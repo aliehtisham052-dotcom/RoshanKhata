@@ -792,17 +792,27 @@
       has left, one line always, no stretched letters. At a large phone font
       it shrinks its padding rather than breaking "Change" into "Ch-ang-e".
     -->
-    <style name="ProfileRowButton" parent="ProfileSmallButton">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1</item>
+<style name="ProfileRowButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <!-- A compact tonal button (11 Nov 2026, the owner: a wide outlined Add beside a small picture looked
+             unfinished). Its own width, one line; the code sets + for Add and the pencil for Change. -->
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">40dp</item>
         <item name="android:layout_marginStart">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="android:paddingStart">12dp</item>
-        <item name="android:paddingEnd">12dp</item>
-        <item name="icon">@drawable/ic_edit</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/brand_green_text</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="backgroundTint">@color/brand_green_soft</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="icon">@drawable/ic_add_plain</item>
         <item name="iconTint">@color/brand_green_text</item>
         <item name="iconSize">18dp</item>
         <item name="iconGravity">textStart</item>
@@ -1024,20 +1034,22 @@
     </style>
 
     <!-- Icon-only remove, 48dp square: red outline, bin icon. -->
-    <style name="ProfileRemoveButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:layout_marginStart">6dp</item>
+<style name="ProfileRemoveButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <!-- Remove a picture: a round tonal icon, the gave red on its own soft red (11 Nov 2026). -->
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_marginStart">8dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:padding">0dp</item>
+        <item name="backgroundTint">@color/summary_get_bg</item>
         <item name="icon">@drawable/ic_delete</item>
         <item name="iconTint">@color/red_gave_text</item>
+        <item name="iconSize">20dp</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">0dp</item>
-        <item name="strokeColor">@color/red_gave_text</item>
-        <item name="cornerRadius">12dp</item>
+        <item name="cornerRadius">20dp</item>
     </style>
 
     <style name="ProfileTile">

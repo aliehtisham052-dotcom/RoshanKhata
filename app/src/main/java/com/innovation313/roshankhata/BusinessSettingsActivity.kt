@@ -663,7 +663,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivLogoPreview.visibility = View.GONE
                 ivNoLogo.visibility = View.VISIBLE
                 btnRemoveLogo.visibility = View.GONE
-                btnPickLogo.setText(R.string.bp_add)
+                pictureState(btnPickLogo, ivLogoPreview, false)
                 ivPreviewLogo.visibility = View.GONE
                 tvPreviewInitials.visibility = View.VISIBLE
                 (ivPreviewLogo.parent as? View)?.setBackgroundResource(R.drawable.bg_business_logo_solid)
@@ -672,7 +672,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivLogoPreview.visibility = View.VISIBLE
                 ivNoLogo.visibility = View.GONE
                 btnRemoveLogo.visibility = View.VISIBLE
-                btnPickLogo.setText(R.string.bp_change)
+                pictureState(btnPickLogo, ivLogoPreview, true)
                 ivPreviewLogo.setImageBitmap(logo)
                 ivPreviewLogo.visibility = View.VISIBLE
                 tvPreviewInitials.visibility = View.GONE
@@ -706,14 +706,14 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivSignaturePreview.visibility = android.view.View.GONE
                 tvNoSignature.visibility = android.view.View.VISIBLE
                 btnRemoveSignature.visibility = android.view.View.GONE
-                btnPickSignature.setText(R.string.bp_add)
+                pictureState(btnPickSignature, ivSignaturePreview, false)
                 hasSignature = false
             } else {
                 ivSignaturePreview.setImageBitmap(signature)
                 ivSignaturePreview.visibility = android.view.View.VISIBLE
                 tvNoSignature.visibility = android.view.View.GONE
                 btnRemoveSignature.visibility = android.view.View.VISIBLE
-                btnPickSignature.setText(R.string.bp_change)
+                pictureState(btnPickSignature, ivSignaturePreview, true)
                 hasSignature = true
             }
             sections.refreshAll()
@@ -798,7 +798,8 @@ class BusinessSettingsActivity : BaseActivity() {
                 val c = android.graphics.Canvas(bmp)
                 com.innovation313.roshankhata.data.InvoiceTemplateKit.drawRecordSeal(
                     c, side / 2f, side / 2f, side * 0.92f,
-                    com.innovation313.roshankhata.ui.Format.dateOnly(System.currentTimeMillis()).uppercase(), "INVOICE"
+                    com.innovation313.roshankhata.ui.Format.dateOnly(System.currentTimeMillis()).uppercase(), "INVOICE",
+                    top = com.innovation313.roshankhata.data.InvoiceTemplateKit.sealName(this)
                 )
                 // A picture on this screen, not a paper: nothing to play when a PDF opens next.
                 com.innovation313.roshankhata.data.SealMark.clear()
@@ -807,6 +808,17 @@ class BusinessSettingsActivity : BaseActivity() {
                 tvPreviewStampPlaceholder.visibility = View.GONE
             }
         }
+    }
+
+    /**
+     * A picture row's one look (11 Nov 2026, the owner: a wide outlined Add beside a small dashed box looked
+     * unfinished): Add with a plus while empty, Change with the pencil once set; the thumb dashed while empty and a
+     * plain white tile once it holds a picture.
+     */
+    private fun pictureState(button: com.google.android.material.button.MaterialButton, thumb: View, has: Boolean) {
+        button.setText(if (has) R.string.bp_change else R.string.bp_add)
+        button.setIconResource(if (has) R.drawable.ic_edit else R.drawable.ic_add_plain)
+        (thumb.parent as? View)?.setBackgroundResource(if (has) R.drawable.bg_logo_tile else R.drawable.bg_preview_thumb_slot)
     }
 
     private fun refreshStamp() {
@@ -818,7 +830,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivStampPreview.visibility = View.GONE
                 tvNoStamp.visibility = View.VISIBLE
                 btnRemoveStamp.visibility = View.GONE
-                btnPickStamp.setText(R.string.bp_add)
+                pictureState(btnPickStamp, ivStampPreview, false)
                 ivPreviewStampThumb.visibility = View.GONE
                 tvPreviewStampPlaceholder.visibility = View.VISIBLE
             } else {
@@ -826,7 +838,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivStampPreview.visibility = View.VISIBLE
                 tvNoStamp.visibility = View.GONE
                 btnRemoveStamp.visibility = View.VISIBLE
-                btnPickStamp.setText(R.string.bp_change)
+                pictureState(btnPickStamp, ivStampPreview, true)
                 ivPreviewStampThumb.setImageBitmap(stamp)
                 ivPreviewStampThumb.visibility = View.VISIBLE
                 tvPreviewStampPlaceholder.visibility = View.GONE
@@ -905,7 +917,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivQrPreview.visibility = View.VISIBLE
                 tvNoQr.visibility = View.GONE
                 btnRemoveQr.visibility = View.VISIBLE
-                btnPickQr.setText(R.string.bp_change)
+                pictureState(btnPickQr, ivQrPreview, true)
                 hasQr = true
                 ivPreviewQrThumb.setImageBitmap(bitmap)
                 ivPreviewQrThumb.visibility = View.VISIBLE
@@ -914,7 +926,7 @@ class BusinessSettingsActivity : BaseActivity() {
                 ivQrPreview.visibility = View.GONE
                 tvNoQr.visibility = View.VISIBLE
                 btnRemoveQr.visibility = View.GONE
-                btnPickQr.setText(R.string.bp_add)
+                pictureState(btnPickQr, ivQrPreview, false)
                 hasQr = false
                 ivPreviewQrThumb.visibility = View.GONE
                 tvPreviewQrPlaceholder.visibility = View.VISIBLE

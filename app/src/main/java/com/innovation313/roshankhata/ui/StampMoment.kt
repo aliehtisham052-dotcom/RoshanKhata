@@ -154,7 +154,7 @@ object StampMoment {
                 return bmp
             }
         }
-        InvoiceTemplateKit.drawRecordSeal(c, side / 2f, side / 2f, side * 0.96f, mark.middle, mark.below, tilt = 0f)
+        InvoiceTemplateKit.drawRecordSeal(c, side / 2f, side / 2f, side * 0.96f, mark.middle, mark.below, tilt = 0f, top = mark.top)
         // The drawing above remembered its words again; nothing else should play from them.
         SealMark.clear()
         val clear = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT); isAntiAlias = true }

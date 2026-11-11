@@ -1869,7 +1869,7 @@
     <string name="bp_seals_help">सादे सफ़ेद काग़ज़ पर फ़ोटो — ऐप खुद काट लेता है।</string>
     <string name="seal_choice_title">काग़ज़ों पर मोहर</string>
     <string name="seal_choice_help">हर इनवॉइस, स्टेटमेंट और रिपोर्ट के आख़िर में एक मोहर लगती है, काग़ज़ की तारीख़ और नंबर के साथ।</string>
-    <string name="seal_choice_app">रोशन खाता की मोहर</string>
+    <string name="seal_choice_app">दुकान की मोहर (आपकी दुकान के नाम के साथ)</string>
     <string name="seal_choice_own">मेरी दुकान की अपनी मोहर</string>
     <string name="seal_choice_none">कोई मोहर नहीं</string>
     <string name="seal_choice_own_needs">अपनी मोहर इस्तेमाल करने के लिए नीचे उसकी तस्वीर लगाएँ।</string>

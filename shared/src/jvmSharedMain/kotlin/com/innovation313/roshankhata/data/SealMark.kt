@@ -8,14 +8,14 @@ package com.innovation313.roshankhata.data
  */
 object SealMark {
     /** [own]: the shop's own stamp picture was printed in the seal's place ([SealChoice.OWN]), not the Roshan Khata seal. */
-    class Mark(val middle: String, val below: String, val at: Long, val own: Boolean = false)
+    class Mark(val middle: String, val below: String, val at: Long, val own: Boolean = false, val top: String = "ROSHAN KHATA")
 
     @Volatile
     private var last: Mark? = null
 
     /** Called by the seal's drawing. */
-    fun drawn(middle: String, below: String, now: Long = System.currentTimeMillis(), own: Boolean = false) {
-        last = Mark(middle, below, now, own)
+    fun drawn(middle: String, below: String, now: Long = System.currentTimeMillis(), own: Boolean = false, top: String = "ROSHAN KHATA") {
+        last = Mark(middle, below, now, own, top)
     }
 
     /** The last seal's words, once; null when none was drawn in the last [maxAgeMs]. */

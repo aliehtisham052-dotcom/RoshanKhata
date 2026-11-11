@@ -70,6 +70,18 @@ object InvoiceTemplateKit {
      * the rim with plain rotations, so the computer's drawing stand-in draws it the same, and the whole seal is one
      * left-to-right unit on a right-to-left page ([PdfRtl.asOne]).
      */
+    /**
+     * The name round the top of the seal: the shop's own (11 Nov 2026, the owner: "Bhatti Traders" in the seal, not
+     * "Roshan Khata"), in capitals. Only a name in Latin letters goes round the rim - joined scripts (Urdu, Arabic,
+     * Hindi, Bengali) break apart when their letters are turned one by one - so a shop named only in those, or not
+     * named at all, keeps "ROSHAN KHATA".
+     */
+    fun sealName(context: Context): String {
+        val name = BusinessProfile.businessName(context)?.trim().orEmpty()
+        val latin = name.isNotEmpty() && name.all { it.code < 0x250 || it == '\u00b7' }
+        return if (latin) name.uppercase() else "ROSHAN KHATA"
+    }
+
     /** What this shop's papers carry: [SealChoice], its own stamp only when a stamp picture is kept. */
     fun sealToPrint(context: Context): SealChoice =
         BusinessProfile.sealChoice(context).printed(BusinessProfile.hasStamp(context))
@@ -87,7 +99,7 @@ object InvoiceTemplateKit {
         SealChoice.OWN -> {
             val stamp = BusinessProfile.loadStamp(context)
             if (stamp == null) {
-                drawRecordSeal(c, cx, cy, size, middle, below, ink, paper)
+                drawRecordSeal(c, cx, cy, size, middle, below, ink, paper, top = sealName(context))
             } else {
                 PdfRtl.asOne(c, cx - size / 2f, cx + size / 2f) {
                     val turned = c.save()
@@ -99,17 +111,18 @@ object InvoiceTemplateKit {
             }
             true
         }
-        SealChoice.APP -> { drawRecordSeal(c, cx, cy, size, middle, below, ink, paper); true }
+        SealChoice.APP -> { drawRecordSeal(c, cx, cy, size, middle, below, ink, paper, top = sealName(context)); true }
     }
 
     fun drawRecordSeal(
         c: Canvas, cx: Float, cy: Float, size: Float, middle: String, below: String,
-        ink: Int = SEAL_INK, paper: Int = 0xFFFFFFFF.toInt(), tilt: Float = SEAL_TILT
+        ink: Int = SEAL_INK, paper: Int = 0xFFFFFFFF.toInt(), tilt: Float = SEAL_TILT,
+        top: String = "ROSHAN KHATA"
     ) {
         // A stamp's own build (10 Nov 2026, the owner: the first one looked thin and plain): full-strength ink, a heavy
         // rim with a fine line inside it, the name over the top and DIGITAL RECORD under the bottom, a lightly tinted
         // centre with the book, and the paper's own date on a ribbon across the middle - the figure a reader looks for.
-        SealMark.drawn(middle, below)
+        SealMark.drawn(middle, below, top = top)
         val k = size / 320f
         val ring = Paint().apply { color = ink; style = Paint.Style.STROKE; isAntiAlias = true }
         val fill = Paint().apply { color = ink; style = Paint.Style.FILL; isAntiAlias = true }
@@ -125,8 +138,14 @@ object InvoiceTemplateKit {
                 color = ink; isAntiAlias = true; textSize = 25f * k; textAlign = Paint.Align.CENTER
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             }
-            // Each line's letters centred on the band's middle (radius 119).
-            arcWords(c, "ROSHAN KHATA", cx, cy, (119f - 0.36f * 25f) * k, rim, 5.5f * k, top = true)
+            // Each line's letters centred on the band's middle (radius 119). The shop's name keeps to the top
+            // arc - about 125 degrees - and gets smaller to fit; a long one loses some spacing first.
+            var track = 5.5f * k
+            fun length() = rim.measureText(top) + track * (top.length - 1)
+            val room = 236f * k
+            while (length() > room && track > 1.5f * k) track -= 0.5f * k
+            while (length() > room && rim.textSize > 14f * k) rim.textSize -= 0.5f * k
+            arcWords(c, top, cx, cy, (119f - 0.36f * rim.textSize / k) * k, rim, track, top = true)
             rim.textSize = 18f * k
             arcWords(c, "DIGITAL RECORD", cx, cy, (119f - 0.36f * 18f) * k, rim, 4.5f * k, top = false)
 

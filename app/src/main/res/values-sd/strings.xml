@@ -1849,7 +1849,7 @@
     <string name="bp_seals_help">سادي اڇي ڪاغذ تي تصوير وٺو — ايپ پاڻ ڪٽي ٿي.</string>
     <string name="seal_choice_title">ڪاغذن تي مُهر</string>
     <string name="seal_choice_help">هر انوائس، اسٽيٽمينٽ ۽ رپورٽ جي آخر ۾ هڪ مُهر لڳي ٿي، ڪاغذ جي تاريخ ۽ نمبر سان.</string>
-    <string name="seal_choice_app">روشن کاتي جي مُهر</string>
+    <string name="seal_choice_app">دڪان جي مُهر (توهان جي دڪان جي نالي سان)</string>
     <string name="seal_choice_own">منهنجي دڪان جي پنهنجي مُهر</string>
     <string name="seal_choice_none">ڪا مُهر نه</string>
     <string name="seal_choice_own_needs">پنهنجي مُهر استعمال ڪرڻ لاءِ هيٺ ان جي تصوير لڳايو.</string>

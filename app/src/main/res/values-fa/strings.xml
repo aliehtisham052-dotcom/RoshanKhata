@@ -1849,7 +1849,7 @@
     <string name="bp_seals_help">روی کاغذ سفید ساده عکس بگیرید — برنامه خودش برش می‌دهد.</string>
     <string name="seal_choice_title">مهر روی برگه‌ها</string>
     <string name="seal_choice_help">در پایان هر فاکتور، صورت‌حساب و گزارش یک مهر می‌آید، با تاریخ و شمارهٔ برگه.</string>
-    <string name="seal_choice_app">مهر روشن خاتا</string>
+    <string name="seal_choice_app">مهر فروشگاه (با نام فروشگاه شما)</string>
     <string name="seal_choice_own">مهر خود فروشگاهم</string>
     <string name="seal_choice_none">بدون مهر</string>
     <string name="seal_choice_own_needs">برای استفاده از مهر خودتان، تصویر آن را پایین اضافه کنید.</string>

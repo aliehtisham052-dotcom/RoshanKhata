@@ -1874,7 +1874,7 @@
     <string name="bp_seals_help">Photo on plain white paper — the app crops it for you.</string>
     <string name="seal_choice_title">Seal on your papers</string>
     <string name="seal_choice_help">One seal goes at the end of every invoice, statement and report, with the paper\'s date and number.</string>
-    <string name="seal_choice_app">Roshan Khata seal</string>
+    <string name="seal_choice_app">Shop seal (with your shop\'s name)</string>
     <string name="seal_choice_own">My shop\'s own stamp</string>
     <string name="seal_choice_none">No seal</string>
     <string name="seal_choice_own_needs">To use your own stamp, add its picture below.</string>

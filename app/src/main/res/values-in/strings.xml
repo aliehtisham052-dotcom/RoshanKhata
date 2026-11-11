@@ -1831,7 +1831,7 @@
     <string name="bp_seals_help">Foto di atas kertas putih polos — aplikasi akan memotongnya untuk Anda.</string>
     <string name="seal_choice_title">Stempel di dokumen</string>
     <string name="seal_choice_help">Satu stempel dibubuhkan di akhir setiap faktur, laporan rekening, dan laporan, dengan tanggal dan nomor dokumen.</string>
-    <string name="seal_choice_app">Stempel Roshan Khata</string>
+    <string name="seal_choice_app">Stempel toko (dengan nama toko Anda)</string>
     <string name="seal_choice_own">Stempel toko saya sendiri</string>
     <string name="seal_choice_none">Tanpa stempel</string>
     <string name="seal_choice_own_needs">Untuk memakai stempel sendiri, tambahkan gambarnya di bawah.</string>

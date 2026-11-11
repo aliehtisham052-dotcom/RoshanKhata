@@ -1973,7 +1973,7 @@
     <string name="bp_seals_help">صوّرها على ورق أبيض عادي — يقصّها التطبيق تلقائيًا.</string>
     <string name="seal_choice_title">الختم على أوراقك</string>
     <string name="seal_choice_help">يوضع ختم واحد في نهاية كل فاتورة وكشف حساب وتقرير، مع تاريخ الورقة ورقمها.</string>
-    <string name="seal_choice_app">ختم روشن كهاتا</string>
+    <string name="seal_choice_app">ختم المتجر (باسم متجرك)</string>
     <string name="seal_choice_own">ختم متجري الخاص</string>
     <string name="seal_choice_none">بدون ختم</string>
     <string name="seal_choice_own_needs">لاستخدام ختمك الخاص، أضف صورته أدناه.</string>

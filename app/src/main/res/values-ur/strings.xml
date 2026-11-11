@@ -1821,7 +1821,7 @@
     <string name="bp_seals_help">سادہ سفید کاغذ پر تصویر لیں — ایپ خود کاٹ دیتی ہے۔</string>
     <string name="seal_choice_title">کاغذات پر مہر</string>
     <string name="seal_choice_help">ہر انوائس، اسٹیٹمنٹ اور رپورٹ کے آخر میں ایک مہر لگتی ہے، کاغذ کی تاریخ اور نمبر کے ساتھ۔</string>
-    <string name="seal_choice_app">روشن کھاتہ کی مہر</string>
+    <string name="seal_choice_app">دکان کی مہر (آپ کی دکان کے نام کے ساتھ)</string>
     <string name="seal_choice_own">میری دکان کی اپنی مہر</string>
     <string name="seal_choice_none">کوئی مہر نہیں</string>
     <string name="seal_choice_own_needs">اپنی مہر استعمال کرنے کے لیے نیچے اس کی تصویر لگائیں۔</string>

@@ -112,7 +112,7 @@ fun StampMoment(mark: SealMark.Mark, ownStamp: ImageBitmap? = null, onDone: () -
 /** The seal as printed, with a rubber stamp's grain (the same specks every time). */
 private fun sealPicture(side: Int, mark: SealMark.Mark): ImageBitmap {
     val bmp = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888)
-    InvoiceTemplateKit.drawRecordSeal(Canvas(bmp), side / 2f, side / 2f, side * 0.96f, mark.middle, mark.below, tilt = 0f)
+    InvoiceTemplateKit.drawRecordSeal(Canvas(bmp), side / 2f, side / 2f, side * 0.96f, mark.middle, mark.below, tilt = 0f, top = mark.top)
     SealMark.clear()
     val img = bmp.image
     val g = img.createGraphics()

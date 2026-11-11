@@ -1821,7 +1821,7 @@
     <string name="bp_seals_help">Sada safed kaghaz par photo lein — app khud kaat deti hai.</string>
     <string name="seal_choice_title">Kaghazaat par mohar</string>
     <string name="seal_choice_help">Har invoice, statement aur report ke aakhir mein ek mohar lagti hai, kaghaz ki tareekh aur number ke saath.</string>
-    <string name="seal_choice_app">Roshan Khata ki mohar</string>
+    <string name="seal_choice_app">Dukaan ki mohar (aap ki dukaan ke naam ke saath)</string>
     <string name="seal_choice_own">Meri dukaan ki apni mohar</string>
     <string name="seal_choice_none">Koi mohar nahi</string>
     <string name="seal_choice_own_needs">Apni mohar istemal karne ke liye neeche us ki tasveer lagayein.</string>
