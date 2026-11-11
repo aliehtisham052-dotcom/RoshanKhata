@@ -332,16 +332,16 @@
     <string name="remind_whatsapp">WhatsApp</string>
     <string name="remind_sms">SMS</string>
     <string name="reminder_preview_help">Read it over before sending. You can edit anything here — Roshan Khata will hand it to WhatsApp or your SMS app, and you press send yourself.</string>
-    <string name="reminder_they_owe">%1$s\n\nA friendly reminder about the pending amount on your account.\n\nAmount due: *%2$s*%3$s\n\nPlease arrange the payment when convenient. If you have already paid, please ignore this message.\n\nThank you.</string>
+    <string name="reminder_they_owe">%1$s\n\nA friendly reminder about the pending amount on your account.\n\nAmount due: *%2$s*%3$s\n\nPlease arrange the payment soon. If you have made a payment, please send us its date and the receipt or transaction ID so we can match it to your account.\n\nThank you.</string>
     <!-- Used instead of the above when the party has an open payment plan with an
          agreed date: %3$s. Never shown otherwise — a reminder must not name a date
          the customer never gave. -->
-    <string name="reminder_they_owe_by_date">%1$s\n\nA friendly reminder about the pending amount on your account.\n\nAmount due: *%2$s*%4$s\nAgreed date: *%3$s*\n\nPlease clear it by the agreed date. If you have already paid, please ignore this message.\n\nThank you.</string>
+    <string name="reminder_they_owe_by_date">%1$s\n\nA friendly reminder about the pending amount on your account.\n\nAmount due: *%2$s*%4$s\nAgreed date: *%3$s*\n\nPlease clear it by the agreed date. If you have made a payment, please send us its date and the receipt or transaction ID so we can match it to your account.\n\nThank you.</string>
     <string name="reminder_step_gentle">Gentle</string>
     <string name="reminder_step_plain">Plain</string>
     <string name="reminder_step_serious">Serious</string>
-    <string name="reminder_step2">%1$s\n\nThis message is about the pending amount on your account, following our reminder of %3$s.\n\nAmount due: *%2$s*%4$s\n\nPlease pay this week, or let us know when you will be able to. If you have already paid, please ignore this message.\n\nThank you.</string>
-    <string name="reminder_step3">%1$s\n\nThe amount on your account is still unpaid.\n\nAmount due: *%2$s*%3$s\n\nPlease pay it now, or tell us the date by which you will pay so that we can settle the account. If you have already paid, please let us know.\n\nThank you for your understanding.</string>
+    <string name="reminder_step2">%1$s\n\nThis message is about the pending amount on your account, following our reminder of %3$s.\n\nAmount due: *%2$s*%4$s\n\nPlease pay this week, or let us know when you will be able to. If you have made a payment, please send us its date and the receipt or transaction ID so we can match it to your account.\n\nThank you.</string>
+    <string name="reminder_step3">%1$s\n\nThe amount on your account is still unpaid.\n\nAmount due: *%2$s*%3$s\n\nPlease pay it now, or tell us the date by which you will pay so that we can settle the account. If you have made a payment, please send us its date and the receipt or transaction ID so we can match it to your account.\n\nThank you for your understanding.</string>
     <string name="reminder_ref">Reference: %1$s</string>
     <string name="reminder_greeting">Dear *%1$s*,</string>
     <string name="reminder_greeting_neutral">Dear customer,</string>
