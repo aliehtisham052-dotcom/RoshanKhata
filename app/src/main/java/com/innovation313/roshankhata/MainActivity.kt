@@ -194,8 +194,10 @@ class MainActivity : BaseActivity() {
         val title = findViewById<TextView>(R.id.tvHudhudGreet)
         title.text = greeting
         // The greeting is one line at any text size, shrunk to the bubble as Home's balance is (the 150% proof:
-        // "Assalam-o-Alaikum!" broke before its "!", which stood alone on a second line).
-        title.doOnLayout { com.innovation313.roshankhata.ui.FitOneLine.fit(title, it.width) }
+        // "Assalam-o-Alaikum!" broke before its "!", which stood alone on a second line). Shrunk after the layout pass,
+        // not inside it (lesson 88): a size set while the bubble was being laid out was drawn on one line but kept two
+        // lines' height (a963f5d's proof).
+        title.doOnLayout { v -> v.post { com.innovation313.roshankhata.ui.FitOneLine.fit(title, v.width) } }
         findViewById<TextView>(R.id.tvHudhudGreetLine).text = line
         findViewById<View>(R.id.hudhudGreetingCard).setOnClickListener {
             bubble.visibility = View.GONE

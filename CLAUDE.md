@@ -2612,6 +2612,11 @@ Each of these cost a build or a bug.
 87. **An enum class is not a value.** `val w = VoiceQuestion.Window` failed every build of the tests ("does not
     have a companion object", 3b2e3de); import the enum and write `Window.TODAY`.
 
+88. **A size set while a view is being laid out is drawn but never measured.** `doOnLayout { FitOneLine.fit(…) }`
+    shrank the greeting's title inside the layout pass: View.layout clears the request the new size made, so the
+    words were drawn on one line and the bubble kept two lines' height (a963f5d's proof). Change a size after the
+    pass — `post { }` from the layout callback, as Home's balance does.
+
 ---
 
 ## Working with the owner
