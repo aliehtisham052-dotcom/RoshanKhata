@@ -50,6 +50,33 @@ class VoiceQuestionTest {
         assertEquals(Kind.SALES_TODAY, q("مبيعات اليوم"))
     }
 
+    @Test fun `a figure's word counts only whole, so names stay names`() {
+        // 12 Nov 2026 (Hudhud): the letters were looked for anywhere, so each of these asked for the sales or the profit.
+        assertEquals(Kind.TO_GET, q("Saleem ka kitna baqaya hai"))
+        assertNull(q("Ali Wholesale ka hisaab"))
+        assertNull(q("Kalabagh Traders"))
+        assertNull(q("سودا سلف"))
+    }
+
+    @Test fun `words with their joined pieces still count`() {
+        assertEquals(Kind.SALES_TODAY, q("আজকের বিক্রি"))
+        assertEquals(Kind.PROFIT_MONTH, q("الأرباح هذا الشهر"))
+        assertEquals(Kind.SALES_MONTH, q("والمبيعات"))
+        assertEquals(Kind.TO_GET, q("total dues"))
+    }
+
+    @Test fun `the words owners say most`() {
+        assertEquals(Kind.PROFIT_MONTH, q("is mahine kitna faida hua"))
+        assertEquals(Kind.SALES_TODAY, q("aaj kitna bika"))
+        assertEquals(Kind.SALES_TODAY, q("how much did I sell today"))
+        assertEquals(Kind.TO_GET, q("kitna baqi hai"))
+    }
+
+    @Test fun `a Bengali ya written either way is one word`() {
+        val composed = "সবচেয়ে বেশি বাকি কার".replace("\u09AF\u09BC", "\u09DF")
+        assertEquals(Kind.WHO_OWES_MOST, q(composed))
+    }
+
     @Test fun `anything else is not guessed at`() {
         assertNull(q("mausam kaisa hai"))
         assertNull(q(""))

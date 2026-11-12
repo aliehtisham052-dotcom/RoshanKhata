@@ -1021,8 +1021,6 @@
     <string name="vq_ask">Bol kar poochein</string>
     <string name="vq_prompt">Apni dukaan ke baare mein poochein</string>
     <string name="vq_heard">Suna: “%1$s”</string>
-    <string name="vq_understood">Maine ye samjha: %1$s</string>
-    <string name="vq_not_understood">Ye sawal abhi mujhe nahi aata. Aap pooch sakte hain: sab se zyada baqaya kis ka, kul kitna lena hai, kul kitna dena hai, aaj ki bikri, is mahine ki bikri, is mahine ka munafa, kya expire hone wala hai, kis ne paisa nahi diya.</string>
     <string name="vq_who_owes_most">Sab se zyada baqaya kis ka</string>
     <string name="vq_to_get">Kul lena</string>
     <string name="vq_to_give">Kul dena</string>
@@ -1036,6 +1034,25 @@
     <string name="vq_no_recognizer">Is phone mein awaaz pehchanne wali app nahi.</string>
     <string name="vq_not_paid_body">Follow-up list mein woh gahak sab se upar hain jin se pehle wusooli karni hai.</string>
     <string name="vq_expiring_body">Expiring stock screen par woh maal hai jo sab se pehle khatam hoga.</string>
+    <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
+    <string name="hudhud_name">Hudhud</string>
+    <string name="hudhud_ask">Hudhud se poochein…</string>
+    <string name="hudhud_hello">Apne khate ke baare mein poochein. Main isi phone par aap ke khate mein dekh kar batata hoon.</string>
+    <string name="hudhud_salaam_reply">Wa alaikum assalam!</string>
+    <string name="hudhud_listening">Sun raha hoon…</string>
+    <string name="hudhud_thinking">Khate mein dekh raha hoon…</string>
+    <string name="hudhud_speaking">Bata raha hoon</string>
+    <string name="hudhud_replay">Dobara sunein</string>
+    <string name="hudhud_unknown">Is ka jawab abhi mujhe nahi aata, main sirf aap ka khata jaanta hoon. Aap pooch sakte hain:</string>
+    <string name="hudhud_owner_only">Ye raqam sirf maalik ya manager dekh sakte hain.</string>
+    <string name="hudhud_quiet">Home par balance chhupa hai, is liye main raqam yahan likhta hoon, bolta nahi.</string>
+    <string name="hudhud_no_voice">Is phone mein is zaban ki awaaz nahi, is liye jawab yahan likha hai.</string>
+    <string name="hudhud_voice_on">Hudhud ki awaaz chalu hai</string>
+    <string name="hudhud_voice_off">Hudhud ki awaaz band hai</string>
+    <string name="hudhud_chip_backup">Aakhri backup kab hua?</string>
+    <string name="hudhud_chip_drawer">Galle mein kitna hona chahiye?</string>
+    <string name="hudhud_pick_party">Aap kis ki baat kar rahe hain?</string>
+    <string name="hudhud_you_asked">Aap ne poocha: “%1$s”</string>
     <string name="cf_title">Cash Flow</string>
     <string name="cf_subtitle">Aane ka waada aur jane wala paisa</string>
     <string name="cf_days">%1$s din</string>

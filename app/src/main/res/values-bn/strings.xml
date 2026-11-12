@@ -1061,8 +1061,6 @@
     <string name="vq_ask">বলে জিজ্ঞাসা করুন</string>
     <string name="vq_prompt">আপনার দোকান নিয়ে জিজ্ঞাসা করুন</string>
     <string name="vq_heard">শোনা গেছে: “%1$s”</string>
-    <string name="vq_understood">আমি এটা বুঝেছি: %1$s</string>
-    <string name="vq_not_understood">এই প্রশ্নটি এখনো আমি জানি না। আপনি জিজ্ঞাসা করতে পারেন: সবচেয়ে বেশি বাকি কার, মোট কত পাওনা, মোট কত দেনা, আজকের বিক্রি, এই মাসের বিক্রি, এই মাসের লাভ, কোন মালের মেয়াদ শেষ হচ্ছে, কে টাকা দেয়নি।</string>
     <string name="vq_who_owes_most">সবচেয়ে বেশি বাকি কার</string>
     <string name="vq_to_get">মোট পাওনা</string>
     <string name="vq_to_give">মোট দেনা</string>
@@ -1076,6 +1074,25 @@
     <string name="vq_no_recognizer">এই ফোনে কণ্ঠস্বর চেনার অ্যাপ নেই।</string>
     <string name="vq_not_paid_body">ফলো-আপ তালিকায় যাদের কাছ থেকে আগে আদায় করতে হবে তারা সবার ওপরে।</string>
     <string name="vq_expiring_body">মেয়াদ শেষ হওয়া স্টকের পর্দায় সবার আগে যা ফুরোবে তা দেখায়।</string>
+    <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
+    <string name="hudhud_name">হুদহুদ</string>
+    <string name="hudhud_ask">হুদহুদকে জিজ্ঞাসা করুন…</string>
+    <string name="hudhud_hello">আপনার খাতা নিয়ে জিজ্ঞাসা করুন। আমি এই ফোনেই আপনার নিজের খাতা দেখে বলি।</string>
+    <string name="hudhud_salaam_reply">ওয়ালাইকুম আসসালাম!</string>
+    <string name="hudhud_listening">শুনছি…</string>
+    <string name="hudhud_thinking">খাতায় দেখছি…</string>
+    <string name="hudhud_speaking">বলছি</string>
+    <string name="hudhud_replay">আবার শুনুন</string>
+    <string name="hudhud_unknown">এর উত্তর এখনো আমি জানি না, আমি শুধু আপনার খাতা জানি। আপনি জিজ্ঞাসা করতে পারেন:</string>
+    <string name="hudhud_owner_only">এই অঙ্ক শুধু মালিক বা ম্যানেজার দেখতে পারেন।</string>
+    <string name="hudhud_quiet">হোমে ব্যালেন্স লুকানো, তাই আমি অঙ্ক এখানে লিখি, জোরে বলি না।</string>
+    <string name="hudhud_no_voice">এই ফোনে এই ভাষার কণ্ঠ নেই, তাই উত্তর এখানে লেখা আছে।</string>
+    <string name="hudhud_voice_on">হুদহুদের কণ্ঠ চালু</string>
+    <string name="hudhud_voice_off">হুদহুদের কণ্ঠ বন্ধ</string>
+    <string name="hudhud_chip_backup">শেষ ব্যাকআপ কবে হয়েছে?</string>
+    <string name="hudhud_chip_drawer">ক্যাশে কত থাকার কথা?</string>
+    <string name="hudhud_pick_party">আপনি কার কথা বলছেন?</string>
+    <string name="hudhud_you_asked">আপনি জিজ্ঞেস করেছেন: “%1$s”</string>
     <string name="cf_title">ক্যাশ ফ্লো</string>
     <string name="cf_subtitle">আসার প্রতিশ্রুতি ও যাওয়ার টাকা</string>
     <string name="cf_days">%1$s দিন</string>

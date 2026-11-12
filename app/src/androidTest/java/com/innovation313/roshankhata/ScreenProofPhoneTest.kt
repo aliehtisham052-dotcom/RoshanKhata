@@ -258,6 +258,14 @@ class ScreenProofPhoneTest(
         // The seal with shops named in every script and at every length (11 Nov 2026): joined letters stay joined,
         // a long name stays inside its band. Made-up names (lesson 80).
         save("49-seal-names.png", sealNames())
+        // Hudhud (12 Nov 2026): an answer with its customers (his own chip's words, asked as typed) and a help page, on
+        // his sheet over Home, silent. Home's own picture (01) shows his bar.
+        shoot("50-hudhud-answer", open(MainActivity::class.java) { putExtra(MainActivity.EXTRA_UNLOCKED, true) }) { a ->
+            com.innovation313.roshankhata.ui.HudhudSheet.open(a, ask = a.getString(R.string.vq_who_owes_most), speak = false)
+        }
+        shoot("51-hudhud-help", open(MainActivity::class.java) { putExtra(MainActivity.EXTRA_UNLOCKED, true) }) { a ->
+            com.innovation313.roshankhata.ui.HudhudSheet.open(a, ask = a.getString(R.string.faq_q_backup), speak = false)
+        }
         shoot("35-live-roads", open(BackupActivity::class.java)) { a ->
             val roads = a.findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)
             roads.visibility = android.view.View.VISIBLE

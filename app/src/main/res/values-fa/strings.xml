@@ -1049,8 +1049,6 @@
     <string name="vq_ask">پرسیدن با صدا</string>
     <string name="vq_prompt">درباره فروشگاهتان بپرسید</string>
     <string name="vq_heard">شنیده شد: «%1$s»</string>
-    <string name="vq_understood">این را فهمیدم: %1$s</string>
-    <string name="vq_not_understood">این پرسش را هنوز نمی‌دانم. می‌توانید بپرسید: بیشترین طلب از کیست، جمع طلب، جمع بدهی، فروش امروز، فروش این ماه، سود این ماه، چه کالایی رو به انقضاست، چه کسی پرداخت نکرده.</string>
     <string name="vq_who_owes_most">بیشترین طلب از کیست</string>
     <string name="vq_to_get">جمع طلب</string>
     <string name="vq_to_give">جمع بدهی</string>
@@ -1064,6 +1062,25 @@
     <string name="vq_no_recognizer">این گوشی برنامه تشخیص گفتار ندارد.</string>
     <string name="vq_not_paid_body">فهرست پیگیری مشتریانی را که باید زودتر وصول کنید بالاتر نشان می‌دهد.</string>
     <string name="vq_expiring_body">صفحه کالای رو به انقضا آنچه زودتر تمام می‌شود را نشان می‌دهد.</string>
+    <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
+    <string name="hudhud_name">هدهد</string>
+    <string name="hudhud_ask">از هدهد بپرسید…</string>
+    <string name="hudhud_hello">درباره دفترتان بپرسید. در همین گوشی، در دفتر خودتان نگاه می‌کنم و می‌گویم.</string>
+    <string name="hudhud_salaam_reply">علیکم السلام!</string>
+    <string name="hudhud_listening">گوش می‌دهم…</string>
+    <string name="hudhud_thinking">در دفتر نگاه می‌کنم…</string>
+    <string name="hudhud_speaking">می‌گویم</string>
+    <string name="hudhud_replay">دوباره بشنوید</string>
+    <string name="hudhud_unknown">پاسخ این را هنوز نمی‌دانم، من فقط دفتر شما را می‌شناسم. می‌توانید بپرسید:</string>
+    <string name="hudhud_owner_only">این رقم را فقط مالک یا مدیر می‌بیند.</string>
+    <string name="hudhud_quiet">مانده در صفحه اصلی پنهان است، پس مبلغ را اینجا می‌نویسم و بلند نمی‌گویم.</string>
+    <string name="hudhud_no_voice">این گوشی برای این زبان صدایی ندارد، پس پاسخ اینجا نوشته شده.</string>
+    <string name="hudhud_voice_on">صدای هدهد روشن است</string>
+    <string name="hudhud_voice_off">صدای هدهد خاموش است</string>
+    <string name="hudhud_chip_backup">آخرین پشتیبان کی گرفته شد؟</string>
+    <string name="hudhud_chip_drawer">چقدر باید در صندوق باشد؟</string>
+    <string name="hudhud_pick_party">منظورتان کدام است؟</string>
+    <string name="hudhud_you_asked">پرسیدید: «%1$s»</string>
     <string name="cf_title">جریان نقدی</string>
     <string name="cf_subtitle">پولی که قول آمدنش داده شده و پولی که باید برود</string>
     <string name="cf_days">%1$s روز</string>

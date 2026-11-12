@@ -1109,8 +1109,6 @@
     <string name="vq_ask">اسأل بصوتك</string>
     <string name="vq_prompt">اسأل عن متجرك</string>
     <string name="vq_heard">سُمع: “%1$s”</string>
-    <string name="vq_understood">فهمتُ: %1$s</string>
-    <string name="vq_not_understood">لا أعرف هذا السؤال بعد. يمكنك أن تسأل: من عليه أكثر دين، كم لي إجمالًا، كم عليّ إجمالًا، مبيعات اليوم، مبيعات هذا الشهر، ربح هذا الشهر، ما الذي قارب انتهاء صلاحيته، من لم يدفع.</string>
     <string name="vq_who_owes_most">من عليه أكثر دين</string>
     <string name="vq_to_get">إجمالي ما لي</string>
     <string name="vq_to_give">إجمالي ما عليّ</string>
@@ -1124,6 +1122,25 @@
     <string name="vq_no_recognizer">لا يوجد في هذا الهاتف تطبيق للتعرّف على الكلام.</string>
     <string name="vq_not_paid_body">قائمة المتابعة تضع في أعلاها العملاء الذين يجب التحصيل منهم أولًا.</string>
     <string name="vq_expiring_body">شاشة البضاعة القريبة من انتهاء الصلاحية تعرض ما ينتهي أولًا.</string>
+    <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
+    <string name="hudhud_name">هُدهُد</string>
+    <string name="hudhud_ask">اسأل هُدهُد…</string>
+    <string name="hudhud_hello">اسأل عن دفترك. أبحث في دفترك أنت، هنا على هذا الهاتف.</string>
+    <string name="hudhud_salaam_reply">وعليكم السلام!</string>
+    <string name="hudhud_listening">أستمع…</string>
+    <string name="hudhud_thinking">أبحث في دفترك…</string>
+    <string name="hudhud_speaking">أتحدث</string>
+    <string name="hudhud_replay">استمع مرة أخرى</string>
+    <string name="hudhud_unknown">لا أعرف جواب هذا بعد، فأنا أعرف دفترك فقط. يمكنك أن تسأل:</string>
+    <string name="hudhud_owner_only">هذا الرقم يراه المالك أو المدير فقط.</string>
+    <string name="hudhud_quiet">الرصيد مخفي في الشاشة الرئيسية، لذا أكتب المبالغ هنا ولا أنطقها.</string>
+    <string name="hudhud_no_voice">لا يوجد في هذا الهاتف صوت لهذه اللغة، لذا الجواب مكتوب هنا.</string>
+    <string name="hudhud_voice_on">صوت هُدهُد يعمل</string>
+    <string name="hudhud_voice_off">صوت هُدهُد متوقف</string>
+    <string name="hudhud_chip_backup">متى كانت آخر نسخة احتياطية؟</string>
+    <string name="hudhud_chip_drawer">كم يجب أن يكون في الدرج؟</string>
+    <string name="hudhud_pick_party">من تقصد؟</string>
+    <string name="hudhud_you_asked">سألت: “%1$s”</string>
     <string name="cf_title">التدفق النقدي</string>
     <string name="cf_subtitle">مال موعود بدخوله ومال مستحق خروجه</string>
     <string name="cf_days">%1$s يومًا</string>

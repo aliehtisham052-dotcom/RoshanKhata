@@ -153,9 +153,37 @@ class MainActivity : BaseActivity() {
 
         buildFeatureGrid()
         sizeGridTail()
+        bindHudhud()
         if (!askTradeIfMissing() && !askCountryOnce()) maybeShowCoachMarks()
 
         builtInLocale = com.innovation313.roshankhata.ui.LocaleRefresh.tag(this)
+    }
+
+    /**
+     * Hudhud's bar at the foot of Home (12 Nov 2026): his face opens his sheet, the box opens it ready to type, the
+     * microphone opens it listening. In right-to-left he is turned to face the box. The first few times Home opens he
+     * nods once, so the owner sees there is someone to ask ([HUDHUD_NODS], Motion.firstTimes); with the phone's
+     * animations off he stands still.
+     */
+    private fun bindHudhud() {
+        val face = findViewById<View>(R.id.ivHudhudFace) ?: return
+        face.setOnClickListener { com.innovation313.roshankhata.ui.HudhudSheet.open(this) }
+        findViewById<View>(R.id.hudhudPill).setOnClickListener {
+            com.innovation313.roshankhata.ui.HudhudSheet.open(this, typing = true)
+        }
+        findViewById<View>(R.id.btnHudhudMic).setOnClickListener {
+            com.innovation313.roshankhata.ui.HudhudSheet.open(this, listen = true)
+        }
+        if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) face.scaleX = -1f
+        val motion = com.innovation313.roshankhata.ui.Motion
+        if (!motion.enabled(this)) return
+        face.postDelayed({
+            if (isFinishing || isDestroyed || !motion.firstTimes(this, "hudhud_home_nod", HUDHUD_NODS)) return@postDelayed
+            val lift = -4f * resources.displayMetrics.density
+            face.animate().translationY(lift).setDuration(180).withEndAction {
+                face.animate().translationY(0f).setDuration(260).start()
+            }.start()
+        }, HUDHUD_NOD_AFTER_MS)
     }
 
     /**
@@ -1068,6 +1096,12 @@ class MainActivity : BaseActivity() {
 
         /** How long Home is seen before the first-run tour dims it. */
         private const val TOUR_DELAY_MS = 600L
+
+        /** Hudhud nods on Home this many times on a phone, then stands still. */
+        private const val HUDHUD_NODS = 3
+
+        /** After the grid has settled (and after the tour's dimming would have begun). */
+        private const val HUDHUD_NOD_AFTER_MS = 1200L
 
         /** Tiles per row in the feature grid. */
         private const val TILE_HEIGHT_COMPACT_DP = 62f

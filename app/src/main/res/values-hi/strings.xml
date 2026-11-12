@@ -1061,8 +1061,6 @@
     <string name="vq_ask">बोलकर पूछें</string>
     <string name="vq_prompt">अपनी दुकान के बारे में पूछें</string>
     <string name="vq_heard">सुना: “%1$s”</string>
-    <string name="vq_understood">मैंने यह समझा: %1$s</string>
-    <string name="vq_not_understood">यह सवाल अभी मुझे नहीं आता। आप पूछ सकते हैं: सबसे ज़्यादा बकाया किसका, कुल कितना लेना है, कुल कितना देना है, आज की बिक्री, इस महीने की बिक्री, इस महीने का मुनाफ़ा, क्या एक्सपायर होने वाला है, किसने पैसे नहीं दिए।</string>
     <string name="vq_who_owes_most">सबसे ज़्यादा बकाया किसका</string>
     <string name="vq_to_get">कुल लेना</string>
     <string name="vq_to_give">कुल देना</string>
@@ -1076,6 +1074,25 @@
     <string name="vq_no_recognizer">इस फ़ोन में आवाज़ पहचानने वाला ऐप नहीं है।</string>
     <string name="vq_not_paid_body">फ़ॉलो-अप सूची में वे ग्राहक सबसे ऊपर हैं जिनसे पहले वसूली करनी है।</string>
     <string name="vq_expiring_body">एक्सपायर होने वाले स्टॉक की स्क्रीन पर वह माल है जो सबसे पहले ख़त्म होगा।</string>
+    <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
+    <string name="hudhud_name">हुदहुद</string>
+    <string name="hudhud_ask">हुदहुद से पूछें…</string>
+    <string name="hudhud_hello">अपने खाते के बारे में पूछें। मैं इसी मोबाइल पर आपके खाते में देखकर बताता हूँ।</string>
+    <string name="hudhud_salaam_reply">वालेकुम अस्सलाम!</string>
+    <string name="hudhud_listening">सुन रहा हूँ…</string>
+    <string name="hudhud_thinking">खाते में देख रहा हूँ…</string>
+    <string name="hudhud_speaking">बता रहा हूँ</string>
+    <string name="hudhud_replay">फिर से सुनें</string>
+    <string name="hudhud_unknown">इसका जवाब अभी मुझे नहीं आता, मैं सिर्फ आपका खाता जानता हूँ। आप पूछ सकते हैं:</string>
+    <string name="hudhud_owner_only">यह रकम सिर्फ मालिक या मैनेजर देख सकते हैं।</string>
+    <string name="hudhud_quiet">होम पर बैलेंस छुपा है, इसलिए मैं रकम यहाँ लिखता हूँ, बोलता नहीं।</string>
+    <string name="hudhud_no_voice">इस मोबाइल में इस भाषा की आवाज नहीं है, इसलिए जवाब यहाँ लिखा है।</string>
+    <string name="hudhud_voice_on">हुदहुद की आवाज चालू है</string>
+    <string name="hudhud_voice_off">हुदहुद की आवाज बंद है</string>
+    <string name="hudhud_chip_backup">आखिरी बैकअप कब हुआ?</string>
+    <string name="hudhud_chip_drawer">गल्ले में कितना होना चाहिए?</string>
+    <string name="hudhud_pick_party">आप किसकी बात कर रहे हैं?</string>
+    <string name="hudhud_you_asked">आपने पूछा: “%1$s”</string>
     <string name="cf_title">कैश फ़्लो</string>
     <string name="cf_subtitle">आने का वादा और जाने वाला पैसा</string>
     <string name="cf_days">%1$s दिन</string>

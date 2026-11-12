@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The box Hudhud is asked in, on Home: a card-coloured pill with the page's hairline. A ripple with no mask of its
+  own is held to its layers, so a press shows inside the pill's round ends, never as a square.
+-->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/surface" />
+            <stroke android:width="1dp" android:color="@color/page_line" />
+            <corners android:radius="27dp" />
+        </shape>
+    </item>
+</ripple>

@@ -176,7 +176,7 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Ask by voice (5 Oct): eight fixed questions, answers only read. -->
+                <!-- Ask by voice (5 Oct): since 12 Nov 2026 it opens Hudhud listening (ui/HudhudSheet). -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAskVoice"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"

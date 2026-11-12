@@ -1063,8 +1063,6 @@
     <string name="vq_ask">Ask by voice</string>
     <string name="vq_prompt">Ask about your shop</string>
     <string name="vq_heard">Heard: “%1$s”</string>
-    <string name="vq_understood">I understood: %1$s</string>
-    <string name="vq_not_understood">That is not a question I know yet. You can ask: who owes the most, how much I have to get, how much I have to give, today\'s sale, this month\'s sale, this month\'s profit, what is expiring, who has not paid.</string>
     <string name="vq_who_owes_most">Who owes the most</string>
     <string name="vq_to_get">Total I have to get</string>
     <string name="vq_to_give">Total I have to give</string>
@@ -1078,6 +1076,25 @@
     <string name="vq_no_recognizer">This phone has no speech recognition app.</string>
     <string name="vq_not_paid_body">The Follow-up list puts the customers to chase first at the top.</string>
     <string name="vq_expiring_body">The Expiring stock screen lists what runs out soonest.</string>
+    <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
+    <string name="hudhud_name">Hudhud</string>
+    <string name="hudhud_ask">Ask Hudhud…</string>
+    <string name="hudhud_hello">Ask about your khata. I look it up in your own book, right here on this phone.</string>
+    <string name="hudhud_salaam_reply">Wa alaikum assalam!</string>
+    <string name="hudhud_listening">Listening…</string>
+    <string name="hudhud_thinking">Looking in your book…</string>
+    <string name="hudhud_speaking">Speaking</string>
+    <string name="hudhud_replay">Hear again</string>
+    <string name="hudhud_unknown">I can\'t answer this yet: I only know your khata. You can ask:</string>
+    <string name="hudhud_owner_only">Only the owner or a manager can see this figure.</string>
+    <string name="hudhud_quiet">Balances are hidden on Home, so I write amounts here and do not say them aloud.</string>
+    <string name="hudhud_no_voice">This phone has no voice for this language, so the answer is written here.</string>
+    <string name="hudhud_voice_on">Hudhud\'s voice is on</string>
+    <string name="hudhud_voice_off">Hudhud\'s voice is off</string>
+    <string name="hudhud_chip_backup">When was the last backup?</string>
+    <string name="hudhud_chip_drawer">How much should be in the drawer?</string>
+    <string name="hudhud_pick_party">Which one do you mean?</string>
+    <string name="hudhud_you_asked">You asked: “%1$s”</string>
     <string name="cf_title">Cash flow</string>
     <string name="cf_subtitle">Money promised to come in, and money due to go out</string>
     <string name="cf_days">%1$s days</string>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Where Hudhud stands on his sheet: nothing by day; by night a faint warm light behind him (hudhud_glow is
+  transparent by day), so a gold bird is not lost on a dark page.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="52dp"
+        android:startColor="@color/hudhud_glow"
+        android:endColor="@android:color/transparent" />
+</shape>

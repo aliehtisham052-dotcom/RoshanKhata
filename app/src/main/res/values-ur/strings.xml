@@ -1021,8 +1021,6 @@
     <string name="vq_ask">آواز سے پوچھیں</string>
     <string name="vq_prompt">اپنی دکان کے بارے میں پوچھیں</string>
     <string name="vq_heard">سنا: “%1$s”</string>
-    <string name="vq_understood">میں نے یہ سمجھا: %1$s</string>
-    <string name="vq_not_understood">یہ سوال ابھی مجھے نہیں آتا۔ آپ پوچھ سکتے ہیں: سب سے زیادہ بقایا کس کا، کل کتنا لینا ہے، کل کتنا دینا ہے، آج کی بکری، اس مہینے کی بکری، اس مہینے کا منافع، کس مال کی میعاد ختم ہونے والی ہے، کس نے پیسے نہیں دیے۔</string>
     <string name="vq_who_owes_most">سب سے زیادہ بقایا کس کا</string>
     <string name="vq_to_get">کل لینا</string>
     <string name="vq_to_give">کل دینا</string>
@@ -1036,6 +1034,25 @@
     <string name="vq_no_recognizer">اس فون میں آواز پہچاننے والی ایپ نہیں۔</string>
     <string name="vq_not_paid_body">فالو اپ فہرست میں وہ گاہک سب سے اوپر ہیں جن سے پہلے وصولی کرنی ہے۔</string>
     <string name="vq_expiring_body">میعاد ختم ہونے والے اسٹاک کی اسکرین پر وہ مال ہے جو سب سے پہلے ختم ہوگا۔</string>
+    <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
+    <string name="hudhud_name">ہُدہُد</string>
+    <string name="hudhud_ask">ہُدہُد سے پوچھیں…</string>
+    <string name="hudhud_hello">اپنے کھاتے کے بارے میں پوچھیں۔ میں اسی فون پر آپ کے کھاتے میں دیکھ کر بتاتا ہوں۔</string>
+    <string name="hudhud_salaam_reply">وعلیکم السلام!</string>
+    <string name="hudhud_listening">سن رہا ہوں…</string>
+    <string name="hudhud_thinking">کھاتے میں دیکھ رہا ہوں…</string>
+    <string name="hudhud_speaking">بتا رہا ہوں</string>
+    <string name="hudhud_replay">دوبارہ سنیں</string>
+    <string name="hudhud_unknown">اس کا جواب ابھی مجھے نہیں آتا، میں صرف آپ کا کھاتہ جانتا ہوں۔ آپ پوچھ سکتے ہیں:</string>
+    <string name="hudhud_owner_only">یہ رقم صرف مالک یا منیجر دیکھ سکتے ہیں۔</string>
+    <string name="hudhud_quiet">ہوم پر بیلنس چھپا ہے، اس لیے میں رقم یہاں لکھتا ہوں، بولتا نہیں۔</string>
+    <string name="hudhud_no_voice">اس فون میں اس زبان کی آواز نہیں، اس لیے جواب یہاں لکھا ہے۔</string>
+    <string name="hudhud_voice_on">ہُدہُد کی آواز چالو ہے</string>
+    <string name="hudhud_voice_off">ہُدہُد کی آواز بند ہے</string>
+    <string name="hudhud_chip_backup">آخری بیک اپ کب ہوا؟</string>
+    <string name="hudhud_chip_drawer">گلے میں کتنا ہونا چاہیے؟</string>
+    <string name="hudhud_pick_party">آپ کس کی بات کر رہے ہیں؟</string>
+    <string name="hudhud_you_asked">آپ نے پوچھا: “%1$s”</string>
     <string name="cf_title">کیش فلو</string>
     <string name="cf_subtitle">آنے کا وعدہ اور جانے والا پیسہ</string>
     <string name="cf_days">%1$s دن</string>

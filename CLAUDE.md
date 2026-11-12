@@ -2595,6 +2595,13 @@ Each of these cost a build or a bug.
     SCALE_X/Y, X, Y, Z; `View.ELEVATION` failed both phone builds (11 Nov 2026). Elevation is animated by name
     (`PropertyValuesHolder.ofFloat("elevation", …)`) or through TRANSLATION_Z.
 
+85. **A keyword is a whole word.** VoiceQuestion looked for its words anywhere in a sentence: "Saleem ka baqaya"
+    held "sale" and asked for the month's sales, "Ali Wholesale" too, "Kalabagh" the profit, Urdu سودا the profit
+    (12 Nov 2026, found while giving Hudhud names). Words match whole, with only the pieces their language joins to
+    them (Arabic's article in front, Bengali's endings behind, an English plural of four letters or more); a phrase
+    matches as a run of whole words; a phrase's words are set aside from name search only when the phrase is said.
+    A chip's own label must be understood as its own question in all nine languages (HudhudWordsTest) — eight were not.
+
 ---
 
 ## Working with the owner
@@ -2891,3 +2898,51 @@ hidden with the big-shop tools off was an earlier audit's choice), L86 (phone to
   strips the whole message (`Reminder.buildMessage(forSms)`), not only the body.
 - **Lost:** the handover's local calculator commit (7c0b836, uncompiled) was never pushed and is not in this
   repository; c014f1b / 671cc21 / cc0b22f (round keys, the form pad) are.
+
+### 12 Nov 2026: Hudhud, the shop's assistant (Marhala 1; the owner's chosen place and name; CI only)
+
+Phone only (Windows has none yet). Named Billy in the mockups until 12 Nov (the owner: Hudhud, an Islamic name).
+
+- **Where:** a bar at the foot of Home only (`hudhudBar` in activity_main.xml; the grid ends above it, so it never
+  covers a tile): his face (`hudhud_face`, its ring centred on the 54 dp box, the crest up to the bar's edge — the
+  face's -21 dp top margin keeps the FrameLayout the box's height), the box ("Ask Hudhud…") and a green microphone,
+  as a chat's message bar. Face → sheet, box → sheet with the keyboard, microphone → sheet listening
+  (`MainActivity.bindHudhud`; he is mirrored in right-to-left and nods on Home the first 3 times). Insights' "Ask
+  by voice" opens him listening: its own dialog, `askByVoice`/`compute` and `vq_understood`/`vq_not_understood` went.
+- **The sheet** (`ui/HudhudSheet`, `sheet_hudhud.xml`, theme `ThemeOverlay.RoshanKhata.HudhudSheet`: the frame
+  itself is `hudhud_sheet` with 24 dp top corners, so the colour runs under the navigation bar): his pose over a
+  warm glow at night (`hudhud_glow`), name and state ("Listening…", "Looking in your book…", "Speaking"); the
+  speaker switch (prefs "hudhud", kept for good); "Heard: …" for a spoken question, "You asked: …"
+  (`hudhud_you_asked`) for a typed one or a chip; the answer card (label, one figure, lines, up to five customers
+  that open their page, a note) with Open (the one screen it comes from) and Hear again; chips; box and microphone.
+  Poses cross-fade (`hudhud_idle/listening/thinking/talking/happy/alert`), thinking only after 300 ms, glad of good
+  news (a hop the first 5 times, `Motion.firstTimes`), concerned while something waits; three breaths on opening;
+  a nod per spoken word. With animations off he changes pose without fading and never moves.
+- **His ears** (`data/Hudhud`, shared, HudhudTest): "how" asks for a help page first; then a customer or supplier
+  the question names (`NameSearch.confidentMatch`, else up to five strong hits near the best — a choice, never a
+  guess), unless it asks a figure other than to get / to give; VoiceQuestion's eight figures; the backup; the
+  drawer; a help page by IDF over the FAQ and the feature sheets (in the app's language and English, and both Urdu
+  scripts on an Urdu phone); salaam; hello; else "I can't answer this yet" with the chips. **VoiceQuestion now
+  matches whole words** (lesson 85), learnt faida, baqi, bika, sell, expiring, terbesar and the app's own chip
+  phrasings; Farsi بدهی is what the shop owes.
+- **His answers** (`data/HudhudBook`) only READ, each by the rule of the screen they name: sales by
+  `salesTotalBetween` over Insights' day and month, profit by `Profit.thisMonth`, to get / to give by `PartyTotals`,
+  who owes most from the same balances, the drawer by `DayCloseMath.drawerByTheBooks`, the backup as the bell judges
+  it. Every figure and the drawer need REPORTS (a cashier is told only the owner or a manager sees it; the drawer's
+  expected cash is not told before a count). A feature sheet added later does not build until `screenOf` names its
+  screen.
+- **His voice** (`ui/HudhudVoice`): the phone's own offline voice only (`PaymentNotice.offlineVoice`; a network
+  voice would send names and amounts to a server), Urdu and Roman Urdu said from the Urdu words with ur-PK,
+  USAGE_ASSISTANT. **Voice in, voice out:** he speaks only an answer to a spoken question; typed or a chip, he
+  writes it and offers Hear again. An amount is never said aloud while Home's balance is hidden (hidden by default),
+  and he says so once (`hudhud_quiet`); no offline voice for the language: `hudhud_no_voice`. The engine wakes only
+  when the microphone opens and is shut when the sheet closes.
+- No new permission (the microphone is the phone's recogniser, RecognizerIntent, as voice entry); the app sends
+  nothing (the recogniser is Google's own service, as for voice entry). Both privacy policies' section 11 says so
+  (12 Nov 2026). Strings (nine languages): hudhud_* (18). Tests: HudhudTest, VoiceQuestionTest (+5),
+  HudhudWordsTest (desktop: every chip label in nine languages), HudhudOnDeviceTest (the face opens the sheet, a turn
+  closes it, a made-up customer asked by name is answered with his balance); proofs 50-hudhud-answer,
+  51-hudhud-help.
+- **Not yet (later marhalas):** the morning greeting on Home (by the shop's country), "show me" (he points at the
+  screen), the tour in his words, his face on notifications, prefilled actions ("Ali ko 500 diye" → the entry
+  form, the owner saves), Windows.

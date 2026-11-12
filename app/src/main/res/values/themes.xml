@@ -108,6 +108,29 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
+    <!--
+      Hudhud's sheet (12 Nov 2026): the page's own colour with rounded top corners, as the owner's chosen mockup draws
+      it, and the white answer card on it. The sheet's frame itself wears the colour (not a background inside it), so
+      the colour also runs under the navigation bar, where Material's edge-to-edge sheet draws its frame. Material
+      1.12.0's ThemeOverlay.MaterialComponents.BottomSheetDialog is the theme every other sheet in the app opens with.
+    -->
+    <style name="ThemeOverlay.RoshanKhata.HudhudSheet" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.RoshanKhata.HudhudSheet</item>
+    </style>
+
+    <style name="Widget.RoshanKhata.HudhudSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="backgroundTint">@color/hudhud_sheet</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.RoshanKhata.HudhudSheet</item>
+    </style>
+
+    <style name="ShapeAppearance.RoshanKhata.HudhudSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
     <!-- One tab of the All / Customers / Suppliers track (11 Oct). -->
     <!-- Backup screen buttons (13 Oct): sentence case, one height, one radius. -->
     <style name="BackupPrimaryButton" parent="Widget.MaterialComponents.Button">

@@ -436,4 +436,9 @@
     <color name="wash_gave">#F7E7E6</color>
     <color name="wash_gold">#FFF4D6</color>
     <color name="gold_ink">#5C4A16</color>
+    <!-- Hudhud's stage on his sheet (12 Nov 2026): no light by day, a faint warm one by night. -->
+    <color name="hudhud_glow">#00FFDA6B</color>
+    <!-- Hudhud's sheet: the page's colour by day; by night a step lighter than the page, so the sheet stands off
+         the dimmed screen behind it and its white-by-day cards still stand off it. -->
+    <color name="hudhud_sheet">#F7F6F2</color>
 </resources>
