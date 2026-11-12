@@ -2874,3 +2874,20 @@ hidden with the big-shop tools off was an earlier audit's choice), L86 (phone to
 - **m80:** `DateWords.clock` also turns "hh:mm a" into 24-hour where the shop's country writes it; the phone's date-time picker and the poster's time picker follow the shop's clock, not the phone's. **L152:** a pulled-book copy a killed app left in `to-phone` (older than an hour) is deleted when the next pull is prepared (the streaming itself was already done in L57).
 - **L134:** desktop.yml does not upload an MSI when the release already holds a newer commit (`compare` says ahead): an old push finishing last no longer makes the old MSI the new one. **L162:** a saved Windows PDF carries a link over the DOWNLOAD pill (`Canvas.links`, noted by `PdfBranding`, written by `PdfFiles.write` as a PDAnnotationLink to the tagged Play URL). **L141:** Windows has Add product since L91; its empty-list words (`no_products_pc`) now say so.
 - **Left, with the reason:** L108 (a shift's drawer ignoring khata and cashbook cash: those rows carry no `createdBy`, so one person's share cannot be told from another's without a schema 45 and a rule for who owns an unattributed row — the owner's call); L141's rest (khata link, seal, Waris, payment voice on Windows: a roadmap); L161 (new store shots need a seeded counter/documents book and an emulator run to be looked at); L153 (a streamed restore: BackupCodec.parseFile and the restore core both hold the parsed book — the plan: stream-parse table by table into a temp book file, restore from it in one transaction, keep the in-memory path as the fallback, and a test that restores one book both ways and compares fingerprints; not done blind, with no compile or run here).
+
+### 12 Nov 2026: handover fixes (calculator range, the seal never alone, SMS bold; CI only)
+
+- **Calculator range** (`Calc.MAX_ABS` = 9,999,999,999,999.99): a Double is exact to the paisa only to about 13 digits
+  and the paisa, so every number typed, every step of a sum and its answer are held to it; past it `eval` returns
+  null (every box's own "not a figure"), never a figure whose last digit is a little wrong. `Calc.tooBig` says why, and
+  both calculators show `calc_too_big` (nine languages) instead of a blank answer. CalcRangeTest.
+- **The seal never opens a page alone.** Invoices (all designs): before the terms and signature a design checks
+  `InvoiceTemplateKit.closingRoom` (terms + signature as laid out, and the seal with its gaps when one prints) against
+  the maker's strip (PAGE_H - 96), so the terms, signature and seal move to the next page together. The Khata Report
+  keeps its last rows (three at most) with the seal (`keepWithSeal`). The statement's own rule is bf5bca6; the
+  register's seal stands between its signatures. The computer's invoice copies are regenerated
+  (`gen_desktop_invoice.py`). **The stamp animation (StampMoment) assumes the seal is on the last page** — keep it so.
+- **SMS:** the payment block's heading is bold in every language (`pay_heading`, *How to pay*); an SMS reminder
+  strips the whole message (`Reminder.buildMessage(forSms)`), not only the body.
+- **Lost:** the handover's local calculator commit (7c0b836, uncompiled) was never pushed and is not in this
+  repository; c014f1b / 671cc21 / cc0b22f (round keys, the form pad) are.

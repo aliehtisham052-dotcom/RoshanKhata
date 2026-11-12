@@ -792,6 +792,27 @@ object InvoiceTemplateKit {
      * stamp side by side, each kept to its own aspect ratio). Returns the
      * y position work should continue from.
      */
+    /**
+     * The height the paper's closing block takes from where the terms start: the terms and signature as
+     * [drawTermsAndSignature] lays them out, and the seal under them with its gaps when one is printed
+     * ([sealToPrint]). A design breaks the page before the terms when this does not fit above the maker's strip
+     * (12 Nov 2026, the handover: when only the seal was left without room it went to a new page alone — now the
+     * signature and terms go with it, as a stamp is never pressed on an empty page).
+     */
+    fun closingRoom(context: Context, fonts: Fonts, left: Float, right: Float, invoice: Invoice): Float {
+        val sigW = 168f
+        val sigH = 80f
+        val footerLines = listOfNotNull(invoice.note?.takeIf { it.isNotBlank() }, BusinessProfile.termsAndConditions(context))
+        var termsH = 0f
+        if (footerLines.isNotEmpty()) {
+            val termsP = paint(fonts, 9f, 0)
+            termsH = 27f + 12f * footerLines.sumOf { wrapLines(it, termsP, right - sigW - 16f - left, 3).size }
+        }
+        val block = maxOf(sigH, termsH) + 16f
+        val seal = if (sealToPrint(context) != SealChoice.NONE) SEAL_GAP + SEAL_SIZE + SEAL_GAP else 10f
+        return block + seal
+    }
+
     fun drawTermsAndSignature(
         c: Canvas,
         context: Context,

@@ -69,9 +69,10 @@ object Reminder {
             words, partyName, balance, promisedDate, step, firstSentAt, reference = reference
         )
 
-        // How to pay, only on a reminder that asks for money (2 Oct).
+        // How to pay, only on a reminder that asks for money (2 Oct). Its heading is bold in every language
+        // (*How to pay*), so an SMS strips the block too (12 Nov 2026, the handover: the asterisks showed in SMS).
         val pay = if (Money.isPositive(balance)) paymentBlock(context, words) else ""
-        return (if (forSms) toPlainText(body) else body) + pay + from
+        return (if (forSms) toPlainText(body + pay) else body + pay) + from
     }
 
     /**

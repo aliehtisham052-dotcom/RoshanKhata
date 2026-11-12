@@ -130,7 +130,9 @@ object Calc {
      * running total to its left, which is what makes a discount come out the
      * way it does on paper.
      */
-    fun resolvePercent(input: String): String {
+    fun resolvePercent(input: String): String = resolvePercentWithin(input, MAX_ABS)
+
+    private fun resolvePercentWithin(input: String, limit: Double): String {
         var out = input
         while (true) {
             val at = out.indexOf('%')
@@ -141,7 +143,7 @@ object Calc {
 
             val opIndex = numStart - 1
             val op = if (opIndex >= 0) out[opIndex] else ' '
-            val base = if (opIndex > 0) eval(out.substring(0, opIndex)) else null
+            val base = if (opIndex > 0) evalWithin(out.substring(0, opIndex), limit) else null
 
             val replacement = when {
                 (op == '+' || op == '-') && base != null -> trim(base * number / 100.0)
@@ -164,19 +166,40 @@ object Calc {
      * a clean number-or-expression, so callers can keep their existing
      * "invalid amount" handling.
      */
-    fun eval(input: String): Double? {
+    fun eval(input: String): Double? = evalWithin(input, MAX_ABS)
+
+    /**
+     * The largest figure, either way, a box or the calculator takes (12 Nov 2026, the handover: a 15-16 digit
+     * figure came out with its last digit wrong). A Double holds about 15-16 significant digits, so 9,999,999,
+     * 999,999.99 — thirteen digits and the paisa — is the most that is always exact to the paisa; anything
+     * bigger is refused (null, the box's own "not a figure") rather than shown a little wrong. Every number
+     * typed, every step of the sum and its answer are held to it, so 9999999999999*1000/1000 is refused too.
+     */
+    const val MAX_ABS: Double = 9_999_999_999_999.99
+
+    /**
+     * True when [input] would be a figure but for [MAX_ABS] — what the calculator says instead of a blank
+     * answer ("Too large…"). The pad's own symbols, percent and handwriting are read as [evalPad] reads them.
+     */
+    fun tooBig(input: String): Boolean {
+        val text = runCatching { resolvePercentWithin(normalize(input), Double.MAX_VALUE) }.getOrNull() ?: return false
+        if (evalWithin(text, MAX_ABS) != null) return false
+        return evalWithin(text, Double.MAX_VALUE) != null
+    }
+
+    private fun evalWithin(input: String, limit: Double): Double? {
         val text = Digits.toLatin(input).trim().replace(" ", "")
         if (text.isEmpty()) return null
 
         // Fast path: a plain number (possibly decimal). No math to do. Never "NaN", "Infinity" or a figure
         // too large to hold (22 Oct 2026, the review: they passed here and crashed the counter's sums).
-        text.toDoubleOrNull()?.let { return it.takeIf { v -> v.isFinite() } }
+        text.toDoubleOrNull()?.let { return it.takeIf { v -> v.isFinite() && kotlin.math.abs(v) <= limit } }
 
         // Only digits, decimal points and the four operators are allowed.
         if (!text.all { it.isDigit() || it == '.' || it in "+-*/" }) return null
 
         return try {
-            Parser(text).parse().takeIf { it.isFinite() }
+            Parser(text, limit).parse().takeIf { it.isFinite() && kotlin.math.abs(it) <= limit }
         } catch (e: Exception) {
             null
         }
@@ -187,7 +210,7 @@ object Calc {
      * term = factor (('*'|'/') factor)*, factor = number | '(' expr ')'.
      * Parentheses aren't offered in the UI but cost nothing to support.
      */
-    private class Parser(val s: String) {
+    private class Parser(val s: String, val limit: Double) {
         var pos = 0
 
         fun parse(): Double {
@@ -201,7 +224,7 @@ object Calc {
             while (pos < s.length && (s[pos] == '+' || s[pos] == '-')) {
                 val op = s[pos++]
                 val r = term()
-                v = if (op == '+') v + r else v - r
+                v = held(if (op == '+') v + r else v - r)
             }
             return v
         }
@@ -211,7 +234,7 @@ object Calc {
             while (pos < s.length && (s[pos] == '*' || s[pos] == '/')) {
                 val op = s[pos++]
                 val r = factor()
-                v = if (op == '*') v * r else v / r
+                v = held(if (op == '*') v * r else v / r)
             }
             return v
         }
@@ -229,7 +252,11 @@ object Calc {
             if (pos < s.length && s[pos] == '-') pos++
             while (pos < s.length && (s[pos].isDigit() || s[pos] == '.')) pos++
             val token = s.substring(start, pos)
-            return token.toDoubleOrNull() ?: throw IllegalArgumentException("bad number '$token'")
+            return held(token.toDoubleOrNull() ?: throw IllegalArgumentException("bad number '$token'"))
         }
+
+        /** Every number and every step within [limit]: past it a Double is no longer exact to the paisa. */
+        private fun held(v: Double): Double =
+            if (v.isFinite() && kotlin.math.abs(v) <= limit) v else throw IllegalArgumentException("out of range")
     }
 }

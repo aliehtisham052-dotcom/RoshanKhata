@@ -3042,6 +3042,7 @@
     <string name="calc_add_to_khata">Tambah ke buku</string>
     <string name="calc_pick_party">%1$s: ketuk pelanggan untuk menambahkannya</string>
     <string name="calc_khata_positive">Hanya jumlah di atas nol yang bisa masuk buku.</string>
+    <string name="calc_too_big">Angka terlalu besar: paling banyak %1$s.</string>
     <string name="stat_bills">Tagihan</string>
     <string name="stat_you_owe">Utang Anda</string>
     <string name="stat_expiring">Kedaluwarsa 60 hari</string>

@@ -3044,6 +3044,7 @@
     <string name="calc_add_to_khata">Khate mein daalein</string>
     <string name="calc_pick_party">%1$s: jis ke khate mein daalna hai us par tap karein</string>
     <string name="calc_khata_positive">Khate mein sirf zero se zyada raqam ja sakti hai.</string>
+    <string name="calc_too_big">Bohat bari raqam: zyada se zyada %1$s tak.</string>
     <string name="stat_bills">Bill</string>
     <string name="stat_you_owe">Aap ne dene hain</string>
     <string name="stat_expiring">60 din mein expire</string>

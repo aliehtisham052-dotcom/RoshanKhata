@@ -3092,6 +3092,7 @@
     <string name="calc_add_to_khata">খাতায় যোগ করুন</string>
     <string name="calc_pick_party">%1$s: যার খাতায় যোগ করবেন তাকে ট্যাপ করুন</string>
     <string name="calc_khata_positive">খাতায় শুধু শূন্যের বেশি টাকা যোগ করা যায়।</string>
+    <string name="calc_too_big">অনেক বড় অঙ্ক: সর্বোচ্চ %1$s পর্যন্ত।</string>
     <string name="stat_bills">বিল</string>
     <string name="stat_you_owe">আপনার দেনা</string>
     <string name="stat_expiring">60 দিনে মেয়াদ শেষ</string>

@@ -210,7 +210,12 @@ class CalculatorActivity : BaseActivity() {
         // rows that state their direction in words, and this screen states
         // nothing. 75 − 80 read back as "Rs 5" — the right digits with the
         // meaning reversed, which on a shop counter is worse than no answer.
-        tvResult.text = if (value == null) "" else Format.signedIfNegative(value)
+        // Past Calc.MAX_ABS a figure is no longer exact to the paisa (12 Nov 2026): say so, never a blank or a wrong last digit.
+        tvResult.text = when {
+            value != null -> Format.signedIfNegative(value)
+            Calc.tooBig(expression) -> getString(R.string.calc_too_big, Format.signedIfNegative(Calc.MAX_ABS))
+            else -> ""
+        }
         tvHistory.text = history.joinToString("\n")
         tvHistory.visibility = if (history.isEmpty()) android.view.View.GONE else android.view.View.VISIBLE
         val usable = value != null && !value.isNaN() && !value.isInfinite()

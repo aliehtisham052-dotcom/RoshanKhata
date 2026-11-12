@@ -3072,6 +3072,7 @@
     <string name="calc_add_to_khata">افزودن به حساب</string>
     <string name="calc_pick_party">%1$s: روی مشتری بزنید تا به حسابش اضافه شود</string>
     <string name="calc_khata_positive">فقط مبلغ بیشتر از صفر به حساب اضافه می‌شود.</string>
+    <string name="calc_too_big">مبلغ خیلی بزرگ است: حداکثر %1$s.</string>
     <string name="stat_bills">فاکتورها</string>
     <string name="stat_you_owe">بدهی شما</string>
     <string name="stat_expiring">انقضا تا 60 روز</string>

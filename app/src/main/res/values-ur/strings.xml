@@ -3044,6 +3044,7 @@
     <string name="calc_add_to_khata">کھاتے میں ڈالیں</string>
     <string name="calc_pick_party">%1$s: جس کے کھاتے میں ڈالنا ہے اس پر ٹیپ کریں</string>
     <string name="calc_khata_positive">کھاتے میں صرف صفر سے زیادہ رقم جا سکتی ہے۔</string>
+    <string name="calc_too_big">بہت بڑی رقم: زیادہ سے زیادہ %1$s تک۔</string>
     <string name="stat_bills">بل</string>
     <string name="stat_you_owe">آپ نے دینے ہیں</string>
     <string name="stat_expiring">60 دن میں ایکسپائر</string>

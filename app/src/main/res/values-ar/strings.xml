@@ -3244,6 +3244,7 @@
     <string name="calc_add_to_khata">أضف إلى حساب</string>
     <string name="calc_pick_party">%1$s: اضغط على العميل لإضافته</string>
     <string name="calc_khata_positive">يمكن إضافة مبلغ أكبر من الصفر فقط.</string>
+    <string name="calc_too_big">مبلغ كبير جدًا: الحد الأقصى %1$s.</string>
     <string name="stat_bills">فواتير</string>
     <string name="stat_you_owe">عليك لهم</string>
     <string name="stat_expiring">تنتهي خلال 60 يومًا</string>

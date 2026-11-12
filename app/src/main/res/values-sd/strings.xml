@@ -3072,6 +3072,7 @@
     <string name="calc_add_to_khata">کاتي ۾ وجهو</string>
     <string name="calc_pick_party">%1$s: جنهن جي کاتي ۾ وجهڻو آهي، ان تي ٽيپ ڪريو</string>
     <string name="calc_khata_positive">کاتي ۾ صرف صفر کان وڌيڪ رقم وجهي سگهجي ٿي.</string>
+    <string name="calc_too_big">تمام وڏي رقم: وڌ ۾ وڌ %1$s تائين.</string>
     <string name="stat_bills">بل</string>
     <string name="stat_you_owe">توهان کي ڏيڻا آهن</string>
     <string name="stat_expiring">60 ڏينهن ۾ ايڪسپائر</string>

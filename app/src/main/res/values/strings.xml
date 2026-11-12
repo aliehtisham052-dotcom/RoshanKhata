@@ -3256,6 +3256,7 @@
     <string name="calc_add_to_khata">Add to a khata</string>
     <string name="calc_pick_party">%1$s: tap the customer to add it to</string>
     <string name="calc_khata_positive">Only an amount above zero can go on a khata.</string>
+    <string name="calc_too_big">Too large: the most this can take is %1$s.</string>
     <string name="stat_bills">Bills</string>
     <string name="stat_you_owe">You owe them</string>
     <string name="stat_expiring">Expiring in 60 days</string>

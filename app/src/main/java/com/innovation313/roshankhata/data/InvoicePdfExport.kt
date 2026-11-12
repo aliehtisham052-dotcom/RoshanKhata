@@ -229,7 +229,7 @@ object InvoicePdfExport {
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
         if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
-        if (y > PAGE_H_A4 - 140f) {
+        if (y + InvoiceTemplateKit.closingRoom(context, fonts, left, right, invoice) > PAGE_H_A4 - 96f) {
             val fresh = newPage()
             c = fresh.first
             y = fresh.second
@@ -336,7 +336,7 @@ object InvoicePdfExport {
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
         if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
-        if (y > PAGE_H_A4 - 140f) {
+        if (y + InvoiceTemplateKit.closingRoom(context, fonts, left, right, invoice) > PAGE_H_A4 - 96f) {
             val fresh = newPage()
             c = fresh.first
             y = fresh.second
@@ -429,7 +429,7 @@ object InvoicePdfExport {
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
         if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
-        if (y > PAGE_H_A4 - 140f) {
+        if (y + InvoiceTemplateKit.closingRoom(context, fonts, left, right, invoice) > PAGE_H_A4 - 96f) {
             val fresh = newPage()
             c = fresh.first
             y = fresh.second
@@ -529,7 +529,7 @@ object InvoicePdfExport {
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
         if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
-        if (y > PAGE_H_A4 - 140f) {
+        if (y + InvoiceTemplateKit.closingRoom(context, fonts, left, right, invoice) > PAGE_H_A4 - 96f) {
             val fresh = newPage()
             c = fresh.first
             y = fresh.second
@@ -624,7 +624,7 @@ object InvoicePdfExport {
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
         if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
-        if (y > PAGE_H_A4 - 140f) {
+        if (y + InvoiceTemplateKit.closingRoom(context, fonts, left, right, invoice) > PAGE_H_A4 - 96f) {
             val fresh = newPage()
             c = fresh.first
             y = fresh.second
@@ -715,7 +715,7 @@ object InvoicePdfExport {
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
         if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
-        if (y > PAGE_H_A4 - 140f) {
+        if (y + InvoiceTemplateKit.closingRoom(context, fonts, left, right, invoice) > PAGE_H_A4 - 96f) {
             val fresh = newPage()
             c = fresh.first
             y = fresh.second
@@ -804,7 +804,7 @@ object InvoicePdfExport {
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
         if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
-        if (y > PAGE_H_A4 - 140f) {
+        if (y + InvoiceTemplateKit.closingRoom(context, fonts, left, right, invoice) > PAGE_H_A4 - 96f) {
             val fresh = newPage()
             c = fresh.first
             y = fresh.second
@@ -900,7 +900,7 @@ object InvoicePdfExport {
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
         if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
-        if (y > PAGE_H_A4 - 140f) {
+        if (y + InvoiceTemplateKit.closingRoom(context, fonts, left, right, invoice) > PAGE_H_A4 - 96f) {
             val fresh = newPage()
             c = fresh.first
             y = fresh.second
@@ -987,7 +987,7 @@ object InvoicePdfExport {
         y = InvoiceTemplateKit.drawPaymentAndTotals(c, context, palette, fonts, left, right, y, invoice, totals)
         if (prices) y = InvoiceTemplateKit.drawAmountInWords(c, context, palette, fonts, left, right, y, totals.grandTotal)
 
-        if (y > PAGE_H_A4 - 140f) {
+        if (y + InvoiceTemplateKit.closingRoom(context, fonts, left, right, invoice) > PAGE_H_A4 - 96f) {
             val fresh = newPage()
             c = fresh.first
             y = fresh.second

@@ -118,7 +118,11 @@ fun CalculatorPane(onKhata: ((Double) -> Unit)? = null) {
                             if (e.type == KeyEventType.KeyDown && (equals || enter)) { CalcMemory.settle(); true } else false
                         },
                         textStyle = androidx.compose.ui.text.TextStyle(fontSize = 22.sp, textAlign = TextAlign.End))
-                    Text(result?.let { Format.signedIfNegative(it) } ?: "", Modifier.fillMaxWidth(), color = c.ink, fontSize = 30.sp,
+                    // Past Calc.MAX_ABS a figure is no longer exact to the paisa (12 Nov 2026): said, never a wrong last digit.
+                    val tooBig = result == null && Calc.tooBig(text)
+                    if (tooBig) Text(word(W.calc_too_big, Format.signedIfNegative(Calc.MAX_ABS)), Modifier.fillMaxWidth(),
+                        color = c.iOwe, fontSize = 15.sp, textAlign = TextAlign.End)
+                    else Text(result?.let { Format.signedIfNegative(it) } ?: "", Modifier.fillMaxWidth(), color = c.ink, fontSize = 30.sp,
                         fontWeight = FontWeight.Bold, textAlign = TextAlign.End, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     // The last three sums, oldest first, as the phone shows them.
                     CalcMemory.history.forEach { line ->

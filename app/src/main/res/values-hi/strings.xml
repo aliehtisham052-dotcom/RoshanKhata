@@ -3092,6 +3092,7 @@
     <string name="calc_add_to_khata">खाते में डालें</string>
     <string name="calc_pick_party">%1$s: जिसके खाते में डालना है उस पर टैप करें</string>
     <string name="calc_khata_positive">खाते में सिर्फ़ शून्य से ज़्यादा रकम जा सकती है।</string>
+    <string name="calc_too_big">बहुत बड़ी रकम: ज़्यादा से ज़्यादा %1$s तक।</string>
     <string name="stat_bills">बिल</string>
     <string name="stat_you_owe">आपको देना है</string>
     <string name="stat_expiring">60 दिन में एक्सपायर</string>

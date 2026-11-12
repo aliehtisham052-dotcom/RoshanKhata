@@ -217,12 +217,22 @@ object LedgerReport {
 
             tableHeader()
 
+            // The seal never opens a page alone (12 Nov 2026, the handover; the statement's rule of 11 Nov): the last
+            // rows - three at most - are kept with it, so when they and the seal do not fit above the strip they
+            // start the next page together.
+            fun heightOf(e: EntryWithParty) = if (!e.note.isNullOrBlank()) 30f else 20f
+            val sealRoom = if (InvoiceTemplateKit.sealToPrint(context) != SealChoice.NONE)
+                InvoiceTemplateKit.SEAL_GAP + InvoiceTemplateKit.SEAL_SIZE + InvoiceTemplateKit.SEAL_GAP else 0f
+            val tailFrom = maxOf(1, entries.size - 3)
+            val tailHeight = entries.drop(tailFrom).sumOf { heightOf(it).toDouble() }.toFloat()
+
             entries.forEachIndexed { index, e ->
                 // A row is taller when it carries a note line beneath the name.
                 val hasNote = !e.note.isNullOrBlank()
                 val rowH = if (hasNote) 30f else 20f
 
-                if (y + rowH > PAGE_H - 60f) {
+                val keepWithSeal = sealRoom > 0f && index == tailFrom && y + tailHeight + sealRoom > PAGE_H - 104f
+                if (keepWithSeal || y + rowH > PAGE_H - 60f) {
                     newPage()
                     PdfRtl.drawText(canvas, context.getString(R.string.pdf_rep_entries_continued), MARGIN, y, section)
                     y += 18f
