@@ -323,8 +323,15 @@ class LiveGiveTest {
         val given = LiveWire.takeGift(invite(secret), "Phone 2", file, accept = { false })
         assertEquals(LiveWire.Given.Refused, given)
         assertFalse(file.exists())
-        // The computer heard the phone's no: nothing waits, still the same book with the same devices.
-        Thread.sleep(300)
+        // The computer heard the phone's no: nothing waits, still the same book with the same devices. It hears it on
+        // its own connection thread (the Gift's settle) after the phone already has its answer, so the test waits for
+        // that to finish, up to ten seconds: a fixed 300 ms lost the race on a busy Windows runner (12 Nov 2026).
+        val settledBy = System.currentTimeMillis() + 10_000L
+        while (System.currentTimeMillis() < settledBy && (
+                LiveRound.pending(pcSql) != null ||
+                    pc.khataDao().settingValue(BookSettings.LIVE_RELAY) != null ||
+                    (dir.resolve("to-phone").listFiles()?.size ?: 0) > 0)
+        ) Thread.sleep(50)
         assertNull(LiveRound.pending(pcSql))
         assertEquals(pcId.book, LiveSync.identity(pcSql)!!.book)
         assertEquals(1, LiveSync.state(pcSql).peers.size)
