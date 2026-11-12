@@ -281,8 +281,8 @@ object HudhudSheet {
 
         /**
          * "Heard" for what the recogniser made of the owner's voice (he can see a word it got wrong); "You asked" else.
-         * The words are isolated in the sentence: a Roman Urdu question in the Urdu sentence was laid out in pieces,
-         * the name before "آپ نے پوچھا" and the rest on the next line (the 150% proof).
+         * The words are isolated in the sentence, as every name or typed word dropped into one is (Format.isolate): a
+         * question that begins with a figure ("500 Ali ko diye") keeps the figure in front in an Urdu line.
          */
         private fun asked(words: String, spoken: Boolean): String =
             ctx.getString(if (spoken) R.string.vq_heard else R.string.hudhud_you_asked, Format.isolate(words))

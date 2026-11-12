@@ -306,306 +306,314 @@
       came back null on every card but the first.
     -->
     <!--
-      The scroll clips its own grid (12 Nov 2026, the greeting's proofs): the page lets Hudhud's crest draw past his
-      bar (clipChildren off), so a scroll that did not clip to its padding painted its tiles past its own edges — under
-      the greeting bubble, and over the header once scrolled. The room under the last row is the grid's own padding.
+      The grid is clipped by a frame of its own (12 Nov 2026, the greeting's proofs). The page lets Hudhud's crest draw
+      past his bar (clipChildren off), and a child of such a page is not clipped to its own edges; nor does a scroll
+      with no padding clip itself (clipToPadding acts only on a padding). So the tiles were painted past the scroll's
+      edges: under the morning greeting, and over the header once scrolled. This frame clips what is inside it (its
+      own clipChildren is on); the room under the last row is the grid's own padding.
     -->
-    <ScrollView
-        android:id="@+id/featureScroll"
+    <FrameLayout
+        android:id="@+id/featureFrame"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@id/hudhudGreeting"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/featureScroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="10dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="12dp">
+            android:layout_height="match_parent"
+            android:scrollbars="none">
 
-            <!--
-              Read-only phone (3 Oct): whose copy this is and how old, one
-              tap to refresh. Same look as the late note below it. Gone on
-              every normal phone.
-            -->
-            <TextView
-                android:textAlignment="viewStart"
-                android:id="@+id/tvHomeViewer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_home_late"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:paddingStart="14dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="14dp"
-                android:paddingBottom="10dp"
-                android:textColor="@color/note_text"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <!--
-              "N customers are paying later than usual" (1 Oct): counted from
-              each customer's own payment habit (PaymentHabit), the same rule
-              as the Follow-up screen it opens. Gone when nobody is late.
-            -->
-            <TextView
-                android:textAlignment="viewStart"
-                android:id="@+id/tvHomeLate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_home_late"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:paddingStart="14dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="14dp"
-                android:paddingBottom="10dp"
-                android:textColor="@color/note_text"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <!-- An empty book says what to do first (8 Nov 2026 review, M38); gone once there is a customer. -->
-            <TextView
-                android:textAlignment="viewStart"
-                android:id="@+id/tvHomeFirst"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_home_late"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:paddingStart="14dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="14dp"
-                android:paddingBottom="10dp"
-                android:text="@string/home_add_first_customer"
-                android:textColor="@color/note_text"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <!-- Kitab ki Muhar offer (8 Nov 2026): once per book while the seal is off; words on their own line,
-                 the two buttons share the row below by weight (lesson 58). Gone after Not now or Turn on. -->
             <LinearLayout
-                android:id="@+id/cardHomeSeal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_home_late"
                 android:orientation="vertical"
-                android:paddingStart="14dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="14dp"
-                android:paddingBottom="8dp"
-                android:visibility="gone">
+                android:paddingStart="10dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="12dp">
 
+                <!--
+                  Read-only phone (3 Oct): whose copy this is and how old, one
+                  tap to refresh. Same look as the late note below it. Gone on
+                  every normal phone.
+                -->
                 <TextView
+                    android:textAlignment="viewStart"
+                    android:id="@+id/tvHomeViewer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_shield_check"
-                    android:drawablePadding="8dp"
-                    android:drawableTint="@color/note_text"
-                    android:gravity="center_vertical"
-                    android:text="@string/muhar_offer_text"
-                    android:textAlignment="viewStart"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_home_late"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="10dp"
                     android:textColor="@color/note_text"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
+                <!--
+                  "N customers are paying later than usual" (1 Oct): counted from
+                  each customer's own payment habit (PaymentHabit), the same rule
+                  as the Follow-up screen it opens. Gone when nobody is late.
+                -->
+                <TextView
+                    android:textAlignment="viewStart"
+                    android:id="@+id/tvHomeLate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_home_late"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="10dp"
+                    android:textColor="@color/note_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <!-- An empty book says what to do first (8 Nov 2026 review, M38); gone once there is a customer. -->
+                <TextView
+                    android:textAlignment="viewStart"
+                    android:id="@+id/tvHomeFirst"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_home_late"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="10dp"
+                    android:text="@string/home_add_first_customer"
+                    android:textColor="@color/note_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <!-- Kitab ki Muhar offer (8 Nov 2026): once per book while the seal is off; words on their own line,
+                     the two buttons share the row below by weight (lesson 58). Gone after Not now or Turn on. -->
                 <LinearLayout
+                    android:id="@+id/cardHomeSeal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_home_late"
+                    android:orientation="vertical"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="8dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_shield_check"
+                        android:drawablePadding="8dp"
+                        android:drawableTint="@color/note_text"
+                        android:gravity="center_vertical"
+                        android:text="@string/muhar_offer_text"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/note_text"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnHomeSealNo"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:minHeight="44dp"
+                            android:text="@string/muhar_offer_dismiss"
+                            android:textAllCaps="false"
+                            android:textColor="@color/note_text" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnHomeSealOn"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:minHeight="44dp"
+                            android:text="@string/muhar_turn_on"
+                            android:textAllCaps="false" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- The feature slider (6 Oct): four cards that turn on their own; HomeSlides. -->
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/homeSlides"
+                    android:layout_width="match_parent"
+                    android:layout_height="68dp" />
+
+                <!-- Four small dots under the banner (7 Oct): the owner wanted to see how many there are. -->
+                <LinearLayout
+                    android:id="@+id/homeSlideDots"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:orientation="horizontal">
+                    android:gravity="center"
+                    android:orientation="horizontal" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnHomeSealNo"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:minHeight="44dp"
-                        android:text="@string/muhar_offer_dismiss"
-                        android:textAllCaps="false"
-                        android:textColor="@color/note_text" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnHomeSealOn"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:minHeight="44dp"
-                        android:text="@string/muhar_turn_on"
-                        android:textAllCaps="false" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- The feature slider (6 Oct): four cards that turn on their own; HomeSlides. -->
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/homeSlides"
-                android:layout_width="match_parent"
-                android:layout_height="68dp" />
-
-            <!-- Four small dots under the banner (7 Oct): the owner wanted to see how many there are. -->
-            <LinearLayout
-                android:id="@+id/homeSlideDots"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:gravity="center"
-                android:orientation="horizontal" />
-
-            <!--
-              Today (7 Oct): the bell's items as chips on one line — "Cheques · 2",
-              "Late · 1", "Bills · 1" — so the day's work is in view without a
-              tap. Tap: Notifications. Gone when there is nothing today.
-            -->
-            <HorizontalScrollView
-                android:id="@+id/todayStrip"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/bg_today_strip"
-                android:scrollbars="none"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <LinearLayout
-                    android:id="@+id/todayChips"
-                    android:layout_width="wrap_content"
+                <!--
+                  Today (7 Oct): the bell's items as chips on one line — "Cheques · 2",
+                  "Late · 1", "Bills · 1" — so the day's work is in view without a
+                  tap. Tap: Notifications. Gone when there is nothing today.
+                -->
+                <HorizontalScrollView
+                    android:id="@+id/todayStrip"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="10dp"
-                    android:paddingTop="7dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="7dp">
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_today_strip"
+                    android:scrollbars="none"
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/todayChips"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:letterSpacing="0.1"
-                        android:text="@string/home_today"
-                        android:textAllCaps="true"
-                        android:textColor="@color/brand_green_text"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </HorizontalScrollView>
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="10dp"
+                        android:paddingTop="7dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="7dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:letterSpacing="0.1"
+                            android:text="@string/home_today"
+                            android:textAllCaps="true"
+                            android:textColor="@color/brand_green_text"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </HorizontalScrollView>
 
 
-            <!-- Section headings (7 Oct): bold ink, not spaced grey caps; Business carries "See all" (the drawer). -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="6dp"
-                android:text="@string/home_sec_daily"
-                android:textColor="@color/ink"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/gridDaily"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="6dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
+                <!-- Section headings (7 Oct): bold ink, not spaced grey caps; Business carries "See all" (the drawer). -->
                 <TextView
-                    android:textAlignment="viewStart"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/home_sec_business"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="@string/home_sec_daily"
                     android:textColor="@color/ink"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
+                <LinearLayout
+                    android:id="@+id/gridDaily"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:textAlignment="viewStart"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/home_sec_business"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/gridBusiness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="@string/home_section_tools"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/gridTools"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <!-- A quiet last line: the app, its version, the brand. -->
+                <TextView
+                    android:id="@+id/tvHomeFooter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    android:textColor="@color/text_faint"
+                    android:textSize="10sp"
+                    tools:text="Roshan Khata 1.9 · Innovation-313" />
+
+                <!--
+                  Room beneath the last row so the walkthrough can scroll it to the
+                  top of the viewport. Without this the final tiles could never
+                  rise far enough for their card to sit below them.
+                -->
+                <Space
+                    android:id="@+id/gridTailSpace"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp" />
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/gridBusiness"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="6dp"
-                android:text="@string/home_section_tools"
-                android:textColor="@color/ink"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/gridTools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            <!-- A quiet last line: the app, its version, the brand. -->
-            <TextView
-                android:id="@+id/tvHomeFooter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:gravity="center"
-                android:textColor="@color/text_faint"
-                android:textSize="10sp"
-                tools:text="Roshan Khata 1.9 · Innovation-313" />
-
-            <!--
-              Room beneath the last row so the walkthrough can scroll it to the
-              top of the viewport. Without this the final tiles could never
-              rise far enough for their card to sit below them.
-            -->
-            <Space
-                android:id="@+id/gridTailSpace"
-                android:layout_width="match_parent"
-                android:layout_height="0dp" />
-        </LinearLayout>
-    </ScrollView>
+        </ScrollView>
+    </FrameLayout>
 
     <!--
       Hudhud's morning greeting (12 Nov 2026, the owner's rule): once a day, the first time Home comes forward, a
