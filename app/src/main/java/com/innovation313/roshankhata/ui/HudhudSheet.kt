@@ -24,6 +24,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -129,6 +130,7 @@ object HudhudSheet {
         val poseB: ImageView = view.findViewById(R.id.ivHudPoseB)
         val tvState: TextView = view.findViewById(R.id.tvHudState)
         val btnVoice: ImageButton = view.findViewById(R.id.btnHudVoice)
+        val scroll: NestedScrollView = view.findViewById(R.id.hudScroll)
         val tvHeard: TextView = view.findViewById(R.id.tvHudHeard)
         val tvLabel: TextView = view.findViewById(R.id.tvHudLabel)
         val tvFigure: TextView = view.findViewById(R.id.tvHudFigure)
@@ -277,9 +279,13 @@ object HudhudSheet {
             answer(words, spoken = false) { words to ask }
         }
 
-        /** "Heard" for what the recogniser made of the owner's voice (he can see a word it got wrong); "You asked" else. */
+        /**
+         * "Heard" for what the recogniser made of the owner's voice (he can see a word it got wrong); "You asked" else.
+         * The words are isolated in the sentence: a Roman Urdu question in the Urdu sentence was laid out in pieces,
+         * the name before "آپ نے پوچھا" and the rest on the next line (the 150% proof).
+         */
         private fun asked(words: String, spoken: Boolean): String =
-            ctx.getString(if (spoken) R.string.vq_heard else R.string.hudhud_you_asked, words)
+            ctx.getString(if (spoken) R.string.vq_heard else R.string.hudhud_you_asked, Format.isolate(words))
 
         private fun answer(heardFirst: String, spoken: Boolean, understand: (List<Hudhud.Name>) -> Pair<String, Hudhud.Ask>) {
             job?.cancel()
@@ -287,6 +293,8 @@ object HudhudSheet {
             setState(null)
             tvHeard.visibility = View.VISIBLE
             tvHeard.text = asked(heardFirst, spoken)
+            // A new question is read from its top: the last answer may have been scrolled to its end.
+            scroll.scrollTo(0, 0)
             thinkingLater?.let { view.removeCallbacks(it) }
             // Thinking shows only when the answer takes long enough to be noticed (Nielsen's tenth of a second, and
             // then some): a quick answer goes straight to speaking, without a flicker of the thinking pose.

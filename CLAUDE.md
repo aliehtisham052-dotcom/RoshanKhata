@@ -2602,6 +2602,15 @@ Each of these cost a build or a bug.
     matches as a run of whole words; a phrase's words are set aside from name search only when the phrase is said.
     A chip's own label must be understood as its own question in all nine languages (HudhudWordsTest) — eight were not.
 
+86. **A page that lets one child draw past its edges lets them all.** Home's root turned clipChildren off so Hudhud's
+    crest could rise above his bar; the grid's ScrollView had clipToPadding off, so nothing clipped it any more and
+    its tiles were painted past its own edges — under the morning greeting (12 Nov 2026, the 150% proofs) and over
+    the header once scrolled. A scroll on such a page clips itself: no clipToPadding="false", its padding on its
+    content.
+
+87. **An enum class is not a value.** `val w = VoiceQuestion.Window` failed every build of the tests ("does not
+    have a companion object", 3b2e3de); import the enum and write `Window.TODAY`.
+
 ---
 
 ## Working with the owner
@@ -2983,3 +2992,9 @@ Phone only (Windows has none yet). Named Billy in the mockups until 12 Nov (the 
   hudhud_chip_likely; plurals hudhud_greet_remind, hudhud_greet_alerts. Tests: HudhudTest (+7), HudhudWordsTest (his
   own chips in nine languages), VoiceEntryTest (+2), HudhudOnDeviceTest (+2: the entry offered, the greeting once);
   proofs 52-hudhud-greeting, 53-hudhud-today, 54-hudhud-entry, 55-hudhud-radar.
+- **From the proofs (the same evening):** Home's grid clips itself (lesson 86: its tiles showed under the bubble);
+  the greeting is one line at any text size (`FitOneLine`: "Assalam-o-Alaikum!" left its "!" alone at 150%); only
+  the sheet's middle scrolls, Hudhud at the top and the chips and box at the foot (`hudScroll`: a help page or the
+  Radar's reasons pushed the box under the navigation bar), each new answer read from its top; what was asked is
+  isolated in its sentence (a Roman Urdu question broke apart in the Urdu line); the bell's expiry row reads
+  "Batches expiring within 60 days: 1" (it said "1 batches"; the bell's other counts still need plurals).

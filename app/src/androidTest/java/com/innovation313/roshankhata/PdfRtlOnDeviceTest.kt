@@ -8,10 +8,12 @@ import android.graphics.Color
 import android.graphics.RectF
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfRenderer
+import android.net.Uri
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import androidx.test.core.app.ApplicationProvider
+import com.innovation313.roshankhata.data.BusinessProfile
 import com.innovation313.roshankhata.data.Invoice
 import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.InvoicePdfExport
@@ -98,8 +100,32 @@ class PdfRtlOnDeviceTest {
         assertTrue("Urdu: blue half still on its right (not back to front)", isBlue(ur.getPixel(185, 50)))
     }
 
+    /**
+     * The tile measured is the white one a shop's logo stands on. Since 10 Nov 2026 a shop with no logo has its
+     * initials there on a light wash of the band instead of the app's mark on white (InvoiceTemplateKit), which no
+     * colour test can tell from the band — and the CI phone has no logo, so "T1 English: tile top-left" failed from
+     * then on. The test gives the shop a logo for its run and takes it away after, when it had none.
+     */
     @Test
     fun every_invoice_design_mirrors_in_urdu() {
+        val hadLogo = BusinessProfile.hasLogo(app)
+        if (!hadLogo) assertTrue("a logo for the test", giveLogo())
+        try {
+            designsMirror()
+        } finally {
+            if (!hadLogo) BusinessProfile.removeLogo(app)
+        }
+    }
+
+    /** A plain red square saved as the shop's logo, through the same door the profile's picker uses. */
+    private fun giveLogo(): Boolean {
+        val pic = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888).apply { eraseColor(Color.rgb(200, 30, 30)) }
+        val file = File(app.cacheDir, "rtl-test-logo.png")
+        file.outputStream().use { pic.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        return try { BusinessProfile.saveLogo(app, Uri.fromFile(file)) } finally { file.delete() }
+    }
+
+    private fun designsMirror() {
         val items = listOf(
             InvoiceItem(invoiceId = 1, itemName = "Urea", quantity = 2.0, unit = "bag", rate = 4900.0),
             InvoiceItem(invoiceId = 1, itemName = "سلفر", quantity = 12.0, unit = "kg", rate = 1333.0)

@@ -617,8 +617,8 @@ object BusinessProfile {
     /**
      * The shop's own logo (added 30 Sep 2026), printed in the letterhead tile
      * of an invoice and the masthead of the stock register. Optional: with
-     * none, the invoice keeps the app's mark in its tile and the register
-     * keeps the shop's initials. Stored exactly like the stamp — the owner's
+     * none, both print the shop's initials (never the app's mark since 10 Nov
+     * 2026: it is on the strip at the foot). Stored exactly like the stamp — the owner's
      * file, own storage, never uploaded, PNG so a cut-out logo stays
      * transparent.
      */

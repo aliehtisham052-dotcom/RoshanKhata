@@ -1168,7 +1168,7 @@
     <string name="na_plan_due">Instalment due today</string>
     <string name="na_plan_late">Instalment overdue</string>
     <string name="na_bill_due">Supplier bill due %1$s</string>
-    <string name="na_expiring">Stock expiring within 60 days: %1$s batches</string>
+    <string name="na_expiring">Batches expiring within 60 days: %1$s</string>
     <string name="na_backup">Last backup %1$s days ago</string>
     <string name="na_tag_today">Today</string>
     <string name="na_tag_late">Late</string>

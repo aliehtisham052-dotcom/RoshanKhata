@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.doOnLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Businesses
@@ -190,7 +191,11 @@ class MainActivity : BaseActivity() {
 
     /** The bubble itself: its words, its two ways out, and a soft rise into place (none with animations off). */
     private fun showGreeting(bubble: View, greeting: String, line: String) {
-        findViewById<TextView>(R.id.tvHudhudGreet).text = greeting
+        val title = findViewById<TextView>(R.id.tvHudhudGreet)
+        title.text = greeting
+        // The greeting is one line at any text size, shrunk to the bubble as Home's balance is (the 150% proof:
+        // "Assalam-o-Alaikum!" broke before its "!", which stood alone on a second line).
+        title.doOnLayout { com.innovation313.roshankhata.ui.FitOneLine.fit(title, it.width) }
         findViewById<TextView>(R.id.tvHudhudGreetLine).text = line
         findViewById<View>(R.id.hudhudGreetingCard).setOnClickListener {
             bubble.visibility = View.GONE
