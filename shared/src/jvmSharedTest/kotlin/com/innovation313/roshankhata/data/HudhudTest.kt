@@ -2,6 +2,7 @@ package com.innovation313.roshankhata.data
 
 import com.innovation313.roshankhata.data.Hudhud.Ask
 import com.innovation313.roshankhata.data.VoiceQuestion.Kind
+import com.innovation313.roshankhata.data.VoiceQuestion.Window
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -100,20 +101,19 @@ class HudhudTest {
     // ------------------------------------------------------------------- Marhala 2 (12 Nov 2026)
 
     @Test fun `a figure over the span of days it names`() {
-        val w = VoiceQuestion.Window
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.YESTERDAY), ask("kal ki sale kitni hui"))
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.YESTERDAY), ask("کل کی بکری"))
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.YESTERDAY), ask("penjualan kemarin"))
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.THIS_WEEK), ask("is hafte ki bikri"))
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.LAST_WEEK), ask("pichle hafte ki sale"))
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.LAST_MONTH), ask("last month's sales"))
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.LAST_MONTH), ask("पिछले महीने की बिक्री"))
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.LAST_MONTH), ask("গত মাসের বিক্রি"))
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.LAST_MONTH), ask("فروش ماه گذشته"))
-        assertEquals(Ask.Period(Hudhud.Measure.SALES, w.LAST_MONTH), ask("مبيعات الشهر الماضي"))
-        assertEquals(Ask.Period(Hudhud.Measure.PROFIT, w.LAST_MONTH), ask("pichle mahine ka munafa"))
-        assertEquals(Ask.Period(Hudhud.Measure.PROFIT, w.TODAY), ask("aaj ka munafa"))
-        assertEquals(Ask.Period(Hudhud.Measure.PROFIT, w.THIS_WEEK), ask("is hafte kitna faida hua"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.YESTERDAY), ask("kal ki sale kitni hui"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.YESTERDAY), ask("کل کی بکری"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.YESTERDAY), ask("penjualan kemarin"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.THIS_WEEK), ask("is hafte ki bikri"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.LAST_WEEK), ask("pichle hafte ki sale"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.LAST_MONTH), ask("last month's sales"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.LAST_MONTH), ask("पिछले महीने की बिक्री"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.LAST_MONTH), ask("গত মাসের বিক্রি"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.LAST_MONTH), ask("فروش ماه گذشته"))
+        assertEquals(Ask.Period(Hudhud.Measure.SALES, Window.LAST_MONTH), ask("مبيعات الشهر الماضي"))
+        assertEquals(Ask.Period(Hudhud.Measure.PROFIT, Window.LAST_MONTH), ask("pichle mahine ka munafa"))
+        assertEquals(Ask.Period(Hudhud.Measure.PROFIT, Window.TODAY), ask("aaj ka munafa"))
+        assertEquals(Ask.Period(Hudhud.Measure.PROFIT, Window.THIS_WEEK), ask("is hafte kitna faida hua"))
         // The eight figures' own day and month stay as they were.
         assertEquals(Ask.Figure(Kind.SALES_TODAY), ask("aaj ki sale"))
         assertEquals(Ask.Figure(Kind.SALES_MONTH), ask("is mahine ki bikri"))
@@ -125,16 +125,15 @@ class HudhudTest {
         val f = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.ROOT).apply { timeZone = tz }
         fun at(s: String) = f.parse(s)!!.time
         val now = at("2026-11-12 10:30") // a Thursday; Pakistan's week starts on Monday
-        val w = VoiceQuestion.Window
         val before = ShopCountry.current
         ShopCountry.current = ShopCountry.PAKISTAN
         try {
-            assertEquals(at("2026-11-12 00:00") to at("2026-11-13 00:00"), Hudhud.span(w.TODAY, now, tz))
-            assertEquals(at("2026-11-11 00:00") to at("2026-11-12 00:00"), Hudhud.span(w.YESTERDAY, now, tz))
-            assertEquals(at("2026-11-09 00:00") to at("2026-11-13 00:00"), Hudhud.span(w.THIS_WEEK, now, tz))
-            assertEquals(at("2026-11-02 00:00") to at("2026-11-09 00:00"), Hudhud.span(w.LAST_WEEK, now, tz))
-            assertEquals(at("2026-11-01 00:00") to at("2026-12-01 00:00"), Hudhud.span(w.THIS_MONTH, now, tz))
-            assertEquals(at("2026-10-01 00:00") to at("2026-11-01 00:00"), Hudhud.span(w.LAST_MONTH, now, tz))
+            assertEquals(at("2026-11-12 00:00") to at("2026-11-13 00:00"), Hudhud.span(Window.TODAY, now, tz))
+            assertEquals(at("2026-11-11 00:00") to at("2026-11-12 00:00"), Hudhud.span(Window.YESTERDAY, now, tz))
+            assertEquals(at("2026-11-09 00:00") to at("2026-11-13 00:00"), Hudhud.span(Window.THIS_WEEK, now, tz))
+            assertEquals(at("2026-11-02 00:00") to at("2026-11-09 00:00"), Hudhud.span(Window.LAST_WEEK, now, tz))
+            assertEquals(at("2026-11-01 00:00") to at("2026-12-01 00:00"), Hudhud.span(Window.THIS_MONTH, now, tz))
+            assertEquals(at("2026-10-01 00:00") to at("2026-11-01 00:00"), Hudhud.span(Window.LAST_MONTH, now, tz))
         } finally {
             ShopCountry.current = before
         }
@@ -158,9 +157,8 @@ class HudhudTest {
     }
 
     @Test fun `what he paid or took over a span`() {
-        val w = VoiceQuestion.Window
-        assertEquals(Ask.Moved(listOf(2L), w.YESTERDAY, got = true), ask("Bashir ne kal kitna diya"))
-        assertEquals(Ask.Moved(listOf(2L), w.THIS_WEEK, got = false), ask("Bashir ko is hafte kitna diya"))
+        assertEquals(Ask.Moved(listOf(2L), Window.YESTERDAY, got = true), ask("Bashir ne kal kitna diya"))
+        assertEquals(Ask.Moved(listOf(2L), Window.THIS_WEEK, got = false), ask("Bashir ko is hafte kitna diya"))
     }
 
     @Test fun `today's summary and good morning`() {
