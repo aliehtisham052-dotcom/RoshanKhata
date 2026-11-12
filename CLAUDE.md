@@ -2943,6 +2943,43 @@ Phone only (Windows has none yet). Named Billy in the mockups until 12 Nov (the 
   HudhudWordsTest (desktop: every chip label in nine languages), HudhudOnDeviceTest (the face opens the sheet, a turn
   closes it, a made-up customer asked by name is answered with his balance); proofs 50-hudhud-answer,
   51-hudhud-help.
-- **Not yet (later marhalas):** the morning greeting on Home (by the shop's country), "show me" (he points at the
-  screen), the tour in his words, his face on notifications, prefilled actions ("Ali ko 500 diye" → the entry
-  form, the owner saves), Windows.
+- **Not yet (later marhalas):** "show me" (he points at the screen), the tour in his words, his face on
+  notifications, Windows.
+
+### 12 Nov 2026: Hudhud, Marhala 2 (the owner's yes to the review's four recommendations; CI only)
+
+- **An entry said as a fact** ("Ali ko 500 diye": an amount, which way it went, no question word — `Hudhud.QUESTION`;
+  kya/kia/کیا ask only as a sentence's first word, later they are "did"): `Ask.Entry`. Nothing is written: the card
+  says who, how much and which way, and "Fill in the entry" opens his page with voice entry's own extras
+  (`HudhudBook.entryForm`), where the form's checks run and the owner saves. Several or no names: each offered,
+  nearest first (voice entry's picker), one tap opens the form filled in for him. A read-only phone is told it cannot.
+- **Voice entry reads who gave** (`VoiceEntry.customerActs`, both the Khata microphone and Hudhud): "Ali ne 500 diye"
+  is money IN — Urdu and Hindi mark the doer with ne; "main ne", "maine", "ham ne" (and "aap ne") are the shop, any
+  other doer the customer. It read as "I gave" before, the wrong side of the book. VoiceEntryTest (+2).
+- **When he will pay** (`Ask.WhenPays`: a named party with "kab dega", "when will … pay"; `WILL_PAY`, or `PAY` beside
+  `WHEN`/`WHO`): the Payment Radar's reading by its own rules (REPORTS, `RadarUi.on`, customers only; his lines,
+  promised day and PromiseLog) with `RadarUi.reasons`; said aloud is only the likely days ("Likely 8 Nov – 12 Nov"),
+  never the judgement. No name ("aaj kaun dega", the chip `hudhud_chip_likely`): who is in his usual paying days
+  (`PaymentRadar.likelyNow`).
+- **Spans of days** (`VoiceQuestion.Window`, `windowOf`: today, yesterday, this week, last week, this month, last
+  month in nine languages; Urdu script's yesterday only as "کل کی/کا/کے" or "گزشتہ روز" — کل is also "total"):
+  `Ask.Period` for a sale or a profit over a span other than the eight figures' own; `Hudhud.span` gives [from, to)
+  as the screens read it (the week from the shop's own first day). Sales by `salesTotalBetween`, opened on the sales
+  report over the same days (`SalesReportScreen(startPeriod, startCustom)`, `SalesReportActivity.EXTRA_PERIOD /
+  EXTRA_FIRST_DAY / EXTRA_LAST_DAY`); profit by `Profit.between`, opened on Insights for this and last month (a day's
+  or a week's profit is on no screen: no button). `Ask.Moved`: what a named customer paid or took over a span ("Ali
+  ne kal kitna diya"), a figure question winning over it.
+- **The morning greeting** (the owner's rule: "Assalam-o-Alaikum" in Pakistan and the Muslim countries — the OIC's
+  member states among the app's countries, checked on Wikipedia 12 Nov 2026 — at any hour; elsewhere the hour's own
+  greeting, `Hudhud.greeting`): once a day, the first time Home comes forward after the tour, a bubble between the
+  grid and his bar (`hudhudGreeting`, the grid ends above it) with one line of counts — whom to remind
+  (`Automations.collect`, now with `top` and `likelyIds`), else the bell's rows, else nothing waiting — never an
+  amount, never aloud; a tap opens `Ask.Today` on his sheet (`HudhudSheet.open(today = true)`): the greeting, those
+  counts, the bell's own rows and the first three to remind. ✕ puts it away for the day; More → Morning greeting
+  (`ui/HudhudGreet`, prefs "hudhud") turns it off. "Good morning", "aaj ka khulasa" and the chip
+  `hudhud_chip_today` ask for the same summary.
+- Strings (nine languages): hudhud_sales_*/profit_* (9), hudhud_fill_entry, hudhud_entry_check,
+  hudhud_radar_customers, hudhud_likely_none, hudhud_radar_see, hudhud_greet_* (8), hudhud_chip_today,
+  hudhud_chip_likely; plurals hudhud_greet_remind, hudhud_greet_alerts. Tests: HudhudTest (+7), HudhudWordsTest (his
+  own chips in nine languages), VoiceEntryTest (+2), HudhudOnDeviceTest (+2: the entry offered, the greeting once);
+  proofs 52-hudhud-greeting, 53-hudhud-today, 54-hudhud-entry, 55-hudhud-radar.

@@ -312,7 +312,7 @@
         android:clipToPadding="false"
         android:paddingBottom="12dp"
         android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@id/hudhudBar"
+        app:layout_constraintBottom_toTopOf="@id/hudhudGreeting"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header">
@@ -602,6 +602,90 @@
                 android:layout_height="0dp" />
         </LinearLayout>
     </ScrollView>
+
+    <!--
+      Hudhud's morning greeting (12 Nov 2026, the owner's rule): once a day, the first time Home comes forward, a
+      speech bubble beside his head — "Assalam-o-Alaikum!" in Pakistan and the Muslim countries, else the time of day's
+      greeting — and one line of counts (never an amount: balances may be hidden). It stands between the grid and the
+      bar, so the grid ends above it rather than under it; gone, the grid ends at the bar again. A tap opens today's
+      summary on his sheet; the cross puts it away for the day; More → Morning greeting turns it off.
+    -->
+    <LinearLayout
+        android:id="@+id/hudhudGreeting"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="84dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="2dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/hudhudBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/hudhudGreetingCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_hudhud_bubble"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="56dp"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvHudhudGreet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/ink"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvHudhudGreetLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:maxLines="2"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnHudhudGreetClose"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/close"
+                android:scaleType="center"
+                android:src="@drawable/ic_close" />
+        </LinearLayout>
+
+        <!-- The bubble's tail, at its start past the corner's curve, toward his head; a pixel into the bubble, no seam. -->
+        <ImageView
+            android:id="@+id/ivHudhudGreetTail"
+            android:layout_width="14dp"
+            android:layout_height="9dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="-1dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_hudhud_bubble_tail" />
+    </LinearLayout>
 
     <!--
       Hudhud's bar (12 Nov 2026, the owner's chosen place): the shop's assistant at the foot of Home, a box to

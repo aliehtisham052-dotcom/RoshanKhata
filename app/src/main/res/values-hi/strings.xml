@@ -1093,6 +1093,38 @@
     <string name="hudhud_chip_drawer">गल्ले में कितना होना चाहिए?</string>
     <string name="hudhud_pick_party">आप किसकी बात कर रहे हैं?</string>
     <string name="hudhud_you_asked">आपने पूछा: “%1$s”</string>
+    <!-- Hudhud, Marhala 2 (12 Nov 2026): spans of days, entries, the Payment Radar, today and the morning greeting. -->
+    <string name="hudhud_sales_yesterday">कल की बिक्री</string>
+    <string name="hudhud_sales_week">इस हफ़्ते की बिक्री</string>
+    <string name="hudhud_sales_last_week">पिछले हफ़्ते की बिक्री</string>
+    <string name="hudhud_sales_last_month">पिछले महीने की बिक्री</string>
+    <string name="hudhud_profit_today">आज का मुनाफ़ा</string>
+    <string name="hudhud_profit_yesterday">कल का मुनाफ़ा</string>
+    <string name="hudhud_profit_week">इस हफ़्ते का मुनाफ़ा</string>
+    <string name="hudhud_profit_last_week">पिछले हफ़्ते का मुनाफ़ा</string>
+    <string name="hudhud_profit_last_month">पिछले महीने का मुनाफ़ा</string>
+    <string name="hudhud_fill_entry">एंट्री भरें</string>
+    <string name="hudhud_entry_check">फ़ॉर्म भरा हुआ खुलेगा। देखकर सेव करें दबाएँ।</string>
+    <string name="hudhud_radar_customers">पेमेंट रडार सिर्फ ग्राहकों के लिए है।</string>
+    <string name="hudhud_likely_none">आज कोई ग्राहक अपने आम भुगतान के दिनों में नहीं है।</string>
+    <string name="hudhud_radar_see">कारण स्क्रीन पर हैं।</string>
+    <string name="hudhud_greet_salaam">अस्सलाम अलैकुम!</string>
+    <string name="hudhud_greet_morning">सुप्रभात!</string>
+    <string name="hudhud_greet_afternoon">शुभ दोपहर!</string>
+    <string name="hudhud_greet_evening">शुभ संध्या!</string>
+    <string name="hudhud_greet_clear">आज आपके लिए कोई काम बाकी नहीं।</string>
+    <string name="hudhud_chip_today">आज का सारांश</string>
+    <string name="hudhud_chip_likely">आज कौन देगा?</string>
+    <string name="hudhud_greet_title">सुबह का अभिवादन</string>
+    <string name="hudhud_greet_help">दिन में एक बार हुदहुद होम पर आपका अभिवादन करके बताता है कि आज क्या करना है। सिर्फ इस मोबाइल पर।</string>
+    <plurals name="hudhud_greet_remind">
+        <item quantity="one">आज %1$d ग्राहक को याद दिलाना है</item>
+        <item quantity="other">आज %1$d ग्राहकों को याद दिलाना है</item>
+    </plurals>
+    <plurals name="hudhud_greet_alerts">
+        <item quantity="one">आज %1$d काम आपका ध्यान चाहता है</item>
+        <item quantity="other">आज %1$d काम आपका ध्यान चाहते हैं</item>
+    </plurals>
     <string name="cf_title">कैश फ़्लो</string>
     <string name="cf_subtitle">आने का वादा और जाने वाला पैसा</string>
     <string name="cf_days">%1$s दिन</string>

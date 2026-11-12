@@ -1081,6 +1081,38 @@
     <string name="hudhud_chip_drawer">چقدر باید در صندوق باشد؟</string>
     <string name="hudhud_pick_party">منظورتان کدام است؟</string>
     <string name="hudhud_you_asked">پرسیدید: «%1$s»</string>
+    <!-- Hudhud, Marhala 2 (12 Nov 2026): spans of days, entries, the Payment Radar, today and the morning greeting. -->
+    <string name="hudhud_sales_yesterday">فروش دیروز</string>
+    <string name="hudhud_sales_week">فروش این هفته</string>
+    <string name="hudhud_sales_last_week">فروش هفته گذشته</string>
+    <string name="hudhud_sales_last_month">فروش ماه گذشته</string>
+    <string name="hudhud_profit_today">سود امروز</string>
+    <string name="hudhud_profit_yesterday">سود دیروز</string>
+    <string name="hudhud_profit_week">سود این هفته</string>
+    <string name="hudhud_profit_last_week">سود هفته گذشته</string>
+    <string name="hudhud_profit_last_month">سود ماه گذشته</string>
+    <string name="hudhud_fill_entry">تکمیل ثبت</string>
+    <string name="hudhud_entry_check">فرم پرشده باز می‌شود. آن را بررسی کنید و ذخیره را بزنید.</string>
+    <string name="hudhud_radar_customers">رادار پرداخت فقط برای مشتریان است.</string>
+    <string name="hudhud_likely_none">امروز هیچ مشتری در روزهای معمول پرداختش نیست.</string>
+    <string name="hudhud_radar_see">دلیل‌ها روی صفحه است.</string>
+    <string name="hudhud_greet_salaam">سلام علیکم!</string>
+    <string name="hudhud_greet_morning">صبح بخیر!</string>
+    <string name="hudhud_greet_afternoon">روز بخیر!</string>
+    <string name="hudhud_greet_evening">عصر بخیر!</string>
+    <string name="hudhud_greet_clear">امروز کاری منتظر شما نیست.</string>
+    <string name="hudhud_chip_today">خلاصه امروز</string>
+    <string name="hudhud_chip_likely">امروز چه کسی می‌پردازد؟</string>
+    <string name="hudhud_greet_title">سلام صبحگاهی</string>
+    <string name="hudhud_greet_help">روزی یک بار هدهد در صفحه اصلی به شما سلام می‌کند و می‌گوید امروز چه کاری منتظر شماست. فقط در همین گوشی.</string>
+    <plurals name="hudhud_greet_remind">
+        <item quantity="one">یادآوری امروز: %1$d مشتری</item>
+        <item quantity="other">یادآوری امروز: %1$d مشتری</item>
+    </plurals>
+    <plurals name="hudhud_greet_alerts">
+        <item quantity="one">امروز %1$d کار منتظر شماست</item>
+        <item quantity="other">امروز %1$d کار منتظر شماست</item>
+    </plurals>
     <string name="cf_title">جریان نقدی</string>
     <string name="cf_subtitle">پولی که قول آمدنش داده شده و پولی که باید برود</string>
     <string name="cf_days">%1$s روز</string>

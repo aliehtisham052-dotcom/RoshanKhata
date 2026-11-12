@@ -1071,6 +1071,36 @@
     <string name="hudhud_chip_drawer">Berapa seharusnya di laci?</string>
     <string name="hudhud_pick_party">Yang mana maksud Anda?</string>
     <string name="hudhud_you_asked">Anda bertanya: “%1$s”</string>
+    <!-- Hudhud, Marhala 2 (12 Nov 2026): spans of days, entries, the Payment Radar, today and the morning greeting. -->
+    <string name="hudhud_sales_yesterday">Penjualan kemarin</string>
+    <string name="hudhud_sales_week">Penjualan minggu ini</string>
+    <string name="hudhud_sales_last_week">Penjualan minggu lalu</string>
+    <string name="hudhud_sales_last_month">Penjualan bulan lalu</string>
+    <string name="hudhud_profit_today">Laba hari ini</string>
+    <string name="hudhud_profit_yesterday">Laba kemarin</string>
+    <string name="hudhud_profit_week">Laba minggu ini</string>
+    <string name="hudhud_profit_last_week">Laba minggu lalu</string>
+    <string name="hudhud_profit_last_month">Laba bulan lalu</string>
+    <string name="hudhud_fill_entry">Isi catatan</string>
+    <string name="hudhud_entry_check">Formulir terbuka sudah terisi. Periksa lalu tekan Simpan.</string>
+    <string name="hudhud_radar_customers">Radar Pembayaran hanya untuk pelanggan.</string>
+    <string name="hudhud_likely_none">Hari ini tidak ada pelanggan di hari bayar biasanya.</string>
+    <string name="hudhud_radar_see">Alasannya ada di layar.</string>
+    <string name="hudhud_greet_salaam">Assalamualaikum!</string>
+    <string name="hudhud_greet_morning">Selamat pagi!</string>
+    <string name="hudhud_greet_afternoon">Selamat siang!</string>
+    <string name="hudhud_greet_evening">Selamat malam!</string>
+    <string name="hudhud_greet_clear">Hari ini tidak ada yang menunggu Anda.</string>
+    <string name="hudhud_chip_today">Ringkasan hari ini</string>
+    <string name="hudhud_chip_likely">Siapa yang bayar hari ini?</string>
+    <string name="hudhud_greet_title">Sapaan pagi</string>
+    <string name="hudhud_greet_help">Sekali sehari, Hudhud menyapa Anda di Beranda dan memberi tahu apa yang perlu dilakukan hari ini. Hanya di ponsel ini.</string>
+    <plurals name="hudhud_greet_remind">
+        <item quantity="other">%1$d pelanggan untuk diingatkan hari ini</item>
+    </plurals>
+    <plurals name="hudhud_greet_alerts">
+        <item quantity="other">Hari ini %1$d hal perlu perhatian Anda</item>
+    </plurals>
     <string name="cf_title">Arus kas</string>
     <string name="cf_subtitle">Uang yang dijanjikan masuk dan uang yang harus keluar</string>
     <string name="cf_days">%1$s hari</string>

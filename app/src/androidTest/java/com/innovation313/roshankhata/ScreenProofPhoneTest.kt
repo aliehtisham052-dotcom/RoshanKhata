@@ -68,6 +68,8 @@ class ScreenProofPhoneTest(
         CoachMarkController.markRun(app)
         // The pictures are of the screens, not of their first-open sheets (one sheet has its own picture).
         com.innovation313.roshankhata.ui.FeatureIntro.markAllSeen(app)
+        // Nor of Hudhud's morning greeting, which has its own picture (52).
+        com.innovation313.roshankhata.ui.HudhudGreet.greeted(app)
         BalancePrivacy.setHidden(app, false)
         BusinessProfile.setTrade(app, trade)
         BusinessProfile.setBusinessName(app, "Al-Noor Traders")
@@ -265,6 +267,20 @@ class ScreenProofPhoneTest(
         }
         shoot("51-hudhud-help", open(MainActivity::class.java) { putExtra(MainActivity.EXTRA_UNLOCKED, true) }) { a ->
             com.innovation313.roshankhata.ui.HudhudSheet.open(a, ask = a.getString(R.string.faq_q_backup), speak = false)
+        }
+        // Marhala 2 (12 Nov 2026): the morning greeting on Home, today's summary, an entry said as a fact (the made-up
+        // customer's name) and when he will pay, each on his sheet, silent.
+        com.innovation313.roshankhata.ui.HudhudGreet.forget(app)
+        shoot("52-hudhud-greeting", open(MainActivity::class.java) { putExtra(MainActivity.EXTRA_UNLOCKED, true) }, settleMs = 2500)
+        com.innovation313.roshankhata.ui.HudhudGreet.greeted(app)
+        shoot("53-hudhud-today", open(MainActivity::class.java) { putExtra(MainActivity.EXTRA_UNLOCKED, true) }) { a ->
+            com.innovation313.roshankhata.ui.HudhudSheet.open(a, today = true, speak = false)
+        }
+        shoot("54-hudhud-entry", open(MainActivity::class.java) { putExtra(MainActivity.EXTRA_UNLOCKED, true) }) { a ->
+            com.innovation313.roshankhata.ui.HudhudSheet.open(a, ask = "$BIG_NAME ko 500 diye", speak = false)
+        }
+        shoot("55-hudhud-radar", open(MainActivity::class.java) { putExtra(MainActivity.EXTRA_UNLOCKED, true) }) { a ->
+            com.innovation313.roshankhata.ui.HudhudSheet.open(a, ask = "$BIG_NAME kab dega", speak = false)
         }
         shoot("35-live-roads", open(BackupActivity::class.java)) { a ->
             val roads = a.findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)

@@ -76,6 +76,8 @@ object MoreSheet {
             e(R.drawable.ic_menu_language, R.color.tile_khata_bg, R.string.language, display) { activity.startActivity(Intent(activity, LanguageActivity::class.java)) },
             e(R.drawable.ic_menu_textsize, R.color.tile_invoice_bg, R.string.text_size, display) { textSize(activity) },
             e(R.drawable.ic_menu_theme, R.color.tile_card_bg, R.string.theme, display) { theme(activity) },
+            // Hudhud's morning greeting on Home (12 Nov 2026): its one switch, on this phone.
+            e(R.drawable.ic_menu_greeting, R.color.tile_bills_bg, R.string.hudhud_greet_title, display) { HudhudGreet.settings(activity) },
             // Reporting a problem lives inside Help, one door for "something is wrong".
             e(R.drawable.ic_menu_help, R.color.tile_insights_bg, R.string.help_support, help) { activity.startActivity(Intent(activity, HelpActivity::class.java)) },
             // Telling another shopkeeper (8 Nov 2026 review, L168): the system share sheet with one line and the tagged Play link.

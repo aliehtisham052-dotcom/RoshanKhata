@@ -129,11 +129,17 @@ fun SalesReportScreen(
      * The rows on screen and their heading ("By item · This month"), each time they change: what the phone's
      * Excel writes (3 Nov 2026), the same rows the computer's page exports ([reportRows]).
      */
-    onRows: ((heading: String, head: List<String>, rows: List<List<String>>) -> Unit)? = null
+    onRows: ((heading: String, head: List<String>, rows: List<List<String>>) -> Unit)? = null,
+    /**
+     * The period it opens on (12 Nov 2026, Hudhud: "is hafte ki sale" opens This week), or [startCustom]'s first and
+     * last day (the start of each, as the range picker gives them: yesterday, last week, last month).
+     */
+    startPeriod: ReportPeriod = ReportPeriod.TODAY,
+    startCustom: Pair<Long, Long>? = null
 ) {
     val c = LocalRoshanColors.current
-    var period by remember { mutableStateOf(ReportPeriod.TODAY) }
-    var custom by remember { mutableStateOf<Pair<Long, Long>?>(null) }
+    var period by remember { mutableStateOf(if (startCustom != null) ReportPeriod.CUSTOM else startPeriod) }
+    var custom by remember { mutableStateOf(startCustom) }
     var view by remember { mutableStateOf(ReportView.ITEM) }
     var report by remember { mutableStateOf<SalesReport?>(null) }
     LaunchedEffect(period, custom, reload) {

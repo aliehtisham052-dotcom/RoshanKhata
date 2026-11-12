@@ -56,6 +56,8 @@ class HomeTilesFitTest(
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language))
         }
         TextSize.setLevel(context, level)
+        // The tiles alone: no morning greeting standing between them and Hudhud's bar.
+        com.innovation313.roshankhata.ui.HudhudGreet.greeted(context)
     }
 
     @After

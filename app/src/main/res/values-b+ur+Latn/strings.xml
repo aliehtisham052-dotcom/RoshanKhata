@@ -1053,6 +1053,38 @@
     <string name="hudhud_chip_drawer">Galle mein kitna hona chahiye?</string>
     <string name="hudhud_pick_party">Aap kis ki baat kar rahe hain?</string>
     <string name="hudhud_you_asked">Aap ne poocha: “%1$s”</string>
+    <!-- Hudhud, Marhala 2 (12 Nov 2026): spans of days, entries, the Payment Radar, today and the morning greeting. -->
+    <string name="hudhud_sales_yesterday">Kal ki bikri</string>
+    <string name="hudhud_sales_week">Is hafte ki bikri</string>
+    <string name="hudhud_sales_last_week">Pichle hafte ki bikri</string>
+    <string name="hudhud_sales_last_month">Pichle mahine ki bikri</string>
+    <string name="hudhud_profit_today">Aaj ka munafa</string>
+    <string name="hudhud_profit_yesterday">Kal ka munafa</string>
+    <string name="hudhud_profit_week">Is hafte ka munafa</string>
+    <string name="hudhud_profit_last_week">Pichle hafte ka munafa</string>
+    <string name="hudhud_profit_last_month">Pichle mahine ka munafa</string>
+    <string name="hudhud_fill_entry">Entry bharein</string>
+    <string name="hudhud_entry_check">Form bhara hua khulega. Dekh kar Mehfooz Karein dabayein.</string>
+    <string name="hudhud_radar_customers">Payment Radar sirf gahakon ke liye hai.</string>
+    <string name="hudhud_likely_none">Aaj koi gahak apne aam adaigi ke dinon mein nahi.</string>
+    <string name="hudhud_radar_see">Wajoohat screen par hain.</string>
+    <string name="hudhud_greet_salaam">Assalam-o-Alaikum!</string>
+    <string name="hudhud_greet_morning">Subah bakhair!</string>
+    <string name="hudhud_greet_afternoon">Dopahar bakhair!</string>
+    <string name="hudhud_greet_evening">Shaam bakhair!</string>
+    <string name="hudhud_greet_clear">Aaj aap ke liye koi kaam baqi nahi.</string>
+    <string name="hudhud_chip_today">Aaj ka khulasa</string>
+    <string name="hudhud_chip_likely">Aaj kaun dega?</string>
+    <string name="hudhud_greet_title">Subah ka salaam</string>
+    <string name="hudhud_greet_help">Din mein ek baar Hudhud Home par aap ko salaam kar ke batata hai ke aaj kya karna hai. Sirf is phone par.</string>
+    <plurals name="hudhud_greet_remind">
+        <item quantity="one">Aaj %1$d gahak ko yaad dehani</item>
+        <item quantity="other">Aaj %1$d gahakon ko yaad dehani</item>
+    </plurals>
+    <plurals name="hudhud_greet_alerts">
+        <item quantity="one">Aaj %1$d cheez aap ki tawajjo chahti hai</item>
+        <item quantity="other">Aaj %1$d cheezein aap ki tawajjo chahti hain</item>
+    </plurals>
     <string name="cf_title">Cash Flow</string>
     <string name="cf_subtitle">Aane ka waada aur jane wala paisa</string>
     <string name="cf_days">%1$s din</string>

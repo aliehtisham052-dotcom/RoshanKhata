@@ -18,6 +18,7 @@ import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.ShopCountry
 import com.innovation313.roshankhata.data.Trade
 import com.innovation313.roshankhata.data.get
+import com.innovation313.roshankhata.ui.CoachMarkController
 import com.innovation313.roshankhata.ui.HudhudSheet
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -45,6 +46,7 @@ class HudhudOnDeviceTest {
         context.getSharedPreferences("setup", Context.MODE_PRIVATE).edit().putBoolean("done", true).commit()
         BusinessProfile.setCountry(context, ShopCountry.PAKISTAN)
         if (BusinessProfile.trade(context) == null) BusinessProfile.setTrade(context, Trade.KIRYANA)
+        com.innovation313.roshankhata.ui.HudhudGreet.greeted(context)
     }
 
     private fun home() = Intent(context, MainActivity::class.java).putExtra(MainActivity.EXTRA_UNLOCKED, true)
@@ -100,6 +102,51 @@ class HudhudOnDeviceTest {
             var name = ""
             InstrumentationRegistry.getInstrumentation().runOnMainSync { name = label?.text?.toString().orEmpty() }
             assertEquals("Zarnosh Traders", name)
+        }
+    }
+    @Test
+    fun anEntrySaidAsAFactOffersTheFormFilledIn() {
+        val dao = KhataDatabase.get(context).khataDao()
+        runBlocking {
+            if (dao.partiesWithBalanceOnce().none { it.name == "Qeemat Brothers" }) {
+                dao.insertParty(Party(name = "Qeemat Brothers", phone = "03000000002"))
+            }
+        }
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            var figure: TextView? = null
+            var open: TextView? = null
+            scenario.onActivity { a ->
+                val sheet = HudhudSheet.open(a, ask = "Qeemat Brothers ko 700 diye", speak = false)
+                figure = sheet?.findViewById(R.id.tvHudFigure)
+                open = sheet?.findViewById(R.id.btnHudOpen)
+            }
+            val offered = waitFor(5000) {
+                figure?.text?.filter { it.isDigit() }?.toString() == "700" && open?.visibility == View.VISIBLE
+            }
+            assertTrue("no entry offered for 700, got: ${figure?.text}", offered)
+            var words = ""
+            InstrumentationRegistry.getInstrumentation().runOnMainSync { words = open?.text?.toString().orEmpty() }
+            assertEquals(context.getString(R.string.hudhud_fill_entry), words)
+        }
+    }
+
+    @Test
+    fun theMorningGreetingShowsOnceAndOpensToday() {
+        CoachMarkController.markRun(context)
+        com.innovation313.roshankhata.ui.HudhudGreet.forget(context)
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            var bubble: View? = null
+            scenario.onActivity { a -> bubble = a.findViewById(R.id.hudhudGreeting) }
+            assertTrue("the morning greeting did not show", waitFor(5000) { bubble?.visibility == View.VISIBLE })
+            scenario.onActivity { a -> a.findViewById<View>(R.id.hudhudGreetingCard).performClick() }
+            assertTrue("today's summary did not open from the greeting", waitFor(3000) { HudhudSheet.isOpen() })
+        }
+        // Greeted today: Home again shows no bubble.
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            SystemClock.sleep(1500)
+            var shown = true
+            scenario.onActivity { a -> shown = a.findViewById<View>(R.id.hudhudGreeting).visibility == View.VISIBLE }
+            assertFalse("the greeting came twice in one day", shown)
         }
     }
 }

@@ -17,6 +17,12 @@ object VoiceQuestion {
 
     enum class Kind { PROFIT_MONTH, EXPIRING, NOT_PAID, WHO_OWES_MOST, SALES_TODAY, SALES_MONTH, TO_GIVE, TO_GET }
 
+    /**
+     * The span of days a figure is asked for (12 Nov 2026, Hudhud): "kal ki sale", "pichle mahine ka munafa". The eight
+     * questions keep their own day and month; a window said with them asks for that span instead ([windowOf]).
+     */
+    enum class Window { TODAY, YESTERDAY, THIS_WEEK, LAST_WEEK, THIS_MONTH, LAST_MONTH }
+
     private val PROFIT = listOf("munafa", "munafah", "profit", "laba", "untung", "منافع", "نفعو", "ربح", "أرباح", "ارباح",
         "سود", "मुनाफ़ा", "मुनाफा", "लाभ", "লাভ", "মুনাফা",
         // 12 Nov 2026 (Hudhud): "is mahine kitna faida hua", as most owners say it.
@@ -42,6 +48,19 @@ object VoiceQuestion {
         // 12 Nov 2026 (Hudhud): "aaj kitna bika", "how much did I sell".
         "sell", "selling", "bika", "biki", "bikay", "بکا", "بکی", "बिका", "बिकी")
     private val TODAY = listOf("aaj", "today", "hari ini", "آج", "اڄ", "اليوم", "امروز", "आज", "আজ")
+
+    // The windows' words (12 Nov 2026). Urdu writes "kal" (yesterday) and "kul" (total) alike, so in its own script
+    // yesterday is only "کل کی/کا/کے" or "گزشتہ روز"; Hindi, Sindhi and the rest have a word of their own. Indonesian
+    // "kemarin" is yesterday alone and "last" beside "bulan" or "minggu".
+    private val YESTERDAY = listOf("kal", "yesterday", "guzishta roz", "pichle din", "کل کی", "کل کا", "کل کے", "گزشتہ روز",
+        "گذشتہ روز", "कल", "গতকাল", "ڪالهه", "أمس", "امس", "البارحة", "دیروز", "kemarin")
+    private val WEEK = listOf("hafta", "hafte", "haftay", "week", "ہفتہ", "ہفتے", "हफ्ता", "हफ्ते", "सप्ताह", "هفتو", "هفتي",
+        "أسبوع", "اسبوع", "هفته", "সপ্তাহ", "minggu", "pekan")
+    private val MONTH = listOf("mahina", "mahine", "mahinay", "maheena", "maheene", "month", "مہینہ", "مہینے", "ماہ",
+        "महीना", "महीने", "माह", "مهينو", "مهيني", "شهر", "ماه", "মাস", "bulan")
+    private val LAST = listOf("pichle", "pichhle", "pichlay", "pichhlay", "pichla", "pichhla", "guzishta", "guzashta",
+        "last", "previous", "پچھلے", "پچھلا", "پچھلی", "گزشتہ", "گذشتہ", "पिछले", "पिछला", "पिछली", "गत", "গত", "আগের",
+        "پوئين", "گذريل", "الماضي", "الماضية", "السابق", "الفائت", "گذشته", "قبل", "پیش", "lalu", "kemarin", "sebelumnya")
     private val TO_GIVE = listOf("dena", "dene", "to give", "i owe", "to pay", "utang saya", "دینا", "دینے", "ڏيڻا", "ڏيڻو",
         "علي دفع", "پرداختنی", "بدهکار", "देना", "देने", "দেনা", "দিতে",
         // 12 Nov 2026 (Hudhud), from the app's own chips: Farsi's debt is what the shop owes ("جمع بدهی"), Arabic's
@@ -130,7 +149,28 @@ object VoiceQuestion {
     }
 
     private val ALL: List<String> by lazy {
-        listOf(PROFIT, EXPIRING, NOT_PAID, MOST, DEBT, SALES, TODAY, TO_GIVE, TO_GET).flatten()
+        listOf(PROFIT, EXPIRING, NOT_PAID, MOST, DEBT, SALES, TODAY, TO_GIVE, TO_GET, YESTERDAY, WEEK, MONTH, LAST).flatten()
+    }
+
+    /**
+     * The span of days [heard] names, or null when it names none (12 Nov 2026): last month and last week (a "last"
+     * word beside the month's or the week's), this week, today, yesterday, this month. A sentence naming none keeps
+     * the figure's own span; one naming a span this list does not know ("parson", "this year") keeps it too, and the
+     * card's heading says which span its figure is for.
+     */
+    fun windowOf(heard: String): Window? {
+        val t = normalise(heard)
+        if (t.isEmpty()) return null
+        val last = saysAny(t, LAST)
+        return when {
+            last && saysAny(t, MONTH) -> Window.LAST_MONTH
+            last && saysAny(t, WEEK) -> Window.LAST_WEEK
+            saysAny(t, WEEK) -> Window.THIS_WEEK
+            saysAny(t, TODAY) -> Window.TODAY
+            saysAny(t, YESTERDAY) -> Window.YESTERDAY
+            saysAny(t, MONTH) -> Window.THIS_MONTH
+            else -> null
+        }
     }
 
     fun classify(heard: String): Kind? {

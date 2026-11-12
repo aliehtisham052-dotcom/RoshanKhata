@@ -84,15 +84,16 @@ object HudhudSheet {
 
     /**
      * Opens the sheet, or brings back the one already open. [ask] is answered at once (the proofs, a chip from
-     * elsewhere), [listen] starts the microphone, [typing] puts the cursor in the box; [speak] false keeps him silent
-     * for this sheet (the screen proofs).
+     * elsewhere), [listen] starts the microphone, [typing] puts the cursor in the box, [today] answers with today's
+     * summary (the morning greeting on Home); [speak] false keeps him silent for this sheet (the screen proofs).
      */
     fun open(
         activity: Activity,
         ask: String? = null,
         listen: Boolean = false,
         typing: Boolean = false,
-        speak: Boolean = true
+        speak: Boolean = true,
+        today: Boolean = false
     ): BottomSheetDialog? {
         if (activity.isFinishing || activity.isDestroyed) return null
         val host = activity as? ComponentActivity ?: return null
@@ -110,7 +111,7 @@ object HudhudSheet {
         sheet.show()
         KeyboardFollow.dialog(sheet)
         shown = WeakReference(sheet)
-        ui.start(ask, listen, typing)
+        ui.start(ask, listen, typing, today)
         return sheet
     }
 
@@ -162,7 +163,7 @@ object HudhudSheet {
             get() = prefs.getBoolean(KEY_VOICE, true)
             set(value) { prefs.edit().putBoolean(KEY_VOICE, value).apply() }
 
-        fun start(ask: String?, listenNow: Boolean, typing: Boolean) {
+        fun start(ask: String?, listenNow: Boolean, typing: Boolean, today: Boolean) {
             // He faces into the sheet: the drawings look right, so they are turned in right-to-left.
             if (view.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
                 poseA.scaleX = -1f
@@ -187,6 +188,7 @@ object HudhudSheet {
             breathe()
             when {
                 ask != null -> question(listOf(ask), spoken = false)
+                today -> chip(ctx.getString(R.string.hudhud_chip_today), Hudhud.Ask.Today)
                 listenNow -> listen()
                 typing -> etAsk.postDelayed({
                     if (!closed) {
@@ -234,7 +236,7 @@ object HudhudSheet {
                     ?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
                 if (heard.isEmpty()) {
                     setState(null)
-                    setPose(Pose.IDLE)
+                    showPose(Pose.IDLE)
                 } else {
                     question(heard, spoken = true)
                 }
@@ -248,7 +250,7 @@ object HudhudSheet {
                 putExtra(RecognizerIntent.EXTRA_PROMPT, ctx.getString(R.string.vq_prompt))
             }
             try {
-                setPose(Pose.LISTENING)
+                showPose(Pose.LISTENING)
                 setState(R.string.hudhud_listening)
                 launcher.launch(intent)
             } catch (e: ActivityNotFoundException) {
@@ -263,8 +265,10 @@ object HudhudSheet {
          * "Hear again" to hear it.
          */
         private fun question(candidates: List<String>, spoken: Boolean) {
+            // The recogniser's language, so a Persian or Indonesian amount is read its own way (voice entry's rule).
+            val language = Locale.getDefault().toLanguageTag()
             answer(candidates.first(), spoken) { names ->
-                Hudhud.understand(candidates, names, topics)
+                Hudhud.understand(candidates, names, topics, language)
             }
         }
 
@@ -288,7 +292,7 @@ object HudhudSheet {
             // then some): a quick answer goes straight to speaking, without a flicker of the thinking pose.
             val later = Runnable {
                 if (!closed) {
-                    setPose(Pose.THINKING)
+                    showPose(Pose.THINKING)
                     setState(R.string.hudhud_thinking)
                 }
             }
@@ -327,7 +331,10 @@ object HudhudSheet {
                 row.findViewById<TextView>(R.id.tvHudRowName).text = r.name
                 row.findViewById<TextView>(R.id.tvHudRowFigure).text = r.figure
                 row.findViewById<TextView>(R.id.tvHudRowSub).textOrGone(r.sub)
-                row.setOnClickListener { openParty(r.partyId) }
+                row.setOnClickListener {
+                    val amount = r.amount
+                    openParty(r.partyId, if (amount != null) HudhudBook.entryForm(amount, r.isGiven) else null)
+                }
                 TextFit.relax(row)
                 rows.addView(row)
                 TextFit.stackWhenLarge(row.findViewById(R.id.hudRowNameColumn), row.findViewById(R.id.tvHudRowFigure))
@@ -342,6 +349,7 @@ object HudhudSheet {
         private fun showButtons(a: HudhudBook.Answer) {
             val canOpen = a.open != null || a.openParty != null
             btnOpen.visibility = if (canOpen) View.VISIBLE else View.GONE
+            (btnOpen as? TextView)?.setText(a.openLabel ?: R.string.vq_open)
             btnOpen.setOnClickListener { go(a) }
             btnReplay.visibility = if (canSay(a)) View.VISIBLE else View.GONE
             buttons.visibility = if (canOpen || canSay(a)) View.VISIBLE else View.GONE
@@ -357,12 +365,12 @@ object HudhudSheet {
             // What he was saying ends first (Hear again while he speaks), then he speaks from the moment the answer is
             // his to say, not only once the engine starts: no stale "Listening…" while the phone's voice wakes up.
             voice.stop()
-            setPose(Pose.TALKING)
+            showPose(Pose.TALKING)
             setState(R.string.hudhud_speaking)
             voice.speak(words, object : HudhudVoice.Listener {
                 override fun onStart() {
                     if (closed) return
-                    setPose(Pose.TALKING)
+                    showPose(Pose.TALKING)
                     setState(R.string.hudhud_speaking)
                 }
 
@@ -386,12 +394,12 @@ object HudhudSheet {
             setState(null)
             when (mood) {
                 HudhudBook.Mood.GOOD -> {
-                    setPose(Pose.HAPPY)
+                    showPose(Pose.HAPPY)
                     hop()
-                    view.postDelayed({ if (!closed && pose == Pose.HAPPY) setPose(Pose.IDLE) }, HAPPY_MS)
+                    view.postDelayed({ if (!closed && pose == Pose.HAPPY) showPose(Pose.IDLE) }, HAPPY_MS)
                 }
-                HudhudBook.Mood.CARE -> setPose(Pose.ALERT)
-                HudhudBook.Mood.CALM -> setPose(Pose.IDLE)
+                HudhudBook.Mood.CARE -> showPose(Pose.ALERT)
+                HudhudBook.Mood.CALM -> showPose(Pose.IDLE)
             }
         }
 
@@ -400,18 +408,23 @@ object HudhudSheet {
             val screen = a.open
             val intent = when {
                 party != null -> Intent(host, PartyDetailActivity::class.java).putExtra(PartyDetailActivity.EXTRA_PARTY_ID, party)
-                // Asked from the very screen the answer comes from (Insights' microphone): the sheet closes onto it.
-                screen != null && screen == host.javaClass -> null
+                // Asked from the very screen the answer comes from (Insights' microphone): the sheet closes onto it,
+                // unless the answer opens it on days of its own.
+                screen != null && screen == host.javaClass && a.openExtras == null -> null
                 screen != null -> Intent(host, screen)
                 else -> return
             }
+            a.openExtras?.let { intent?.putExtras(it) }
             sheet.dismiss()
             intent?.let { host.startActivity(it) }
         }
 
-        private fun openParty(id: Long) {
+        /** His page; [extras] the entry form filled in, when he was offered for an entry. */
+        private fun openParty(id: Long, extras: android.os.Bundle? = null) {
             sheet.dismiss()
-            host.startActivity(Intent(host, PartyDetailActivity::class.java).putExtra(PartyDetailActivity.EXTRA_PARTY_ID, id))
+            val intent = Intent(host, PartyDetailActivity::class.java).putExtra(PartyDetailActivity.EXTRA_PARTY_ID, id)
+            extras?.let { intent.putExtras(it) }
+            host.startActivity(intent)
         }
 
         // ------------------------------------------------------------------------------------- chips
@@ -421,7 +434,11 @@ object HudhudSheet {
             chips.removeAllViews()
             val reports = Access.can(Access.Permission.REPORTS)
             val list = buildList<Pair<Int, Hudhud.Ask>> {
+                // What needs the owner today first: his morning's question.
+                add(R.string.hudhud_chip_today to Hudhud.Ask.Today)
                 if (reports) add(R.string.vq_sales_today to Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
+                // Who is in his usual paying days (the Payment Radar, where it is on).
+                if (reports && RadarUi.on(ctx)) add(R.string.hudhud_chip_likely to Hudhud.Ask.WhenPays(emptyList()))
                 if (reports) add(R.string.vq_who_owes_most to Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST))
                 add(R.string.hudhud_chip_backup to Hudhud.Ask.BackupStatus)
                 if (reports) {
@@ -457,7 +474,7 @@ object HudhudSheet {
 
         // ------------------------------------------------------------------------------------- Hudhud himself
 
-        private fun setPose(p: Pose) {
+        private fun showPose(p: Pose) {
             if (p == pose) return
             pose = p
             val back = if (front === poseA) poseB else poseA

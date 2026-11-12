@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The greeting bubble's tail: down from the bubble's start, toward Hudhud's head. Turned in right-to-left by
+     MainActivity.showGreeting, as his face is (only arrows are autoMirrored: check_icon_direction). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="14dp"
+    android:height="9dp"
+    android:viewportWidth="14"
+    android:viewportHeight="9">
+    <path
+        android:fillColor="@color/brand_green_soft"
+        android:pathData="M0,0 L14,0 Q6,1 0,9 Z" />
+</vector>

@@ -1095,6 +1095,38 @@
     <string name="hudhud_chip_drawer">How much should be in the drawer?</string>
     <string name="hudhud_pick_party">Which one do you mean?</string>
     <string name="hudhud_you_asked">You asked: “%1$s”</string>
+    <!-- Hudhud, Marhala 2 (12 Nov 2026): spans of days, entries, the Payment Radar, today and the morning greeting. -->
+    <string name="hudhud_sales_yesterday">Yesterday\'s sale</string>
+    <string name="hudhud_sales_week">This week\'s sale</string>
+    <string name="hudhud_sales_last_week">Last week\'s sale</string>
+    <string name="hudhud_sales_last_month">Last month\'s sale</string>
+    <string name="hudhud_profit_today">Today\'s profit</string>
+    <string name="hudhud_profit_yesterday">Yesterday\'s profit</string>
+    <string name="hudhud_profit_week">This week\'s profit</string>
+    <string name="hudhud_profit_last_week">Last week\'s profit</string>
+    <string name="hudhud_profit_last_month">Last month\'s profit</string>
+    <string name="hudhud_fill_entry">Fill in the entry</string>
+    <string name="hudhud_entry_check">The form opens filled in. Check it and press Save.</string>
+    <string name="hudhud_radar_customers">Payment Radar is for customers only.</string>
+    <string name="hudhud_likely_none">No customer is in his usual paying days today.</string>
+    <string name="hudhud_radar_see">The reasons are on the screen.</string>
+    <string name="hudhud_greet_salaam">Assalam-o-Alaikum!</string>
+    <string name="hudhud_greet_morning">Good morning!</string>
+    <string name="hudhud_greet_afternoon">Good afternoon!</string>
+    <string name="hudhud_greet_evening">Good evening!</string>
+    <string name="hudhud_greet_clear">Nothing is waiting for you today.</string>
+    <string name="hudhud_chip_today">What\'s on today?</string>
+    <string name="hudhud_chip_likely">Who will pay today?</string>
+    <string name="hudhud_greet_title">Morning greeting</string>
+    <string name="hudhud_greet_help">Once a day, Hudhud greets you on Home and tells you what needs you today. Only on this phone.</string>
+    <plurals name="hudhud_greet_remind">
+        <item quantity="one">%1$d customer to remind today</item>
+        <item quantity="other">%1$d customers to remind today</item>
+    </plurals>
+    <plurals name="hudhud_greet_alerts">
+        <item quantity="one">%1$d thing needs your eye today</item>
+        <item quantity="other">%1$d things need your eye today</item>
+    </plurals>
     <string name="cf_title">Cash flow</string>
     <string name="cf_subtitle">Money promised to come in, and money due to go out</string>
     <string name="cf_days">%1$s days</string>

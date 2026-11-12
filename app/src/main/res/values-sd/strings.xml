@@ -1081,6 +1081,38 @@
     <string name="hudhud_chip_drawer">گلي ۾ ڪيترو هجڻ گهرجي؟</string>
     <string name="hudhud_pick_party">توهان ڪنهن جي ڳالهه ڪري رهيا آهيو؟</string>
     <string name="hudhud_you_asked">توهان پڇيو: “%1$s”</string>
+    <!-- Hudhud, Marhala 2 (12 Nov 2026): spans of days, entries, the Payment Radar, today and the morning greeting. -->
+    <string name="hudhud_sales_yesterday">ڪالهه جو وڪرو</string>
+    <string name="hudhud_sales_week">هن هفتي جو وڪرو</string>
+    <string name="hudhud_sales_last_week">گذريل هفتي جو وڪرو</string>
+    <string name="hudhud_sales_last_month">گذريل مهيني جو وڪرو</string>
+    <string name="hudhud_profit_today">اڄ جو نفعو</string>
+    <string name="hudhud_profit_yesterday">ڪالهه جو نفعو</string>
+    <string name="hudhud_profit_week">هن هفتي جو نفعو</string>
+    <string name="hudhud_profit_last_week">گذريل هفتي جو نفعو</string>
+    <string name="hudhud_profit_last_month">گذريل مهيني جو نفعو</string>
+    <string name="hudhud_fill_entry">داخلا ڀريو</string>
+    <string name="hudhud_entry_check">فارم ڀريل کلندو. ڏسي محفوظ ڪريو دٻايو.</string>
+    <string name="hudhud_radar_customers">پيمينٽ ريڊار رڳو گراهڪن لاءِ آهي.</string>
+    <string name="hudhud_likely_none">اڄ ڪو گراهڪ پنهنجي عام ادائيگي جي ڏينهن ۾ ناهي.</string>
+    <string name="hudhud_radar_see">سبب اسڪرين تي آهن.</string>
+    <string name="hudhud_greet_salaam">السلام عليڪم!</string>
+    <string name="hudhud_greet_morning">صبح بخير!</string>
+    <string name="hudhud_greet_afternoon">منجهند بخير!</string>
+    <string name="hudhud_greet_evening">شام بخير!</string>
+    <string name="hudhud_greet_clear">اڄ توهان لاءِ ڪو ڪم باقي ناهي.</string>
+    <string name="hudhud_chip_today">اڄ جو خلاصو</string>
+    <string name="hudhud_chip_likely">اڄ ڪير ڏيندو؟</string>
+    <string name="hudhud_greet_title">صبح جو سلام</string>
+    <string name="hudhud_greet_help">ڏينهن ۾ هڪ ڀيرو هُدهُد هوم تي توهان کي سلام ڪري ٻڌائي ٿو ته اڄ ڇا ڪرڻو آهي. رڳو هن فون تي.</string>
+    <plurals name="hudhud_greet_remind">
+        <item quantity="one">اڄ %1$d گراهڪ کي ياد ڏيارڻو</item>
+        <item quantity="other">اڄ %1$d گراهڪن کي ياد ڏيارڻو</item>
+    </plurals>
+    <plurals name="hudhud_greet_alerts">
+        <item quantity="one">اڄ %1$d ڳالهه توهان جو ڌيان گهري ٿي</item>
+        <item quantity="other">اڄ %1$d ڳالهيون توهان جو ڌيان گهرن ٿيون</item>
+    </plurals>
     <string name="cf_title">ڪيش فلو</string>
     <string name="cf_subtitle">اچڻ جو واعدو ۽ ويندڙ پئسو</string>
     <string name="cf_days">%1$s ڏينهن</string>

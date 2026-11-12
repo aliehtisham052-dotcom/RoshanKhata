@@ -160,6 +160,62 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * Hudhud's morning greeting (12 Nov 2026, the owner's rule; ui/HudhudGreet): once a day, the first time Home comes
+     * forward after the tour has run, his bubble says the greeting and one line of counts from the bell's own rows
+     * ([bell]) and Follow-up's "remind today". Never over his open sheet, never an amount, never aloud.
+     */
+    private fun greetOnce(bell: Int) {
+        val bubble = findViewById<View>(R.id.hudhudGreeting) ?: return
+        if (!com.innovation313.roshankhata.ui.HudhudGreet.due(this)) return
+        if (!CoachMarkController.hasRun(this) || com.innovation313.roshankhata.ui.HudhudSheet.isOpen()) return
+        lifecycleScope.launch {
+            val line = try {
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    com.innovation313.roshankhata.data.HudhudBook.greetingLine(
+                        this@MainActivity, KhataDatabase.get(this@MainActivity).khataDao(), bell
+                    )
+                }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                return@launch
+            }
+            if (isFinishing || isDestroyed || !com.innovation313.roshankhata.ui.HudhudGreet.due(this@MainActivity)) return@launch
+            // Home was left while the line was read: greeted the next time it comes forward, not behind the owner's back.
+            if (!lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.STARTED)) return@launch
+            com.innovation313.roshankhata.ui.HudhudGreet.greeted(this@MainActivity)
+            showGreeting(bubble, com.innovation313.roshankhata.data.HudhudBook.greeting(this@MainActivity), line)
+        }
+    }
+
+    /** The bubble itself: its words, its two ways out, and a soft rise into place (none with animations off). */
+    private fun showGreeting(bubble: View, greeting: String, line: String) {
+        findViewById<TextView>(R.id.tvHudhudGreet).text = greeting
+        findViewById<TextView>(R.id.tvHudhudGreetLine).text = line
+        findViewById<View>(R.id.hudhudGreetingCard).setOnClickListener {
+            bubble.visibility = View.GONE
+            com.innovation313.roshankhata.ui.HudhudSheet.open(this, today = true)
+        }
+        findViewById<View>(R.id.btnHudhudGreetClose).setOnClickListener { bubble.visibility = View.GONE }
+        // The tail points at his head, which is on the reading side's start: turned in right-to-left, as his face is.
+        if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            findViewById<View>(R.id.ivHudhudGreetTail)?.scaleX = -1f
+        }
+        com.innovation313.roshankhata.ui.TextFit.relax(bubble)
+        bubble.visibility = View.VISIBLE
+        val motion = com.innovation313.roshankhata.ui.Motion
+        if (!motion.enabled(this)) return
+        bubble.alpha = 0f
+        bubble.translationY = 8f * resources.displayMetrics.density
+        bubble.animate().alpha(1f).translationY(0f).setDuration(GREET_RISE_MS).start()
+        val face = findViewById<View>(R.id.ivHudhudFace) ?: return
+        val lift = -4f * resources.displayMetrics.density
+        face.animate().translationY(lift).setStartDelay(GREET_RISE_MS).setDuration(180).withEndAction {
+            face.animate().translationY(0f).setStartDelay(0).setDuration(260).start()
+        }.start()
+    }
+
+    /**
      * Hudhud's bar at the foot of Home (12 Nov 2026): his face opens his sheet, the box opens it ready to type, the
      * microphone opens it listening. In right-to-left he is turned to face the box. The first few times Home opens he
      * nods once, so the owner sees there is someone to ask ([HUDHUD_NODS], Motion.firstTimes); with the phone's
@@ -465,6 +521,8 @@ class MainActivity : BaseActivity() {
     override fun onStop() {
         totalsJob?.cancel()
         lateJob?.cancel()
+        // A greeting is said once, as Home comes forward: back on Home later the bubble is not standing there still.
+        findViewById<View>(R.id.hudhudGreeting)?.visibility = View.GONE
         super.onStop()
     }
 
@@ -535,6 +593,7 @@ class MainActivity : BaseActivity() {
                 text = if (n > 9) "9+" else n.toString()
             }
             paintToday(alerts)
+            greetOnce(alerts.size)
             maybeOfferBackup()
         }
         showSealOffer()
@@ -1099,6 +1158,8 @@ class MainActivity : BaseActivity() {
 
         /** Hudhud nods on Home this many times on a phone, then stands still. */
         private const val HUDHUD_NODS = 3
+        /** The greeting bubble's rise into place. */
+        private const val GREET_RISE_MS = 240L
 
         /** After the grid has settled (and after the tour's dimming would have begun). */
         private const val HUDHUD_NOD_AFTER_MS = 1200L

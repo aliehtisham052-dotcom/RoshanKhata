@@ -48,12 +48,28 @@ class SalesReportActivity : BaseActivity() {
         val dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
             android.content.res.Configuration.UI_MODE_NIGHT_YES
         val words = AndroidWords(this)
+        // Opened on a period of its own (12 Nov 2026, Hudhud's "is hafte ki sale", "pichle mahine ki sale").
+        val startPeriod = intent.getStringExtra(EXTRA_PERIOD)
+            ?.let { name -> com.innovation313.roshankhata.screens.ReportPeriod.values().firstOrNull { it.name == name } }
+            ?: com.innovation313.roshankhata.screens.ReportPeriod.TODAY
+        val firstDay = intent.getLongExtra(EXTRA_FIRST_DAY, 0L)
+        val lastDay = intent.getLongExtra(EXTRA_LAST_DAY, 0L)
+        val startCustom = if (firstDay > 0L && lastDay >= firstDay) firstDay to lastDay else null
         findViewById<ComposeView>(R.id.reportCompose).setContent {
             RoshanTheme(dark = dark) { ProvideWords(words) {
                 SalesReportScreen(dao, onReport = { latest = it }, pickRange = { current, picked -> pickRange(current, picked) },
-                    onRows = { heading, head, rows -> latestRows = Triple(heading, head, rows) })
+                    onRows = { heading, head, rows -> latestRows = Triple(heading, head, rows) },
+                    startPeriod = startPeriod, startCustom = startCustom)
             } }
         }
+    }
+
+    companion object {
+        /** A ReportPeriod's name to open on. */
+        const val EXTRA_PERIOD = "sales_report_period"
+        /** The first and last day to open on, each as the start of its day (the custom period). */
+        const val EXTRA_FIRST_DAY = "sales_report_first_day"
+        const val EXTRA_LAST_DAY = "sales_report_last_day"
     }
 
     /**

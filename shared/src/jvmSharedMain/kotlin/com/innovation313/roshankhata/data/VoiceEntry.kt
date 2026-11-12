@@ -613,10 +613,36 @@ object VoiceEntry {
         }
         val gave = spoken(GAVE)
         val got = spoken(GOT)
-        return when {
+        val said = when {
             gave && !got -> true
             got && !gave -> false
             else -> null
-        }
+        } ?: return null
+        // "Ali ne 500 diye" is Ali giving: the money came IN (12 Nov 2026). The verb says who handed money over only
+        // together with who did it, and Urdu and Hindi mark the doer with ne; "main ne", "maine" and "ham ne" are the
+        // shop, any other doer the customer. It read as "I gave" before, the wrong side of the book.
+        return if (customerActs(words)) !said else said
     }
+
+    /** The doer marked with ne is someone other than the shop: "Ali ne", "us ne", "usne", "उसने". */
+    private fun customerActs(words: List<String>): Boolean {
+        if (words.any { it in THEY_DID }) return true
+        val i = words.indexOfFirst { it in NE }
+        return i > 0 && words[i - 1] !in WE_DID
+    }
+
+    /** The doer's mark, as the recognisers write it. */
+    private val NE = setOf("ne", "nay", "ney", "نے", "ने")
+
+    /** Before ne, the shop itself: I, we (and "aap", the owner's own polite "you", as a recogniser hears it). */
+    private val WE_DID = setOf("main", "mein", "mai", "mae", "hum", "ham", "aap", "ap", "میں", "مین", "ہم", "آپ", "मैं", "मै", "हम", "आप")
+
+    /** A third person and ne written as one word. */
+    private val THEY_DID = setOf("usne", "usnay", "isne", "isnay", "unhone", "unhonay", "inhone", "inhonay", "उसने", "इसने", "उन्होंने", "इन्होंने")
+
+    /**
+     * Every word that says money moved, either way: the words a customer's name is never made of (Hudhud sets them
+     * aside before looking for one, 12 Nov 2026).
+     */
+    fun directionWords(): List<String> = GAVE + GOT
 }

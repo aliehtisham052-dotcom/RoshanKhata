@@ -1141,6 +1141,46 @@
     <string name="hudhud_chip_drawer">كم يجب أن يكون في الدرج؟</string>
     <string name="hudhud_pick_party">من تقصد؟</string>
     <string name="hudhud_you_asked">سألت: “%1$s”</string>
+    <!-- Hudhud, Marhala 2 (12 Nov 2026): spans of days, entries, the Payment Radar, today and the morning greeting. -->
+    <string name="hudhud_sales_yesterday">مبيعات أمس</string>
+    <string name="hudhud_sales_week">مبيعات هذا الأسبوع</string>
+    <string name="hudhud_sales_last_week">مبيعات الأسبوع الماضي</string>
+    <string name="hudhud_sales_last_month">مبيعات الشهر الماضي</string>
+    <string name="hudhud_profit_today">ربح اليوم</string>
+    <string name="hudhud_profit_yesterday">ربح أمس</string>
+    <string name="hudhud_profit_week">ربح هذا الأسبوع</string>
+    <string name="hudhud_profit_last_week">ربح الأسبوع الماضي</string>
+    <string name="hudhud_profit_last_month">ربح الشهر الماضي</string>
+    <string name="hudhud_fill_entry">املأ القيد</string>
+    <string name="hudhud_entry_check">سيُفتح النموذج معبأً. راجعه ثم اضغط حفظ.</string>
+    <string name="hudhud_radar_customers">رادار الدفع للعملاء فقط.</string>
+    <string name="hudhud_likely_none">لا يوجد اليوم عميل في أيام سداده المعتادة.</string>
+    <string name="hudhud_radar_see">الأسباب على الشاشة.</string>
+    <string name="hudhud_greet_salaam">السلام عليكم!</string>
+    <string name="hudhud_greet_morning">صباح الخير!</string>
+    <string name="hudhud_greet_afternoon">نهارك سعيد!</string>
+    <string name="hudhud_greet_evening">مساء الخير!</string>
+    <string name="hudhud_greet_clear">لا شيء ينتظرك اليوم.</string>
+    <string name="hudhud_chip_today">ملخص اليوم</string>
+    <string name="hudhud_chip_likely">من سيدفع اليوم؟</string>
+    <string name="hudhud_greet_title">تحية الصباح</string>
+    <string name="hudhud_greet_help">مرة في اليوم يحييك هُدهُد في الشاشة الرئيسية ويخبرك بما ينتظرك اليوم. على هذا الهاتف فقط.</string>
+    <plurals name="hudhud_greet_remind">
+        <item quantity="zero">للتذكير اليوم: %1$d</item>
+        <item quantity="one">للتذكير اليوم: %1$d</item>
+        <item quantity="two">للتذكير اليوم: %1$d</item>
+        <item quantity="few">للتذكير اليوم: %1$d</item>
+        <item quantity="many">للتذكير اليوم: %1$d</item>
+        <item quantity="other">للتذكير اليوم: %1$d</item>
+    </plurals>
+    <plurals name="hudhud_greet_alerts">
+        <item quantity="zero">%1$d أمر ينتظرك اليوم</item>
+        <item quantity="one">أمر واحد (%1$d) ينتظرك اليوم</item>
+        <item quantity="two">أمران (%1$d) ينتظرانك اليوم</item>
+        <item quantity="few">%1$d أمور تنتظرك اليوم</item>
+        <item quantity="many">%1$d أمرًا ينتظرك اليوم</item>
+        <item quantity="other">%1$d أمر ينتظرك اليوم</item>
+    </plurals>
     <string name="cf_title">التدفق النقدي</string>
     <string name="cf_subtitle">مال موعود بدخوله ومال مستحق خروجه</string>
     <string name="cf_days">%1$s يومًا</string>

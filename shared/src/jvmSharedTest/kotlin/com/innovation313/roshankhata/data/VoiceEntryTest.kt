@@ -495,4 +495,26 @@ class VoiceEntryTest {
         assertEquals(12.5, amount("12.5")!!, 0.0)
         assertEquals(5000.0, amount("5,000")!!, 0.0)
     }
+    /**
+     * "Ali ne 500 diye" is Ali giving: the money came in (12 Nov 2026). The verb said who moved money only with its
+     * doer, and Urdu and Hindi mark the doer with ne; it read as "I gave", the wrong side of the book.
+     */
+    @Test
+    fun `the customer who gave is money in`() {
+        assertEquals(false, VoiceEntry.parse("Ali ne 500 diye", listOf("Ali")).isGiven)
+        assertEquals(false, VoiceEntry.parse("علی نے پانچ سو دیے", listOf("Ali")).isGiven)
+        assertEquals(false, VoiceEntry.parse("अली ने 500 दिए", listOf("Ali")).isGiven)
+        assertEquals(false, VoiceEntry.parse("usne 500 diye", listOf("Ali")).isGiven)
+        // He took: the shop gave.
+        assertEquals(true, VoiceEntry.parse("Ali ne 500 liye", listOf("Ali")).isGiven)
+    }
+
+    @Test
+    fun `the shop that gave is still money out`() {
+        assertEquals(true, VoiceEntry.parse("Main ne Ali ko 500 diye", listOf("Ali")).isGiven)
+        assertEquals(true, VoiceEntry.parse("Maine Ali ko 500 diye", listOf("Ali")).isGiven)
+        assertEquals(true, VoiceEntry.parse("میں نے علی کو 500 دیے", listOf("Ali")).isGiven)
+        assertEquals(true, VoiceEntry.parse("मैंने अली को 500 दिए", listOf("Ali")).isGiven)
+        assertEquals(true, VoiceEntry.parse("ہم نے علی کو 500 دیے", listOf("Ali")).isGiven)
+    }
 }

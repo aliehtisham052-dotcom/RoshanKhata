@@ -86,7 +86,16 @@ object Automations {
 
     // ---------------------------------------------------------------- the five
 
-    data class Collect(val count: Int, val total: Double, val names: List<String>, val likely: Int = 0)
+    data class Collect(
+        val count: Int,
+        val total: Double,
+        val names: List<String>,
+        val likely: Int = 0,
+        /** The first three to remind, as Follow-up orders them (12 Nov 2026: Hudhud's morning card lists them). */
+        val top: List<PartyWithBalance> = emptyList(),
+        /** Of those to remind, who is in his usual paying days ([PaymentRadar.likelyNow]). */
+        val likelyIds: Set<Long> = emptySet()
+    )
 
     /**
      * Follow-up's "remind today" (a promise come due, or late by his own habit), less those already
@@ -112,7 +121,8 @@ object Automations {
         val due = FollowUpRank.order(debtors, habits, promises, now, tz, remindedToday, likely).filter {
             !it.phone.isNullOrBlank() && FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday, likely)
         }
-        return Collect(due.size, due.sumOf { it.balance }, due.take(3).map { it.name }, due.count { it.id in likely })
+        return Collect(due.size, due.sumOf { it.balance }, due.take(3).map { it.name }, due.count { it.id in likely },
+            top = due.take(3), likelyIds = likely)
     }
 
     data class DayEnd(val sales: Double, val received: Double, val drawer: Double, val counted: Boolean, val moved: Boolean)
