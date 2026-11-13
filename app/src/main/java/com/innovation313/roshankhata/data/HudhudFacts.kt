@@ -918,7 +918,7 @@ internal object HudhudFacts {
         val byId = parties.associateBy { it.id }
         val rows = owed.take(TOP).mapNotNull { q -> byId[q.partyId]?.let { p -> Row(p.id, p.name, HudhudBook.money(q.qarz), null) } }
         return Answer(Mood.CALM, label = label, figure = HudhudBook.money(owed.sumOf { it.qarz }), rows = rows,
-            lines = listOf(c.resources.getQuantityString(R.plurals.hudhud_qarz_people, owed.size, owed.size), note),
+            lines = listOf(Digits.quantity(c.resources, R.plurals.hudhud_qarz_people, owed.size, owed.size), note),
             open = ZakatActivity::class.java, money = true)
     }
 
