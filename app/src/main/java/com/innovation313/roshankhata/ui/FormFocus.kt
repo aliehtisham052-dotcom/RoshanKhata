@@ -115,8 +115,13 @@ object FormFocus {
     /** Moves from [box] to [nextBox]; false when there is none. */
     fun next(box: EditText): Boolean = nextBox(box)?.let { go(it); true } ?: false
 
-    /** No autofill bubble over this view or anything inside it (a Compose host's boxes included). */
+    /**
+     * No autofill bubble over this view or anything inside it (a Compose host's boxes included). Autofill is
+     * Android 8+: on 7.x the call does not exist (it threw there, 13 Nov 2026 lint), and there is no bubble to hide.
+     */
     fun noAutofill(view: View) {
-        view.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            view.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+        }
     }
 }

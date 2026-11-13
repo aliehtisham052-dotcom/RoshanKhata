@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:drawablePadding="6dp"
-                android:gravity="center_vertical"
+                android:gravity="center_vertical|start"
                 android:minHeight="40dp"
                 android:text="@string/hudhud_settings"
                 android:textAlignment="viewStart"
