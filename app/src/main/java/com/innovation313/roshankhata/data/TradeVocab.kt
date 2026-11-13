@@ -34,6 +34,9 @@ object TradeVocab {
         return if (id == 0) emptyList() else context.resources.getStringArray(id).toList()
     }
 
+    /** The active trade's name in lower case, as the resources and the poster's emblems key it (AGRI is "agri"). */
+    fun key(context: Context, trade: Trade = Trade.current(context)): String = trade.name.lowercase()
+
     /**
      * Three example goods of the active trade, in the app's language. An
      * Other shop's own goods come first when the owner wrote some (11 Oct),

@@ -12,7 +12,7 @@ import com.innovation313.roshankhata.desktop.gfx.Path
 import com.innovation313.roshankhata.desktop.gfx.RadialGradient
 import com.innovation313.roshankhata.desktop.gfx.RectF
 import com.innovation313.roshankhata.desktop.gfx.Shader
-import com.innovation313.roshankhata.desktop.invoice.R
+import com.innovation313.roshankhata.desktop.poster.NewStockWords
 import com.innovation313.roshankhata.desktop.poster.TradeVocab
 import com.innovation313.roshankhata.desktop.poster.Hero
 
@@ -39,7 +39,7 @@ object PosterNewStock {
     private const val GOLD = 0xFFF3CF6A.toInt()
 
     /** The emerald studio; [spotlight] adds the cone of light from above. */
-    fun drawBackground(c: Canvas, spotlight: Boolean = true) {
+    fun drawBackground(c: Canvas, spotlight: Boolean = true, keepClear: RectF? = null) {
         val bg = Paint()
         bg.shader = LinearGradient(0f, 0f, 0f, 1920f,
             intArrayOf(0xFF071A12.toInt(), 0xFF0A2A1C.toInt(), 0xFF040C08.toInt()),
@@ -50,6 +50,10 @@ object PosterNewStock {
         c.drawRect(0f, 0f, W, 1920f, glow)
         val dust = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = GOLD }
         for ((x, y, r) in DUST) {
+            // A speck that falls on a panel reads as a bullet before its first word or a stain on its edge (the Hours
+            // poster, 13 Nov), so a design with a panel says where it stands and the specks keep clear of it.
+            if (keepClear != null && x > keepClear.left - r - 8f && x < keepClear.right + r + 8f &&
+                y > keepClear.top - r - 8f && y < keepClear.bottom + r + 8f) continue
             dust.alpha = 170
             c.drawCircle(x, y, r, dust)
         }
@@ -74,12 +78,14 @@ object PosterNewStock {
         val c = page.c
         val context = page.context
         val urdu = page.urdu
+        // The shop's trade words the corner label and the line under the headline (NewStockWords, 13 Nov 2026).
+        val trade = TradeVocab.key(context)
         drawBackground(c)
 
         // The heading is the shop's name alone (12 Oct, the owner: never a list of products).
         PosterKit.header(page, top = 66f, sealSize = 138f)
 
-        PosterKit.kicker(page, context.getString(R.string.poster_kicker_new_stock), 300f, GOLD, size = 33f)
+        PosterKit.kicker(page, NewStockWords.kicker(context, trade), 300f, GOLD, size = 33f)
 
         // Headline in gold foil.
         val head = PosterKit.foilHeadline(page, page.title, if (urdu) 138f else 126f, 72f, 470f, greeting = false)
@@ -87,7 +93,7 @@ object PosterNewStock {
         // The hero: the owner's own photo of the stock if he gave one, else the
         // 3D crate if the phone could render it, else a flat one.
         val photo = page.photo
-        if (photo != null) photoCard(c, photo) else page.drawHero(HERO) { flatCrate(it) }
+        if (photo != null) photoCard(c, photo) else page.drawHero(HERO) { flatCrate(it, trade) }
 
         // What arrived, on a strip of glass: the owner's list, or his trade's usual three.
         val list = page.fields.items.ifEmpty { TradeVocab.items(context).take(3) }
@@ -100,7 +106,7 @@ object PosterNewStock {
         PosterKit.inkLine(c, items, ip, 540f, strip.centerY())
 
         // The owner's line under it.
-        val msg = page.message.ifBlank { context.getString(R.string.poster_new_stock_msg) }
+        val msg = page.message.ifBlank { NewStockWords.message(context, trade) }
         val ml = PosterKit.message(page, msg, 1460f, 0xDDF6EBD0.toInt(), if (urdu) 45f else 46f, lines = 2, italicLatin = true, floor = 34f)
 
         PosterKit.phonePill(page, RectF(102f, 1530f, W - 102f, 1710f))
@@ -136,19 +142,73 @@ object PosterNewStock {
         c.restore()
     }
 
-    /** A flat crate for phones that cannot render the 3D one. */
-    private fun flatCrate(c: Canvas) {
-        val plinthTop = RectF(270f, 978f, 810f, 1092f)
+    /**
+     * A flat crate for phones that cannot render the 3D one, for the list's thumbnails and for the computer (13 Nov
+     * 2026, the poster review). It was an empty green square floating above its plinth, the same for every shop;
+     * now it stands on the plinth, closed with gold straps, and wears the shop's own glyph ([PosterEmblems], the
+     * shop-type icon) in gold on a round plaque, so a medical shop's poster shows a capsule and a mobile shop's a
+     * phone. Drawn inside [HERO].
+     */
+    private fun flatCrate(c: Canvas, trade: String) {
+        val cx = 540f
+        // The plinth, its gold rim, and the crate's shadow on it.
+        val plinthTop = RectF(250f, 975f, 830f, 1105f)
         val p = Paint(Paint.ANTI_ALIAS_FLAG)
-        p.shader = RadialGradient(540f, 1010f, 300f, 0xFF2F8A62.toInt(), 0xFF12452F.toInt(), Shader.TileMode.CLAMP)
+        p.shader = RadialGradient(cx, 1020f, 320f, 0xFF2F8A62.toInt(), 0xFF12452F.toInt(), Shader.TileMode.CLAMP)
         c.drawOval(plinthTop, p)
         val rim = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 4.5f; color = 0xFFD9B25A.toInt() }
         c.drawOval(plinthTop, rim)
-        val box = RectF(405f, 642f, 675f, 912f)
-        val f = Paint(Paint.ANTI_ALIAS_FLAG)
-        f.shader = LinearGradient(box.left, box.top, box.right, box.bottom, 0xFF2C8C62.toInt(), 0xFF0B3B27.toInt(), Shader.TileMode.CLAMP)
-        c.drawRect(box, f)
-        rim.strokeWidth = 9f; rim.color = 0xFFE7C268.toInt()
-        c.drawRect(box, rim)
+        val shade = Paint(Paint.ANTI_ALIAS_FLAG)
+        shade.shader = RadialGradient(cx, 1040f, 250f, 0x99000000.toInt(), 0x00000000, Shader.TileMode.CLAMP)
+        c.save(); c.scale(1f, 0.2f, cx, 1040f); c.drawCircle(cx, 1040f, 250f, shade); c.restore()
+
+        // The crate: the front, the lid seen from a little above, a lip, gold straps at both corners.
+        val front = RectF(330f, 725f, 750f, 1040f)
+        val body = Paint(Paint.ANTI_ALIAS_FLAG)
+        body.shader = LinearGradient(front.left, front.top, front.right, front.bottom,
+            0xFF2C8C62.toInt(), 0xFF0B3B27.toInt(), Shader.TileMode.CLAMP)
+        c.drawRect(front, body)
+        val top = Path().apply {
+            moveTo(front.left, front.top); lineTo(front.right, front.top)
+            lineTo(front.right - 34f, front.top - 66f); lineTo(front.left + 34f, front.top - 66f); close()
+        }
+        val lid = Paint(Paint.ANTI_ALIAS_FLAG)
+        lid.shader = LinearGradient(0f, front.top - 66f, 0f, front.top, 0xFF4FB488.toInt(), 0xFF2C8C62.toInt(), Shader.TileMode.CLAMP)
+        c.drawPath(top, lid)
+        // Planks: a dark seam with a light edge under it.
+        val seam = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 3f; color = 0x40000000 }
+        val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 2f; color = 0x1AFFFFFF }
+        for (y in floatArrayOf(front.top + 124f, front.top + 222f)) {
+            c.drawLine(front.left + 36f, y, front.right - 36f, y, seam)
+            c.drawLine(front.left + 36f, y + 3f, front.right - 36f, y + 3f, edge)
+        }
+        // The lip across the top of the front, and the straps.
+        val gold = Paint(Paint.ANTI_ALIAS_FLAG)
+        gold.shader = LinearGradient(0f, front.top, 0f, front.bottom, 0xFFF3CF6A.toInt(), 0xFFC8962B.toInt(), Shader.TileMode.CLAMP)
+        c.drawRect(RectF(front.left - 10f, front.top, front.right + 10f, front.top + 30f), gold)
+        c.drawRect(RectF(front.left, front.top + 30f, front.left + 36f, front.bottom), gold)
+        c.drawRect(RectF(front.right - 36f, front.top + 30f, front.right, front.bottom), gold)
+        val rivet = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF8A641B.toInt() }
+        for (y in floatArrayOf(front.top + 66f, front.top + 160f, front.top + 254f)) {
+            c.drawCircle(front.left + 18f, y, 5.5f, rivet); c.drawCircle(front.right - 18f, y, 5.5f, rivet)
+        }
+        // A soft sheen from the top left.
+        val sheen = Paint(Paint.ANTI_ALIAS_FLAG)
+        sheen.shader = LinearGradient(front.left, front.top, front.centerX(), front.bottom, 0x26FFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP)
+        c.drawRect(RectF(front.left + 36f, front.top + 30f, front.right - 36f, front.bottom), sheen)
+
+        // The plaque: a deep green disc in a gold ring, the shop's glyph in gold on it.
+        val py = 905f
+        val disc = Paint(Paint.ANTI_ALIAS_FLAG)
+        disc.shader = RadialGradient(cx, py - 22f, 124f, 0xFF145A3E.toInt(), 0xFF06241A.toInt(), Shader.TileMode.CLAMP)
+        disc.setShadowLayer(16f, 0f, 9f, 0x66000000)
+        c.drawCircle(cx, py, 100f, disc)
+        val ring = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 8f }
+        ring.shader = LinearGradient(cx - 100f, py - 100f, cx + 100f, py + 100f, 0xFFFFF1C1.toInt(), 0xFFC8962B.toInt(), Shader.TileMode.CLAMP)
+        c.drawCircle(cx, py, 100f, ring)
+        ring.shader = null; ring.strokeWidth = 2f; ring.color = 0x66F3CF6A
+        c.drawCircle(cx, py, 84f, ring)
+        PosterEmblems.draw(c, trade, cx, py, 124f, 0xFFFFF1C1.toInt(), 0xFFD9A441.toInt())
     }
+
 }

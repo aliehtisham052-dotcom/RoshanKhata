@@ -62,4 +62,25 @@ object PosterGlyphs {
         c.drawPath(tail, fill)
         icon(c, CALL, cx, cy - size * 0.03f, r * 1.15f, inner)
     }
+
+    /**
+     * The same chat mark in one colour with nothing cut out of it (13 Nov 2026): a ring with its tail and the handset
+     * inside. [chat] cuts the handset out in a second colour, which only works over a flat disc; a line of text on a
+     * poster has a gradient or a photograph behind it.
+     */
+    fun chatLine(c: Canvas, cx: Float, cy: Float, size: Float, colour: Int) {
+        val r = size * 0.42f
+        val mid = cy - size * 0.03f
+        c.drawCircle(cx, mid, r, Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colour; style = Paint.Style.STROKE; strokeWidth = size * 0.075f
+        })
+        val tail = Path().apply {
+            moveTo(cx - r * 0.62f, cy + r * 0.55f)
+            lineTo(cx - r * 1.02f, cy + r * 1.08f)
+            lineTo(cx - r * 0.08f, cy + r * 0.86f)
+            close()
+        }
+        c.drawPath(tail, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = colour })
+        icon(c, CALL, cx, mid, r * 1.15f, colour)
+    }
 }

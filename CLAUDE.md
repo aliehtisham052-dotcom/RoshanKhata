@@ -117,7 +117,7 @@ No account, no server, no ads. Everything stays on the phone.
   **The phone's printed designs run unchanged on the computer**: invoices
   (InvoicePdfExport, InvoiceTemplateKit), business cards (CardTemplates,
   CardGlyphs, CardLogo) and posters (PosterKit, PosterDesigns, PosterFlat,
-  PosterGlyphs, PosterNewStock, PosterWords, PosterMotion, poster3d's Hero,
+  PosterGlyphs, PosterNewStock, PosterFoot, PosterEmblems (written from the trade icons), PosterWords, PosterMotion, poster3d's Hero,
   CoinFace, SealFace, data's Poster and PosterFields) are COPIED by
   `scripts/gen_desktop_invoice.py`, `gen_desktop_cards.py` and
   `gen_desktop_poster.py` (Strings CI fails if stale — re-run after
@@ -2645,6 +2645,63 @@ Each of these cost a build or a bug.
     (`words.W` and `hijriUmmAlQura`) and a small JUnit stand-in, and runs their tests in 15 s (13 Nov 2026: Hudhud's
     whole engine, 164 tests, before any push). Only plain JVM code: the app's Android files still need CI.
 
+94. **A row added under a design is placed by the design's own arithmetic, never at a fixed height.** The 8 Nov address
+    rows were drawn at fixed heights beneath sign-offs the designs had not moved, so a long address or an email touched
+    the seal, the name or the phone on Fitr, Ramazan, Jumu'ah, 14 August, Adha and Thanks (13 Nov, review item M18).
+    The foot is one pure piece of arithmetic (`PosterFoot.plan` / `column` / `stack`, `PosterFootTest`): a design hands it
+    the top it may not pass (`topLimit`) and draws where it is told; a new foot row goes into it, with a test. The proofs
+    are drawn with a long address AND an email, in Urdu (Nastaliq rows are 58 apart, Latin 48), brand mark on and off.
+
+95. **Letter-spacing is for Latin.** A tracked word in Arabic script is pulled apart letter by letter, and in the desktop
+    proofs Hindi and Bengali words split too ("बं द", "ছা ড়": the signs belong to the letter before them). `PosterKit.canTrack(text)`
+    says whether words may be tracked — ask it before any `letterSpacing` on words (a phone number is digits and keeps its
+    spacing). The phone's own text engine was not run for Indic scripts here; the rule costs a Latin-only look at most.
+
+96. **A default that differs by region reads one property of the shop's country (lesson 29), and a saved choice is never
+    overwritten by it.** The Hours poster's Friday-prayer row was on for every shop. It is now on by default only where
+    `ShopCountry.oic` (the app's 28 OIC member states, Wikipedia 12 Nov 2026 — the same list as Hudhud's salaam, so the two
+    cannot disagree); `PosterFields.fromJson` reads `optBoolean("prayerBreak", default)`, so only a field that was never
+    saved takes it. A second list of countries for the next regional default is the mistake this prevents.
+
+97. **A new use of a stand-in is drawn before it is trusted.** New stock's flat crate wears the shop's own trade emblem
+    (`PosterEmblems`, generated from `ic_trade_*.xml`). All 25 icons use SVG arcs, which the desktop `gfx` PathParser (the
+    android.graphics stand-in) did not know: the first draw threw "path command 'A' is not supported". Found by drawing,
+    not by reading; the stand-in has arcs now. A new picture source is drawn for every trade and the four scripts.
+
+98. **Anything scattered at random is kept off the text.** The background specks sat on the Hours card's words and read
+    as bullets (the 13 Nov proofs). `PosterNewStock.drawBackground(keepClear = panel)` skips specks near a panel; a new
+    design that draws a card over a scattered background passes the card's rectangle.
+
+99. **A rule that gives way is proved three ways.** The Thank-you card's mark steps out of the frame when nothing else clears the
+    seal (`PosterFoot.stack`, 13 Nov 2026). It is held by (1) a test that every layout that fitted before is exactly as it was,
+    (2) pairs of pictures of the same poster showing that only the mark moved, and (3) a close look: the first stepped-out mark drew
+    36 px of ink into a 40 px band and touched the outer border while the arithmetic passed — `PosterKit.mark(maxInk)`.
+
+100. **A drawing test compares two pictures of the same poster, and is proved by breaking the code.** `PosterFootDesktopTest`
+    compares the bare foot with the full one and the mark on with off, with margins measured on real renders (the foot's first
+    ink row 1612 against the seal's bar 1604), so it does not care which font draws. Then the code was broken five ways on purpose
+    (the old overlap, no clearing, the mark on the frame, always out, a wrong `nameHalf`) and the test had to fail every time. A test
+    never seen failing is not yet a test.
+
+101. **A phone number typed into a box is cleaned on the way in, compared by its last ten digits and kept only whole.**
+    `PosterContact`: any script's digits become 0-9, only `+ - ( )` and single spaces stay, 24 characters at most; "0300 1234567",
+    "300-1234567" and "+92 300 1234567" are one number, one digit apart is another, under 7 digits is never "the same"; a number
+    that is not 7 to 15 digits is not kept, so a half-typed one is never drawn. The call number typed again as the WhatsApp number
+    is the call number with its chat mark, not a second line.
+
+102. **When a list can grow, the test names every member.** `NewStockWordsTest` places each `Trade` in one family on purpose and
+    fails for one that is unplaced or placed twice: a trade added to the picker breaks it until somebody decides what its poster
+    says, instead of quietly saying "new stock has arrived" for a barber (as `HudhudBook.screenOf` does for the feature sheets).
+
+103. **A limit is measured before it is written down.** Phase 1 said the poster proofs used "the container's fonts, not the app's";
+    one render with the font folder and one without (258,577 pixels differ) showed they use the app's own files. What the harness
+    really cannot show is Android's text engine (Java2D shapes the text) and a real phone — that is what is written now. A wrong
+    limit sends the owner looking for a fault that is not there and away from the one that is.
+
+104. **A clone made for one branch knows one branch.** The poster session's clone could not see kmp-desktop-16 moving, and a
+    merge check against a stale ref would have passed. Before any merge check read the live head (`git ls-remote origin <branch>`)
+    or fetch the branch by name (`git fetch origin <b>:refs/remotes/origin/<b>`).
+
 ---
 
 ## Working with the owner
@@ -3126,3 +3183,121 @@ screen it opens. Not tried on a real phone.
   product's price, customers counted, today's date, the face's introduction).
 - **Not yet:** a product name across scripts ("यूरिया" for "Urea"); "Ali ne Urea kab liya" (a customer and a product in
   one question); Windows.
+
+### The posters, a high-end pass (13 Nov 2026, branch poster-highend-13nov — the owner: "study the posters deeply, point out every flaw per niche, improve them, commit, do not push yet")
+
+The stills and the flat fallbacks (thumbnails, phones without 3D, Windows). **Not touched, another session's:** PosterMotion,
+PosterVideo, poster3d/* (Hero, HeroStage, Studio, Ktx, CoinFace, SealFace), assets/poster3d, store/poster3d, the poster3d-probe
+workflow and Poster3dOnDeviceTest/PosterVideoOnDeviceTest; every design still returns the same `PosterMotion.Spec`
+(`PosterNewStock.DUST` is as it was). **Nothing was seen on a phone**: the proofs are the desktop copies drawn headless by a
+harness outside the repo (flat heroes; the app's own font files, Sora and Nastaliq included, shaped by Java2D — not by Android's
+text engine; corrected 13 Nov, phase 1 said "the container's fonts"), in English, Urdu, Hindi,
+Bengali, Indonesian, Arabic, Farsi and Sindhi, for a dozen trades, with a long address and an email, with no phone number, and
+with the brand mark on and off (it is OFF in the real app, `Branding.ON_POSTERS_AND_CARDS`). No Gradle on that machine (Maven
+Central is closed to it): the pure logic was run for real with kotlinc + JUnitCore on the junit 4.13.2 jar of the Gradle
+distribution (PosterFootTest 20, PosterKitTrackTest 4, PosterFieldsFridayTest 2, the first two of ShopCountryOicTest; the foot's
+constants were changed one at a time and a test failed each time); the Hudhud case of ShopCountryOicTest and everything that
+needs Android were not run — CI is the first real build.
+
+- **The foot (critical, review item M18; lesson 94):** `PosterFoot` (shared by the designs, copied to Windows) is the arithmetic of
+  the bottom of a poster — `plan` for the sign-off designs (seal, phone, address rows, brand mark), `column` for Eid ul-Adha's
+  left column, `stack` for Thank you's centred block (name, phone, address). Each takes the top it may not pass and gives
+  every position back; an address is one row when address and email fit in 900 px and two rows when not (rows 48 apart, 58 in
+  Arabic script); then the seal shrinks (never under `SEAL_FLOOR` 104), the "from" line drops and the rows tighten, in that order,
+  before anything touches. Fitr, Ramazan, Jumu'ah and 14 August call `PosterKit.foot(…)` with their own limits, Adha `column`,
+  Thanks `stack`. Before, a long address or an email touched the seal, the name or the phone on six designs.
+- **New stock for every trade:** the flat crate is an emerald crate on a gold-rimmed plinth whose plaque wears the shop's own trade
+  emblem (`PosterEmblems`, written by `gen_desktop_poster.py` from the 25 `ic_trade_*.xml`; the script refuses an icon that is not
+  two paths on a 24 x 24 canvas, so a changed trade icon changes the poster and CI's `--check` sees it; `TradeVocab.key(context)`
+  names the trade, a book with none is agri as everywhere). Windows' `gfx` PathParser learned SVG arcs for it (lesson 97). The 3D
+  crate of the live preview, the video and the shared still is the other session's and unchanged (poster3d/* has no trade logic).
+- **Friday prayers (lesson 96):** the Hours poster offers the row by default only where `ShopCountry.oic`; a saved choice stays.
+  Hudhud's salaam reads the same property (`Hudhud.greeting`; its private list went). Decided by the owner's norm, one line to
+  revert: `PosterFields.prayerBreak`'s default.
+- **Words and specks (lessons 95, 98):** no letter-spacing on Arabic-script, Devanagari or Bengali words (`PosterKit.canTrack`: the
+  kicker, the closed sign, the custom tag); the Hours card keeps background specks off its text (`drawBackground(keepClear)`).
+- **Tests (CI runs them):** PosterFootTest, PosterKitTrackTest, PosterFieldsFridayTest, PosterEmblemsTest (every `Trade` has an
+  emblem — also cross-checked by a script), ShopCountryOicTest.
+- **Left, with the reason (for the owner; (1), (3) and (8) were built the same day, see "The posters, phase 2" below):** (1) New stock says one thing three times — kicker "Just arrived", headline "New stock has
+  arrived!", message "Fresh stock is in…" — and a restaurant, salon, tailor or fuel station has no "stock": per-trade occasions and
+  wording (rate board, new collection, fresh today, new menu) need strings in nine languages and a native read for Sindhi and
+  Bengali. (2) Only 14 August is limited to a country (`PosterOccasion.offeredIn`); other national days need each country's verified
+  date, flag and wording. (3) One phone number serves both the call and WhatsApp (a separate WhatsApp number is a profile field); a
+  number is printed as typed (`DuplicateDetector.displayPhone` could shape it). (4) WhatsApp Status's safe zones (what its own
+  buttons cover at the top and foot) are not checked against a real phone. (5) The thumbnails' tick badge and the four-item New stock
+  line size are XML and device matters. (6) The app's own Urdu and Other-script fonts on a phone, and the poster's look at 150% text,
+  were not seen. (7) For the other session: `CoinFace.kt` line 73 still letter-spaces the coin's word in Hindi and Bengali (a
+  one-line fix, `if (PosterKit.canTrack(word))`), and the 3D crate wants the same emblem as its plaque. (8) Known residual: Urdu with
+  two address rows and the brand mark ON lets Thank you's name come within a shadow of the seal.
+
+### The posters, phase 2 (13 Nov 2026, branch poster-highend-13nov — the owner: do the New stock wording, the separate call/WhatsApp number, the hand-off for the other session and the known residual; no national day but 14 August)
+
+Pushed on the owner's word (13 Nov); Android CI run 43378566956, run by hand on the branch, passed (desktop.yml was not run there);
+merged into kmp-desktop-16 the same day. The same limits as phase 1: nothing was seen on a phone; the proofs are the desktop copies drawn headless with the app's own font
+files through Java2D (Android's text engine and a real phone's Nastaliq are what they cannot show). Numbers in the proofs and the
+tests are made up (0300 1234567, 0300 7654321).
+
+- **New stock says a different thing on each of its three lines, and says it for the shop's trade** (`NewStockWords` in
+  `data/Poster.kt`, copied to Windows): five families from `TradeVocab.key` — GOODS (13 trades; "New stock has arrived!" as
+  before), FRESH (dairy, bakery, meat, produce: "Fresh today!"), COLLECTION (clothing, footwear, cosmetics, furniture: "Our new
+  collection is here!"), MENU (restaurant: "Now on our menu!"), SERVICE (salon, tailor, fuel: "Now available!"). The corner label
+  is "JUST ARRIVED" for the first three and the short "NEW" (`poster_kicker_new_short`) for MENU and SERVICE; the line under the
+  headline says what to do, no longer "fresh stock is in" again (`poster_new_stock_msg` is now "Come and see it today.", so a shop
+  that never edited it reads the shorter line). A trade nobody named is GOODS. Every screen asks `PosterOccasion.titleIn(context,
+  trade)` / `messageIn` / `hasWords` — the "original" buttons, the design pills, the thumbnails, the share and Windows' page — never
+  `getString(title)`; a title or message is stored only when the owner changed it (`save(kind, text, default)` drops text equal to
+  the design's own words for this shop), so a shop that changes its trade later gets the new words wherever it had not edited them.
+  `NewStockWordsTest` places every `Trade` in exactly one family on purpose: a trade added to the picker fails there until somebody
+  decides what its poster says. Tailor is SERVICE (stitching and alterations are not stock; one line in `family` to change it).
+  Strings (nine languages): poster_new_fresh/_fresh_msg, _collection, _menu/_menu_msg, _service/_service_msg,
+  poster_kicker_new_short, poster_call_urgent_wa, poster_wa_other/_other_help, poster_wa_number_is, poster_wa_remove,
+  poster_wa_number_bad (14 new keys; poster_new_stock_msg reworded). **Sindhi and Bengali wording is for a native read.**
+- **A WhatsApp number of its own** (`PosterContact`, pure rules in `ui/`, copied to Windows): a shop often takes calls on one
+  number and answers WhatsApp on another. The call number is the shop profile's phone, as always. The poster has its own optional
+  WhatsApp number (`PosterFields.whatsappNumber`: in the phone's poster prefs JSON; on Windows `poster_b<id>.properties`, key
+  `whatsappNumber`) — **never written into the shop profile**, so an invoice or a statement says what it always said. What shows
+  (`PosterContact.of(phone, onWhatsapp, whatsappNumber)`): no number of its own — the call number alone, with its chat mark when
+  "On WhatsApp" is ticked, exactly as before; **the call number typed again is one number on WhatsApp** (`same`: the last ten
+  digits when both have that many, else the digits without leading zeros; under 7 digits never the same), so the chat mark and no
+  second item; a different number — two items, the call number first; a WhatsApp number can stand alone when the call number is
+  not shown. Drawn (`PosterKit.contactRow`, `numberPill`, `PosterGlyphs.chat/chatLine`): the sign-off designs, the Adha column and
+  the Thank-you card show one line, a handset before the call number and a chat bubble before the WhatsApp one, both shrunk together
+  (36 down to 26) until they fit 940 px, the first on the reading side (the right in Urdu); the designs with the gold call button
+  get two slim pills in the button's place (`PILL_GAP` 14, `SLIM_TEXT` 0.68, number floor 30) with a handset and a bubble in
+  their discs; Closed says `poster_call_urgent_wa` when no call number is shown. The "On WhatsApp" tick goes while a number of its
+  own is typed (it belongs to the call number). A typed number is `clean`ed (any script's digits to 0-9, only `+ - ( )` and single
+  spaces, 24 at most) and **kept only once it has 7 to 15 digits** (`kept`), so a half-typed number is never drawn; the phone's
+  window (`askValue`'s new `initial`, `message`, `problem`, `onRemove`: Remove) and Windows' box both go through it, and
+  `PosterFields.fromJson` cuts a longer one from a file. Printed as typed, not shaped (`DuplicateDetector.displayPhone` could).
+- **The Thank-you card's known residual is closed** (phase 1, item 8; `PosterFoot.stack`'s `bottomOutside` / `Stack.markOutside`,
+  `PosterKit.mark(maxInk)`): Urdu + phone + two address rows (a long address and an email) + the brand mark ON left no layout
+  that cleared the seal — the name's tails ran about 13 px into it. `stack` now tries its three rungs (roomy, gaps closed, rows
+  sunk 8) with the mark inside the frame, then the same three with the mark **stepped out under the frame** (cy 1900, `maxInk` 30 so
+  the tall ink of Nastaliq, Devanagari and Bengali fits the band under the border); the mark is the least important row, so it
+  gives way, not the owner's. Every layout that fitted before is exactly as it was; the only combination that steps out is that one,
+  and with the mark out the card is the same as with the mark off. The mark is OFF in the shipped app
+  (`Branding.ON_POSTERS_AND_CARDS`), so this matters the day it is turned on. `nameHalfOf` (42 for Nastaliq, 24 for Latin) was
+  measured with Java2D's shaping, not a phone's.
+- **Not added, by the owner's decision:** any national day but 14 August. 14 August stays limited to Pakistan
+  (`PosterOccasion.offeredIn`, untouched); other countries get nothing new.
+- **For the other session** (hand-off kept outside the repository, nothing of theirs touched; `git status` of poster3d/*,
+  assets/poster3d and store/poster3d is empty): a note and a one-line patch — `CoinFace.kt` line 73 letter-spaces the coin's word
+  in Hindi and Bengali (`if (PosterKit.canTrack(word))` fixes it; the patch needs this branch's `canTrack`), and the 3D crate wants
+  the shop's trade emblem on its plaque as the flat crate has it (`PosterEmblems.draw`, the plaque's numbers are in
+  `PosterNewStock.flatCrate`; `Hero.CRATE.face` and a `PlaqueFace` like `CoinFace`, and `make_heroes.py` for the plaque material).
+  Merging: re-run `gen_desktop_poster.py` after either side touches a phone poster file.
+- **Tests (CI runs them; the pure ones were run here with kotlinc + JUnitCore):** phone — `PosterFootTest` (24: the ladder, the
+  mark stepping out, no regression for the layouts that fitted) and `PosterContactTest` (14) were run here; `NewStockWordsTest`
+  (4) and `PosterFieldsContactTest` (5, Robolectric) were **not run here** (the desktop copy of the family rule was, by
+  `NewStockWordsDesktopTest`). Windows — `PosterContactDesktopTest` (7: what is DRAWN for the
+  rules above, a different number moves nothing above it), `NewStockWordsDesktopTest` (4: the words of each family in nine
+  languages and five pictures per language), `PosterFootDesktopTest` (5: **pairs of pictures of the same poster compared with
+  measured margins** — the foot's first ink row 1612 against the seal's bar 1604, the mark's ink rows 1885–1914 inside the band
+  1881–1918 — so it does not depend on the font; five deliberate breakages, the old overlap, no clearing, the mark on the frame, the
+  mark always out and a wrong `nameHalf`, each failed it). Pictures go to `build/poster-proof` (lesson 16).
+- **Left, with the reason (for the owner):** (1) A profile-wide WhatsApp number for invoices, statements and receipts is a larger,
+  separate change (a profile field on both platforms and in the backup); the poster's own number does not reach them. (2) WhatsApp
+  Status's safe zones are still not checked against a real phone. (3) The poster's look on a real phone (Android's text engine,
+  the app's Nastaliq at 150% text) and the 3D heroes were not seen. (4) The two slim pills were drawn with the longest number the
+  box keeps (15 digits, 24 characters with its marks: "+971 (50) 123 45 67 89 0") in English and Urdu on the five pill designs and
+  it fits both pills at a readable size; how it looks on a phone's screen and on WhatsApp's thumbnail is not seen.

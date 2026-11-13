@@ -36,7 +36,8 @@ data class PosterFields(
     val opens: Int = 9 * 60,
     val closes: Int = 20 * 60,
     val holidays: Set<Int> = setOf(ShopCountry.current.weeklyOff),
-    val prayerBreak: Boolean = true,
+    /** The Friday-prayer row: on by default only where the country is an OIC member ([ShopCountry.oic]); the owner's switch decides after. */
+    val prayerBreak: Boolean = ShopCountry.current.oic,
     val breakFrom: Int = 13 * 60,
     val breakTo: Int = 14 * 60 + 30,
 
@@ -67,7 +68,12 @@ data class PosterFields(
     /** The shop's email under the call button (12 Oct). */
     val showEmail: Boolean = true,
     /** The number is on WhatsApp too: the call button carries a chat mark. */
-    val onWhatsapp: Boolean = true
+    val onWhatsapp: Boolean = true,
+    /**
+     * A WhatsApp number of its own, when it is not the call number (13 Nov 2026): typed on the poster screen and kept
+     * here, with the poster's other choices, never in the shop profile. "" = none; see PosterContact for how it is shown.
+     */
+    val whatsappNumber: String = ""
 ) {
     /** Why a shop closes, as the owner picks it; each has its own words in every language. */
     enum class Reason(val key: String) { FRIDAY("friday"), EID("eid"), WEDDING("wedding"), BEREAVEMENT("bereavement"), STRIKE("strike"), HOLIDAY("holiday") }
@@ -88,6 +94,8 @@ data class PosterFields(
     companion object {
         const val CUSTOM_REASON = "custom"
         const val MAX_ITEMS = 4
+        /** The longest a kept phone number is (PosterContact.MAX_LENGTH): a longer one in a file is cut. */
+        const val MAX_NUMBER = 24
         private const val PREFS = "poster"
 
     }

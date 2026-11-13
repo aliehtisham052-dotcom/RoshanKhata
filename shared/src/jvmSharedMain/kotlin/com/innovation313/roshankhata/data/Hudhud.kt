@@ -781,21 +781,11 @@ object Hudhud {
      * greeting, so "good morning" is never said in the evening (morning from 4 to noon, afternoon to 5).
      */
     fun greeting(country: ShopCountry, hour: Int): Greeting = when {
-        country in SALAAM_COUNTRIES -> Greeting.SALAAM
+        country.oic -> Greeting.SALAAM
         hour in 4..11 -> Greeting.MORNING
         hour in 12..16 -> Greeting.AFTERNOON
         else -> Greeting.EVENING
     }
-
-    /** The app's countries that are members of the OIC (Wikipedia, "Member states of the OIC", checked 12 Nov 2026). */
-    private val SALAAM_COUNTRIES = setOf(
-        ShopCountry.PAKISTAN, ShopCountry.BANGLADESH, ShopCountry.SAUDI_ARABIA, ShopCountry.UAE, ShopCountry.QATAR,
-        ShopCountry.OMAN, ShopCountry.KUWAIT, ShopCountry.BAHRAIN, ShopCountry.EGYPT, ShopCountry.IRAN,
-        ShopCountry.AFGHANISTAN, ShopCountry.INDONESIA, ShopCountry.MALAYSIA, ShopCountry.TURKEY, ShopCountry.NIGERIA,
-        ShopCountry.IRAQ, ShopCountry.JORDAN, ShopCountry.LEBANON, ShopCountry.SYRIA, ShopCountry.PALESTINE,
-        ShopCountry.YEMEN, ShopCountry.MOROCCO, ShopCountry.ALGERIA, ShopCountry.TUNISIA, ShopCountry.LIBYA,
-        ShopCountry.SUDAN, ShopCountry.MAURITANIA, ShopCountry.TAJIKISTAN
-    )
 
     // ------------------------------------------------------------------------------------------------ the words
 

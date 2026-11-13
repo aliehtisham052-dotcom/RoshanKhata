@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.data
 
+import android.content.Context
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.ShopCountry
 
@@ -42,10 +43,75 @@ enum class PosterOccasion(
     /** Whether this occasion is for the shop's country: 14 August is Pakistan's (21 Oct 2026). */
     fun offeredIn(country: ShopCountry): Boolean = this != AZADI || country.pakistan
 
+    /** Whether the occasion starts with words of its own (the shop's own announcement starts empty). */
+    val hasWords: Boolean get() = this != CUSTOM
+
+    /**
+     * The headline this occasion starts with, in [context]'s language, for a shop of [trade] ([TradeVocab.key]).
+     * Only New stock changes with the trade (13 Nov 2026, [NewStockWords]); every other occasion says the same
+     * to every shop.
+     */
+    fun titleIn(context: Context, trade: String): String = when (this) {
+        CUSTOM -> ""
+        NEW_STOCK -> NewStockWords.title(context, trade)
+        else -> context.getString(title)
+    }
+
+    /** The line under the headline, the same way. */
+    fun messageIn(context: Context, trade: String): String = when (this) {
+        CUSTOM -> ""
+        NEW_STOCK -> NewStockWords.message(context, trade)
+        else -> context.getString(message)
+    }
+
     companion object {
         fun byKey(key: String?): PosterOccasion = values().firstOrNull { it.key == key } ?: NEW_STOCK
 
         /** The occasions a shop in [country] is offered, in order. */
         fun offered(country: ShopCountry = ShopCountry.current): List<PosterOccasion> = values().filter { it.offeredIn(country) }
     }
+}
+
+/**
+ * The New stock poster's words by the kind of shop (13 Nov 2026). "Stock" is a word for goods: a restaurant has a
+ * menu, a salon, a tailor (stitching, alterations) and a fuel station have something to offer, a baker's counter is
+ * fresh today, a clothier's or a furniture shop's is a collection. The three lines also say three different things
+ * now (the corner label: it is new; the
+ * headline: what kind of new; the line under it: what to do) where they said "just arrived", "new stock has
+ * arrived" and "fresh stock is in" one after another.
+ *
+ * Sindhi and Bengali wording of the new lines is for a native reader to look at.
+ */
+object NewStockWords {
+    enum class Family { GOODS, FRESH, COLLECTION, MENU, SERVICE }
+
+    /** The trade ([TradeVocab.key], lower case) says the family; a trade not named here sells goods, as before. */
+    fun family(trade: String): Family = when (trade.trim().lowercase()) {
+        "dairy", "bakery", "meat", "produce" -> Family.FRESH
+        "clothing", "footwear", "cosmetics", "furniture" -> Family.COLLECTION
+        "restaurant" -> Family.MENU
+        "salon", "tailor", "fuel" -> Family.SERVICE
+        else -> Family.GOODS
+    }
+
+    /** The label in the poster's corner: "JUST ARRIVED" for what arrives, the short "NEW" for a menu or a service. */
+    fun kicker(context: Context, trade: String): String = context.getString(when (family(trade)) {
+        Family.MENU, Family.SERVICE -> R.string.poster_kicker_new_short
+        else -> R.string.poster_kicker_new_stock
+    })
+
+    fun title(context: Context, trade: String): String = context.getString(when (family(trade)) {
+        Family.GOODS -> R.string.poster_new_stock
+        Family.FRESH -> R.string.poster_new_fresh
+        Family.COLLECTION -> R.string.poster_new_collection
+        Family.MENU -> R.string.poster_new_menu
+        Family.SERVICE -> R.string.poster_new_service
+    })
+
+    fun message(context: Context, trade: String): String = context.getString(when (family(trade)) {
+        Family.GOODS, Family.COLLECTION -> R.string.poster_new_stock_msg
+        Family.FRESH -> R.string.poster_new_fresh_msg
+        Family.MENU -> R.string.poster_new_menu_msg
+        Family.SERVICE -> R.string.poster_new_service_msg
+    })
 }
