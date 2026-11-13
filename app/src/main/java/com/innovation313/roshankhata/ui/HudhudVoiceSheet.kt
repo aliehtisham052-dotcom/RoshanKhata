@@ -26,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.HudhudSay
 import java.util.Locale
 
 /**
@@ -75,6 +76,7 @@ object HudhudVoiceSheet {
         val etCallMe: EditText = view.findViewById(R.id.etHudCallMe)
         val rgStyle: RadioGroup = view.findViewById(R.id.rgHudStyle)
         val rgVoices: RadioGroup = view.findViewById(R.id.rgHudVoices)
+        val rgNameWay: RadioGroup = view.findViewById(R.id.rgHudNameWay)
         val tvNoVoice: TextView = view.findViewById(R.id.tvHudNoVoice)
         val btnMore: View = view.findViewById(R.id.btnHudMoreVoices)
         val btnSample: View = view.findViewById(R.id.btnHudSample)
@@ -106,7 +108,7 @@ object HudhudVoiceSheet {
                 }
             }
 
-            voice.voices { list -> if (!closed) fillVoices(list) }
+            voice.voices { list -> if (!closed) voice.plan { plan -> if (!closed) fillVoices(list, plan) } }
             btnMore.setOnClickListener {
                 voice.engine { engine -> if (!closed) HudhudVoice.openVoiceDownloads(host, engine) }
             }
@@ -127,14 +129,18 @@ object HudhudVoiceSheet {
             HudhudPrefs.setCallMe(ctx, etCallMe.text?.toString())
         }
 
-        /** The phone's voices for his language, "Voice 1" first (the best), the chosen one ticked. */
-        private fun fillVoices(list: List<HudhudVoice.Choice>) {
+        /**
+         * The phone's voices for the language he speaks, "Voice 1" first (the best), the chosen one ticked; when that is
+         * not the app's own language (the phone has no voice for it), the line under them says which he speaks.
+         */
+        private fun fillVoices(list: List<HudhudVoice.Choice>, plan: HudhudVoice.Plan?) {
             rgVoices.setOnCheckedChangeListener(null)
             rgVoices.removeAllViews()
-            val language = voice.languageKey()
+            val language = plan?.language ?: return showNoVoice(null)
+            fillNameWays(language)
             val chosen = HudhudPrefs.voiceName(ctx, language)
             val shown = list.take(MAX_VOICES)
-            tvNoVoice.visibility = if (shown.isEmpty()) View.VISIBLE else View.GONE
+            if (plan.fallback) showNoVoice(plan) else tvNoVoice.visibility = View.GONE
             val tick = shown.indexOfFirst { it.name == chosen }.takeIf { it >= 0 } ?: 0
             val minHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48f, ctx.resources.displayMetrics).toInt()
             shown.forEachIndexed { i, v ->
@@ -159,12 +165,54 @@ object HudhudVoiceSheet {
             }
         }
 
-        /** A sample in the chosen style and voice; a phone with no voice for the language says so. */
+        /** No voice at all ([plan] null), or a voice of another language ([plan]'s fallback): said under the voices. */
+        private fun showNoVoice(plan: HudhudVoice.Plan?) {
+            if (plan == null) {
+                tvNoVoice.setText(R.string.hudhud_voice_none_here)
+                tvNoVoice.visibility = View.VISIBLE
+                return
+            }
+            val app = ctx.resources.configuration.locales[0]
+            val wanted = Locale(plan.wanted).getDisplayLanguage(app).ifBlank { plan.wanted }
+            val spoken = Locale(plan.language).getDisplayLanguage(app).ifBlank { plan.language }
+            tvNoVoice.text = ctx.getString(R.string.hudhud_voice_fallback, wanted, spoken)
+            tvNoVoice.visibility = View.VISIBLE
+        }
+
+        /** The ways his name can be given to the voice, each written as the voice gets it; the chosen one ticked. */
+        private fun fillNameWays(language: String) {
+            rgNameWay.setOnCheckedChangeListener(null)
+            rgNameWay.removeAllViews()
+            val ways = HudhudSay.nameWays(language)
+            val chosen = HudhudPrefs.nameWay(ctx, language) ?: 0
+            val minHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48f, ctx.resources.displayMetrics).toInt()
+            ways.forEachIndexed { i, way ->
+                val rb = RadioButton(ctx).apply {
+                    id = View.generateViewId()
+                    text = way
+                    textSize = 16f
+                    this.minHeight = minHeight
+                    textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                    setTextColor(ContextCompat.getColor(ctx, R.color.ink))
+                    tag = i
+                }
+                rgNameWay.addView(rb, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+                if (i == chosen.coerceIn(0, ways.size - 1)) rb.isChecked = true
+            }
+            TextFit.relax(rgNameWay)
+            rgNameWay.setOnCheckedChangeListener { group, id ->
+                val way = group.findViewById<RadioButton>(id)?.tag as? Int ?: return@setOnCheckedChangeListener
+                HudhudPrefs.setNameWay(ctx, language, way)
+                sample()
+            }
+        }
+
+        /** A sample in the chosen style, voice and way of saying his name; a phone with no voice says so. */
         private fun sample() {
             voice.speak(
                 { it.getString(R.string.hudhud_voice_sample) },
                 object : HudhudVoice.Listener {},
-                noVoice = { if (!closed) tvNoVoice.visibility = View.VISIBLE }
+                noVoice = { if (!closed) showNoVoice(null) }
             )
         }
 
@@ -242,12 +290,14 @@ object HudhudVoiceSheet {
         }
 
         private fun idOf(style: HudhudStyle): Int = when (style) {
+            HudhudStyle.PROFESSIONAL -> R.id.rbHudProfessional
             HudhudStyle.GENTLE -> R.id.rbHudGentle
             HudhudStyle.LIVELY -> R.id.rbHudLively
             HudhudStyle.SERIOUS -> R.id.rbHudSerious
         }
 
         private fun styleOf(id: Int): HudhudStyle? = when (id) {
+            R.id.rbHudProfessional -> HudhudStyle.PROFESSIONAL
             R.id.rbHudGentle -> HudhudStyle.GENTLE
             R.id.rbHudLively -> HudhudStyle.LIVELY
             R.id.rbHudSerious -> HudhudStyle.SERIOUS

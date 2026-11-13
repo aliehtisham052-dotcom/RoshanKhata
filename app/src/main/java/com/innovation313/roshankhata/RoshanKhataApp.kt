@@ -46,6 +46,12 @@ class RoshanKhataApp : Application() {
         com.innovation313.roshankhata.ui.AccessUi.install(this)
         com.innovation313.roshankhata.data.Currency.refresh(this)
         com.innovation313.roshankhata.data.ShopCalendar.refresh(this)
+        // Hudhud's sense (13 Nov 2026): what was learnt from the bank, shipped as an asset and read on the first
+        // question (Home warms it up a moment after it opens). Nothing is read here.
+        val appAssets = assets
+        com.innovation313.roshankhata.data.HudhudSense.useModel {
+            runCatching { appAssets.open("hudhud/sense.bin").use { it.readBytes() } }.getOrNull()
+        }
         CrashLog.install(this)
         // Live sync's passed-over failures go to their own small file, never shown as a crash (23 Oct 2026).
         com.innovation313.roshankhata.data.SyncLog.install(this)

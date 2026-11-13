@@ -79,16 +79,32 @@ object HudhudBook {
         val openExtras: Bundle? = null,
         /** The button's own words, when "Open" would not say what it does. */
         val openLabel: Int? = null,
-        /** An amount of money: not said aloud while Home's balance is hidden. */
+        /** The big figure is an amount of money: not said aloud while Home's balance is hidden. */
         val money: Boolean = false,
-        /** The words to say, written with a context in the voice's language; null says nothing. */
+        /**
+         * What to say instead of the card itself, with a context in the voice's language (a help page's first sentences,
+         * a greeting, a customer's likely days without the Radar's judgement); null: the whole card is said ([speech]).
+         */
         val spoken: ((Context) -> String)? = null,
         /** What the card's button does instead of opening a screen (the sheet's own: download the language). */
         val doIt: (() -> Unit)? = null,
         /** "Did you mean": the questions offered as chips under the card (13 Nov 2026). */
         val options: List<Hudhud.Ask> = emptyList(),
         /** The button opens Hudhud's voice settings (what he calls the owner). */
-        val voiceSettings: Boolean = false
+        val voiceSettings: Boolean = false,
+        /** The question this answers: the sheet asks it again in the voice's language when that is another (Roman Urdu). */
+        val ask: Hudhud.Ask? = null,
+        /**
+         * What a sentence nothing fitted exactly was taken as (13 Nov 2026, the owner: "aap ka kaam batana hai, poochhna
+         * nahi"): written over the card, so a wrong reading is seen; such an answer is not said aloud.
+         */
+        val tookAs: String? = null,
+        /** Not said aloud: a choice between names, a guess (the owner: "jo doubtful hai us par chup rahe"). */
+        val quiet: Boolean = false,
+        /** One of his little acts, played on the sheet (13 Nov 2026, the owner: "urr ke dikhao"). */
+        val act: Hudhud.Move? = null,
+        /** Values the card shows and the voice never says (a phone number, an account number, an email, a tax number). */
+        val secrets: List<String> = emptyList()
     )
 
     /** A help page Hudhud can point to: a question from Help, or a feature's first-open sheet. */
@@ -200,6 +216,9 @@ object HudhudBook {
     fun failed(context: Context) = Answer(Mood.CARE, lines = listOf(context.getString(R.string.hudhud_unknown)))
 
     suspend fun answer(context: Context, dao: KhataDao, ask: Hudhud.Ask, parties: List<PartyWithBalance>): Answer =
+        answerOf(context, dao, ask, parties).let { if (it.ask == null) it.copy(ask = ask) else it }
+
+    private suspend fun answerOf(context: Context, dao: KhataDao, ask: Hudhud.Ask, parties: List<PartyWithBalance>): Answer =
         when (ask) {
             is Hudhud.Ask.Figure -> figure(context, dao, ask.kind, parties)
             is Hudhud.Ask.Period -> period(context, dao, ask.measure, ask.window)
@@ -213,11 +232,9 @@ object HudhudBook {
             Hudhud.Ask.Drawer -> drawer(context, dao)
             Hudhud.Ask.Salaam -> Answer(
                 Mood.GOOD,
-                lines = listOf(context.getString(R.string.hudhud_salaam_reply), context.getString(R.string.hudhud_hello)),
-                spoken = { it.getString(R.string.hudhud_salaam_reply) }
+                lines = listOf(addressed(context, R.string.hudhud_salaam_reply), context.getString(R.string.hudhud_hello))
             )
-            Hudhud.Ask.Hello -> Answer(Mood.CALM, lines = listOf(context.getString(R.string.hudhud_hello)),
-                spoken = { it.getString(R.string.hudhud_hello) })
+            Hudhud.Ask.Hello -> Answer(Mood.CALM, lines = listOf(context.getString(R.string.hudhud_hello)))
             Hudhud.Ask.Abilities -> abilities(context)
             is Hudhud.Ask.Chat -> chat(context, ask)
             Hudhud.Ask.Unknown -> unknown(context)
@@ -232,9 +249,43 @@ object HudhudBook {
             is Hudhud.Ask.Deliveries -> HudhudFacts.deliveries(context, dao, ask.window)
             is Hudhud.Ask.Activity -> HudhudFacts.activity(context, dao, ask.window)
             is Hudhud.Ask.Collected -> HudhudFacts.collected(context, dao, ask.window)
-            Hudhud.Ask.NeedName -> HudhudFacts.needName(context)
-            is Hudhud.Ask.DidYouMean -> HudhudFacts.didYouMean(context, ask.options)
+            is Hudhud.Ask.NeedName -> HudhudFacts.needName(context, dao, ask.facet, parties)
+            is Hudhud.Ask.Cashbook -> HudhudFacts.cashbook(context, dao, ask.window)
+            is Hudhud.Ask.Returns -> HudhudFacts.returns(context, dao, ask.window)
+            is Hudhud.Ask.Act -> act(context, ask.move)
+            // Tell, never ask (13 Nov 2026): a guess is answered, with what it was taken as over the card; "did you
+            // mean" answers its first meaning the same way and offers the others as chips.
+            is Hudhud.Ask.Guessed -> guessed(context, dao, ask.ask, parties, emptyList())
+            is Hudhud.Ask.DidYouMean -> ask.options.firstOrNull()?.let { guessed(context, dao, it, parties, ask.options.drop(1)) }
+                ?: unknown(context)
         }
+
+    /** [ask] answered as a guess: the card says what it was taken as, the [others] are chips, and nothing is said aloud. */
+    private suspend fun guessed(
+        context: Context, dao: KhataDao, ask: Hudhud.Ask, parties: List<PartyWithBalance>, others: List<Hudhud.Ask>
+    ): Answer {
+        val inner = answer(context, dao, ask, parties)
+        val took = chipLabel(context, ask) ?: inner.label ?: ""
+        return inner.copy(
+            tookAs = context.getString(R.string.hudhud_took_as, Format.isolate(took)),
+            quiet = true,
+            options = others,
+            ask = ask
+        )
+    }
+
+    /** One of his acts: the sheet plays it; the card says it in a word. */
+    private fun act(context: Context, move: Hudhud.Move): Answer = Answer(
+        Mood.GOOD,
+        lines = listOf(context.getString(
+            when (move) {
+                Hudhud.Move.FLY -> R.string.hudhud_act_fly
+                Hudhud.Move.DANCE -> R.string.hudhud_act_dance
+                Hudhud.Move.JUMP -> R.string.hudhud_act_jump
+            }
+        )),
+        act = move
+    )
 
     /**
      * What he can tell (13 Nov 2026, the owner: "aap kya bata sakte ho" — the list): what this person may see of it,
@@ -258,7 +309,7 @@ object HudhudBook {
         lines += "\u2022 " + context.getString(R.string.hudhud_can_shop)
         lines += "\u2022 " + context.getString(R.string.hudhud_can_more)
         lines += "\u2022 " + context.getString(R.string.hudhud_can_chat)
-        return Answer(Mood.GOOD, lines = lines, spoken = { it.getString(R.string.hudhud_can_spoken) })
+        return Answer(Mood.GOOD, lines = lines)
     }
 
     /**
@@ -266,30 +317,46 @@ object HudhudBook {
      * shop. A salaam with it is answered first.
      */
     private fun chat(context: Context, ask: Hudhud.Ask.Chat): Answer {
-        val res = when (ask.talk) {
-            Hudhud.Talk.HOW_ARE_YOU -> R.string.hudhud_chat_how
-            Hudhud.Talk.WHO_ARE_YOU -> R.string.hudhud_chat_who
-            Hudhud.Talk.THANKS -> R.string.hudhud_chat_thanks
-            Hudhud.Talk.BYE -> R.string.hudhud_chat_bye
-            Hudhud.Talk.PRAISE -> R.string.hudhud_chat_praise
-            Hudhud.Talk.FINE -> R.string.hudhud_chat_fine
+        fun words(w: Context): String {
+            val reply = when (ask.talk) {
+                Hudhud.Talk.HOW_ARE_YOU -> w.getString(R.string.hudhud_chat_how)
+                Hudhud.Talk.WHO_ARE_YOU -> w.getString(R.string.hudhud_chat_who)
+                Hudhud.Talk.THANKS -> w.getString(R.string.hudhud_chat_thanks)
+                Hudhud.Talk.BYE -> w.getString(R.string.hudhud_chat_bye)
+                Hudhud.Talk.PRAISE -> w.getString(R.string.hudhud_chat_praise)
+                Hudhud.Talk.FINE -> w.getString(R.string.hudhud_chat_fine)
+                Hudhud.Talk.CAN_TALK -> w.getString(R.string.hudhud_chat_can_talk)
+                // Only called ("bhai jaan", "Hudhud"): he answers to it, with the owner's name when he gave one.
+                Hudhud.Talk.ADDRESS -> addressed(w, R.string.hudhud_chat_address)
+            }
+            return (if (ask.salaam) addressed(w, R.string.hudhud_salaam_reply) + " " else "") + reply
         }
-        fun words(w: Context) = (if (ask.salaam) w.getString(R.string.hudhud_salaam_reply) + " " else "") + w.getString(res)
         val mood = when (ask.talk) {
-            Hudhud.Talk.WHO_ARE_YOU, Hudhud.Talk.BYE -> Mood.CALM
+            Hudhud.Talk.WHO_ARE_YOU, Hudhud.Talk.BYE, Hudhud.Talk.ADDRESS, Hudhud.Talk.CAN_TALK -> Mood.CALM
             else -> Mood.GOOD
         }
         return Answer(mood, lines = listOf(words(context)), spoken = { w -> words(w) })
     }
 
     /**
-     * What he does not know: the card points at the chips under it ("You can ask:") and at the list of what he knows;
-     * he says the first sentence and where the list is.
+     * A reply that turns to the owner by the name he gave ("Ji, Ali bhai. Farmaiye.", 13 Nov 2026); the words alone
+     * when he gave none. [words] has the name's place as its first argument, and a form of its own without it.
      */
-    internal fun unknown(context: Context) = Answer(
-        Mood.CALM, lines = listOf(context.getString(R.string.hudhud_unknown_try), context.getString(R.string.hudhud_unknown)),
-        spoken = { firstSentence(it.getString(R.string.hudhud_unknown)) + " " + it.getString(R.string.hudhud_unknown_try) }
-    )
+    private fun addressed(w: Context, words: Int): String {
+        val name = HudhudPrefs.callMe(w) ?: return w.getString(words)
+        val named = when (words) {
+            R.string.hudhud_chat_address -> R.string.hudhud_chat_address_named
+            R.string.hudhud_salaam_reply -> R.string.hudhud_salaam_reply_named
+            else -> return w.getString(words)
+        }
+        return w.getString(named, Format.isolate(name))
+    }
+
+    /**
+     * What he does not know: one line, said whole, that the nearest questions he can answer are the chips under it
+     * ([Hudhud.suggest], from the words he was given).
+     */
+    internal fun unknown(context: Context) = Answer(Mood.CALM, lines = listOf(context.getString(R.string.hudhud_unknown)))
 
     /** The words each of VoiceQuestion's figures goes by. */
     fun labelOf(kind: VoiceQuestion.Kind): Int = when (kind) {
@@ -331,24 +398,20 @@ object HudhudBook {
             VoiceQuestion.Kind.WHO_OWES_MOST -> {
                 val top = parties.filter { Money.isPositive(it.balance) }.sortedByDescending { it.balance }.take(TOP)
                 if (top.isEmpty()) {
-                    Answer(Mood.GOOD, label = label, lines = listOf(context.getString(R.string.vq_nobody)),
-                        spoken = { it.getString(R.string.vq_nobody) })
+                    Answer(Mood.GOOD, label = label, lines = listOf(context.getString(R.string.vq_nobody)))
                 } else {
                     val first = top.first()
                     Answer(
                         Mood.CALM, label = label,
                         rows = top.map { Row(it.id, it.name, money(it.balance), null) },
-                        open = KhataActivity::class.java, money = true,
-                        spoken = { w -> w.getString(labelRes) + ": " + first.name + ", " + said(w, first.balance) }
+                        open = KhataActivity::class.java, money = true
                     )
                 }
             }
             VoiceQuestion.Kind.NOT_PAID -> Answer(Mood.CALM, label = label,
-                lines = listOf(context.getString(R.string.vq_not_paid_body)), open = FollowUpActivity::class.java,
-                spoken = { it.getString(R.string.vq_not_paid_body) })
+                lines = listOf(context.getString(R.string.vq_not_paid_body)), open = FollowUpActivity::class.java)
             VoiceQuestion.Kind.EXPIRING -> Answer(Mood.CALM, label = label,
-                lines = listOf(context.getString(R.string.vq_expiring_body)), open = ExpiringActivity::class.java,
-                spoken = { it.getString(R.string.vq_expiring_body) })
+                lines = listOf(context.getString(R.string.vq_expiring_body)), open = ExpiringActivity::class.java)
         }
     }
 
@@ -363,8 +426,7 @@ object HudhudBook {
                 figure = money(r.grossProfit),
                 lines = listOfNotNull(r.coveragePercent?.let { Digits.string(context.resources, R.string.insights_profit_coverage, it) }),
                 open = open,
-                money = true,
-                spoken = { w -> w.getString(labelRes) + ": " + said(w, r.grossProfit) }
+                money = true
             )
         }
 
@@ -460,8 +522,7 @@ object HudhudBook {
             figure = money(total),
             lines = listOf(context.getString(way) + " · " + context.getString(windowWord(window))),
             openParty = p.id,
-            money = true,
-            spoken = { w -> p.name + ", " + w.getString(windowWord(window)) + ": " + said(w, total) }
+            money = true
         )
     }
 
@@ -493,8 +554,7 @@ object HudhudBook {
                 openParty = p.id,
                 openExtras = entryForm(ask.amount, ask.isGiven),
                 openLabel = R.string.hudhud_fill_entry,
-                money = true,
-                spoken = { w -> p.name + ", " + said(w, ask.amount) + ", " + w.getString(if (ask.isGiven) R.string.i_gave else R.string.i_got) }
+                money = true
             )
         }
         // As voice entry's own picker: the names the words recognise, else the whole book nearest the words first
@@ -509,8 +569,7 @@ object HudhudBook {
             rows = choices.map {
                 Row(it.id, it.name, money(abs(it.balance)), side(context, it.balance), amount = ask.amount, isGiven = ask.isGiven)
             },
-            money = true,
-            spoken = { w -> w.getString(R.string.voice_which_party, said(w, ask.amount)) }
+            money = true, quiet = true
         )
     }
 
@@ -543,13 +602,12 @@ object HudhudBook {
             val heading = context.getString(R.string.radar_likely_now)
             if (rows.isEmpty()) {
                 return Answer(Mood.CALM, label = heading, lines = listOf(context.getString(R.string.hudhud_likely_none)),
-                    open = FollowUpActivity::class.java, spoken = { it.getString(R.string.hudhud_likely_none) })
+                    open = FollowUpActivity::class.java)
             }
             return Answer(
                 Mood.GOOD, label = heading,
                 rows = rows.map { Row(it.id, it.name, money(it.balance), null) },
-                open = FollowUpActivity::class.java,
-                spoken = { w -> w.getString(R.string.radar_likely_now) + ": " + rows.joinToString(", ") { it.name } }
+                open = FollowUpActivity::class.java
             )
         }
         val found = ids.mapNotNull { id -> parties.firstOrNull { it.id == id } }
@@ -590,8 +648,7 @@ object HudhudBook {
     internal fun pick(context: Context, found: List<PartyWithBalance>) = Answer(
         Mood.CALM,
         label = context.getString(R.string.hudhud_pick_party),
-        rows = found.map { Row(it.id, it.name, money(abs(it.balance)), side(context, it.balance)) },
-        spoken = { it.getString(R.string.hudhud_pick_party) }
+        rows = found.map { Row(it.id, it.name, money(abs(it.balance)), side(context, it.balance)) }, quiet = true
     )
 
     // ------------------------------------------------------------------------------------------------ today
@@ -673,8 +730,7 @@ object HudhudBook {
         label = label,
         figure = money(value),
         open = open,
-        money = true,
-        spoken = { w -> w.getString(labelRes) + ": " + said(w, value) }
+        money = true
     )
 
     // -------------------------------------------------------------------------------------- customers by name
@@ -691,8 +747,7 @@ object HudhudBook {
                 figure = money(abs(p.balance)),
                 lines = listOf(side(context, p.balance)),
                 openParty = p.id,
-                money = true,
-                spoken = { w -> p.name + ": " + said(w, abs(p.balance)) + ", " + side(w, p.balance) }
+                money = true
             )
         }
         return pick(context, found)
@@ -716,7 +771,7 @@ object HudhudBook {
         val other = AlertNotes.otherPhoneAt(context)
         val failed = AlertNotes.backupFailedAt(context)
         fun care(title: String, sub: String) = Answer(
-            Mood.CARE, label = label, lines = listOf(title, sub), open = BackupActivity::class.java, spoken = { title }
+            Mood.CARE, label = label, lines = listOf(title, sub), open = BackupActivity::class.java
         )
         return when {
             other > last -> care(context.getString(R.string.notif_backup_other_phone_title), context.getString(R.string.na_backup_other_phone_sub))
@@ -728,7 +783,7 @@ object HudhudBook {
                     care(context.getString(R.string.na_backup, days.toString()), context.getString(R.string.na_backup_sub))
                 } else {
                     val line = context.getString(R.string.business_last_backup, Format.dateOnly(last))
-                    Answer(Mood.GOOD, label = label, lines = listOf(line), open = BackupActivity::class.java, spoken = { line })
+                    Answer(Mood.GOOD, label = label, lines = listOf(line), open = BackupActivity::class.java)
                 }
             }
         }
@@ -754,8 +809,7 @@ object HudhudBook {
             figure = money(expected),
             lines = listOf(since),
             open = CashbookActivity::class.java,
-            money = true,
-            spoken = { w -> w.getString(R.string.z_expected) + ": " + said(w, expected) }
+            money = true
         )
     }
 
@@ -771,12 +825,6 @@ object HudhudBook {
             // Said in full when short, else its first sentences and that the rest is on the screen (13 Nov 2026).
             spoken = { w -> HudhudSpeech.upTo(w.getString(page.body), SAY_HELP, w.getString(R.string.hudhud_more_on_screen)) }
         )
-    }
-
-    /** A help page is said up to its first full stop: the rest is on the card. */
-    internal fun firstSentence(text: String): String {
-        val end = text.indexOfAny(charArrayOf('.', '\u06D4', '\u0964', '?', '\u061F', '!'))
-        return if (end in 1 until SAY_AT_MOST) text.substring(0, end + 1) else text.take(SAY_AT_MOST)
     }
 
     // ------------------------------------------------------------------------------------------ chips
@@ -803,7 +851,10 @@ object HudhudBook {
             Hudhud.ShopFacet.ALL -> c.getString(R.string.hudhud_chip_shop)
             else -> null
         }
-        Hudhud.Ask.NeedName -> c.getString(R.string.hudhud_chip_someone)
+        is Hudhud.Ask.NeedName -> c.getString(R.string.hudhud_chip_someone)
+        is Hudhud.Ask.Cashbook -> c.getString(R.string.hudhud_chip_cashbook)
+        is Hudhud.Ask.Returns -> c.getString(R.string.hudhud_chip_returns)
+        is Hudhud.Ask.Guessed -> chipLabel(c, ask.ask)
         Hudhud.Ask.Clock -> c.getString(R.string.hudhud_chip_date)
         is Hudhud.Ask.Parties -> if (ask.ids.size == 1) c.getString(R.string.hudhud_l_balance) else null
         is Hudhud.Ask.Person -> c.getString(
@@ -948,6 +999,11 @@ object HudhudBook {
             Hudhud.Ask.BackupStatus -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))
             Hudhud.Ask.Drawer -> listOf(Hudhud.Ask.Collected(today), Hudhud.Ask.Activity(today))
             Hudhud.Ask.Abilities -> listOf(Hudhud.Ask.Today, Hudhud.Ask.Clock, Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))
+            is Hudhud.Ask.Cashbook -> listOf(Hudhud.Ask.Drawer, Hudhud.Ask.Collected(today), Hudhud.Ask.Activity(today))
+            is Hudhud.Ask.Returns -> listOf(Hudhud.Ask.Count(Hudhud.Thing.TICKETS, today), Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
+            is Hudhud.Ask.NeedName -> listOf(Hudhud.Ask.Count(Hudhud.Thing.CUSTOMERS), Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST))
+            is Hudhud.Ask.Act -> listOf(Hudhud.Ask.Abilities, Hudhud.Ask.Today)
+            is Hudhud.Ask.Guessed -> return next(c, ask.ask)
             else -> emptyList()
         }
         return out.filter { a -> a != ask && (reports || !needsReports(a)) }.distinct().take(MAX_NEXT)
@@ -956,7 +1012,7 @@ object HudhudBook {
     /** A question whose answer is a figure only the owner or a manager may see. */
     private fun needsReports(a: Hudhud.Ask): Boolean = when (a) {
         is Hudhud.Ask.Figure, is Hudhud.Ask.Period, is Hudhud.Ask.Collected, is Hudhud.Ask.Activity, Hudhud.Ask.Drawer,
-        is Hudhud.Ask.WhenPays -> true
+        is Hudhud.Ask.WhenPays, is Hudhud.Ask.Cashbook -> true
         is Hudhud.Ask.Status -> a.of == Hudhud.StatusOf.STAFF
         is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD
         else -> false
@@ -984,18 +1040,90 @@ object HudhudBook {
         }.distinct().take(MAX_NEXT - 1)
     }
 
+    // ------------------------------------------------------------------------------------------ the voice
+
+    /** What [speech] said of a card: its words, and whether amounts were left out for the hidden balance. */
+    class Speech(val text: String, val leftOutMoney: Boolean)
+
+    /**
+     * What he says for [a], with [w] a context in the voice's language (13 Nov 2026, the owner: "jo cheez confirm hai
+     * usko complete bolna chahiye… jo doubtful hai us par chup rahe"): its own words when it has them
+     * ([Answer.spoken]); else the whole card — the heading with its figure, every line, every row (the name, its
+     * figure, what it is) — less what is never said aloud: the [Answer.secrets] (said to be on the screen), and every
+     * amount while Home's balance is hidden ([hideMoney]: a customer may be standing at the counter). Null for a quiet
+     * answer (a guess, a choice) and when nothing but a heading would be left.
+     */
+    fun speech(w: Context, a: Answer, hideMoney: Boolean): Speech? {
+        if (a.quiet) return null
+        a.spoken?.let { own ->
+            val text = runCatching { own(w) }.getOrNull()?.takeIf { it.isNotBlank() } ?: return null
+            return Speech(text, false)
+        }
+        val onScreen = w.getString(R.string.hudhud_on_screen).trimEnd('.', '\u06D4', '\u0964', '!')
+        var leftOut = false
+        fun said(text: String?): String? {
+            if (text.isNullOrBlank()) return null
+            var t = HudhudSpeech.clean(text)
+            for (secret in a.secrets) {
+                val v = HudhudSpeech.clean(secret)
+                if (v.isNotEmpty()) t = t.replace(v, onScreen)
+            }
+            if (hideMoney && hasMoney(t)) {
+                leftOut = true
+                return null
+            }
+            return t.takeIf { it.isNotBlank() }
+        }
+        val parts = ArrayList<String>()
+        val label = said(a.label)
+        val figure = if (a.money && hideMoney && a.figure != null) { leftOut = true; null } else said(a.figure)
+        when {
+            label != null && figure != null -> parts += "$label: $figure"
+            label != null -> parts += label
+            figure != null -> parts += figure
+        }
+        a.lines.forEach { line -> said(line)?.let { parts += it } }
+        for (r in a.rows) {
+            val bits = listOfNotNull(HudhudSpeech.clean(r.name).takeIf { it.isNotBlank() }, said(r.figure), said(r.sub))
+            if (bits.isNotEmpty()) parts += bits.joinToString(", ")
+        }
+        // Only the heading is left (its figure and lines were amounts): nothing worth saying.
+        if (parts.isEmpty() || (leftOut && parts.size == 1 && label != null && figure == null)) return null
+        val stop = sentenceEnd(w)
+        return Speech(parts.joinToString(" ") { endWith(it, stop) }, leftOut)
+    }
+
+    /** An amount written as the screens write money: the book's sign with a figure. */
+    private fun hasMoney(text: String): Boolean {
+        val sign = Currency.symbol.trim()
+        return sign.isNotEmpty() && text.contains(sign) && text.any { it.isDigit() }
+    }
+
+    /**
+     * The full stop of the voice's language: Urdu's, Hindi's and Bengali's own; the others' the Latin one — and Urdu
+     * written in Latin letters (Roman Urdu) the Latin one too.
+     */
+    private fun sentenceEnd(w: Context): String {
+        val locale = w.resources.configuration.locales[0]
+        if (locale.script == "Latn") return "."
+        return when (locale.language) {
+            "ur" -> "\u06D4"
+            "hi", "bn" -> "\u0964"
+            else -> "."
+        }
+    }
+
+    private fun endWith(part: String, stop: String): String {
+        val t = part.trim().trimEnd(',', ';', ':')
+        return if (t.isEmpty() || t.last() in ENDS) t else t + stop
+    }
+
+    private val ENDS = setOf('.', '!', '?', '\u061F', '\u06D4', '\u0964', '\u2026')
+
     // ------------------------------------------------------------------------------------------ the words
 
     /** A figure as every screen writes it: the minus outside the left-to-right seal, as Insights writes it. */
     fun money(v: Double): String = (if (v < 0) "\u2212" else "") + Format.moneyLtr(v)
-
-    /** A figure as it is said: "12,400 rupees" for the rupee, else the figure and the book's sign. */
-    internal fun said(words: Context, v: Double): String {
-        val digits = Format.plain(abs(v))
-        val amount = if (Currency.symbol == Currency.DEFAULT) words.getString(R.string.paisa_rupees, digits)
-        else "$digits ${Currency.symbol}"
-        return if (v < 0) "- $amount" else amount
-    }
 
     /** A feature sheet's page key begins so; a question-and-answer page's with "faq_". */
     private const val FEATURE = "intro_"
@@ -1006,7 +1134,6 @@ object HudhudBook {
     private const val PICK = 6
     private const val DAY_MS = 24L * 60 * 60 * 1000
     private const val OLD_BACKUP_DAYS = 7
-    private const val SAY_AT_MOST = 220
     /** How much of a help page is said aloud before "the rest is on the screen". */
     private const val SAY_HELP = 320
 }

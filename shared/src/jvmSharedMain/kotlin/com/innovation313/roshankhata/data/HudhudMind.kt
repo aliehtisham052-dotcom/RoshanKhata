@@ -39,7 +39,7 @@ internal object HudhudMind {
         // Goods.
         GOODS, PRICE, STOCK, LEFT, COST, CHEAP, DEAR, SUPPLIER, CUSTOMER, CAME, BOUGHT, FROM_WHOM,
         // The book's other pages.
-        BILL, INVOICE, CHEQUE, PLAN, STAFF, TICKET, CALCULATOR, APP, OPEN, TIMES, MADE, PENDING, LOW,
+        BILL, INVOICE, CHEQUE, PLAN, STAFF, TICKET, CALCULATOR, APP, OPEN, TIMES, MADE, PENDING, LOW, CASHBOOK, RETURN,
         HAPPENED, EDITED, DELETED, REPORT, INFO, DATA, SAFE, USED, SALARY, MONEY, ACCOUNT,
         // About Hudhud and the day.
         MAKER, LANGUAGE, VERSION, DATE, DAY, TIME, ALL, HEALTH, HOW_IS, ABLE, TELL, DO, KNOW
@@ -239,6 +239,16 @@ internal object HudhudMind {
             "موظف", "موظفين", "الموظفون", "الموظفين", "کارمند", "کارکنان", "کارکن", "اسٽاف", "karyawan", "pegawai"
         ),
         C.TICKET to listOf("ticket", "tickets", "counter", "pos", "receipt", "receipts", "کاؤنٹر", "काउंटर", "কাউন্টার", "الكاونتر", "پیشخوان", "ڪائونٽر", "kasir", "struk"),
+        // 13 Nov 2026: the cashbook by the app's own name for it in each language (Sindhi's is "روڪڙ"; Arabic's and
+        // Farsi's one word also means the cash in hand, so only with "book" before it), and goods that came back.
+        C.CASHBOOK to listOf(
+            "cashbook", "cash book", "کیش بک", "کیشبک", "कैशबुक", "कैश बुक", "ক্যাশবুক", "ক্যাশ বুক", "روڪڙ",
+            "دفتر النقد", "سجل النقد", "دفتر الصندوق", "دفتر صندوق", "buku kas"
+        ),
+        C.RETURN to listOf(
+            "wapsi", "wapasi", "return", "returns", "returned", "واپسی", "वापसी", "ফেরত", "مرتجع", "مرتجعات", "المرتجعات",
+            "مرجوعی", "برگشتی", "واپسي", "retur"
+        ),
         C.CALCULATOR to listOf(
             "calculator", "calculater", "calcolator", "kalkulator", "calc", "calculation", "calculations", "کیلکولیٹر",
             "کیلکیولیٹر", "कैलकुलेटर", "ক্যালকুলেটর", "حاسبة", "الحاسبة", "آلة حاسبة", "ماشین حساب", "ڪئلڪوليٽر", "hitungan"
@@ -363,6 +373,56 @@ internal object HudhudMind {
         out
     }
 
+    /**
+     * A word's consonants as they are heard, in Latin letters, whatever script wrote it (13 Nov 2026, the owner: "har
+     * zaban ke hisaab se khud ba khud", not one word at a time): the phone writes the English and Roman-Urdu words a
+     * shopkeeper says in his own letters — "کیلکولیٹر", "سپلائر", "कैलकुलेटर", "ক্যালকুলেটর", "اسٹاک", "بیک اپ" — and each
+     * of them sounds like a word the lexicon already holds in Latin letters. NameSearch.fold turns any of the app's
+     * scripts into Latin letters by sound (its rule for names, "بشیر" and "Bashir"); the vowels then go (a script
+     * writes them or not, long or short, as it pleases) and a letter said twice is said once: "calculator",
+     * "کیلکولیٹر" and "कैलकुलेटर" are all "klkltr". Bengali's ya-phala (্য) is a glide, not a letter of its own.
+     */
+    internal fun skeleton(word: String): String {
+        val folded = NameSearch.fold(word.replace("\u09CD\u09AF", ""))
+        val out = StringBuilder()
+        for (ch in folded) {
+            if (ch in "aeiouyw" || !ch.isLetter()) continue
+            if (out.isNotEmpty() && out.last() == ch) continue
+            out.append(ch)
+        }
+        return out.toString()
+    }
+
+    /** The fewest consonants a word must have to be met by its sound alone: two meet far too many words. */
+    private const val SKELETON_MIN = 3
+
+    /**
+     * Every Latin word of the lexicon by its [skeleton], with what it means; a sound that two different meanings share
+     * is left out (it would be a guess), as is one shorter than [SKELETON_MIN].
+     */
+    private val SKELETONS: Map<String, Set<C>> by lazy {
+        val out = HashMap<String, Set<C>>()
+        val clash = HashSet<String>()
+        for ((w, cs) in WORDS) {
+            if (w.any { it !in 'a'..'z' } || w in SOFT) continue
+            val k = skeleton(w)
+            if (k.length < SKELETON_MIN) continue
+            val had = out[k]
+            when {
+                had == null -> out[k] = cs
+                had != cs -> clash += k
+            }
+        }
+        for (k in clash) out.remove(k)
+        out
+    }
+
+    /** What a word written in any script means by its sound ([SKELETONS]); empty when nothing sounds like it. */
+    internal fun bySkeleton(word: String): Set<C> {
+        val k = skeleton(word)
+        return if (k.length < SKELETON_MIN) emptySet() else SKELETONS[k].orEmpty()
+    }
+
     /** "the", "and the", "with the", "for the", "and", "with", "for", "so": joined to the word after them in Arabic. */
     private val ARABIC_FRONT = listOf("وال", "بال", "فال", "ال", "لل", "و", "ب", "ل", "ف")
 
@@ -385,13 +445,16 @@ internal object HudhudMind {
     private const val NOT_ARABIC_LETTERS = "\u0679\u0688\u0691\u06BA\u06D2\u06BE\u06AF\u067E\u0686\u0698\u06AA\u067B\u0680\u0684\u0683" +
         "\u0687\u068C\u068D\u068F\u0699\u06B3\u06B1\u06BB\u067A\u067D\u067F\u06A6\u06FE\u06FD"
 
-    /** Little words of Urdu, Sindhi and Persian that Arabic never writes. */
+    /**
+     * Little words of Urdu, Sindhi and Persian that Arabic never writes. Not Persian's "آن" (that): with the madda
+     * folded away it is "ان", which is also how Arabic's own "أن" and "إن" are spelt for matching (13 Nov 2026).
+     */
     private val NOT_ARABIC_WORDS: Set<String> by lazy {
         listOf(
             "کا", "کی", "کے", "ہے", "ہیں", "ہو", "میں", "کو", "سے", "نے", "آج", "کتنا", "کتنی", "کتنے", "کب", "کون", "کیا", "یہ",
             "وہ", "اور", "بھی", "تھا", "تھی", "آئی", "آیا", "آئے", "ہوا", "ہوئی", "دیا", "دیے", "کس", "کسی", "کچھ", "نہیں",
             "اپنا", "اپنی", "اپنے", "میرا", "میری", "میرے", "تمام", "سب", "اب", "پر", "تک", "اس", "جو", "جي", "جا", "آهي",
-            "هن", "مان", "توهان", "است", "را", "می", "این", "آن", "برای", "از", "با", "هست", "شما", "امروز", "دیروز", "تو"
+            "هن", "مان", "توهان", "است", "را", "می", "این", "برای", "از", "با", "هست", "شما", "امروز", "دیروز", "تو"
         ).map { norm(it) }.toSet()
     }
 
@@ -516,6 +579,30 @@ internal object HudhudMind {
             if (near != null) {
                 meanings[i] = near
                 bySound += i
+            }
+        }
+        // By sound across scripts (13 Nov 2026): a word still unknown — "کیلکولیٹر", "सप्लायर", "ক্যালকুলেটর", or a Roman
+        // word spelt by ear ("kalkuletar") — meets the lexicon's Latin word that sounds the same. Then two unknown words
+        // side by side, for the English words a recogniser writes in two ("کیش بک", "بیک اپ").
+        fun unknown(i: Int) = meanings[i].isEmpty() && !covered[i] && said[i].length >= 3 && !isName(said[i]) &&
+            !said[i].all { it.isDigit() }
+        for (i in said.indices) {
+            if (!unknown(i)) continue
+            val near = bySkeleton(said[i])
+            if (near.isNotEmpty()) {
+                meanings[i] = near
+                bySound += i
+            }
+        }
+        for (i in 0 until said.size - 1) {
+            if (!unknown(i) || !unknown(i + 1)) continue
+            if (said[i].any { it in 'a'..'z' } != said[i + 1].any { it in 'a'..'z' }) continue
+            val near = bySkeleton(said[i] + said[i + 1])
+            if (near.isNotEmpty()) {
+                meanings[i] = near
+                meanings[i + 1] = near
+                bySound += i
+                bySound += i + 1
             }
         }
         return Read(said, meanings, bySound)

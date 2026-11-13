@@ -1079,16 +1079,16 @@
     <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
     <string name="hudhud_name">Hudhud</string>
     <string name="hudhud_ask">Ask Hudhud…</string>
-    <string name="hudhud_hello">Ask about your khata. I look it up in your own book, right here on this phone.</string>
+    <string name="hudhud_hello">Ask about your khata. Every answer comes from your own book, on this phone.</string>
     <string name="hudhud_salaam_reply">Wa alaikum assalam!</string>
     <string name="hudhud_listening">Listening…</string>
     <string name="hudhud_thinking">Looking in your book…</string>
     <string name="hudhud_speaking">Speaking</string>
     <string name="hudhud_replay">Hear again</string>
-    <string name="hudhud_unknown">I can\'t answer this yet: I only know your khata. You can ask:</string>
+    <string name="hudhud_unknown">I could not find this in your khata. The nearest questions I can answer are below.</string>
     <string name="hudhud_owner_only">Only the owner or a manager can see this figure.</string>
     <string name="hudhud_quiet">Balances are hidden on Home, so I write amounts here and do not say them aloud.</string>
-    <string name="hudhud_no_voice">This phone has no voice for this language, so the answer is written here.</string>
+    <string name="hudhud_no_voice">This phone has no voice for this language. The answer is written here; Voice settings can get one.</string>
     <string name="hudhud_voice_on">Hudhud\'s voice is on</string>
     <string name="hudhud_voice_off">Hudhud\'s voice is off</string>
     <string name="hudhud_chip_backup">When was the last backup?</string>
@@ -4509,19 +4509,19 @@
     <string name="hudhud_voice_more">Get more voices</string>
     <string name="hudhud_voice_none_here">This phone has no voice for this language yet. Tap Get more voices to download one free.</string>
     <string name="hudhud_voice_try">Hear a sample</string>
-    <string name="hudhud_voice_sample">Hello! I\'m Hudhud, your shop\'s munshi. Ask me anything about your khata.</string>
+    <string name="hudhud_voice_sample">I\'m Hudhud, your shop\'s munshi. This is how I sound.</string>
     <string name="hudhud_listen_title">How he listens</string>
     <string name="hudhud_listen_box">He uses the phone\'s voice search box. Allow the microphone and he listens himself.</string>
     <string name="hudhud_listen_ready">He listens himself, even without internet.</string>
     <string name="hudhud_listen_pack">He listens himself with internet. Download your language and he can listen without it too.</string>
     <string name="hudhud_listen_online">He listens himself while there\'s internet. This phone has no offline pack for this language.</string>
     <string name="hudhud_settings">Voice settings</string>
-    <string name="hudhud_chat_how">I\'m very well, thank you for asking! Your book is safe with me. How\'s the shop today?</string>
-    <string name="hudhud_chat_who">I\'m Hudhud, your shop\'s munshi. I look things up in your khata on this phone and tell you, in writing and aloud. Ask me: What can you tell me?</string>
-    <string name="hudhud_chat_thanks">You\'re welcome! I\'m here whenever you need me.</string>
-    <string name="hudhud_chat_bye">Take care! Your book stays safe right here.</string>
-    <string name="hudhud_chat_praise">Thank you! The hard work is yours; I only keep the count.</string>
-    <string name="hudhud_chat_fine">Glad to hear it! What shall we look at today?</string>
+    <string name="hudhud_chat_how">All is well, thank you. Ask whatever you need to check.</string>
+    <string name="hudhud_chat_who">I\'m Hudhud, your shop\'s munshi. I read your khata on this phone and answer in writing and by voice.</string>
+    <string name="hudhud_chat_thanks">You\'re welcome.</string>
+    <string name="hudhud_chat_bye">Goodbye. Your book stays safe on this phone.</string>
+    <string name="hudhud_chat_praise">Thank you.</string>
+    <string name="hudhud_chat_fine">Good to hear. Ask whatever you need to check.</string>
     <string name="hudhud_can_intro">Here\'s what I can tell you from your book:</string>
     <string name="hudhud_can_dues">Who owes you, whom you owe, and anyone\'s balance: just say the name</string>
     <string name="hudhud_can_sales">Sales and profit: today, yesterday, this week, this month or last month</string>
@@ -4529,12 +4529,10 @@
     <string name="hudhud_can_pay">Who will pay today, and when a customer usually pays</string>
     <string name="hudhud_can_entry">An entry, said as it happened (“gave Ali 500”): I fill in the form, you press Save</string>
     <string name="hudhud_can_more">Your last backup, and how to use any part of the app</string>
-    <string name="hudhud_can_chat">And a little chat: ask me how I am!</string>
-    <string name="hudhud_can_spoken">Here\'s what I can do for you; it\'s all listed below. Tap a question, or just ask me.</string>
+    <string name="hudhud_can_chat">Greetings and short conversation</string>
     <string name="hudhud_chip_abilities">What can you tell me?</string>
     <string name="hudhud_greet_named">%1$s, %2$s!</string>
     <string name="hudhud_more_on_screen">The rest is written on the screen.</string>
-    <string name="hudhud_unknown_try">Ask me “What can you tell me?” and I\'ll show you everything I know.</string>
 
     <!-- Hudhud Brain v2 (13 Nov 2026): a customer's and an item's facts, the shop, the day, counts, where things stand, what happened. -->
     <string name="hudhud_l_balance">Balance</string>
@@ -4581,7 +4579,7 @@
     <string name="hudhud_about_version">Roshan Khata version %1$s.</string>
     <string name="hudhud_owner_unnamed">You haven\'t told me your name yet. Write it in my voice settings, and I\'ll greet you by it.</string>
     <string name="hudhud_owner_named">I call you %1$s. You can change it in my voice settings.</string>
-    <string name="hudhud_intro">I\'m Hudhud, your shop\'s munshi. Ask me anything about your khata — speak or type.</string>
+    <string name="hudhud_intro">I\'m Hudhud, your shop\'s munshi. Ask about your khata, by voice or in writing.</string>
     <string name="hudhud_l_islamic">Islamic date</string>
     <string name="hudhud_l_time">Time</string>
     <string name="hudhud_hijri_note">Worked out by calendar; by the moon it may differ by a day.</string>
@@ -4617,8 +4615,6 @@
     <string name="hudhud_t_collected">Money that came in</string>
     <string name="hudhud_l_from_customers">From customers</string>
     <string name="hudhud_l_cashbook_in">Cashbook income</string>
-    <string name="hudhud_need_name">Whose? Ask with the name — for example “Ali\'s number”.</string>
-    <string name="hudhud_did_you_mean">Did you mean:</string>
     <string name="hudhud_can_people">A customer\'s number, last payment, limit or promise — ask with the name</string>
     <string name="hudhud_can_goods">An item\'s price, stock, purchase rate and which supplier is cheaper</string>
     <string name="hudhud_can_book">Today\'s invoices, goods that came in, money that came in, and who changed what</string>
@@ -4639,4 +4635,37 @@
     <string name="hudhud_chip_book">My book</string>
     <string name="hudhud_chip_activity">What happened today</string>
     <string name="hudhud_chip_collected">Money in today</string>
+    <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
+    <string name="hudhud_took_as">Taken as: %1$s</string>
+    <string name="hudhud_act_fly">Watch me fly.</string>
+    <string name="hudhud_act_dance">Watch me dance.</string>
+    <string name="hudhud_act_jump">Watch me hop.</string>
+    <string name="hudhud_chat_can_talk">Yes, I can hear you. Please ask your question.</string>
+    <string name="hudhud_chat_address">Yes, how can I help?</string>
+    <string name="hudhud_chat_address_named">Yes, %1$s. How can I help?</string>
+    <string name="hudhud_salaam_reply_named">Wa alaikum assalam, %1$s!</string>
+    <string name="hudhud_need_phone">Numbers of recent customers</string>
+    <string name="hudhud_need_payment">Last payments of recent customers</string>
+    <string name="hudhud_need_limit">Credit limits of recent customers</string>
+    <string name="hudhud_need_promise">Promised days of recent customers</string>
+    <string name="hudhud_need_recent">Recent customers</string>
+    <string name="hudhud_need_hint">For one customer, add the name: “Ali\'s number”.</string>
+    <string name="hudhud_no_phone_short">No number</string>
+    <string name="hudhud_t_cashbook">Cashbook</string>
+    <string name="hudhud_cashbook_none">Nothing was written in the cashbook in this time.</string>
+    <string name="hudhud_l_net">Net</string>
+    <string name="hudhud_t_returns">Returns</string>
+    <string name="hudhud_returns_none">No goods came back in this time.</string>
+    <string name="hudhud_l_returned_worth">Worth of goods returned</string>
+    <string name="hudhud_l_refunded">Refunded</string>
+    <string name="hudhud_l_total">Total</string>
+    <string name="hudhud_l_since_counting">Since counting began</string>
+    <string name="hudhud_count_none">None in this time.</string>
+    <string name="hudhud_none_yet">None yet.</string>
+    <string name="hudhud_chip_cashbook">Cashbook today</string>
+    <string name="hudhud_chip_returns">Returns today</string>
+    <string name="hudhud_voice_fallback">This phone has no %1$s voice, so Hudhud speaks %2$s. Voice settings can get the phone\'s own voice.</string>
+    <string name="hudhud_style_professional">Professional</string>
+    <string name="hudhud_name_say">How he says his name</string>
+    <string name="hudhud_name_say_help">If his name sounds wrong in this phone\'s voice, choose another way. Each is heard when chosen.</string>
 </resources>

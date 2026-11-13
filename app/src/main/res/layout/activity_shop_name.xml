@@ -350,7 +350,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:imeOptions="actionDone"
+                    android:imeOptions="actionNext"
                     android:importantForAutofill="no"
                     android:inputType="phone"
                     android:maxLength="20"
@@ -362,6 +362,38 @@
                     android:textDirection="ltr"
                     android:textSize="16sp" />
             </LinearLayout>
+
+            <!-- What Hudhud calls the owner (13 Nov 2026, the owner: "Hudhud mujhe naam se bulaye"): kept on this
+                 phone only (HudhudPrefs), never in the book; may be left empty. -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:labelFor="@+id/etOwnerName"
+                android:text="@string/hudhud_call_me"
+                android:textAlignment="viewStart"
+                android:textColor="@color/brand_green_text"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etOwnerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_editor_field"
+                android:hint="@string/hudhud_call_me_hint"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName|textCapWords"
+                android:maxLength="30"
+                android:minHeight="52dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textAlignment="viewStart"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/hint_pale"
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 

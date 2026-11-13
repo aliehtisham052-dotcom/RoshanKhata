@@ -35,11 +35,17 @@
         android:gravity="bottom"
         android:orientation="horizontal">
 
+        <!-- A tap on Hudhud plays one of his acts (13 Nov 2026, the owner: "touch karne par kabhi urre, kabhi pankh
+             maare"): HudhudActs, over the window above the sheet. -->
         <FrameLayout
             android:id="@+id/hudStage"
             android:layout_width="96dp"
             android:layout_height="104dp"
-            android:background="@drawable/bg_hudhud_stage">
+            android:background="@drawable/bg_hudhud_stage"
+            android:clickable="true"
+            android:contentDescription="@string/hudhud_name"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless">
 
             <ImageView
                 android:id="@+id/ivHudPoseA"
@@ -157,6 +163,18 @@
                 android:background="@drawable/bg_hudhud_card"
                 android:orientation="vertical"
                 android:padding="16dp">
+
+                <!-- What a sentence nothing fitted exactly was taken as (13 Nov 2026): over the answer, so a wrong
+                     reading is seen at once. -->
+                <TextView
+                    android:id="@+id/tvHudTook"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/brand_green_text"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tvHudLabel"

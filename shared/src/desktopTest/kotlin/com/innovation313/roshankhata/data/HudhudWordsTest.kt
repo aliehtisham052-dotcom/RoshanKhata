@@ -15,6 +15,9 @@ import java.util.Locale
  */
 class HudhudWordsTest {
 
+    // The chips are read as the app reads them: rules and the sense it ships.
+    init { HudhudSense.use(HudhudModelTest.shippedModel()) }
+
     private val languages = listOf("en", "ur", "ur-Latn", "sd", "ar", "fa", "hi", "bn", "id")
 
     private val chips = mapOf(
@@ -92,12 +95,16 @@ class HudhudWordsTest {
             "hudhud_chip_my_name" to Hudhud.Ask.About(Hudhud.AboutTopic.OWNER_NAME),
             "hudhud_chip_shop" to Hudhud.Ask.Shop(Hudhud.ShopFacet.ALL),
             "hudhud_chip_shop_phone" to Hudhud.Ask.Shop(Hudhud.ShopFacet.PHONE),
-            "hudhud_chip_someone" to Hudhud.Ask.NeedName,
+            // A customer's number with nobody named: the latest customers' numbers (13 Nov 2026: told, not asked).
+            "hudhud_chip_someone" to Hudhud.Ask.NeedName(Hudhud.Facet.PHONE),
             "hudhud_chip_book" to Hudhud.Ask.Status(Hudhud.StatusOf.BOOK),
             "hudhud_chip_activity" to Hudhud.Ask.Activity(today),
             "hudhud_chip_collected" to Hudhud.Ask.Collected(today),
             // A product's "sold this month" typed alone is the shop's month (naming the product asks the product's).
-            "hudhud_chip_sold" to Hudhud.Ask.Figure(Kind.SALES_MONTH)
+            "hudhud_chip_sold" to Hudhud.Ask.Figure(Kind.SALES_MONTH),
+            // 13 Nov 2026: the cashbook's day and the day's returns.
+            "hudhud_chip_cashbook" to Hudhud.Ask.Cashbook(today),
+            "hudhud_chip_returns" to Hudhud.Ask.Returns(today)
         ))
         assertEquals(wrong.joinToString("\n"), 0, wrong.size)
     }

@@ -1077,16 +1077,16 @@
     <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
     <string name="hudhud_name">हुदहुद</string>
     <string name="hudhud_ask">हुदहुद से पूछें…</string>
-    <string name="hudhud_hello">अपने खाते के बारे में पूछें। मैं इसी मोबाइल पर आपके खाते में देखकर बताता हूँ।</string>
+    <string name="hudhud_hello">अपने खाते के बारे में पूछें। हर जवाब इसी मोबाइल पर आपके अपने खाते से आता है।</string>
     <string name="hudhud_salaam_reply">वालेकुम अस्सलाम!</string>
     <string name="hudhud_listening">सुन रहा हूँ…</string>
     <string name="hudhud_thinking">खाते में देख रहा हूँ…</string>
     <string name="hudhud_speaking">बता रहा हूँ</string>
     <string name="hudhud_replay">फिर से सुनें</string>
-    <string name="hudhud_unknown">इसका जवाब अभी मुझे नहीं आता, मैं सिर्फ आपका खाता जानता हूँ। आप पूछ सकते हैं:</string>
+    <string name="hudhud_unknown">यह आपके खाते में नहीं मिला। इसके सबसे करीब के सवाल, जिनका जवाब दे सकता हूँ, नीचे हैं।</string>
     <string name="hudhud_owner_only">यह रकम सिर्फ मालिक या मैनेजर देख सकते हैं।</string>
     <string name="hudhud_quiet">होम पर बैलेंस छुपा है, इसलिए मैं रकम यहाँ लिखता हूँ, बोलता नहीं।</string>
-    <string name="hudhud_no_voice">इस मोबाइल में इस भाषा की आवाज नहीं है, इसलिए जवाब यहाँ लिखा है।</string>
+    <string name="hudhud_no_voice">इस मोबाइल में इस भाषा की आवाज नहीं है। जवाब यहाँ लिखा है; आवाज की सेटिंग से आवाज ली जा सकती है।</string>
     <string name="hudhud_voice_on">हुदहुद की आवाज चालू है</string>
     <string name="hudhud_voice_off">हुदहुद की आवाज बंद है</string>
     <string name="hudhud_chip_backup">आखिरी बैकअप कब हुआ?</string>
@@ -4344,19 +4344,19 @@
     <string name="hudhud_voice_more">और आवाजें लें</string>
     <string name="hudhud_voice_none_here">इस मोबाइल में अभी इस भाषा की आवाज नहीं है। और आवाजें लें दबाकर मुफ्त डाउनलोड करें।</string>
     <string name="hudhud_voice_try">सुनकर देखें</string>
-    <string name="hudhud_voice_sample">नमस्ते! मैं हुदहुद हूँ, आपकी दुकान का मुंशी। अपने खाते के बारे में कुछ भी पूछें।</string>
+    <string name="hudhud_voice_sample">मैं हुदहुद हूँ, आपकी दुकान का मुंशी। मेरी आवाज ऐसी है।</string>
     <string name="hudhud_listen_title">सुनने का तरीका</string>
     <string name="hudhud_listen_box">अभी मोबाइल का वॉइस सर्च बॉक्स इस्तेमाल होता है। माइक की अनुमति दें तो हुदहुद खुद सुनेगा।</string>
     <string name="hudhud_listen_ready">हुदहुद खुद सुनता है, बिना इंटरनेट भी।</string>
     <string name="hudhud_listen_pack">हुदहुद इंटरनेट के साथ खुद सुनता है। अपनी भाषा डाउनलोड करें तो बिना इंटरनेट भी सुनेगा।</string>
     <string name="hudhud_listen_online">हुदहुद इंटरनेट के साथ खुद सुनता है। इस मोबाइल में इस भाषा का ऑफ़लाइन पैक नहीं है।</string>
     <string name="hudhud_settings">आवाज की सेटिंग</string>
-    <string name="hudhud_chat_how">मैं बिल्कुल ठीक हूँ, पूछने के लिए शुक्रिया! आपका खाता मेरे पास सुरक्षित है। बताइए, आज दुकान कैसी चल रही है?</string>
-    <string name="hudhud_chat_who">मैं हुदहुद हूँ, आपकी दुकान का मुंशी। इसी मोबाइल पर आपके खाते में देखकर लिखकर भी बताता हूँ और बोलकर भी। पूछिए: आप क्या बता सकते हैं?</string>
-    <string name="hudhud_chat_thanks">कोई बात नहीं! जब जरूरत हो, मैं हाजिर हूँ।</string>
-    <string name="hudhud_chat_bye">अपना ध्यान रखिए! आपका खाता यहीं सुरक्षित है।</string>
-    <string name="hudhud_chat_praise">शुक्रिया! मेहनत तो आपकी है, मैं तो बस हिसाब रखता हूँ।</string>
-    <string name="hudhud_chat_fine">सुनकर खुशी हुई! बताइए, आज क्या देखें?</string>
+    <string name="hudhud_chat_how">सब ठीक है, शुक्रिया। जो देखना हो, पूछें।</string>
+    <string name="hudhud_chat_who">मैं हुदहुद हूँ, आपकी दुकान का मुंशी। इसी मोबाइल पर आपका खाता देखकर लिखकर और बोलकर जवाब देता हूँ।</string>
+    <string name="hudhud_chat_thanks">कोई बात नहीं।</string>
+    <string name="hudhud_chat_bye">अलविदा। आपका खाता इसी मोबाइल पर सुरक्षित है।</string>
+    <string name="hudhud_chat_praise">शुक्रिया।</string>
+    <string name="hudhud_chat_fine">सुनकर अच्छा लगा। जो देखना हो, पूछें।</string>
     <string name="hudhud_can_intro">आपके खाते से मैं यह सब बता सकता हूँ:</string>
     <string name="hudhud_can_dues">किसने आपको देना है, आपने किसको देना है, और किसी का भी बकाया: बस नाम बोलें</string>
     <string name="hudhud_can_sales">बिक्री और मुनाफा: आज, कल, इस हफ्ते, इस महीने या पिछले महीने</string>
@@ -4364,12 +4364,10 @@
     <string name="hudhud_can_pay">आज कौन पैसे देगा, और कोई ग्राहक आमतौर पर कब देता है</string>
     <string name="hudhud_can_entry">एंट्री बोलकर (“अली को 500 दिए”): मैं फ़ॉर्म भर देता हूँ, सेव करें आप दबाते हैं</string>
     <string name="hudhud_can_more">आखिरी बैकअप कब हुआ, और ऐप का कोई भी हिस्सा कैसे चलाएँ</string>
-    <string name="hudhud_can_chat">और थोड़ी गपशप: मेरा हाल पूछिए!</string>
-    <string name="hudhud_can_spoken">मैं आपके लिए यह सब कर सकता हूँ, पूरी सूची नीचे है। कोई सवाल दबाएँ, या बस मुझसे पूछें।</string>
+    <string name="hudhud_can_chat">दुआ-सलाम और छोटी बातचीत</string>
     <string name="hudhud_chip_abilities">आप क्या बता सकते हैं?</string>
     <string name="hudhud_greet_named">%1$s, %2$s!</string>
     <string name="hudhud_more_on_screen">बाकी स्क्रीन पर लिखा है।</string>
-    <string name="hudhud_unknown_try">मुझसे पूछें “आप क्या बता सकते हैं?” तो मैं सब कुछ दिखा दूँगा।</string>
 
     <!-- Hudhud Brain v2 (13 Nov 2026): a customer's and an item's facts, the shop, the day, counts, where things stand, what happened. -->
     <string name="hudhud_l_balance">बैलेंस</string>
@@ -4416,7 +4414,7 @@
     <string name="hudhud_about_version">रोशन खाता का वर्ज़न %1$s।</string>
     <string name="hudhud_owner_unnamed">आपने अभी मुझे अपना नाम नहीं बताया। मेरी आवाज की सेटिंग में लिख दें, मैं आपको उसी नाम से पुकारूँगा।</string>
     <string name="hudhud_owner_named">मैं आपको %1$s कहता हूँ। मेरी आवाज की सेटिंग में इसे बदल सकते हैं।</string>
-    <string name="hudhud_intro">मैं हुदहुद हूँ, आपकी दुकान का मुंशी। अपने खाते के बारे में कुछ भी पूछें — बोलकर या लिखकर।</string>
+    <string name="hudhud_intro">मैं हुदहुद हूँ, आपकी दुकान का मुंशी। अपने खाते के बारे में बोलकर या लिखकर पूछें।</string>
     <string name="hudhud_l_islamic">इस्लामी तारीख</string>
     <string name="hudhud_l_time">समय</string>
     <string name="hudhud_hijri_note">यह कैलेंडर से निकाली गई है; चाँद के हिसाब से एक दिन का फर्क हो सकता है।</string>
@@ -4452,8 +4450,6 @@
     <string name="hudhud_t_collected">वसूल हुई रकम</string>
     <string name="hudhud_l_from_customers">ग्राहकों से</string>
     <string name="hudhud_l_cashbook_in">कैशबुक की आमदनी</string>
-    <string name="hudhud_need_name">किसका? नाम के साथ पूछें — जैसे “अली का नंबर”।</string>
-    <string name="hudhud_did_you_mean">क्या आपका मतलब है:</string>
     <string name="hudhud_can_people">किसी ग्राहक का नंबर, आखिरी भुगतान, सीमा या वादा — नाम लेकर पूछें</string>
     <string name="hudhud_can_goods">किसी आइटम का भाव, स्टॉक, खरीद रेट और किस सप्लायर का सस्ता है</string>
     <string name="hudhud_can_book">आज की इनवॉइस, आया हुआ माल, आई हुई रकम, और किसने क्या बदला</string>
@@ -4474,4 +4470,37 @@
     <string name="hudhud_chip_book">मेरा खाता</string>
     <string name="hudhud_chip_activity">आज क्या-क्या हुआ</string>
     <string name="hudhud_chip_collected">आज कितनी रकम आई</string>
+    <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
+    <string name="hudhud_took_as">समझा: %1$s</string>
+    <string name="hudhud_act_fly">देखिए, मैं उड़ता हूँ।</string>
+    <string name="hudhud_act_dance">देखिए, मेरा नाच।</string>
+    <string name="hudhud_act_jump">देखिए, मैं फुदकता हूँ।</string>
+    <string name="hudhud_chat_can_talk">जी, मैं सुन रहा हूँ। अपना सवाल पूछें।</string>
+    <string name="hudhud_chat_address">जी, बताइए।</string>
+    <string name="hudhud_chat_address_named">जी %1$s, बताइए।</string>
+    <string name="hudhud_salaam_reply_named">वालेकुम अस्सलाम, %1$s!</string>
+    <string name="hudhud_need_phone">हाल के ग्राहकों के नंबर</string>
+    <string name="hudhud_need_payment">हाल के ग्राहकों का आखिरी भुगतान</string>
+    <string name="hudhud_need_limit">हाल के ग्राहकों की उधार सीमा</string>
+    <string name="hudhud_need_promise">हाल के ग्राहकों के वादे के दिन</string>
+    <string name="hudhud_need_recent">हाल के ग्राहक</string>
+    <string name="hudhud_need_hint">किसी एक ग्राहक के लिए नाम भी कहें: “अली का नंबर”।</string>
+    <string name="hudhud_no_phone_short">नंबर नहीं</string>
+    <string name="hudhud_t_cashbook">कैशबुक</string>
+    <string name="hudhud_cashbook_none">इस अवधि में कैशबुक में कुछ नहीं लिखा गया।</string>
+    <string name="hudhud_l_net">शुद्ध</string>
+    <string name="hudhud_t_returns">वापसी</string>
+    <string name="hudhud_returns_none">इस अवधि में कोई माल वापस नहीं आया।</string>
+    <string name="hudhud_l_returned_worth">वापस आए माल की कीमत</string>
+    <string name="hudhud_l_refunded">लौटाई गई रकम</string>
+    <string name="hudhud_l_total">कुल</string>
+    <string name="hudhud_l_since_counting">गिनती शुरू होने से अब तक</string>
+    <string name="hudhud_count_none">इस अवधि में कोई नहीं।</string>
+    <string name="hudhud_none_yet">अभी कोई नहीं।</string>
+    <string name="hudhud_chip_cashbook">आज की कैशबुक</string>
+    <string name="hudhud_chip_returns">आज की वापसी</string>
+    <string name="hudhud_voice_fallback">इस मोबाइल में %1$s आवाज नहीं है, इसलिए हुदहुद %2$s में बोलता है। आवाज की सेटिंग से मोबाइल की अपनी आवाज ली जा सकती है।</string>
+    <string name="hudhud_style_professional">प्रोफेशनल</string>
+    <string name="hudhud_name_say">वह अपना नाम कैसे बोले</string>
+    <string name="hudhud_name_say_help">अगर इस मोबाइल की आवाज में उसका नाम ठीक न लगे तो दूसरा तरीका चुनें। हर तरीका चुनते ही सुनाई देता है।</string>
 </resources>

@@ -113,6 +113,17 @@
             android:layout_marginTop="4dp"
             android:orientation="vertical">
 
+            <!-- The phone's own voice as it is: his first style (13 Nov 2026, the owner: "professional sound"). -->
+            <RadioButton
+                android:id="@+id/rbHudProfessional"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:text="@string/hudhud_style_professional"
+                android:textAlignment="viewStart"
+                android:textColor="@color/ink"
+                android:textSize="16sp" />
+
             <RadioButton
                 android:id="@+id/rbHudGentle"
                 android:layout_width="match_parent"
@@ -172,6 +183,34 @@
             android:textColor="@color/text_muted"
             android:textSize="14sp"
             android:visibility="gone" />
+
+        <!-- How he says his own name (13 Nov 2026, the owner: "apna naam bhi sahi tarah nahi bolta"): the ways his
+             name can be written for the voice, each heard when chosen (HudhudSay.nameWays). -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/hudhud_name_say"
+            android:textAlignment="viewStart"
+            android:textColor="@color/ink"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/hudhud_name_say_help"
+            android:textAlignment="viewStart"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp" />
+
+        <RadioGroup
+            android:id="@+id/rgHudNameWay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnHudMoreVoices"

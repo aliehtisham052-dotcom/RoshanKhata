@@ -1,0 +1,975 @@
+who_are_you	تم ہو کون
+who_are_you	آپ کا تعارف
+who_are_you	اپنا نام تو بتاؤ
+who_are_you	نام؟
+who_are_you	یار تو ہے کون
+who_are_you	بھائی ذرا اپنا تعارف کرواؤ
+who_are_you	یہ پرندہ کون ہے
+who_are_you	اپ کون ہو
+who_are_you	آپ کو کیا کہہ کر بلاؤں
+who_are_you	تیرا نام کیا رکھا ہے
+who_are_you	سنو جی آپ ہیں کون آخر
+who_are_you	اچھا تو تم کون ہوئے
+who_are_you	تم کون سی چیز ہو
+who_are_you	میں کس سے بات کر رہا ہوں
+who_are_you	اپنے بارے میں بتاؤ کون ہو
+abilities	کیا کیا کر لیتے ہو
+abilities	تم کس کام کے ہو
+abilities	تمہارا کام کیا ہے
+abilities	مجھے کیا کیا بتا سکتے ہو بھائی
+abilities	آپ سے کیا کیا پوچھ سکتا ہوں
+abilities	تم سے کیا پوچھوں
+abilities	کام کیا ہے تیرا
+abilities	کچھ آتا بھی ہے تمہیں
+abilities	یار تو میری کیا مدد کرے گا
+abilities	اپ کیا کیا بتا سکتے ہو
+abilities	اپنی خوبیاں بتاؤ
+abilities	کون کون سے سوال کا جواب دیتے ہو
+abilities	تمہیں دکان کے بارے میں کیا کیا معلوم ہے
+abilities	ہیلپ کیا کر سکتے ہو میری
+abilities	ذرا بتاؤ تم کس کس چیز میں کام آتے ہو
+how_are_you	کیسے ہو بھائی
+how_are_you	ٹھیک ہو
+how_are_you	اور سناؤ کیا حال ہیں
+how_are_you	طبیعت کیسی ہے
+how_are_you	حال؟
+how_are_you	سب خیریت ہے
+how_are_you	کیا حال چال ہیں جناب کے
+how_are_you	تم ٹھیک ٹھاک ہو نا
+how_are_you	کیسا ہے تو
+how_are_you	اپ کی طبیعت ٹھیک ہے
+how_are_you	اور بھائی کیسا چل رہا ہے
+how_are_you	مزاج کیسے ہیں
+how_are_you	خیریت سے ہو
+how_are_you	کیا ہال ہے
+how_are_you	سنو جی آپ کیسے ہو آج
+can_talk	سن رہے ہو نا
+can_talk	ہیلو سنائی دے رہا ہے
+can_talk	تم ہو وہاں
+can_talk	آواز آ رہی ہے میری
+can_talk	بات کرو گے مجھ سے
+can_talk	کیا تم بول سکتے ہو
+can_talk	مجھے سن پا رہے ہو
+can_talk	ہو یا سو گئے
+can_talk	یار جواب تو دو سن رہے ہو کہ نہیں
+can_talk	تم بولتے بھی ہو
+can_talk	میرے ساتھ بات چیت کر سکتے ہو
+can_talk	اپ سن رہے ہیں
+can_talk	مائیک چل رہا ہے میری آواز پہنچ رہی ہے
+can_talk	کوئی ہے ادھر
+can_talk	ذرا بولو تو سہی سنتے ہو یا نہیں
+address	جناب عالی
+address	سنو بھئی
+address	ہدہد صاحب
+address	استاد
+address	یار
+address	اوئے بھائی
+address	بھائی صاحب
+address	سنیے جی
+address	ارے بھائی
+address	ہدہد بھائی
+address	بھیا جی
+address	سنو تو
+address	اے دوست
+address	پیارے بھائی
+address	ہد ہد
+salaam	السلام علیکم ورحمت اللہ بھائی
+salaam	سلام بھائی
+salaam	اسلام علیکم
+salaam	ہدہد السلام علیکم
+salaam	سلام جی
+salaam	سلام علیکم جناب
+salaam	السلام علیکم یار
+salaam	سلام علیکم بھائی جان
+salaam	السلام علیکم ورحمۃ اللہ وبرکاتہ
+salaam	سلام دوست
+salaam	اسلام و علیکم
+salaam	سلام ہے بھائی
+salaam	السلام علیکم جی
+salaam	سلام عرض ہے
+salaam	اسلام علیکم بھائی
+hello	ہیلو بھائی صاحب
+hello	ہائے ہدہد
+hello	ارے ہیلو
+hello	گڈ ایوننگ جی
+hello	صبح بخیر جناب
+hello	ہیلو ہیلو ہیلو
+hello	ہائے دوست
+hello	نمستے
+hello	گڈ آفٹرنون جی
+hello	ہلو
+hello	آداب عرض ہے
+hello	ہیلو ہدہد
+hello	صبح بخیر بھائی
+hello	ہائے جی
+hello	گڈ مارننگ ہدہد
+thanks	شکریہ جی
+thanks	تھینکس
+thanks	بہت مہربانی
+thanks	تھینک یو بھائی
+thanks	جزاک اللہ جی
+thanks	شکریہ یار
+thanks	بڑا احسان
+thanks	تھینکس اے لاٹ
+thanks	مہربانی آپ کی
+thanks	جزاک اللہ خیر بھائی
+thanks	تھینک یو ہدہد
+thanks	بہت بہت شکریہ
+thanks	شکریہ دوست
+thanks	تیرا شکریہ
+thanks	شکریا
+bye	بائے بائے یار
+bye	چلتا ہوں
+bye	فی امان اللہ
+bye	اچھا اللہ حافظ
+bye	پھر ملیں گے
+bye	اوکے بائے
+bye	خدا حافظ بھائی
+bye	ٹاٹا
+bye	اب میں چلتا ہوں اللہ حافظ
+bye	شب بخیر
+bye	گڈ نائٹ
+bye	چلو پھر بعد میں بات ہو گی
+bye	بائے ہدہد
+bye	الوداع دوست
+bye	اللہ حافظ یار کل ملتے ہیں
+praise	واہ
+praise	زبردست
+praise	کمال کر دیا
+praise	تم بہت اچھے ہو
+praise	گڈ جاب ہدہد
+praise	بہت خوب بھائی
+praise	مزا آ گیا یار تو تو بڑا تیز ہے
+praise	شاباش ہدہد
+praise	کیا بات ہے تیری
+praise	ویری گڈ
+praise	اعلیٰ
+praise	بھائی تو تو ہیرو نکلا
+praise	بہت اچھا کام کیا
+praise	اپ بہت زبردست ہو
+praise	دل خوش کر دیا
+owner_name	میں کون ہوں بھلا
+owner_name	میرا نام؟
+owner_name	تم مجھے کس نام سے جانتے ہو
+owner_name	مجھے پہچانتے ہو
+owner_name	بتاؤ تو میں کون ہوں
+owner_name	میرا نام پتہ ہے تمہیں
+owner_name	آپ کے پاس میرا نام کیا لکھا ہے
+owner_name	تو مجھے کیا کہہ کے بلاتا ہے
+owner_name	یار میرا نام یاد ہے تجھے
+owner_name	مجھے کیا بلاتے ہو تم
+owner_name	میرا نام بتا
+owner_name	مجھے جانتے بھی ہو کہ نہیں
+owner_name	ذرا بتاؤ تم مجھے کس نام سے پکارتے ہو
+owner_name	میرا نام کیا سیو ہے تمہارے پاس
+owner_name	اچھا میرا نام بولو
+maker	کس نے بنایا تمہیں
+maker	تمہارا مالک کون ہے
+maker	یہ ایپ کس کی ہے
+maker	بنانے والی کمپنی کا نام
+maker	کس کمپنی کی ایپ ہے یہ
+maker	تمہیں کہاں بنایا گیا
+maker	ڈویلپر کون ہے اس ایپ کا
+maker	روشن کھاتہ کس نے بنایا
+maker	یار تجھے کس نے پیدا کیا
+maker	اپ کو کس نے بنایا
+maker	اس ایپ کے پیچھے کون لوگ ہیں
+maker	یہ سافٹ ویئر کس کا بنایا ہوا ہے
+maker	کس نے تیار کی یہ ایپ
+maker	تمہارا استاد کون ہے جس نے تمہیں بنایا
+maker	کمپنی کون سی ہے تمہاری
+app_about	یہ کیا ایپ ہے
+app_about	روشن کھاتہ کے بارے میں بتاؤ
+app_about	یہ ایپ کیا کرتی ہے
+app_about	اس ایپ کا کام کیا ہے
+app_about	ایپ کا تعارف
+app_about	یہ ایپلیکیشن کس لیے ہے
+app_about	روشن کھاتہ میں کیا کیا ہے
+app_about	بھائی یہ ایپ ہے کیا چیز
+app_about	اس ایپ کا فائدہ کیا ہے
+app_about	روشن کھاتا کیا ہے
+app_about	یہ کھاتہ ایپ کس چیز کی ہے
+app_about	ذرا اس ایپ کی تفصیل بتاؤ کیا کیا ہوتا ہے اس میں
+app_about	ایپ کس مقصد کے لیے بنی
+app_about	یہ سافٹ ویئر کیا کام آتا ہے
+app_about	روشن کھاتہ ایپ سمجھاؤ
+privacy	میرا ڈیٹا کہاں جاتا ہے
+privacy	ڈیٹا سیف ہے نا
+privacy	کوئی اور تو میرا حساب نہیں دیکھ سکتا
+privacy	میرا کھاتہ کسی سرور پر تو نہیں
+privacy	ڈیٹا محفوظ؟
+privacy	میری معلومات کہیں لیک تو نہیں ہو گی
+privacy	تم میرا ڈیٹا کسی کو دیتے ہو
+privacy	یار میرے کسٹمرز کے نمبر کہیں باہر تو نہیں جاتے
+privacy	میرا ڈیٹا کس کے پاس ہے
+privacy	پرائیویسی کا کیا سسٹم ہے
+privacy	ڈیٹا چوری تو نہیں ہو سکتا
+privacy	میرا حساب کتاب محفوظ ہے
+privacy	کیا کمپنی میرا ڈیٹا دیکھتی ہے
+privacy	میرا ریکارڈ فون میں ہی رہتا ہے یا انٹرنیٹ پر
+privacy	کیا میری باتیں ریکارڈ ہوتی ہیں
+languages	کون کون سی زبان آتی ہے
+languages	اردو سمجھتے ہو
+languages	تم کتنی لینگویج بولتے ہو
+languages	کیا تم پنجابی سمجھتے ہو
+languages	لینگویجز کون سی ہیں
+languages	ہندی میں بات کر سکتے ہو
+languages	اپ کو کتنی زبانیں آتی ہیں
+languages	کس زبان میں پوچھوں تم سے
+languages	سندھی آتی ہے تمہیں
+languages	زبانیں؟
+languages	تم انگلش بھی سمجھ لیتے ہو یا صرف اردو
+languages	یار تو کون کون سی بولی سمجھتا ہے
+languages	عربی میں جواب دو گے
+languages	کون سی زبان سمجھتے ہو
+languages	ایپ کتنی زبانوں میں چلتی ہے
+date_time	آج کیا ڈیٹ ہے
+date_time	ٹائم؟
+date_time	کتنے بج گئے
+date_time	آج کون سا دن ہے بھائی
+date_time	تاریخ بتاؤ
+date_time	آج جمعہ ہے کیا
+date_time	ابھی کیا وقت ہوا ہے
+date_time	اج کیا تاریخ ہے
+date_time	گھڑی میں کیا ٹائم ہے
+date_time	اسلامی تاریخ کیا ہے آج
+date_time	آج مہینے کی کون سی تاریخ ہے
+date_time	چاند کی کتنی تاریخ ہے
+date_time	دن کون سا ہے آج
+date_time	یار ٹائم بتا ذرا
+date_time	آج پیر ہے یا منگل
+today_summary	آج کیا کیا کرنا ہے
+today_summary	آج کا کام
+today_summary	آج کس چیز پر دھیان دوں
+today_summary	صبح کی رپورٹ دو
+today_summary	آج کے ضروری کام بتاؤ
+today_summary	آج کیا دیکھنا ہے مجھے
+today_summary	آج کا حال سناؤ دکان کا
+today_summary	بھائی آج کیا کیا رہ گیا ہے
+today_summary	آج کی لسٹ بتاؤ کیا کیا پینڈنگ
+today_summary	اج کا خلاصہ
+today_summary	آج کون کون سے کام باقی ہیں
+today_summary	آج دکان میں کیا توجہ چاہیے
+today_summary	دن کا خلاصہ سنا دو
+today_summary	آج کے لیے کیا ہے
+today_summary	آج کی بریفنگ
+sales_today	آج کی سیل
+sales_today	آج کتنے کا مال بکا
+sales_today	آج کی بکری کتنی رہی
+sales_today	سیل کتنی ہوئی آج
+sales_today	آج ٹوٹل سیل بتاؤ
+sales_today	بھائی آج دکان پر کتنے کی سیل ہوئی
+sales_today	اج کی سیل کتنی ہے
+sales_today	آج کتنے روپے کا سامان بیچا
+sales_today	آج کی سیل کا ٹوٹل
+sales_today	آج کتنی کتنی سیل ہوئی
+sales_today	ابھی تک آج کی بکری کتنی ہو گئی
+sales_today	آج کا سیل فگر
+sales_today	یار آج کتنے کی بکری ہوئی ہے بتا
+sales_today	آج بیچا کتنا
+sales_today	آج کی کل فروخت
+sales_period	کل کی سیل
+sales_period	اس ہفتے کی سیل
+sales_period	پچھلے مہینے کتنی سیل ہوئی تھی
+sales_period	لاسٹ ویک کی بکری
+sales_period	کل کتنے کا مال نکلا تھا دکان سے
+sales_period	اس مہینے اب تک کتنا بکا
+sales_period	گزشتہ ہفتے کی فروخت بتاؤ
+sales_period	پچھلے مہینے کی ٹوٹل سیل
+sales_period	بھائی کل دکان پر کتنی بکری رہی
+sales_period	اس ہفتے کتنے کا سامان بیچا
+sales_period	کل کی سیل کتنی رہی تھی
+sales_period	اس منتھ کی سیل بتاؤ ذرا
+sales_period	پچھلے ہفتے کتنا کتنا بکا
+sales_period	مہینے بھر کی بکری کتنی ہوئی
+sales_period	لاسٹ منتھ سیل
+profit	منافع؟
+profit	آج کا پرافٹ
+profit	اس ہفتے کتنا کمایا
+profit	پچھلے ہفتے کا منافع بتاؤ
+profit	کل کتنی بچت ہوئی
+profit	اس مہینے کتنا فائدہ ہوا
+profit	کمائی کتنی ہوئی اس مہینے
+profit	لاسٹ منتھ کا پرافٹ
+profit	بھائی آج کتنا کمایا ہم نے
+profit	اس ہفتے کا نفع کتنا رہا
+profit	اج کا منافع کتنا ہے
+profit	مہینے کا نیٹ پرافٹ بتاؤ
+profit	کل کتنا فائدہ رہا دکان کو
+profit	پچھلے مہینے کی کمائی کیا رہی
+profit	یار خرچہ نکال کے اس مہینے کتنا بچا
+to_get	کل لینا کتنا ہے
+to_get	ادھار کتنا پھیلا ہوا ہے
+to_get	ٹوٹل ریسیوایبل
+to_get	کسٹمرز کی طرف کل کتنی رقم ہے
+to_get	میرا کتنا پیسہ باہر ہے
+to_get	لوگوں نے کل کتنا دینا ہے مجھے
+to_get	سب گاہکوں کا ملا کر ادھار کتنا ہے
+to_get	لینے والی رقم بتاؤ
+to_get	کل بقایا کتنا لینا ہے
+to_get	ٹوٹل ادھار مارکیٹ میں
+to_get	بھائی مجھے سب سے ملا کر کتنے لینے ہیں
+to_get	کتنا پیسہ وصول کرنا باقی ہے کل
+to_get	مجھے کل کتنا لینا ہے
+to_get	سب کا ادھار جمع کرو کتنا بنتا ہے
+to_get	لینا ٹوٹل
+to_give	کل دینا کتنا ہے
+to_give	میں نے لوگوں کا کتنا دینا ہے
+to_give	ٹوٹل پے ایبل
+to_give	کمپنیوں کا کتنا بقایا ہے میرے ذمے
+to_give	سپلائرز کا کل کتنا دینا ہے
+to_give	مجھ پر کتنا ادھار چڑھا ہوا ہے
+to_give	دینے والی رقم بتاؤ
+to_give	کل ادائیگی کتنی کرنی ہے مجھے
+to_give	بھائی میں نے سب کو ملا کر کتنا دینا ہے
+to_give	میرے ذمے کتنے پیسے ہیں
+to_give	دینا ٹوٹل
+to_give	ڈیلرز کو کتنا دینا رہ گیا
+to_give	مجھے کل کتنا دینا ہے
+to_give	مارکیٹ کا کتنا دینا ہے مجھے
+to_give	یار میرا دینا کتنا بن گیا ہے سب ملا کے
+who_owes_most	سب سے بڑا ادھار والا کون
+who_owes_most	ٹاپ ادھار کس کا
+who_owes_most	کس کی طرف سب سے زیادہ رقم ہے
+who_owes_most	سب سے زیادہ کس نے دینا ہے
+who_owes_most	نمبر ون بقایا دار
+who_owes_most	کس گاہک پر سب سے زیادہ پیسہ ہے
+who_owes_most	سب سے بڑی رقم کس کے ذمے ہے
+who_owes_most	بھائی سب سے موٹا ادھار کس کا چل رہا ہے
+who_owes_most	کون سا کسٹمر سب سے زیادہ مقروض ہے
+who_owes_most	سب سے ذیادہ ادھار کس پر ہے
+who_owes_most	سب سے زیادہ لینا کس سے ہے
+who_owes_most	کس ایک بندے نے سب سے زیادہ پیسے روکے ہوئے ہیں
+who_owes_most	ٹاپ ڈیٹر کون ہے
+who_owes_most	سب سے اوپر کس کا نام ہے ادھار میں
+who_owes_most	ادھار میں سب سے آگے کون
+not_paid	کس نے پیسے نہیں دیے
+not_paid	لیٹ والے کون ہیں
+not_paid	کن لوگوں کی ادائیگی لیٹ ہے
+not_paid	کون پیسے دبا کے بیٹھا ہے
+not_paid	کس کس کا ادھار پرانا ہو گیا
+not_paid	اوور ڈیو کسٹمرز
+not_paid	پیسے روکنے والے گاہک بتاؤ
+not_paid	کس نے وعدہ کر کے نہیں دیا
+not_paid	کون کون ابھی تک نہیں دے رہا
+not_paid	دیر سے دینے والے کون کون ہیں
+not_paid	بھائی کس کس کی پیمنٹ لیٹ چل رہی ہے
+not_paid	کس نے کافی دنوں سے کچھ نہیں دیا
+not_paid	کس نے پیسے نہی دیے
+not_paid	تاخیر کس کس کی ہے
+not_paid	نادہندہ کون ہیں
+likely_payers	آج کس سے پیسے آئیں گے
+likely_payers	آج کون کون دے گا
+likely_payers	آج کس کے دینے کی باری ہے
+likely_payers	آج کن سے وصولی کی امید ہے
+likely_payers	آج پیسے دینے والے کون
+likely_payers	بھائی آج کس کس کے پیسے آنے کا چانس ہے
+likely_payers	ان دنوں کون دیتا ہے پیسے
+likely_payers	آج کس کے پاس جاؤں پیسے لینے
+likely_payers	آج کون کون دے سکتا ہے
+likely_payers	آج کس سے ملنے کی توقع ہے
+likely_payers	اج کون پیسے دے گا
+likely_payers	آج کس کی پیمنٹ ایکسپیکٹڈ ہے
+likely_payers	اس وقت عام طور پر کون ادائیگی کرتا ہے
+likely_payers	آج کس کس نے دینے ہیں
+likely_payers	یار آج کوئی دینے والا ہے یا نہیں
+collected	آج کی وصولی
+collected	آج کتنا پیسہ آیا گاہکوں سے
+collected	کل کتنے پیسے وصول ہوئے
+collected	اس ہفتے کی ریکوری کتنی ہے
+collected	آج کسٹمرز سے کتنا ملا
+collected	پچھلے ہفتے کتنی وصولی ہوئی
+collected	اس مہینے کتنی رقم وصول ہوئی
+collected	آج ادھار واپس کتنا آیا
+collected	ریکوری؟
+collected	بھائی آج لوگوں نے کتنے پیسے جمع کروائے
+collected	پچھلے مہینے کتنا پیسہ واپس آیا
+collected	اج کتنی وصولی ہوئی
+collected	کل گاہکوں سے کتنی پیمنٹ آئی
+collected	آج کیش اور آن لائن ملا کر کتنی وصولی ہوئی
+collected	اس ہفتے ادھار والوں نے کتنا دیا
+drawer	گلہ
+drawer	گلے میں کتنے پیسے ہیں
+drawer	کیش گن لوں ذرا
+drawer	دن بند کرو
+drawer	دراز کا کیش بتاؤ
+drawer	ہاتھ میں کتنا نقد ہے
+drawer	گلہ گنتی کرنا ہے
+drawer	کلوزنگ کرنی ہے آج کی
+drawer	بھائی گلے میں کتنا ہونا چاہیے ابھی
+drawer	کیش ڈرار میں کتنا پڑا ہے
+drawer	نقدی کتنی ہے دکان میں
+drawer	گلے مے کتنا کیش پڑا ہے
+drawer	آج کا دن کلوز کر دو
+drawer	گلہ ملانا ہے
+drawer	کاؤنٹر کے دراز میں کتنی رقم ہونی چاہیے
+expiring	ایکسپائری والا مال
+expiring	کیا ایکسپائر ہونے والا ہے
+expiring	کون سی دوائی کی ایکسپائری قریب ہے
+expiring	جس مال کی تاریخ ختم ہو رہی ہے وہ بتاؤ
+expiring	نیئر ایکسپائری آئٹمز
+expiring	کون کون سا مال خراب ہونے والا ہے تاریخ سے
+expiring	ایکسپائر ہونے والی چیزیں
+expiring	کس بیچ کی ایکسپائری آ رہی ہے
+expiring	بھائی کون سا اسٹاک ایکسپائر ہو جائے گا جلدی
+expiring	اگلے مہینے کیا کیا ایکسپائر ہو گا
+expiring	ایکسپائری چیک کرو
+expiring	کونسا مال ایکسپائر ہو رہا ہے
+expiring	میعاد ختم ہونے والا سامان
+expiring	کن چیزوں کی ڈیٹ نکلنے والی ہے
+expiring	پرانی تاریخ والا مال کون سا پڑا ہے
+low_stock	کیا کم ہے
+low_stock	کم اسٹاک والا مال
+low_stock	کیا منگوانا ہے
+low_stock	کون سی چیزیں ختم ہو رہی ہیں
+low_stock	آرڈر کس کس کا دینا ہے
+low_stock	کیا کیا تھوڑا رہ گیا ہے
+low_stock	لو اسٹاک آئٹمز
+low_stock	کس مال کی کمی ہے دکان میں
+low_stock	بھائی کیا کیا منگوانا پڑے گا
+low_stock	اسٹاک کم کس کس کا ہے
+low_stock	کون سا سامان ختم ہونے کے قریب ہے
+low_stock	ری آرڈر لسٹ بتاؤ
+low_stock	کیا کیا ختم ہونے لگا ہے
+low_stock	کون سا مال دوبارہ لینا ہے
+low_stock	شیلف پر کیا کیا ختم ہو رہا ہے
+party_balance	{NAME} کا بیلنس
+party_balance	{NAME} کا کتنا بنتا ہے
+party_balance	{NAME} کی طرف کتنا ہے
+party_balance	{NAME} سے کتنا لینا ہے
+party_balance	{NAME} کو کتنا دینا ہے
+party_balance	{NAME} کا ادھار کتنا ہے
+party_balance	{NAME} کا کھاتہ کھولو
+party_balance	بھائی {NAME} کا حساب بتانا ذرا
+party_balance	{NAME} کا بقایا
+party_balance	{NAME} پر کتنے پیسے ہیں
+party_balance	{NAME} کا حساب کتنا ہے
+party_balance	{NAME} کا اکاؤنٹ دکھاؤ
+party_balance	{NAME} کا ٹوٹل کیا بن گیا
+party_balance	یار {NAME} کے کتنے پیسے رہتے ہیں
+party_balance	{NAME} حساب
+party_phone	{NAME} کا فون
+party_phone	{NAME} کا موبائل نمبر
+party_phone	{NAME} کا نمبر کیا ہے
+party_phone	{NAME} کو کال کرنی ہے نمبر دو
+party_phone	{NAME} کا کانٹیکٹ نمبر
+party_phone	{NAME} کا نمبر بتاؤ
+party_phone	{NAME} کا رابطہ نمبر
+party_phone	بھائی {NAME} کا نمبر ہے تمہارے پاس
+party_phone	{NAME} کا واٹس ایپ والا نمبر دو
+party_phone	{NAME} نمبر
+party_phone	{NAME} کا نمبر بتا
+party_phone	{NAME} کا فون نمبر لکھا ہے کیا
+party_phone	{NAME} سے رابطہ کیسے کروں نمبر کیا ہے
+party_phone	{NAME} کا سیل نمبر دکھاؤ
+party_phone	ذرا {NAME} کا موبائل بتانا
+party_last_payment	{NAME} نے آخری دفعہ کب دیا
+party_last_payment	{NAME} کی لاسٹ پیمنٹ
+party_last_payment	{NAME} نے پچھلی بار کب پیسے دیے تھے
+party_last_payment	{NAME} کی آخری وصولی کب ہوئی
+party_last_payment	{NAME} نے آخری بار کتنے دیے اور کب
+party_last_payment	{NAME} سے آخری پیسے کب ملے تھے
+party_last_payment	{NAME} کی پچھلی ادائیگی کب کی ہے
+party_last_payment	{NAME} لاسٹ ٹائم کب دے کے گیا
+party_last_payment	بھائی {NAME} نے آخری پیمنٹ کب کی تھی
+party_last_payment	{NAME} کی اخری پیمنٹ کب آئی
+party_last_payment	{NAME} نے کب سے پیسے نہیں دیے
+party_last_payment	{NAME} کا آخری جمع کب ہوا تھا
+party_last_payment	{NAME} آخری ادائیگی
+party_last_payment	{NAME} نے پچھلے دنوں کب دیے تھے پیسے
+party_last_payment	یار {NAME} نے لاسٹ کب پیسے جمع کروائے
+party_limit	{NAME} کی لمٹ
+party_limit	{NAME} کی ادھار لمٹ کتنی ہے
+party_limit	{NAME} کو کتنے تک ادھار دینا ہے
+party_limit	{NAME} کی حد کیا رکھی ہے
+party_limit	{NAME} کی کریڈٹ لمٹ بتاؤ
+party_limit	{NAME} کی لمٹ کتنی بچی ہے
+party_limit	{NAME} کو اور ادھار دے سکتے ہیں کیا لمٹ میں
+party_limit	{NAME} کی ادھار کی حد
+party_limit	بھائی {NAME} کی لمٹ کتنی سیٹ ہے
+party_limit	{NAME} کتنے تک ادھار لے سکتا ہے
+party_limit	{NAME} کی لیمٹ کتنی ہے
+party_limit	{NAME} نے لمٹ کراس کر لی ہے کیا
+party_limit	{NAME} کی زیادہ سے زیادہ ادھار کی رقم
+party_limit	{NAME} لمٹ
+party_limit	{NAME} کا کریڈٹ کتنے تک الاؤڈ ہے
+party_promise	{NAME} کا وعدہ
+party_promise	{NAME} نے کب کا وعدہ کیا ہے
+party_promise	{NAME} نے کون سا دن دیا تھا پیسے دینے کا
+party_promise	{NAME} کی وعدے کی تاریخ
+party_promise	{NAME} نے کس تاریخ کا کہا ہے
+party_promise	{NAME} کا پرامس کس دن کا ہے
+party_promise	{NAME} نے کیا تاریخ بولی تھی
+party_promise	بھائی {NAME} نے کس دن کا بولا تھا
+party_promise	{NAME} نے پیسے دینے کا وعدہ کب کا کیا
+party_promise	{NAME} کا وادہ کب کا ہے
+party_promise	{NAME} نے کون سی ڈیٹ دی ہے
+party_promise	{NAME} کی وعدے والی تاریخ بتاؤ
+party_promise	{NAME} نے زبان کس دن کی دی تھی
+party_promise	{NAME} وعدہ تاریخ
+party_promise	{NAME} نے جو دن بتایا تھا وہ کون سا تھا
+party_when_pays	{NAME} کب پیسے دے گا
+party_when_pays	{NAME} کب دے گا پیسے
+party_when_pays	{NAME} سے کب ملنے کی امید ہے
+party_when_pays	{NAME} کی پیمنٹ کب آئے گی
+party_when_pays	{NAME} کب تک ادائیگی کرے گا
+party_when_pays	{NAME} کب دے سکتا ہے
+party_when_pays	کب دے گا {NAME}
+party_when_pays	بھائی {NAME} کے پیسے کب آئیں گے
+party_when_pays	{NAME} اکثر کن دنوں میں دیتا ہے
+party_when_pays	{NAME} کب دیگا پیسے
+party_when_pays	{NAME} سے وصولی کب ہو گی
+party_when_pays	{NAME} کتنے دن میں دے دے گا
+party_when_pays	{NAME} کا پیسہ کب تک آ جائے گا
+party_when_pays	اندازہ بتاؤ {NAME} کب دے گا
+party_when_pays	{NAME} دے گا کب
+party_details	{NAME} کی ڈیٹیلز
+party_details	{NAME} کا ایڈریس
+party_details	{NAME} کہاں رہتا ہے
+party_details	{NAME} کا گاؤں کون سا ہے
+party_details	{NAME} کے ابو کا نام
+party_details	{NAME} کی معلومات دکھاؤ
+party_details	{NAME} کس کا بیٹا ہے
+party_details	{NAME} کا گھر کہاں ہے
+party_details	بھائی {NAME} کے بارے میں کیا کیا لکھا ہے
+party_details	{NAME} کی پوری تفصیل
+party_details	{NAME} کہاں کا رہنے والا ہے
+party_details	{NAME} کا پتا کیا ہے
+party_details	{NAME} کی ولدیت کیا ہے
+party_details	{NAME} کون ہے کہاں سے ہے
+party_details	{NAME} تفصیل
+entry_gave	{NAME} کو 800 ادھار دیے
+entry_gave	{NAME} 1500 کا سامان لے گیا ادھار پر
+entry_gave	{NAME} کو 250 کا آٹا دیا ادھار
+entry_gave	{NAME} کے کھاتے میں 3000 ادھار لکھو
+entry_gave	{NAME} نے 600 کی دوائی ادھار لی
+entry_gave	میں نے {NAME} کو 5000 نقد دیے
+entry_gave	{NAME} کو 450 کا کپڑا ادھار دیا ہے
+entry_gave	{NAME} کو 10000 دیے ہیں
+entry_gave	بھائی {NAME} 700 کا مال ادھار لے گیا ہے
+entry_gave	{NAME} کو 1200 ادھار دیا
+entry_gave	{NAME} پر 900 چڑھا دو ادھار لے گیا ہے
+entry_gave	{NAME} نے 2500 کا سیمنٹ ادھار اٹھایا
+entry_gave	{NAME} کو 150 کا لوڈ ادھار دیا
+entry_gave	اج {NAME} کو 4000 قرض دیا
+entry_gave	{NAME} کو دیے 300
+entry_got	{NAME} نے 800 دے دیے
+entry_got	{NAME} سے 1500 آئے
+entry_got	{NAME} نے 250 جمع کروا دیے
+entry_got	{NAME} نے 3000 واپس کیے
+entry_got	{NAME} سے 600 وصول کیے
+entry_got	{NAME} 5000 دے گیا ہے
+entry_got	{NAME} نے 450 ادا کیے
+entry_got	مجھے {NAME} سے 10000 مل گئے
+entry_got	بھائی {NAME} نے 700 جمع کرائے ہیں
+entry_got	{NAME} نے 1200 دیا
+entry_got	{NAME} کی طرف سے 900 آ گئے
+entry_got	{NAME} نے 2500 آن لائن بھیجے ہیں
+entry_got	{NAME} سے 150 لیے
+entry_got	اج {NAME} نے 4000 کی ادائیگی کی
+entry_got	{NAME} سے ملے 300
+goods_price	{ITEM} ریٹ
+goods_price	{ITEM} کی قیمت
+goods_price	{ITEM} کیا بھاؤ ہے
+goods_price	{ITEM} کتنے میں بیچنا ہے
+goods_price	{ITEM} کا دام بتاؤ
+goods_price	{ITEM} کا پرائس کیا ہے
+goods_price	{ITEM} کا نقد ریٹ اور ادھار ریٹ
+goods_price	بھائی {ITEM} کتنے کا دے رہے ہیں ہم
+goods_price	{ITEM} کی سیل پرائس
+goods_price	{ITEM} کا بھاؤ کیا چل رہا ہے آج کل
+goods_price	{ITEM} کا ریٹ کیا ہے
+goods_price	{ITEM} کس بھاؤ بکتا ہے
+goods_price	{ITEM} کے کتنے پیسے لینے ہیں گاہک سے
+goods_price	{ITEM} پرائس
+goods_price	ذرا {ITEM} کا ریٹ دیکھنا
+goods_stock	{ITEM} اسٹاک
+goods_stock	{ITEM} کتنا رہتا ہے
+goods_stock	{ITEM} کے کتنے پیس پڑے ہیں
+goods_stock	{ITEM} ہے دکان میں
+goods_stock	{ITEM} کتنی مقدار میں موجود ہے
+goods_stock	{ITEM} کا کتنا مال بچا
+goods_stock	{ITEM} ختم تو نہیں ہوا
+goods_stock	بھائی {ITEM} کتنا پڑا ہے گودام میں
+goods_stock	{ITEM} کی کتنی بوری بچی ہیں
+goods_stock	{ITEM} موجود ہے کیا
+goods_stock	{ITEM} کا سٹاک کتنا ہے
+goods_stock	{ITEM} کے کتنے ڈبے رہتے ہیں
+goods_stock	{ITEM} شیلف پر کتنا ہے
+goods_stock	{ITEM} دستیاب ہے
+goods_stock	{ITEM} کتنا کتنا بچا ہے
+goods_suppliers	{ITEM} سستا کون دیتا ہے
+goods_suppliers	{ITEM} کا خرید ریٹ
+goods_suppliers	{ITEM} کس سے لینا سستا پڑے گا
+goods_suppliers	{ITEM} کی پرچیز پرائس کیا تھی
+goods_suppliers	{ITEM} کس سپلائر کا ریٹ کم ہے
+goods_suppliers	{ITEM} کہاں سے منگواتے ہیں ہم
+goods_suppliers	{ITEM} پچھلی بار کتنے میں خریدا تھا
+goods_suppliers	{ITEM} کے سپلائرز بتاؤ
+goods_suppliers	بھائی {ITEM} کس کمپنی سے سستا ملتا ہے
+goods_suppliers	{ITEM} کس ڈیلر سے آتا ہے
+goods_suppliers	{ITEM} کی خرید کتنے کی ہے
+goods_suppliers	{ITEM} کا پرچیز ریٹ کیا ہے
+goods_suppliers	{ITEM} سب سے کم ریٹ پر کون دے رہا ہے
+goods_suppliers	{ITEM} کس کس سے لیا ہے اور کس بھاؤ
+goods_suppliers	{ITEM} سپلائر
+goods_buyers	{ITEM} کس نے لیا
+goods_buyers	{ITEM} کس کس کو بیچا
+goods_buyers	{ITEM} کون لے کے گیا تھا
+goods_buyers	{ITEM} کے گاہک کون ہیں
+goods_buyers	{ITEM} کن لوگوں نے خریدا ہے
+goods_buyers	{ITEM} کس کو دیا تھا
+goods_buyers	{ITEM} لینے والے کون کون ہیں
+goods_buyers	بھائی {ITEM} کس کس کسٹمر نے اٹھایا
+goods_buyers	{ITEM} کس نے خریدا ہے
+goods_buyers	{ITEM} کے بائرز بتاؤ
+goods_buyers	{ITEM} کس کس کے پاس گیا ہے
+goods_buyers	{ITEM} سب سے زیادہ کون لیتا ہے
+goods_buyers	{ITEM} کون کون خریدتا ہے
+goods_buyers	{ITEM} خریدنے والوں کی لسٹ
+goods_buyers	{ITEM} کس نے لیا تھا آج
+goods_sold	{ITEM} کی سیل
+goods_sold	{ITEM} آج کتنا بکا
+goods_sold	{ITEM} کتنا نکلا اس ہفتے
+goods_sold	اس مہینے {ITEM} کی کتنی بکری ہوئی
+goods_sold	{ITEM} کے کتنے پیس بکے
+goods_sold	کل {ITEM} کتنا بکا تھا
+goods_sold	{ITEM} کتنا فروخت ہوا
+goods_sold	پچھلے مہینے {ITEM} کتنا بکا
+goods_sold	بھائی {ITEM} کتنا بک گیا اب تک
+goods_sold	{ITEM} کی کتنی بوری بکی ہیں
+goods_sold	{ITEM} کتنا بکا ہے
+goods_sold	{ITEM} کی بکری بتاؤ
+goods_sold	اج {ITEM} کے کتنے ڈبے نکلے
+goods_sold	{ITEM} کتنے کا بکا اس مہینے
+goods_sold	{ITEM} بکا کتنا
+shop_info	دکان کا نام
+shop_info	میری دکان کا پتہ
+shop_info	دکان کا نمبر کیا سیو ہے
+shop_info	شاپ کا ایڈریس بتاؤ
+shop_info	ایپ میں دکان کا کیا نام لکھا ہے
+shop_info	میری شاپ کی ڈیٹیلز
+shop_info	بزنس پروفائل میں کیا لکھا ہے
+shop_info	دکان کا فون نمبر
+shop_info	بھائی میری دکان کا نام کیا ڈالا ہوا ہے
+shop_info	کاروبار کا نام کیا ہے
+shop_info	دکان کا پتا کیا لکھا ہے
+shop_info	شاپ کا کانٹیکٹ نمبر کون سا ہے
+shop_info	دکان کی معلومات دکھاؤ
+shop_info	میرے بزنس کا نام اور ایڈریس
+shop_info	انوائس پر دکان کا کیا نام آتا ہے
+count_customers	کسٹمرز کتنے ہیں
+count_customers	کل گاہک
+count_customers	کتنے لوگ ہیں میرے کھاتے میں
+count_customers	سپلائرز کی تعداد
+count_customers	میرے کتنے کسٹمر بن گئے
+count_customers	ٹوٹل پارٹیاں کتنی ہیں
+count_customers	گاہک کتنے ہیں میرے پاس
+count_customers	کتنے کھاتے دار ہیں
+count_customers	بھائی کل کتنے کسٹمرز ایڈ ہیں
+count_customers	کتنے سپلائر ایڈ کیے ہیں میں نے
+count_customers	کتنے گاہک ہیں
+count_customers	کسٹمر اور سپلائر کتنے کتنے ہیں
+count_customers	کھاتے میں کتنے نام ہیں
+count_customers	ٹوٹل کسٹمرز
+count_customers	کتنی کمپنیوں سے مال لیتا ہوں گنتی بتاؤ
+count_products	پروڈکٹس کتنے ہیں
+count_products	کل کتنا سامان ایڈ ہے
+count_products	کتنی آئٹمز ہیں
+count_products	کتنی قسم کا مال ہے دکان میں
+count_products	ٹوٹل پروڈکٹس
+count_products	پروڈکٹ لسٹ میں کتنی چیزیں ہیں
+count_products	کتنے آئٹم ڈالے ہوئے ہیں
+count_products	بھائی کل کتنے پروڈکٹس بنا رکھے ہیں
+count_products	کتنی دوائیاں ایڈ ہیں
+count_products	مال کی کتنی اقسام ہیں
+count_products	کتنے پراڈکٹ ہیں کل
+count_products	آئٹمز کی گنتی بتاؤ
+count_products	سامان کی تعداد کتنی ہے
+count_products	کتنے پروڈکٹس سیو ہیں ایپ میں
+count_products	کل چیزیں کتنی
+bills_today	آج کتنے بل آئے
+bills_today	آج سپلائر کے کتنے بل ڈالے
+bills_today	کل کتنے کے بل چڑھائے تھے
+bills_today	اس ہفتے کتنے کا مال بل پر آیا
+bills_today	آج کے سپلائر بلز
+bills_today	اس مہینے کتنے سپلائر بل ایڈ ہوئے
+bills_today	پچھلے ہفتے کتنے بل بنے تھے سپلائر کے
+bills_today	آج خرید کے کتنے بل لکھے
+bills_today	بھائی آج کمپنی کے کتنے بل انٹر ہوئے
+bills_today	پچھلے مہینے کتنے کے بل آئے تھے
+bills_today	اج کتنے بل ایڈ ہوئے
+bills_today	آج پرچیز بل کتنے ہیں
+bills_today	کل سپلائر بل کتنے کی رقم کے تھے
+bills_today	اس ہفتے خریداری کے بل کتنے
+bills_today	آج کتنے کتنے کے بل چڑھے ہیں سپلائر کے
+invoices_today	آج کی انوائسز
+invoices_today	آج کتنے انوائس کٹے
+invoices_today	کل کتنی انوائس بنائی
+invoices_today	اس مہینے کتنی انوائسز بنیں
+invoices_today	آج انوائس کتنی بنی ہیں
+invoices_today	پچھلے ہفتے کتنے انوائس بنے تھے
+invoices_today	آج کوئی انوائس بنی ہے
+invoices_today	اس ہفتے کی انوائسز بتاؤ
+invoices_today	بھائی آج کتنی انوائس نکالی ہم نے
+invoices_today	پچھلے مہینے کتنی انوائسز بنی تھیں
+invoices_today	اج کتنی انوائس بنی
+invoices_today	آج کوٹیشن اور انوائس کتنی بنی
+invoices_today	کل کے انوائس کتنے تھے
+invoices_today	انوائس کتنی ہوئی آج
+invoices_today	آج کتنے کی انوائسز بنی ہیں
+tickets_today	آج کتنی رسیدیں
+tickets_today	آج کاؤنٹر پر کتنے ٹکٹ کٹے
+tickets_today	آج کتنی پرچیاں بنیں
+tickets_today	کل کاؤنٹر سیل کی کتنی رسید بنی
+tickets_today	آج کاؤنٹر سے کتنی پرچی کٹی
+tickets_today	اس ہفتے کتنے ٹکٹ بنے کاؤنٹر پر
+tickets_today	آج کاؤنٹر سیل کتنی دفعہ ہوئی
+tickets_today	اس مہینے کاؤنٹر کی کتنی رسیدیں بنیں
+tickets_today	آج رسیدوں کی گنتی
+tickets_today	بھائی آج کاؤنٹر پر کتنی رسید کٹی ہیں
+tickets_today	پچھلے ہفتے کتنی کاؤنٹر رسیدیں تھیں
+tickets_today	اج کتنی رسید بنی
+tickets_today	آج کاؤنٹر سیل کے کتنے ٹکٹ
+tickets_today	کل کتنی رسیدیں کٹی تھیں
+tickets_today	پچھلے مہینے کاؤنٹر پر کتنے ٹکٹ بنے
+entries_today	آج کی انٹریز
+entries_today	آج کتنی انٹری لکھی
+entries_today	کل کھاتے میں کتنی انٹریز ہوئی تھیں
+entries_today	آج کتنے اندراج ہوئے
+entries_today	اس ہفتے کتنی انٹری لکھی گئی
+entries_today	آج کھاتے میں کتنا کچھ لکھا گیا گنتی بتاؤ
+entries_today	اس مہینے کتنی انٹریز ہوئیں
+entries_today	آج انٹری کتنی ہوئی ہیں
+entries_today	بھائی آج کتنی انٹریز ڈالی ہیں ہم نے
+entries_today	پچھلے ہفتے کتنی انٹریز لکھی تھیں
+entries_today	اج کتنی انٹری ہوئی
+entries_today	آج کھاتہ انٹریز کی تعداد
+entries_today	کل کتنے اندراج کیے تھے
+entries_today	پچھلے مہینے کتنی انٹری ہوئی تھیں
+entries_today	انٹریز کتنی آج
+calculator_uses	کیلکولیٹر کتنی بار چلا آج
+calculator_uses	آج کیلکولیٹر یوز ہوا کیا
+calculator_uses	آج کتنے حساب کیلکولیٹر پر کیے
+calculator_uses	کل کیلکولیٹر چلا تھا
+calculator_uses	اس ہفتے کیلکولیٹر کتنی دفعہ یوز ہوا
+calculator_uses	آج کیلکولیٹر کتنی مرتبہ کھلا
+calculator_uses	کیلکولیٹر کا استعمال آج
+calculator_uses	اس مہینے کیلکولیٹر کتنی بار چلایا
+calculator_uses	بھائی آج کیلکولیٹر پر کتنی بار حساب لگایا
+calculator_uses	پچھلے ہفتے کیلکولیٹر کتنا یوز ہوا
+calculator_uses	اج کیلکولیٹر کتنی بار چلا
+calculator_uses	آج کیلکولیٹر سے کتنے سم کیے
+calculator_uses	کل کیلکولیٹر کتنی بار استعمال کیا
+calculator_uses	کیلکولیٹر آج کھولا تھا کسی نے
+calculator_uses	پچھلے مہینے کیلکولیٹر کتنی دفعہ چلا
+app_opens	ایپ کتنی بار کھلی آج
+app_opens	آج ایپ کتنی مرتبہ کھولی
+app_opens	آج کتنی دفعہ ایپ اوپن کی
+app_opens	کل ایپ کتنی بار کھلی تھی
+app_opens	اس ہفتے ایپ کتنی دفعہ کھولی گئی
+app_opens	آج ایپ کھولنے کی گنتی
+app_opens	اس مہینے ایپ کتنی بار اوپن ہوئی
+app_opens	آج میں نے ایپ کتنی بار کھولی
+app_opens	بھائی آج یہ ایپ کتنی دفعہ چلی
+app_opens	پچھلے ہفتے ایپ کتنی بار کھلی تھی
+app_opens	اج ایپ کتنی بار کھلی
+app_opens	ایپ اوپنز آج کے
+app_opens	کل کتنی بار ایپ اوپن کی تھی
+app_opens	پچھلے مہینے ایپ کتنی مرتبہ کھلی
+app_opens	آج روشن کھاتہ کتنی بار کھولا گیا
+cheques_status	چیک
+cheques_status	چیکس کا اسٹیٹس
+cheques_status	کون سے چیک پینڈنگ ہیں
+cheques_status	کوئی چیک باؤنس تو نہیں ہوا
+cheques_status	کس چیک کی ڈیٹ آنے والی ہے
+cheques_status	چیک کتنے پڑے ہیں کلیئر ہونے والے
+cheques_status	باؤنس چیک کون سے ہیں
+cheques_status	آج کس چیک کی تاریخ ہے
+cheques_status	بھائی چیکوں کا کیا سین ہے
+cheques_status	کتنے چیک کلیئر ہو گئے
+cheques_status	چک کا کیا حال ہے
+cheques_status	بینک میں لگانے والے چیک کون سے ہیں
+cheques_status	چیک کتنے کے پینڈنگ ہیں
+cheques_status	ڈیو چیکس بتاؤ
+cheques_status	کس کس کا چیک پڑا ہوا ہے
+plans_status	قسطیں
+plans_status	قسطوں کا حساب
+plans_status	کس کی قسط آج ہے
+plans_status	کتنے پلان چل رہے ہیں
+plans_status	انسٹالمنٹ کا اسٹیٹس
+plans_status	کس کی قسط لیٹ ہے
+plans_status	قسط پلانز کا حال بتاؤ
+plans_status	اگلی قسط کس کی اور کب ہے
+plans_status	بھائی قسطوں والے کھاتوں کا کیا حال ہے
+plans_status	کتنی قسطیں آ چکی ہیں کتنی رہتی ہیں
+plans_status	قسطو کا کیا حال ہے
+plans_status	انسٹالمنٹ پلانز کتنے ہیں
+plans_status	اس مہینے کس کس کی قسط آنی ہے
+plans_status	ڈیو قسطیں بتاؤ
+plans_status	قسط پر دیا مال کس کس کا چل رہا ہے
+staff_salary	تنخواہ
+staff_salary	اسٹاف کی سیلری
+staff_salary	ملازموں کو کتنا دینا ہے
+staff_salary	کس کی تنخواہ باقی ہے
+staff_salary	ایڈوانس کس کس نے لیا
+staff_salary	اس مہینے کی تنخواہیں دی جا چکی ہیں
+staff_salary	لڑکوں کی سیلری کتنی بنتی ہے
+staff_salary	اسٹاف کا ایڈوانس کتنا ہے
+staff_salary	بھائی کام والوں کی تنخواہ کا کیا حساب ہے
+staff_salary	سیلری ڈیو کس کس کی ہے
+staff_salary	تنخا کتنی دینی ہے
+staff_salary	ملازم نے کتنا ایڈوانس لے رکھا ہے
+staff_salary	ورکرز کی پے بتاؤ
+staff_salary	تنخواہ دینے کا وقت آ گیا کیا
+staff_salary	اسٹاف کو کل کتنا دینا بنتا ہے
+deliveries	آج کیا آیا
+deliveries	آج مال آیا ہے
+deliveries	کل کون کون سا سامان آیا تھا
+deliveries	اس ہفتے سپلائر سے کیا کیا آیا
+deliveries	آج کی ڈیلیوری
+deliveries	آج کمپنی سے کتنا مال اترا
+deliveries	پچھلے ہفتے کیا مال آیا تھا
+deliveries	اس مہینے کتنا مال آیا ہے
+deliveries	بھائی آج کون سی گاڑی کا مال اترا ہے
+deliveries	کل سپلائر نے کیا بھیجا تھا
+deliveries	اج کیا مال آیا
+deliveries	آج اسٹاک میں کیا نیا آیا
+deliveries	پچھلے مہینے کون کون سا مال آیا تھا
+deliveries	آج کس سپلائر کا مال پہنچا
+deliveries	مال کی آمد آج کی
+activity	آج کیا ہوا
+activity	آج کس نے کیا کیا
+activity	آج کیا ایڈٹ ہوا
+activity	کل کس نے انٹری ڈیلیٹ کی تھی
+activity	آج ایپ میں کیا تبدیلی ہوئی
+activity	اس ہفتے کیا کیا ڈیلیٹ ہوا
+activity	آج کی ایکٹیویٹی
+activity	کس نے کیا چھیڑا ہے آج
+activity	بھائی آج کس نے کھاتے میں گڑبڑ کی ہے
+activity	پچھلے ہفتے کس نے کیا بدلا تھا
+activity	اج کیا کیا ہوا ایپ میں
+activity	کل کیا کیا تبدیل کیا گیا
+activity	کس نے کیا کیا کی ہسٹری دکھاؤ
+activity	اس مہینے کون سی انٹریز مٹائی گئیں
+activity	آج کوئی وائڈ یا ڈیلیٹ ہوا ہے
+backup_status	بیک اپ
+backup_status	بیک اپ کب ہوا تھا
+backup_status	آج بیک اپ ہوا
+backup_status	بیک اپ لے لیا ہے کیا
+backup_status	لاسٹ بیک اپ
+backup_status	میرا ڈیٹا بیک اپ ہے نا
+backup_status	آخری بار بیک اپ کب بنا
+backup_status	ڈرائیو پر بیک اپ گیا ہے
+backup_status	بھائی بیک اپ ہو رہا ہے یا نہیں
+backup_status	بیک اپ کا اسٹیٹس
+backup_status	بیکپ ہوا ہے کیا
+backup_status	کتنے دن سے بیک اپ نہیں ہوا
+backup_status	بیک اپ ٹھیک چل رہا ہے
+backup_status	پچھلا بیک اپ کس دن کا ہے
+backup_status	بیک اپ کب کا پڑا ہے
+book_summary	پورا حساب
+book_summary	میرے کھاتے کا خلاصہ
+book_summary	سب کچھ بتاؤ میرے کھاتے کا
+book_summary	اوور آل حساب کیا ہے
+book_summary	میرا ٹوٹل ڈیٹا
+book_summary	کھاتے کی پوری تصویر دکھاؤ
+book_summary	سارے کھاتے کی سمری
+book_summary	کل ملا کر کیا پوزیشن ہے
+book_summary	بھائی میرے پورے کاروبار کا حساب سنا دو
+book_summary	میرا پورا کھاتہ ایک نظر میں
+book_summary	میرا کھاتا کیا کہتا ہے
+book_summary	دکان کا مکمل حساب کتاب
+book_summary	اوور آل اکاؤنٹ بتاؤ
+book_summary	سب کا سب حساب
+book_summary	پوری کتاب کا حال
+cashbook_today	آج کا خرچہ
+cashbook_today	کیش بک
+cashbook_today	آج کتنا پیسہ آیا اور کتنا گیا
+cashbook_today	کل کے خرچے بتاؤ
+cashbook_today	آج کیش بک میں کیا کیا لکھا ہے
+cashbook_today	اس ہفتے کتنا خرچہ ہوا
+cashbook_today	آج کے اخراجات
+cashbook_today	اس مہینے کیش بک میں کتنا آیا کتنا نکلا
+cashbook_today	بھائی آج دکان کے خرچے کتنے ہوئے
+cashbook_today	پچھلے ہفتے کا خرچہ کتنا تھا
+cashbook_today	اج کا خرچہ کتنا ہے
+cashbook_today	آج منی ان منی آؤٹ بتاؤ
+cashbook_today	کل کیش بک کا کیا حساب تھا
+cashbook_today	پچھلے مہینے کے اخراجات کتنے تھے
+cashbook_today	آج چائے پانی کرایہ وغیرہ میں کتنا گیا
+returns_today	آج کی واپسی
+returns_today	آج کیا واپس آیا
+returns_today	آج کتنے ریٹرن ہوئے
+returns_today	کل کتنا مال واپس ہوا تھا
+returns_today	اس ہفتے کے ریٹرنز
+returns_today	آج کس نے مال واپس کیا
+returns_today	اس مہینے کتنا سامان واپس آیا
+returns_today	آج کوئی چیز واپس ہوئی
+returns_today	بھائی آج گاہکوں نے کیا کیا واپس کیا
+returns_today	پچھلے ہفتے کتنی واپسی ہوئی تھی
+returns_today	اج کتنا مال واپس آیا
+returns_today	آج ریٹرن کتنے کے ہوئے
+returns_today	کل کوئی ریٹرن آیا تھا
+returns_today	پچھلے مہینے کتنے کا مال واپس آیا
+returns_today	واپس آیا ہوا مال آج کا
+help_howto	انوائس کیسے بناؤں
+help_howto	بیک اپ کیسے لوں
+help_howto	کسٹمر کیسے ایڈ کرتے ہیں
+help_howto	انٹری کیسے لکھتے ہیں
+help_howto	بل کیسے ڈالوں سپلائر کا
+help_howto	واٹس ایپ پر تقاضا کیسے بھیجوں گاہک کو
+help_howto	نیا پروڈکٹ کیسے بناؤں
+help_howto	اسٹیٹمنٹ کیسے نکالتے ہیں
+help_howto	بھائی کاؤنٹر سیل کیسے کرتے ہیں اس میں
+help_howto	چیک کیسے درج کروں
+help_howto	زبان کیسے بدلتے ہیں
+help_howto	پی ڈی ایف کیسے بناتے ہیں
+help_howto	ایپ لاک کیسے لگاتے ہیں
+help_howto	ڈیٹا ریسٹور کرنے کا طریقہ بتاؤ
+help_howto	دن بند کیسے کرتے ہیں طریقہ سمجھاؤ
+act_fly	اڑ کے دکھاؤ نا ہدہد
+act_fly	اڑ کر دکھاؤ ذرا
+act_fly	اڑو
+act_fly	تم اڑ سکتے ہو کیا
+act_fly	ایک چکر لگا کے آؤ اڑ کے
+act_fly	اڑان بھرو
+act_fly	پرواز کرو
+act_fly	ہوا میں اڑو
+act_fly	بھائی ذرا اڑ کے تو دکھا
+act_fly	فلائی کرو
+act_fly	اڑ کہ دکھا
+act_fly	اڑنا آتا ہے تمہیں
+act_fly	پر پھیلا کے اڑو
+act_fly	اڑ جا
+act_fly	اسکرین پر ادھر ادھر اڑو
+act_dance	ناچو
+act_dance	ڈانس دکھاؤ
+act_dance	تھوڑا ناچ کے دکھاؤ
+act_dance	ناچنا آتا ہے
+act_dance	بھنگڑا ڈالو
+act_dance	تم ناچ سکتے ہو
+act_dance	ہو جائے ایک ڈانس پھر
+act_dance	ٹھمکا لگاؤ
+act_dance	بھائی ذرا ڈانس تو کر کے دکھا
+act_dance	جھوم کے دکھاؤ
+act_dance	ڈانس کرو نا
+act_dance	ناچ ناچ
+act_dance	لڈی ڈالو
+act_dance	ڈانس کرنا آتا ہے تمہیں
+act_dance	چلو ناچ شروع کرو
+act_jump	کودو
+act_jump	جمپ
+act_jump	اچھلو
+act_jump	ایک چھلانگ لگاؤ
+act_jump	کود کے دکھاؤ
+act_jump	تم اچھل سکتے ہو
+act_jump	پھدکو ذرا
+act_jump	جمپ مارو
+act_jump	بھائی ایک جمپ تو لگا کے دکھا
+act_jump	کوئی کرتب دکھاؤ
+act_jump	جمپ کرو نا
+act_jump	اچھل کود کرو
+act_jump	قلابازی لگاؤ
+act_jump	کود سکتے ہو کیا
+act_jump	اوپر نیچے کودو

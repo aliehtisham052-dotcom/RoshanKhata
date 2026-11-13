@@ -1,0 +1,1170 @@
+en	who_are_you	hey, who am I talking to
+en	who_are_you	what should I call you
+en	abilities	what all do you know
+en	abilities	okay so what are you good at
+en	how_are_you	you okay buddy
+en	how_are_you	are you well
+en	can_talk	are you listening
+en	can_talk	can you speak
+en	address	sir
+en	address	Hudhud my friend
+en	salaam	salaam alaikum brother
+en	salaam	as salamu alaykum my friend
+en	hello	hello Hudhud
+en	hello	hi Hudhud good morning
+en	thanks	thanks a lot buddy
+en	thanks	thanks for the help
+en	bye	okay bye Hudhud
+en	bye	take care, bye
+en	praise	good job buddy
+en	praise	great job, well done
+en	owner_name	tell me my name
+en	owner_name	you know me or not, what is my name
+en	maker	who is your maker
+en	maker	which people made you
+en	app_about	this app is for what
+en	app_about	what kind of app is this
+en	privacy	who can see my data
+en	privacy	is my information private
+en	languages	can you understand Urdu
+en	languages	do you understand Bengali and Hindi also
+en	date_time	today's date please
+en	date_time	what is the Islamic date today
+en	today_summary	give me summary of today
+en	today_summary	summary for today
+en	sales_today	how much was sold today
+en	sales_today	sale today
+en	sales_period	this month sale how much
+en	sales_period	how much was sold this week buddy
+en	profit	last month profit how much
+en	profit	am I in profit this month buddy
+en	to_get	how much total is still to come from customers
+en	to_get	money to get total
+en	to_give	how much I owe to suppliers in total
+en	to_give	my debt total how much buddy
+en	who_owes_most	biggest debtor who
+en	who_owes_most	largest dues are on which customer buddy
+en	not_paid	who is late in payment
+en	not_paid	which customers are behind on payment buddy
+en	likely_payers	which customers may pay today
+en	likely_payers	any customer expected to pay today buddy
+en	collected	how much payment came from customers this week
+en	collected	total collection today buddy
+en	drawer	I want to close the day
+en	drawer	how much money is in the till buddy
+en	expiring	show me goods that will expire soon
+en	expiring	what all is expiring
+en	low_stock	low stock items
+en	low_stock	anything low in stock
+en	party_balance	{NAME} account tell
+en	party_balance	how much is due on {NAME}
+en	party_phone	{NAME} mobile number tell
+en	party_phone	on which number can I call {NAME}
+en	party_last_payment	{NAME} last time paid when
+en	party_last_payment	when did I last receive money from {NAME}
+en	party_limit	{NAME} limit tell
+en	party_limit	how much of the limit has {NAME} used
+en	party_promise	{NAME} promise day tell
+en	party_promise	promised day of {NAME}
+en	party_when_pays	when can I expect money from {NAME}
+en	party_when_pays	when does {NAME} usually pay
+en	party_details	{NAME} is from which village
+en	party_details	give me the information of {NAME}
+en	entry_gave	write 750 udhaar for {NAME}
+en	entry_gave	I lent 10000 to {NAME}
+en	entry_got	{NAME} gave me 750
+en	entry_got	received payment of 10000 from {NAME}
+en	goods_price	how much is {ITEM}
+en	goods_price	cash and credit price of {ITEM}
+en	goods_stock	{ITEM} stock how much
+en	goods_stock	{ITEM} quantity left
+en	goods_suppliers	who supplies {ITEM}
+en	goods_suppliers	which company gives {ITEM} at the best rate
+en	goods_buyers	who took {ITEM}
+en	goods_buyers	to which customers did I sell {ITEM}
+en	goods_sold	{ITEM} sale this week how much
+en	goods_sold	how much quantity of {ITEM} was sold today
+en	shop_info	tell me my shop details please
+en	shop_info	show my business name and address
+en	count_customers	customers count
+en	count_customers	number of suppliers
+en	count_products	products count
+en	count_products	number of items in product list
+en	bills_today	supplier bills of this week how much
+en	bills_today	any supplier bill added today
+en	invoices_today	invoices of this week
+en	invoices_today	today invoice how many
+en	tickets_today	counter sale tickets this week
+en	tickets_today	how many counter receipts were cut today
+en	entries_today	entries this week count
+en	entries_today	any entry written in the khata today
+en	calculator_uses	calculator use this week how many times
+en	calculator_uses	did anyone use the calculator today
+en	app_opens	app opens this week
+en	app_opens	app open count last month
+en	cheques_status	did any cheque bounce
+en	cheques_status	show me pending cheques
+en	plans_status	which instalments are pending
+en	plans_status	how many instalments are left to come
+en	staff_salary	how much advance did the staff take
+en	staff_salary	which worker's pay is pending
+en	deliveries	what stock came from suppliers this month
+en	deliveries	what was delivered to the shop today
+en	activity	what was changed this week
+en	activity	activity of today
+en	backup_status	backup status
+en	backup_status	last backup when
+en	book_summary	summary of my whole khata
+en	book_summary	show me the total summary of the ledger
+en	cashbook_today	expenses yesterday how much
+en	cashbook_today	today expense how much
+en	returns_today	returns this week
+en	returns_today	did any customer return goods today
+en	help_howto	how to add a new product
+en	help_howto	show me how to set the app lock
+en	act_fly	fly around the screen
+en	act_fly	do one flight and show
+en	act_dance	do a little dance please
+en	act_dance	will you dance once
+en	act_jump	do a trick
+en	act_jump	do one hop
+ur	who_are_you	اپ کا نام کیا ہے
+ur	who_are_you	اپنے بارے میں بتاؤ نا
+ur	abilities	تمہیں کیا کیا پتا ہے
+ur	abilities	اپ کس لیے ہیں
+ur	how_are_you	یار کیا حال چال ہیں
+ur	how_are_you	سب ٹھیک ٹھاک ہے نا
+ur	can_talk	اپ بات کرتے ہو کیا
+ur	can_talk	آپ بول سکتے ہیں کیا
+ur	address	ہدہد
+ur	address	استاد جی
+ur	salaam	سلام علیکم
+ur	salaam	سلام استاد
+ur	hello	گڈ مارننگ
+ur	hello	آداب
+ur	thanks	تھینکس یار
+ur	thanks	تھینک یو سو مچ
+ur	bye	اچھا پھر ملتے ہیں
+ur	bye	چلتا ہوں خدا حافظ
+ur	praise	تم تو کمال ہو
+ur	praise	گڈ جاب
+ur	owner_name	میرا نام بتاؤ
+ur	owner_name	ذرا بتاؤ میرا نام کیا ہے
+ur	maker	تمہارا بنانے والا کون ہے
+ur	maker	ایپ کا ڈویلپر کون ہے
+ur	app_about	یہ ایپ کس کام کی ہے
+ur	app_about	بھائی اس ایپ کا کیا فائدہ ہے
+ur	privacy	یار میرا ڈیٹا کہیں اور تو نہیں جاتا
+ur	privacy	اس ایپ میں پرائیویسی کیسی ہے
+ur	languages	اپ کو انگلش آتی ہے کیا
+ur	languages	ذرا بتاؤ کس زبان میں پوچھ سکتا ہوں
+ur	date_time	ابھی کتنے بجے ہیں
+ur	date_time	بھائی آج اسلامی تاریخ کیا ہے
+ur	today_summary	اج کی سمری
+ur	today_summary	بھائی آج کا پورا خلاصہ دے دو
+ur	sales_today	اج کتنی سیل ہوئی ہے
+ur	sales_today	ذرا آج کی سیل تو بتانا
+ur	sales_period	اس مہینے کی سیل کتنی ہے
+ur	sales_period	بھائی اس مہینے ابھی تک کتنی سیل ہوئی
+ur	profit	پچھلے مہینے کتنا فائدہ ہوا تھا
+ur	profit	اس مہینے کا منافع بتا دیں
+ur	to_get	مارکیٹ میں میرا کتنا پیسہ پھنسا ہے
+ur	to_get	ذرا بتاؤ ٹوٹل ریسیوایبل کتنا ہے
+ur	to_give	میرے اوپر کتنا قرضہ ہے
+ur	to_give	ذرا بتاؤ پے ایبل کتنا ہے
+ur	who_owes_most	سب سے زیادہ پیسے کس کی طرف ہیں
+ur	who_owes_most	سب سے زیادہ بقایا کس پر ہے
+ur	not_paid	پیسے نہ دینے والے کون ہیں
+ur	not_paid	کس نے پیسے روک رکھے ہیں
+ur	likely_payers	آج کل کون اکثر پیسے دیتا ہے
+ur	likely_payers	آج کس کس کے آنے کی امید ہے پیسے دینے
+ur	collected	اس ہفتے کتنے پیسے ملے
+ur	collected	بھائی کل کتنے پیسے آئے تھے
+ur	drawer	دن بند کرنا ہے
+ur	drawer	دراز کا کیش کاؤنٹ کروا دو
+ur	expiring	کون کون سا اسٹاک ایکسپائر ہو رہا ہے
+ur	expiring	کس بیچ کی میعاد ختم ہو رہی ہے
+ur	low_stock	اسٹاک کس کا کم ہو گیا
+ur	low_stock	کم اسٹاک والی چیزیں بتائیں
+ur	party_balance	{NAME} کا کھاتہ دکھاؤ
+ur	party_balance	ذرا {NAME} کا اکاؤنٹ تو دیکھنا
+ur	party_phone	یار {NAME} کا نمبر دینا ذرا
+ur	party_phone	{NAME} کا واٹس ایپ نمبر
+ur	party_last_payment	{NAME} کی اخری ادائیگی
+ur	party_last_payment	ذرا بتاؤ {NAME} کی آخری وصولی کب ہوئی تھی
+ur	party_limit	{NAME} کو کتنا ادھار دے سکتا ہوں
+ur	party_limit	ذرا {NAME} کی لمٹ چیک کرو
+ur	party_promise	{NAME} نے کب دینے کا کہا تھا
+ur	party_promise	ذرا دیکھو {NAME} نے کون سا دن بولا تھا دینے کا
+ur	party_when_pays	یار {NAME} کب تک دے دے گا
+ur	party_when_pays	ذرا بتاؤ {NAME} سے وصولی کب ہوگی
+ur	party_details	{NAME} کے والد کا نام کیا ہے
+ur	party_details	ذرا {NAME} کی معلومات نکالو
+ur	entry_gave	{NAME} کو 350 کا مال ادھار دیا
+ur	entry_gave	{NAME} کو 35000 کا مال ادھار پر دے دیا
+ur	entry_got	{NAME} سے 350 وصول ہوئے ہیں
+ur	entry_got	{NAME} نے 35000 کیش جمع کروا دیے
+ur	goods_price	{ITEM} کا ریٹ کیا چل رہا ہے
+ur	goods_price	ذرا {ITEM} کی قیمت تو دیکھنا
+ur	goods_stock	{ITEM} ہے یا ختم ہو گیا
+ur	goods_stock	ذرا {ITEM} کا اسٹاک چیک کرو
+ur	goods_suppliers	{ITEM} کس کس سپلائر سے آتا ہے
+ur	goods_suppliers	ذرا {ITEM} کے سپلائرز کے ریٹ دکھاؤ
+ur	goods_buyers	{ITEM} کے خریدار کون ہیں
+ur	goods_buyers	ذرا بتاؤ {ITEM} کس کس کو گیا
+ur	goods_sold	{ITEM} کی سیل کتنی ہوئی
+ur	goods_sold	ذرا {ITEM} کی اس مہینے کی سیل بتاؤ
+ur	shop_info	شاپ کا نام بتاؤ
+ur	shop_info	ذرا دکان کا نام اور پتہ بتانا
+ur	count_customers	کسٹمرز کی تعداد بتاؤ
+ur	count_customers	ذرا گن کر بتاؤ کتنے کسٹمرز ہیں
+ur	count_products	کتنے آئٹمز ایڈ ہیں
+ur	count_products	ذرا گن کر بتاؤ کتنے پروڈکٹ ہیں
+ur	bills_today	اس ہفتے کتنے سپلائر بل بنے
+ur	bills_today	بھائی آج کے سپلائر بلوں کی ٹوٹل رقم کیا ہے
+ur	invoices_today	اس ہفتے کتنی انوائس بنی ہیں
+ur	invoices_today	بھائی اج کی انوائسز دکھاؤ
+ur	tickets_today	اس ہفتے کاؤنٹر پر کتنی رسیدیں کٹیں
+ur	tickets_today	پچھلے مہینے کاؤنٹر پر کتنی رسید بنی تھی
+ur	entries_today	اس ہفتے کتنی انٹریز ہوئی ہیں
+ur	entries_today	بھائی آج کی انٹریز کی گنتی بتاؤ
+ur	calculator_uses	اس ہفتے کیلکولیٹر کتنی بار کھولا
+ur	calculator_uses	بھائی آج کیلکولیٹر پہ کتنی دفعہ جمع تفریق ہوئی
+ur	app_opens	اس ہفتے ایپ کتنی بار کھلی
+ur	app_opens	بھائی آج یہ ایپ کتنی مرتبہ کھول چکا ہوں
+ur	cheques_status	کس چیک کی تاریخ آ گئی ہے
+ur	cheques_status	ذرا چیک دیکھو کون سے رہتے ہیں
+ur	plans_status	انسٹالمنٹ پلان دکھاؤ
+ur	plans_status	ذرا انسٹالمنٹس چیک کرو
+ur	staff_salary	تنخواہ کا حساب بتاؤ
+ur	staff_salary	ذرا اسٹاف کی تنخواہ اور ایڈوانس دکھاؤ
+ur	deliveries	اس ہفتے کتنا مال آیا
+ur	deliveries	بھائی آج کی ڈیلیوری بتاؤ کیا کیا آیا
+ur	activity	اس ہفتے کون سی انٹری ایڈٹ ہوئی
+ur	activity	پچھلے مہینے کیا کیا ڈیلیٹ کیا گیا تھا
+ur	backup_status	لاسٹ بیک اپ کب لیا تھا
+ur	backup_status	ذرا بیک اپ کا اسٹیٹس بتاؤ
+ur	book_summary	کل حساب کتاب کیا ہے
+ur	book_summary	ذرا پورے کھاتے کا حال سنا دو
+ur	cashbook_today	اس ہفتے کیش بک کا حساب بتاؤ
+ur	cashbook_today	بھائی آج کے خرچے دکھاؤ
+ur	returns_today	اس ہفتے کتنی واپسی ہوئی
+ur	returns_today	بھائی آج کی واپسیاں دکھاؤ
+ur	help_howto	سپلائر بل کیسے ڈالتے ہیں
+ur	help_howto	ذرا بتاؤ زبان کیسے بدلتے ہیں
+ur	act_fly	ذرا اڑ کر دکھاؤ
+ur	act_fly	ہدہد اڑ کے دکھا نا
+ur	act_dance	کیا تم ڈانس کر سکتے ہو
+ur	act_dance	ایک ڈانس ہو جائے
+ur	act_jump	کیا تم کود سکتے ہو
+ur	act_jump	ہدہد ایک دفعہ اچھلو
+ur-Latn	who_are_you	ap ka naam kia hy
+ur-Latn	who_are_you	apne baare mein batao na
+ur-Latn	abilities	tumhe kya kya pata hai
+ur-Latn	abilities	aap kis liye hain
+ur-Latn	how_are_you	yaar kia haal chaal hain
+ur-Latn	how_are_you	sab theek thaak hai na
+ur-Latn	can_talk	ap baat karte ho kia
+ur-Latn	can_talk	aap bol sakte hain kya
+ur-Latn	address	Hudhud
+ur-Latn	address	ustad ji
+ur-Latn	salaam	salam alaikum
+ur-Latn	salaam	salam ustad
+ur-Latn	hello	good morning
+ur-Latn	hello	aadaab
+ur-Latn	thanks	thanks yaar
+ur-Latn	thanks	thank you so much
+ur-Latn	bye	achha phir milte hain
+ur-Latn	bye	chalta hun khuda hafiz
+ur-Latn	praise	tum to kamaal ho
+ur-Latn	praise	good job
+ur-Latn	owner_name	mera naam batao
+ur-Latn	owner_name	zara batao mera naam kia hai
+ur-Latn	maker	tumhara banane wala kaun hai
+ur-Latn	maker	app ka developer kaun hai
+ur-Latn	app_about	yeh app kis kaam ki hai
+ur-Latn	app_about	bhai is app ka kya faida hai
+ur-Latn	privacy	yaar mera data kahin aur to nahi jata
+ur-Latn	privacy	is app mein privacy kaisi hai
+ur-Latn	languages	ap ko english aati hai kya
+ur-Latn	languages	zara batao kis zaban me pooch sakta hun
+ur-Latn	date_time	abhi kitne baje hain
+ur-Latn	date_time	bhai aaj islami tareekh kya hai
+ur-Latn	today_summary	aaj ki summary
+ur-Latn	today_summary	bhai aaj ka poora khulasa de do
+ur-Latn	sales_today	aaj kitni sale hui hai
+ur-Latn	sales_today	zara aaj ki sale to batana
+ur-Latn	sales_period	is mahine ki sale kitni hai
+ur-Latn	sales_period	bhai is maheenay abhi tak kitni sale hui
+ur-Latn	profit	pichle mahine kitna faida hua tha
+ur-Latn	profit	is maheenay ka munafa bata dein
+ur-Latn	to_get	market mein mera kitna paisa phansa hai
+ur-Latn	to_get	zara batao total receivable kitna hy
+ur-Latn	to_give	mere upar kitna qarza hai
+ur-Latn	to_give	zara batao payable kitna hy
+ur-Latn	who_owes_most	sab se zyada paise kis ki taraf hain
+ur-Latn	who_owes_most	sab se zyada baqaya kis par hai
+ur-Latn	not_paid	paise na dene wale kaun hain
+ur-Latn	not_paid	kis ne paisay rok rakhe hain
+ur-Latn	likely_payers	aaj kal kaun aksar paise deta hai
+ur-Latn	likely_payers	aaj kis kis ke aane ki umeed hy paise dene
+ur-Latn	collected	is hafte kitne paise mile
+ur-Latn	collected	bhai kl kitne paise aaye thay
+ur-Latn	drawer	din band karna hai
+ur-Latn	drawer	daraz ka cash count karwa do
+ur-Latn	expiring	kon kon sa stock expire ho raha hai
+ur-Latn	expiring	kis batch ki miyaad khatam ho rahi hai
+ur-Latn	low_stock	stock kis ka kam ho gaya
+ur-Latn	low_stock	kam stock wali cheezein batayein
+ur-Latn	party_balance	{NAME} ka khata dikhao
+ur-Latn	party_balance	zara {NAME} ka account to dekhna
+ur-Latn	party_phone	yaar {NAME} ka number dena zara
+ur-Latn	party_phone	{NAME} ka whatsapp number
+ur-Latn	party_last_payment	{NAME} ki akhri adaigi
+ur-Latn	party_last_payment	zara batao {NAME} ki aakhri wusooli kab hui thi
+ur-Latn	party_limit	{NAME} ko kitna udhaar de sakta hun
+ur-Latn	party_limit	zara {NAME} ki limit check karo
+ur-Latn	party_promise	{NAME} ne kab dene ka kaha tha
+ur-Latn	party_promise	zara dekho {NAME} ne kon sa din bola tha dene ka
+ur-Latn	party_when_pays	yaar {NAME} kab tak de dega
+ur-Latn	party_when_pays	zara batao {NAME} se wusooli kab hogi
+ur-Latn	party_details	{NAME} ke walid ka naam kya hai
+ur-Latn	party_details	zara {NAME} ki maloomat nikalo
+ur-Latn	entry_gave	{NAME} ko 350 ka maal udhaar diya
+ur-Latn	entry_gave	{NAME} ko 35000 ka maal udhaar par de diya
+ur-Latn	entry_got	{NAME} se 350 wasool hue hain
+ur-Latn	entry_got	{NAME} ne 35000 cash jama karwa diye
+ur-Latn	goods_price	{ITEM} ka rate kya chal raha hai
+ur-Latn	goods_price	zara {ITEM} ki qeemat to dekhna
+ur-Latn	goods_stock	{ITEM} hai ya khatam ho gaya
+ur-Latn	goods_stock	zara {ITEM} ka stock check karo
+ur-Latn	goods_suppliers	{ITEM} kis kis supplier se aata hai
+ur-Latn	goods_suppliers	zara {ITEM} ke suppliers ke rate dikhao
+ur-Latn	goods_buyers	{ITEM} ke khareedar kaun hain
+ur-Latn	goods_buyers	zara batao {ITEM} kis kis ko gaya
+ur-Latn	goods_sold	{ITEM} ki sale kitni hui
+ur-Latn	goods_sold	zara {ITEM} ki is mahine ki sale batao
+ur-Latn	shop_info	shop ka naam batao
+ur-Latn	shop_info	zara dukaan ka naam aur pata batana
+ur-Latn	count_customers	customers ki tadaad batao
+ur-Latn	count_customers	zara gin kar batao kitne customers hain
+ur-Latn	count_products	kitne items add hain
+ur-Latn	count_products	zara gin kar batao kitne product hain
+ur-Latn	bills_today	is hafte kitne supplier bill bane
+ur-Latn	bills_today	bhai aaj ke supplier bills ki total raqam kia hy
+ur-Latn	invoices_today	is hafte kitni invoice bani hain
+ur-Latn	invoices_today	bhai aaj ki invoices dikhao
+ur-Latn	tickets_today	is hafte counter par kitni raseedein katin
+ur-Latn	tickets_today	pichle mahine counter par kitni raseed bani thi
+ur-Latn	entries_today	is hafte kitni entries hui hain
+ur-Latn	entries_today	bhai aaj ki entries ki ginti batao
+ur-Latn	calculator_uses	is hafte calculator kitni baar khola
+ur-Latn	calculator_uses	bhai aaj calculator pe kitni dafa jama tafreeq hui
+ur-Latn	app_opens	is hafte app kitni baar khuli
+ur-Latn	app_opens	bhai aaj ye app kitni martaba khol chuka hun
+ur-Latn	cheques_status	kis cheque ki tareekh aa gayi hai
+ur-Latn	cheques_status	zara cheque dekho kon se rehte hain
+ur-Latn	plans_status	instalment plans dikhao
+ur-Latn	plans_status	zara installments check karo
+ur-Latn	staff_salary	tankhwah ka hisaab batao
+ur-Latn	staff_salary	zara staff ki tankhwah aur advance dikhao
+ur-Latn	deliveries	is hafte kitna maal aaya
+ur-Latn	deliveries	bhai aaj ki delivery batao kya kya aaya
+ur-Latn	activity	is hafte kon si entry edit hui
+ur-Latn	activity	pichle mahine kya kya delete kiya gaya tha
+ur-Latn	backup_status	last backup kab liya tha
+ur-Latn	backup_status	zara backup ka status batao
+ur-Latn	book_summary	kul hisaab kitab kya hai
+ur-Latn	book_summary	zara poore khate ka haal suna do
+ur-Latn	cashbook_today	is hafte cash book ka hisaab batao
+ur-Latn	cashbook_today	bhai aaj ke kharche dikhao
+ur-Latn	returns_today	is hafte kitni wapsi hui
+ur-Latn	returns_today	bhai aaj ki wapsiyan dikhao
+ur-Latn	help_howto	supplier bill kaise dalte hain
+ur-Latn	help_howto	zara batao zaban kaise badalte hain
+ur-Latn	act_fly	zara ur kar dikhao
+ur-Latn	act_fly	Hudhud ur ke dikha na
+ur-Latn	act_dance	kya tum dance kar sakte ho
+ur-Latn	act_dance	ek dance ho jaye
+ur-Latn	act_jump	kya tum kood sakte ho
+ur-Latn	act_jump	Hudhud ek dafa uchhlo
+hi	who_are_you	आपका नाम क्या है
+hi	who_are_you	अपने बारे में बताओ ना
+hi	abilities	तुम्हें क्या क्या पता है
+hi	abilities	आप किस लिए हैं
+hi	how_are_you	यार क्या हाल चाल है
+hi	how_are_you	सब ठीक ठाक है ना
+hi	can_talk	आप बात करते हो क्या
+hi	can_talk	आप बोल सकते हैं क्या
+hi	address	हुदहुद
+hi	address	उस्ताद जी
+hi	salaam	सलाम अलैकुम
+hi	salaam	सलाम उस्ताद
+hi	hello	गुड मॉर्निंग
+hi	hello	नमस्कार जी
+hi	thanks	थैंक्स यार
+hi	thanks	थैंक यू सो मच
+hi	bye	अच्छा फिर मिलते हैं
+hi	bye	अल्लाह हाफ़िज़
+hi	praise	तुम तो कमाल हो
+hi	praise	गुड जॉब
+hi	owner_name	मेरा नाम बताओ
+hi	owner_name	ज़रा बताओ मेरा नाम क्या है
+hi	maker	तुम्हारा बनाने वाला कौन है
+hi	maker	ऐप का डेवलपर कौन है
+hi	app_about	यह ऐप किस काम का है
+hi	app_about	भाई इस ऐप का क्या फ़ायदा है
+hi	privacy	यार मेरा डेटा कहीं और तो नहीं जाता
+hi	privacy	इस ऐप में प्राइवेसी कैसी है
+hi	languages	आपको इंग्लिश आती है क्या
+hi	languages	ज़रा बताओ किस भाषा में पूछ सकता हूं
+hi	date_time	अभी कितने बजे हैं
+hi	date_time	भाई आज इस्लामी तारीख़ क्या है
+hi	today_summary	आज की समरी
+hi	today_summary	भाई आज का पूरा ख़ुलासा दे दो
+hi	sales_today	आज कितनी सेल हुई है
+hi	sales_today	ज़रा आज की बिक्री तो बताना
+hi	sales_period	इस महीने की सेल कितनी है
+hi	sales_period	भाई इस महीने अभी तक कितनी सेल हुई
+hi	profit	पिछले महीने कितना फ़ायदा हुआ था
+hi	profit	इस महीने का मुनाफ़ा बता दीजिए
+hi	to_get	मार्केट में मेरा कितना पैसा फंसा है
+hi	to_get	ज़रा बताओ टोटल लेनदारी कितनी है
+hi	to_give	मेरे ऊपर कितना कर्ज़ा है
+hi	to_give	ज़रा बताओ कुल देनदारी कितनी है
+hi	who_owes_most	सबसे ज़्यादा पैसे किसकी तरफ़ हैं
+hi	who_owes_most	सबसे ज़्यादा बकाया किस पर है
+hi	not_paid	पैसे ना देने वाले कौन हैं
+hi	not_paid	किसने पैसे रोक रखे हैं
+hi	likely_payers	आजकल कौन अक्सर पैसे देता है
+hi	likely_payers	आज किस किस के आने की उम्मीद है पैसे देने
+hi	collected	इस हफ़्ते कितने पैसे मिले
+hi	collected	भाई कल कितने पैसे आए थे
+hi	drawer	दिन बंद करना है
+hi	drawer	दराज़ का कैश काउंट करवा दो
+hi	expiring	कौन कौन सा स्टॉक एक्सपायर हो रहा है
+hi	expiring	किस बैच की मियाद ख़त्म हो रही है
+hi	low_stock	स्टॉक किसका कम हो गया
+hi	low_stock	कम स्टॉक वाली चीज़ें बताइए
+hi	party_balance	{NAME} का खाता दिखाओ
+hi	party_balance	ज़रा {NAME} का अकाउंट तो देखना
+hi	party_phone	यार {NAME} का नंबर देना ज़रा
+hi	party_phone	{NAME} का व्हाट्सएप नंबर
+hi	party_last_payment	{NAME} का आख़िरी भुगतान
+hi	party_last_payment	ज़रा बताओ {NAME} की आख़िरी वसूली कब हुई थी
+hi	party_limit	{NAME} को कितना उधार दे सकता हूं
+hi	party_limit	ज़रा {NAME} की लिमिट चेक करो
+hi	party_promise	{NAME} ने कब देने को कहा था
+hi	party_promise	ज़रा देखो {NAME} ने कौन सा दिन बोला था देने का
+hi	party_when_pays	यार {NAME} कब तक दे देगा
+hi	party_when_pays	ज़रा बताओ {NAME} से वसूली कब होगी
+hi	party_details	{NAME} के पिता का नाम क्या है
+hi	party_details	ज़रा {NAME} की जानकारी निकालो
+hi	entry_gave	{NAME} को 350 का माल उधार दिया
+hi	entry_gave	{NAME} को 35000 का माल उधार पर दे दिया
+hi	entry_got	{NAME} से 350 वसूल हुए हैं
+hi	entry_got	{NAME} ने 35000 कैश जमा करवा दिए
+hi	goods_price	{ITEM} का रेट क्या चल रहा है
+hi	goods_price	ज़रा {ITEM} का दाम तो देखना
+hi	goods_stock	{ITEM} है या ख़त्म हो गया
+hi	goods_stock	ज़रा {ITEM} का स्टॉक चेक करो
+hi	goods_suppliers	{ITEM} किस किस सप्लायर से आता है
+hi	goods_suppliers	ज़रा {ITEM} के सप्लायर्स के रेट दिखाओ
+hi	goods_buyers	{ITEM} के ख़रीदार कौन हैं
+hi	goods_buyers	ज़रा बताओ {ITEM} किस किस को गया
+hi	goods_sold	{ITEM} की सेल कितनी हुई
+hi	goods_sold	ज़रा {ITEM} की इस महीने की सेल बताओ
+hi	shop_info	शॉप का नाम बताओ
+hi	shop_info	ज़रा दुकान का नाम और पता बताना
+hi	count_customers	कस्टमर्स की संख्या बताओ
+hi	count_customers	ज़रा गिनकर बताओ कितने कस्टमर्स हैं
+hi	count_products	कितने आइटम ऐड हैं
+hi	count_products	ज़रा गिनकर बताओ कितने प्रोडक्ट हैं
+hi	bills_today	इस हफ़्ते कितने सप्लायर बिल बने
+hi	bills_today	भाई आज के सप्लायर बिलों की टोटल रकम क्या है
+hi	invoices_today	इस हफ़्ते कितनी इनवॉइस बनी हैं
+hi	invoices_today	भाई आज की इनवॉइस दिखाओ
+hi	tickets_today	इस हफ़्ते काउंटर पर कितनी रसीदें कटीं
+hi	tickets_today	पिछले महीने काउंटर पर कितनी रसीद बनी थी
+hi	entries_today	इस हफ़्ते कितनी एंट्री हुई हैं
+hi	entries_today	भाई आज की एंट्री की गिनती बताओ
+hi	calculator_uses	इस हफ़्ते कैलकुलेटर कितनी बार खोला
+hi	calculator_uses	भाई आज कैलकुलेटर पे कितनी बार जोड़ घटाव हुआ
+hi	app_opens	इस हफ़्ते ऐप कितनी बार खुला
+hi	app_opens	भाई आज यह ऐप कितनी बार खोल चुका हूं
+hi	cheques_status	किस चेक की तारीख़ आ गई है
+hi	cheques_status	ज़रा चेक देखो कौन से रहते हैं
+hi	plans_status	इंस्टॉलमेंट प्लान दिखाओ
+hi	plans_status	ज़रा इंस्टॉलमेंट चेक करो
+hi	staff_salary	तनख़्वाह का हिसाब बताओ
+hi	staff_salary	ज़रा स्टाफ की सैलरी और एडवांस दिखाओ
+hi	deliveries	इस हफ़्ते कितना माल आया
+hi	deliveries	भाई आज की डिलीवरी बताओ क्या क्या आया
+hi	activity	इस हफ़्ते कौन सी एंट्री एडिट हुई
+hi	activity	पिछले महीने क्या क्या डिलीट किया गया था
+hi	backup_status	लास्ट बैकअप कब लिया था
+hi	backup_status	ज़रा बैकअप का स्टेटस बताओ
+hi	book_summary	कुल हिसाब किताब क्या है
+hi	book_summary	ज़रा पूरे खाते का हाल सुना दो
+hi	cashbook_today	इस हफ़्ते कैश बुक का हिसाब बताओ
+hi	cashbook_today	भाई आज के ख़र्चे दिखाओ
+hi	returns_today	इस हफ़्ते कितनी वापसी हुई
+hi	returns_today	भाई आज की वापसी दिखाओ
+hi	help_howto	सप्लायर बिल कैसे डालते हैं
+hi	help_howto	ज़रा बताओ भाषा कैसे बदलते हैं
+hi	act_fly	ज़रा उड़ कर दिखाओ
+hi	act_fly	हुदहुद उड़ के दिखा ना
+hi	act_dance	क्या तुम डांस कर सकते हो
+hi	act_dance	एक डांस हो जाए
+hi	act_jump	क्या तुम कूद सकते हो
+hi	act_jump	हुदहुद एक बार उछलो
+bn	who_are_you	তোমার পরিচয় দাও
+bn	who_are_you	আচ্ছা তুমি আসলে কে
+bn	abilities	তুমি কি কি জানো
+bn	abilities	তুমি কিসের জন্য আছো
+bn	how_are_you	কি খবর তোমার
+bn	how_are_you	শরীর ভালো তো
+bn	can_talk	শুনছো তো
+bn	can_talk	আমার কথা কি শোনা যাচ্ছে
+bn	address	হুদহুদ
+bn	address	ও ভাই শোনো
+bn	salaam	সালাম ভাই
+bn	salaam	আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহ
+bn	hello	হ্যালো হুদহুদ
+bn	hello	হাই হুদহুদ
+bn	thanks	ধন্যবাদ ভাই
+bn	thanks	সাহায্যের জন্য ধন্যবাদ
+bn	bye	খোদা হাফেজ
+bn	bye	টা টা
+bn	praise	বাহ চমৎকার
+bn	praise	তুমি খুব কাজের
+bn	owner_name	আমার নামটা বলো তো
+bn	owner_name	তোমার কাছে আমার নাম কি লেখা আছে
+bn	maker	তোমার নির্মাতা কে
+bn	maker	এই অ্যাপের পেছনে কে আছে
+bn	app_about	এই অ্যাপ কিসের জন্য
+bn	app_about	এই অ্যাপের ব্যাপারে কিছু বলো
+bn	privacy	আমার ডেটা কে কে দেখতে পারে
+bn	privacy	আমার তথ্য কি গোপন থাকে
+bn	languages	তুমি কি বাংলা বোঝো
+bn	languages	কোন কোন ভাষা সাপোর্ট করে একটু বলো
+bn	date_time	আজকের তারিখ বলো
+bn	date_time	আজ হিজরি কত তারিখ
+bn	today_summary	আজকের সামারি দাও
+bn	today_summary	আজকের সারসংক্ষেপ বলো
+bn	sales_today	আজ কত টাকার মাল বিক্রি হলো
+bn	sales_today	আজ কত বেচলাম
+bn	sales_period	এই মাসে কত বিক্রি হলো
+bn	sales_period	এই সপ্তাহে কত বেচলাম
+bn	profit	গত মাসে প্রফিট কত ছিল
+bn	profit	এই মাসে লাভ হচ্ছে তো ভাই
+bn	to_get	বাজারে আমার কত টাকা পড়ে আছে
+bn	to_get	টোটাল পাওনা
+bn	to_give	সাপ্লায়ারদের মোট কত দিতে হবে
+bn	to_give	দোকানের ঘাড়ে মোট কত দেনা
+bn	who_owes_most	কে আমার কাছে সবচেয়ে বেশি দেনা
+bn	who_owes_most	সবচেয়ে বেশি বাকি যাদের তাদের দেখাও
+bn	not_paid	কার পেমেন্ট দেরি হয়েছে
+bn	not_paid	দেরি করা কাস্টমার কারা
+bn	likely_payers	আজ কোন কাস্টমার পেমেন্ট করতে পারে
+bn	likely_payers	আজ কোনো কাস্টমারের টাকা দেওয়ার সম্ভাবনা আছে
+bn	collected	এই সপ্তাহে কত টাকা আদায় হলো
+bn	collected	আজকের মোট আদায়
+bn	drawer	দিন বন্ধ করতে চাই
+bn	drawer	গল্লায় কত টাকা আছে
+bn	expiring	শিগগির কোন পণ্যের মেয়াদ যাবে
+bn	expiring	মেয়াদ শেষ হচ্ছে কিসের
+bn	low_stock	লো স্টক আইটেম
+bn	low_stock	স্টক কম কিসের
+bn	party_balance	{NAME} এর বাকি কত
+bn	party_balance	{NAME} এর নামে কত বাকি আছে
+bn	party_phone	{NAME} এর নাম্বার বলো
+bn	party_phone	{NAME} কে কোন নাম্বারে ফোন দেবো
+bn	party_last_payment	{NAME} লাস্ট কবে পেমেন্ট করেছে
+bn	party_last_payment	{NAME} এর কাছ থেকে শেষ কবে টাকা পেয়েছি
+bn	party_limit	{NAME} এর লিমিট বলো
+bn	party_limit	{NAME} লিমিটের কত টাকা ব্যবহার করেছে
+bn	party_promise	{NAME} এর কথা দেওয়া দিন বলো
+bn	party_promise	{NAME} এর ওয়াদার দিন
+bn	party_when_pays	{NAME} এর কাছ থেকে কবে টাকা পাবো
+bn	party_when_pays	{NAME} সাধারণত কবে টাকা দেয়
+bn	party_details	{NAME} কোন গ্রামের
+bn	party_details	{NAME} এর তথ্য দাও
+bn	entry_gave	{NAME} এর নামে 750 টাকা বাকি লেখো
+bn	entry_gave	{NAME} কে 10000 টাকা ধার দিলাম
+bn	entry_got	{NAME} আমাকে 750 টাকা দিলো
+bn	entry_got	{NAME} এর 10000 টাকা পেমেন্ট পেয়েছি
+bn	goods_price	{ITEM} কত করে
+bn	goods_price	{ITEM} এর নগদ আর বাকির দাম
+bn	goods_stock	{ITEM} এর স্টক কত
+bn	goods_stock	{ITEM} এর মজুদ কত
+bn	goods_suppliers	{ITEM} কে সাপ্লাই দেয়
+bn	goods_suppliers	কোন কোম্পানি {ITEM} ভালো রেটে দেয়
+bn	goods_buyers	{ITEM} কে নিয়েছে
+bn	goods_buyers	{ITEM} কোন কাস্টমারদের কাছে বেচেছি
+bn	goods_sold	এই সপ্তাহে {ITEM} এর সেল কত
+bn	goods_sold	আজ {ITEM} কত পরিমাণ বিক্রি হলো
+bn	shop_info	দোকানের তথ্য একটু বলো
+bn	shop_info	ব্যবসার নাম আর ঠিকানা দেখাও
+bn	count_customers	কাস্টমার সংখ্যা
+bn	count_customers	সাপ্লায়ারের সংখ্যা কত
+bn	count_products	প্রোডাক্ট সংখ্যা
+bn	count_products	প্রোডাক্ট লিস্টে কয়টা আইটেম
+bn	bills_today	এই সপ্তাহে সাপ্লায়ার বিল কত টাকার
+bn	bills_today	আজ কোনো সাপ্লায়ার বিল যোগ হয়েছে
+bn	invoices_today	এই সপ্তাহের ইনভয়েস
+bn	invoices_today	আজ ইনভয়েস কয়টা হলো
+bn	tickets_today	এই সপ্তাহে কাউন্টার সেলের টিকিট কয়টা
+bn	tickets_today	আজ কাউন্টারে কয়টা মেমো কাটা হলো
+bn	entries_today	এই সপ্তাহে এন্ট্রি কয়টা
+bn	entries_today	আজ খাতায় কোনো এন্ট্রি লেখা হয়েছে
+bn	calculator_uses	এই সপ্তাহে ক্যালকুলেটর কয়বার চলেছে
+bn	calculator_uses	আজ কেউ ক্যালকুলেটর চালিয়েছে
+bn	app_opens	এই সপ্তাহে অ্যাপ কয়বার খোলা হলো
+bn	app_opens	গত মাসে অ্যাপ খোলার সংখ্যা
+bn	cheques_status	কোনো চেক কি বাউন্স হয়েছে
+bn	cheques_status	পেন্ডিং চেকগুলো দেখাও
+bn	plans_status	কোন কিস্তি পেন্ডিং আছে
+bn	plans_status	আর কয়টা কিস্তি আসা বাকি
+bn	staff_salary	কর্মচারীরা কত অ্যাডভান্স নিয়েছে
+bn	staff_salary	কোন কর্মচারীর বেতন পেন্ডিং
+bn	deliveries	এই মাসে সাপ্লায়ারের কাছ থেকে কি স্টক এসেছে
+bn	deliveries	আজ দোকানে কি ডেলিভারি হয়েছে
+bn	activity	এই সপ্তাহে কি কি বদলানো হয়েছে
+bn	activity	আজকের অ্যাক্টিভিটি
+bn	backup_status	ব্যাকআপের অবস্থা
+bn	backup_status	লাস্ট ব্যাকআপ কবে
+bn	book_summary	পুরো খাতার সারাংশ
+bn	book_summary	খাতার মোট সারসংক্ষেপ দেখাও
+bn	cashbook_today	গতকাল খরচ কত হয়েছে
+bn	cashbook_today	আজ খরচ কত হলো
+bn	returns_today	এই সপ্তাহের রিটার্ন
+bn	returns_today	আজ কোনো কাস্টমার মাল ফেরত দিয়েছে
+bn	help_howto	নতুন পণ্য কিভাবে যোগ করে
+bn	help_howto	অ্যাপ লক কিভাবে চালু করে দেখাও
+bn	act_fly	স্ক্রিনে একটু উড়ে বেড়াও
+bn	act_fly	একবার উড়ে দেখাও তো
+bn	act_dance	একটু নেচে দেখাও প্লিজ
+bn	act_dance	একবার নাচবে
+bn	act_jump	একটা কসরত দেখাও
+bn	act_jump	একবার লাফাও তো
+ar	who_are_you	شو اسمك يا أخي
+ar	who_are_you	طيب قل لي من تكون
+ar	abilities	شو بتعرف
+ar	abilities	ايش الأشياء اللي تقدر تخبرني عنها
+ar	how_are_you	شلونك
+ar	how_are_you	شخبارك
+ar	can_talk	انت موجود
+ar	can_talk	بتسمعني يا أخي
+ar	address	يا أستاذ
+ar	address	يا عم
+ar	salaam	السلام عليكم ورحمة الله وبركاته
+ar	salaam	سلامو عليكم
+ar	hello	صباح الخير
+ar	hello	مرحبا يا هدهد
+ar	thanks	يعطيك العافية
+ar	thanks	متشكر اوي
+ar	bye	باي
+ar	bye	تصبح على خير
+ar	praise	برافو عليك
+ar	praise	جيد جدا
+ar	owner_name	شو اسمي عندك
+ar	owner_name	قل لي اسمي لو سمحت
+ar	maker	من الذي برمجك
+ar	maker	التطبيق ده بتاع أنهي شركة
+ar	app_about	التطبيق ده عبارة عن ايه
+ar	app_about	ما الغرض من هذا التطبيق
+ar	privacy	هل أحد يقدر يشوف بياناتي
+ar	privacy	هل ترسلون بياناتي الى سيرفر
+ar	languages	تفهم عربي
+ar	languages	هل تفهم لغات أخرى غير العربية
+ar	date_time	النهارده ايه
+ar	date_time	قديش الساعة
+ar	today_summary	ماذا يجب أن أفعل اليوم
+ar	today_summary	وش عندي اليوم
+ar	sales_today	كم بلغت المبيعات اليوم
+ar	sales_today	ما هي مبيعات اليوم
+ar	sales_period	مبيعات هذا الشهر كم
+ar	sales_period	كم بلغت المبيعات في الشهر الحالي
+ar	profit	ارباح هذا الاسبوع
+ar	profit	كم ارباحي هالشهر يا أخي
+ar	to_get	كل اللي ليا عند العملاء كام
+ar	to_get	مجموع ما يجب أن أستلمه من العملاء
+ar	to_give	كل اللي عليا للموردين كام
+ar	to_give	كم باقي علينا ندفع
+ar	who_owes_most	اكبر مديون مين
+ar	who_owes_most	وش اكبر دين عندنا وعلى مين
+ar	not_paid	مين متأخر عن الدفع
+ar	not_paid	مين اللي عليه دفعات متأخرة
+ar	likely_payers	من المحتمل ان يسدد اليوم
+ar	likely_payers	مين المفروض يدفع هاليومين
+ar	collected	كم التحصيل هذا الاسبوع
+ar	collected	كم سددوا لنا الزبائن امس
+ar	drawer	اريد اغلاق اليوم
+ar	drawer	جرد الصندوق لو سمحت
+ar	expiring	في حاجة هتنتهي صلاحيتها قريب
+ar	expiring	هل يوجد شيء صلاحيته على وشك الانتهاء
+ar	low_stock	الاصناف الناقصة في المخزون
+ar	low_stock	وش الاصناف اللي كميتها قربت تخلص
+ar	party_balance	{NAME} عليه كام
+ar	party_balance	كم علينا ل {NAME}
+ar	party_phone	رقم تليفون {NAME} ايه
+ar	party_phone	رقم جوال {NAME} يا أخي
+ar	party_last_payment	متى سدد {NAME} آخر مرة
+ar	party_last_payment	{NAME} متى اخر دفعة له يا أخي
+ar	party_limit	سقف الدين بتاع {NAME} كام
+ar	party_limit	كم الحد الاقصى لحساب {NAME}
+ar	party_promise	موعد وعد {NAME} بالدفع
+ar	party_promise	{NAME} وعدني بأي تاريخ يا أخي
+ar	party_when_pays	ايمتى بيدفع {NAME}
+ar	party_when_pays	متى نتوقع السداد من {NAME}
+ar	party_details	{NAME} من أي قرية
+ar	party_details	معلومات {NAME} لو سمحت
+ar	entry_gave	{NAME} خد بضاعة ب 750 على الحساب
+ar	entry_gave	عطيت {NAME} 1500 بالآجل يا أخي
+ar	entry_got	وصلني من {NAME} 2000
+ar	entry_got	جاني من {NAME} 1500
+ar	goods_price	سعر {ITEM}
+ar	goods_price	بكم نبيع {ITEM}
+ar	goods_stock	{ITEM} فاضل منه كام
+ar	goods_stock	كم حبة {ITEM} عندنا يا أخي
+ar	goods_suppliers	بنشتري {ITEM} بكام من كل مورد
+ar	goods_suppliers	سعر شراء {ITEM} عند الموردين
+ar	goods_buyers	أي زبائن اشتروا {ITEM}
+ar	goods_buyers	{ITEM} راح لمين
+ar	goods_sold	كم مبيعات {ITEM} هذا الاسبوع
+ar	goods_sold	{ITEM} بعنا منه كم امس
+ar	shop_info	ايش اسم محلي في التطبيق
+ar	shop_info	اعرض معلومات المحل لو سمحت
+ar	count_customers	كم عدد الموردين
+ar	count_customers	الزبائن كم واحد يا أخي
+ar	count_products	عدد الاصناف
+ar	count_products	عدد المنتجات يا أخي
+ar	bills_today	فواتير المشتريات هذا الاسبوع
+ar	bills_today	قديش فواتير الموردين اللي سجلناها اليوم
+ar	invoices_today	الفواتير الصادرة هذا الاسبوع
+ar	invoices_today	قديش فواتير طلعنا للزباين اليوم
+ar	tickets_today	كم وصل بيع هذا الاسبوع
+ar	tickets_today	قديش وصل طلع من الكاشير اليوم
+ar	entries_today	كم قيد دخلنا هذا الاسبوع
+ar	entries_today	قديش قيد كتبنا بالدفتر اليوم
+ar	calculator_uses	كم مرة فتحت الحاسبة هذا الاسبوع
+ar	calculator_uses	قديش مرة استعملت الحاسبة اليوم
+ar	app_opens	فتحت التطبيق كم مرة هذا الاسبوع
+ar	app_opens	قديش مرة فتحت البرنامج اليوم
+ar	cheques_status	في شيكات مرتجعة
+ar	cheques_status	هل رجع أي شيك
+ar	plans_status	في اقساط لازم تتدفع
+ar	plans_status	كم خطة تقسيط مفتوحة
+ar	staff_salary	السلف اللي اخذها الموظفين
+ar	staff_salary	الرواتب المستحقة للموظفين
+ar	deliveries	ماذا استلمنا من الموردين هذا الاسبوع
+ar	deliveries	وش البضاعة اللي نزلت عندنا امس
+ar	activity	ما الذي حذف هذا الاسبوع
+ar	activity	شو صار بالبرنامج اليوم
+ar	backup_status	اخر باك أب كان امتى
+ar	backup_status	وش وضع النسخة الاحتياطية
+ar	book_summary	الحساب العام
+ar	book_summary	ملخص كل الحسابات يا أخي
+ar	cashbook_today	كم المصروفات امس
+ar	cashbook_today	قديش مصاريف المحل اليوم
+ar	returns_today	في بضاعة رجعت النهارده
+ar	returns_today	شو رجع بضاعة اليوم
+ar	help_howto	ازاي اضيف منتج
+ar	help_howto	شلون اضيف مورد يا أخي
+ar	act_fly	حلق يا هدهد
+ar	act_fly	طير حول الشاشة لو سمحت
+ar	act_dance	هل تستطيع الرقص
+ar	act_dance	ارقص شوية لو سمحت
+ar	act_jump	هل تستطيع القفز
+ar	act_jump	يلا نط وورني
+fa	who_are_you	شما کی هستید
+fa	who_are_you	داداش اسمت چی بود
+fa	abilities	چه چیزهایی میدونی
+fa	abilities	چه کمکی از دستت برمیاد داداش
+fa	how_are_you	حال شما چطور است
+fa	how_are_you	جور هستی
+fa	can_talk	صدای من را می‌شنوی
+fa	can_talk	داداش صدام میاد
+fa	address	آقا
+fa	address	رفیق
+fa	salaam	سلام علیکم و رحمت الله
+fa	salaam	سلام آقا
+fa	hello	های
+fa	hello	درود بر شما
+fa	thanks	خیلی ممنون
+fa	thanks	متشکرم هدهد جان
+fa	bye	فعلا
+fa	bye	شب خوش
+fa	praise	دمت گرم
+fa	praise	خیلی عالی هستی
+fa	owner_name	منو چی صدا میزنی
+fa	owner_name	داداش بگو اسم من چیه
+fa	maker	سازنده این اپ کیه
+fa	maker	داداش کی ساختت
+fa	app_about	روشن کهاتا چیه
+fa	app_about	داداش این اپ اصلا چیه
+fa	privacy	کسی میتونه اطلاعات منو ببینه
+fa	privacy	حریم خصوصی من چطوره
+fa	languages	انگلیسی بلدی
+fa	languages	به چه زبانی میتونم باهات حرف بزنم
+fa	date_time	امروز چند شنبه است
+fa	date_time	امروز چندم ماه است
+fa	today_summary	امروز باید چیکار کنم
+fa	today_summary	کارهای مانده امروز چیست
+fa	sales_today	امروز چقدر فروش داشتیم
+fa	sales_today	میزان فروش امروز را بگو
+fa	sales_period	فروش این ماه چقدره
+fa	sales_period	این هفته چقدر فروش داشتیم داداش
+fa	profit	سود این هفته
+fa	profit	این ماه چقدر سود بردم داداش
+fa	to_get	مردم چقدر به من بدهکارند
+fa	to_get	کل بدهی مشتریان به مغازه
+fa	to_give	مغازه چقدر بدهی داره
+fa	to_give	کل پولی که باید بدم چقدره
+fa	who_owes_most	بیشترین طلب را از کی دارم
+fa	who_owes_most	بیشترین پول را کی به من بدهکار است
+fa	not_paid	بدحساب‌ها کیا هستن
+fa	not_paid	لیست کسانی که دیرکرد دارند
+fa	likely_payers	امروز از کی انتظار پرداخت داریم
+fa	likely_payers	کدام مشتری‌ها این روزها پرداخت می‌کنند
+fa	collected	این هفته چقدر دریافت کردیم
+fa	collected	دیروز چند پیسه از مشتریا گرفتیم
+fa	drawer	نقدی دست من چقدر است
+fa	drawer	شمارش صندوق لطفا
+fa	expiring	کدام اجناس تاریخشان رو به اتمام است
+fa	expiring	تاریخ انقضای چی نزدیکه داداش
+fa	low_stock	کدام اجناس موجودی‌شان کم است
+fa	low_stock	موجودی چی پایینه داداش
+fa	party_balance	مانده حساب {NAME}
+fa	party_balance	داداش حساب {NAME} چنده
+fa	party_phone	نمبر {NAME} چند است
+fa	party_phone	میخوام به {NAME} زنگ بزنم شمارش چنده
+fa	party_last_payment	آخرین پرداختی {NAME} کی بود
+fa	party_last_payment	{NAME} دفعه آخر کی پول آورد داداش
+fa	party_limit	تا چقدر میتونم به {NAME} نسیه بدم
+fa	party_limit	لیمیت {NAME} چنده داداش
+fa	party_promise	{NAME} وعده کدام روز را داده
+fa	party_promise	{NAME} قرار گذاشته چه روزی تسویه کنه
+fa	party_when_pays	کی {NAME} تسویه میکنه
+fa	party_when_pays	{NAME} چه زمانی پول خواهد داد
+fa	party_details	{NAME} از کدام روستاست
+fa	party_details	اطلاعات کامل {NAME} لطفا
+fa	entry_gave	{NAME} 750 جنس نسیه گرفت
+fa	entry_gave	به {NAME} 1500 جنس نسیه دادم داداش
+fa	entry_got	{NAME} 2000 پیسه آورد
+fa	entry_got	از {NAME} 1500 رسید
+fa	goods_price	{ITEM} چند است
+fa	goods_price	لطفا قیمت {ITEM} را بگو
+fa	goods_stock	{ITEM} داریم
+fa	goods_stock	چقدر {ITEM} باقی مانده است
+fa	goods_suppliers	{ITEM} را از کدام عمده‌فروش ارزان‌تر میخریم
+fa	goods_suppliers	قیمت‌های خرید {ITEM} رو مقایسه کن
+fa	goods_buyers	{ITEM} را کی برد
+fa	goods_buyers	لیست خریداران {ITEM} را نشان بده
+fa	goods_sold	فروش {ITEM} این هفته
+fa	goods_sold	دیروز چند تا {ITEM} فروش رفت
+fa	shop_info	نام دکان ثبت شده چیست
+fa	shop_info	اطلاعات فروشگاه را نشان بده
+fa	count_customers	تعداد تامین‌کننده‌ها چنده
+fa	count_customers	چند مشتری و چند فروشنده عمده دارم
+fa	count_products	تعداد کالاها چنده
+fa	count_products	چند قلم کالا در برنامه است
+fa	bills_today	فاکتورهای خرید این هفته
+fa	bills_today	امروز چند بل خرید داخل شد
+fa	invoices_today	فاکتورهای صادرشده این هفته
+fa	invoices_today	امروز چند انوایس جور کردیم
+fa	tickets_today	این هفته چند رسید فروش صادر شد
+fa	tickets_today	امروز چند رسید کانتر جور شد
+fa	entries_today	این هفته چند ثبت در دفتر حساب زدیم
+fa	entries_today	امروز چند ثبت در کهاته نوشته شد
+fa	calculator_uses	این هفته چند بار با ماشین حساب حساب کردم
+fa	calculator_uses	امروز چند بار حساب‌کتاب با ماشین حساب زدم
+fa	app_opens	این هفته چند بار برنامه را باز کردم
+fa	app_opens	امروز چند بار به برنامه سر زدم
+fa	cheques_status	چک برگشتی داریم
+fa	cheques_status	آیا چکی برگشت خورده
+fa	plans_status	چند قسط عقب افتاده داریم
+fa	plans_status	پلان‌های قسطی در چه حال است
+fa	staff_salary	مساعده‌هایی که کارگرها گرفتند
+fa	staff_salary	تنخواه کارکنان چند مانده
+fa	deliveries	این هفته از تامین‌کننده‌ها چی تحویل گرفتیم
+fa	deliveries	امروز کدام مال به دکان رسید
+fa	activity	این هفته چی حذف شده
+fa	activity	امروز در برنامه چه کارها شد
+fa	backup_status	آخرین نسخه پشتیبان مربوط به چه زمانی است
+fa	backup_status	بکاپ گرفته شد داداش
+fa	book_summary	حساب کلی
+fa	book_summary	نمای کلی دفتر مغازه
+fa	cashbook_today	مخارج دیروز چقدر بود
+fa	cashbook_today	امروز در دفتر نقدی چقدر پول آمد و چقدر رفت
+fa	returns_today	کالاهای برگشتی این هفته
+fa	returns_today	امروز کدام مال واپس آمد
+fa	help_howto	چطور کالا اضافه کنم
+fa	help_howto	چه قسم تامین‌کننده اضافه کنم
+fa	act_fly	پرواز کن هدهد جان
+fa	act_fly	پر بزن
+fa	act_dance	می‌توانی برقصی
+fa	act_dance	لطفا کمی برقص
+fa	act_jump	میتونی بپری
+fa	act_jump	بپر ببینم هدهد جان
+sd	who_are_you	پنهنجو تعارف ڪراءِ
+sd	who_are_you	تون آهين ڪير
+sd	abilities	تون ڇا ڄاڻين ٿو
+sd	abilities	سائين توهان مون کي ڇا ڇا ٻڌائي سگهو ٿا
+sd	how_are_you	خوش آهين
+sd	how_are_you	خير ته آهين
+sd	can_talk	تون موجود آهين
+sd	can_talk	منهنجي ڳالهه ٻڌين ٿو يا نه
+sd	address	هدهد
+sd	address	او ادا
+sd	salaam	السلام عليڪم ورحمة الله
+sd	salaam	سلام ادا
+sd	hello	هيلو ادا
+sd	hello	صبح بخير سائين
+sd	thanks	ٿورا
+sd	thanks	جزاڪ الله
+sd	bye	باءِ
+sd	bye	الله واهي سائين
+sd	praise	تون ڏاڍو سٺو آهين
+sd	praise	شاباس ادا
+sd	owner_name	تون مون کي ڇا سڏيندو آهين
+sd	owner_name	ادا منهنجو نالو ته ٻڌاءِ
+sd	maker	تنهنجو ٺاهيندڙ ڪير آهي
+sd	maker	سائين توهان کي ڪنهن ٺاهيو آهي
+sd	app_about	هيءَ ايپ ڇا جي لاءِ آهي
+sd	app_about	هي پروگرام ڇا آهي
+sd	privacy	منهنجو ڊيٽا ڪو ٻيو ڏسي سگهي ٿو
+sd	privacy	ادا منهنجو ڊيٽا سيف آهي يا نه
+sd	languages	اردو اچي ٿي
+sd	languages	ٻيون ڪهڙيون ٻوليون ڄاڻين ٿو
+sd	date_time	اڄ ڪهڙو ڏينهن آهي
+sd	date_time	وقت ڪيترو ٿيو آهي
+sd	today_summary	اڄ مون کي ڇا ڪرڻو آهي
+sd	today_summary	مهرباني ڪري اڄ جي رپورٽ مختصر ٻڌاءِ
+sd	sales_today	اڄ اسان ڪيترو وڪيو
+sd	sales_today	اڄ جو وڪرو ٻڌايو سائين
+sd	sales_period	هن مهيني جو وڪرو ڪيترو آهي
+sd	sales_period	هلندڙ مهيني ۾ ڪيتري سيل ٿي آهي ادا
+sd	profit	هن هفتي جو منافعو
+sd	profit	ادا هن مهيني ڪيترو ڪمايوسين
+sd	to_get	سڄي اڌار ڪيتري بيٺي آهي
+sd	to_get	ادا سڀني گراهڪن کان ڪيترا وٺڻا آهن
+sd	to_give	سپلائرن کي ڪيترا ڏيڻا آهن
+sd	to_give	ڪل ادائيگي ڪيتري رهيل آهي
+sd	who_owes_most	سڀ کان وڌيڪ ڪنهن کان وٺڻا آهن
+sd	who_owes_most	ٽاپ قرضدار ڪير آهي
+sd	not_paid	ڪنهن جي ادائيگي ليٽ آهي
+sd	not_paid	ليٽ ڏيڻ وارا گراهڪ
+sd	likely_payers	عام طور هنن ڏينهن ۾ ڪير پئسا ڏيندو آهي
+sd	likely_payers	اڄڪلهه ڪير پئسا ڏيڻ وارو آهي
+sd	collected	هن هفتي ڪيتري وصولي ٿي
+sd	collected	ڪالهه ڪيترا پئسا آيا گراهڪن وٽان
+sd	drawer	ڏينهن بند ڪرڻو آهي
+sd	drawer	مهرباني ڪري گلي جي ڳڻپ ڪراءِ
+sd	expiring	ڪهڙين شين جي تاريخ ختم ٿيڻ واري آهي
+sd	expiring	ايڪسپائري جي ويجهو ڇا ڇا آهي
+sd	low_stock	اسٽاڪ ۾ ڇا گهٽ آهي
+sd	low_stock	ڇا ڇا خريد ڪرڻو پوندو
+sd	party_balance	{NAME} ڏانهن ڪيتري اڌار آهي
+sd	party_balance	{NAME} جي باقي ڪيتري آهي
+sd	party_phone	{NAME} جو نمبر ٻڌاءِ
+sd	party_phone	مهرباني ڪري {NAME} جو فون نمبر ٻڌايو
+sd	party_last_payment	{NAME} آخري پئسا ڪڏهن ڏنا هئا
+sd	party_last_payment	{NAME} پڇاڙي واري ادائيگي ڪڏهن ڪئي
+sd	party_limit	{NAME} کي ڪيتري تائين اڌار ڏئي سگهجي ٿي
+sd	party_limit	{NAME} پنهنجي حد کان مٿي ويو آهي ڇا
+sd	party_promise	{NAME} ڪهڙي تاريخ تي ڏيڻ جو چيو هو
+sd	party_promise	{NAME} ڪهڙي تاريخ جي زبان ڏني آهي
+sd	party_when_pays	{NAME} کان پئسا ڪڏهن ملندا
+sd	party_when_pays	{NAME} کان وصولي ڪڏهن ٿيندي
+sd	party_details	{NAME} ڪهڙي ڳوٺ جو آهي
+sd	party_details	ادا {NAME} جو ڳوٺ ۽ پيءُ جو نالو ٻڌاءِ
+sd	entry_gave	{NAME} 750 جو مال اڌار تي کنيو
+sd	entry_gave	ادا {NAME} کي 1500 اڌار ڏنا آهن، لکي ڇڏ
+sd	entry_got	{NAME} وٽان 2000 وصول ٿيا
+sd	entry_got	{NAME} کان 1500 اچي ويا
+sd	goods_price	{ITEM} جو ريٽ
+sd	goods_price	{ITEM} جي وڪري جي قيمت
+sd	goods_stock	{ITEM} آهي يا ختم ٿي ويو
+sd	goods_stock	گودام ۾ {ITEM} ڪيترو پيو آهي
+sd	goods_suppliers	{ITEM} ڪهڙي واپاري وٽان سستو ملي ٿو
+sd	goods_suppliers	سپلائرن جا {ITEM} وارا ريٽ ڀيٽي ڏيکار
+sd	goods_buyers	ڪهڙن گراهڪن {ITEM} خريد ڪيو
+sd	goods_buyers	{ITEM} خريد ڪندڙن جي لسٽ ڏيکار
+sd	goods_sold	هن هفتي {ITEM} جو وڪرو
+sd	goods_sold	ڪالهه {ITEM} ڪيترا وڪرو ٿيا ادا
+sd	shop_info	ايپ ۾ منهنجي دڪان جو نالو ڇا لکيل آهي
+sd	shop_info	ادا دڪان جو نالو ۽ پتو ٻڌاءِ
+sd	count_customers	ڪيترا سپلائر آهن
+sd	count_customers	کاتي ۾ ڪيترا گراهڪ درج آهن
+sd	count_products	ڪيترا آئٽم لکيل آهن
+sd	count_products	مال جا ڪيترا قسم آهن
+sd	bills_today	هن هفتي جا سپلائر بل
+sd	bills_today	اڄ خريداري جا بل ڪيتري رقم جا ٿيا ادا
+sd	invoices_today	هن هفتي جون انوائسون
+sd	invoices_today	اڄ ڪيترا انوائس ڪٽيا ادا
+sd	tickets_today	هن هفتي ڪيتريون رسيدون نڪتيون
+sd	tickets_today	اڄ ڪائونٽر تان ڪيترا ٽڪيٽ نڪتا ادا
+sd	entries_today	هن هفتي کاتي ۾ ڪيتريون اينٽريون ٿيون
+sd	entries_today	اڄ کاتي ۾ ڪيترا ڀيرا لکيو ويو ادا
+sd	calculator_uses	هن هفتي ڪيلڪيوليٽر ڪيترا ڀيرا کوليو
+sd	calculator_uses	اڄ ڪيلڪيوليٽر گهڻا دفعا هليو ادا
+sd	app_opens	هن هفتي مون ايپ ڪيترا ڀيرا کولي
+sd	app_opens	اڄ ايپ گهڻا دفعا کولي آهي ادا
+sd	cheques_status	ڪو چيڪ بائونس ٿيو آهي
+sd	cheques_status	ڪو چيڪ موٽيو ته نه آهي
+sd	plans_status	ڪيتريون قسطون ليٽ آهن
+sd	plans_status	ادا قسطن جو ڇا ٿيو
+sd	staff_salary	ملازمن جيڪا ايڊوانس کنئي آهي
+sd	staff_salary	ادا ڇوڪرن جي پگهار ڪيتري بيٺي آهي
+sd	deliveries	هن هفتي سپلائرن کان ڇا ڇا آيو
+sd	deliveries	اڄ سپلائر وٽان ڇا آيو آهي ادا
+sd	activity	هن هفتي ڇا ڊيليٽ ٿيو
+sd	activity	اڄ ايپ ۾ ڪهڙا ڪم ٿيا ادا
+sd	backup_status	آخري بيڪ اپ ڪڏهن جو آهي
+sd	backup_status	بيڪ اپ تازو آهي يا پراڻو
+sd	book_summary	ڪل حساب
+sd	book_summary	ادا سڄي کاتي جي ڇا صورتحال آهي
+sd	cashbook_today	ڪالهه جا خرچا ڪيترا هئا
+sd	cashbook_today	اڄ ڪيش بڪ ۾ ڪيترا آيا ۽ ڪيترا ويا ادا
+sd	returns_today	هن هفتي واپس ٿيل مال
+sd	returns_today	اڄ ڪو سامان واپس آيو آهي ادا
+sd	help_howto	نئين شيءِ ڪيئن وجهان
+sd	help_howto	ادا سپلائر ڪيئن ايڊ ڪجي
+sd	act_fly	اڏام هدهد
+sd	act_fly	ادا هڪ اڏام ته ڪر
+sd	act_dance	نچ هدهد
+sd	act_dance	مهرباني ڪري ٿورو نچ
+sd	act_jump	ڇا تون ٽپ ڏئي سگهين ٿو
+sd	act_jump	ادا هڪ ٽپ ته ڏي
+id	who_are_you	perkenalkan dirimu
+id	who_are_you	sebenarnya kamu ini siapa sih
+id	abilities	kamu tahu apa saja
+id	abilities	kamu jagonya apa
+id	how_are_you	sehat kan
+id	how_are_you	kamu sehat
+id	can_talk	kamu lagi dengerin kan
+id	can_talk	suara saya kedengaran nggak
+id	address	dengar
+id	address	Mas
+id	salaam	assalamualaikum Bang
+id	salaam	assalamualaikum Pak
+id	hello	halo Hudhud
+id	hello	halo halo
+id	thanks	makasih ya
+id	thanks	terima kasih atas bantuannya
+id	bye	oke dah Hudhud
+id	bye	duluan ya Bang
+id	praise	mantap
+id	praise	sip mantap Bang
+id	owner_name	sebutkan nama saya
+id	owner_name	kamu kenal saya kan, nama saya siapa
+id	maker	siapa pembuatmu
+id	maker	yang bikin kamu siapa sih
+id	app_about	aplikasi ini untuk apa
+id	app_about	kasih info tentang aplikasi ini dong
+id	privacy	siapa saja yang bisa lihat data saya
+id	privacy	apakah informasi saya rahasia
+id	languages	kamu ngerti bahasa Indonesia
+id	languages	bahasa Inggris dan Arab bisa juga nggak
+id	date_time	tanggal hari ini dong
+id	date_time	tanggal Hijriah hari ini berapa
+id	today_summary	kasih rangkuman hari ini dong
+id	today_summary	rangkuman untuk hari ini
+id	sales_today	hari ini laku berapa
+id	sales_today	omzet hari ini
+id	sales_period	bulan ini penjualan brp
+id	sales_period	minggu ini laku berapa ya
+id	profit	bulan lalu untungnya berapa
+id	profit	bulan ini untung nggak ya
+id	to_get	berapa total yang harus ditagih dari pelanggan
+id	to_get	total yang harus diterima
+id	to_give	total utang saya ke pemasok berapa
+id	to_give	utang aku totalnya berapa ya
+id	who_owes_most	pengutang terbesar siapa
+id	who_owes_most	utang paling besar ada di pelanggan mana ya
+id	not_paid	siapa yang terlambat membayar
+id	not_paid	pelanggan mana yang telat bayar ya
+id	likely_payers	pelanggan mana yang mungkin bayar hari ini
+id	likely_payers	ada pelanggan yang diperkirakan bayar hari ini nggak ya
+id	collected	minggu ini berapa pembayaran pelanggan yang masuk
+id	collected	total penagihan hari ini ya
+id	drawer	saya mau tutup hari
+id	drawer	uang di laci kasir berapa ya
+id	expiring	tampilkan barang yang sebentar lagi expired
+id	expiring	apa saja yang hampir expired
+id	low_stock	barang stok rendah
+id	low_stock	ada stok yang menipis nggak
+id	party_balance	catatan utang {NAME}
+id	party_balance	sisa utang {NAME} berapa ya
+id	party_phone	nomor HP {NAME} berapa
+id	party_phone	{NAME} bisa ditelepon di nomor berapa
+id	party_last_payment	{NAME} terakhir bayar kapan
+id	party_last_payment	kapan terakhir saya terima uang dari {NAME}
+id	party_limit	batas utang {NAME} berapa
+id	party_limit	{NAME} sudah pakai berapa dari limitnya
+id	party_promise	hari janji bayar {NAME}
+id	party_promise	hari yang dijanjikan {NAME}
+id	party_when_pays	kapan saya bisa terima uang dari {NAME}
+id	party_when_pays	{NAME} biasanya bayar kapan
+id	party_details	{NAME} dari desa mana
+id	party_details	minta informasi {NAME} dong
+id	entry_gave	catat utang 75000 untuk {NAME}
+id	entry_gave	saya pinjamkan 1000000 ke {NAME}
+id	entry_got	{NAME} kasih saya 75000
+id	entry_got	pembayaran 1000000 diterima dari {NAME}
+id	goods_price	{ITEM} berapaan
+id	goods_price	harga tunai dan kredit {ITEM}
+id	goods_stock	stok {ITEM} berapa
+id	goods_stock	jumlah {ITEM} yang tersisa
+id	goods_suppliers	siapa yang memasok {ITEM}
+id	goods_suppliers	perusahaan mana yang kasih {ITEM} harga terbaik
+id	goods_buyers	siapa yang ambil {ITEM}
+id	goods_buyers	ke pelanggan mana saya jual {ITEM}
+id	goods_sold	penjualan {ITEM} minggu ini brp
+id	goods_sold	berapa banyak {ITEM} yang terjual hari ini
+id	shop_info	tolong detail toko saya
+id	shop_info	tampilkan nama dan alamat usaha saya
+id	count_customers	jumlah pelanggan
+id	count_customers	jumlah pemasok
+id	count_products	jumlah produk
+id	count_products	jumlah item di daftar produk
+id	bills_today	faktur pemasok minggu ini berapa
+id	bills_today	ada nota pemasok yang ditambah hari ini nggak
+id	invoices_today	faktur penjualan minggu ini
+id	invoices_today	hari ini invoice brp
+id	tickets_today	struk penjualan kasir minggu ini
+id	tickets_today	hari ini berapa struk yang dicetak di kasir
+id	entries_today	jumlah entri minggu ini
+id	entries_today	ada catatan yang ditulis di buku hari ini nggak
+id	calculator_uses	minggu ini kalkulator dipakai berapa kali
+id	calculator_uses	ada yang pakai kalkulator hari ini
+id	app_opens	aplikasi dibuka minggu ini berapa kali
+id	app_opens	jumlah buka aplikasi bulan lalu
+id	cheques_status	ada cek yang ditolak nggak
+id	cheques_status	tampilkan cek yang belum cair
+id	plans_status	cicilan mana yang belum dibayar
+id	plans_status	berapa angsuran yang belum masuk
+id	staff_salary	karyawan ambil kasbon berapa
+id	staff_salary	pegawai mana yang gajinya masih tertunda
+id	deliveries	stok apa yang datang dari pemasok bulan ini
+id	deliveries	apa yang dikirim ke toko hari ini
+id	activity	apa yang diubah minggu ini
+id	activity	aktivitas hari ini
+id	backup_status	status backup
+id	backup_status	terakhir backup kapan
+id	book_summary	ringkasan seluruh buku saya
+id	book_summary	tampilkan ringkasan total buku besar
+id	cashbook_today	pengeluaran kemarin brp
+id	cashbook_today	hari ini biaya berapa
+id	returns_today	retur minggu ini
+id	returns_today	ada pelanggan yang mengembalikan barang hari ini nggak
+id	help_howto	cara menambah produk baru
+id	help_howto	ajari saya cara pasang kunci aplikasi
+id	act_fly	terbang keliling layar
+id	act_fly	coba terbang sekali
+id	act_dance	tolong menari sedikit
+id	act_dance	mau joget sekali nggak
+id	act_jump	tunjukkan satu trik
+id	act_jump	coba loncat sekali

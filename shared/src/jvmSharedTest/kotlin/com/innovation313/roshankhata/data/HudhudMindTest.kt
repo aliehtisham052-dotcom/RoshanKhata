@@ -21,6 +21,9 @@ import org.junit.Test
  */
 class HudhudMindTest {
 
+    // understand() reads with the sense the app ships (the rules alone: byRules).
+    init { HudhudSense.use(HudhudModelTest.shippedModel()) }
+
     private val names = listOf(
         Hudhud.Name(1, "Abid Ali"), Hudhud.Name(2, "Bashir Ahmad"), Hudhud.Name(3, "Naeem Khan"),
         Hudhud.Name(4, "Malik Riaz"), Hudhud.Name(5, "Kamal Din"), Hudhud.Name(6, "Rehmat Store"),
@@ -37,7 +40,14 @@ class HudhudMindTest {
         Hudhud.Topic("intro_staff", "Staff", "Salaries, advances and attendance of the people who work for you.")
     )
 
-    private fun ask(s: String, before: Ask? = null) = Hudhud.understand(s, names, topics, goods = goods, before = before)
+    // The rules' own reading: HudhudSenseTest measures the rules and the sense together on the held-out set.
+    private fun ask(s: String, before: Ask? = null) = Hudhud.byRules(s, names, topics, goods = goods, before = before)
+
+    /** Every sentence of [said] names nobody, and he tells what he can without a name ([Ask.NeedName]). */
+    private fun needs(said: List<String>) {
+        val wrong = said.mapNotNull { s -> ask(s).takeIf { it !is Ask.NeedName }?.let { "\"$s\" -> $it" } }
+        assertEquals("expected a question about somebody unnamed:\n" + wrong.joinToString("\n"), 0, wrong.size)
+    }
 
     /** Every sentence of [said] must be taken for [expected]; all misses are listed together. */
     private fun all(expected: Ask, said: List<String>, before: Ask? = null) {
@@ -388,8 +398,8 @@ class HudhudMindTest {
     }
 
     @Test fun `a question about somebody who is not named asks whose`() {
-        all(Ask.NeedName, listOf("uska number", "limit kitni hai", "wada kab ka hai", "aakhri payment kab aayi", "walid ka naam"))
-        assertEquals(Ask.DidYouMean(listOf(Ask.Shop(ShopFacet.PHONE), Ask.NeedName)), ask("number"))
+        needs(listOf("uska number", "limit kitni hai", "wada kab ka hai", "aakhri payment kab aayi", "walid ka naam"))
+        assertEquals(Ask.DidYouMean(listOf(Ask.Shop(ShopFacet.PHONE), Ask.NeedName(Facet.PHONE))), ask("number"))
     }
 
     // ------------------------------------------------------------------------------------------------ follow-ups
@@ -566,7 +576,7 @@ class HudhudMindTest {
         assertEquals(Ask.Parties(listOf(2L)), ask("بشیر کی رقم کتنی ہے"))
         assertEquals(Ask.Person(listOf(2L), Facet.PHONE), ask("رقم بشير"))
         assertEquals(Ask.Shop(ShopFacet.PHONE), ask("رقم المتجر"))
-        assertEquals(Ask.NeedName, ask("رقم عميل"))
+        needs(listOf("رقم عميل"))
     }
 
     @Test fun `Arabic's joined my and your`() {
@@ -595,10 +605,10 @@ class HudhudMindTest {
     @Test fun `somebody's number with no name asks whose`() {
         listOf("kisi gahak ka number", "supplier ka number", "mere supplier ka number", "کسی گاہک کا نمبر", "किसी ग्राहक का नंबर",
             "কোনো গ্রাহকের নম্বর", "شماره یک مشتری", "Nomor pelanggan", "A customer's number")
-            .forEach { assertEquals(it, Ask.NeedName, ask(it)) }
+            .let { needs(it) }
         assertEquals(Ask.Shop(ShopFacet.PHONE), ask("dukaan ka number"))
-        assertEquals(Ask.NeedName, ask("udhaar ki hadd"))
-        assertEquals(Ask.DidYouMean(listOf(Ask.Status(StatusOf.BOOK), Ask.NeedName)), ask("aakhri entry"))
+        needs(listOf("udhaar ki hadd"))
+        assertEquals(Ask.DidYouMean(listOf(Ask.Status(StatusOf.BOOK), Ask.NeedName(Facet.LAST_ENTRY))), ask("aakhri entry"))
     }
 
     @Test fun `money that came in, in all nine languages`() = all(

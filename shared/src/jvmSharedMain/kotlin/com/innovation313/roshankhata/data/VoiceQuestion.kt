@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.data
 
+import java.text.Normalizer
 import java.util.Locale
 
 /**
@@ -60,7 +61,7 @@ object VoiceQuestion {
         "گذشتہ روز", "कल", "গতকাল", "ڪالهه", "أمس", "امس", "البارحة", "دیروز", "kemarin")
     private val WEEK = listOf("hafta", "hafte", "haftay", "week", "ہفتہ", "ہفتے", "हफ्ता", "हफ्ते", "सप्ताह", "هفتو", "هفتي",
         "أسبوع", "اسبوع", "هفته", "সপ্তাহ", "minggu", "pekan")
-    private val MONTH = listOf("mahina", "mahine", "mahinay", "maheena", "maheene", "month", "مہینہ", "مہینے", "ماہ",
+    private val MONTH = listOf("mahina", "mahine", "mahinay", "maheena", "maheene", "maheenay", "mahiney", "maheeney", "month", "مہینہ", "مہینے", "ماہ",
         "महीना", "महीने", "माह", "مهينو", "مهيني", "شهر", "ماه", "মাস", "bulan")
     private val LAST = listOf("pichle", "pichhle", "pichlay", "pichhlay", "pichla", "pichhla", "guzishta", "guzashta",
         "last", "previous", "پچھلے", "پچھلا", "پچھلی", "گزشتہ", "گذشتہ", "पिछले", "पिछला", "पिछली", "गत", "গত", "আগের",
@@ -76,7 +77,9 @@ object VoiceQuestion {
         "ما لي", "harus diterima")
 
     // Made once, before anything below first spells a word.
-    private val MARKS = Regex("[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]")
+    // Arabic-script vowel marks, madda and hamza above or below (taken off their letter by [normalise]'s NFD), the
+    // tatweel that stretches a word, and the accents Latin letters may carry.
+    private val MARKS = Regex("[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED\\u0640\\u0300-\\u036F]")
     private val PUNCT = Regex("[\\p{Punct}،؟۔!?]")
     private val SPACES = Regex("\\s+")
 
@@ -88,13 +91,19 @@ object VoiceQuestion {
      * (a recogniser or keyboard may write them, a list never does), the joiners Persian writes inside words are a
      * space, and Bengali's ya, rra and rha are one way however a keyboard writes them (12 Nov 2026, Hudhud: his own
      * spelling until then, now the one both use).
+     *
+     * Every way a letter can be written is one letter (13 Nov 2026, the owner's screenshot: the phone heard "آپ کا
+     * نام" and wrote "اپ کا نام", without the madda, and Hudhud knew only "آپ"). The text is first taken apart into
+     * letters and their marks (NFD), and the marks go: آ أ إ are ا, ؤ is و, ئ is ی, ۂ ۀ are ہ, ۓ is ے, क़ is क, é is e —
+     * the same for the lists and for whatever a recogniser or a keyboard writes, so no word has to be listed twice.
      */
-    internal fun normalise(s: String): String = s
+    internal fun normalise(s: String): String = Normalizer.normalize(s, Normalizer.Form.NFD)
         .replace(MARKS, "").replace('\u200C', ' ').replace('\u200D', ' ')
         .replace("\u09DF", "\u09AF\u09BC").replace("\u09DC", "\u09A1\u09BC").replace("\u09DD", "\u09A2\u09BC")
         .lowercase(Locale.ROOT)
-        .replace('ي', 'ی').replace('ى', 'ی').replace('ك', 'ک').replace('ه', 'ہ').replace('ة', 'ہ')
+        .replace('ي', 'ی').replace('ى', 'ی').replace('ك', 'ک').replace('ه', 'ہ').replace('ة', 'ہ').replace('\u06D5', 'ہ')
         .replace("\u093C", "") // Devanagari nukta: ज़ and ज are one word to a listener
+        .replace('\u0901', '\u0902') // Devanagari chandrabindu and anusvara: हूँ and हूं are one word
         .replace(PUNCT, " ")
         .replace(SPACES, " ").trim()
 

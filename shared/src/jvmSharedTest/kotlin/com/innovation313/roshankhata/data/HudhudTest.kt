@@ -10,6 +10,9 @@ import org.junit.Test
 /** What Hudhud takes a question for (12 Nov 2026), in the scripts a recogniser writes. Made-up names only. */
 class HudhudTest {
 
+    // understand() reads with the sense the app ships (the rules alone: byRules).
+    init { HudhudSense.use(HudhudModelTest.shippedModel()) }
+
     private val names = listOf(
         Hudhud.Name(1, "Ali Raza"), Hudhud.Name(2, "Bashir Ahmad"), Hudhud.Name(3, "Sale Point"),
         Hudhud.Name(4, "Kabir Traders"), Hudhud.Name(5, "Asghar Spray Wala"), Hudhud.Name(6, "Asghar Ali")
@@ -23,7 +26,8 @@ class HudhudTest {
         Hudhud.Topic("intro_staff", "Staff", "Salaries, advances and attendance of the people who work for you.")
     )
 
-    private fun ask(s: String) = Hudhud.understand(s, names, topics)
+    // The rules' own reading: HudhudSenseTest measures the rules and the sense together on the held-out set.
+    private fun ask(s: String) = Hudhud.byRules(s, names, topics)
 
     @Test fun `the eight figures are VoiceQuestion's`() {
         assertEquals(Ask.Figure(Kind.SALES_TODAY), ask("aaj ki bikri kitni hai"))

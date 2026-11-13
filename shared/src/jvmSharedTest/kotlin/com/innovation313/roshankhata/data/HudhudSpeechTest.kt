@@ -1,6 +1,8 @@
 package com.innovation313.roshankhata.data
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /** Hudhud's words made ready for the ear (13 Nov 2026): sentences, marks out, a help page cut at a sentence. */
@@ -28,5 +30,19 @@ class HudhudSpeechTest {
         assertEquals(page, HudhudSpeech.upTo(page, 200, "More on screen."))
         // The first sentence is said even when it alone is longer than the limit.
         assertEquals("One two three. More on screen.", HudhudSpeech.upTo(page, 5, "More on screen."))
+    }
+
+    @Test fun `a pause after a joining word is not the end of the question`() {
+        assertTrue(HudhudSpeech.endsOpen("Ali ka"))
+        assertTrue(HudhudSpeech.endsOpen("aaj Ali Raza ki"))
+        assertTrue(HudhudSpeech.endsOpen("آج علی کی"))
+        assertTrue(HudhudSpeech.endsOpen("अली का"))
+        assertTrue(HudhudSpeech.endsOpen("what is the price of"))
+        assertTrue(HudhudSpeech.endsOpen("قیمت از"))
+        assertTrue(HudhudSpeech.endsOpen("harga untuk"))
+        assertFalse(HudhudSpeech.endsOpen("Ali ka hisaab"))
+        assertFalse(HudhudSpeech.endsOpen("aaj ki sale kitni hai"))
+        assertFalse(HudhudSpeech.endsOpen("آج کی بکری بتاؤ"))
+        assertFalse(HudhudSpeech.endsOpen(""))
     }
 }

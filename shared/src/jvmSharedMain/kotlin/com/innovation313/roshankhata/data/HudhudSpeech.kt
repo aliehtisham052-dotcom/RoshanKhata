@@ -49,6 +49,42 @@ object HudhudSpeech {
     }
 
     /**
+     * Whether [heard] stops on a word that joins it to more ("Ali ka", "the price of", "علی کی", "از"), so a pause
+     * there is someone thinking of the rest, not the end of the question (13 Nov 2026, Hudhud's own end of speech:
+     * he waits a little longer after such a word before he answers).
+     */
+    fun endsOpen(heard: String): Boolean {
+        val last = VoiceQuestion.normalise(heard).split(' ').lastOrNull { it.isNotEmpty() } ?: return false
+        return last in JOINING
+    }
+
+    /** Words that join a sentence to what comes next, in the app's nine languages and the scripts they are said in. */
+    private val JOINING: Set<String> by lazy {
+        listOf(
+            // Roman Urdu and Hindi in Latin letters
+            "ka", "ki", "ke", "ko", "se", "ne", "mein", "me", "aur", "ya", "par", "pe", "tak", "wala", "wali", "wale",
+            "jo", "keh",
+            // Urdu
+            "کا", "کی", "کے", "کو", "سے", "نے", "میں", "اور", "یا", "پر", "تک", "والا", "والی", "والے", "جو",
+            // Hindi
+            "का", "की", "के", "को", "से", "ने", "में", "और", "या", "पर", "तक", "वाला", "वाली", "वाले", "जो",
+            // English
+            "of", "the", "a", "an", "and", "or", "to", "for", "from", "in", "on", "at", "with", "my", "his", "her",
+            "their", "our", "your", "is", "are", "was", "about", "than",
+            // Bengali
+            "এবং", "আর", "বা", "থেকে", "জন্য", "সাথে", "এর",
+            // Arabic
+            "من", "الى", "إلى", "على", "في", "عن", "مع", "او", "أو", "ثم", "يا", "حق",
+            // Farsi
+            "از", "به", "با", "در", "و", "را", "که", "برای", "تا",
+            // Sindhi
+            "جو", "جي", "جا", "سان", "۾", "۽", "تي", "کان", "کي",
+            // Indonesian
+            "dan", "atau", "di", "ke", "dari", "untuk", "yang", "dengan", "si", "punya"
+        ).map { VoiceQuestion.normalise(it) }.toSet()
+    }
+
+    /**
      * Whole sentences of [text] up to [max] characters (always at least the first), and [more] after them when any
      * were left out — a help page said aloud, its rest on the screen.
      */

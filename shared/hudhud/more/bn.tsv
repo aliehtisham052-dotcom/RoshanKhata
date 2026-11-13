@@ -1,0 +1,975 @@
+who_are_you	আপনি কে ভাই
+who_are_you	তোমার নামটা কি বলো তো
+who_are_you	নাম কি
+who_are_you	কার সাথে কথা বলছি
+who_are_you	তোমাকে কি বলে ডাকবো
+who_are_you	আচ্ছা তুমি কে গো
+who_are_you	নিজের পরিচয় দাও
+who_are_you	তুমি কি হুদহুদ
+who_are_you	একটু বলো তো তুমি আসলে কে
+who_are_you	আপনার পরিচয়টা দিন
+who_are_you	এই পাখিটার নাম কি
+who_are_you	তুই কে রে
+who_are_you	নাম কি তোমার ভাই
+who_are_you	তুমি ক্যা
+who_are_you	তমার নাম কি
+abilities	তুমি আমার দোকানের জন্য কি করতে পারো
+abilities	তুমি কি কাজে লাগো
+abilities	আমাকে কিভাবে সাহায্য করবে
+abilities	তোমার কাজটা কি ভাই
+abilities	কি কি জিজ্ঞেস করতে পারি তোমাকে
+abilities	আচ্ছা তুমি কি কি জানো
+abilities	ভাই তুমি কি কি বলতে পারবে
+abilities	তুমি কোন কোন প্রশ্নের উত্তর দাও
+abilities	তোমাকে দিয়ে কি হয়
+abilities	তুমি আদৌ কিছু জানো
+abilities	কি কি পারো একটু লিস্ট দাও
+abilities	আমি নতুন, তোমাকে কি জিজ্ঞেস করা যায়
+abilities	ব্যবসায় তুমি কি হেল্প করতে পারো
+abilities	তুমি কি কি করতে পার
+abilities	তুমি কি পারু
+how_are_you	কি খবর ভাই
+how_are_you	ভালো আছো তো ভাই
+how_are_you	তুমি কেমন আছো আজকে
+how_are_you	সব ঠিকঠাক
+how_are_you	শরীর ভালো
+how_are_you	কি অবস্থা তোমার
+how_are_you	আপনি ভালো আছেন তো
+how_are_you	দিনকাল কেমন যাচ্ছে
+how_are_you	কেমন চলছে ভাই
+how_are_you	তুমি ঠিক আছো তো
+how_are_you	হুদহুদ কেমন আছো
+how_are_you	আছো কেমন
+how_are_you	কি খবর, ভালো তো
+how_are_you	কেমন আছ
+how_are_you	কেমুন আছো
+can_talk	শুনছো
+can_talk	তুমি কি আছো ওখানে
+can_talk	আমার কথা শোনা যাচ্ছে
+can_talk	তুমি কি শুনতে পাচ্ছো ভাই
+can_talk	আমার সাথে একটু কথা বলবে
+can_talk	কেউ আছেন
+can_talk	হ্যালো, শুনতে পাও
+can_talk	তুমি কি জেগে আছো
+can_talk	একটু কথা বলা যাবে তোমার সাথে
+can_talk	আমার আওয়াজ পাচ্ছো তো
+can_talk	টেস্ট করছি, শোনা যায়
+can_talk	মাইক কাজ করছে, তুমি শুনছো
+can_talk	উত্তর দাও, আছো নাকি
+can_talk	তুমি কি সুনছো
+can_talk	শুনতে পাচ্চো
+address	ও ভাই
+address	ও হুদহুদ ভাই
+address	এই যে হুদহুদ
+address	ও ভাইজান
+address	শোনো তো
+address	এই যে
+address	স্যার
+address	বস
+address	ও হুদহুদ
+address	দোস্ত
+address	মামা
+address	ভাই শোনো
+address	এই যে ভাই
+address	বন্ধু
+address	হুদ হুদ
+salaam	আসসালামু আলাইকুম ভাইজান
+salaam	সালাম আলাইকুম ভাই
+salaam	আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহ ভাই
+salaam	সালাম হুদহুদ ভাই
+salaam	স্লামালাইকুম
+salaam	সালাম ভাইয়া
+salaam	আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহ হুদহুদ
+salaam	সালাম স্যার
+salaam	আসসালামুয়ালাইকুম
+salaam	স্লামালেকুম ভাই
+salaam	ভাই সালাম
+salaam	আসসালামু আলাইকুম প্রিয় হুদহুদ
+salaam	সালাম নিবেন
+salaam	আসালামু আলাইকুম
+salaam	সালামালাইকুম
+hello	হ্যালো হুদহুদ ভাই
+hello	হাই ভাই
+hello	শুভ সকাল ভাই
+hello	শুভ সন্ধ্যা হুদহুদ
+hello	গুড মর্নিং ভাই
+hello	গুড ইভিনিং
+hello	হ্যালো হ্যালো
+hello	নমস্কার ভাই
+hello	শুভ দুপুর হুদহুদ
+hello	এই হ্যালো
+hello	হ্যালো ভাইয়া
+hello	শুভ সকাল হুদহুদ
+hello	গুড আফটারনুন
+hello	হেলো
+hello	হায় হুদহুদ
+thanks	ধন্যবাদ ভাইয়া
+thanks	থ্যাংক ইউ সো মাচ
+thanks	থ্যাংকস ভাই
+thanks	অনেক অনেক ধন্যবাদ
+thanks	ধন্যবাদ হুদহুদ
+thanks	আচ্ছা ধন্যবাদ
+thanks	তোমাকে ধন্যবাদ
+thanks	শুকরিয়া ভাই
+thanks	জাযাকাল্লাহ
+thanks	থ্যাংক ইউ ভাই
+thanks	উপকার হলো, ধন্যবাদ
+thanks	ওকে থ্যাংকস
+thanks	অসংখ্য ধন্যবাদ
+thanks	ধন্যবাত
+thanks	থেংক ইউ
+bye	বাই হুদহুদ
+bye	আচ্ছা বাই
+bye	আচ্ছা পরে কথা হবে
+bye	আল্লাহ হাফেজ ভাই
+bye	খোদা হাফেজ হুদহুদ
+bye	আসি তাহলে
+bye	আবার দেখা হবে ভাই
+bye	শুভ রাত্রি
+bye	গেলাম ভাই
+bye	টা টা বাই বাই
+bye	কাল কথা হবে
+bye	ভালো থেকো, বাই
+bye	এখন যাই
+bye	বায় বায়
+bye	আল্লা হাফেজ
+praise	খুব ভালো করেছো ভাই
+praise	দারুণ কাজ করেছো
+praise	তুমি তো অনেক চালাক
+praise	চমৎকার
+praise	বাহ, কি তাড়াতাড়ি বলে দিলে
+praise	তুমি সেরা
+praise	গুড জব হুদহুদ
+praise	অসাধারণ ভাই
+praise	তুমি খুব বুদ্ধিমান
+praise	একদম ঠিক উত্তর
+praise	ফাটাফাটি
+praise	তোমার কাজ আমার ভালো লাগে
+praise	বেশ ভালো
+praise	সাব্বাশ
+praise	দারুন
+owner_name	আমার নাম বলো
+owner_name	আমার নামটা কি জানো
+owner_name	আমি কে বলো তো
+owner_name	ভাই আমার নাম মনে আছে তোমার
+owner_name	আমার কি নাম সেভ করা আছে
+owner_name	আমাকে কি নামে চেনো
+owner_name	তুমি আমাকে চেনো তো
+owner_name	মালিকের নাম কি
+owner_name	আচ্ছা বলো তো আমাকে কি বলে ডাকো
+owner_name	এই দোকান কার, আমার নাম কি
+owner_name	আমার নাম কি লেখা আছে তোমার কাছে
+owner_name	আমার নাম?
+owner_name	তুমি আমাকে কি নামে ডাকবে
+owner_name	আমার নাম কী বল
+owner_name	আমার নাম কি জান
+maker	তোমাকে কে তৈরি করেছে
+maker	তোমার নির্মাতা কারা
+maker	এই অ্যাপ কে বানিয়েছে
+maker	তুমি কোন কোম্পানির তৈরি
+maker	এই অ্যাপের পেছনে কারা
+maker	কারা তোমাকে বানালো ভাই
+maker	অ্যাপটা কার বানানো
+maker	তোমাকে কে প্রোগ্রাম করেছে
+maker	যে কোম্পানি বানিয়েছে তার নাম বলো
+maker	কে বানিয়েছে
+maker	তোমার ডেভেলপার কে
+maker	তোমাকে কোথায় আর কে বানিয়েছে
+maker	এই সফটওয়্যার কাদের
+maker	তোমাকে কে বানাইছে
+maker	তোমাকে কে বানিয়েচে
+app_about	এই অ্যাপ কি করে
+app_about	এই অ্যাপটা কিসের জন্য
+app_about	এটা কি খাতার অ্যাপ
+app_about	এই অ্যাপ সম্পর্কে কিছু বলো
+app_about	অ্যাপটা একটু বুঝিয়ে দাও
+app_about	রোশন খাতা কি ধরনের অ্যাপ
+app_about	এই অ্যাপ দিয়ে কি করা যায়
+app_about	ভাই এই সফটওয়্যারটা কি
+app_about	রোশন খাতা কিসের জন্য
+app_about	অ্যাপের পরিচয় দাও
+app_about	রোশন খাতার কাজ কি
+app_about	এটা কি হিসাবের অ্যাপ নাকি অন্য কিছু
+app_about	এই অ্যাপ কি কাজে লাগে
+app_about	এই এপ কি
+app_about	রোসন খাতা কি
+privacy	আমার ডেটা কি গোপন থাকে
+privacy	আমার ডেটা কে দেখতে পারে
+privacy	অন্য কেউ কি আমার খাতা পড়তে পারে
+privacy	আমার তথ্য এখানে নিরাপদ তো
+privacy	আমার ডেটা কি কোনো সার্ভারে যায়
+privacy	তুমি কি আমার ডেটা কাউকে দাও
+privacy	কাস্টমারদের নাম্বার সেফ আছে তো
+privacy	আমার হিসাব কোথায় জমা থাকে
+privacy	এই অ্যাপ কি সিকিউর
+privacy	কোম্পানি কি আমার হিসাব দেখতে পায়
+privacy	ডেটা সেফ?
+privacy	ভাই আমার হিসাব কোথাও লিক হয় না তো
+privacy	তোমরা কি আমার ডেটা বিক্রি করো
+privacy	আমার ডাটা কি নিরাপত
+privacy	ডেটা ফোনে থাকে নাকি ইন্টারনেটে
+languages	তুমি কোন কোন ভাষা জানো
+languages	তুমি কি বাংলা ভালো বোঝো
+languages	ইংরেজি বলতে পারো
+languages	কয়টা ভাষায় কথা বলতে পারো
+languages	শুধু বাংলা জানো নাকি আরো
+languages	কোন ভাষায় তোমাকে জিজ্ঞেস করবো
+languages	তুমি কি উর্দু বোঝো
+languages	ভাষা?
+languages	হিন্দিতে বললে বুঝবে
+languages	এই অ্যাপে কি কি ভাষা আছে
+languages	আরবি বুঝতে পারো
+languages	কোন কোন ল্যাঙ্গুয়েজ সাপোর্ট করে
+languages	ভাই তুমি কোন ভাষা সবচেয়ে ভালো বোঝো
+languages	তুমি কোন বাসা বোঝো
+languages	কয়টা ভাসা জানো
+date_time	আজকের তারিখ
+date_time	আজ কি বার ভাই
+date_time	এখন সময় কত
+date_time	কয়টা বাজে ভাই
+date_time	আজ কোন তারিখ
+date_time	আজ শুক্রবার নাকি শনিবার
+date_time	তারিখ আর বার বলো
+date_time	এখন কোন মাস চলছে
+date_time	আজ বাংলা কত তারিখ
+date_time	আজ কি সোমবার
+date_time	আজ আরবি মাসের কত তারিখ
+date_time	তারিখ?
+date_time	ঘড়িতে এখন কয়টা
+date_time	আজ কতো তারিক
+date_time	কটা বাজে
+today_summary	আজকের সামারিটা একটু দাও
+today_summary	আজ কিসে নজর দিতে হবে
+today_summary	আজকের জন্য কিছু বাকি আছে
+today_summary	আজ কি কি কাজ আছে
+today_summary	আজকের খবর একটু বলো
+today_summary	আজ কোনটা জরুরি
+today_summary	আজ আমার কি কি করা দরকার
+today_summary	আচ্ছা ভাই আজ আমার কি কি করতে হবে
+today_summary	আজকের কাজের লিস্ট
+today_summary	আজকের জন্য কোনো রিমাইন্ডার
+today_summary	আজ কাকে ফোন দিতে হবে আর কি কি পেন্ডিং
+today_summary	দিন শুরু করি, আগে কি দেখবো
+today_summary	আজ আমার জন্য কি অপেক্ষা করছে
+today_summary	আজকের সারাংস
+today_summary	আজ কি করা উচিৎ
+sales_today	আজ কত টাকার বিক্রি হলো
+sales_today	আজকের মোট বিক্রি
+sales_today	আজ কত টাকা বেচলাম
+sales_today	আজকের সেল কত হলো ভাই
+sales_today	এখন পর্যন্ত আজ কত বিক্রি
+sales_today	আজ মোট কত টাকার মাল বিক্রি হয়েছে
+sales_today	ভাই আজকের বেচাকেনা কত
+sales_today	আজ কত টাকার বেচাবিক্রি হলো
+sales_today	আজকের সেলের অংকটা বলো
+sales_today	আজ সকাল থেকে কত বিক্রি হয়েছে
+sales_today	আজকের বিক্রি একটু তাড়াতাড়ি বলো
+sales_today	আজ বিক্রি?
+sales_today	আজ দোকানে কত টাকার মাল গেলো
+sales_today	আজ কত বিক্রী হয়েছে
+sales_today	আজকের সেইল কতো
+sales_period	গতকালের বিক্রি
+sales_period	কাল কত বেচলাম
+sales_period	এই সপ্তাহে মোট বিক্রি কত
+sales_period	গত সপ্তাহে কত বিক্রি হয়েছে
+sales_period	এই মাসের বিক্রি
+sales_period	গত মাসের মোট বিক্রি
+sales_period	গত মাসে কত টাকার বেচাকেনা হলো
+sales_period	এই সপ্তাহে মোট কত টাকার মাল বিক্রি হলো
+sales_period	ভাই গতকাল সেল কেমন ছিল
+sales_period	এই মাসে এখন পর্যন্ত বিক্রি
+sales_period	গত সপ্তাহের সেল একটু বলো
+sales_period	শুধু গত মাসের বিক্রিটা বলো
+sales_period	চলতি মাসে আমি কত বিক্রি করেছি
+sales_period	গতকালের বিক্রী
+sales_period	গত সপ্তার বিক্রি
+profit	এই মাসের লাভ
+profit	এই মাসে কত আয় করলাম
+profit	আজকের লাভ কত
+profit	গতকাল কত লাভ হলো
+profit	গত মাসের লাভ
+profit	এই সপ্তাহে আমার আয়
+profit	গত সপ্তাহে কত কামাই হলো
+profit	এই মাসে লাভ হচ্ছে নাকি লস
+profit	নিট লাভ বলো
+profit	আজ কত মুনাফা হলো
+profit	ভাই গত মাসে কত লাভ করলাম
+profit	এই সপ্তাহের মোট প্রফিট বলো
+profit	এই মাসে কত টাকা কামাই
+profit	এই মাসে কত লাব হয়েছে
+profit	আজকের প্রফিড
+to_get	মোট পাওনা টাকা কত
+to_get	বাজারে মোট বাকি কত
+to_get	কাস্টমারদের কাছে কত টাকা আটকে আছে
+to_get	সব কাস্টমার মিলে কত বাকি
+to_get	আমার মোট আদায়যোগ্য টাকা
+to_get	মানুষের কাছে আমি কত টাকা পাই
+to_get	কাস্টমারদের মোট বকেয়া
+to_get	মোট কত টাকা বাকিতে দেওয়া আছে
+to_get	ভাই সব মিলিয়ে কত টাকা পাওনা
+to_get	সব কাস্টমারের ব্যালেন্স যোগ করলে কত
+to_get	বাজার থেকে আমার কত টাকা তুলতে হবে
+to_get	আমার বাইরে মোট কত টাকা
+to_get	মোট পাওনা?
+to_get	আমি মোট কত টাকা পাব
+to_get	মোট পাওনা কতো
+to_give	আমি মোট কত টাকা দেনা
+to_give	সাপ্লায়ারদের সব মিলে কত দিতে হবে
+to_give	মানুষকে আমার কত টাকা দিতে হবে
+to_give	আমার মোট ঋণ
+to_give	সব সাপ্লায়ার মিলে আমি কত দেনা
+to_give	আমার ঘাড়ে কত টাকা
+to_give	মোট কত টাকা পরিশোধ করতে হবে
+to_give	বাজারে আমার কত টাকা দেনা
+to_give	মহাজনদের কাছে আমার মোট দেনা কত
+to_give	আমার মোট দায়
+to_give	ভাই অন্যদের আমি কত টাকা ফেরত দেবো
+to_give	মোট দিতে হবে কত বলো
+to_give	মোট দেনা?
+to_give	আমার মোট কত টাকা দিতে হব
+to_give	মোট দেনা কতো
+who_owes_most	আমার সবচেয়ে বড় দেনাদার কে
+who_owes_most	কোন কাস্টমারের কাছে সবচেয়ে বেশি টাকা পাই
+who_owes_most	টপ দেনাদার
+who_owes_most	কার বাকি সবচেয়ে বড়
+who_owes_most	কার ঘাড়ে সবচেয়ে বেশি টাকা
+who_owes_most	বাকিতে এক নম্বর কাস্টমার কে
+who_owes_most	কার কাছে সবচেয়ে বেশি টাকা আটকে আছে
+who_owes_most	সবচেয়ে বেশি বাকি নিয়ে কে শোধ করেনি
+who_owes_most	সবচেয়ে বড় ব্যালেন্স কোন কাস্টমারের
+who_owes_most	ভাই যার কাছে সবচেয়ে বেশি পাই তার নাম বলো
+who_owes_most	কোন পার্টির বকেয়া সবচেয়ে বেশি
+who_owes_most	কে আমাকে সবচেয়ে বেশি টাকা দেবে
+who_owes_most	সবচেয়ে বড় বাকিদারের নাম বলো
+who_owes_most	কার কাছে সবচে বেশি পাওনা
+who_owes_most	কার বাকি সবচাইতে বেশি
+not_paid	কে টাকা দিচ্ছে না
+not_paid	কে এখনো টাকা দেয়নি
+not_paid	দেরি করা কাস্টমারদের লিস্ট
+not_paid	কার পেমেন্ট দেরি হচ্ছে
+not_paid	কোন কাস্টমারদের সময় পার হয়ে গেছে
+not_paid	কে আমার টাকা নিয়ে ঘোরাচ্ছে
+not_paid	কার কার পেমেন্ট ওভারডিউ হয়ে আছে
+not_paid	কারা অনেকদিন ধরে বাকি শোধ করেনি
+not_paid	খেলাপিদের লিস্ট
+not_paid	ভাই কে কে টাকা ফেরত দিচ্ছে না
+not_paid	কার তারিখ পার হয়ে গেছে তবু টাকা দেয়নি
+not_paid	যাদের পেমেন্ট লেট তাদের দেখাও
+not_paid	ওভারডিউ কারা
+not_paid	কে কে টাকা দেয় নাই
+not_paid	কারা টাকা দেয়নী
+likely_payers	আজ কে টাকা দিতে পারে
+likely_payers	আজ কার টাকা দেওয়ার কথা
+likely_payers	আজ কার কাছ থেকে টাকা আশা করতে পারি
+likely_payers	এই সময়টায় সাধারণত কারা টাকা দেয়
+likely_payers	আজ কার পেমেন্ট আসতে পারে
+likely_payers	এই তারিখের দিকে কে টাকা দেয়
+likely_payers	আজ কোনো কাস্টমার টাকা দেবে বলে মনে হয়
+likely_payers	অভ্যাস অনুযায়ী আজ কার দেওয়ার কথা
+likely_payers	ভাই আজ কে আমাকে টাকা দেবে
+likely_payers	মাসের এই সময়ে কোন কাস্টমাররা সাধারণত দেয়
+likely_payers	আজ কার কাছ থেকে পেমেন্ট আশা করা যায়
+likely_payers	আজ কে দিতে পারে
+likely_payers	আজ সম্ভাব্য কারা দেবে
+likely_payers	আজ কে টাকা দিবে
+likely_payers	আজ কে কে টাকা দেব
+collected	আজ কত টাকা আদায় হলো
+collected	আজ কাস্টমারদের কাছ থেকে কত টাকা পেলাম
+collected	আজকের মোট আদায় কত
+collected	আজ কত পেমেন্ট এলো
+collected	গতকাল কাস্টমাররা কত টাকা দিলো
+collected	এই সপ্তাহের আদায়
+collected	গত সপ্তাহে কত টাকা তুললাম
+collected	এই মাসে কত পেমেন্ট পেয়েছি
+collected	গত মাসের মোট আদায়
+collected	আজ কত বাকির টাকা ফেরত এলো
+collected	ভাই গতকাল কাস্টমারদের কাছ থেকে কত টাকা এলো
+collected	এই সপ্তাহে কাস্টমাররা কত দিয়েছে
+collected	এই মাসে এখন পর্যন্ত কত আদায়
+collected	আজ কত আদায় হইছে
+collected	আজ কত টাকা পাইছি
+drawer	ক্যাশ বাক্সে কত
+drawer	হাতে নগদ কত আছে
+drawer	ড্রয়ারে এখন কত ক্যাশ
+drawer	ক্যাশ বাক্সে কত থাকার কথা
+drawer	আজকের দিন বন্ধ করতে চাই
+drawer	চলো ক্যাশ গুনি
+drawer	এখন ক্যাশে কত থাকা উচিত
+drawer	দিন ক্লোজ করো
+drawer	ক্যাশ কাউন্টারের মোট টাকা
+drawer	গল্লায় এখন কত টাকা
+drawer	ভাই ড্রয়ারের টাকা বলো, দোকান বন্ধ করছি
+drawer	দিন শেষ, ক্যাশে কত থাকার কথা
+drawer	ড্রয়ারের ক্যাশ মিলছে তো
+drawer	ক্যাস বাক্সে কত টাকা
+drawer	হাতে ক্যাশ কতো
+expiring	কোন কোন মালের মেয়াদ শেষ হচ্ছে
+expiring	কি তাড়াতাড়ি এক্সপায়ার হবে
+expiring	মেয়াদ শেষের কাছাকাছি মাল
+expiring	কোনো ওষুধের মেয়াদ কি শেষ হতে যাচ্ছে
+expiring	আগামী মাসে কোন স্টকের মেয়াদ যাবে
+expiring	এক্সপায়ারি লিস্ট দেখাও
+expiring	এই সপ্তাহে কিছু এক্সপায়ার হচ্ছে
+expiring	কোন ব্যাচের মেয়াদ শেষ হওয়ার পথে
+expiring	কোন মালের ডেট কাছে চলে এসেছে
+expiring	ভাই কোনো মালের ডেট শেষ হয়ে যাচ্ছে নাকি
+expiring	কোন মাল তাড়াতাড়ি নষ্ট হবে
+expiring	কোন কোন পণ্যের এক্সপায়ারি আসছে
+expiring	60 দিনের মধ্যে কি কি এক্সপায়ার হবে
+expiring	কোন মালের মেয়াত শেষ হচ্ছে
+expiring	এক্সপায়ার মাল
+low_stock	কোন কোন মাল কম আছে
+low_stock	দোকানে কি শেষ হয়ে যাচ্ছে
+low_stock	কি অর্ডার দিতে হবে
+low_stock	কম স্টকের লিস্ট
+low_stock	কোন স্টক শেষের পথে
+low_stock	কোন পণ্য আবার অর্ডার করা দরকার
+low_stock	স্টকে কিসের টান
+low_stock	কিছু ফুরিয়ে যাচ্ছে
+low_stock	কোন মাল আবার কিনতে হবে
+low_stock	ভাই কোন কোন মাল প্রায় শেষ
+low_stock	সাপ্লায়ারকে কি অর্ডার দেবো বলো
+low_stock	কোন জিনিস মিনিমাম লেভেলের নিচে
+low_stock	কোন মালের শর্ট পড়েছে
+low_stock	কোন মাল কমে গেসে
+low_stock	লো স্টক আইটেম গুলা
+party_balance	{NAME} এর খাতা
+party_balance	{NAME} কত টাকা দেবে
+party_balance	{NAME} এর ব্যালেন্সটা বলো
+party_balance	{NAME} এর কাছে কত পাই
+party_balance	{NAME} এর হিসাব দেখাও
+party_balance	{NAME} এর নামে কত আছে
+party_balance	{NAME} এর কাছে কত বাকি পড়ে আছে
+party_balance	{NAME} কে আমি কত দেনা
+party_balance	{NAME} এর মোট বকেয়া
+party_balance	ভাই {NAME} এর খাতাটা দেখো তো, কত বাকি
+party_balance	{NAME} আর কত বাকি
+party_balance	{NAME} এর পাওনা টাকার পরিমাণ বলো
+party_balance	{NAME} এর হিসাবের অবস্থা কি
+party_balance	{NAME} এর বেলেন্স
+party_balance	{NAME} এর বাকী কত
+party_phone	{NAME} এর নাম্বার
+party_phone	{NAME} এর মোবাইল নাম্বার
+party_phone	{NAME} এর নাম্বারটা কত
+party_phone	{NAME} এর কন্টাক্ট দাও
+party_phone	{NAME} এর ফোন?
+party_phone	{NAME} কে ফোন দেবো, নাম্বার বলো
+party_phone	{NAME} এর যোগাযোগের নাম্বার একটু দাও
+party_phone	{NAME} এর কোন নাম্বার সেভ করা আছে
+party_phone	{NAME} এর হোয়াটসঅ্যাপ নাম্বার
+party_phone	ভাই {NAME} এর ফোন নাম্বারটা বের করো
+party_phone	{NAME} এর মোবাইল দেখাও
+party_phone	কোন নাম্বারে {NAME} কে পাওয়া যাবে
+party_phone	{NAME} এর সেল নাম্বার বলো
+party_phone	{NAME} এর ফুন নাম্বার
+party_phone	{NAME} এর ফোন নম্বার
+party_last_payment	{NAME} এর শেষ পেমেন্টটা
+party_last_payment	{NAME} শেষবার কবে টাকা দিয়েছে
+party_last_payment	{NAME} লাস্ট কবে টাকা দিলো
+party_last_payment	কোন তারিখে {NAME} শেষ টাকা দিয়েছে
+party_last_payment	{NAME} টাকা দিয়েছে কতদিন হলো
+party_last_payment	{NAME} এর শেষ পেমেন্টের তারিখটা বলো
+party_last_payment	{NAME} এর কাছ থেকে শেষ টাকা কবে পেয়েছিলাম
+party_last_payment	{NAME} শেষবার কত দিয়েছে আর কবে
+party_last_payment	{NAME} এর আগের পেমেন্টটা কবে ছিল
+party_last_payment	ভাই {NAME} এর লাস্ট পেমেন্ট কবে
+party_last_payment	{NAME} শেষ কত টাকা জমা দিয়েছিল
+party_last_payment	{NAME} শেষ কবে দিলো
+party_last_payment	{NAME} এর সর্বশেষ পেমেন্ট কোন দিন এসেছে
+party_last_payment	{NAME} শেষ কবে টাকা দিসে
+party_last_payment	{NAME} এর শেস পেমেন্ট
+party_limit	{NAME} এর লিমিট
+party_limit	{NAME} এর ক্রেডিট লিমিট
+party_limit	{NAME} কে কত টাকা বাকি দেওয়া যাবে
+party_limit	{NAME} এর জন্য কত লিমিট সেট করা
+party_limit	{NAME} এর বাকির লিমিট কত
+party_limit	{NAME} কত পর্যন্ত বাকি নিতে পারবে
+party_limit	{NAME} কি লিমিট পার করেছে
+party_limit	{NAME} এর আর কত লিমিট বাকি আছে
+party_limit	{NAME} এর লিমিটটা বলো
+party_limit	ভাই {NAME} কে সর্বোচ্চ কত বাকি দেওয়া যায়
+party_limit	{NAME} এর লিমিট কত টাকা
+party_limit	{NAME} কি তার ক্রেডিট লিমিটের উপরে
+party_limit	{NAME} এর বাকির সীমা কত
+party_limit	{NAME} এর ক্রেডিট লিমিড
+party_limit	{NAME} এর লিমেট কত
+party_promise	{NAME} কবে টাকা দেওয়ার কথা দিয়েছে
+party_promise	{NAME} এর ওয়াদার তারিখ কবে
+party_promise	{NAME} পেমেন্টের জন্য কোন তারিখটা দিয়ে গেছে
+party_promise	{NAME} এর কথা দেওয়া দিন
+party_promise	{NAME} কোন দিন দেবে বলেছিল
+party_promise	{NAME} কোন তারিখের কথা দিয়েছে
+party_promise	{NAME} এর ওয়াদা?
+party_promise	{NAME} কি ওয়াদা করেছিল
+party_promise	কোন তারিখে দেবে বলে {NAME} কথা দিয়েছিল
+party_promise	ভাই {NAME} কোন দিনের কথা দিয়ে গেছে
+party_promise	{NAME} এর প্রতিশ্রুত তারিখটা বলো
+party_promise	{NAME} বলেছিল কোন দিন টাকা দেবে
+party_promise	{NAME} এর প্রতিশ্রুতির ডিউ ডেট কবে
+party_promise	{NAME} এর ওয়াদার তারিক
+party_promise	{NAME} কোন দিন কথা দিসে
+party_when_pays	আচ্ছা {NAME} কবে টাকা দেবে
+party_when_pays	{NAME} টাকাটা দেবে কবে
+party_when_pays	{NAME} এর কাছ থেকে কবে টাকা আশা করতে পারি
+party_when_pays	{NAME} কবে নাগাদ বাকি শোধ করবে
+party_when_pays	{NAME} কবে দিতে পারে
+party_when_pays	{NAME} কবে দিতে যাচ্ছে
+party_when_pays	{NAME} কত তাড়াতাড়ি টাকা দেবে
+party_when_pays	{NAME} এর টাকা কবে পাবো
+party_when_pays	ভাই তোমার কি মনে হয় {NAME} কবে দেবে
+party_when_pays	{NAME} সাধারণত কবে নাগাদ দেয়
+party_when_pays	{NAME} কি এই সপ্তাহে দেবে
+party_when_pays	{NAME} এর পেমেন্ট কবে আসতে পারে
+party_when_pays	{NAME} কবে শোধ করবে বলে ধরবো
+party_when_pays	{NAME} কবে টাকা দিবে
+party_when_pays	{NAME} কবে দেব
+party_details	{NAME} এর বিস্তারিত দাও
+party_details	{NAME} এর সব তথ্য
+party_details	{NAME} কোথায় থাকে
+party_details	{NAME} এর ঠিকানা
+party_details	{NAME} কোন গ্রামের লোক
+party_details	{NAME} এর বাবার নামটা কি
+party_details	{NAME} এর প্রোফাইল দেখাও
+party_details	{NAME} সম্পর্কে বলো
+party_details	{NAME} এর ইনফো দাও
+party_details	{NAME} কে, তার রেকর্ড দেখাও
+party_details	ভাই {NAME} এর ডিটেইলস খোলো
+party_details	{NAME} এর বাড়ি কোথায়
+party_details	{NAME} এর পুরো তথ্য দাও
+party_details	{NAME} এর ডিটেলস
+party_details	{NAME} এর ঠিকানাটা কি
+entry_gave	{NAME} 500 নিয়েছে
+entry_gave	{NAME} কে 750 দিলাম
+entry_gave	{NAME} কে 3000 টাকা বাকি দিয়েছি
+entry_gave	{NAME} এর নামে 1500 বাকি লেখো
+entry_gave	{NAME} 2200 টাকার মাল নিয়েছে
+entry_gave	{NAME} কে 400 দেওয়া হলো
+entry_gave	{NAME} আমার কাছ থেকে 900 নিয়েছে
+entry_gave	{NAME} এর খাতায় 6000 বাকি তোলো
+entry_gave	{NAME} কে 10000 ধার দিলাম
+entry_gave	ভাই লিখে রাখো, {NAME} 350 বাকি নিলো
+entry_gave	{NAME} কে 1800 টাকার মাল বাকিতে দিলাম
+entry_gave	{NAME} এর হিসাবে 250 তোলো, চিনি নিয়েছে
+entry_gave	{NAME} 5000 ধার নিয়েছে
+entry_gave	{NAME} 600 নিসে
+entry_gave	{NAME} কে 1200 টাকা দিছি
+entry_got	{NAME} 500 দিয়েছে
+entry_got	{NAME} এর কাছ থেকে 750 পেলাম
+entry_got	{NAME} আমাকে 3000 টাকা দিলো
+entry_got	আজ {NAME} এর কাছ থেকে 1500 পেয়েছি
+entry_got	{NAME} 2200 জমা দিয়েছে
+entry_got	{NAME} 400 ফেরত দিয়েছে
+entry_got	{NAME} এর কাছ থেকে 900 পাওয়া গেছে লেখো
+entry_got	{NAME} 6000 শোধ করেছে
+entry_got	{NAME} থেকে 10000 পেয়েছি
+entry_got	ভাই লিখে রাখো, {NAME} 350 দিলো
+entry_got	{NAME} এর কাছ থেকে 1800 টাকার পেমেন্ট এলো
+entry_got	{NAME} 250 ফেরত দিলো
+entry_got	{NAME} এর কাছ থেকে 5000 আদায় করলাম
+entry_got	{NAME} 600 দিসে
+entry_got	{NAME} থেকে 1200 টাকা পাইছি
+goods_price	{ITEM} এর দামটা
+goods_price	{ITEM} এর রেট
+goods_price	{ITEM} কত
+goods_price	{ITEM} কত টাকা
+goods_price	{ITEM} কত করে বেচি
+goods_price	{ITEM} এর বিক্রয় মূল্য বলো
+goods_price	{ITEM} এর দাম?
+goods_price	একটা {ITEM} কাস্টমারকে কত পড়ে
+goods_price	{ITEM} আমরা কত দামে দিই
+goods_price	ভাই {ITEM} এর রেট কত
+goods_price	{ITEM} এর নগদ দাম আর বাকির দাম
+goods_price	{ITEM} এর জন্য কত নেবো
+goods_price	কাস্টমার {ITEM} এর দাম জিজ্ঞেস করছে, তাড়াতাড়ি বলো
+goods_price	{ITEM} এর দাম কতো
+goods_price	{ITEM} এর রেইট
+goods_stock	{ITEM} কত আছে
+goods_stock	{ITEM} এর পরিমাণ
+goods_stock	{ITEM} আছে
+goods_stock	{ITEM} কি স্টকে আছে
+goods_stock	{ITEM} কয়টা বাকি আছে
+goods_stock	{ITEM} এর কয় পিস রয়ে গেছে
+goods_stock	{ITEM} এর স্টক?
+goods_stock	{ITEM} এর স্টক চেক করো
+goods_stock	{ITEM} শেষ নাকি এখনো আছে
+goods_stock	ভাই দোকানে {ITEM} কতটুকু পড়ে আছে
+goods_stock	{ITEM} আর কত অবশিষ্ট
+goods_stock	{ITEM} কয় বস্তা আছে
+goods_stock	{ITEM} কতটা পাওয়া যাবে
+goods_stock	{ITEM} এর স্টোক
+goods_stock	{ITEM} কত আসে
+goods_suppliers	{ITEM} আমাকে সবচেয়ে সস্তায় কে দেয়
+goods_suppliers	{ITEM} এর ক্রয় মূল্য
+goods_suppliers	{ITEM} এর কেনা দাম কত পড়ে
+goods_suppliers	কোন সাপ্লায়ারের কাছে {ITEM} সস্তা
+goods_suppliers	{ITEM} কত রেটে কিনেছিলাম
+goods_suppliers	{ITEM} কে কে সাপ্লাই দেয়
+goods_suppliers	প্রতিটা সাপ্লায়ারের {ITEM} এর কেনা দাম
+goods_suppliers	{ITEM} এ কোন কোম্পানি সবচেয়ে ভালো রেট দেয়
+goods_suppliers	{ITEM} এর শেষ কেনা রেট
+goods_suppliers	ভাই {ITEM} কার কাছ থেকে কিনবো
+goods_suppliers	{ITEM} এর সাপ্লায়ার আর তাদের রেট
+goods_suppliers	{ITEM} সবচেয়ে কম রেটে কোথায় পাই
+goods_suppliers	{ITEM} এর সাপ্লায়ার?
+goods_suppliers	{ITEM} এর পারচেজ রেইট
+goods_suppliers	{ITEM} কে সস্তা দেয়
+goods_buyers	{ITEM} কে কে নিয়েছে
+goods_buyers	{ITEM} কারা কেনে
+goods_buyers	{ITEM} এর ক্রেতা
+goods_buyers	কোন কাস্টমার {ITEM} কিনেছে
+goods_buyers	{ITEM} কার কাছে বিক্রি করেছি
+goods_buyers	এই মাসে {ITEM} কে কে কিনেছে
+goods_buyers	{ITEM} এর কাস্টমার কারা
+goods_buyers	{ITEM} কোন কোন কাস্টমারের কাছে গেছে
+goods_buyers	আমার কাছ থেকে {ITEM} কে নিয়ে গেছে
+goods_buyers	ভাই বলো তো {ITEM} কে কিনলো
+goods_buyers	যারা {ITEM} কিনেছে তাদের লিস্ট দাও
+goods_buyers	{ITEM} কাকে বেচা হয়েছে
+goods_buyers	{ITEM} এর ক্রেতা কারা
+goods_buyers	{ITEM} কে কিনসে
+goods_buyers	{ITEM} কে কিনেচে
+goods_sold	{ITEM} কত বিক্রি হলো
+goods_sold	আজ {ITEM} এর বিক্রি
+goods_sold	আজ {ITEM} কয়টা গেলো
+goods_sold	গতকাল {ITEM} কত বিক্রি হয়েছে
+goods_sold	এই সপ্তাহে {ITEM} কত বেচলাম
+goods_sold	গত সপ্তাহে {ITEM} এর সেল
+goods_sold	এই মাসে {ITEM} এর বিক্রি
+goods_sold	গত মাসে {ITEM} কয়টা বিক্রি হয়েছে
+goods_sold	আজ {ITEM} মোট কতটুকু বিক্রি হলো
+goods_sold	ভাই এই মাসে {ITEM} কত বেচা হলো
+goods_sold	গতকাল মোট {ITEM} কত বিক্রি হয়েছে বলো
+goods_sold	এই সপ্তাহে {ITEM} কয় পিস বিক্রি
+goods_sold	গত মাসে {ITEM} এর সেল কত
+goods_sold	আজ {ITEM} কত বিক্রী হলো
+goods_sold	এই মাসে {ITEM} কত বিকরি
+shop_info	আমার দোকানের নাম
+shop_info	আমার দোকানের নামটা কি
+shop_info	আমার দোকানের ঠিকানা
+shop_info	দোকানের ফোন নাম্বার
+shop_info	দোকানের কোন ঠিকানা সেভ করা আছে
+shop_info	দোকানের প্রোফাইলে কোন নাম্বার আছে
+shop_info	আমার ব্যবসার নাম?
+shop_info	আমার দোকানের তথ্য বলো
+shop_info	অ্যাপে আমার দোকানের ঠিকানা কি দেওয়া
+shop_info	দোকানের নাম আর ঠিকানা বলো
+shop_info	ভাই দোকানের নাম কি লেখা আছে
+shop_info	এখানে দোকানের কোন মোবাইল নাম্বার সেভ
+shop_info	দোকানের ট্যাক্স নাম্বার কি
+shop_info	আমার দোকানের ঠিকান
+shop_info	দোকানের নাম কী
+count_customers	কতজন কাস্টমার
+count_customers	কাস্টমারের সংখ্যা
+count_customers	আমার কাস্টমার গুনে বলো
+count_customers	আমার খাতায় কয়টা পার্টি
+count_customers	আমার কতজন সাপ্লায়ার
+count_customers	মোট সাপ্লায়ার
+count_customers	কাস্টমার কয়জন?
+count_customers	আমার খাতায় কতজন মানুষ আছে
+count_customers	এখন পর্যন্ত কতজন কাস্টমার যোগ হয়েছে
+count_customers	ভাই আমাদের কাস্টমার কয়জন
+count_customers	কাস্টমার সাপ্লায়ার সব মিলে কতজন
+count_customers	আমার খাতায় কয়টা হিসাব আছে
+count_customers	সাপ্লায়ার কয়জন
+count_customers	কতজন কাষ্টমার আছে
+count_customers	কাস্টমার কয় জন আসে
+count_products	কয়টা পণ্য
+count_products	আইটেমের সংখ্যা
+count_products	আমার পণ্য গুনে বলো
+count_products	কয়টা আইটেম যোগ করা আছে
+count_products	লিস্টে মোট কত মাল
+count_products	আমার কত রকমের মাল আছে
+count_products	পণ্য কয়টা?
+count_products	আমার লিস্টে কয়টা ওষুধ আছে
+count_products	দোকানে কত রকম আইটেম
+count_products	ভাই আমাদের প্রোডাক্ট কয়টা
+count_products	মোট পণ্যের সংখ্যা বলো
+count_products	এখন পর্যন্ত কয়টা আইটেম তুলেছি
+count_products	প্রোডাক্ট লিস্টে কয়টা আছে
+count_products	কয়টা প্রডাক্ট আছে
+count_products	কয়টা পন্য আছে
+bills_today	আজকের সাপ্লায়ার বিল
+bills_today	আজ কয়টা বিল যোগ হয়েছে
+bills_today	আজ কয়টা ক্রয়ের বিল
+bills_today	গতকালের সাপ্লায়ার বিল
+bills_today	আজ সাপ্লায়ার বিলে কত টাকা যোগ হলো
+bills_today	এই সপ্তাহের ক্রয়ের বিল
+bills_today	গত সপ্তাহে কয়টা সাপ্লায়ার বিল
+bills_today	এই মাসের মোট সাপ্লায়ার বিল
+bills_today	গত মাসে কয়টা কেনার বিল
+bills_today	ভাই আজ কোনো সাপ্লায়ার বিল তুলেছি
+bills_today	গতকালের সাপ্লায়ার বিলের মোট টাকা
+bills_today	এই সপ্তাহে সাপ্লায়ারদের কয়টা বিল এন্ট্রি হলো
+bills_today	আজ সাপ্লায়ার বিল?
+bills_today	আজ কয়টা সাপ্লাইয়ার বিল
+bills_today	আজ কয়টা সাপ্লায়ার বীল তুলসি
+invoices_today	আজকের ইনভয়েস
+invoices_today	আজ কয়টা ইনভয়েস বানানো হয়েছে
+invoices_today	আজ ইনভয়েসের সংখ্যা
+invoices_today	আজ কোনো ইনভয়েস করেছি
+invoices_today	গতকালের ইনভয়েস
+invoices_today	এই সপ্তাহে কয়টা ইনভয়েস
+invoices_today	গত সপ্তাহের ইনভয়েস
+invoices_today	এই মাসের ইনভয়েস
+invoices_today	গত মাসে কয়টা ইনভয়েস হয়েছে
+invoices_today	ভাই আজ আমরা কয়টা ইনভয়েস করলাম
+invoices_today	গতকাল মোট কয়টা ইনভয়েস তৈরি হয়েছে
+invoices_today	এই সপ্তাহে বানানো ইনভয়েসের সংখ্যা বলো
+invoices_today	আজ ইনভয়েস?
+invoices_today	আজ কয়টা ইনবয়েস
+invoices_today	আজ কয়টা ইনভয়েজ বানাইছি
+tickets_today	আজকের কাউন্টার সেল
+tickets_today	আজ কয়টা রসিদ
+tickets_today	আজ কয়টা টিকিট কাটা হলো
+tickets_today	আজ কাউন্টারে কয়টা বিক্রি হয়েছে
+tickets_today	গতকাল রসিদের সংখ্যা
+tickets_today	এই সপ্তাহে কাউন্টারে কয়টা বিল
+tickets_today	গত সপ্তাহের কাউন্টার রসিদ
+tickets_today	এই মাসে কয়টা টিকিট
+tickets_today	গত মাসে কাউন্টার সেল কয়টা
+tickets_today	ভাই আজ কাউন্টারে কয়টা স্লিপ কাটা হলো
+tickets_today	আজ কাউন্টারে কয়জন কাস্টমারের বিল হলো
+tickets_today	গতকাল কাউন্টার সেলের সংখ্যা বলো
+tickets_today	আজ টিকিট?
+tickets_today	আজ কয়টা রশিদ কাটা হলো
+tickets_today	আজ কাউন্টার সেইল কয়টা
+entries_today	আজকের এন্ট্রি
+entries_today	আজ কয়টা এন্ট্রি লেখা হয়েছে
+entries_today	আজ খাতায় কয়টা এন্ট্রি
+entries_today	আজ এন্ট্রির সংখ্যা
+entries_today	গতকাল কয়টা এন্ট্রি
+entries_today	এই সপ্তাহের এন্ট্রি
+entries_today	গত সপ্তাহে কয়টা এন্ট্রি
+entries_today	এই মাসে লেখা এন্ট্রি
+entries_today	গত মাসে কয়টা এন্ট্রি হয়েছে
+entries_today	ভাই আজ আমরা কয়টা এন্ট্রি দিলাম
+entries_today	গতকাল খাতায় কয়টা লেখা হয়েছে
+entries_today	আজ খাতায় কয়বার লিখেছি
+entries_today	আজ এন্ট্রি?
+entries_today	আজ কয়টা এনট্রি
+entries_today	আজ কয়টা এন্টি লিখসি
+calculator_uses	আজ ক্যালকুলেটর ব্যবহার হয়েছে
+calculator_uses	আজ আমি কয়বার ক্যালকুলেটর চালিয়েছি
+calculator_uses	আজ কেউ ক্যালকুলেটর ব্যবহার করেছে
+calculator_uses	ক্যালকুলেটর ব্যবহারের সংখ্যা
+calculator_uses	গতকাল ক্যালকুলেটর কতবার চলেছে
+calculator_uses	এই সপ্তাহে ক্যালকুলেটর কয়বার ব্যবহার
+calculator_uses	আজ কি ক্যালকুলেটর খুলেছিলাম
+calculator_uses	আজ ক্যালকুলেটরে কয়টা হিসাব করা হয়েছে
+calculator_uses	আজকের ক্যালকুলেটর ইউজ
+calculator_uses	ভাই আজ ক্যালকুলেটর চলেছে নাকি চলেনি
+calculator_uses	আজ কয়টা ক্যালকুলেশন
+calculator_uses	গতকাল ক্যালকুলেটর কয়বার চালানো হয়েছে
+calculator_uses	আজ ক্যালকুলেটর?
+calculator_uses	আজ কেলকুলেটর ব্যবহার হয়েছে
+calculator_uses	আজ কয়বার ক্যালকুলেটার ইউজ
+app_opens	আজ অ্যাপ খোলা হয়েছে
+app_opens	আজ আমি অ্যাপটা কয়বার খুললাম
+app_opens	আজ অ্যাপ কতবার চালু হয়েছে
+app_opens	অ্যাপ খোলার সংখ্যা
+app_opens	গতকাল অ্যাপ কয়বার খোলা হয়েছিল
+app_opens	এই সপ্তাহে অ্যাপ কয়বার খোলা
+app_opens	গতকাল কি অ্যাপ খুলেছিলাম
+app_opens	আজ এই অ্যাপ কয়বার স্টার্ট হয়েছে
+app_opens	আজ অ্যাপ ইউজ, কয়বার ওপেন
+app_opens	ভাই আজ আমি অ্যাপে কয়বার এলাম
+app_opens	এই মাসে অ্যাপ কয়বার খোলা হয়েছে
+app_opens	গত সপ্তাহে অ্যাপ কতবার খোলা হলো
+app_opens	আজ অ্যাপ ওপেন?
+app_opens	আজ কয়বার এপ খোলা হয়েছে
+app_opens	আজ কয়বার অ্যাপ খুলসি
+cheques_status	চেক পেন্ডিং
+cheques_status	কোন কোন চেক পেন্ডিং আছে
+cheques_status	আজ কোনো চেকের তারিখ
+cheques_status	চেকের স্ট্যাটাস
+cheques_status	কোনো চেক বাউন্স হয়েছে
+cheques_status	কয়টা চেক ক্লিয়ার হওয়া বাকি
+cheques_status	এই সপ্তাহে কোন চেকের ডেট
+cheques_status	পেন্ডিং চেকগুলো একটু দেখাও
+cheques_status	কোনো চেক কি ফেরত এসেছে
+cheques_status	ভাই চেকের অবস্থা কি
+cheques_status	কোন চেক ডিউ আর কোনটা ক্লিয়ার বলো
+cheques_status	হাতে কয়টা চেক আছে
+cheques_status	চেক?
+cheques_status	কোনো চেক পেনডিং
+cheques_status	চেকের স্টেটাস
+plans_status	কিস্তির প্ল্যান
+plans_status	আজ কোনো কিস্তি আছে
+plans_status	কোন কিস্তিগুলো বাকি
+plans_status	কয়টা প্ল্যান চলছে
+plans_status	কিস্তির স্ট্যাটাস
+plans_status	কার কিস্তি দেরি হয়েছে
+plans_status	এই সপ্তাহে কোন কিস্তি ডিউ
+plans_status	চলমান কিস্তির প্ল্যান দেখাও
+plans_status	কয়টা কিস্তি ওভারডিউ
+plans_status	ভাই কিস্তির প্ল্যানগুলোর কি খবর
+plans_status	কোন কাস্টমারের কিস্তি ডিউ
+plans_status	প্ল্যানের অবস্থা বলো
+plans_status	কিস্তি?
+plans_status	কিস্তির প্লান স্ট্যাটাস
+plans_status	কোনো কিস্তী বাকি
+staff_salary	স্টাফের বেতন
+staff_salary	বেতন বাকি
+staff_salary	কত বেতন পেন্ডিং আছে
+staff_salary	এই মাসে কে অ্যাডভান্স নিয়েছে
+staff_salary	স্টাফের অ্যাডভান্স
+staff_salary	কর্মচারীদের আমার কত দিতে হবে
+staff_salary	কোন কর্মচারীর বেতন বাকি
+staff_salary	এই মাসের বেতন
+staff_salary	স্টাফরা কত অগ্রিম নিয়েছে
+staff_salary	ভাই আর কত বেতন দেওয়া বাকি
+staff_salary	কর্মচারীদের বেতনের অবস্থা
+staff_salary	কার বেতন বাকি আর কত
+staff_salary	বেতন?
+staff_salary	স্টাপের বেতন
+staff_salary	স্টাফের বেতোন বাকি
+deliveries	আজ মাল এসেছে
+deliveries	আজ কি স্টক এলো
+deliveries	গতকাল কোন মাল ঢুকেছে
+deliveries	আজ সাপ্লায়াররা কি পাঠিয়েছে
+deliveries	এই সপ্তাহে কি স্টক পেয়েছি
+deliveries	গত সপ্তাহে কি কি এসেছে
+deliveries	এই মাসে আসা মাল
+deliveries	গত মাসে সাপ্লায়ারদের কাছ থেকে কি মাল এলো
+deliveries	আজ কোনো ডেলিভারি
+deliveries	ভাই আজ কি মাল ঢুকলো
+deliveries	গতকাল কোন কোন আইটেম রিসিভ হয়েছে
+deliveries	এই সপ্তাহে নতুন কি স্টক এসেছে বলো
+deliveries	আজ ডেলিভারি?
+deliveries	আজ কি মাল আইসে
+deliveries	আজ মাল এসেচে
+activity	আজ কি কি হলো
+activity	আজকের অ্যাক্টিভিটি দেখাও
+activity	আজ কি পরিবর্তন করা হয়েছে
+activity	আজ কে কি এডিট করেছে
+activity	আজ কি ডিলিট করা হয়েছে
+activity	কেউ কি কোনো এন্ট্রি মুছেছে
+activity	আজকের পরিবর্তনগুলো দেখাও
+activity	আজ কে কি করেছে
+activity	গতকাল কোনো এন্ট্রি এডিট হয়েছে
+activity	ভাই আজ অ্যাপে কি কি ঘটলো
+activity	এন্ট্রিগুলো কে বদলেছে
+activity	আজ স্টাফ অ্যাপে কি করেছে
+activity	অ্যাক্টিভিটি লগ দাও
+activity	আজ কি হইছে
+activity	আজ কি এডিড হয়েছে
+backup_status	ব্যাকআপ হয়েছে?
+backup_status	ব্যাকআপ কি হয়ে গেছে
+backup_status	শেষ ব্যাকআপ কবে
+backup_status	শেষ কবে ব্যাকআপ নিয়েছি
+backup_status	আমার ডেটার ব্যাকআপ আছে তো
+backup_status	ব্যাকআপ স্ট্যাটাস
+backup_status	আজকের ব্যাকআপ নেওয়া হয়েছে
+backup_status	আমার ব্যাকআপ কতদিনের পুরনো
+backup_status	ব্যাকআপ কি হয়েছিল
+backup_status	ভাই ব্যাকআপ ঠিক আছে তো
+backup_status	শেষবার ব্যাকআপ কবে করা হয়েছে
+backup_status	ড্রাইভ ব্যাকআপ চলেছে
+backup_status	শেষ ব্যাকআপের তারিখ বলো
+backup_status	ব্যাকাপ হয়েছে
+backup_status	লাস্ট বেকআপ কবে
+book_summary	আমার পুরো খাতা
+book_summary	আমার খাতার সারাংশ
+book_summary	সার্বিক অবস্থা
+book_summary	পুরো হিসাবের সামারি
+book_summary	আমার বইয়ের সম্পূর্ণ সারাংশ
+book_summary	আমার গোটা ব্যবসার হিসাব কেমন
+book_summary	আমার খাতার পুরো চিত্র
+book_summary	আমার সব হিসাব সংক্ষেপে দেখাও
+book_summary	আমার সমস্ত হিসাব
+book_summary	ভাই পুরো খাতার সামারি দাও
+book_summary	সবকিছুর সার্বিক সারাংশ
+book_summary	আমার পুরো খাতার অবস্থা কি
+book_summary	খাতার সামারি?
+book_summary	আমার পুরা খাতা
+book_summary	সার্বিক হিসাবের সারাংস
+cashbook_today	আজকের ক্যাশবুক
+cashbook_today	আজ টাকা ঢুকলো কত বের হলো কত
+cashbook_today	আজকের খরচ
+cashbook_today	আজ কত খরচ হলো
+cashbook_today	আজ ক্যাশ ইন ক্যাশ আউট
+cashbook_today	আজ কি কি খরচ করলাম
+cashbook_today	গতকালের ক্যাশবুক
+cashbook_today	এই সপ্তাহের খরচ
+cashbook_today	গত সপ্তাহে কত টাকা বের হয়েছে
+cashbook_today	এই মাসের ক্যাশবুক
+cashbook_today	গত মাসের মোট খরচ
+cashbook_today	ভাই আজ খরচা কত
+cashbook_today	গতকাল কত টাকা গেলো আর কত এলো
+cashbook_today	আজকের খরছ
+cashbook_today	আজ ক্যাশ বুক
+returns_today	আজকের রিটার্ন
+returns_today	আজ কি ফেরত এসেছে
+returns_today	আজ ফেরত আসা মাল
+returns_today	গতকাল কোনো রিটার্ন
+returns_today	আজ কত মাল ফেরত এলো
+returns_today	এই সপ্তাহের রিটার্ন কত
+returns_today	গত সপ্তাহে কাস্টমাররা কি ফেরত দিয়েছে
+returns_today	এই মাসের রিটার্ন
+returns_today	গত মাসে কয়টা রিটার্ন
+returns_today	ভাই আজ কেউ মাল ফেরত দিয়েছে
+returns_today	গতকালের রিটার্নের মোট টাকা
+returns_today	এই সপ্তাহে কোন কোন আইটেম ফেরত এলো
+returns_today	আজ রিটার্ন?
+returns_today	আজ কি ফেরৎ এসেছে
+returns_today	আজ মাল ফেরত আইসে
+help_howto	ইনভয়েস কিভাবে বানায় ভাই
+help_howto	ব্যাকআপ কিভাবে নিতে হয়
+help_howto	নতুন কাস্টমার কিভাবে যোগ করে
+help_howto	প্রোডাক্ট কিভাবে অ্যাড করবো
+help_howto	রসিদ কিভাবে প্রিন্ট করবো
+help_howto	রিমাইন্ডার কিভাবে পাঠাবো
+help_howto	ভাষা কিভাবে বদলাবো
+help_howto	ব্যাকআপ কিভাবে রিস্টোর করবো
+help_howto	সাপ্লায়ার বিল কিভাবে তুলতে হয় শিখিয়ে দাও
+help_howto	ভাই এন্ট্রি কিভাবে ডিলিট করে
+help_howto	ক্রেডিট লিমিট কিভাবে সেট করবো
+help_howto	দিন কোথায় বন্ধ করে, কিভাবে করবো
+help_howto	হোয়াটসঅ্যাপে স্টেটমেন্ট কিভাবে শেয়ার করবো
+help_howto	কাস্টমার কি ভাবে অ্যাড করব
+help_howto	ইনবয়েস কেমনে বানাবো
+act_fly	আমার জন্য ওড়ো
+act_fly	উড়ে বেড়াও
+act_fly	উড়ে দেখাও তো
+act_fly	একটু উড়তে পারো
+act_fly	কিভাবে ওড়ো দেখাও
+act_fly	ভাই একবার ওড়ো
+act_fly	একটা উড়াল দাও
+act_fly	উপরে ওড়ো প্লিজ
+act_fly	ডানা মেলে ওড়ো
+act_fly	আচ্ছা এবার ওড়ো
+act_fly	উঁচুতে ওড়ো হুদহুদ
+act_fly	একটু ওড়াউড়ি করো
+act_fly	তুমি তো পাখি, ওড়ো তাহলে
+act_fly	উরে দেখাও
+act_fly	উড়ো তো
+act_dance	একটা নাচ দাও
+act_dance	নাচো প্লিজ
+act_dance	একটা নাচ দেখাও
+act_dance	একটু নাচো ভাই
+act_dance	আমার জন্য নাচতে পারো
+act_dance	দেখি তোমার নাচ
+act_dance	আচ্ছা এবার নাচো
+act_dance	একটু নাচানাচি করো হুদহুদ
+act_dance	একবার নাচো
+act_dance	খুশিতে নাচো
+act_dance	চলো নাচো তো
+act_dance	নাচ জানো তো, দেখাও
+act_dance	এই নেচে দেখাও
+act_dance	নাচু
+act_dance	একটা নাছ দেখাও
+act_jump	একটা লাফ দাও
+act_jump	লাফাও প্লিজ
+act_jump	আমার জন্য লাফ দাও
+act_jump	একটা কসরত দেখাও তো
+act_jump	একবার লাফ দাও ভাই
+act_jump	লাফাতে পারো তুমি
+act_jump	একটা ট্রিক দেখাও
+act_jump	উপরে লাফ দাও
+act_jump	আচ্ছা এবার জোরে লাফ দাও
+act_jump	লাফিয়ে বেড়াও হুদহুদ
+act_jump	একটু লাফালাফি করো
+act_jump	দেখি তোমার ট্রিক
+act_jump	এই লাফিয়ে দেখাও
+act_jump	লাপ দাও
+act_jump	একটা লাফ দেও

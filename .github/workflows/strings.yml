@@ -31,6 +31,9 @@ on:
       # The computer's copies of the phone's designs (gen_desktop_*.py --check).
       - 'scripts/gen_desktop_*.py'
       - 'desktop/src/main/kotlin/**'
+      # Hudhud's sentence bank, written into the tests' resources (gen_hudhud_bank.py --check).
+      - 'shared/hudhud/**'
+      - 'scripts/gen_hudhud_bank.py'
   pull_request:
     paths:
       - 'app/src/main/res/values*/strings.xml'
@@ -53,6 +56,9 @@ on:
       # The computer's copies of the phone's designs (gen_desktop_*.py --check).
       - 'scripts/gen_desktop_*.py'
       - 'desktop/src/main/kotlin/**'
+      # Hudhud's sentence bank, written into the tests' resources (gen_hudhud_bank.py --check).
+      - 'shared/hudhud/**'
+      - 'scripts/gen_hudhud_bank.py'
 
 jobs:
   parity:
@@ -81,3 +87,6 @@ jobs:
         run: python3 scripts/gen_desktop_poster.py --check
       - name: The computer's stock register is the phone's (generated copy up to date)
         run: python3 scripts/gen_desktop_inspector.py --check
+      # The sense the app ships is learnt from this bank; HudhudModelTest (the build's tests) holds the asset to it.
+      - name: Hudhud's sentence bank is current (shared/hudhud -> the tests' bank and held-out set)
+        run: python3 scripts/gen_hudhud_bank.py --check

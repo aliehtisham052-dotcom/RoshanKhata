@@ -69,11 +69,15 @@ import kotlin.coroutines.resume
  *  - Every answer only READS ([HudhudBook]); a figure behind REPORTS is not shown to a cashier.
  *  - What was understood is always shown with the answer ([Hudhud], VoiceQuestion's rule).
  *  - With his voice on (the speaker at the top) he says every answer aloud, however it was asked (13 Nov 2026, the
- *    owner: "jab upar on hai to neeche bhi awaaz aani chahiye"), and "Hear again" says it once more; off, he only
- *    writes it. He speaks
- *    only through the phone's own offline voice ([HudhudVoice]), and only once the screen is his again: an answer
- *    ready the moment the voice-search box closed was said into its closing and lost ([sayWhenHere]). An amount is
- *    never said aloud while Home's balance is hidden (a customer may be standing at the counter).
+ *    owner: "jab upar on hai to neeche bhi awaaz aani chahiye"), the whole card and not only its first line
+ *    ([HudhudBook.speech]), and "Hear again" says it once more; off, he only writes it. A guess or a choice is written,
+ *    not said ("jo doubtful hai us par chup rahe"). He speaks only through the phone's own offline voice
+ *    ([HudhudVoice]: the app's language, else the nearest the phone has, in that language's own words), and only once
+ *    the screen is his again: an answer ready the moment the voice-search box closed was said into its closing and
+ *    lost ([sayWhenHere]). No amount is said aloud while Home's balance is hidden (a customer may be standing at the
+ *    counter), nor a phone or account number.
+ *  - A tap on Hudhud plays one of his acts ([HudhudActs]: he flies, beats his wings, dances, hops or turns), with a
+ *    light touch of the phone's haptics.
  *  - With the phone's animations off he changes pose without fading, and never hops, bobs or breathes.
  *  - He listens himself ([HudhudEars], 13 Nov 2026: no voice-search box) once the microphone is allowed — on the
  *    phone itself when it has the language; without the permission, the phone's voice-search box as before
@@ -147,6 +151,7 @@ object HudhudSheet {
         val btnVoice: ImageButton = view.findViewById(R.id.btnHudVoice)
         val scroll: NestedScrollView = view.findViewById(R.id.hudScroll)
         val tvHeard: TextView = view.findViewById(R.id.tvHudHeard)
+        val tvTook: TextView = view.findViewById(R.id.tvHudTook)
         val tvLabel: TextView = view.findViewById(R.id.tvHudLabel)
         val tvFigure: TextView = view.findViewById(R.id.tvHudFigure)
         val tvLines: TextView = view.findViewById(R.id.tvHudLines)
@@ -171,6 +176,9 @@ object HudhudSheet {
         var listenLauncher: ActivityResultLauncher<Intent>? = null
         var micAsk: ActivityResultLauncher<String>? = null
         var speakJob: Job? = null
+        var voiceJob: Job? = null
+        /** His acts, over the sheet's whole window. */
+        val acts = HudhudActs(stage, listOf(poseA, poseB)) { sheet.window?.decorView as? ViewGroup }
         var breath: ValueAnimator? = null
         var closed = false
 
@@ -241,6 +249,7 @@ object HudhudSheet {
                 showVoiceSwitch()
                 if (!voiceOn) {
                     speakJob?.cancel()
+                    voiceJob?.cancel()
                     voice.stop()
                     // Turned off before he began: he does not stay turned to speak.
                     if (pose == Pose.TALKING) last?.let { settle(it.mood) }
@@ -248,6 +257,7 @@ object HudhudSheet {
                 last?.let { showButtons(it) }
             }
             view.findViewById<View>(R.id.btnHudClose).setOnClickListener { sheet.dismiss() }
+            stage.setOnClickListener { tapped() }
             // Its icon is drawn white: tinted here too, so it shows even where the layout's tint is not read.
             TextViewCompat.setCompoundDrawableTintList(
                 btnSettings, ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.brand_green_text))
@@ -278,6 +288,8 @@ object HudhudSheet {
                 val card = HudhudBook.intro(ctx, greet)
                 helloCard = card
                 show(card, speak = speakAllowed && voiceOn)
+                // Touched, he answers with his wings as he arrives (13 Nov 2026, the owner).
+                stage.postDelayed({ if (!closed) acts.play(HudhudActs.Act.FLAP) }, ARRIVE_ACT_MS)
             } else {
                 val card = HudhudBook.hello(ctx)
                 helloCard = card
@@ -300,8 +312,10 @@ object HudhudSheet {
 
         fun close() {
             closed = true
+            acts.stop()
             job?.cancel()
             speakJob?.cancel()
+            voiceJob?.cancel()
             parties.cancel()
             thinkingLater?.let { view.removeCallbacks(it) }
             breath?.cancel()
@@ -535,28 +549,46 @@ object HudhudSheet {
                     val names = known.map { Hudhud.Name(it.id, it.name) }
                     val products = goods.await()
                     val (heard, ask) = withContext(Dispatchers.Default) { understand(names, products) }
-                    Triple(heard, ask, withContext(Dispatchers.IO) { HudhudBook.answer(ctx, dao, ask, known) })
+                    val answer = withContext(Dispatchers.IO) { HudhudBook.answer(ctx, dao, ask, known) }
+                    val next = withContext(Dispatchers.Default) { chipsFor(heard, ask, answer, names, products) }
+                    Answered(heard, ask, answer, next)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    Triple(heardFirst, null, HudhudBook.failed(ctx))
+                    Answered(heardFirst, null, HudhudBook.failed(ctx), emptyList())
                 }
                 view.removeCallbacks(later)
                 if (closed) return@launch
-                val (heard, ask, answer) = result
-                tvHeard.text = asked(heard, spoken)
-                show(answer, speak = true)
-                // What comes next: the answer's own next questions, the choices it offers, or the nearest he knows.
-                // A question back ("whose?", "did you mean") keeps the one the talk was about.
-                if (ask != null && ask !is Hudhud.Ask.DidYouMean && ask != Hudhud.Ask.Unknown && ask != Hudhud.Ask.NeedName) before = ask
-                showChips(
-                    when {
-                        ask is Hudhud.Ask.DidYouMean -> ask.options
-                        ask == Hudhud.Ask.Unknown -> Hudhud.closest(heard)
-                        ask != null -> HudhudBook.next(ctx, ask)
-                        else -> emptyList()
-                    }
-                )
+                tvHeard.text = asked(result.heard, spoken)
+                show(result.answer, speak = true)
+                // What the talk is about now, so "uska number?" or "aur kal?" carry on: a guess counts as what it was
+                // taken for; a list of names offered ("whose?") keeps the one before.
+                val taken = (result.ask as? Hudhud.Ask.Guessed)?.ask ?: result.ask
+                if (taken != null && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown && taken !is Hudhud.Ask.NeedName) {
+                    before = taken
+                }
+                showChips(result.next)
+            }
+        }
+
+        /** A question answered: what was heard, what it was taken for, the answer, and the chips that follow it. */
+        private class Answered(val heard: String, val ask: Hudhud.Ask?, val answer: HudhudBook.Answer, val next: List<Hudhud.Ask>)
+
+        /**
+         * The chips under an answer (13 Nov 2026, the owner: "kehne wala jo keyword de raha hai, us hisaab se suggestion
+         * de"): for a guess, the other meanings its words could have, then what follows the guess; for words he could
+         * not place, the nearest meanings he knows; else what follows the answer.
+         */
+        private fun chipsFor(
+            heard: String, ask: Hudhud.Ask?, answer: HudhudBook.Answer, names: List<Hudhud.Name>, products: List<Hudhud.Name>
+        ): List<Hudhud.Ask> {
+            val language = Locale.getDefault().toLanguageTag()
+            return when {
+                ask == null -> emptyList()
+                ask == Hudhud.Ask.Unknown -> Hudhud.suggest(heard, names, topics, language, products)
+                answer.tookAs != null -> answer.options + Hudhud.suggest(heard, names, topics, language, products, skip = ask) +
+                    HudhudBook.next(ctx, ask)
+                else -> answer.options + HudhudBook.next(ctx, ask)
             }
         }
 
@@ -564,6 +596,7 @@ object HudhudSheet {
 
         private fun show(a: HudhudBook.Answer, speak: Boolean) {
             last = a
+            tvTook.textOrGone(a.tookAs)
             tvLabel.textOrGone(a.label)
             tvFigure.textOrGone(a.figure)
             tvLines.textOrGone(a.lines.joinToString("\n").takeIf { it.isNotBlank() })
@@ -591,9 +624,9 @@ object HudhudSheet {
                 TextFit.stackWhenLarge(row.findViewById(R.id.hudRowNameColumn), row.findViewById(R.id.tvHudRowFigure))
             }
             showButtons(a)
-            // Asked aloud and not answered aloud: he says why (an amount, while Home's balance is hidden).
-            val quiet = speak && speakAllowed && voiceOn && a.money && a.spoken != null && BalancePrivacy.isHidden(ctx)
-            note(if (quiet) R.string.hudhud_quiet else null)
+            note(null)
+            // One of his acts, asked for ("urr ke dikhao"): it plays as the card arrives.
+            a.act?.let { move -> stage.post { if (!closed && last === a) acts.play(HudhudActs.Act.of(move)) } }
             if (speak && canSay(a)) {
                 // He turns to speak as the answer arrives; the words follow once the screen is his ([sayWhenHere]).
                 showPose(Pose.TALKING)
@@ -655,19 +688,71 @@ object HudhudSheet {
             buttons.visibility = if (canOpen || canSay(a)) View.VISIBLE else View.GONE
         }
 
-        /** He says an answer when it has words, his voice is on, and it is not an amount while balances are hidden. */
-        private fun canSay(a: HudhudBook.Answer): Boolean =
-            speakAllowed && voiceOn && a.spoken != null && !(a.money && BalancePrivacy.isHidden(ctx))
+        /** He says an answer when his voice is on and it is no guess or choice ([HudhudBook.Answer.quiet]). */
+        private fun canSay(a: HudhudBook.Answer): Boolean = speakAllowed && voiceOn && !a.quiet
 
+        /** Whether the voice says the app's own words (else the card is asked again in the voice's language). */
+        private fun sameWords(plan: HudhudVoice.Plan): Boolean {
+            val app = ctx.resources.configuration.locales[0]
+            val said = plan.words.resources.configuration.locales[0]
+            return app.language == said.language && app.script == said.script
+        }
+
+        /**
+         * Says [a] in full ([HudhudBook.speech]): with the phone's voice for the app's language, else the nearest one it
+         * has, the card then asked again in that language's own words (and in the Urdu words for Roman Urdu, which an
+         * Urdu voice reads). What he leaves out, and a voice of another language, he says once on the card.
+         */
         private fun say(a: HudhudBook.Answer) {
-            val words = a.spoken ?: return
             if (!canSay(a)) return
             // What he was saying ends first (Hear again while he speaks), then he speaks from the moment the answer is
             // his to say, not only once the engine starts: no stale "Listening…" while the phone's voice wakes up.
+            voiceJob?.cancel()
             voice.stop()
             showPose(Pose.TALKING)
             setState(R.string.hudhud_speaking)
-            voice.speak(words, object : HudhudVoice.Listener {
+            voiceJob = host.lifecycleScope.launch {
+                val plan = voice.plan()
+                if (closed || last !== a) return@launch
+                if (plan == null) {
+                    note(R.string.hudhud_no_voice)
+                    settle(a.mood)
+                    return@launch
+                }
+                val ask = a.ask
+                val card = if (sameWords(plan) || ask == null || a.spoken != null) a else try {
+                    withContext(Dispatchers.IO) { HudhudBook.answer(plan.words, dao, ask, parties.await()) }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    null
+                }
+                if (closed || last !== a) return@launch
+                val hidden = BalancePrivacy.isHidden(ctx)
+                val speech = card?.let { HudhudBook.speech(plan.words, it, hidden) }
+                when {
+                    plan.fallback -> fallbackNote(plan)
+                    speech == null && a.money && hidden -> note(R.string.hudhud_quiet)
+                    speech?.leftOutMoney == true -> note(R.string.hudhud_quiet)
+                }
+                if (speech == null) {
+                    settle(a.mood)
+                    return@launch
+                }
+                speakNow(a, speech.text, plan)
+            }
+        }
+
+        /** The phone has no voice for the app's language: which one he speaks instead, and where to get the voice. */
+        private fun fallbackNote(plan: HudhudVoice.Plan) {
+            val app = ctx.resources.configuration.locales[0]
+            val wanted = Locale(plan.wanted).getDisplayLanguage(app).ifBlank { plan.wanted }
+            val spoken = Locale(plan.language).getDisplayLanguage(app).ifBlank { plan.language }
+            tvNote.textOrGone(ctx.getString(R.string.hudhud_voice_fallback, wanted, spoken))
+        }
+
+        private fun speakNow(a: HudhudBook.Answer, text: String, plan: HudhudVoice.Plan) {
+            voice.speak(text, plan, object : HudhudVoice.Listener {
                 override fun onStart() {
                     if (closed) return
                     showPose(Pose.TALKING)
@@ -687,12 +772,25 @@ object HudhudSheet {
                     note(R.string.hudhud_voice_failed)
                     settle(a.mood)
                 }
-            }, noVoice = {
-                if (!closed) {
-                    note(R.string.hudhud_no_voice)
-                    settle(a.mood)
-                }
             })
+        }
+
+        /**
+         * A tap on Hudhud (13 Nov 2026, the owner: "touch karne par… kabhi urre, kabhi pankh maare, kabhi alag alag
+         * activities"): one of his acts, never the same twice in a row; with the phone's animations off, a light touch of
+         * the haptics and his glad pose a moment.
+         */
+        private fun tapped() {
+            if (acts.busy) return
+            breath?.cancel()
+            stage.scaleY = 1f
+            if (!Motion.enabled(ctx)) {
+                acts.tap()
+                showPose(Pose.HAPPY)
+                view.postDelayed({ if (!closed && pose == Pose.HAPPY) showPose(Pose.IDLE) }, HAPPY_MS)
+                return
+            }
+            acts.play(acts.random())
         }
 
         /** Where he rests after an answer: glad of good news a moment, concerned while there is something to see to. */
@@ -895,9 +993,11 @@ object HudhudSheet {
     /** The longest wait for the sheet's window to have the focus back before he speaks anyway. */
     private const val FOCUS_WAIT_MS = 1500L
     /** A breath between the microphone closing and his answer. */
-    private const val SETTLE_MS = 250L
+    private const val SETTLE_MS = 150L
     /** An answer not said within this long (the app was left meanwhile) is not said out of nowhere later. */
     private const val STALE_MS = 10_000L
     /** How much the microphone grows with a loud voice while he listens. */
     private const val MIC_GROW = 0.14f
+    /** The flap he answers a tap on his face with, once the sheet has risen. */
+    private const val ARRIVE_ACT_MS = 380L
 }

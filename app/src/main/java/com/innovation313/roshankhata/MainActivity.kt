@@ -238,6 +238,14 @@ class MainActivity : BaseActivity() {
             com.innovation313.roshankhata.ui.HudhudSheet.open(this, listen = true)
         }
         if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) face.scaleX = -1f
+        // His sense is read off the screen's thread a moment after Home opens, so the first question is answered
+        // at once (a few hundred kilobytes; 13 Nov 2026).
+        face.postDelayed({
+            if (!isFinishing && !isDestroyed) Thread { com.innovation313.roshankhata.data.HudhudSense.warmUp() }.apply {
+                priority = Thread.MIN_PRIORITY
+                start()
+            }
+        }, HUDHUD_WARM_AFTER_MS)
         val motion = com.innovation313.roshankhata.ui.Motion
         if (!motion.enabled(this)) return
         face.postDelayed({
@@ -1170,6 +1178,8 @@ class MainActivity : BaseActivity() {
 
         /** After the grid has settled (and after the tour's dimming would have begun). */
         private const val HUDHUD_NOD_AFTER_MS = 1200L
+        /** His sense is read this long after Home opens, off the screen's thread. */
+        private const val HUDHUD_WARM_AFTER_MS = 1500L
 
         /** Tiles per row in the feature grid. */
         private const val TILE_HEIGHT_COMPACT_DP = 62f

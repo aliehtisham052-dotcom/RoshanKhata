@@ -1,0 +1,975 @@
+who_are_you	tum ho kaun
+who_are_you	aap ka taaruf
+who_are_you	apna naam to batao
+who_are_you	naam?
+who_are_you	yaar tu hai kaun
+who_are_you	bhai apna taaruf karwao zara
+who_are_you	ye parinda kaun hai
+who_are_you	tum kon si cheez ho
+who_are_you	aap ko kya keh kar bulaun
+who_are_you	tera naam kya rakha hai
+who_are_you	suno ji aap hain kaun aakhir
+who_are_you	achha to tum kaun hue
+who_are_you	ap kon hn
+who_are_you	introduce to karo apne aap ko
+who_are_you	main kis se baat kar raha hun
+abilities	kya kya kar lete ho
+abilities	tum kis kaam ke ho
+abilities	tumhara kaam kya hai
+abilities	mujhe kya kya bata sakte ho bhai
+abilities	aap se kya kya pooch sakta hun
+abilities	tum se kya poochun
+abilities	kaam kya hai tera
+abilities	kuch aata bhi hai tumhe
+abilities	yaar tu meri kya madad karega
+abilities	ap kia kia bta skte ho
+abilities	apni khoobiyan batao
+abilities	kon kon se sawal ka jawab dete ho
+abilities	tumhe dukaan ke baare mein kya kya maloom hai
+abilities	help kya kar sakte ho meri
+abilities	zara batao tum kis kis cheez mein kaam aate ho
+how_are_you	kaise ho bhai
+how_are_you	theek ho
+how_are_you	aur sunao kya haal hain
+how_are_you	tabiyat kaisi hai
+how_are_you	haal?
+how_are_you	sab khairiyat hai
+how_are_you	kya haal chaal hain janab ke
+how_are_you	tum theek thaak ho na
+how_are_you	kesa hai tu
+how_are_you	aap ki tabiyat theek hai
+how_are_you	aur bhai kaisa chal raha hai
+how_are_you	mizaj kaise hain
+how_are_you	khairiyat se ho
+how_are_you	kya hal he
+how_are_you	suno ji aap kaise ho aaj
+can_talk	sun rahe ho na
+can_talk	hello sunai de raha hai
+can_talk	tum ho wahan
+can_talk	awaaz aa rahi hai meri
+can_talk	baat karoge mujh se
+can_talk	kya tum bol sakte ho
+can_talk	mujhe sun pa rahe ho
+can_talk	ho ya so gaye
+can_talk	yaar jawab to do sun rahe ho ke nahi
+can_talk	tum bolte bhi ho
+can_talk	mere saath baat cheet kar sakte ho
+can_talk	ap sun rhe hn
+can_talk	mic chal raha hai meri awaaz pohanch rahi hai
+can_talk	koi hai udhar
+can_talk	zara bolo to sahi sunte ho ya nahi
+address	janab e aali
+address	suno bhai
+address	Hudhud sahab
+address	ustad
+address	yaar
+address	oye bhai
+address	bhai sahab
+address	suniye ji
+address	arey bhai
+address	Hudhud bhai
+address	bhaiya ji
+address	suno to
+address	aye dost
+address	pyare bhai
+address	hud hud
+salaam	assalam o alaikum wa rahmatullah bhai
+salaam	salam bhai
+salaam	aslam alekum
+salaam	assalamu alaikum Hudhud
+salaam	salam ji
+salaam	salam alaikum janab
+salaam	assalam alaikum yaar
+salaam	slam
+salaam	salaam alaikum bhai jaan
+salaam	assalam o alaikum wa rahmatullahi wa barakatuhu
+salaam	salam dost
+salaam	asalam o alikum
+salaam	salam hai bhai
+salaam	assalamualaikum ji
+salaam	salam arz hai
+hello	hello bhai sahab
+hello	hi Hudhud
+hello	hey
+hello	good evening ji
+hello	subah bakhair janab
+hello	hello hello hello
+hello	hi dost
+hello	namaste
+hello	good afternoon ji
+hello	helo
+hello	aadaab arz hai
+hello	hey Hudhud
+hello	subah ba khair bhai
+hello	hi ji
+hello	good morning Hudhud
+thanks	shukriya ji
+thanks	thanks
+thanks	bohat meharbani
+thanks	thank you bhai
+thanks	jazakallah ji
+thanks	shukria yaar
+thanks	bara ehsan
+thanks	thanks a lot
+thanks	meharbani aap ki
+thanks	jazakallah khair bhai
+thanks	thankyou Hudhud
+thanks	bohat bohat shukriya
+thanks	shukriya dost
+thanks	tera shukriya
+thanks	thenks
+bye	bye bye yaar
+bye	chalta hun
+bye	fi amanillah
+bye	achha allah hafiz
+bye	phir milenge
+bye	ok bye
+bye	khuda hafiz bhai
+bye	tata
+bye	ab main chalta hun allah hafiz
+bye	shab bakhair
+bye	good night
+bye	chalo phir baad mein baat hogi
+bye	bye Hudhud
+bye	alvida dost
+bye	allah hafiz yaar kal milte hain
+praise	wah
+praise	zabardast
+praise	kamaal kar diya
+praise	tum bohat achhe ho
+praise	good job Hudhud
+praise	bohat khoob bhai
+praise	maza aa gaya yaar tu to bara tez hai
+praise	shabash Hudhud
+praise	kya baat hai teri
+praise	very good
+praise	aala
+praise	bhai tu to hero nikla
+praise	bohat acha kaam kiya
+praise	ap bht zabrdast ho
+praise	dil khush kar diya
+owner_name	main kaun hun
+owner_name	mera naam?
+owner_name	tum mujhe kis naam se jaante ho
+owner_name	mujhe pehchante ho
+owner_name	batao to main kon hun
+owner_name	mera naam pata hai tumhe
+owner_name	aap ke paas mera naam kya likha hai
+owner_name	tu mujhe kya keh ke bulata hai
+owner_name	yaar mera naam yaad hai tujhe
+owner_name	mujhe kya bulate ho tum
+owner_name	mera nam bta
+owner_name	mujhe jaante bhi ho ke nahi
+owner_name	zara batao tum mujhe kis naam se pukarte ho
+owner_name	mera naam kya save hai tumhare paas
+owner_name	achha mera naam bolo
+maker	kis ne banaya tumhe
+maker	tumhara malik kaun hai
+maker	ye app kis ki hai
+maker	banane wali company ka naam
+maker	kis company ka app hai ye
+maker	tumhe kahan banaya gaya
+maker	developer kaun hai is app ka
+maker	Roshan Khata kis ne banaya
+maker	yaar tujhe kis ne paida kiya
+maker	ap ko kis ne bnaya
+maker	is app ke peeche kaun log hain
+maker	ye software kis ka banaya hua hai
+maker	kis ne tayyar ki ye app
+maker	tumhara ustad kaun hai jis ne tumhe banaya
+maker	company kon si hai tumhari
+app_about	ye kya app hai
+app_about	Roshan Khata ke baare mein batao
+app_about	ye app kya karti hai
+app_about	is app ka kaam kya hai
+app_about	app ka taaruf
+app_about	yeh application kis liye hai
+app_about	Roshan Khata mein kya kya hai
+app_about	bhai ye app hai kya cheez
+app_about	is app ka faida kya hai
+app_about	roshan khata kia he
+app_about	ye khata app kis cheez ki hai
+app_about	zara is app ki tafseel batao kya kya hota hai is mein
+app_about	app kis maqsad ke liye bani
+app_about	ye software kya kaam aata hai
+app_about	Roshan Khata app samjhao
+privacy	mera data kahan jata hai
+privacy	data safe hai na
+privacy	koi aur to mera hisaab nahi dekh sakta
+privacy	mera khata kisi server par to nahi
+privacy	data mehfooz?
+privacy	meri maloomat kahin leak to nahi hogi
+privacy	tum mera data kisi ko dete ho
+privacy	yaar mere customers ke number kahin bahar to nahi jate
+privacy	mera data kis ke paas hai
+privacy	privacy ka kya system hai
+privacy	data chori to nahi ho sakta
+privacy	mera hisab kitab mehfuz he
+privacy	kya company mera data dekhti hai
+privacy	mera record phone mein hi rehta hai ya internet par
+privacy	kya meri baatein record hoti hain
+languages	kon kon si zaban aati hai
+languages	urdu samajhte ho
+languages	tum kitni language bolte ho
+languages	kya tum punjabi samajhte ho
+languages	languages kon si hain
+languages	hindi mein baat kar sakte ho
+languages	ap ko kitni zabanein aati hain
+languages	kis zuban mein poochun tum se
+languages	sindhi aati hai tumhe
+languages	zabanein?
+languages	tum english bhi samajh lete ho ya sirf urdu
+languages	yaar tu kon kon si boli samajhta hai
+languages	arabi mein jawab doge
+languages	kon c zban smjhte ho
+languages	app kitni zabanon mein chalti hai
+date_time	aaj kya date hai
+date_time	time?
+date_time	kitne baj gaye
+date_time	aaj kaun sa din hai bhai
+date_time	tareekh batao
+date_time	aaj jumma hai kya
+date_time	abhi kya waqt hua hai
+date_time	aj kia tarikh he
+date_time	ghari mein kya time hai
+date_time	islami tareekh kya hai aaj
+date_time	aaj mahine ki kon si tareekh hai
+date_time	chand ki kitni tareekh hai
+date_time	din kon sa hai aaj
+date_time	yaar time bata zara
+date_time	aaj peer hai ya mangal
+today_summary	aaj kya kya karna hai
+today_summary	aaj ka kaam
+today_summary	aaj kis cheez par dhyan dun
+today_summary	subah ki report do
+today_summary	aaj ke zaroori kaam batao
+today_summary	aaj kya dekhna hai mujhe
+today_summary	aaj ka haal sunao dukaan ka
+today_summary	bhai aaj kya kya reh gaya hai
+today_summary	aaj ki list batao kya kya pending
+today_summary	aj ka khulasa
+today_summary	aaj kon kon se kaam baqi hain
+today_summary	aaj dukaan mein kya tawajjo chahiye
+today_summary	din ka khulasa suna do
+today_summary	aaj ke liye kya hai
+today_summary	aaj ki briefing
+sales_today	aaj ki sale
+sales_today	aaj kitne ka maal bika
+sales_today	aaj ki bikri kitni rahi
+sales_today	sale kitni hui aaj
+sales_today	aaj total sale batao
+sales_today	bhai aaj dukaan par kitne ki sale hui
+sales_today	aj ki sale kitn he
+sales_today	aaj kitne rupay ka saman becha
+sales_today	aaj ki sale ka total
+sales_today	aaj kitni kitni sale hui
+sales_today	abhi tak aaj ki bikri kitni ho gayi
+sales_today	aaj ka sale figure
+sales_today	yaar aaj kitne ki bikri hui hai bata
+sales_today	aaj becha kitna
+sales_today	aaj ki kul farokht
+sales_period	kal ki sale
+sales_period	is hafte ki sale
+sales_period	pichle mahine kitni sale hui thi
+sales_period	last week ki bikri
+sales_period	kal kitne ka maal bika tha
+sales_period	is mahine ab tak kitna bika
+sales_period	guzishta hafte ki farokht batao
+sales_period	pichle mahine ki total sale
+sales_period	bhai kal dukaan par kitni bikri rahi
+sales_period	is hafte kitne ka saman becha
+sales_period	kal ki sale kitn thi
+sales_period	is month ki sale batao zara
+sales_period	pichle hafte kitna kitna bika
+sales_period	mahine bhar ki bikri kitni hui
+sales_period	last month sale
+profit	munafa?
+profit	aaj ka profit
+profit	is hafte kitna kamaya
+profit	pichle hafte ka munafa batao
+profit	kal kitni bachat hui
+profit	is mahine kitna faida hua
+profit	kamai kitni hui is mahine
+profit	last month ka profit
+profit	bhai aaj kitna kamaya hum ne
+profit	is hafte ka nafa kitna raha
+profit	aj ka munafa kitna he
+profit	mahine ka net profit batao
+profit	kal kitna faida raha dukaan ko
+profit	pichle mahine ki kamai kya rahi
+profit	yaar kharcha nikal ke is mahine kitna bacha
+to_get	kul lena kitna hai
+to_get	udhaar kitna phaila hua hai
+to_get	total receivable
+to_get	customers ki taraf kul kitni raqam hai
+to_get	mera kitna paisa bahar hai
+to_get	logon ne kul kitna dena hai mujhe
+to_get	sab gahakon ka mila kar udhaar kitna hai
+to_get	lene wali raqam batao
+to_get	kul baqaya kitna lena hai
+to_get	total udhaar market mein
+to_get	bhai mujhe sab se mila kar kitne lene hain
+to_get	kitna paisa wasool karna baqi hai kul
+to_get	mjhe kul kitna lena he
+to_get	sab ka udhaar jama karo kitna banta hai
+to_get	lena total
+to_give	kul dena kitna hai
+to_give	main ne logon ka kitna dena hai
+to_give	total payable
+to_give	companies ka kitna baqaya hai mere zimme
+to_give	suppliers ka kul kitna dena hai
+to_give	mujh par kitna udhaar charha hua hai
+to_give	dene wali raqam batao
+to_give	kul adaigi kitni karni hai mujhe
+to_give	bhai maine sab ko mila kar kitna dena hai
+to_give	mere zimme kitne paise hain
+to_give	dena total
+to_give	dealers ko kitna dena reh gaya
+to_give	mjhe kul kitna dena he
+to_give	market ka kitna dena hai mujhe
+to_give	yaar mera dena kitna ban gaya hai sab mila ke
+who_owes_most	sab se bara udhaar wala kaun
+who_owes_most	top udhaar kis ka
+who_owes_most	kis ki taraf sab se zyada raqam hai
+who_owes_most	sab se zyada kis ne dena hai
+who_owes_most	number one baqayadar
+who_owes_most	kis gahak par sab se zyada paisa hai
+who_owes_most	sab se bari raqam kis ke zimme hai
+who_owes_most	bhai sab se mota udhaar kis ka chal raha hai
+who_owes_most	kon sa customer sab se zyada maqrooz hai
+who_owes_most	sb se zyada udhar kis ka he
+who_owes_most	sab se zyada lena kis se hai
+who_owes_most	kis ek bande ne sab se zyada paise rokay hue hain
+who_owes_most	top debtor kaun hai
+who_owes_most	sab se oopar kis ka naam hai udhaar mein
+who_owes_most	udhaar mein sab se aage kaun
+not_paid	kis ne paise nahi diye
+not_paid	late wale kaun hain
+not_paid	kin logon ki adaigi late hai
+not_paid	kaun paise daba ke baitha hai
+not_paid	kis kis ka udhaar purana ho gaya
+not_paid	overdue customers
+not_paid	paise rokne wale gahak batao
+not_paid	kis ne wada kar ke nahi diya
+not_paid	kaun kaun abhi tak nahi de raha
+not_paid	der se dene wale kaun kaun hain
+not_paid	bhai kis kis ki payment late chal rahi hai
+not_paid	kis ne kafi dinon se kuch nahi diya
+not_paid	kis ne pese nhi diye
+not_paid	taakheer kis kis ki hai
+not_paid	nadehinda kaun hain
+likely_payers	aaj kis se paise aayenge
+likely_payers	aaj kaun kaun dega
+likely_payers	aaj kis ke dene ki bari hai
+likely_payers	aaj kin se wusooli ki umeed hai
+likely_payers	aaj paise dene wale kaun
+likely_payers	bhai aaj kis kis ke paise aane ka chance hai
+likely_payers	in dinon kaun deta hai paise
+likely_payers	aaj kis ke paas jaun paise lene
+likely_payers	aaj kon kon de sakta hai
+likely_payers	aaj kis se milne ki tawaqqo hai
+likely_payers	aj kon pese dega
+likely_payers	aaj kis ki payment expected hai
+likely_payers	is waqt aam taur par kaun adaigi karta hai
+likely_payers	aaj kis kis ne dene hain
+likely_payers	yaar aaj koi dene wala hai ya nahi
+collected	aaj ki wusooli
+collected	aaj kitna paisa aaya gahakon se
+collected	kal kitne paise wasool hue
+collected	is hafte ki recovery kitni hai
+collected	aaj customers se kitna mila
+collected	pichle hafte kitni wusooli hui
+collected	is mahine kitni raqam wasool hui
+collected	aaj udhaar wapas kitna aaya
+collected	recovery?
+collected	bhai aaj logon ne kitne paise jama karwaye
+collected	pichle mahine kitna paisa wapas aaya
+collected	aj kitni wasoli hui
+collected	kal gahakon se kitni payment aayi
+collected	aaj cash aur online mila kar kitni wusooli hui
+collected	is hafte udhaar walon ne kitna diya
+drawer	galla
+drawer	galle mein kitne paise hain
+drawer	cash gin lun zara
+drawer	din band karo
+drawer	daraz ka cash batao
+drawer	hath mein kitna naqd hai
+drawer	galla ginti karna hai
+drawer	closing karni hai aaj ki
+drawer	bhai galle mein kitna hona chahiye abhi
+drawer	cash drawer mein kitna para hai
+drawer	naqdi kitni hai dukaan mein
+drawer	gale me kitna cash he
+drawer	aaj ka din close kar do
+drawer	galla milana hai
+drawer	counter ke daraz mein kitni raqam honi chahiye
+expiring	expiry wala maal
+expiring	kya expire hone wala hai
+expiring	kon si dawai ki expiry qareeb hai
+expiring	jis maal ki tareekh khatam ho rahi hai wo batao
+expiring	near expiry items
+expiring	kon kon sa maal kharab hone wala hai tareekh se
+expiring	expire hone wali cheezein
+expiring	kis batch ki expiry aa rahi hai
+expiring	bhai kon sa stock expire ho jayega jaldi
+expiring	agle mahine kya kya expire hoga
+expiring	expiry check karo
+expiring	kon sa mal expair hone wala he
+expiring	miyaad khatam hone wala saman
+expiring	kin cheezon ki date nikalne wali hai
+expiring	purani tareekh wala maal kon sa para hai
+low_stock	kya kam hai
+low_stock	kam stock wala maal
+low_stock	kya mangwana hai
+low_stock	kon si cheezein khatam ho rahi hain
+low_stock	order kis kis ka dena hai
+low_stock	kya kya thora reh gaya hai
+low_stock	low stock items
+low_stock	kis maal ki kami hai dukaan mein
+low_stock	bhai kya kya mangwana parega
+low_stock	stock kam kis kis ka hai
+low_stock	kon sa saman khatam hone ke qareeb hai
+low_stock	reorder list batao
+low_stock	kia kia khtm hone wala he
+low_stock	kon sa maal dobara lena hai
+low_stock	shelf par kya kya khatam ho raha hai
+party_balance	{NAME} ka balance
+party_balance	{NAME} ka kitna banta hai
+party_balance	{NAME} ki taraf kitna hai
+party_balance	{NAME} se kitna lena hai
+party_balance	{NAME} ko kitna dena hai
+party_balance	{NAME} ka udhaar kitna hai
+party_balance	{NAME} ka khata kholo
+party_balance	bhai {NAME} ka hisaab batana zara
+party_balance	{NAME} ka baqaya
+party_balance	{NAME} par kitne paise hain
+party_balance	{NAME} ka hisab kitn he
+party_balance	{NAME} ka account dikhao
+party_balance	{NAME} ka total kya ban gaya
+party_balance	yaar {NAME} ke kitne paise rehte hain
+party_balance	{NAME} hisaab
+party_phone	{NAME} ka phone
+party_phone	{NAME} ka mobile number
+party_phone	{NAME} ka number kya hai
+party_phone	{NAME} ko call karni hai number do
+party_phone	{NAME} ka contact number
+party_phone	{NAME} ka number batao
+party_phone	{NAME} ka rabta number
+party_phone	bhai {NAME} ka number hai tumhare paas
+party_phone	{NAME} ka whatsapp wala number do
+party_phone	{NAME} number
+party_phone	{NAME} ka nmbr bta
+party_phone	{NAME} ka phone number likha hai kya
+party_phone	{NAME} se rabta kaise karun number kya hai
+party_phone	{NAME} ka cell number dikhao
+party_phone	zara {NAME} ka mobile batana
+party_last_payment	{NAME} ne aakhri dafa kab diya
+party_last_payment	{NAME} ki last payment
+party_last_payment	{NAME} ne pichli baar kab paise diye thay
+party_last_payment	{NAME} ki aakhri wusooli kab hui
+party_last_payment	{NAME} ne aakhri baar kitne diye aur kab
+party_last_payment	{NAME} se aakhri paise kab mile thay
+party_last_payment	{NAME} ki pichli adaigi kab ki hai
+party_last_payment	{NAME} last time kab de ke gaya
+party_last_payment	bhai {NAME} ne aakhri payment kab ki thi
+party_last_payment	{NAME} ki akhri payment kb ayi
+party_last_payment	{NAME} ne kab se paise nahi diye
+party_last_payment	{NAME} ka aakhri jama kab hua tha
+party_last_payment	{NAME} aakhri adaigi
+party_last_payment	{NAME} ne pichle dinon kab diye thay paise
+party_last_payment	yaar {NAME} ne last kab paise jama karwaye
+party_limit	{NAME} ki limit
+party_limit	{NAME} ki udhaar limit kitni hai
+party_limit	{NAME} ko kitne tak udhaar dena hai
+party_limit	{NAME} ki hadd kya rakhi hai
+party_limit	{NAME} ki credit limit batao
+party_limit	{NAME} ki limit kitni bachi hai
+party_limit	{NAME} ko aur udhaar de sakte hain kya limit mein
+party_limit	{NAME} ki udhaar ki hadd
+party_limit	bhai {NAME} ki limit kitni set hai
+party_limit	{NAME} kitne tak udhaar le sakta hai
+party_limit	{NAME} ki limit kitn he
+party_limit	{NAME} ne limit cross kar li hai kya
+party_limit	{NAME} ki zyada se zyada udhaar ki raqam
+party_limit	{NAME} limit
+party_limit	{NAME} ka credit kitne tak allowed hai
+party_promise	{NAME} ka wada
+party_promise	{NAME} ne kab ka wada kiya hai
+party_promise	{NAME} ne kon sa din diya tha paise dene ka
+party_promise	{NAME} ki wade ki tareekh
+party_promise	{NAME} ne kis tareekh ka kaha hai
+party_promise	{NAME} ka promise kis din ka hai
+party_promise	{NAME} ne kya tareekh boli thi
+party_promise	bhai {NAME} ne kis din ka bola tha
+party_promise	{NAME} ne paise dene ka wada kab ka kiya
+party_promise	{NAME} ka wada kb ka he
+party_promise	{NAME} ne kon si date di hai
+party_promise	{NAME} ki wade wali tareekh batao
+party_promise	{NAME} ne zuban kis din ki di thi
+party_promise	{NAME} wada tareekh
+party_promise	{NAME} ne jo din bataya tha wo kon sa tha
+party_when_pays	{NAME} kab paise dega
+party_when_pays	{NAME} kab dega paise
+party_when_pays	{NAME} se kab milne ki umeed hai
+party_when_pays	{NAME} ki payment kab aayegi
+party_when_pays	{NAME} kab tak adaigi karega
+party_when_pays	{NAME} kab de sakta hai
+party_when_pays	kab dega {NAME}
+party_when_pays	bhai {NAME} ke paise kab aayenge
+party_when_pays	{NAME} aam taur par kab deta hai
+party_when_pays	{NAME} kb dega pese
+party_when_pays	{NAME} se wusooli kab hogi
+party_when_pays	{NAME} kitne din mein de dega
+party_when_pays	{NAME} ka paisa kab tak aa jayega
+party_when_pays	andaza batao {NAME} kab dega
+party_when_pays	{NAME} dega kab
+party_details	{NAME} ki details
+party_details	{NAME} ka address
+party_details	{NAME} kahan rehta hai
+party_details	{NAME} ka gaon kon sa hai
+party_details	{NAME} ke abbu ka naam
+party_details	{NAME} ki maloomat dikhao
+party_details	{NAME} kis ka beta hai
+party_details	{NAME} ka ghar kahan hai
+party_details	bhai {NAME} ke baare mein kya kya likha hai
+party_details	{NAME} ki poori tafseel
+party_details	{NAME} kahan ka rehne wala hai
+party_details	{NAME} ka pta kia he
+party_details	{NAME} ki waldiyat kya hai
+party_details	{NAME} kaun hai kahan se hai
+party_details	{NAME} tafseel
+entry_gave	{NAME} ko 800 udhaar diye
+entry_gave	{NAME} 1500 ka saman le gaya udhaar par
+entry_gave	{NAME} ko 250 ka aata diya udhaar
+entry_gave	{NAME} ke khate mein 3000 udhaar likho
+entry_gave	{NAME} ne 600 ki dawai udhaar li
+entry_gave	main ne {NAME} ko 5000 naqd diye
+entry_gave	{NAME} ko 450 ka kapra udhaar diya hai
+entry_gave	{NAME} ko 10000 diye hain
+entry_gave	bhai {NAME} 700 ka maal udhaar le gaya hai
+entry_gave	{NAME} ko 1200 udhar dia
+entry_gave	{NAME} par 900 charha do udhaar le gaya hai
+entry_gave	{NAME} ne 2500 ka cement udhaar uthaya
+entry_gave	{NAME} ko 150 ka load udhaar diya
+entry_gave	aaj {NAME} ko 4000 qarz diya
+entry_gave	{NAME} ko diye 300
+entry_got	{NAME} ne 800 de diye
+entry_got	{NAME} se 1500 aaye
+entry_got	{NAME} ne 250 jama karwa diye
+entry_got	{NAME} ne 3000 wapas kiye
+entry_got	{NAME} se 600 wasool kiye
+entry_got	{NAME} 5000 de gaya hai
+entry_got	{NAME} ne 450 ada kiye
+entry_got	mujhe {NAME} se 10000 mil gaye
+entry_got	bhai {NAME} ne 700 jama karaye hain
+entry_got	{NAME} ne 1200 dia
+entry_got	{NAME} ki taraf se 900 aa gaye
+entry_got	{NAME} ne 2500 online bheje hain
+entry_got	{NAME} se 150 liye
+entry_got	aaj {NAME} ne 4000 ki adaigi ki
+entry_got	{NAME} se mile 300
+goods_price	{ITEM} rate
+goods_price	{ITEM} ki qeemat
+goods_price	{ITEM} kya bhao hai
+goods_price	{ITEM} kitne mein bechna hai
+goods_price	{ITEM} ka daam batao
+goods_price	{ITEM} ka price kya hai
+goods_price	{ITEM} ka naqd rate aur udhaar rate
+goods_price	bhai {ITEM} kitne ka de rahe hain hum
+goods_price	{ITEM} ki sale price
+goods_price	{ITEM} ka bhao kya chal raha hai aaj kal
+goods_price	{ITEM} ka ret kia he
+goods_price	{ITEM} kis bhao bikta hai
+goods_price	{ITEM} ke kitne paise lene hain gahak se
+goods_price	{ITEM} price
+goods_price	zara {ITEM} ka rate dekhna
+goods_stock	{ITEM} stock
+goods_stock	{ITEM} kitna rehta hai
+goods_stock	{ITEM} ke kitne piece pade hain
+goods_stock	{ITEM} hai dukaan mein
+goods_stock	{ITEM} kitni miqdar mein maujood hai
+goods_stock	{ITEM} ka kitna maal bacha
+goods_stock	{ITEM} khatam to nahi hua
+goods_stock	bhai {ITEM} kitna para hai godam mein
+goods_stock	{ITEM} ki kitni bori bachi hain
+goods_stock	{ITEM} maujood hai kya
+goods_stock	{ITEM} ka stok kitna he
+goods_stock	{ITEM} ke kitne dabbe rehte hain
+goods_stock	{ITEM} shelf par kitna hai
+goods_stock	{ITEM} available hai
+goods_stock	{ITEM} kitna kitna bacha hai
+goods_suppliers	{ITEM} sasta kaun deta hai
+goods_suppliers	{ITEM} ka khareed rate
+goods_suppliers	{ITEM} kis se lena sasta parega
+goods_suppliers	{ITEM} ki purchase price kya thi
+goods_suppliers	{ITEM} kis supplier ka rate kam hai
+goods_suppliers	{ITEM} kahan se mangwate hain hum
+goods_suppliers	{ITEM} pichli baar kitne mein khareeda tha
+goods_suppliers	{ITEM} ke suppliers batao
+goods_suppliers	bhai {ITEM} kis company se sasta milta hai
+goods_suppliers	{ITEM} kis dealer se aata hai
+goods_suppliers	{ITEM} ki khareed kitne ki hai
+goods_suppliers	{ITEM} ka purchase rate kia he
+goods_suppliers	{ITEM} sab se kam rate par kaun de raha hai
+goods_suppliers	{ITEM} kis kis se liya hai aur kis bhao
+goods_suppliers	{ITEM} supplier
+goods_buyers	{ITEM} kis ne liya
+goods_buyers	{ITEM} kis kis ko becha
+goods_buyers	{ITEM} kaun le ke gaya tha
+goods_buyers	{ITEM} ke gahak kaun hain
+goods_buyers	{ITEM} kin logon ne khareeda hai
+goods_buyers	{ITEM} kis ko diya tha
+goods_buyers	{ITEM} lene wale kaun kaun hain
+goods_buyers	bhai {ITEM} kis kis customer ne uthaya
+goods_buyers	{ITEM} kis ne khrida
+goods_buyers	{ITEM} ke buyers batao
+goods_buyers	{ITEM} kis kis ke paas gaya hai
+goods_buyers	{ITEM} sab se zyada kaun leta hai
+goods_buyers	{ITEM} kaun kaun khareedta hai
+goods_buyers	{ITEM} khareedne walon ki list
+goods_buyers	{ITEM} kis ne liya tha aaj
+goods_sold	{ITEM} ki sale
+goods_sold	{ITEM} aaj kitna bika
+goods_sold	{ITEM} kitna nikla is hafte
+goods_sold	is mahine {ITEM} ki kitni bikri hui
+goods_sold	{ITEM} ke kitne piece bike
+goods_sold	kal {ITEM} kitna bika tha
+goods_sold	{ITEM} kitna farokht hua
+goods_sold	pichle mahine {ITEM} kitna bika
+goods_sold	bhai {ITEM} kitna bik gaya ab tak
+goods_sold	{ITEM} ki kitni bori biki hain
+goods_sold	{ITEM} kitna bika he
+goods_sold	{ITEM} ki bikri batao
+goods_sold	aaj {ITEM} ke kitne dabbe nikle
+goods_sold	{ITEM} kitne ka bika is mahine
+goods_sold	{ITEM} bika kitna
+shop_info	dukaan ka naam
+shop_info	meri dukaan ka pata
+shop_info	dukaan ka number kya save hai
+shop_info	shop ka address batao
+shop_info	app mein dukaan ka kya naam likha hai
+shop_info	meri shop ki details
+shop_info	business profile mein kya likha hai
+shop_info	dukaan ka phone number
+shop_info	bhai meri dukaan ka naam kya dala hua hai
+shop_info	karobar ka naam kya hai
+shop_info	dukan ka pta kia likha he
+shop_info	shop ka contact number kon sa hai
+shop_info	dukaan ki maloomat dikhao
+shop_info	mere business ka naam aur address
+shop_info	invoice par dukaan ka kya naam aata hai
+count_customers	customers kitne hain
+count_customers	kul gahak
+count_customers	kitne log hain mere khate mein
+count_customers	suppliers ki tadaad
+count_customers	mere kitne customer ban gaye
+count_customers	total parties kitni hain
+count_customers	gahak kitne hain mere paas
+count_customers	kitne khatedaar hain
+count_customers	bhai kul kitne customers add hain
+count_customers	kitne supplier add kiye hain main ne
+count_customers	kitne gahak hn
+count_customers	customer aur supplier kitne kitne hain
+count_customers	khate mein kitne naam hain
+count_customers	total customers
+count_customers	kitni companies se maal leta hun ginti batao
+count_products	products kitne hain
+count_products	kul kitna saman add hai
+count_products	kitni items hain
+count_products	kitni qisam ka maal hai dukaan mein
+count_products	total products
+count_products	product list mein kitni cheezein hain
+count_products	kitne item dale hue hain
+count_products	bhai kul kitne products bana rakhe hain
+count_products	kitni dawaiyan add hain
+count_products	maal ki kitni iqsaam hain
+count_products	kitne product hn
+count_products	items ki ginti batao
+count_products	saman ki tadaad kitni hai
+count_products	kitne products save hain app mein
+count_products	kul cheezein kitni
+bills_today	aaj kitne bill aaye
+bills_today	aaj supplier ke kitne bill dale
+bills_today	kal kitne ke bill charhaye thay
+bills_today	is hafte kitne ka maal bill par aaya
+bills_today	aaj ke supplier bills
+bills_today	is mahine kitne supplier bill add hue
+bills_today	pichle hafte kitne bill bane thay supplier ke
+bills_today	aaj khareed ke kitne bill likhe
+bills_today	bhai aaj company ke kitne bill enter hue
+bills_today	pichle mahine kitne ke bill aaye thay
+bills_today	aj kitne bil add hue
+bills_today	aaj purchase bill kitne hain
+bills_today	kal supplier bill kitne ki raqam ke thay
+bills_today	is hafte khareedari ke bill kitne
+bills_today	aaj kitne kitne ke bill charhe hain supplier ke
+invoices_today	aaj ki invoices
+invoices_today	aaj kitne invoice kate
+invoices_today	kal kitni invoice banayi
+invoices_today	is mahine kitni invoices bani
+invoices_today	aaj invoice kitni bani hain
+invoices_today	pichle hafte kitne invoice bane thay
+invoices_today	aaj koi invoice bani hai
+invoices_today	is hafte ki invoices batao
+invoices_today	bhai aaj kitni invoice nikali hum ne
+invoices_today	pichle mahine kitni invoices bani thin
+invoices_today	aj kitni invoice bani
+invoices_today	aaj quotation aur invoice kitni bani
+invoices_today	kal ke invoice kitne thay
+invoices_today	invoice kitni hui aaj
+invoices_today	aaj kitne ki invoices bani hain
+tickets_today	aaj kitni raseedein
+tickets_today	aaj counter par kitne ticket kate
+tickets_today	aaj kitni parchiyan bani
+tickets_today	kal counter sale ki kitni receipt bani
+tickets_today	aaj counter se kitni parchi kati
+tickets_today	is hafte kitne ticket bane counter par
+tickets_today	aaj counter sale kitni dafa hui
+tickets_today	is mahine counter ki kitni raseedein bani
+tickets_today	aaj receipts ki ginti
+tickets_today	bhai aaj counter par kitni raseed kati hain
+tickets_today	pichle hafte kitni counter receipts thin
+tickets_today	aj kitni rasid bani
+tickets_today	aaj counter sale ke kitne ticket
+tickets_today	kal kitni raseedein kati thin
+tickets_today	pichle mahine counter par kitne ticket bane
+entries_today	aaj ki entries
+entries_today	aaj kitni entry likhi
+entries_today	kal khate mein kitni entries hui thin
+entries_today	aaj kitne indiraaj hue
+entries_today	is hafte kitni entry likhi gayi
+entries_today	aaj khate mein kitna kuch likha gaya ginti batao
+entries_today	is mahine kitni entries hui
+entries_today	aaj entry kitni hui hain
+entries_today	bhai aaj kitni entries dali hain hum ne
+entries_today	pichle hafte kitni entries likhi thin
+entries_today	aj kitni entry hui
+entries_today	aaj khata entries ki tadaad
+entries_today	kal kitne indiraaj kiye thay
+entries_today	pichle mahine kitni entry hui thin
+entries_today	entries kitni aaj
+calculator_uses	calculator kitni baar chala aaj
+calculator_uses	aaj calculator use hua kya
+calculator_uses	aaj kitne hisaab calculator par kiye
+calculator_uses	kal calculator chala tha
+calculator_uses	is hafte calculator kitni dafa use hua
+calculator_uses	aaj calculator kitni martaba khula
+calculator_uses	calculator ka istemal aaj
+calculator_uses	is mahine calculator kitni baar chalaya
+calculator_uses	bhai aaj calculator par kitni baar hisaab lagaya
+calculator_uses	pichle hafte calculator kitna use hua
+calculator_uses	aj calculator kitni bar chala
+calculator_uses	aaj calculator se kitne sum kiye
+calculator_uses	kal calculator kitni baar istemal kiya
+calculator_uses	calculator aaj khola tha kisi ne
+calculator_uses	pichle mahine calculator kitni dafa chala
+app_opens	app kitni baar khuli aaj
+app_opens	aaj app kitni martaba kholi
+app_opens	aaj kitni dafa app open ki
+app_opens	kal app kitni baar khuli thi
+app_opens	is hafte app kitni dafa kholi gayi
+app_opens	aaj app kholne ki ginti
+app_opens	is mahine app kitni baar open hui
+app_opens	aaj main ne app kitni baar kholi
+app_opens	bhai aaj ye app kitni dafa chali
+app_opens	pichle hafte app kitni baar khuli thi
+app_opens	aj app kitni bar khuli
+app_opens	app opens aaj ke
+app_opens	kal kitni baar app open ki thi
+app_opens	pichle mahine app kitni martaba khuli
+app_opens	aaj Roshan Khata kitni baar khola gaya
+cheques_status	cheque
+cheques_status	cheques ka status
+cheques_status	kon se cheque pending hain
+cheques_status	koi cheque bounce to nahi hua
+cheques_status	kis cheque ki date aane wali hai
+cheques_status	cheque kitne pare hain clear hone wale
+cheques_status	bounce cheque kon se hain
+cheques_status	aaj kis cheque ki tareekh hai
+cheques_status	bhai chequon ka kya scene hai
+cheques_status	kitne cheque clear ho gaye
+cheques_status	chek ka kia haal he
+cheques_status	bank mein lagane wale cheque kon se hain
+cheques_status	cheque kitne ke pending hain
+cheques_status	due cheques batao
+cheques_status	kis kis ka cheque para hua hai
+plans_status	qistein
+plans_status	qiston ka hisaab
+plans_status	kis ki qist aaj hai
+plans_status	kitne plan chal rahe hain
+plans_status	instalment ka status
+plans_status	kis ki qist late hai
+plans_status	qist plans ka haal batao
+plans_status	agli qist kis ki aur kab hai
+plans_status	bhai qiston wale khaton ka kya haal hai
+plans_status	kitni qistein aa chuki hain kitni rehti hain
+plans_status	qiston ka kia haal he
+plans_status	installment plans kitne hain
+plans_status	is mahine kis kis ki qist aani hai
+plans_status	due qistein batao
+plans_status	qist par diya maal kis kis ka chal raha hai
+staff_salary	tankhwah
+staff_salary	staff ki salary
+staff_salary	mulazimon ko kitna dena hai
+staff_salary	kis ki tankhwah baqi hai
+staff_salary	advance kis kis ne liya
+staff_salary	is mahine ki tankhwahein di ja chuki hain
+staff_salary	larkon ki salary kitni banti hai
+staff_salary	staff ka advance kitna hai
+staff_salary	bhai kaam walon ki tankhwah ka kya hisaab hai
+staff_salary	salary due kis kis ki hai
+staff_salary	tankha kitni deni he
+staff_salary	mulazim ne kitna advance le rakha hai
+staff_salary	workers ki pay batao
+staff_salary	tankhwah dene ka waqt aa gaya kya
+staff_salary	staff ko kul kitna dena banta hai
+deliveries	aaj kya aaya
+deliveries	aaj maal aaya hai
+deliveries	kal kon kon sa saman aaya tha
+deliveries	is hafte supplier se kya kya aaya
+deliveries	aaj ki delivery
+deliveries	aaj company se kitna maal utra
+deliveries	pichle hafte kya maal aaya tha
+deliveries	is mahine kitna maal aaya hai
+deliveries	bhai aaj kon si gaari ka maal utra hai
+deliveries	kal supplier ne kya bheja tha
+deliveries	aj kia mal aya
+deliveries	aaj stock mein kya naya aaya
+deliveries	pichle mahine kon kon sa maal aaya tha
+deliveries	aaj kis supplier ka maal pohancha
+deliveries	maal ki aamad aaj ki
+activity	aaj kya hua
+activity	aaj kis ne kya kiya
+activity	aaj kya edit hua
+activity	kal kis ne entry delete ki thi
+activity	aaj app mein kya tabdeeli hui
+activity	is hafte kya kya delete hua
+activity	aaj ki activity
+activity	kis ne kya chheda hai aaj
+activity	bhai aaj kis ne khate mein gar bar ki hai
+activity	pichle hafte kis ne kya badla tha
+activity	aj kia kia hua app me
+activity	kal kya kya tabdeel kiya gaya
+activity	kis ne kya kiya ki history dikhao
+activity	is mahine kon si entries mitayi gayin
+activity	aaj koi void ya delete hua hai
+backup_status	backup
+backup_status	backup kab hua tha
+backup_status	aaj backup hua
+backup_status	backup le liya hai kya
+backup_status	last backup
+backup_status	mera data backup hai na
+backup_status	aakhri baar backup kab bana
+backup_status	drive par backup gaya hai
+backup_status	bhai backup ho raha hai ya nahi
+backup_status	backup ka status
+backup_status	bekup hua he kia
+backup_status	kitne din se backup nahi hua
+backup_status	backup theek chal raha hai
+backup_status	pichla backup kis din ka hai
+backup_status	backup kab ka para hai
+book_summary	poora hisaab
+book_summary	mere khate ka khulasa
+book_summary	sab kuch batao mere khate ka
+book_summary	overall hisaab kya hai
+book_summary	mera total data
+book_summary	khate ki poori tasveer dikhao
+book_summary	saare khate ki summary
+book_summary	kul mila kar kya position hai
+book_summary	bhai mere poore karobar ka hisaab suna do
+book_summary	mera poora khata ek nazar mein
+book_summary	mera khata kia kehta he
+book_summary	dukaan ka mukammal hisaab kitab
+book_summary	overall account batao
+book_summary	sab ka sab hisaab
+book_summary	poori kitab ka haal
+cashbook_today	aaj ka kharcha
+cashbook_today	cash book
+cashbook_today	aaj kitna paisa aaya aur kitna gaya
+cashbook_today	kal ke kharche batao
+cashbook_today	aaj cashbook mein kya kya likha hai
+cashbook_today	is hafte kitna kharcha hua
+cashbook_today	aaj ke akhrajaat
+cashbook_today	is mahine cash book mein kitna aaya kitna nikla
+cashbook_today	bhai aaj dukaan ke kharche kitne hue
+cashbook_today	pichle hafte ka kharcha kitna tha
+cashbook_today	aj ka khrcha kitna he
+cashbook_today	aaj money in money out batao
+cashbook_today	kal cash book ka kya hisaab tha
+cashbook_today	pichle mahine ke akhrajaat kitne thay
+cashbook_today	aaj chai pani kiraya waghera mein kitna gaya
+returns_today	aaj ki wapsi
+returns_today	aaj kya wapas aaya
+returns_today	aaj kitne return hue
+returns_today	kal kitna maal wapas hua tha
+returns_today	is hafte ke returns
+returns_today	aaj kis ne maal wapas kiya
+returns_today	is mahine kitna saman wapas aaya
+returns_today	aaj koi cheez wapas hui
+returns_today	bhai aaj gahakon ne kya kya wapas kiya
+returns_today	pichle hafte kitni wapsi hui thi
+returns_today	aj kitna mal wapis aya
+returns_today	aaj return kitne ke hue
+returns_today	kal koi return aaya tha
+returns_today	pichle mahine kitne ka maal wapas aaya
+returns_today	wapas aaya hua maal aaj ka
+help_howto	invoice kaise banaun
+help_howto	backup kaise lun
+help_howto	customer kaise add karte hain
+help_howto	entry kaise likhte hain
+help_howto	bill kaise dalun supplier ka
+help_howto	whatsapp par taqaza kaise bhejun gahak ko
+help_howto	naya product kaise banaun
+help_howto	statement kaise nikalte hain
+help_howto	bhai counter sale kaise karte hain is mein
+help_howto	cheque kaise darj karun
+help_howto	zaban kaise badalte hain
+help_howto	pdf kese bnate hn
+help_howto	app lock kaise lagate hain
+help_howto	data restore karne ka tareeqa batao
+help_howto	din band kaise karte hain tareeqa samjhao
+act_fly	urr ke dikhao
+act_fly	ud kar dikhao zara
+act_fly	udo
+act_fly	tum ud sakte ho kya
+act_fly	ek chakkar laga ke aao udd ke
+act_fly	uraan bharo
+act_fly	parwaz karo
+act_fly	hawa mein uro
+act_fly	bhai zara udd ke to dikha
+act_fly	fly karo
+act_fly	ur k dikha
+act_fly	udna aata hai tumhe
+act_fly	par phela ke uro
+act_fly	udd ja
+act_fly	screen par idhar udhar uro na
+act_dance	naacho
+act_dance	dance dikhao
+act_dance	thora naach ke dikhao
+act_dance	nachna aata hai
+act_dance	bhangra dalo
+act_dance	tum naach sakte ho
+act_dance	ho jaye ek dance phir
+act_dance	thumka lagao
+act_dance	bhai zara dance to kar ke dikha
+act_dance	jhoom ke dikhao
+act_dance	dans kro
+act_dance	naach naach
+act_dance	luddi dalo
+act_dance	dance karna aata hai tumhe
+act_dance	chalo naach shuru karo
+act_jump	koodo
+act_jump	jump
+act_jump	uchhlo
+act_jump	ek chhalang lagao
+act_jump	kood ke dikhao
+act_jump	tum uchhal sakte ho
+act_jump	phudko zara
+act_jump	jump maro
+act_jump	bhai ek jump to laga ke dikha
+act_jump	koi kartab dikhao
+act_jump	jamp kro
+act_jump	uchhal kood karo
+act_jump	qalabazi lagao
+act_jump	kood sakte ho kya
+act_jump	oopar neeche koodo

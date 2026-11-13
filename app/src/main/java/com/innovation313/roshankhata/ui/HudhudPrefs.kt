@@ -17,6 +17,7 @@ object HudhudPrefs {
     private const val KEY_CALL_ME = "call_me"
     private const val KEY_MIC_DENIED = "mic_denied"
     private const val KEY_HELLO_DAY = "hello_day"
+    private const val KEY_NAME_WAY = "name_way_"
 
     /** The longest name he is given to say. */
     const val CALL_ME_MAX = 30
@@ -44,10 +45,21 @@ object HudhudPrefs {
 
     fun style(context: Context): HudhudStyle =
         prefs(context).getString(KEY_STYLE, null)?.let { s -> HudhudStyle.values().firstOrNull { it.name == s } }
-            ?: HudhudStyle.GENTLE
+            ?: HudhudStyle.PROFESSIONAL
 
     fun setStyle(context: Context, style: HudhudStyle) {
         prefs(context).edit().putString(KEY_STYLE, style.name).apply()
+    }
+
+    /**
+     * How he says his own name in [language]'s voice (13 Nov 2026, the owner: "apna naam bhi sahi tarah nahi bolta"):
+     * which of [com.innovation313.roshankhata.data.HudhudSay.nameWays] the owner chose; null for the first.
+     */
+    fun nameWay(context: Context, language: String): Int? =
+        prefs(context).getInt(KEY_NAME_WAY + language, -1).takeIf { it >= 0 }
+
+    fun setNameWay(context: Context, language: String, way: Int) {
+        prefs(context).edit().putInt(KEY_NAME_WAY + language, way).apply()
     }
 
     /** The owner said no to the microphone: Hudhud uses the phone's voice-search box and does not ask again. */
@@ -67,11 +79,13 @@ object HudhudPrefs {
 }
 
 /**
- * How Hudhud speaks (13 Nov 2026, the owner: "Naram, Josh wala, Sanjeeda"): the phone's own voice at a pace and a
- * pitch. Gentle is the phone's natural voice a little slower; lively a little quicker and brighter; serious slower
- * and deeper. Kept by name (an enum's name survives the shrinker).
+ * How Hudhud speaks (13 Nov 2026, the owner: "Naram, Josh wala, Sanjeeda", and later the same day "professional
+ * sound"): the phone's own voice at a pace and a pitch. Professional is the phone's voice as it is, and the one he
+ * starts with; gentle a little slower; lively a little quicker and brighter; serious slower and deeper. Kept by name
+ * (an enum's name survives the shrinker).
  */
 enum class HudhudStyle(val rate: Float, val pitch: Float, val label: Int) {
+    PROFESSIONAL(1.0f, 1.0f, R.string.hudhud_style_professional),
     GENTLE(0.95f, 1.0f, R.string.hudhud_style_gentle),
     LIVELY(1.08f, 1.15f, R.string.hudhud_style_lively),
     SERIOUS(0.9f, 0.86f, R.string.hudhud_style_serious)

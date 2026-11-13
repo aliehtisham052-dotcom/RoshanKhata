@@ -46,7 +46,7 @@ class FormatNameTest {
     @Test
     fun `a name with letters is left exactly as typed`() {
         for (tag in listOf("en", "ur")) under(tag) {
-            for (name in listOf("Aamar Baiee", "(Pappu)Touseef Ahmed", "بلال بھٹی", "ভাই রহিম", "M. Ashraf 2")) {
+            for (name in listOf("Nadir Bhaee", "(Pappu)Touseef Ahmed", "بلال بھٹی", "ভাই রহিম", "M. Ashraf 2")) {
                 assertEquals(name, Format.name(name))
             }
         }

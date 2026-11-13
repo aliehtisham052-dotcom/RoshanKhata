@@ -17,5 +17,9 @@
 *.glb  binary
 *.ktx  binary
 *.filamat binary
+# Hudhud's sense (app/src/main/assets/hudhud/sense.bin) is gzip: byte for byte, as HudhudModelTest compares it.
+*.bin  binary
+# Hudhud's sentence bank reads the same on every machine (gen_hudhud_bank.py --check compares it byte for byte).
+*.tsv  text eol=lf
 # The shell scripts CI runs must keep Unix line endings on any machine.
 *.sh   text eol=lf

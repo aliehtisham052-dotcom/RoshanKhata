@@ -22,7 +22,7 @@ class NameSearchTest {
     private val book = listOf(
         "A Bilal",
         "(Pappu)Touseef Ahmed Mallay Wali",
-        "Aamar Baiee",
+        "Nadir Bhaee",
         "Abbas Sabzi Mandi Pasrur Dokandar",
         "Abbas Loader",
         "Asghar",

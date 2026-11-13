@@ -90,8 +90,7 @@ internal object HudhudFacts {
             Hudhud.Facet.PHONE -> {
                 val phone = party?.phone?.takeIf { it.isNotBlank() }
                 if (phone == null) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_no_phone, name)), openParty = p.id,
-                        spoken = { it.getString(R.string.hudhud_no_phone, name) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_no_phone, name)), openParty = p.id)
                 } else {
                     Answer(Mood.CALM, label = name, figure = Format.ltr(phone), lines = listOf(c.getString(R.string.hudhud_l_phone)),
                         openParty = p.id, spoken = { w -> name + ": " + w.getString(R.string.hudhud_on_screen) })
@@ -109,51 +108,40 @@ internal object HudhudFacts {
                     if (points.isEmpty()) c.getString(R.string.party_no_entries) else balance
                 )
                 Answer(Mood.CALM, label = name, lines = lines, openParty = p.id,
-                    spoken = { w ->
-                        listOfNotNull(name, w.getString(if (p.isCustomer) R.string.customer else R.string.supplier),
-                            party?.village?.takeIf { it.isNotBlank() }).joinToString(", ")
-                    })
+                    secrets = listOfNotNull(party?.phone?.takeIf { it.isNotBlank() }))
             }
             Hudhud.Facet.LAST_PAYMENT -> {
                 val points = LedgerLines.of(dao, listOf(p.id))
                 // A customer pays with an "I got"; the shop pays a supplier with an "I gave".
                 val last = points.filter { it.isGiven != p.isCustomer }.maxByOrNull { it.timestamp }
                 if (last == null) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_no_payment), balance), openParty = p.id,
-                        spoken = { it.getString(R.string.hudhud_no_payment) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_no_payment), balance), openParty = p.id)
                 } else {
                     val at = whenOf(c, last.timestamp)
                     Answer(Mood.CALM, label = name, figure = HudhudBook.money(last.amount),
-                        lines = listOf(line(c, R.string.hudhud_l_last_payment, at), balance), openParty = p.id, money = true,
-                        spoken = { w -> name + ", " + w.getString(R.string.hudhud_l_last_payment) + ": " + whenOf(w, last.timestamp) + ", " + HudhudBook.said(w, last.amount) })
+                        lines = listOf(line(c, R.string.hudhud_l_last_payment, at), balance), openParty = p.id, money = true)
                 }
             }
             Hudhud.Facet.LAST_ENTRY -> {
                 val last = LedgerLines.of(dao, listOf(p.id)).maxByOrNull { it.timestamp }
                 if (last == null) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.party_no_entries)), openParty = p.id,
-                        spoken = { it.getString(R.string.party_no_entries) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.party_no_entries)), openParty = p.id)
                 } else {
                     val way = c.getString(if (last.isGiven) R.string.i_gave else R.string.i_got)
                     Answer(Mood.CALM, label = name, figure = HudhudBook.money(last.amount),
                         lines = listOf(line(c, R.string.hudhud_l_last_entry, whenOf(c, last.timestamp) + " · " + way), balance),
-                        openParty = p.id, money = true,
-                        spoken = { w ->
-                            name + ", " + whenOf(w, last.timestamp) + ", " + w.getString(if (last.isGiven) R.string.i_gave else R.string.i_got) +
-                                " " + HudhudBook.said(w, last.amount)
-                        })
+                        openParty = p.id, money = true)
                 }
             }
             Hudhud.Facet.SINCE -> {
                 val points = LedgerLines.of(dao, listOf(p.id))
                 val first = points.minOfOrNull { it.timestamp }
                 if (first == null) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.party_no_entries)), openParty = p.id,
-                        spoken = { it.getString(R.string.party_no_entries) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.party_no_entries)), openParty = p.id)
                 } else {
                     Answer(Mood.CALM, label = name, figure = Format.dateOnly(first),
                         lines = listOf(c.getString(R.string.hudhud_l_since), line(c, R.string.hudhud_l_entries, n(points.size))),
-                        openParty = p.id, spoken = { w -> name + ", " + w.getString(R.string.hudhud_l_since) + ": " + Format.dateOnly(first) })
+                        openParty = p.id)
                 }
             }
             Hudhud.Facet.ENTRIES -> {
@@ -166,33 +154,29 @@ internal object HudhudFacts {
                         line(c.getString(R.string.i_gave), n(gave.size) + " · " + HudhudBook.money(gave.sumOf { it.amount })),
                         line(c.getString(R.string.i_got), n(got.size) + " · " + HudhudBook.money(got.sumOf { it.amount }))
                     ),
-                    openParty = p.id, money = true,
-                    spoken = { w -> name + ", " + w.getString(R.string.hudhud_l_entries) + ": " + points.size })
+                    openParty = p.id)
             }
             Hudhud.Facet.LIMIT -> {
                 val limit = party?.creditLimit?.takeIf { it > 0.0 }
                 if (limit == null) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_limit_none), balance), openParty = p.id,
-                        spoken = { it.getString(R.string.hudhud_limit_none) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_limit_none), balance), openParty = p.id)
                 } else {
                     val used = if (p.balance > 0) Format.percent(p.balance / limit * 100.0) + "%" else "0%"
                     val over = p.balance > limit
                     Answer(if (over) Mood.CARE else Mood.CALM, label = name, figure = HudhudBook.money(limit),
                         lines = listOf(c.getString(R.string.credit_limit), balance, line(c, R.string.hudhud_l_limit_used, used)),
-                        openParty = p.id, money = true,
-                        spoken = { w -> name + ", " + w.getString(R.string.credit_limit) + ": " + HudhudBook.said(w, limit) })
+                        openParty = p.id, money = true)
                 }
             }
             Hudhud.Facet.PROMISE -> {
                 val day = party?.harvestPromise
                 if (day == null) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_promise_none), balance), openParty = p.id,
-                        spoken = { it.getString(R.string.hudhud_promise_none) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_promise_none), balance), openParty = p.id)
                 } else {
                     val passed = DayMath.startOfDay(day) < DayMath.startOfDay(now()) && Money.isPositive(p.balance)
                     Answer(if (passed) Mood.CARE else Mood.CALM, label = name, figure = Format.dateOnly(day),
                         lines = listOfNotNull(c.getString(R.string.hudhud_l_promise), if (passed) c.getString(R.string.hudhud_promise_passed) else null, balance),
-                        openParty = p.id, spoken = { w -> name + ", " + w.getString(R.string.hudhud_l_promise) + ": " + Format.dateOnly(day) })
+                        openParty = p.id)
                 }
             }
         }
@@ -211,8 +195,7 @@ internal object HudhudFacts {
         if (found.isEmpty()) return HudhudBook.unknown(c)
         if (found.size > 1) {
             return Answer(Mood.CALM, label = c.getString(R.string.hudhud_pick_party),
-                rows = found.map { Row(0, it.name, it.salePrice?.let { v -> HudhudBook.money(v) } ?: "", it.company, open = ProductsActivity::class.java) },
-                spoken = { it.getString(R.string.hudhud_pick_party) })
+                rows = found.map { Row(0, it.name, it.salePrice?.let { v -> HudhudBook.money(v) } ?: "", it.company, open = ProductsActivity::class.java) }, quiet = true)
         }
         val p = found.first()
         val name = p.name
@@ -237,23 +220,20 @@ internal object HudhudFacts {
             Hudhud.GoodsFacet.PRICE -> {
                 val pl = priceLines()
                 if (pl.isEmpty()) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_price_none)), open = open,
-                        spoken = { it.getString(R.string.hudhud_price_none) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_price_none)), open = open)
                 } else {
                     val v = p.salePrice ?: p.creditPrice ?: 0.0
-                    Answer(Mood.CALM, label = name, figure = perUnit(v), lines = pl, open = open, money = true,
-                        spoken = { w -> name + ": " + HudhudBook.said(w, v) })
+                    Answer(Mood.CALM, label = name, figure = perUnit(v), lines = pl, open = open, money = true)
                 }
             }
             Hudhud.GoodsFacet.STOCK -> {
                 if (onHand == null) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.stock_no_movement)), open = open,
-                        spoken = { it.getString(R.string.stock_no_movement) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.stock_no_movement)), open = open)
                 } else {
                     val left = Format.qty(onHand, stockUnit)
                     Answer(if (isLow) Mood.CARE else Mood.CALM, label = name, figure = left,
                         lines = listOfNotNull(c.getString(R.string.hudhud_l_stock), if (isLow) c.getString(R.string.hudhud_t_low) else null),
-                        open = open, spoken = { _ -> name + ": " + left })
+                        open = open)
                 }
             }
             Hudhud.GoodsFacet.COST -> {
@@ -261,15 +241,13 @@ internal object HudhudFacts {
                 val cost = p.costPrice ?: stock?.cost
                 val last = lines.firstOrNull()
                 if (cost == null && last == null) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_cost_none)), open = SupplierRatesActivity::class.java,
-                        spoken = { it.getString(R.string.hudhud_cost_none) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_cost_none)), open = SupplierRatesActivity::class.java)
                 } else {
                     val shown = cost ?: last!!.rate
                     Answer(Mood.CALM, label = name, figure = perUnit(shown),
                         lines = listOfNotNull(c.getString(R.string.hudhud_l_cost),
                             last?.let { line(c, R.string.hudhud_l_last_in, it.supplierName + " · " + Format.dateOnly(it.billDate) + " · " + HudhudBook.money(it.rate)) }),
-                        open = SupplierRatesActivity::class.java, money = true,
-                        spoken = { w -> name + ", " + w.getString(R.string.hudhud_l_cost) + ": " + HudhudBook.said(w, shown) })
+                        open = SupplierRatesActivity::class.java, money = true)
                 }
             }
             Hudhud.GoodsFacet.SUPPLIERS -> {
@@ -277,8 +255,7 @@ internal object HudhudFacts {
                 // Each supplier's own last rate, cheapest first.
                 val each = lines.groupBy { it.supplierId }.values.map { it.first() }.sortedBy { it.rate }
                 if (each.isEmpty()) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_rates_none)), open = SupplierRatesActivity::class.java,
-                        spoken = { it.getString(R.string.hudhud_rates_none) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_rates_none)), open = SupplierRatesActivity::class.java)
                 } else {
                     val cheap = each.first()
                     val dear = each.last()
@@ -288,22 +265,19 @@ internal object HudhudFacts {
                             if (each.size > 1) line(c, R.string.hudhud_l_dearest, dear.supplierName + " · " + HudhudBook.money(dear.rate)) else null
                         ),
                         rows = each.take(TOP).map { Row(it.supplierId, it.supplierName, HudhudBook.money(it.rate), Format.dateOnly(it.billDate)) },
-                        open = SupplierRatesActivity::class.java, money = true,
-                        spoken = { w -> name + ", " + w.getString(R.string.hudhud_l_cheapest) + ": " + cheap.supplierName + ", " + HudhudBook.said(w, cheap.rate) })
+                        open = SupplierRatesActivity::class.java, money = true)
                 }
             }
             Hudhud.GoodsFacet.LAST_IN -> {
                 val last = lines.firstOrNull()
                 if (last == null) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_rates_none)), open = BillsActivity::class.java,
-                        spoken = { it.getString(R.string.hudhud_rates_none) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_rates_none)), open = BillsActivity::class.java)
                 } else {
                     val rate = if (reports()) " · " + HudhudBook.money(last.rate) else ""
                     Answer(Mood.CALM, label = name, figure = Format.dateOnly(last.billDate),
                         lines = listOf(c.getString(R.string.hudhud_l_last_in), last.supplierName + rate),
                         rows = listOf(Row(last.supplierId, last.supplierName, if (reports()) HudhudBook.money(last.rate) else "", Format.dateOnly(last.billDate))),
-                        open = BillsActivity::class.java,
-                        spoken = { w -> name + ", " + w.getString(R.string.hudhud_l_last_in) + ": " + dayOf(w, last.billDate) + ", " + last.supplierName })
+                        open = BillsActivity::class.java)
                 }
             }
             Hudhud.GoodsFacet.BUYERS -> {
@@ -313,12 +287,11 @@ internal object HudhudFacts {
                     putString(ProductCustomersActivity.EXTRA_PRODUCT_NAME, p.name)
                 }
                 if (who.isEmpty()) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_buyers_none)), spoken = { it.getString(R.string.hudhud_buyers_none) })
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_buyers_none)))
                 } else {
                     Answer(Mood.CALM, label = name, figure = n(who.size), lines = listOf(c.getString(R.string.hudhud_t_customers)),
                         rows = who.take(TOP).map { Row(it.id, it.name, HudhudBook.money(abs(it.balance)), HudhudBook.side(c, it.balance)) },
-                        open = ProductCustomersActivity::class.java, openExtras = extras,
-                        spoken = { w -> name + ", " + w.getString(R.string.hudhud_t_customers) + ": " + who.size })
+                        open = ProductCustomersActivity::class.java, openExtras = extras)
                 }
             }
             Hudhud.GoodsFacet.SOLD -> {
@@ -328,12 +301,11 @@ internal object HudhudFacts {
                 val (from, to) = Hudhud.span(w)
                 val sold = dao.topProductsBetween(from, to, ALL_PRODUCTS).firstOrNull { it.name.trim().equals(name.trim(), ignoreCase = true) }
                 if (sold == null || sold.qty <= 0.0) {
-                    Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_sold_none)), spoken = { it.getString(R.string.hudhud_sold_none) })
+                    Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_sold_none)))
                 } else {
                     val q = Format.qty(sold.qty, sold.unit)
                     Answer(Mood.GOOD, label = label, figure = q, lines = listOf(c.getString(R.string.hudhud_l_sold)),
-                        open = com.innovation313.roshankhata.SalesReportActivity::class.java,
-                        spoken = { v -> name + ", " + v.getString(HudhudBook.windowWord(w)) + ": " + q })
+                        open = com.innovation313.roshankhata.SalesReportActivity::class.java)
                 }
             }
             Hudhud.GoodsFacet.OVERVIEW -> {
@@ -342,8 +314,7 @@ internal object HudhudFacts {
                         line(c, R.string.hudhud_l_last_in, it.supplierName + " · " + Format.dateOnly(it.billDate) + " · " + HudhudBook.money(it.rate))
                     }) else emptyList()
                 val price = p.salePrice ?: p.creditPrice
-                Answer(Mood.CALM, label = name, lines = all.ifEmpty { listOf(c.getString(R.string.hudhud_price_none)) }, open = open, money = true,
-                    spoken = { w -> name + (price?.let { ", " + HudhudBook.said(w, it) } ?: "") })
+                Answer(Mood.CALM, label = name, lines = all.ifEmpty { listOf(c.getString(R.string.hudhud_price_none)) }, open = open, money = true)
             }
         }
     }
@@ -364,11 +335,10 @@ internal object HudhudFacts {
         /** One field: written on the card; said aloud only when it is words, never a number (a phone, a tax number). */
         fun one(label: (Context) -> String, value: String?, sayIt: Boolean): Answer =
             if (value.isNullOrBlank()) {
-                Answer(Mood.CALM, label = label(c), lines = listOf(c.getString(R.string.hudhud_not_set)), open = open,
-                    spoken = { it.getString(R.string.hudhud_not_set) })
+                Answer(Mood.CALM, label = label(c), lines = listOf(c.getString(R.string.hudhud_not_set)), open = open)
             } else {
                 Answer(Mood.CALM, label = label(c), figure = if (sayIt) value else Format.ltr(value), open = open,
-                    spoken = { w -> label(w) + ": " + if (sayIt) value else w.getString(R.string.hudhud_on_screen) })
+                    secrets = if (sayIt) emptyList() else listOf(value))
             }
         fun res(id: Int): (Context) -> String = { it.getString(id) }
         return when (facet) {
@@ -389,7 +359,7 @@ internal object HudhudFacts {
                 )
                 if (bank.isEmpty()) one(res(R.string.hudhud_l_bank), null, false)
                 else Answer(Mood.CALM, label = c.getString(R.string.hudhud_l_bank), lines = bank, open = open,
-                    spoken = { w -> w.getString(R.string.hudhud_l_bank) + ": " + w.getString(R.string.hudhud_on_screen) })
+                    secrets = listOfNotNull(BusinessProfile.bankIban(c), BusinessProfile.bankJazzCash(c)).filter { it.isNotBlank() })
             }
             Hudhud.ShopFacet.ALL -> {
                 val lines = listOfNotNull(
@@ -403,7 +373,7 @@ internal object HudhudFacts {
                 )
                 Answer(Mood.CALM, label = name?.takeIf { it.isNotBlank() } ?: c.getString(R.string.hudhud_chip_shop),
                     lines = if (name.isNullOrBlank()) listOf(c.getString(R.string.hudhud_not_set)) + lines else lines, open = open,
-                    spoken = { w -> listOfNotNull(name?.takeIf { it.isNotBlank() }, address?.takeIf { it.isNotBlank() }).joinToString(", ").ifEmpty { w.getString(R.string.hudhud_not_set) } })
+                    secrets = listOfNotNull(phone, email, tax).filter { it.isNotBlank() })
             }
         }
     }
@@ -417,24 +387,22 @@ internal object HudhudFacts {
         Hudhud.AboutTopic.LANGUAGES -> said(c, R.string.hudhud_about_languages, LanguageActivity::class.java)
         Hudhud.AboutTopic.VERSION -> {
             val version = runCatching { c.packageManager.getPackageInfo(c.packageName, 0).versionName }.getOrNull() ?: "?"
-            Answer(Mood.CALM, lines = listOf(c.getString(R.string.hudhud_about_version, version)), open = AboutActivity::class.java,
-                spoken = { it.getString(R.string.hudhud_about_version, version) })
+            Answer(Mood.CALM, lines = listOf(c.getString(R.string.hudhud_about_version, version)), open = AboutActivity::class.java)
         }
         Hudhud.AboutTopic.OWNER_NAME -> {
             val me = HudhudPrefs.callMe(c)
             if (me == null) {
                 Answer(Mood.CALM, lines = listOf(c.getString(R.string.hudhud_owner_unnamed)), openLabel = R.string.hudhud_settings,
-                    voiceSettings = true, spoken = { it.getString(R.string.hudhud_owner_unnamed) })
+                    voiceSettings = true)
             } else {
                 Answer(Mood.GOOD, label = me, lines = listOf(c.getString(R.string.hudhud_owner_named, Format.isolate(me))),
-                    openLabel = R.string.hudhud_settings, voiceSettings = true,
-                    spoken = { it.getString(R.string.hudhud_owner_named, me) })
+                    openLabel = R.string.hudhud_settings, voiceSettings = true)
             }
         }
     }
 
     private fun said(c: Context, words: Int, open: Class<*>?) =
-        Answer(Mood.CALM, lines = listOf(c.getString(words)), open = open, spoken = { it.getString(words) })
+        Answer(Mood.CALM, lines = listOf(c.getString(words)), open = open)
 
     /**
      * Today's date in the calendar everyone uses, the Islamic date worked out by the Umm al-Qura calendar (said to be
@@ -503,39 +471,81 @@ internal object HudhudFacts {
             Hudhud.Thing.ENTRIES -> {
                 val shown = dao.entryCountBetween(from, to)
                 val total = if (window == null) dao.entryCountBetween(0L, Long.MAX_VALUE) else null
-                counted(c, R.string.hudhud_l_entries, w, shown, listOfNotNull(total?.let { line(c, R.string.range_all, n(it)) }), KhataActivity::class.java)
+                // The newest of them as rows, each who, which way and how much (the day book's own entries); the
+                // amounts only for those who may see figures, as the other counts.
+                val money = reports()
+                val rows = if (shown == 0) emptyList() else dao.dayBookEntries(from, to).sortedByDescending { it.timestamp }.take(TOP).map { e ->
+                    Row(0, e.partyName, if (money) HudhudBook.money(e.amount) else "",
+                        c.getString(if (e.isGiven) R.string.i_gave else R.string.i_got) + " \u00B7 " + whenOf(c, e.timestamp),
+                        open = KhataActivity::class.java)
+                }
+                counted(c, R.string.hudhud_l_entries, w, shown, listOfNotNull(total?.let { line(c, R.string.range_all, n(it)) }), KhataActivity::class.java, rows)
             }
             Hudhud.Thing.INVOICES -> {
                 val made = dao.observeInvoicesFrom(from).first().filter { it.invoiceDate < to && it.kind == DocKind.INVOICE }
+                    .sortedByDescending { it.invoiceDate }
                 val total = if (window == null) dao.observeDocCount(DocKind.INVOICE).first() else null
-                val sum = if (reports() && made.isNotEmpty()) HudhudBook.money(made.sumOf { it.grandTotal }) else null
-                counted(c, R.string.invoices, w, made.size, listOfNotNull(sum, total?.let { line(c, R.string.range_all, n(it)) }), InvoicesActivity::class.java)
+                val money = reports()
+                val sum = if (money && made.isNotEmpty()) line(c, R.string.hudhud_l_total, HudhudBook.money(made.sumOf { it.grandTotal })) else null
+                val rows = made.take(TOP).map { i ->
+                    Row(0, i.customerName, if (money) HudhudBook.money(i.grandTotal) else "", i.invoiceNumber + " \u00B7 " + dayOf(c, i.invoiceDate),
+                        open = InvoicesActivity::class.java)
+                }
+                counted(c, R.string.invoices, w, made.size, listOfNotNull(sum, total?.let { line(c, R.string.range_all, n(it)) }), InvoicesActivity::class.java, rows)
             }
             Hudhud.Thing.BILLS -> {
+                // Bills by their own date, as the Bills page lists them: who sent them, what they came to, the first items.
                 val bills = dao.observeBills().first()
-                val came = bills.filter { it.billDate >= from && it.billDate < to }
-                val who = came.map { it.partyName }.distinct().take(3).joinToString(", ")
-                val sum = if (reports() && came.isNotEmpty()) HudhudBook.money(came.sumOf { it.totalAmount }) else null
-                counted(c, R.string.supplier_bills, w, came.size, listOfNotNull(who.takeIf { it.isNotEmpty() }, sum,
-                    if (window == null) line(c, R.string.range_all, n(bills.size)) else null), BillsActivity::class.java)
+                val came = bills.filter { it.billDate >= from && it.billDate < to }.sortedByDescending { it.billDate }
+                val money = reports()
+                val sum = if (money && came.isNotEmpty()) line(c, R.string.hudhud_l_total, HudhudBook.money(came.sumOf { it.totalAmount })) else null
+                val rows = came.take(TOP).map { b ->
+                    val items = runCatching { dao.billItems(b.id) }.getOrDefault(emptyList()).filter { !it.isDeleted }
+                    val what = items.take(2).joinToString(", ") { it.productName } + if (items.size > 2) "\u2026" else ""
+                    Row(b.partyId, b.partyName, if (money) HudhudBook.money(b.totalAmount) else "",
+                        listOf(dayOf(c, b.billDate), what).filter { it.isNotBlank() }.joinToString(" \u00B7 "))
+                }
+                counted(c, R.string.supplier_bills, w, came.size,
+                    listOfNotNull(sum, if (window == null) line(c, R.string.range_all, n(bills.size)) else null), BillsActivity::class.java, rows)
             }
-            Hudhud.Thing.TICKETS -> counted(c, R.string.hudhud_t_tickets, w, dao.doneSaleCount(from, to), emptyList(), CounterSaleActivity::class.java)
+            Hudhud.Thing.TICKETS -> {
+                val sales = dao.salesBetween(from, to).filter { it.status == "done" }
+                val money = reports()
+                val sum = if (money && sales.isNotEmpty()) line(c, R.string.hudhud_l_total, HudhudBook.money(sales.sumOf { it.grandTotal })) else null
+                val rows = sales.take(TOP).map { t ->
+                    Row(0, t.customerName?.takeIf { it.isNotBlank() } ?: c.getString(R.string.pos_walk_in),
+                        if (money) HudhudBook.money(t.grandTotal) else "", t.saleNumber + " \u00B7 " + whenOf(c, t.timestamp),
+                        open = CounterSaleActivity::class.java)
+                }
+                counted(c, R.string.hudhud_t_tickets, w, sales.size, listOfNotNull(sum), CounterSaleActivity::class.java, rows)
+            }
             Hudhud.Thing.CALCULATIONS, Hudhud.Thing.APP_OPENS -> {
                 val what = if (thing == Hudhud.Thing.CALCULATIONS) UsageLog.What.CALCULATIONS else UsageLog.What.APP_OPENS
                 val shown = UsageLog.count(c, what, from, to)
                 val since = UsageLog.since(c)
                 val title = if (thing == Hudhud.Thing.CALCULATIONS) R.string.hudhud_t_calculations else R.string.hudhud_t_app_opens
+                // Asked with no day: today's, and every one since this phone began counting.
+                val all = if (window == null) UsageLog.count(c, what, 0L, Long.MAX_VALUE) else null
                 counted(c, title, w, shown,
-                    listOfNotNull(since?.let { c.getString(R.string.hudhud_counted_since, Format.dateOnly(it)) }),
+                    listOfNotNull(
+                        all?.let { line(c, R.string.hudhud_l_since_counting, n(it)) },
+                        since?.let { c.getString(R.string.hudhud_counted_since, Format.dateOnly(it)) }
+                    ),
                     if (thing == Hudhud.Thing.CALCULATIONS) CalculatorActivity::class.java else null)
             }
         }
     }
 
-    private fun counted(c: Context, title: Int, window: VoiceQuestion.Window?, count: Int, lines: List<String>, open: Class<*>?): Answer {
+    /** A count with its heading; none said plainly ("None in this time"), not as a bare nought. */
+    private fun counted(
+        c: Context, title: Int, window: VoiceQuestion.Window?, count: Int, lines: List<String>, open: Class<*>?, rows: List<Row> = emptyList()
+    ): Answer {
         val label = heading(c, title, window)
-        return Answer(Mood.CALM, label = label, figure = n(count), lines = lines, open = open,
-            spoken = { w -> heading(w, title, window) + ": " + count })
+        if (count == 0) {
+            val none = c.getString(if (window != null) R.string.hudhud_count_none else R.string.hudhud_none_yet)
+            return Answer(Mood.CALM, label = label, lines = listOf(none) + lines, open = open)
+        }
+        return Answer(Mood.CALM, label = label, figure = n(count), lines = lines, rows = rows, open = open)
     }
 
     // ------------------------------------------------------------------------------------------------ the pages
@@ -554,8 +564,7 @@ internal object HudhudFacts {
         val label = c.getString(R.string.cheques)
         val pending = dao.pendingChequesOnce()
         if (pending.isEmpty()) {
-            return Answer(Mood.GOOD, label = label, lines = listOf(c.getString(R.string.hudhud_cheques_none)), open = ChequesActivity::class.java,
-                spoken = { it.getString(R.string.hudhud_cheques_none) })
+            return Answer(Mood.GOOD, label = label, lines = listOf(c.getString(R.string.hudhud_cheques_none)), open = ChequesActivity::class.java)
         }
         val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY).second
         val due = pending.count { it.dueDate < endOfToday }
@@ -567,8 +576,7 @@ internal object HudhudFacts {
         return Answer(if (due > 0) Mood.CARE else Mood.CALM, label = label, figure = n(pending.size),
             lines = listOfNotNull(part(R.string.hudhud_l_cheques_in, got), part(R.string.hudhud_l_cheques_out, gave),
                 if (due > 0) line(c, R.string.hudhud_l_due, n(due)) else null),
-            open = ChequesActivity::class.java,
-            spoken = { w -> w.getString(R.string.cheques) + ": " + pending.size + if (due > 0) ", " + w.getString(R.string.hudhud_l_due) + ": " + due else "" })
+            open = ChequesActivity::class.java)
     }
 
     /** Open payment plans: how many, how many are due today or late, and the soonest few. */
@@ -576,8 +584,7 @@ internal object HudhudFacts {
         val label = c.getString(R.string.nav_plans)
         val open = dao.openPlansOnce()
         if (open.isEmpty()) {
-            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_plans_none)), open = PlansActivity::class.java,
-                spoken = { it.getString(R.string.hudhud_plans_none) })
+            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_plans_none)), open = PlansActivity::class.java)
         }
         val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY).second
         val due = open.filter { (it.nextDueDate ?: Long.MAX_VALUE) < endOfToday }
@@ -587,8 +594,7 @@ internal object HudhudFacts {
                 if (reports()) line(c, R.string.hudhud_l_remaining, HudhudBook.money(open.sumOf { it.remaining })) else null
             ),
             rows = open.take(TOP).map { Row(it.partyId, it.partyName, if (reports()) HudhudBook.money(it.remaining) else "", it.nextDueDate?.let { d -> Format.dateOnly(d) }) },
-            open = PlansActivity::class.java,
-            spoken = { w -> w.getString(R.string.nav_plans) + ": " + open.size + if (due.isNotEmpty()) ", " + w.getString(R.string.hudhud_l_due) + ": " + due.size else "" })
+            open = PlansActivity::class.java)
     }
 
     /** Supplier bills not paid in full, what is owed to suppliers (Home's sum over them), and the next due. */
@@ -596,8 +602,7 @@ internal object HudhudFacts {
         val label = c.getString(R.string.supplier_bills)
         val unpaid = dao.observeBills().first().filter { !it.isPaidInFull }.sortedBy { it.dueDate ?: Long.MAX_VALUE }
         if (unpaid.isEmpty()) {
-            return Answer(Mood.GOOD, label = label, lines = listOf(c.getString(R.string.hudhud_bills_none)), open = BillsActivity::class.java,
-                spoken = { it.getString(R.string.hudhud_bills_none) })
+            return Answer(Mood.GOOD, label = label, lines = listOf(c.getString(R.string.hudhud_bills_none)), open = BillsActivity::class.java)
         }
         val owed = PartyTotals.of(parties.filter { !it.isCustomer }.map { it.balance }).give
         val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY).second
@@ -608,8 +613,7 @@ internal object HudhudFacts {
                 if (due > 0) line(c, R.string.hudhud_l_due, n(due)) else null
             ),
             rows = unpaid.take(TOP).map { Row(it.partyId, it.partyName, if (reports()) HudhudBook.money(it.totalAmount) else "", it.dueDate?.let { d -> Format.dateOnly(d) }) },
-            open = BillsActivity::class.java,
-            spoken = { w -> w.getString(R.string.supplier_bills) + ": " + unpaid.size })
+            open = BillsActivity::class.java)
     }
 
     /** Goods at or under the level the owner set: the bell's own list ([Valuation.low]). */
@@ -619,12 +623,11 @@ internal object HudhudFacts {
         val low = v.low
         if (low.isEmpty()) {
             return Answer(Mood.GOOD, label = label, lines = listOf(c.getString(R.string.hudhud_low_none), line(c, R.string.tile_products, n(v.rows.size))),
-                open = ProductsActivity::class.java, spoken = { it.getString(R.string.hudhud_low_none) })
+                open = ProductsActivity::class.java)
         }
         return Answer(Mood.CARE, label = label, figure = n(low.size),
             rows = low.take(TOP + 1).map { Row(0, it.name, it.onHand?.let { h -> Format.qty(h, it.unit) } ?: "", null, open = ProductsActivity::class.java) },
-            open = ProductsActivity::class.java,
-            spoken = { w -> w.getString(R.string.hudhud_t_low) + ": " + low.take(3).joinToString(", ") { it.name } })
+            open = ProductsActivity::class.java)
     }
 
     /**
@@ -651,11 +654,7 @@ internal object HudhudFacts {
             if (reports()) line(c, R.string.you_will_get, HudhudBook.money(totals.get)) else null,
             if (reports()) line(c, R.string.you_will_give, HudhudBook.money(totals.give)) else null
         )
-        return Answer(Mood.CALM, label = c.getString(R.string.hudhud_t_book), lines = lines, open = KhataActivity::class.java,
-            spoken = { w ->
-                w.getString(R.string.hudhud_t_customers) + ": " + customers + ", " + w.getString(R.string.hudhud_t_suppliers) + ": " + suppliers +
-                    ", " + w.getString(R.string.hudhud_l_entries) + ": " + entries
-            })
+        return Answer(Mood.CALM, label = c.getString(R.string.hudhud_t_book), lines = lines, open = KhataActivity::class.java)
     }
 
     /** This month's salaries still to pay, by Staff's own month rule ([Payroll.month]). */
@@ -671,14 +670,12 @@ internal object HudhudFacts {
                 pays.filter { it.staffId == person.id }).due
         }.filter { it.second > 0.004 }
         if (due.isEmpty()) {
-            return Answer(Mood.GOOD, label = label, lines = listOf(c.getString(R.string.hudhud_salary_none)), open = StaffActivity::class.java,
-                spoken = { it.getString(R.string.hudhud_salary_none) })
+            return Answer(Mood.GOOD, label = label, lines = listOf(c.getString(R.string.hudhud_salary_none)), open = StaffActivity::class.java)
         }
         val total = due.sumOf { it.second }
         return Answer(Mood.CALM, label = label, figure = HudhudBook.money(total),
             rows = due.take(TOP + 1).map { (s, d) -> Row(0, s.name, HudhudBook.money(d), null, open = StaffActivity::class.java) },
-            open = StaffActivity::class.java, money = true,
-            spoken = { w -> w.getString(R.string.hudhud_t_salary) + ": " + HudhudBook.said(w, total) })
+            open = StaffActivity::class.java, money = true)
     }
 
     // ------------------------------------------------------------------------------------- what came, what happened
@@ -692,8 +689,7 @@ internal object HudhudFacts {
         val all = dao.observeBills().first().sortedByDescending { it.billDate }
         val bills = if (window == null) all.take(TOP) else Hudhud.span(window).let { (from, to) -> all.filter { it.billDate >= from && it.billDate < to } }
         if (bills.isEmpty()) {
-            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_deliveries_none)), open = BillsActivity::class.java,
-                spoken = { it.getString(R.string.hudhud_deliveries_none) })
+            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_deliveries_none)), open = BillsActivity::class.java)
         }
         val rows = bills.take(TOP).map { b ->
             val items = runCatching { dao.billItems(b.id) }.getOrDefault(emptyList()).filter { !it.isDeleted }
@@ -701,8 +697,7 @@ internal object HudhudFacts {
             Row(b.partyId, b.partyName, if (reports()) HudhudBook.money(b.totalAmount) else "",
                 listOf(dayOf(c, b.billDate), what).filter { it.isNotBlank() }.joinToString(" · "))
         }
-        return Answer(Mood.CALM, label = label, figure = if (window != null) n(bills.size) else null, rows = rows, open = BillsActivity::class.java,
-            spoken = { w -> heading(w, R.string.hudhud_t_deliveries, window) + ": " + bills.take(3).joinToString(", ") { it.partyName } })
+        return Answer(Mood.CALM, label = label, figure = if (window != null) n(bills.size) else null, rows = rows, open = BillsActivity::class.java)
     }
 
     /**
@@ -747,13 +742,7 @@ internal object HudhudFacts {
         val extras = if (open == DayBookActivity::class.java) Bundle().apply { putLong(DayBookActivity.EXTRA_DAY, from) } else null
         return Answer(Mood.CALM, label = label,
             lines = if (nothing) listOf(c.getString(R.string.hudhud_activity_none)) + lines.drop(1).filter { it.isNotEmpty() } else lines,
-            open = open, openExtras = extras, money = true,
-            spoken = { v ->
-                if (nothing) v.getString(R.string.hudhud_activity_none)
-                else heading(v, R.string.hudhud_t_activity, w) + ": " + v.getString(R.string.hudhud_l_entries) + " " + entries +
-                    (if (invoices > 0) ", " + v.getString(R.string.invoices) + " " + invoices else "") +
-                    (if (bills > 0) ", " + v.getString(R.string.supplier_bills) + " " + bills else "")
-            })
+            open = open, openExtras = extras)
     }
 
     /** A day book row's party is a customer: a supplier's "I got" is goods that came, not money. */
@@ -779,19 +768,112 @@ internal object HudhudFacts {
         val extras = if (open != null) Bundle().apply { putLong(DayBookActivity.EXTRA_DAY, from) } else null
         return Answer(if (Money.isPositive(total)) Mood.GOOD else Mood.CALM, label = label, figure = HudhudBook.money(total),
             lines = listOf(line(c, R.string.hudhud_l_from_customers, HudhudBook.money(khata)), line(c, R.string.hudhud_l_cashbook_in, HudhudBook.money(cash))) + ways,
-            open = open, openExtras = extras, money = true,
-            spoken = { v -> heading(v, R.string.hudhud_t_collected, w) + ": " + HudhudBook.said(v, total) })
+            open = open, openExtras = extras, money = true)
     }
 
-    // ------------------------------------------------------------------------------------------------ choices
+    // ------------------------------------------------------------------------------------------------ told, not asked
 
-    /** Whose? A question about somebody that named nobody. */
-    fun needName(c: Context) = Answer(Mood.CALM, lines = listOf(c.getString(R.string.hudhud_need_name)),
-        spoken = { it.getString(R.string.hudhud_need_name) })
+    /**
+     * A question about somebody that names nobody ("uska number", "limit kitni hai"), told rather than asked back (13 Nov
+     * 2026, the owner: "aap ka kaam batana hai, poochhna nahi"): the customers dealt with last, each with that fact —
+     * his number, his last payment, his credit limit, his promised day — or else his balance. A name in the question
+     * gives the one man.
+     */
+    suspend fun needName(c: Context, dao: KhataDao, facet: Hudhud.Facet?, parties: List<PartyWithBalance>): Answer {
+        val title = when (facet) {
+            Hudhud.Facet.PHONE -> R.string.hudhud_need_phone
+            Hudhud.Facet.LAST_PAYMENT -> R.string.hudhud_need_payment
+            Hudhud.Facet.LIMIT -> R.string.hudhud_need_limit
+            Hudhud.Facet.PROMISE -> R.string.hudhud_need_promise
+            else -> R.string.hudhud_need_recent
+        }
+        val recent = parties.sortedByDescending { it.lastActivity }.take(TOP)
+        if (recent.isEmpty()) {
+            return Answer(Mood.CALM, label = c.getString(title), lines = listOf(c.getString(R.string.voice_no_party)), open = KhataActivity::class.java)
+        }
+        val secrets = ArrayList<String>()
+        val rows = recent.map { p ->
+            when (facet) {
+                Hudhud.Facet.PHONE -> {
+                    val phone = p.phone?.takeIf { it.isNotBlank() }
+                    phone?.let { secrets += it }
+                    Row(p.id, p.name, phone?.let { Format.ltr(it) } ?: c.getString(R.string.hudhud_no_phone_short), null)
+                }
+                Hudhud.Facet.LAST_PAYMENT -> {
+                    // A customer pays with an "I got"; the shop pays a supplier with an "I gave".
+                    val last = LedgerLines.of(dao, listOf(p.id)).filter { it.isGiven != p.isCustomer }.maxByOrNull { it.timestamp }
+                    if (last == null) Row(p.id, p.name, "", c.getString(R.string.hudhud_no_payment))
+                    else Row(p.id, p.name, HudhudBook.money(last.amount), whenOf(c, last.timestamp))
+                }
+                Hudhud.Facet.LIMIT -> {
+                    val limit = dao.getParty(p.id)?.creditLimit?.takeIf { it > 0.0 }
+                    if (limit == null) Row(p.id, p.name, "", c.getString(R.string.hudhud_limit_none))
+                    else Row(p.id, p.name, HudhudBook.money(limit), HudhudBook.money(abs(p.balance)) + " \u00B7 " + HudhudBook.side(c, p.balance))
+                }
+                Hudhud.Facet.PROMISE -> {
+                    val day = dao.getParty(p.id)?.harvestPromise
+                    if (day == null) Row(p.id, p.name, "", c.getString(R.string.hudhud_promise_none))
+                    else Row(p.id, p.name, Format.dateOnly(day), null)
+                }
+                else -> Row(p.id, p.name, HudhudBook.money(abs(p.balance)), HudhudBook.side(c, p.balance))
+            }
+        }
+        return Answer(Mood.CALM, label = c.getString(title), lines = listOf(c.getString(R.string.hudhud_need_hint)), rows = rows,
+            open = KhataActivity::class.java, secrets = secrets)
+    }
 
-    /** "Did you mean": the options are the chips under the card. */
-    fun didYouMean(c: Context, options: List<Hudhud.Ask>) = Answer(Mood.CALM, label = c.getString(R.string.hudhud_did_you_mean),
-        options = options, spoken = { it.getString(R.string.hudhud_did_you_mean) })
+    /**
+     * What the cashbook took in and paid out over a span (today when none was said): the two sums, the difference, and
+     * its own rows, newest first (13 Nov 2026, the owner: "cashbook mein kya aaya, kya gaya"). Money, behind REPORTS.
+     */
+    suspend fun cashbook(c: Context, dao: KhataDao, window: VoiceQuestion.Window?): Answer {
+        val w = window ?: VoiceQuestion.Window.TODAY
+        val label = heading(c, R.string.hudhud_t_cashbook, w)
+        if (!reports()) return ownerOnly(c, label)
+        val (from, to) = Hudhud.span(w)
+        val rows = dao.cashbookRowsBetween(from, to)
+        val open = com.innovation313.roshankhata.CashbookActivity::class.java
+        if (rows.isEmpty()) {
+            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_cashbook_none)), open = open)
+        }
+        val moneyIn = rows.filter { it.isIncome }.sumOf { it.amount }
+        val moneyOut = rows.filter { !it.isIncome }.sumOf { it.amount }
+        return Answer(Mood.CALM, label = label, figure = HudhudBook.money(moneyIn - moneyOut),
+            lines = listOf(
+                c.getString(R.string.hudhud_l_net),
+                line(c, R.string.hudhud_l_money_in, HudhudBook.money(moneyIn)),
+                line(c, R.string.hudhud_l_money_out, HudhudBook.money(moneyOut))
+            ),
+            rows = rows.sortedByDescending { it.timestamp }.take(TOP).map { r ->
+                Row(0, r.category.ifBlank { c.getString(if (r.isIncome) R.string.hudhud_l_money_in else R.string.hudhud_l_money_out) },
+                    if (r.isIncome) "+" + HudhudBook.money(r.amount) else HudhudBook.money(-r.amount),
+                    listOfNotNull(whenOf(c, r.timestamp), r.note?.takeIf { it.isNotBlank() }).joinToString(" \u00B7 "), open = open)
+            },
+            open = open, money = true)
+    }
+
+    /** Goods that came back at the counter over a span (today when none was said): how many returns, and what for. */
+    suspend fun returns(c: Context, dao: KhataDao, window: VoiceQuestion.Window?): Answer {
+        val w = window ?: VoiceQuestion.Window.TODAY
+        val label = heading(c, R.string.hudhud_t_returns, w)
+        val (from, to) = Hudhud.span(w)
+        val all = dao.returnsBetween(from, to).filter { it.status == "done" }
+        val open = CounterSaleActivity::class.java
+        if (all.isEmpty()) {
+            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_returns_none)), open = open)
+        }
+        val money = reports()
+        return Answer(Mood.CALM, label = label, figure = n(all.size),
+            lines = if (money) listOf(
+                line(c, R.string.hudhud_l_returned_worth, HudhudBook.money(all.sumOf { it.total })),
+                line(c, R.string.hudhud_l_refunded, HudhudBook.money(all.sumOf { it.refundAmount }))
+            ) else emptyList(),
+            rows = all.take(TOP).map { r ->
+                Row(0, r.customerName?.takeIf { it.isNotBlank() } ?: c.getString(R.string.pos_walk_in), if (money) HudhudBook.money(r.total) else "",
+                    listOf(r.returnNumber, whenOf(c, r.timestamp)).joinToString(" \u00B7 "), open = open)
+            },
+            open = open)
+    }
 
     private val EDITS = setOf(AuditAction.ENTRY_EDITED, AuditAction.CASH_EDITED, AuditAction.PRICE_CHANGED, AuditAction.STOCK_ADJUSTED)
     private val DELETES = setOf(AuditAction.ENTRY_DELETED, AuditAction.CASH_DELETED, AuditAction.PARTY_DELETED)

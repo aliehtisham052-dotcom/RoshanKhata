@@ -1,0 +1,975 @@
+who_are_you	خودتو معرفی کن
+who_are_you	شما کی هستین
+who_are_you	اسم شما چیه
+who_are_you	تو کی‌ای
+who_are_you	کی هستی داداش
+who_are_you	اسمت چی بود
+who_are_you	نام تو چیه
+who_are_you	تو چی هستی
+who_are_you	میشه بگی کی هستی
+who_are_you	خودت رو معرفی کن لطفاً
+who_are_you	تو کیستی
+who_are_you	نامت چیه جان
+who_are_you	اسمتو بگو
+who_are_you	چی صدات کنم
+who_are_you	ببخشید شما
+abilities	چه کمکی میتونی بکنی
+abilities	چی ازت بپرسم
+abilities	تو به چه درد من میخوری
+abilities	کارت چیه
+abilities	چی میدونی
+abilities	چه چیزهایی می‌توانی به من بگویی
+abilities	اصلا چیزی سرت میشه
+abilities	چه کارا بلدی داداش
+abilities	چی کار ازت برمیاد
+abilities	تو چه کاره‌ای اینجا
+abilities	چطور کمکم میکنی
+abilities	چه سوالایی میشه ازت پرسید
+abilities	چه کار کده میتانی
+abilities	توانایی‌هات چیه
+abilities	بگو چیا بلدی
+how_are_you	حالت چطور است
+how_are_you	خوبی داداش
+how_are_you	چه خبر
+how_are_you	حال شما چطوره
+how_are_you	خوب هستی
+how_are_you	چطوری هدهد جان
+how_are_you	احوالت
+how_are_you	حالت خوبه داداش
+how_are_you	روبراهی
+how_are_you	چطور استی بیادر
+how_are_you	خوبی خوشی
+how_are_you	اوضاع چطوره
+how_are_you	سرحالی
+how_are_you	احوال شما
+how_are_you	جور استی جان
+can_talk	صدامو داری
+can_talk	هستی هدهد
+can_talk	اونجایی
+can_talk	میشنوی
+can_talk	میتونی حرف بزنی
+can_talk	گپ زده میتانی
+can_talk	صدای مه میشنوی
+can_talk	با من حرف میزنی
+can_talk	الو میشنوی
+can_talk	گوشت با منه
+can_talk	صدا میاد
+can_talk	جواب میدی
+can_talk	آیا صدای من را می‌شنوی
+can_talk	میشه باهات حرف زد
+can_talk	هنوز اینجایی
+address	هدهد آقا
+address	آقا جان
+address	آقا هدهد
+address	رفیق جان
+address	عزیزم
+address	ببین
+address	داداش گلم
+address	جانم
+address	برادر عزیز
+address	بچیم
+address	هی
+address	آهای
+address	هدهد عزیز
+address	قربان
+address	دوست من
+salaam	سلام علیکم و رحمة الله
+salaam	سلام هدهد
+salaam	سلام داداش
+salaam	سلام علیکم آقا
+salaam	سلام عرض شد
+salaam	سلام و عرض ادب
+salaam	سلام جان
+salaam	سلام علیکم بیادر
+salaam	سلام بر تو
+salaam	سلام علیکم و رحمة الله و برکاته
+salaam	سلام رفیق
+salaam	سلام عزیز
+salaam	سلامون علیکم
+salaam	سلام خدمت شما
+salaam	سلام علیک
+hello	روز بخیر
+hello	عصر شما بخیر
+hello	وقت بخیر هدهد
+hello	ظهر بخیر
+hello	های داداش
+hello	صبح شما بخیر آقا
+hello	درود بر تو
+hello	صبح بخیر هدهد
+hello	خوش آمدی
+hello	روز خوش
+hello	هلو هدهد
+hello	صبحت بخیر داداش
+hello	چاشت شما بخیر
+hello	وقت شما بخیر
+hello	درود هدهد جان
+thanks	ممنونم
+thanks	دستت درد نکنه داداش
+thanks	خیلی خیلی ممنون
+thanks	سپاس
+thanks	تشکر میکنم
+thanks	مرسی داداش
+thanks	قربانت
+thanks	از شما سپاسگزارم
+thanks	متشکرم
+thanks	خانه آباد
+thanks	ممنون هدهد جان
+thanks	تشکر از شما
+thanks	لطف کردی
+thanks	دست شما درد نکند
+thanks	مرسی عزیزم
+bye	خدافظ
+bye	فعلا داداش
+bye	تا بعد
+bye	به امید دیدار هدهد
+bye	شب بخیر
+bye	فعلا خدانگهدار
+bye	بامان خدا
+bye	میبینمت
+bye	تا فردا
+bye	خدا نگهدارت
+bye	من رفتم
+bye	بای بای
+bye	خداحافظ داداش
+bye	در پناه خدا
+bye	یا علی
+praise	دمت گرم داداش
+praise	عالی هستی
+praise	کارت خیلی درسته
+praise	باریکلا
+praise	احسنت
+praise	ایول
+praise	خیلی باهوشی
+praise	آفرین هدهد
+praise	ماشالله
+praise	شاباش هدهد
+praise	تو بهترینی
+praise	گل کاشتی
+praise	خیلی خوب بود
+praise	آفرین داداش کارت عالیه
+praise	بسیار عالی
+owner_name	اسم منو میدونی یا نه
+owner_name	منو میشناسی
+owner_name	من کی‌ام
+owner_name	منو به چه اسمی صدا میزنی
+owner_name	نام مرا می‌دانی
+owner_name	اسمم چیه
+owner_name	بگو اسم من چیه
+owner_name	نام مه چیست
+owner_name	مره میشناسی
+owner_name	اسم من پیش تو چی ثبت شده
+owner_name	میدونی اسمم چیه داداش
+owner_name	به من چه می‌گویی
+owner_name	بگو من کی هستم
+owner_name	اسم خودم چیه
+owner_name	اسم من یادته
+maker	کی ساختت
+maker	سازنده‌ات کیه
+maker	این اپ رو کی ساخته
+maker	کار کدوم شرکته
+maker	برنامه‌نویس تو کیه
+maker	تو را کی ساخته
+maker	کی درستت کرده
+maker	سازنده این برنامه کیست
+maker	این اپلیکیشن مال کدوم شرکته
+maker	ترا کی جور کده
+maker	ساخت کجایی
+maker	کی برنامه رو نوشته
+maker	صاحب این اپ کیه
+maker	توسط چه کسی ساخته شدی
+maker	کدوم کمپانی تو رو ساخته
+app_about	این اپ چیکار میکنه
+app_about	این برنامه به چه دردی میخوره
+app_about	روشن کهاتا چیه داداش
+app_about	راجع به این برنامه توضیح بده
+app_about	این برنامه برای چیست
+app_about	این اپ چی هست اصلا
+app_about	کاربرد این برنامه چیه
+app_about	روشن کهاتا یعنی چی
+app_about	این اپلیکیشن دفتر حسابه
+app_about	درباره برنامه بگو
+app_about	ای برنامه چیست
+app_about	یه توضیح کوتاه از اپ بده
+app_about	این نرم‌افزار چیه
+app_about	روشن کهاتا را معرفی کن
+app_about	برنامه چیه داداش
+privacy	اطلاعاتم جاش امنه
+privacy	کسی اطلاعات منو میبینه
+privacy	داده‌هام کجاست
+privacy	حساب‌هام رو کسی میتونه ببینه
+privacy	اطلاعاتم رو جایی میفرستین
+privacy	دیتای من امن است
+privacy	اطلاعات مشتری‌هام محفوظه
+privacy	اطلاعاتم رو سرور ذخیره میشه یا گوشی
+privacy	حریم خصوصی چطوره
+privacy	معلومات مه محفوظ است
+privacy	کسی میتونه دفترم رو هک کنه
+privacy	این برنامه امنه
+privacy	اطلاعاتم از گوشی بیرون میره
+privacy	دفتر من محرمانه است
+privacy	کی به داده‌های من دسترسی داره
+languages	چه زبونایی بلدی
+languages	انگلیسی هم بلدی
+languages	دری میفهمی
+languages	به چه زبان‌هایی حرف میزنی
+languages	چند زبان بلدی
+languages	عربی میفهمی
+languages	کدوم زبونا رو حالیت میشه
+languages	پشتیبانی از چه زبان‌هایی داری
+languages	اردو بلدی
+languages	به کدام زبان‌ها گپ زده میتانی
+languages	زبان‌های برنامه
+languages	میشه انگلیسی باهات حرف بزنم
+languages	زبونای دیگه هم بلدی
+languages	لهجه منو میفهمی
+languages	با چه زبانی باهات حرف بزنم
+date_time	ساعت چند است
+date_time	امروز چند شنبه‌س آقا
+date_time	امروز چه روزیه
+date_time	تاریخ امروز
+date_time	الان ساعت چنده
+date_time	امروز چندم برجه
+date_time	چند بجه شده
+date_time	چه ماهی هستیم
+date_time	امروز چندم ماهه
+date_time	تاریخ قمری امروز
+date_time	وقت چنده داداش
+date_time	امروز چن شنبه‌س
+date_time	ساعت رو بگو
+date_time	تاریخ شمسی امروز چنده
+date_time	امروز دوشنبه است یا سه‌شنبه
+today_summary	امروز چی دارم
+today_summary	امروز چه خبره
+today_summary	کارهای امروز
+today_summary	امروز چی کار باید بکنم
+today_summary	خلاصه امروز چیه
+today_summary	امروز چی مونده
+today_summary	چی امروز عقب افتاده
+today_summary	امروز چه چیزی توجه لازم داره
+today_summary	امروز چه کارا دارم داداش
+today_summary	مهم‌ترین کار امروز
+today_summary	گزارش کوتاه امروز
+today_summary	امروز باید به چی برسم
+today_summary	امروز کار فوری داریم
+today_summary	خلاصه امروز را بگو لطفاً
+today_summary	امروز چه کار کنم
+sales_today	امروز چقد فروختم
+sales_today	فروش امروز چند شد
+sales_today	امروز چقدر فروش کردیم
+sales_today	جمع فروش امروز
+sales_today	فروش امروز تا الان
+sales_today	امروز چند تومن فروختیم
+sales_today	کل فروش امروز چقدر شد
+sales_today	امروز چقدر سودا شد
+sales_today	فروش امروز چند است
+sales_today	آقا امروز چقدر فروختیم
+sales_today	امروز از صبح تا حالا چقدر جنس فروخته‌ایم
+sales_today	سیل امروز
+sales_today	مبلغ فروش امروز
+sales_today	امروز فروشمون چطور بود چقدر شد
+sales_today	فروش امروز چقدر بوده
+sales_period	فروش دیروز
+sales_period	این هفته چقدر فروختیم
+sales_period	فروش این ماه چند شد
+sales_period	ماه پیش چقدر فروختیم
+sales_period	فروش ماه گذشته
+sales_period	هفته پیش چقد فروش داشتیم
+sales_period	دیروز چقدر سودا شد
+sales_period	فروش این برج
+sales_period	جمع فروش این هفته
+sales_period	کل فروش ماه قبل
+sales_period	دیروز فروش چند بود
+sales_period	فروش هفته قبل
+sales_period	این ماه تا حالا چقدر فروخته‌ایم
+sales_period	فروش دیروز چند تومن شد
+sales_period	هفته تیر شده چقدر فروختیم
+profit	چقدر سود کردیم
+profit	سود این هفته چقدر شد
+profit	امروز چقدر سود بردیم
+profit	سود ماه پیش
+profit	مفاد این ماه
+profit	فایده امروز چقدر شد
+profit	سود خالص این ماه
+profit	هفته پیش چقد سود بردیم
+profit	سود
+profit	این ماه چقدر گیرمان آمد
+profit	سود خالص ماه گذشته چقدر بود
+profit	دیروز سود چند بود
+profit	پروفیت این هفته
+profit	امروز چیزی سود کردیم
+profit	مفاد هفته تیر شده
+to_get	چقدر طلب دارم
+to_get	طلبم از مردم چقدره
+to_get	کل طلبکاری من
+to_get	چقدر پولم دست مردمه
+to_get	مجموع بدهی مشتری‌ها به من
+to_get	چقدر باید از مشتری‌ها بگیرم
+to_get	طلب‌ها
+to_get	پولی که بیرون دارم چقدره
+to_get	جمع نسیه‌های مردم
+to_get	قرضداری مردم از مه چقدر است
+to_get	همه مشتری‌ها روی هم چقدر بدهکارن
+to_get	طلبم از بازار چنده
+to_get	کل مطالبات
+to_get	چقد پول پیش مردم دارم
+to_get	دریافتنی‌های من چقدر است
+to_give	چقدر بدهی دارم
+to_give	بدهی من به تامین‌کننده‌ها
+to_give	چقدر باید بدم
+to_give	کل بدهکاری مغازه
+to_give	به عمده‌فروش‌ها چقدر بدهکارم
+to_give	قرض من چقدره
+to_give	پرداختنی‌های من
+to_give	چقدر قرضدار هستم
+to_give	جمع بدهی‌هام چند شد
+to_give	به مردم چقدر باید پول بدم
+to_give	بدهی‌ها
+to_give	چقد به بنکدار بدهکارم
+to_give	حساب بدهی‌های من به شرکت‌ها
+to_give	روی هم چقدر باید پرداخت کنم
+to_give	بالای مه چقدر قرض است
+who_owes_most	بیشترین بدهی مال کیه
+who_owes_most	کی بیشترین نسیه رو داره
+who_owes_most	بدهکارترین مشتری
+who_owes_most	کدوم مشتری بیشتر از همه بدهکاره
+who_owes_most	بزرگترین طلب من از کیه
+who_owes_most	کی بیشتر از همه قرضدار است
+who_owes_most	سنگین‌ترین حساب مال کیه
+who_owes_most	بالاترین بدهی را چه کسی دارد
+who_owes_most	نفر اول بدهکارها کیه
+who_owes_most	از کی بیشترین طلب رو دارم
+who_owes_most	کدوم مشتری حسابش از همه بالاتره
+who_owes_most	بیشترین نسیه دست کیه
+who_owes_most	کلان‌ترین قرضدار کیست
+who_owes_most	کی از همه بیشتر به من بدهکاره داداش
+who_owes_most	بدهکار شماره یک
+not_paid	کی هنوز نداده
+not_paid	کیا پول ندادن
+not_paid	بدحساب‌ها کیان
+not_paid	کی دیر کرده
+not_paid	کدوم مشتری‌ها عقب افتادن
+not_paid	کیا سر وقت ندادن
+not_paid	معوقه‌ها
+not_paid	کی هنوز تسویه نکرده
+not_paid	کی‌ها پیسه نداده‌اند
+not_paid	چه کسانی از موعد گذشته‌اند
+not_paid	لیست بدحساب‌ها
+not_paid	کی وعده‌اش گذشته و نداده
+not_paid	کیا خیلی وقته پول ندادن
+not_paid	دیرکردی‌ها کیا هستن
+not_paid	مشتری‌های بدقول
+likely_payers	امروز کی میاد پول بده
+likely_payers	امروز از کی پول میاد
+likely_payers	کی امروز تسویه میکنه
+likely_payers	امروز انتظار پول از کی داشته باشم
+likely_payers	کیا معمولا همین روزا میدن
+likely_payers	امروز کی پیسه میاره
+likely_payers	امروز نوبت کیه که بده
+likely_payers	احتمال داره امروز کی پرداخت کنه
+likely_payers	کدوم مشتری‌ها امروز پول میدن
+likely_payers	کی این روزها عادت به پرداخت دارد
+likely_payers	امروز از کی میشه پول گرفت
+likely_payers	موعد کی نزدیکه
+likely_payers	امروز قراره کی حساب کنه
+likely_payers	چه کسی امروز احتمالا پول می‌آورد
+likely_payers	کیا اول ماه میدن
+collected	امروز چقدر دریافت کردیم
+collected	دریافتی امروز
+collected	وصولی این هفته
+collected	امروز از مشتری‌ها چقدر گرفتیم
+collected	دیروز چقدر پول اومد
+collected	چقدر نسیه وصول شد امروز
+collected	وصولی ماه پیش
+collected	امروز چقدر پیسه جمع شد
+collected	این ماه چقدر از مشتری‌ها گرفتم
+collected	مشتری‌ها امروز چقدر دادن
+collected	جمع دریافتی‌های هفته پیش
+collected	پول‌های رسیده امروز
+collected	دیروز چقدر طلب وصول کردیم
+collected	چقدر پول دستم اومد این هفته
+collected	وصولی امروز چند شد
+drawer	تو دخل چقدر پوله
+drawer	نقدی دستم چقدره
+drawer	صندوق رو ببند
+drawer	دخل رو بشمار
+drawer	پول نقد مغازه
+drawer	چقدر نقد دارم
+drawer	حساب روز رو ببند
+drawer	تو کشو چقدر هست
+drawer	دخل چند است
+drawer	موجودی نقد الان
+drawer	باید تو صندوق چقدر باشه
+drawer	روز رو ببند
+drawer	شمارش نقدی
+drawer	در غله چقدر پیسه است
+drawer	دخل امروز رو حساب کن
+expiring	چی داره منقضی میشه
+expiring	تاریخ چی نزدیکه
+expiring	جنس‌های تاریخ نزدیک
+expiring	کدوم داروها تاریخشون نزدیکه
+expiring	چی داره تاریخش میگذره
+expiring	کالاهای رو به انقضا
+expiring	چیزی داریم که این ماه منقضی بشه
+expiring	اکسپایری نزدیک
+expiring	کدوم جنسا دارن خراب میشن
+expiring	تاریخ مصرف چی داره تموم میشه
+expiring	چه چیزهایی تاریخش تیر میشه
+expiring	انقضاهای نزدیک
+expiring	چی زودتر تاریخش میره
+expiring	جنس دم تاریخ داریم
+expiring	انقضای نزدیک
+low_stock	چی کم داریم
+low_stock	چی داره تموم میشه
+low_stock	چی تموم شده
+low_stock	چی باید بخرم
+low_stock	کسری انبار
+low_stock	جنس‌های کم
+low_stock	کدوم جنس‌ها رو به تمامه
+low_stock	از بنکدار چی سفارش بدم
+low_stock	موجودی کم
+low_stock	چی کم مانده
+low_stock	چیزی هست که ته کشیده باشه
+low_stock	لیست خرید مغازه
+low_stock	کدام اجناس خلاص میشه
+low_stock	چی رو باید شارژ کنم
+low_stock	استاک کم
+party_balance	{NAME} چقدر بدهکار است
+party_balance	حساب {NAME} چند شد
+party_balance	{NAME} چقدر باید به من بده
+party_balance	چقدر از {NAME} طلب دارم
+party_balance	مانده حساب {NAME} چنده
+party_balance	{NAME} چند بدهکاره
+party_balance	دفتر {NAME}
+party_balance	حساب {NAME} چطوره
+party_balance	{NAME} چقدر قرضدار است
+party_balance	به {NAME} چقدر بدهکارم
+party_balance	بالانس {NAME}
+party_balance	حساب {NAME} را بیاور ببینم چقدر مانده
+party_balance	{NAME} چقد نسیه داره
+party_balance	صورت حساب {NAME}
+party_balance	{NAME} حسابش
+party_phone	شماره {NAME} چنده
+party_phone	تلفن {NAME}
+party_phone	شماره {NAME} رو بده داداش
+party_phone	موبایل {NAME} چنده
+party_phone	نمبر {NAME}
+party_phone	شماره تماس {NAME}
+party_phone	شماره {NAME} رو داری
+party_phone	نمبر تلیفون {NAME} چند است
+party_phone	چطور به {NAME} زنگ بزنم
+party_phone	شماره همراه {NAME}
+party_phone	{NAME} شمارش چنده
+party_phone	شماره واتساپ {NAME}
+party_phone	لطفاً شماره {NAME} را بگو
+party_phone	تیلیفون {NAME}
+party_phone	شماره {NAME} رو میخوام
+party_last_payment	{NAME} آخرین بار کی داد
+party_last_payment	آخرین باری که {NAME} پول داد کی بود
+party_last_payment	{NAME} کی آخرین پرداخت رو کرد
+party_last_payment	آخرین پول {NAME} کی رسید
+party_last_payment	{NAME} از کی پول نداده
+party_last_payment	آخرین پرداختی {NAME} چقدر بود و کی
+party_last_payment	{NAME} دفعه آخر کی حساب کرد
+party_last_payment	تاریخ آخرین پرداخت {NAME} کی بوده
+party_last_payment	{NAME} آخرین دفعه چه وقت پیسه داد
+party_last_payment	آخرین واریزی {NAME}
+party_last_payment	{NAME} بار آخر کی پول آورد
+party_last_payment	آخرین پرداخت {NAME} چه روزی بود
+party_last_payment	{NAME} آخرین بار کی تسویه کرد
+party_last_payment	چند وقته {NAME} پول نداده
+party_last_payment	آخرین دریافتی از {NAME}
+party_limit	سقف {NAME}
+party_limit	حد نسیه {NAME}
+party_limit	{NAME} تا چقدر میتونه نسیه ببره
+party_limit	سقف اعتبار {NAME} چقدره
+party_limit	لیمیت {NAME}
+party_limit	{NAME} از سقفش رد شده
+party_limit	تا چقدر به {NAME} نسیه بدم
+party_limit	حد قرض {NAME} چند است
+party_limit	از سقف {NAME} چقدر مانده
+party_limit	حداکثر نسیه {NAME}
+party_limit	{NAME} سقفش چنده
+party_limit	کریدیت لیمیت {NAME}
+party_limit	{NAME} به سقف رسیده یا نه
+party_limit	اندازه اعتبار {NAME}
+party_limit	حد اعتباری {NAME} را بگو
+party_promise	{NAME} کی قول داده
+party_promise	قول {NAME}
+party_promise	{NAME} گفته بود چه روزی میده
+party_promise	وعده {NAME} کی بود
+party_promise	{NAME} برای کی قول داده
+party_promise	{NAME} قرار گذاشته کی بده
+party_promise	تاریخ وعده {NAME}
+party_promise	{NAME} چه روزی را وعده کرده
+party_promise	روزی که {NAME} قول داده کیه
+party_promise	{NAME} گفت کدوم روز میاره
+party_promise	موعدی که {NAME} گفته
+party_promise	{NAME} وعده کدام روز ره کده
+party_promise	قول پرداخت {NAME} برای چه تاریخیه
+party_promise	{NAME} قول چه روزی رو داده بود
+party_promise	وعده‌ی {NAME}
+party_when_pays	{NAME} کی میده
+party_when_pays	{NAME} کی پولشو میده
+party_when_pays	کی از {NAME} پول میاد
+party_when_pays	{NAME} کی حساب میکنه
+party_when_pays	{NAME} کی تسویه میکنه
+party_when_pays	فکر میکنی {NAME} کی بده
+party_when_pays	{NAME} چه وقت پیسه میاره
+party_when_pays	{NAME} معمولا کی میده
+party_when_pays	{NAME} کی پرداخت خواهد کرد
+party_when_pays	کی منتظر پول {NAME} باشم
+party_when_pays	{NAME} کی پولش را می‌آورد
+party_when_pays	{NAME} به زودی میده
+party_when_pays	{NAME} کی قرضشو میده
+party_when_pays	احتمالا {NAME} کی پرداخت میکنه
+party_when_pays	{NAME} کی پول میاره داداش
+party_details	اطلاعات {NAME}
+party_details	{NAME} کجاییه
+party_details	{NAME} کجا میشینه
+party_details	اسم پدر {NAME}
+party_details	نشانی {NAME}
+party_details	{NAME} اهل کدوم روستاست
+party_details	{NAME} پسر کیه
+party_details	معلومات {NAME}
+party_details	پروفایل {NAME}
+party_details	{NAME} از کدام ده است
+party_details	مشخصات کامل {NAME}
+party_details	خانه {NAME} کجاست
+party_details	نام پدر {NAME} چیست
+party_details	{NAME} آدرسش کجاست
+party_details	جزئیات {NAME} رو نشون بده
+entry_gave	{NAME} 500 نسیه برد
+entry_gave	به {NAME} 750 قرض دادم
+entry_gave	{NAME} 2000 جنس نسیه برد
+entry_gave	دادم به {NAME} 1500
+entry_gave	{NAME} 400 دستی گرفت
+entry_gave	بنویس {NAME} 1000 نسیه
+entry_gave	به {NAME} 600 پیسه دادم
+entry_gave	{NAME} 250 قرض گرفت
+entry_gave	به حساب {NAME} 900 بزن
+entry_gave	{NAME} 3500 جنس برد حساب کن
+entry_gave	{NAME} 150 برد
+entry_gave	1200 به {NAME} دادم
+entry_gave	{NAME} 800 نسیه برداشت
+entry_gave	برای {NAME} 5000 نسیه بنویس لطفاً
+entry_gave	{NAME} 650 جنس قرض برد
+entry_got	{NAME} 500 آورد
+entry_got	از {NAME} 750 گرفتم
+entry_got	{NAME} 2000 پرداخت کرد
+entry_got	{NAME} 1500 پول داد
+entry_got	{NAME} 400 نقد داد
+entry_got	از {NAME} 1000 رسید
+entry_got	{NAME} 600 پیسه داد
+entry_got	{NAME} 250 کارت به کارت کرد
+entry_got	دریافتی از {NAME} 900
+entry_got	{NAME} 3500 از بدهیش داد
+entry_got	{NAME} 150 واریز کرد
+entry_got	1200 از {NAME} گرفتم
+entry_got	{NAME} 800 از حسابش رو داد
+entry_got	از {NAME} 5000 دریافت شد ثبت کن
+entry_got	{NAME} 650 تسویه کرد
+goods_price	{ITEM} چند
+goods_price	{ITEM} قیمتش چنده
+goods_price	قیمت {ITEM} چند است
+goods_price	نرخ {ITEM} امروز
+goods_price	{ITEM} رو چند میدیم
+goods_price	{ITEM} دونه‌ای چند میدیم
+goods_price	قیمت فروش {ITEM}
+goods_price	{ITEM} چند تومنه
+goods_price	نرخ {ITEM} چند است
+goods_price	{ITEM} نقد چند نسیه چند
+goods_price	قیمت {ITEM} رو بگو
+goods_price	{ITEM} چند بفروشم
+goods_price	ریت {ITEM}
+goods_price	{ITEM} الان چند شده
+goods_price	بهای {ITEM}
+goods_stock	{ITEM} داریم هنوز
+goods_stock	{ITEM} چقد داریم
+goods_stock	چقدر {ITEM} مونده
+goods_stock	{ITEM} موجوده
+goods_stock	{ITEM} چند تا مونده
+goods_stock	موجودی {ITEM} چقدره
+goods_stock	{ITEM} تموم شده یا هنوز هست
+goods_stock	چند کارتن {ITEM} داریم
+goods_stock	{ITEM} چقدر مانده است
+goods_stock	استاک {ITEM}
+goods_stock	{ITEM} تو انبار هست
+goods_stock	از {ITEM} چی مونده
+goods_stock	{ITEM} چند دانه مانده
+goods_stock	هنوز {ITEM} داریم تو قفسه
+goods_stock	تعداد {ITEM} موجود
+goods_suppliers	{ITEM} رو از کی ارزون‌تر بخرم
+goods_suppliers	{ITEM} خریدش چنده
+goods_suppliers	نرخ خرید {ITEM}
+goods_suppliers	کدوم بنکدار {ITEM} رو ارزون‌تر میده
+goods_suppliers	{ITEM} رو چند خریدیم
+goods_suppliers	تامین‌کننده‌های {ITEM}
+goods_suppliers	{ITEM} را کی ارزان میدهد
+goods_suppliers	قیمت عمده {ITEM}
+goods_suppliers	آخرین قیمت خرید {ITEM}
+goods_suppliers	{ITEM} رو از کی میخریم
+goods_suppliers	ارزون‌ترین جا برای خرید {ITEM}
+goods_suppliers	قیمت خرید {ITEM} پیش بنکدارها رو مقایسه کن
+goods_suppliers	{ITEM} پیش کدام شرکت ارزان‌تر است
+goods_suppliers	سپلایر {ITEM} کیه
+goods_suppliers	آخرین بار {ITEM} رو چند آوردیم
+goods_buyers	{ITEM} رو کی خرید
+goods_buyers	کی {ITEM} برد
+goods_buyers	مشتری‌های {ITEM}
+goods_buyers	کیا {ITEM} میخرن
+goods_buyers	{ITEM} را کی‌ها خریده‌اند
+goods_buyers	{ITEM} دست کی رفت
+goods_buyers	{ITEM} رو به کی فروختیم
+goods_buyers	خریدارهای {ITEM} کیان
+goods_buyers	چه کسی {ITEM} را خرید
+goods_buyers	دیروز کی {ITEM} برد
+goods_buyers	{ITEM} ره کی خرید
+goods_buyers	به کیا {ITEM} دادیم
+goods_buyers	کی از من {ITEM} خریده
+goods_buyers	این ماه کیا {ITEM} خریدن
+goods_buyers	{ITEM} مشتریش کیه
+goods_sold	چقدر {ITEM} فروختیم
+goods_sold	{ITEM} امروز چند تا رفت
+goods_sold	فروش {ITEM} این ماه
+goods_sold	این هفته چقدر {ITEM} فروش رفت
+goods_sold	{ITEM} دیروز چقدر فروختیم
+goods_sold	ماه پیش چند تا {ITEM} فروختیم
+goods_sold	امروز چند دانه {ITEM} فروخته شد
+goods_sold	{ITEM} چقدر سودا شد امروز
+goods_sold	مقدار فروش {ITEM} هفته پیش
+goods_sold	از {ITEM} امروز چند تا دادیم
+goods_sold	{ITEM} این ماه چقدر فروش داشت
+goods_sold	فروش {ITEM} ماه گذشته چقدر بود
+goods_sold	امروز {ITEM} فروختیم اصلا
+goods_sold	{ITEM} این هفته چند تا رفته
+goods_sold	امروز چن تا {ITEM} فروش رفت
+shop_info	اسم مغازه چیه
+shop_info	نشانی مغازه
+shop_info	شماره مغازه
+shop_info	اطلاعات مغازه
+shop_info	نام دکان
+shop_info	آدرس دکان من
+shop_info	شماره تماس مغازه چنده
+shop_info	اسم مغازه‌ام تو برنامه چی ثبت شده
+shop_info	مشخصات فروشگاه
+shop_info	نمبر دکان
+shop_info	پروفایل مغازه
+shop_info	نام فروشگاه چیست
+shop_info	آدرس ثبت شده مغازه کجاست
+shop_info	مغازه به چه اسمی ثبته
+shop_info	جزئیات مغازه من
+count_customers	چند مشتری
+count_customers	مشتری‌هام چند تان
+count_customers	چند تا تامین‌کننده دارم
+count_customers	تعداد مشتری‌های من
+count_customers	چند نفر تو دفتر هستن
+count_customers	کل مشتری‌ها چند نفرن
+count_customers	چند تا مشتری ثبت شده
+count_customers	تعداد تامین‌کننده‌ها
+count_customers	چند مشتری دارم
+count_customers	چند تا بنکدار دارم
+count_customers	تعداد مشتریا چقدره
+count_customers	مشتری و تامین‌کننده روی هم چند تا
+count_customers	چند نفر مشتری داریم داداش
+count_customers	تعداد کل مشتریان من
+count_customers	چند تا اسم ثبت کردم
+count_products	چند کالا
+count_products	چند تا جنس دارم
+count_products	تعداد کالاها
+count_products	چند قلم کالا ثبت شده
+count_products	محصولاتم چند تان
+count_products	چند تا محصول داریم
+count_products	تعداد اجناس
+count_products	چند جنس دارم
+count_products	کل اقلام چند تاست
+count_products	چند نوع جنس تو مغازه هست
+count_products	چند تا آیتم دارم
+count_products	تعداد جنس‌های ثبت شده
+count_products	لیست کالاها چند قلمه
+count_products	چند تا دارو ثبت شده
+count_products	تعداد کل محصولات چقدر است
+bills_today	فاکتورهای خرید امروز
+bills_today	امروز چند تا بل خرید زدیم
+bills_today	فاکتور خرید دیروز چند تا بود
+bills_today	این هفته چند فاکتور تامین‌کننده ثبت شد
+bills_today	بل‌های تامین‌کننده امروز
+bills_today	جمع فاکتورهای خرید امروز چقدره
+bills_today	امروز فاکتور خریدی وارد شد
+bills_today	فاکتورهای بنکدار این ماه
+bills_today	هفته پیش چند فاکتور خرید داشتیم
+bills_today	بل‌های شرکت‌ها دیروز
+bills_today	ماه پیش چقدر فاکتور خرید ثبت شد
+bills_today	امروز چند بل سپلایر اضافه شد
+bills_today	مبلغ فاکتورهای خرید این هفته
+bills_today	فاکتور خرید امروز چن تا شد
+bills_today	صورت‌های خرید این ماه
+invoices_today	فاکتورهای امروز
+invoices_today	امروز چند فاکتور زدیم
+invoices_today	فاکتور فروش امروز چند تا شد
+invoices_today	دیروز چند تا فاکتور صادر شد
+invoices_today	این هفته چند فاکتور نوشتیم
+invoices_today	فاکتورهای مشتری این ماه
+invoices_today	امروز اصلا فاکتوری صادر شده
+invoices_today	اینویس‌های امروز
+invoices_today	ماه پیش چند فاکتور فروش داشتیم
+invoices_today	هفته پیش چند تا فاکتور دادیم
+invoices_today	امروز چند بل برای مشتری جور کردیم
+invoices_today	تعداد فاکتورهای امروز
+invoices_today	فاکتورهای صادره دیروز
+invoices_today	امروز برای مشتری‌ها چند صورت‌حساب زدم
+invoices_today	فاکتورهای این هفته چند تاست
+tickets_today	امروز چند تا رسید
+tickets_today	رسیدهای امروز
+tickets_today	امروز چند فیش صادر شد
+tickets_today	تعداد فیش‌های صندوق امروز
+tickets_today	دیروز چند رسید صادر کردیم
+tickets_today	امروز چند مشتری از صندوق رد شد
+tickets_today	امروز چند بار فروش نقدی پیشخوان زدیم
+tickets_today	تعداد رسیدهای این هفته
+tickets_today	فیش‌های دیروز چند تا بود
+tickets_today	امروز چند تا تیکت فروش داشتیم
+tickets_today	تعداد فروش کانتر امروز
+tickets_today	هفته پیش چند رسید پیشخوان زدیم
+tickets_today	امروز چن تا قبض زدیم
+tickets_today	ماه پیش چند فیش فروش صادر شد
+tickets_today	شمار رسیدهای کانتر امروز
+entries_today	ثبت‌های امروز
+entries_today	امروز چند ثبت
+entries_today	امروز چند تا یادداشت دفتری نوشتیم
+entries_today	تعداد ثبت‌های امروز دفتر
+entries_today	دیروز چند مورد وارد دفتر شد
+entries_today	این هفته چند ثبت داشتیم
+entries_today	امروز چند اینتری زدم
+entries_today	امروز چند قلم در کهاتا نوشته شد
+entries_today	تعداد ورودی‌های دفتر این ماه
+entries_today	هفته پیش چند تا ثبت کردیم
+entries_today	امروز چیزی تو دفتر نوشته شده
+entries_today	امروز چند بار تو دفتر نوشتم
+entries_today	ثبت‌های دفتر ماه پیش چند تا بود
+entries_today	امروز چند تا تراکنش دفتر ثبت شد
+entries_today	شمار ثبت‌های امروز
+calculator_uses	ماشین حساب امروز چند بار
+calculator_uses	امروز ماشین حساب باز شده
+calculator_uses	امروز چند تا حساب کتاب با ماشین حساب کردم
+calculator_uses	دیروز از ماشین حساب استفاده کردم
+calculator_uses	این هفته چند بار ماشین حساب زدم
+calculator_uses	امروز چند دفعه حساب کردم با ماشین حساب
+calculator_uses	تعداد استفاده از ماشین حساب امروز
+calculator_uses	کلکولیتر امروز چند بار باز شد
+calculator_uses	امروز کسی ماشین حساب رو باز کرده
+calculator_uses	ماه پیش چقدر از ماشین حساب استفاده شد
+calculator_uses	امروز چند بار ماشین حساب رو زدم
+calculator_uses	استفاده از ماشین حساب هفته پیش
+calculator_uses	امروز چند محاسبه انجام دادم
+calculator_uses	حساب‌گر امروز چند مرتبه استفاده شد
+calculator_uses	ماشین حساب دیروز چن بار
+app_opens	امروز چند بار اپ رو باز کردم
+app_opens	برنامه امروز چند بار باز شده
+app_opens	امروز چند دفعه اومدم تو برنامه
+app_opens	تعداد باز شدن برنامه امروز
+app_opens	دیروز چند بار اپ باز شد
+app_opens	این هفته چند بار برنامه رو باز کردم
+app_opens	امروز چند مرتبه برنامه را باز کرده‌ام
+app_opens	چند بار امروز وارد اپ شدم
+app_opens	امروز چند بار سر زدم به برنامه
+app_opens	ماه پیش چند بار برنامه باز شد
+app_opens	امروز زیاد برنامه رو باز کردم
+app_opens	تعداد ورود به برنامه هفته پیش
+app_opens	اپلیکیشن امروز چن بار باز شد
+app_opens	امروز چند دفعه برنامه ره واز کدم
+app_opens	دفعات باز کردن اپ این ماه
+cheques_status	چک‌ها
+cheques_status	چک برگشتی هم داریم
+cheques_status	چک‌های این هفته
+cheques_status	چک‌ها چه خبر
+cheques_status	چند تا چک وصول نشده داریم
+cheques_status	وضعیت چک‌ها چطوره
+cheques_status	چک‌های برگشت خورده
+cheques_status	چکی هست که امروز موعدش باشه
+cheques_status	کدوم چک‌ها پاس نشدن
+cheques_status	چک‌های مدت‌دار
+cheques_status	چند چک در جریان داریم
+cheques_status	چک‌هایی که سررسیدشان نزدیک شده
+cheques_status	چکی برگشت خورده
+cheques_status	حالت چک‌ها
+cheques_status	چک‌های پاس نشده چند تاست
+plans_status	قسط‌ها
+plans_status	اقساط
+plans_status	قسط امروز داریم
+plans_status	قسط‌ها چه خبر
+plans_status	چند تا طرح قسطی فعال داریم
+plans_status	قسط‌های عقب افتاده
+plans_status	این هفته قسط کی سررسیده
+plans_status	کدوم قسط‌ها پرداخت نشده
+plans_status	چند قسط مانده
+plans_status	قسط‌های این ماه
+plans_status	وضعیت اقساط چطور است
+plans_status	قسطی هست که موعدش گذشته باشه
+plans_status	پلان‌های قسطی
+plans_status	از قسط‌ها چقدر مانده
+plans_status	قسط‌های معوق چند تاست
+staff_salary	حقوق‌ها
+staff_salary	حقوق شاگردها
+staff_salary	معاش کارگرها داده شد
+staff_salary	شاگردها چقدر مساعده گرفتن
+staff_salary	حقوق کی مونده
+staff_salary	حقوق این ماه بچه‌ها
+staff_salary	این ماه چقدر حقوق باید بدم
+staff_salary	مساعده‌های کارمندان
+staff_salary	معاش کارمندان این ماه
+staff_salary	دستمزد کارگرها
+staff_salary	حقوق شاگرد پرداخت شده یا نه
+staff_salary	ماه پیش چقدر حقوق دادیم
+staff_salary	کدوم کارگر پیشکی گرفته
+staff_salary	تنخواه کارگران
+staff_salary	حقوق معوقه کارگرها چقدره
+deliveries	امروز چی رسید
+deliveries	بار امروز
+deliveries	امروز چه باری اومد
+deliveries	دیروز چه جنسی آمد
+deliveries	امروز جنس رسیده
+deliveries	این هفته از بنکدار چی اومد
+deliveries	جنس‌های وارده دیروز
+deliveries	این هفته چی تحویل گرفتیم
+deliveries	امروز سفارشی رسید
+deliveries	هفته پیش چه جنسی وارد انبار شد
+deliveries	ورودی‌های انبار این ماه
+deliveries	ماه پیش از شرکت‌ها چی تحویل گرفتیم
+deliveries	امروز چه مال آمد
+deliveries	تحویلی‌های امروز
+deliveries	امروز چی اومد تو انبار
+activity	امروز چی شد
+activity	امروز تو اپ چه خبر بود
+activity	کی امروز تو دفتر دست برد
+activity	امروز چیزی حذف شده
+activity	دیروز کی ثبت رو پاک کرد
+activity	امروز چی عوض شد
+activity	گزارش فعالیت امروز
+activity	کسی به حساب‌ها دست زده
+activity	دیروز چی پاک شد
+activity	امروز کی چه کار کرد
+activity	تغییرات این هفته
+activity	آخرین تغییرات برنامه
+activity	امروز چیزی ویرایش یا حذف شده
+activity	کی دفتر ره تغییر داده
+activity	امروز چه کارهایی در برنامه انجام شد
+backup_status	بکاپ
+backup_status	بکاپ داریم
+backup_status	آخرین پشتیبان کی گرفته شد
+backup_status	امروز بکاپ گرفته شد
+backup_status	بکاپ درسته
+backup_status	وضعیت بکاپ چطوره
+backup_status	آخرین نسخه پشتیبان مال کیه
+backup_status	از اطلاعاتم بکاپ هست
+backup_status	بکاپ شد یا نه
+backup_status	چند وقته بکاپ نگرفتم
+backup_status	نسخه پشتیبان امروز
+backup_status	بکاپ رفت رو درایو
+backup_status	آخرین بار کی ذخیره پشتیبان شد
+backup_status	بیکاپ گرفته شده یا نی
+backup_status	امروز پشتیبان گرفتیم
+book_summary	خلاصه دفترم
+book_summary	کل دفتر
+book_summary	حساب کلی دفتر
+book_summary	همه حساب‌هام
+book_summary	یه نمای کلی از دفتر بده
+book_summary	وضع کلی دفتر چطوره
+book_summary	خلاصه همه چی
+book_summary	وضعیت کلی من
+book_summary	جمع‌بندی کل حساب‌ها
+book_summary	کهاتای من
+book_summary	دفتر من چطوره در کل
+book_summary	کل اطلاعاتم تو برنامه
+book_summary	خلاصه کلی
+book_summary	حساب و کتاب کلی مغازه
+book_summary	کل دیتای من
+cashbook_today	هزینه‌ها
+cashbook_today	خرج امروز چقدر شد
+cashbook_today	امروز چقد خرج شد
+cashbook_today	ورودی و خروجی امروز
+cashbook_today	دفتر نقدی امروز
+cashbook_today	دیروز چقدر خرج کردیم
+cashbook_today	هزینه‌های این هفته
+cashbook_today	مصرف امروز چند است
+cashbook_today	امروز چقدر از صندوق رفت بیرون
+cashbook_today	دخل و خرج این ماه چقدر شد
+cashbook_today	خرج مغازه ماه پیش
+cashbook_today	امروز چی اومد چی رفت
+cashbook_today	این ماه چقدر برق و کرایه دادیم
+cashbook_today	گردش نقدی دیروز
+cashbook_today	خرج‌های خرد امروز
+returns_today	برگشتی‌های امروز
+returns_today	امروز برگشتی داشتیم
+returns_today	امروز چی برگشت
+returns_today	دیروز چقدر جنس برگشت خورد
+returns_today	مرجوعی این هفته
+returns_today	مرجوعی فروش این ماه
+returns_today	امروز کسی چیزی پس آورد
+returns_today	جنس‌های پس آمده دیروز
+returns_today	ارزش مرجوعی‌های امروز چقدره
+returns_today	ریترن امروز
+returns_today	مرجوعی‌های هفته پیش
+returns_today	امروز مشتری چیزی پس داد
+returns_today	برگشتی‌های ماه پیش
+returns_today	دیروز چند مرجوعی ثبت شد
+returns_today	امروز چه مال واپس آمد
+help_howto	چطور نسیه ثبت کنم
+help_howto	چجوری بکاپ بگیرم
+help_howto	چطور جنس جدید اضافه کنم
+help_howto	فاکتور چطوری بزنم
+help_howto	چطور یادآوری واتساپ بفرستم
+help_howto	تامین‌کننده جدید چطور اضافه میشه
+help_howto	چطور صورت حساب چاپ کنم
+help_howto	زبان رو چطور عوض کنم
+help_howto	گزارش‌ها کجاست
+help_howto	چطور یه ثبت رو حذف کنم
+help_howto	ثبت پاک شده رو چطور برگردونم
+help_howto	چطور برای برنامه رمز بذارم
+help_howto	چک رو چطور ثبت کنم
+help_howto	یاد بده چطور از صندوق استفاده کنم
+help_howto	چطور لینک حساب را برای مشتری بفرستم
+act_fly	پرواز کن هدهد
+act_fly	بال بزن
+act_fly	یه کم پرواز کن
+act_fly	نشون بده چطور پرواز میکنی
+act_fly	پرواز بلدی
+act_fly	یه دور بزن تو هوا
+act_fly	برو بالا پرواز کن
+act_fly	یالا پرواز
+act_fly	میتانی پرواز کنی
+act_fly	تو آسمون پرواز کن
+act_fly	پر بزن برو بالا
+act_fly	پرواز کن ببینیم
+act_fly	میشه جلوی من پرواز کنی
+act_fly	بال‌هاتو باز کن و پرواز کن
+act_fly	پرواز کو
+act_dance	برقص برام
+act_dance	یالا برقص
+act_dance	یه کم برقص
+act_dance	رقص بلدی
+act_dance	رقصتو نشون بده
+act_dance	یه رقص برامون بکن
+act_dance	میتانی برقصی
+act_dance	برقص عزیزم
+act_dance	قر بده
+act_dance	یه قر بده هدهد
+act_dance	برقص ببینیم
+act_dance	میخوام رقصتو ببینم
+act_dance	برقص داداش
+act_dance	لطفاً یه رقص
+act_dance	رقص کن
+act_jump	بپر هدهد
+act_jump	یه کم بپر
+act_jump	بپر هوا
+act_jump	بالا بپر
+act_jump	میتونی بالا بپری
+act_jump	یه حرکت بزن ببینیم
+act_jump	یه حرکت قشنگ نشون بده
+act_jump	یه پرش
+act_jump	یه جست بزن
+act_jump	پریدن بلدی
+act_jump	یالا بپر
+act_jump	پشتک بزن
+act_jump	دو بار بپر
+act_jump	یه شیرین‌کاری بکن
+act_jump	یک خیز بزن

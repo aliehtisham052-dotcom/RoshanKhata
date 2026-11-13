@@ -1065,16 +1065,16 @@
     <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
     <string name="hudhud_name">هُدهُد</string>
     <string name="hudhud_ask">هُدهُد کان پڇو…</string>
-    <string name="hudhud_hello">پنهنجي کاتي بابت پڇو. مان هن ئي فون تي توهان جي کاتي ۾ ڏسي ٻڌايان ٿو.</string>
+    <string name="hudhud_hello">پنهنجي کاتي بابت پڇو. هر جواب هن ئي فون تي توهان جي پنهنجي کاتي مان اچي ٿو.</string>
     <string name="hudhud_salaam_reply">وعليڪم السلام!</string>
     <string name="hudhud_listening">ٻڌي رهيو آهيان…</string>
     <string name="hudhud_thinking">کاتي ۾ ڏسي رهيو آهيان…</string>
     <string name="hudhud_speaking">ٻڌائي رهيو آهيان</string>
     <string name="hudhud_replay">ٻيهر ٻڌو</string>
-    <string name="hudhud_unknown">ان جو جواب اڃا مون کي نٿو اچي، مان رڳو توهان جو کاتو ڄاڻان ٿو. توهان پڇي سگهو ٿا:</string>
+    <string name="hudhud_unknown">هي توهان جي کاتي ۾ نه مليو. ان جي ويجهو سوال، جن جو جواب ڏئي سگهان ٿو، هيٺ آهن.</string>
     <string name="hudhud_owner_only">هي رقم رڳو مالڪ يا مئنيجر ڏسي سگهن ٿا.</string>
     <string name="hudhud_quiet">هوم تي بيلنس لڪيل آهي، تنهن ڪري مان رقم هتي لکان ٿو، ٻڌايان نٿو.</string>
-    <string name="hudhud_no_voice">هن فون ۾ هن ٻولي جو آواز ناهي، تنهن ڪري جواب هتي لکيل آهي.</string>
+    <string name="hudhud_no_voice">هن فون ۾ هن ٻوليءَ جو آواز ناهي. جواب هتي لکيل آهي؛ آواز جي سيٽنگن مان آواز وٺي سگهجي ٿو.</string>
     <string name="hudhud_voice_on">هُدهُد جو آواز چالو آهي</string>
     <string name="hudhud_voice_off">هُدهُد جو آواز بند آهي</string>
     <string name="hudhud_chip_backup">آخري بيڪ اپ ڪڏهن ٿيو؟</string>
@@ -4324,19 +4324,19 @@
     <string name="hudhud_voice_more">وڌيڪ آواز وٺو</string>
     <string name="hudhud_voice_none_here">هن فون ۾ اڃا هن ٻولي جو آواز ناهي. وڌيڪ آواز وٺو دٻائي مفت ڊائونلوڊ ڪريو.</string>
     <string name="hudhud_voice_try">ٻڌي ڏسو</string>
-    <string name="hudhud_voice_sample">السلام عليڪم! مان هُدهُد آهيان، توهان جي دڪان جو منشي. پنهنجي کاتي بابت ڪجهه به پڇو.</string>
+    <string name="hudhud_voice_sample">مان هُدهُد آهيان، توهان جي دڪان جو منشي. منهنجو آواز اهڙو آهي.</string>
     <string name="hudhud_listen_title">ٻڌڻ جو طريقو</string>
     <string name="hudhud_listen_box">هاڻي فون جو وائس سرچ دٻو استعمال ٿئي ٿو. مائيڪ جي اجازت ڏيو ته هُدهُد پاڻ ٻڌندو.</string>
     <string name="hudhud_listen_ready">هُدهُد پاڻ ٻڌي ٿو، انٽرنيٽ کان سواءِ به.</string>
     <string name="hudhud_listen_pack">هُدهُد انٽرنيٽ سان پاڻ ٻڌي ٿو. پنهنجي ٻولي ڊائونلوڊ ڪريو ته انٽرنيٽ کان سواءِ به ٻڌندو.</string>
     <string name="hudhud_listen_online">هُدهُد انٽرنيٽ سان پاڻ ٻڌي ٿو. هن فون ۾ هن ٻولي جو آف لائن پيڪ ناهي.</string>
     <string name="hudhud_settings">آواز جون سيٽنگون</string>
-    <string name="hudhud_chat_how">الحمدلله، مان بلڪل ٺيڪ آهيان، پڇڻ جي مهرباني! توهان جو کاتو مون وٽ محفوظ آهي. ٻڌايو، اڄ دڪان ڪيئن هلي رهيو آهي؟</string>
-    <string name="hudhud_chat_who">مان هُدهُد آهيان، توهان جي دڪان جو منشي. هن ئي فون تي توهان جي کاتي ۾ ڏسي لکي به ٻڌايان ٿو ۽ ڳالهائي به. پڇو: توهان ڇا ٻڌائي سگهو ٿا؟</string>
-    <string name="hudhud_chat_thanks">ڪا ڳالهه ناهي! جڏهن ضرورت هجي، مان حاضر آهيان.</string>
-    <string name="hudhud_chat_bye">الله حافظ! توهان جو کاتو هتي ئي محفوظ آهي.</string>
-    <string name="hudhud_chat_praise">مهرباني! محنت ته توهان جي آهي، مان ته رڳو حساب رکان ٿو.</string>
-    <string name="hudhud_chat_fine">ماشاءالله، ٻڌي خوشي ٿي! ٻڌايو، اڄ ڇا ڏسون؟</string>
+    <string name="hudhud_chat_how">الحمدلله، سڀ ٺيڪ آهي، مهرباني. جيڪو ڏسڻو هجي، پڇو.</string>
+    <string name="hudhud_chat_who">مان هُدهُد آهيان، توهان جي دڪان جو منشي. هن ئي فون تي توهان جو کاتو ڏسي لکي ۽ ڳالهائي جواب ڏيان ٿو.</string>
+    <string name="hudhud_chat_thanks">ڪا ڳالهه ناهي.</string>
+    <string name="hudhud_chat_bye">خدا حافظ. توهان جو کاتو هن ئي فون تي محفوظ آهي.</string>
+    <string name="hudhud_chat_praise">مهرباني.</string>
+    <string name="hudhud_chat_fine">ٻڌي خوشي ٿي. جيڪو ڏسڻو هجي، پڇو.</string>
     <string name="hudhud_can_intro">توهان جي کاتي مان هي سڀ ٻڌائي سگهان ٿو:</string>
     <string name="hudhud_can_dues">ڪنهن توهان کي ڏيڻو آهي، توهان ڪنهن کي ڏيڻو آهي، ۽ ڪنهن جو به بقايا: رڳو نالو چئو</string>
     <string name="hudhud_can_sales">وڪرو ۽ نفعو: اڄ، ڪالهه، هن هفتي، هن مهيني يا گذريل مهيني</string>
@@ -4344,12 +4344,10 @@
     <string name="hudhud_can_pay">اڄ ڪير پئسا ڏيندو، ۽ ڪو گراهڪ عام طور ڪڏهن ڏيندو آهي</string>
     <string name="hudhud_can_entry">داخلا چئي (“علي کي 500 ڏنا”): مان فارم ڀري ڏيان ٿو، محفوظ ڪريو توهان دٻايو ٿا</string>
     <string name="hudhud_can_more">آخري بيڪ اپ ڪڏهن ٿيو، ۽ ايپ جو ڪو به حصو ڪيئن هلائجي</string>
-    <string name="hudhud_can_chat">۽ ٿوري ڪچهري: منهنجو حال پڇو!</string>
-    <string name="hudhud_can_spoken">مان توهان لاءِ هي سڀ ڪري سگهان ٿو، پوري فهرست هيٺ آهي. ڪو سوال دٻايو، يا رڳو مون کان پڇو.</string>
+    <string name="hudhud_can_chat">سلام دعا ۽ مختصر ڳالهه ٻولهه</string>
     <string name="hudhud_chip_abilities">توهان ڇا ٻڌائي سگهو ٿا؟</string>
     <string name="hudhud_greet_named">%1$s، %2$s!</string>
     <string name="hudhud_more_on_screen">باقي اسڪرين تي لکيل آهي.</string>
-    <string name="hudhud_unknown_try">مون کان پڇو “توهان ڇا ٻڌائي سگهو ٿا؟” ته مان سڀ ڪجهه ڏيکاري ڇڏيندس.</string>
 
     <!-- Hudhud Brain v2 (13 Nov 2026): a customer's and an item's facts, the shop, the day, counts, where things stand, what happened. -->
     <string name="hudhud_l_balance">بيلنس</string>
@@ -4396,7 +4394,7 @@
     <string name="hudhud_about_version">روشن کاتو جو ورزن %1$s.</string>
     <string name="hudhud_owner_unnamed">توهان اڃا مون کي پنهنجو نالو نه ٻڌايو آهي. منهنجي آواز جي سيٽنگن ۾ لکي ڇڏيو، مان توهان کي ان ئي نالي سان سڏيندس.</string>
     <string name="hudhud_owner_named">مان توهان کي %1$s سڏيان ٿو. منهنجي آواز جي سيٽنگن ۾ اهو بدلائي سگهو ٿا.</string>
-    <string name="hudhud_intro">مان هُدهُد آهيان، توهان جي دڪان جو منشي. پنهنجي کاتي بابت ڪجهه به پڇو — ڳالهائي يا لکي.</string>
+    <string name="hudhud_intro">مان هُدهُد آهيان، توهان جي دڪان جو منشي. پنهنجي کاتي بابت ڳالهائي يا لکي پڇو.</string>
     <string name="hudhud_l_islamic">اسلامي تاريخ</string>
     <string name="hudhud_l_time">وقت</string>
     <string name="hudhud_hijri_note">هي ڪئلينڊر مان ڪڍي وئي آهي؛ چنڊ جي حساب سان هڪ ڏينهن جو فرق ٿي سگهي ٿو.</string>
@@ -4432,8 +4430,6 @@
     <string name="hudhud_t_collected">وصول ٿيل رقم</string>
     <string name="hudhud_l_from_customers">گراهڪن کان</string>
     <string name="hudhud_l_cashbook_in">روڪڙ ڪتاب جي آمدني</string>
-    <string name="hudhud_need_name">ڪنهن جو؟ نالي سان پڇو — جيئن “علي جو نمبر”.</string>
-    <string name="hudhud_did_you_mean">ڇا توهان جو مطلب آهي:</string>
     <string name="hudhud_can_people">ڪنهن گراهڪ جو نمبر، آخري ادائيگي، حد يا واعدو — نالو وٺي پڇو</string>
     <string name="hudhud_can_goods">ڪنهن شيءِ جي قيمت، اسٽاڪ، خريد ريٽ ۽ ڪهڙي سپلائر جو سستو آهي</string>
     <string name="hudhud_can_book">اڄ جون انوائسون، آيل مال، آيل رقم، ۽ ڪنهن ڇا بدلايو</string>
@@ -4454,4 +4450,37 @@
     <string name="hudhud_chip_book">منهنجو کاتو</string>
     <string name="hudhud_chip_activity">اڄ ڇا ڇا ٿيو</string>
     <string name="hudhud_chip_collected">اڄ ڪيتري رقم آئي</string>
+    <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
+    <string name="hudhud_took_as">سمجهيو: %1$s</string>
+    <string name="hudhud_act_fly">ڏسو، مان اڏامان ٿو.</string>
+    <string name="hudhud_act_dance">ڏسو، منهنجو ناچ.</string>
+    <string name="hudhud_act_jump">ڏسو، مان ٽپا ڏيان ٿو.</string>
+    <string name="hudhud_chat_can_talk">جي، مان ٻڌي رهيو آهيان. پنهنجو سوال پڇو.</string>
+    <string name="hudhud_chat_address">جي، فرمايو.</string>
+    <string name="hudhud_chat_address_named">جي %1$s، فرمايو.</string>
+    <string name="hudhud_salaam_reply_named">وعليڪم السلام، %1$s!</string>
+    <string name="hudhud_need_phone">تازن گراهڪن جا نمبر</string>
+    <string name="hudhud_need_payment">تازن گراهڪن جي پوئين ادائيگي</string>
+    <string name="hudhud_need_limit">تازن گراهڪن جي اڌار جي حد</string>
+    <string name="hudhud_need_promise">تازن گراهڪن جا واعدي جا ڏينهن</string>
+    <string name="hudhud_need_recent">تازا گراهڪ</string>
+    <string name="hudhud_need_hint">ڪنهن هڪ گراهڪ لاءِ نالو به چئو: “علي جو نمبر”.</string>
+    <string name="hudhud_no_phone_short">نمبر ناهي</string>
+    <string name="hudhud_t_cashbook">روڪڙ</string>
+    <string name="hudhud_cashbook_none">هن عرصي ۾ روڪڙ ۾ ڪجهه به نه لکيو ويو.</string>
+    <string name="hudhud_l_net">خالص</string>
+    <string name="hudhud_t_returns">واپسي</string>
+    <string name="hudhud_returns_none">هن عرصي ۾ ڪو مال واپس نه آيو.</string>
+    <string name="hudhud_l_returned_worth">واپس آيل مال جي قيمت</string>
+    <string name="hudhud_l_refunded">واپس ڏنل رقم</string>
+    <string name="hudhud_l_total">ڪل</string>
+    <string name="hudhud_l_since_counting">ڳڻپ شروع ٿيڻ کان وٺي</string>
+    <string name="hudhud_count_none">هن عرصي ۾ ڪو به نه.</string>
+    <string name="hudhud_none_yet">اڃا ڪو به نه.</string>
+    <string name="hudhud_chip_cashbook">اڄ جي روڪڙ</string>
+    <string name="hudhud_chip_returns">اڄ جي واپسي</string>
+    <string name="hudhud_voice_fallback">هن فون ۾ %1$s آواز ناهي، تنهنڪري هُدهُد %2$s ۾ ڳالهائي ٿو. آواز جي سيٽنگن مان فون جو پنهنجو آواز وٺي سگهجي ٿو.</string>
+    <string name="hudhud_style_professional">پروفيشنل</string>
+    <string name="hudhud_name_say">هو پنهنجو نالو ڪيئن چوي</string>
+    <string name="hudhud_name_say_help">جيڪڏهن هن فون جي آواز ۾ هن جو نالو صحيح نه لڳي ته ٻيو طريقو چونڊيو. هر طريقو چونڊڻ سان ٻڌڻ ۾ اچي ٿو.</string>
 </resources>

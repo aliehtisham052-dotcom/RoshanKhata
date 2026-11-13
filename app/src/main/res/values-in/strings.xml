@@ -1055,16 +1055,16 @@
     <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
     <string name="hudhud_name">Hudhud</string>
     <string name="hudhud_ask">Tanya Hudhud…</string>
-    <string name="hudhud_hello">Tanyakan tentang buku Anda. Saya mencarinya di buku Anda sendiri, di ponsel ini.</string>
+    <string name="hudhud_hello">Tanyakan tentang buku Anda. Setiap jawaban berasal dari buku Anda sendiri, di ponsel ini.</string>
     <string name="hudhud_salaam_reply">Waalaikumsalam!</string>
     <string name="hudhud_listening">Mendengarkan…</string>
     <string name="hudhud_thinking">Mencari di buku Anda…</string>
     <string name="hudhud_speaking">Berbicara</string>
     <string name="hudhud_replay">Dengar lagi</string>
-    <string name="hudhud_unknown">Saya belum bisa menjawab ini, saya hanya mengenal buku Anda. Anda bisa bertanya:</string>
+    <string name="hudhud_unknown">Ini tidak saya temukan di buku Anda. Pertanyaan terdekat yang bisa saya jawab ada di bawah.</string>
     <string name="hudhud_owner_only">Angka ini hanya bisa dilihat pemilik atau manajer.</string>
     <string name="hudhud_quiet">Saldo disembunyikan di Beranda, jadi jumlahnya saya tulis di sini tanpa diucapkan.</string>
-    <string name="hudhud_no_voice">Ponsel ini tidak punya suara untuk bahasa ini, jadi jawabannya ditulis di sini.</string>
+    <string name="hudhud_no_voice">Ponsel ini tidak punya suara untuk bahasa ini. Jawabannya tertulis di sini; suara bisa diunduh di Pengaturan suara.</string>
     <string name="hudhud_voice_on">Suara Hudhud aktif</string>
     <string name="hudhud_voice_off">Suara Hudhud mati</string>
     <string name="hudhud_chip_backup">Kapan cadangan terakhir?</string>
@@ -4273,19 +4273,19 @@
     <string name="hudhud_voice_more">Ambil suara lain</string>
     <string name="hudhud_voice_none_here">Ponsel ini belum punya suara untuk bahasa ini. Ketuk Ambil suara lain untuk mengunduhnya gratis.</string>
     <string name="hudhud_voice_try">Dengar contoh</string>
-    <string name="hudhud_voice_sample">Halo! Saya Hudhud, juru tulis toko Anda. Tanyakan apa saja tentang buku Anda.</string>
+    <string name="hudhud_voice_sample">Saya Hudhud, juru tulis toko Anda. Beginilah suara saya.</string>
     <string name="hudhud_listen_title">Cara mendengar</string>
     <string name="hudhud_listen_box">Saat ini memakai kotak pencarian suara ponsel. Izinkan mikrofon agar Hudhud mendengar sendiri.</string>
     <string name="hudhud_listen_ready">Hudhud mendengar sendiri, bahkan tanpa internet.</string>
     <string name="hudhud_listen_pack">Hudhud mendengar sendiri saat ada internet. Unduh bahasa Anda agar ia juga mendengar tanpa internet.</string>
     <string name="hudhud_listen_online">Hudhud mendengar sendiri selama ada internet. Ponsel ini tidak punya paket offline untuk bahasa ini.</string>
     <string name="hudhud_settings">Pengaturan suara</string>
-    <string name="hudhud_chat_how">Saya baik sekali, terima kasih sudah bertanya! Buku Anda aman bersama saya. Bagaimana toko hari ini?</string>
-    <string name="hudhud_chat_who">Saya Hudhud, juru tulis toko Anda. Saya mencari di buku Anda di ponsel ini dan memberi tahu Anda, tertulis maupun dengan suara. Tanyakan: Apa yang bisa Anda lakukan?</string>
-    <string name="hudhud_chat_thanks">Sama-sama! Saya ada kapan pun Anda perlu.</string>
-    <string name="hudhud_chat_bye">Sampai jumpa! Buku Anda tetap aman di sini.</string>
-    <string name="hudhud_chat_praise">Terima kasih! Kerja kerasnya milik Anda; saya hanya mencatat.</string>
-    <string name="hudhud_chat_fine">Senang mendengarnya! Kita lihat apa hari ini?</string>
+    <string name="hudhud_chat_how">Alhamdulillah, semua baik, terima kasih. Silakan tanyakan apa yang perlu Anda cek.</string>
+    <string name="hudhud_chat_who">Saya Hudhud, juru tulis toko Anda. Saya membaca buku Anda di ponsel ini dan menjawab secara tertulis maupun dengan suara.</string>
+    <string name="hudhud_chat_thanks">Sama-sama.</string>
+    <string name="hudhud_chat_bye">Sampai jumpa. Buku Anda tetap aman di ponsel ini.</string>
+    <string name="hudhud_chat_praise">Terima kasih.</string>
+    <string name="hudhud_chat_fine">Senang mendengarnya. Silakan tanyakan apa yang perlu Anda cek.</string>
     <string name="hudhud_can_intro">Ini yang bisa saya sampaikan dari buku Anda:</string>
     <string name="hudhud_can_dues">Siapa berutang kepada Anda, kepada siapa Anda berutang, dan saldo siapa pun: cukup sebut namanya</string>
     <string name="hudhud_can_sales">Penjualan dan laba: hari ini, kemarin, minggu ini, bulan ini atau bulan lalu</string>
@@ -4293,12 +4293,10 @@
     <string name="hudhud_can_pay">Siapa yang akan membayar hari ini, dan kapan pelanggan biasanya membayar</string>
     <string name="hudhud_can_entry">Catatan, diucapkan seperti terjadi (“kasih Ali 500”): saya isi formulirnya, Anda tekan Simpan</string>
     <string name="hudhud_can_more">Cadangan terakhir Anda, dan cara memakai bagian mana pun dari aplikasi</string>
-    <string name="hudhud_can_chat">Dan sedikit ngobrol: tanyakan kabar saya!</string>
-    <string name="hudhud_can_spoken">Ini yang bisa saya lakukan untuk Anda; semuanya ada di bawah. Ketuk pertanyaan, atau tanyakan saja.</string>
+    <string name="hudhud_can_chat">Salam dan obrolan singkat</string>
     <string name="hudhud_chip_abilities">Apa yang bisa Anda lakukan?</string>
     <string name="hudhud_greet_named">%1$s, %2$s!</string>
     <string name="hudhud_more_on_screen">Selebihnya tertulis di layar.</string>
-    <string name="hudhud_unknown_try">Tanyakan “Apa yang bisa Anda lakukan?” dan saya tunjukkan semua yang saya tahu.</string>
 
     <!-- Hudhud Brain v2 (13 Nov 2026): a customer's and an item's facts, the shop, the day, counts, where things stand, what happened. -->
     <string name="hudhud_l_balance">Saldo</string>
@@ -4345,7 +4343,7 @@
     <string name="hudhud_about_version">Roshan Khata versi %1$s.</string>
     <string name="hudhud_owner_unnamed">Anda belum memberi tahu nama Anda. Tulis di pengaturan suara saya, dan saya akan menyapa Anda dengan nama itu.</string>
     <string name="hudhud_owner_named">Saya memanggil Anda %1$s. Anda bisa mengubahnya di pengaturan suara saya.</string>
-    <string name="hudhud_intro">Saya Hudhud, juru tulis toko Anda. Tanyakan apa saja tentang buku Anda — dengan suara atau ketikan.</string>
+    <string name="hudhud_intro">Saya Hudhud, juru tulis toko Anda. Tanyakan tentang buku Anda, dengan suara atau ketikan.</string>
     <string name="hudhud_l_islamic">Tanggal Hijriah</string>
     <string name="hudhud_l_time">Waktu</string>
     <string name="hudhud_hijri_note">Dihitung dengan kalender; menurut rukyat bisa berbeda satu hari.</string>
@@ -4381,8 +4379,6 @@
     <string name="hudhud_t_collected">Uang yang masuk</string>
     <string name="hudhud_l_from_customers">Dari pelanggan</string>
     <string name="hudhud_l_cashbook_in">Pemasukan buku kas</string>
-    <string name="hudhud_need_name">Milik siapa? Tanyakan dengan namanya — misalnya “nomor Ali”.</string>
-    <string name="hudhud_did_you_mean">Maksud Anda:</string>
     <string name="hudhud_can_people">Nomor pelanggan, pembayaran terakhir, batas, atau janjinya — tanyakan dengan namanya</string>
     <string name="hudhud_can_goods">Harga barang, stok, harga beli, dan pemasok mana yang lebih murah</string>
     <string name="hudhud_can_book">Faktur hari ini, barang masuk, uang masuk, dan siapa mengubah apa</string>
@@ -4403,4 +4399,37 @@
     <string name="hudhud_chip_book">Buku saya</string>
     <string name="hudhud_chip_activity">Apa yang terjadi hari ini</string>
     <string name="hudhud_chip_collected">Uang masuk hari ini</string>
+    <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
+    <string name="hudhud_took_as">Saya pahami sebagai: %1$s</string>
+    <string name="hudhud_act_fly">Lihat, saya terbang.</string>
+    <string name="hudhud_act_dance">Lihat, saya menari.</string>
+    <string name="hudhud_act_jump">Lihat, saya melompat.</string>
+    <string name="hudhud_chat_can_talk">Ya, saya mendengar Anda. Silakan ajukan pertanyaan Anda.</string>
+    <string name="hudhud_chat_address">Ya, ada yang bisa saya bantu?</string>
+    <string name="hudhud_chat_address_named">Ya, %1$s. Ada yang bisa saya bantu?</string>
+    <string name="hudhud_salaam_reply_named">Waalaikumsalam, %1$s!</string>
+    <string name="hudhud_need_phone">Nomor pelanggan terbaru</string>
+    <string name="hudhud_need_payment">Pembayaran terakhir pelanggan terbaru</string>
+    <string name="hudhud_need_limit">Batas kredit pelanggan terbaru</string>
+    <string name="hudhud_need_promise">Tanggal janji pelanggan terbaru</string>
+    <string name="hudhud_need_recent">Pelanggan terbaru</string>
+    <string name="hudhud_need_hint">Untuk satu pelanggan, sebutkan namanya: “nomor Ali”.</string>
+    <string name="hudhud_no_phone_short">Tanpa nomor</string>
+    <string name="hudhud_t_cashbook">Buku Kas</string>
+    <string name="hudhud_cashbook_none">Tidak ada yang dicatat di Buku Kas dalam waktu ini.</string>
+    <string name="hudhud_l_net">Bersih</string>
+    <string name="hudhud_t_returns">Retur</string>
+    <string name="hudhud_returns_none">Tidak ada barang yang dikembalikan dalam waktu ini.</string>
+    <string name="hudhud_l_returned_worth">Nilai barang yang dikembalikan</string>
+    <string name="hudhud_l_refunded">Uang dikembalikan</string>
+    <string name="hudhud_l_total">Total</string>
+    <string name="hudhud_l_since_counting">Sejak mulai dihitung</string>
+    <string name="hudhud_count_none">Tidak ada dalam waktu ini.</string>
+    <string name="hudhud_none_yet">Belum ada.</string>
+    <string name="hudhud_chip_cashbook">Buku Kas hari ini</string>
+    <string name="hudhud_chip_returns">Retur hari ini</string>
+    <string name="hudhud_voice_fallback">Ponsel ini tidak punya suara %1$s, jadi Hudhud berbicara dalam %2$s. Suara ponsel bisa diunduh di Pengaturan suara.</string>
+    <string name="hudhud_style_professional">Profesional</string>
+    <string name="hudhud_name_say">Cara dia menyebut namanya</string>
+    <string name="hudhud_name_say_help">Jika namanya terdengar salah dengan suara ponsel ini, pilih cara lain. Setiap cara terdengar saat dipilih.</string>
 </resources>

@@ -1,0 +1,650 @@
+who_are_you	kamu siapa
+who_are_you	siapa namamu
+who_are_you	nama kamu siapa ya
+who_are_you	perkenalkan dirimu
+who_are_you	ini siapa
+who_are_you	boleh tahu nama Anda
+who_are_you	namanya siapa
+who_are_you	aku harus panggil kamu apa
+who_are_you	sebenarnya kamu ini siapa sih
+who_are_you	tolong perkenalkan diri dulu
+abilities	kamu bisa apa saja
+abilities	apa yang bisa kamu kasih tahu
+abilities	kamu tahu sesuatu nggak sih
+abilities	kamu tahu apa saja
+abilities	bagaimana kamu bisa bantu saya
+abilities	kamu gunanya untuk apa
+abilities	tolong sebutkan apa saja yang bisa saya tanyakan
+abilities	bisa bantu apa aja nih
+abilities	kamu jagonya apa
+abilities	pertanyaan apa saja yang bisa kamu jawab
+how_are_you	apa kabar
+how_are_you	gimana kabarmu
+how_are_you	kamu baik-baik saja
+how_are_you	sehat kan
+how_are_you	apa kabar hari ini
+how_are_you	kabar baik nggak
+how_are_you	bagaimana kabar Anda
+how_are_you	lagi gimana nih kabarnya
+how_are_you	kamu sehat
+how_are_you	baik-baik aja kan kamu
+can_talk	kamu bisa ngobrol sama saya
+can_talk	kamu dengar saya nggak
+can_talk	kamu ada di situ
+can_talk	kamu lagi dengerin kan
+can_talk	apakah Anda bisa mendengar saya
+can_talk	mau ngobrol sama aku nggak
+can_talk	kamu bisa bicara
+can_talk	masih di situ kan
+can_talk	suara saya kedengaran nggak
+can_talk	ada orang nggak, bisa ngomong sama saya
+address	Bang
+address	Pak
+address	hei Hudhud
+address	dengar
+address	kak
+address	Hudhud
+address	Bang Hudhud
+address	hei Bang
+address	Mas
+address	eh dengar dulu
+salaam	assalamualaikum
+salaam	salam
+salaam	assalamualaikum Hudhud
+salaam	assalamualaikum Bang
+salaam	assalamualaikum warahmatullah
+salaam	salam alaikum
+salaam	assalamualaikum warahmatullahi wabarakatuh
+salaam	salam Hudhud
+salaam	assalamualaikum Pak
+salaam	samlekum
+hello	halo
+hello	hai
+hello	selamat pagi
+hello	halo Hudhud
+hello	selamat siang
+hello	selamat sore
+hello	selamat malam
+hello	hai Hudhud
+hello	halo halo
+hello	pagi
+thanks	terima kasih
+thanks	makasih
+thanks	terima kasih banyak
+thanks	makasih ya
+thanks	thanks
+thanks	oke makasih
+thanks	terima kasih Hudhud
+thanks	makasih banyak Bang
+thanks	terima kasih atas bantuannya
+thanks	trims ya
+bye	dadah
+bye	selamat tinggal
+bye	sampai jumpa
+bye	oke dah Hudhud
+bye	sampai nanti
+bye	sampai besok ya
+bye	bye bye
+bye	saya pergi dulu ya
+bye	duluan ya Bang
+bye	sampai ketemu lagi
+praise	bagus
+praise	kamu hebat
+praise	bagus sekali
+praise	mantap
+praise	kerja bagus Hudhud
+praise	pintar banget kamu
+praise	keren, kerjamu bagus
+praise	wah kamu luar biasa
+praise	sip mantap Bang
+praise	kamu memang pembantu terbaik
+owner_name	siapa nama saya
+owner_name	kamu tahu saya siapa
+owner_name	kamu panggil saya apa
+owner_name	sebutkan nama saya
+owner_name	namaku siapa
+owner_name	saya ini siapa
+owner_name	tahu nama aku nggak
+owner_name	coba sebut nama saya dong
+owner_name	kamu kenal saya kan, nama saya siapa
+owner_name	dengan nama apa kamu mengenal saya
+maker	siapa yang membuat kamu
+maker	perusahaan mana yang membuat aplikasi ini
+maker	siapa yang bikin aplikasi ini
+maker	siapa pembuatmu
+maker	kamu dibuat sama siapa
+maker	aplikasi ini buatan siapa
+maker	tolong kasih tahu siapa pengembang aplikasi ini
+maker	siapa di balik aplikasi ini ya
+maker	yang bikin kamu siapa sih
+maker	pembuat aplikasi ini siapa
+app_about	aplikasi ini apa
+app_about	ceritakan tentang Roshan Khata
+app_about	apa itu Roshan Khata
+app_about	aplikasi ini untuk apa
+app_about	aplikasi ini gunanya apa
+app_about	tolong jelaskan aplikasi ini
+app_about	Roshan Khata itu apa sih
+app_about	ini aplikasi jenis apa
+app_about	kasih info tentang aplikasi ini dong
+app_about	tentang aplikasi ini gimana
+privacy	apakah data saya aman
+privacy	data saya disimpan di mana
+privacy	data aku aman nggak di aplikasi ini
+privacy	siapa saja yang bisa lihat data saya
+privacy	data saya aman kan
+privacy	apa data saya dikirim ke server
+privacy	tolong kasih tahu data toko saya disimpan di mana
+privacy	orang lain bisa baca buku utang saya nggak
+privacy	apakah informasi saya rahasia
+privacy	privasi data gimana, aman nggak ya
+languages	kamu mengerti bahasa apa saja
+languages	kamu bisa bahasa apa
+languages	berapa bahasa yang kamu tahu
+languages	kamu ngerti bahasa Indonesia
+languages	cuma bahasa Indonesia atau bahasa lain juga bisa
+languages	bahasa yang kamu bisa apa aja
+languages	saya bisa ngomong pakai bahasa apa sama kamu
+languages	kamu paham bahasa apa sih
+languages	bahasa Inggris dan Arab bisa juga nggak
+languages	tolong sebutkan bahasa yang didukung
+date_time	tanggal berapa hari ini
+date_time	jam berapa sekarang
+date_time	hari ini hari apa
+date_time	tanggal hari ini dong
+date_time	sekarang jam brp
+date_time	jam berapa ya sekarang
+date_time	tolong kasih tahu hari dan tanggal sekarang
+date_time	hari ini hari Jumat bukan
+date_time	tanggal Hijriah hari ini berapa
+date_time	tanggal dan jam sekarang
+today_summary	ringkasan hari ini
+today_summary	apa yang masih tertunda hari ini
+today_summary	hari ini saya harus ngapain
+today_summary	kasih rangkuman hari ini dong
+today_summary	ada yang perlu saya perhatikan hari ini
+today_summary	hari ini ada kerjaan apa buat saya
+today_summary	tolong sebutkan hal penting hari ini
+today_summary	apa yang perlu dicek hari ini ya
+today_summary	rangkuman untuk hari ini
+today_summary	oke hari ini ada apa saja
+sales_today	berapa penjualan hari ini
+sales_today	penjualan hari ini
+sales_today	hari ini saya jual berapa
+sales_today	hari ini laku berapa
+sales_today	tolong kasih tahu total penjualan hari ini
+sales_today	penjualan hari ini brp
+sales_today	total jualan hari ini
+sales_today	hari ini kita jual berapa Bang
+sales_today	omzet hari ini
+sales_today	jualan hari ini sudah berapa ya
+sales_period	berapa penjualan kemarin
+sales_period	penjualan minggu ini
+sales_period	minggu lalu penjualannya berapa
+sales_period	bulan ini penjualan brp
+sales_period	tolong total penjualan bulan lalu
+sales_period	bulan ini saya jual berapa
+sales_period	penjualan kemarin dong
+sales_period	penjualan bulan lalu
+sales_period	minggu ini laku berapa ya
+sales_period	total jualan minggu lalu
+profit	berapa laba bulan ini
+profit	laba saya berapa
+profit	untung hari ini
+profit	bulan lalu untungnya berapa
+profit	minggu ini saya dapat untung brp
+profit	tolong kasih tahu keuntungan bulan ini
+profit	laba kemarin
+profit	minggu lalu laba saya berapa
+profit	bulan ini untung nggak ya
+profit	keuntungan bulan ini berapa
+to_get	berapa total uang yang harus saya terima
+to_get	total piutang
+to_get	pelanggan utang berapa ke saya semuanya
+to_get	berapa total yang harus ditagih dari pelanggan
+to_get	total uang saya di luar berapa
+to_get	tolong total piutang saya berapa
+to_get	piutang ke pelanggan yang belum lunas berapa
+to_get	semua pelanggan total utangnya berapa ke toko
+to_get	total yang harus diterima
+to_get	berapa yang bakal saya terima dari orang-orang ya
+to_give	berapa total uang yang harus saya bayar
+to_give	total utang saya
+to_give	saya utang berapa ke orang lain
+to_give	total utang saya ke pemasok berapa
+to_give	tolong total utang toko berapa
+to_give	total yang harus dibayar
+to_give	berapa yang harus saya bayar ke orang
+to_give	jumlah semua utang saya
+to_give	utang aku totalnya berapa ya
+to_give	semuanya toko harus bayar berapa
+who_owes_most	siapa yang paling banyak utang ke saya
+who_owes_most	pelanggan mana yang utangnya paling besar
+who_owes_most	siapa yang saldonya paling tinggi
+who_owes_most	pengutang terbesar siapa
+who_owes_most	pelanggan mana paling banyak utang
+who_owes_most	tolong sebutkan pelanggan dengan utang terbesar
+who_owes_most	utang siapa yang paling gede
+who_owes_most	piutang terbesar ada di siapa
+who_owes_most	utang paling besar ada di pelanggan mana ya
+who_owes_most	tampilkan siapa yang paling banyak utang
+not_paid	siapa yang belum bayar
+not_paid	siapa saja yang telat bayar
+not_paid	pelanggan mana yang belum bayar
+not_paid	siapa yang terlambat membayar
+not_paid	tolong daftar orang yang belum bayar
+not_paid	siapa aja yang nggak bayar-bayar
+not_paid	pembayaran siapa yang sudah lewat jatuh tempo
+not_paid	yang nunggak siapa saja
+not_paid	pelanggan mana yang telat bayar ya
+not_paid	siapa yang sudah lama tidak bayar
+likely_payers	siapa yang akan bayar hari ini
+likely_payers	siapa yang kemungkinan bayar hari ini
+likely_payers	siapa yang biasanya bayar sekitar sekarang
+likely_payers	pelanggan mana yang mungkin bayar hari ini
+likely_payers	dari siapa saya bisa harap pembayaran hari ini
+likely_payers	tolong kasih tahu siapa yang bakal bayar hari ini
+likely_payers	siapa yang biasa bayar hari-hari ini
+likely_payers	hari ini siapa yang mau bayar
+likely_payers	ada pelanggan yang diperkirakan bayar hari ini nggak ya
+likely_payers	pembayaran siapa yang kemungkinan masuk sekarang
+collected	berapa uang yang diterima hari ini
+collected	hari ini saya nagih dapat berapa
+collected	pembayaran yang diterima kemarin
+collected	minggu ini berapa pembayaran pelanggan yang masuk
+collected	tagihan terkumpul bulan ini brp
+collected	minggu lalu terkumpul berapa
+collected	tolong uang yang diterima bulan lalu berapa
+collected	hari ini pembayaran masuk berapa
+collected	total penagihan hari ini ya
+collected	uang diterima dari pelanggan bulan ini
+drawer	berapa uang di laci
+drawer	kas di tangan
+drawer	harusnya uang di laci berapa
+drawer	saya mau tutup hari
+drawer	hitung uang kas
+drawer	uang laci brp
+drawer	tolong uang tunai di tangan sekarang berapa
+drawer	mau tutup toko, uang di laci ada berapa
+drawer	uang di laci kasir berapa ya
+drawer	saldo laci kas
+expiring	apa yang mau kedaluwarsa
+expiring	barang mana yang hampir kedaluwarsa
+expiring	ada barang yang kedaluwarsa bulan ini
+expiring	tampilkan barang yang sebentar lagi expired
+expiring	stok dekat kedaluwarsa
+expiring	tolong produk mana yang mau habis masa berlakunya
+expiring	barang apa yang mau expired
+expiring	ada yang mau kedaluwarsa nggak ya
+expiring	apa saja yang hampir expired
+expiring	batch mana yang sudah dekat tanggal kedaluwarsa
+low_stock	apa yang stoknya menipis
+low_stock	barang mana yang stoknya sedikit
+low_stock	saya perlu pesan apa
+low_stock	barang stok rendah
+low_stock	barang apa yang stoknya mau habis
+low_stock	tolong stok apa yang hampir habis
+low_stock	apa yang harus saya pesan ke pemasok
+low_stock	produk mana yang kurang ya
+low_stock	ada stok yang menipis nggak
+low_stock	tampilkan barang yang perlu dipesan lagi
+party_balance	saldo {NAME}
+party_balance	berapa saldo {NAME}
+party_balance	{NAME} utang berapa ke saya
+party_balance	catatan utang {NAME}
+party_balance	tolong tampilkan buku {NAME}
+party_balance	berapa yang harus saya tagih dari {NAME}
+party_balance	utang {NAME} brp
+party_balance	hitungan {NAME} berapa
+party_balance	sisa utang {NAME} berapa ya
+party_balance	saya yang utang ke {NAME} atau {NAME} yang utang ke saya, saldonya berapa
+party_phone	nomor telepon {NAME}
+party_phone	berapa nomor HP {NAME}
+party_phone	minta nomor {NAME} dong
+party_phone	nomor HP {NAME} berapa
+party_phone	kamu punya nomor {NAME} nggak
+party_phone	nomor kontak {NAME}
+party_phone	saya butuh nomor ponsel {NAME}
+party_phone	no hp {NAME}
+party_phone	{NAME} bisa ditelepon di nomor berapa
+party_phone	tolong nomor telepon {NAME}
+party_last_payment	kapan {NAME} terakhir bayar
+party_last_payment	pembayaran terakhir {NAME}
+party_last_payment	kapan pembayaran terakhir dari {NAME}
+party_last_payment	{NAME} terakhir bayar kapan
+party_last_payment	terakhir {NAME} bayar berapa dan kapan
+party_last_payment	tolong pembayaran terakhir {NAME}
+party_last_payment	pembayaran terakhir {NAME} tanggal berapa
+party_last_payment	{NAME} terakhir setor kapan ya
+party_last_payment	kapan terakhir saya terima uang dari {NAME}
+party_last_payment	tampilkan pembayaran paling baru dari {NAME}
+party_limit	berapa limit kredit {NAME}
+party_limit	limit utang {NAME}
+party_limit	{NAME} limitnya berapa
+party_limit	batas utang {NAME} berapa
+party_limit	sampai berapa saya boleh kasih utang ke {NAME}
+party_limit	tolong batas kredit {NAME}
+party_limit	apakah {NAME} sudah lewat limit kredit
+party_limit	limit kredit {NAME} brp ya
+party_limit	{NAME} sudah pakai berapa dari limitnya
+party_limit	plafon utang {NAME}
+party_promise	{NAME} janji bayar hari apa
+party_promise	tanggal janji {NAME}
+party_promise	{NAME} janji tanggal berapa
+party_promise	hari janji bayar {NAME}
+party_promise	{NAME} bilang janji mau bayar hari apa
+party_promise	tolong tanggal janji bayar {NAME}
+party_promise	{NAME} kasih janji tanggal berapa untuk bayar
+party_promise	janjinya {NAME} tanggal berapa ya
+party_promise	hari yang dijanjikan {NAME}
+party_promise	apakah {NAME} ada janji tanggal bayar
+party_when_pays	kapan {NAME} akan bayar
+party_when_pays	{NAME} kapan bayar
+party_when_pays	kapan {NAME} mau bayar saya
+party_when_pays	kapan saya bisa terima uang dari {NAME}
+party_when_pays	{NAME} bayarnya kapan
+party_when_pays	tolong kira-kira kapan {NAME} bayar
+party_when_pays	kapan {NAME} melunasi utangnya
+party_when_pays	{NAME} kapan bayarnya ya
+party_when_pays	{NAME} biasanya bayar kapan
+party_when_pays	pembayaran {NAME} bakal masuk kapan
+party_details	detail {NAME}
+party_details	tampilkan detail {NAME}
+party_details	alamat {NAME} di mana
+party_details	{NAME} dari desa mana
+party_details	nama ayah {NAME} siapa
+party_details	tolong ceritakan semua tentang {NAME}
+party_details	data lengkap {NAME}
+party_details	{NAME} tinggal di mana ya
+party_details	minta informasi {NAME} dong
+party_details	{NAME} itu siapa, desa dan nama ayahnya
+entry_gave	kasih {NAME} 50000
+entry_gave	{NAME} ambil utang 120000
+entry_gave	saya kasih 200000 ke {NAME}
+entry_gave	catat utang 75000 untuk {NAME}
+entry_gave	{NAME} ambil barang 350000 secara utang
+entry_gave	kasih utang 30000 ke {NAME} ya
+entry_gave	tolong catat saya kasih {NAME} 500000
+entry_gave	{NAME} ngutang 90000 hari ini
+entry_gave	saya pinjamkan 1000000 ke {NAME}
+entry_gave	jual barang 150000 ke {NAME} secara kredit Bang
+entry_got	{NAME} bayar 50000
+entry_got	terima 120000 dari {NAME}
+entry_got	dapat 200000 dari {NAME}
+entry_got	{NAME} kasih saya 75000
+entry_got	{NAME} sudah bayar 350000 hari ini
+entry_got	saya terima kembali 30000 dari {NAME} ya
+entry_got	tolong catat {NAME} bayar 500000
+entry_got	{NAME} setor 90000 untuk utangnya
+entry_got	pembayaran 1000000 diterima dari {NAME}
+entry_got	{NAME} melunasi 150000 dari utangnya Bang
+goods_price	harga {ITEM}
+goods_price	berapa harga {ITEM}
+goods_price	{ITEM} harganya berapa
+goods_price	{ITEM} berapaan
+goods_price	kita jual {ITEM} harga berapa
+goods_price	tolong harga {ITEM}
+goods_price	{ITEM} brp ya
+goods_price	harga jual {ITEM} berapa
+goods_price	harga tunai dan kredit {ITEM}
+goods_price	{ITEM} harganya brp
+goods_stock	stok {ITEM}
+goods_stock	{ITEM} sisa berapa
+goods_stock	ada berapa {ITEM} di stok
+goods_stock	stok {ITEM} berapa
+goods_stock	{ITEM} ada nggak di toko
+goods_stock	tolong sisa stok {ITEM}
+goods_stock	{ITEM} masih ada berapa ya
+goods_stock	kita punya stok {ITEM} nggak
+goods_stock	jumlah {ITEM} yang tersisa
+goods_stock	stok {ITEM} brp
+goods_suppliers	pemasok mana yang kasih {ITEM} paling murah
+goods_suppliers	harga beli {ITEM}
+goods_suppliers	saya beli {ITEM} dari siapa
+goods_suppliers	siapa yang memasok {ITEM}
+goods_suppliers	harga beli {ITEM} dari semua pemasok
+goods_suppliers	tolong pemasok termurah untuk {ITEM}
+goods_suppliers	{ITEM} murahnya di supplier mana ya
+goods_suppliers	terakhir saya beli {ITEM} harga berapa
+goods_suppliers	perusahaan mana yang kasih {ITEM} harga terbaik
+goods_suppliers	harga kulakan {ITEM} per pemasok
+goods_buyers	siapa yang beli {ITEM}
+goods_buyers	pelanggan mana saja yang beli {ITEM}
+goods_buyers	{ITEM} dijual ke siapa
+goods_buyers	siapa yang ambil {ITEM}
+goods_buyers	siapa aja yang beli {ITEM}
+goods_buyers	tolong sebutkan pembeli {ITEM}
+goods_buyers	daftar pembeli {ITEM}
+goods_buyers	yang suka beli {ITEM} siapa ya
+goods_buyers	ke pelanggan mana saya jual {ITEM}
+goods_buyers	{ITEM} yang beli siapa
+goods_sold	berapa {ITEM} terjual hari ini
+goods_sold	{ITEM} terjual bulan ini
+goods_sold	kemarin saya jual berapa {ITEM}
+goods_sold	penjualan {ITEM} minggu ini brp
+goods_sold	bulan lalu {ITEM} laku berapa
+goods_sold	tolong {ITEM} yang terjual minggu lalu
+goods_sold	hari ini {ITEM} laku berapa
+goods_sold	total {ITEM} terjual bulan ini ya
+goods_sold	berapa banyak {ITEM} yang terjual hari ini
+goods_sold	penjualan {ITEM} bulan lalu
+shop_info	nama toko saya apa
+shop_info	alamat toko
+shop_info	nomor telepon toko saya berapa
+shop_info	tolong detail toko saya
+shop_info	nama toko yang tersimpan di aplikasi
+shop_info	alamat mana yang tersimpan untuk toko saya
+shop_info	no telepon toko saya brp
+shop_info	nama toko di profil tertulis apa ya
+shop_info	tampilkan nama dan alamat usaha saya
+shop_info	nomor dan alamat toko dong
+count_customers	saya punya berapa pelanggan
+count_customers	total pelanggan
+count_customers	ada berapa pemasok
+count_customers	jumlah pelanggan
+count_customers	berapa orang di buku utang saya
+count_customers	tolong jumlah pelanggan saya
+count_customers	pelanggan dan pemasok totalnya berapa
+count_customers	total pelanggan brp ya
+count_customers	jumlah pemasok
+count_customers	ada berapa orang di daftar pelanggan saya
+count_products	saya punya berapa produk
+count_products	total produk
+count_products	ada berapa barang di daftar toko
+count_products	jumlah produk
+count_products	berapa barang yang tersimpan di aplikasi
+count_products	tolong jumlah produk saya
+count_products	total barang brp ya
+count_products	saya jual berapa macam produk
+count_products	jumlah item di daftar produk
+count_products	hitung produk saya dong
+bills_today	berapa nota pemasok hari ini
+bills_today	nota pemasok yang ditambahkan hari ini
+bills_today	kemarin saya tambah berapa nota pemasok
+bills_today	faktur pemasok minggu ini berapa
+bills_today	bulan ini total nota pemasok yang masuk berapa
+bills_today	tolong nota pemasok minggu lalu
+bills_today	nota pembelian yang dicatat hari ini
+bills_today	bulan lalu ada berapa faktur pemasok ya
+bills_today	ada nota pemasok yang ditambah hari ini nggak
+bills_today	nota pemasok bulan ini jumlah dan totalnya
+invoices_today	berapa faktur hari ini
+invoices_today	faktur yang dibuat hari ini
+invoices_today	kemarin saya buat berapa faktur
+invoices_today	faktur penjualan minggu ini
+invoices_today	tolong faktur yang dibuat bulan ini
+invoices_today	minggu lalu ada berapa invoice
+invoices_today	ada invoice yang dibuat hari ini nggak
+invoices_today	jumlah invoice bulan lalu ya
+invoices_today	hari ini invoice brp
+invoices_today	berapa faktur yang dibuat bulan ini
+tickets_today	berapa penjualan kasir hari ini
+tickets_today	struk yang dibuat hari ini
+tickets_today	kemarin kasir buat berapa struk
+tickets_today	struk penjualan kasir minggu ini
+tickets_today	tolong jumlah transaksi kasir bulan ini
+tickets_today	berapa struk hari ini
+tickets_today	minggu lalu ada berapa struk kasir
+tickets_today	jumlah transaksi kasir hari ini ya
+tickets_today	hari ini berapa struk yang dicetak di kasir
+tickets_today	bulan lalu struk kasir ada berapa
+entries_today	berapa catatan hari ini
+entries_today	catatan buku utang yang ditulis hari ini
+entries_today	kemarin saya tulis berapa catatan
+entries_today	jumlah entri minggu ini
+entries_today	tolong berapa entri buku yang dibuat bulan ini
+entries_today	hari ini entri brp
+entries_today	minggu lalu ada berapa entri yang ditulis
+entries_today	bulan lalu berapa entri ya
+entries_today	ada catatan yang ditulis di buku hari ini nggak
+entries_today	jumlah entri buku hari ini
+calculator_uses	apakah kalkulator dipakai hari ini
+calculator_uses	kalkulator dipakai berapa kali hari ini
+calculator_uses	kemarin saya pakai kalkulator nggak
+calculator_uses	minggu ini kalkulator dipakai berapa kali
+calculator_uses	tolong berapa kali kalkulator dibuka hari ini
+calculator_uses	kalkulator dipakai nggak hari ini
+calculator_uses	bulan ini berapa hitungan di kalkulator
+calculator_uses	minggu lalu kalkulator dipakai brp kali ya
+calculator_uses	ada yang pakai kalkulator hari ini
+calculator_uses	pemakaian kalkulator bulan lalu
+app_opens	aplikasi dibuka berapa kali hari ini
+app_opens	hari ini aplikasi dibuka brp kali
+app_opens	kemarin saya buka aplikasi berapa kali
+app_opens	aplikasi dibuka minggu ini berapa kali
+app_opens	tolong berapa kali aplikasi ini dibuka bulan ini
+app_opens	hari ini saya buka aplikasi berapa kali
+app_opens	minggu lalu aplikasi dibuka berapa kali
+app_opens	apakah aplikasi dibuka hari ini ya
+app_opens	jumlah buka aplikasi bulan lalu
+app_opens	seberapa sering saya buka aplikasi hari ini
+cheques_status	ada cek yang tertunda
+cheques_status	status cek
+cheques_status	cek mana yang jatuh tempo
+cheques_status	ada cek yang ditolak nggak
+cheques_status	berapa cek yang masih pending
+cheques_status	tolong cek yang jatuh tempo minggu ini
+cheques_status	cek kosong
+cheques_status	cek jatuh temponya kapan ya
+cheques_status	tampilkan cek yang belum cair
+cheques_status	gimana posisi cek-cek saya
+plans_status	status cicilan
+plans_status	ada cicilan yang jatuh tempo
+plans_status	berapa paket cicilan yang berjalan
+plans_status	cicilan mana yang belum dibayar
+plans_status	tolong info rencana cicilan saya
+plans_status	rencana cicilan
+plans_status	cicilan siapa yang jatuh tempo ya
+plans_status	tampilkan rencana angsuran
+plans_status	berapa angsuran yang belum masuk
+plans_status	posisi cicilan gimana
+staff_salary	gaji karyawan
+staff_salary	gaji siapa yang belum dibayar
+staff_salary	berapa gaji yang harus saya bayar ke karyawan
+staff_salary	karyawan ambil kasbon berapa
+staff_salary	gaji yang jatuh tempo bulan ini
+staff_salary	tolong gaji pegawai yang belum dibayar
+staff_salary	kasbon dan gaji karyawan
+staff_salary	gaji karyawan sudah saya bayar belum ya
+staff_salary	pegawai mana yang gajinya masih tertunda
+staff_salary	sisa gaji karyawan yang harus dibayar berapa
+deliveries	barang apa yang masuk hari ini
+deliveries	barang apa yang datang kemarin
+deliveries	barang diterima minggu ini
+deliveries	stok apa yang datang dari pemasok bulan ini
+deliveries	tolong barang yang datang minggu lalu
+deliveries	hari ini barang apa yang masuk
+deliveries	ada kiriman dari pemasok hari ini nggak
+deliveries	bulan lalu barang apa saja yang masuk ya
+deliveries	apa yang dikirim ke toko hari ini
+deliveries	barang datang hari ini
+activity	apa yang terjadi di aplikasi hari ini
+activity	apa yang diedit hari ini
+activity	siapa yang hapus catatan kemarin
+activity	apa yang diubah minggu ini
+activity	tolong apa saja yang dikerjakan di aplikasi hari ini
+activity	ada yang ubah sesuatu hari ini nggak
+activity	catatan apa yang dihapus bulan ini
+activity	minggu lalu siapa ngerjain apa ya
+activity	aktivitas hari ini
+activity	tampilkan yang diedit dan dihapus bulan lalu
+backup_status	apakah backup sudah dilakukan
+backup_status	kapan backup terakhir
+backup_status	backup saya sudah terbaru belum
+backup_status	status backup
+backup_status	backup sudah jalan belum
+backup_status	tolong kapan terakhir backup dibuat
+backup_status	backup sudah atau belum
+backup_status	data saya sudah dicadangkan belum ya
+backup_status	terakhir backup kapan
+backup_status	cadangan sudah dibuat belum
+book_summary	buku saya
+book_summary	semua data saya
+book_summary	akun keseluruhan
+book_summary	ringkasan seluruh buku saya
+book_summary	kasih gambaran lengkap pembukuan saya
+book_summary	tolong posisi keseluruhan buku saya
+book_summary	rangkuman seluruh buku
+book_summary	gimana kondisi pembukuan saya secara keseluruhan ya
+book_summary	tampilkan ringkasan total buku besar
+book_summary	ikhtisar seluruh buku
+cashbook_today	buku kas hari ini
+cashbook_today	berapa uang masuk dan uang keluar di buku kas hari ini
+cashbook_today	pengeluaran hari ini berapa
+cashbook_today	pengeluaran kemarin brp
+cashbook_today	uang keluar minggu ini di buku kas
+cashbook_today	tolong buku kas bulan ini
+cashbook_today	bulan lalu pengeluaran berapa
+cashbook_today	uang masuk dan uang keluar buku kas minggu lalu ya
+cashbook_today	hari ini biaya berapa
+cashbook_today	hari ini saya keluarkan apa saja dari kas
+returns_today	barang apa yang diretur hari ini
+returns_today	ada retur hari ini
+returns_today	kemarin berapa yang diretur
+returns_today	retur minggu ini
+returns_today	tolong barang yang diretur bulan ini
+returns_today	hari ini retur berapa
+returns_today	barang apa yang dikembalikan minggu lalu
+returns_today	bulan lalu ada berapa retur ya
+returns_today	ada pelanggan yang mengembalikan barang hari ini nggak
+returns_today	barang retur hari ini
+help_howto	bagaimana cara membuat faktur
+help_howto	cara backup gimana
+help_howto	gimana cara tambah pelanggan
+help_howto	cara menambah produk baru
+help_howto	bagaimana cara kirim pengingat lewat WhatsApp
+help_howto	tolong kasih tahu cara cetak laporan utang
+help_howto	cara ganti bahasa aplikasi
+help_howto	gimana cara tambah nota pemasok ya
+help_howto	ajari saya cara pasang kunci aplikasi
+help_howto	cara hapus catatan
+act_fly	terbang dan tunjukkan
+act_fly	kamu bisa terbang
+act_fly	terbang
+act_fly	terbang keliling layar
+act_fly	tolong tunjukkan gaya terbangmu
+act_fly	ayo terbang sedikit
+act_fly	Hudhud terbang
+act_fly	terbang dong buat saya
+act_fly	coba terbang sekali
+act_fly	mau terbang sekali nggak
+act_dance	menari
+act_dance	kamu bisa menari
+act_dance	joget dong
+act_dance	tolong menari sedikit
+act_dance	Hudhud joget
+act_dance	tunjukkan tarianmu
+act_dance	ayo Bang joget
+act_dance	menari dan tunjukkan
+act_dance	mau joget sekali nggak
+act_dance	coba lihat kamu menari
+act_jump	lompat
+act_jump	kamu bisa lompat
+act_jump	lompat dong buat saya
+act_jump	tunjukkan satu trik
+act_jump	tolong loncat sedikit
+act_jump	Hudhud lompat
+act_jump	kasih lihat trik ya
+act_jump	lompat yang tinggi
+act_jump	coba loncat sekali
+act_jump	mau lompat sekali nggak

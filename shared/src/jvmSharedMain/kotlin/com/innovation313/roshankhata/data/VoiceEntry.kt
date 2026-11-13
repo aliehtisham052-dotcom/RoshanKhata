@@ -627,9 +627,23 @@ object VoiceEntry {
     /** The doer marked with ne is someone other than the shop: "Ali ne", "us ne", "usne", "उसने". */
     private fun customerActs(words: List<String>): Boolean {
         if (words.any { it in THEY_DID }) return true
+        // "Ali gave me 750", "Ali kasih saya 500": the shop is the one handed the money (13 Nov 2026, the owner's test
+        // read it as "I gave"). English and Indonesian say it with "me" or "us" right after the verb; Bengali and
+        // Persian with "to me" anywhere in the sentence.
+        if (words.indices.any { i -> words[i] in MOVED && words.getOrNull(i + 1) in TO_US }) return true
+        if (words.any { it in TO_US_ANYWHERE }) return true
         val i = words.indexOfFirst { it in NE }
         return i > 0 && words[i - 1] !in WE_DID
     }
+
+    /** The one-word verbs of [GAVE] and [GOT]. */
+    private val MOVED: Set<String> by lazy { (GAVE + GOT).filter { ' ' !in it }.toSet() }
+
+    /** "Me" and "us" as the one handed something, right after the verb. */
+    private val TO_US = setOf("me", "us", "saya", "aku", "kami", "kita")
+
+    /** "To me", "to us": Bengali's own words for it, which say so wherever they stand. */
+    private val TO_US_ANYWHERE = setOf("আমাকে", "আমায়", "আমাদেরকে")
 
     /** The doer's mark, as the recognisers write it. */
     private val NE = setOf("ne", "nay", "ney", "نے", "ने")

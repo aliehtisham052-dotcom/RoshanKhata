@@ -2702,6 +2702,32 @@ Each of these cost a build or a bug.
     merge check against a stale ref would have passed. Before any merge check read the live head (`git ls-remote origin <branch>`)
     or fetch the branch by name (`git fetch origin <b>:refs/remotes/origin/<b>`).
 
+105. **In a perceptron a tie is a mistake.** With every weight at nought every meaning scores the same; a rule that learnt
+    only when a wrong meaning scored strictly higher would never have learnt anything (`HudhudSense.learn`: `bestScore >= own`).
+
+106. **A model learnt for the phone is learnt the same way on every computer.** `Math.log` may differ in its last bit from one
+    machine to another and a hash set's order from one run to the next: Hudhud's sense uses `StrictMath.log`, sorted features
+    and `Random(313)`, so CI learns the very asset the app ships (HudhudModelTest). A change to the bank, to
+    `HudhudSense.features`, or to how HudhudMind or VoiceQuestion read a sentence is learnt again (`HudhudModelTest.main`
+    writes the asset) in the same commit.
+
+107. **A learnt sense is measured on sentences it never saw, and its thresholds come from that measure.** The 1,170 held-out
+    sentences (`heldout.tsv`) are never learnt from; on them the sense read 72% at first and 91% with the rules now. Every
+    threshold in `Hudhud.decide` is the held-out set's own figure (what share was right at each certainty), not a guess.
+
+108. **A sense is surest where the words say least.** It was sure of "money collected" for "Ali ki aakhri wusooli" and of a
+    shop's figure for "a customer's number": the words for the fact were there, the person was not. A reading that names
+    somebody, or asks somebody's fact with nobody named, stays the rules' unless the sense agrees about the person
+    (`namedBy`, `Ask.NeedName(facet)`).
+
+109. **A short name is also a word.** In Arabic "Ali" folds to the letters of اللي, عليه and عليا: a book with an Ali read
+    Arabic sentences as him. A name is said surely only by a word of it of four letters or more that is no word of the
+    language, or by two of its words (`namedSurely`); a person carried on from the last answer must be in `before`.
+
+110. **A view added to a window is placed after the window lays it out.** Hudhud's flier was set with `setX` before its first
+    layout, and a start gravity then hung it from the right edge in Urdu and Arabic: hang it from LEFT|TOP and place it in
+    `doOnLayout` (HudhudActs).
+
 ---
 
 ## Working with the owner
@@ -3301,3 +3327,73 @@ tests are made up (0300 1234567, 0300 7654321).
   the app's Nastaliq at 150% text) and the 3D heroes were not seen. (4) The two slim pills were drawn with the longest number the
   box keeps (15 digits, 24 characters with its marks: "+971 (50) 123 45 67 89 0") in English and Urdu on the five pill designs and
   it fits both pills at a readable size; how it looks on a phone's screen and on WhatsApp's thumbnail is not seen.
+
+### 13 Nov 2026: Hudhud's second brain, whole answers, his acts (phone; CI only)
+
+The owner's round the same day: tell, never ask ("aap ka kaam batana hai, poochhna nahi"); understand every language, missing
+words and spellings ("اپ" for "آپ"); common sense ("بھائی جان" is a calling, "آپ کو کسی چیز کا پتہ ہے" is about knowing, "کیا
+آپ مجھ سے بات کر سکتے ہیں" is talk, not a customer); answers from the book, not a page opened ("aaj supplier bill mein kitna
+add hua", the calculator's count, the cashbook, returns, the day's close); a quick end to listening; his own name said right;
+the owner's name; acts ("urr ke dikhao", a tap on him: fly, flap, dance); the whole confirmed card said aloud and nothing said
+for a doubtful one; a professional voice with even pauses; every language spoken. Free only, nothing downloaded, the app light.
+
+- **The sense** (`HudhudSense`, shared): reads a sentence whole — its words, their three-letter pieces, their sound in any
+  script (`HudhudMind.skeleton`), words side by side, and what HudhudMind's concepts say they mean — with an averaged
+  perceptron learnt from a bank of 13,335 sentences in the nine languages (`shared/hudhud/*.tsv` and `more/`, written in
+  this session on the owner's yes; a name is `qqname`, a product `qqitem`, an amount `qqnum`, never a real one).
+  `scripts/gen_hudhud_bank.py` writes the tests' `bank.tsv` and the 1,170 held-out sentences it never learns from
+  (`heldout.tsv`); Strings CI runs `--check`. Learnt off the phone and the same everywhere (lesson 106), weights as whole
+  numbers, gzipped: `app/src/main/assets/hudhud/sense.bin` (≈361 KB), read on the first question (Home reads it 1.5 s after
+  it opens, on a thread of its own). HudhudModelTest learns it again from the bank and compares weight by weight.
+- **Rules and sense together** (`Hudhud.decide`): the rules' reading stands on firm ground unless the sense is 0.95 sure; a
+  named customer or product, or somebody's fact with nobody named, stays the rules' (lessons 108, 109), only talk turning a
+  surely named person into something else (0.92); where the rules found nothing, the sense's reading is answered at 0.60 and,
+  from 0.30, answered with "Taken as: …" written over the card (`Ask.Guessed`, `hudhud_took_as`) and the other meanings as
+  chips — never a question back. "Did you mean" answers its first meaning the same way.
+- **Held-out** (1,170 sentences never learnt from): rules alone 50%, rules and sense 91% — Arabic 83, Bengali 93, English
+  93, Farsi 88, Hindi 90, Indonesian 93, Sindhi 93, Urdu 90, Roman Urdu 91. The owner's own sentences from his screenshots
+  read right (a local probe). A sentence in no shape the bank knows can still be misread: the card says what it was taken as.
+- **Answers from the book** (`HudhudFacts`): `Ask.NeedName(facet)` — a fact with nobody named ("customer ka number", "kis
+  ki limit") lists the five latest customers with it; `Ask.Cashbook(window)` — money in, money out, the net and the rows
+  (REPORTS); `Ask.Returns(window)` — the counter's returns; counts list their rows: the day's supplier bills (who, what they
+  came to, the first items), invoices, counter tickets, entries (amounts only with REPORTS); none is said as "none in this
+  time" (`hudhud_count_none`, `hudhud_none_yet`). New concepts CASHBOOK and RETURN; "din band" is the drawer; VoiceEntry
+  reads "gave me" and Bengali's "to us" as money in.
+- **Talk**: `Talk.ADDRESS` ("bhai jaan", his name alone) answers "Ji, <the owner's name>, farmaiye"
+  (`hudhud_chat_address(_named)`) and looks up nobody; `Talk.CAN_TALK`; a salaam is answered with the owner's name.
+- **What he says** (`HudhudBook.speech`): the whole card — heading and figure, every line, every row — as one utterance, so
+  the voice keeps its own even pauses; a guess or a choice of names is not said (`Answer.quiet`); a number on the card
+  (phone, account, email, tax number: `Answer.secrets`) is said as "on the screen", and every amount is left out while Home's
+  balance is hidden (said once). Answers with words of their own (`spoken`) are only the greeting, his introduction, talk, a
+  customer's likely days, today's summary and help pages (320 letters, then "the rest is on the screen").
+- **Which voice** (`HudhudVoice.plan`): the app's language when the phone has an offline voice for it, else the nearest —
+  Sindhi → Urdu → Hindi → English, Hindi → Urdu → English, the rest → English — in that language's own words (the answer is
+  asked again with a context in it, `Answer.ask`), never one language's words in another's voice; the card says once which
+  language he speaks and that the phone's own voices can be downloaded (`hudhud_voice_fallback`). Before this a phone with no
+  Sindhi, Arabic or Bengali voice said nothing. Styles: Professional (the phone's own pace and pitch, now the default),
+  Gentle, Lively, Serious. His name is written for each voice (`HudhudSay.nameWays`: "Hood-hood", "ہُود ہُود", "हुद-हुद"…; another way
+  can be chosen in his voice settings, heard when chosen); "!" is read as ".", Rs and ₹ amounts as rupees.
+- **When a question is over** (`HudhudEars`): words unchanged for 1.2 s (1.9 s after a word that joins to more,
+  `HudhudSpeech.endsOpen`: "Ali ka…") close the microphone; the recogniser then has 1.2 s to hand its words over, else the
+  last words heard are the question; nothing heard in 7 s is nothing; 15 s at most; an error after words were heard keeps
+  them. The recogniser is asked for the same 1.2 s pause too.
+- **His acts** (`HudhudActs`; `Ask.Act`: "urr ke dikhao", "naach ke dikhao", "uchhal ke dikhao"): a tap on him plays one at
+  random, never the same twice running — fly off the screen and back over the whole window, flap, dance, hop, spin — with a
+  light haptic tick at take-off and landing (CONFIRM on Android 11+, else KEYBOARD_TAP; the phone's own touch-feedback
+  setting holds). The wings are his two drawings (happy: raised, idle: folded) changed nine times a second. With the phone's
+  animations off: the tick and his glad pose only. Opened from his face, he flaps once as the sheet arrives.
+- **The owner's name in setup** (`ShopNameActivity`, `etOwnerName`, "What should Hudhud call you?"): optional, kept on this
+  phone only (HudhudPrefs), never in the book.
+- Strings (nine languages): hudhud_took_as, hudhud_act_*, hudhud_chat_can_talk, hudhud_chat_address(_named),
+  hudhud_salaam_reply_named, hudhud_need_*, hudhud_t_cashbook, hudhud_cashbook_none, hudhud_t_returns, hudhud_returns_none,
+  hudhud_l_net/_returned_worth/_refunded/_total/_since_counting, hudhud_count_none, hudhud_none_yet,
+  hudhud_chip_cashbook/_returns, hudhud_voice_fallback, hudhud_style_professional, hudhud_name_say(_help); rewritten: the
+  greeting, his introduction, the talk lines, "unknown", the voice sample; gone: hudhud_can_spoken, hudhud_need_name,
+  hudhud_did_you_mean, hudhud_unknown_try.
+- Tests: HudhudSenseTest (held-out floor 88%), HudhudModelTest, HudhudSayTest, HudhudSpeechTest, HudhudTest and
+  HudhudMindTest (the owner's sentences), HudhudWordsTest (with the shipped sense; the cashbook's and returns' chips). The
+  shared tests were run locally with Gradle's own compiler (lesson 93); the app's files were read, not compiled — **CI is the
+  first build, and nothing was tried on a real phone** (the voices and their fallback, the end of listening, the acts, the
+  haptics).
+- **Not yet:** Windows has no Hudhud; Arabic reads lowest (83%); the sense knows only what the bank teaches — a new kind of
+  question needs sentences in the bank and the sense learnt again.

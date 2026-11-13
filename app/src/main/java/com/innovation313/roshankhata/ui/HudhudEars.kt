@@ -8,6 +8,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.speech.RecognitionListener
 import android.speech.RecognitionSupport
 import android.speech.RecognitionSupportCallback
@@ -15,6 +18,7 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.innovation313.roshankhata.data.HudhudSpeech
 import com.innovation313.roshankhata.data.VoiceLanguage
 
 /**
@@ -27,6 +31,13 @@ import com.innovation313.roshankhata.data.VoiceLanguage
  * — the phone's own pack, nothing added to the app); else through the phone's speech service while there is internet,
  * as the voice-search box does. Without internet and without the language on the phone he says so ([Trouble]) instead
  * of opening a box that fails. Nothing is recorded or kept: the words come back as text.
+ *
+ * When the question is over is his to judge too (13 Nov 2026, the owner: "recognizer chalta hi rehta hai… response
+ * bahut late"): a phone's recogniser may keep listening for seconds after the last word. He watches the words as they
+ * come; once they have not changed for [QUIET_MS] (longer, [OPEN_QUIET_MS], when the last word joins to more: "Ali
+ * ka…", [HudhudSpeech.endsOpen]) he closes the microphone himself, and if the recogniser does not then hand over its
+ * words within [FINAL_WAIT_MS] the last words heard are the question. Nothing heard for [NOTHING_MS] is nothing heard;
+ * no question runs past [LONGEST_MS]. A recogniser that ends in an error after words were heard has still been heard.
  *
  * The class needs RECORD_AUDIO (Android's rule for SpeechRecognizer); without it the sheet uses the voice-search box
  * as before. Main thread only; [destroy] when the sheet closes.
@@ -66,6 +77,14 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
     private var recognizer: SpeechRecognizer? = null
     private var downloader: SpeechRecognizer? = null
     private var packTag: String? = null
+
+    // His own end of speech: what was heard last, when it last changed, and whether he has closed the microphone.
+    private val main = Handler(Looper.getMainLooper())
+    private var heardSoFar: String? = null
+    private var changedAt = 0L
+    private var readyAt = 0L
+    private var closingAt = 0L
+    private var watch: Runnable? = null
 
     /** Whether he is listening, or getting ready to (a second tap stops it). */
     var listening = false
@@ -145,14 +164,21 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
 
     private fun listen(r: SpeechRecognizer, intent: Intent, onDevice: Boolean) {
         listening = true
+        heardSoFar = null
+        closingAt = 0L
         r.setRecognitionListener(object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {
                 if (recognizer !== r) return
                 open = true
+                readyAt = SystemClock.uptimeMillis()
+                changedAt = readyAt
                 heard.onListening()
+                startWatch(r)
             }
 
-            override fun onBeginningOfSpeech() {}
+            override fun onBeginningOfSpeech() {
+                if (recognizer === r) changedAt = SystemClock.uptimeMillis()
+            }
 
             override fun onRmsChanged(rmsdB: Float) {
                 // Roughly -2 dB (quiet) to 10 dB (a voice close by), made 0 to 1.
@@ -165,22 +191,35 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
 
             override fun onError(error: Int) {
                 if (recognizer !== r) return
+                val so = heardSoFar
                 drop(r)
-                heard.onTrouble(troubleOf(error, onDevice))
+                // Words were heard and then it ended in silence or a fault of its own: those words are the question.
+                if (so != null && error in HEARD_THEN_ENDED) heard.onHeard(listOf(so))
+                else heard.onTrouble(troubleOf(error, onDevice))
             }
 
             override fun onResults(results: Bundle?) {
                 if (recognizer !== r) return
                 val guesses = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).orEmpty()
                     .map { it.trim() }.filter { it.isNotEmpty() }
+                val so = heardSoFar
                 drop(r)
-                if (guesses.isEmpty()) heard.onTrouble(Trouble.NOTHING_HEARD) else heard.onHeard(guesses)
+                when {
+                    guesses.isNotEmpty() -> heard.onHeard(guesses)
+                    so != null -> heard.onHeard(listOf(so))
+                    else -> heard.onTrouble(Trouble.NOTHING_HEARD)
+                }
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
                 if (recognizer !== r) return
-                partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    ?.firstOrNull()?.trim()?.takeIf { it.isNotEmpty() }?.let { heard.onPartial(it) }
+                val words = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                    ?.firstOrNull()?.trim()?.takeIf { it.isNotEmpty() } ?: return
+                if (words != heardSoFar) {
+                    heardSoFar = words
+                    changedAt = SystemClock.uptimeMillis()
+                }
+                heard.onPartial(words)
             }
 
             override fun onEvent(eventType: Int, params: Bundle?) {}
@@ -191,6 +230,50 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
             drop(r)
             heard.onTrouble(Trouble.OTHER)
         }
+    }
+
+    /** Every tenth of a second or so while he listens: has the question ended, though the recogniser listens on? */
+    private fun startWatch(r: SpeechRecognizer) {
+        stopWatch()
+        val tick = object : Runnable {
+            override fun run() {
+                if (recognizer !== r) return
+                val now = SystemClock.uptimeMillis()
+                val so = heardSoFar
+                if (closingAt > 0L) {
+                    // Closed by him (or a stop): the recogniser's words did not come in time — his own are the question.
+                    if (now - closingAt >= FINAL_WAIT_MS) {
+                        drop(r)
+                        if (so != null) heard.onHeard(listOf(so)) else heard.onTrouble(Trouble.NOTHING_HEARD)
+                        return
+                    }
+                } else if (so == null) {
+                    if (now - readyAt >= NOTHING_MS) {
+                        drop(r)
+                        heard.onTrouble(Trouble.NOTHING_HEARD)
+                        return
+                    }
+                } else {
+                    val quiet = if (HudhudSpeech.endsOpen(so)) OPEN_QUIET_MS else QUIET_MS
+                    if (now - changedAt >= quiet || now - readyAt >= LONGEST_MS) close(r)
+                }
+                main.postDelayed(this, WATCH_MS)
+            }
+        }
+        watch = tick
+        main.postDelayed(tick, WATCH_MS)
+    }
+
+    private fun stopWatch() {
+        watch?.let { main.removeCallbacks(it) }
+        watch = null
+    }
+
+    /** He closes the microphone: the recogniser makes out what it has. */
+    private fun close(r: SpeechRecognizer) {
+        if (closingAt > 0L) return
+        closingAt = SystemClock.uptimeMillis()
+        runCatching { r.stopListening() }
     }
 
     private fun troubleOf(error: Int, onDevice: Boolean): Trouble = when (error) {
@@ -209,7 +292,8 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
 
     /** The microphone stops and what was said is made out (a second tap on the microphone). */
     fun stop() {
-        runCatching { recognizer?.stopListening() }
+        val r = recognizer ?: return
+        close(r)
     }
 
     /** Stops listening and forgets it. */
@@ -221,6 +305,8 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
 
     private fun drop(r: SpeechRecognizer) {
         if (recognizer === r) recognizer = null
+        stopWatch()
+        closingAt = 0L
         listening = false
         open = false
         runCatching { r.cancel() }
@@ -256,12 +342,37 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
         putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5)
         putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
         putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, context.packageName)
+        // Asked of the recogniser too (many keep their own longer pause): end a second after the last word.
+        putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, QUIET_MS)
+        putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, QUIET_MS)
     }
 
     /** What the phone can do for the settings (Android 13+ checks; older phones are taken at their word). */
     enum class Status { NO_MIC, READY_OFFLINE, NEEDS_PACK, ONLINE_ONLY }
 
     companion object {
+        /** The words have not changed this long: the question is over. */
+        const val QUIET_MS = 1200L
+
+        /** The same after a word that joins to more ("Ali ka…"): someone thinking of the rest. */
+        const val OPEN_QUIET_MS = 1900L
+
+        /** After he closes the microphone, how long the recogniser has to hand over its words. */
+        const val FINAL_WAIT_MS = 1200L
+
+        /** Nothing heard this long after the microphone opened: nothing was said. */
+        const val NOTHING_MS = 7000L
+
+        /** The longest question. */
+        const val LONGEST_MS = 15_000L
+
+        private const val WATCH_MS = 120L
+
+        /** Errors that end a recognition which had already heard words: no match, a timeout, the client's own end. */
+        private val HEARD_THEN_ENDED = setOf(
+            SpeechRecognizer.ERROR_NO_MATCH, SpeechRecognizer.ERROR_SPEECH_TIMEOUT, SpeechRecognizer.ERROR_CLIENT
+        )
+
         /** The app holds the microphone permission. */
         fun micGranted(context: Context): Boolean =
             ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED

@@ -1,0 +1,650 @@
+who_are_you	من أنت
+who_are_you	ما اسمك
+who_are_you	انت مين
+who_are_you	شو اسمك يا أخي
+who_are_you	عرفني بنفسك لو سمحت
+who_are_you	ممكن تعرفني عن نفسك
+who_are_you	اسمك ايه
+who_are_you	مين حضرتك
+who_are_you	طيب قل لي من تكون
+who_are_you	وش اسمك انت
+abilities	ماذا تستطيع أن تفعل
+abilities	ايش تقدر تسوي لي
+abilities	بماذا يمكنك ان تساعدني
+abilities	شو بتعرف
+abilities	هل تعرف أي شيء أصلا
+abilities	انت بتعرف حاجة خالص ولا لا
+abilities	ما فائدتك
+abilities	كيف ممكن تساعدني يا أخي
+abilities	ايش الأشياء اللي تقدر تخبرني عنها
+abilities	قل لي ماذا تعرف لو سمحت
+how_are_you	كيف حالك
+how_are_you	كيفك
+how_are_you	ازيك
+how_are_you	شلونك
+how_are_you	كيف الحال يا أخي
+how_are_you	اخبارك ايه
+how_are_you	هل أنت بخير
+how_are_you	عامل ايه
+how_are_you	شخبارك
+how_are_you	كيف صحتك، تمام؟
+can_talk	هل تستطيع أن تتكلم معي
+can_talk	هل تسمعني
+can_talk	سامعني
+can_talk	انت موجود
+can_talk	هل أنت هنا
+can_talk	ممكن تحكي معي
+can_talk	تقدر تتكلم معاي
+can_talk	انت معي ولا لا
+can_talk	بتسمعني يا أخي
+can_talk	هل ستتحدث معي
+address	يا أخي
+address	يا هدهد
+address	اسمع
+address	يا أستاذ
+address	هدهد
+address	يا صاحبي
+address	اسمع يا هدهد
+address	يا أخي العزيز
+address	يا عم
+address	يا معلم
+salaam	السلام عليكم
+salaam	سلام عليكم
+salaam	السلام عليكم ورحمة الله
+salaam	السلام عليكم ورحمة الله وبركاته
+salaam	السلام عليكم يا أخي
+salaam	سلام
+salaam	سلام عليكم يا هدهد
+salaam	السلام عليكم جميعا
+salaam	سلامو عليكم
+salaam	السلام عليكم ورحمه الله
+hello	مرحبا
+hello	اهلا
+hello	هلا
+hello	صباح الخير
+hello	مساء الخير
+hello	أهلا وسهلا
+hello	هاي
+hello	هلو
+hello	مرحبا يا هدهد
+hello	يا هلا والله
+thanks	شكرا
+thanks	شكرا جزيلا
+thanks	مشكور
+thanks	يعطيك العافية
+thanks	تسلم يا أخي
+thanks	جزاك الله خيرا
+thanks	الف شكر
+thanks	شكرا لك يا هدهد
+thanks	متشكر اوي
+thanks	ممنون لك
+bye	مع السلامة
+bye	الى اللقاء
+bye	في أمان الله
+bye	باي
+bye	يلا باي
+bye	أراك لاحقا
+bye	نشوفك بعدين
+bye	مع السلامه يا هدهد
+bye	تصبح على خير
+bye	استودعك الله
+praise	أحسنت
+praise	ممتاز
+praise	انت رائع
+praise	برافو عليك
+praise	شاطر يا هدهد
+praise	عمل ممتاز
+praise	والله انك كفو
+praise	تمام اوي، انت جامد
+praise	جيد جدا
+praise	ما شاء الله عليك
+owner_name	ما اسمي
+owner_name	هل تعرف من أنا
+owner_name	انا مين
+owner_name	شو اسمي عندك
+owner_name	بماذا تناديني
+owner_name	تعرف اسمي
+owner_name	اسمي ايه يا هدهد
+owner_name	وش تسميني انت
+owner_name	قل لي اسمي لو سمحت
+owner_name	هل تعرفني، من أكون
+maker	من صنعك
+maker	مين عملك
+maker	أي شركة صنعت هذا التطبيق
+maker	من الذي برمجك
+maker	مين اللي سوى هالتطبيق
+maker	من هو مطور التطبيق
+maker	مين صاحب البرنامج ده
+maker	من طورك يا هدهد
+maker	التطبيق ده بتاع أنهي شركة
+maker	وش الشركة اللي سوتك
+app_about	ما هذا التطبيق
+app_about	ايش هو هالتطبيق
+app_about	حدثني عن روشن كهاتا
+app_about	التطبيق ده عبارة عن ايه
+app_about	شو هو روشن كهاتا
+app_about	اشرح لي ما هو هذا البرنامج
+app_about	ما هو تطبيق روشن كهاتا يا أخي
+app_about	عرفني على التطبيق
+app_about	ما الغرض من هذا التطبيق
+app_about	طيب روشن كهاتا ده ايه
+privacy	هل بياناتي آمنة
+privacy	أين تحفظ بياناتي
+privacy	بياناتي وين تتخزن
+privacy	هل أحد يقدر يشوف بياناتي
+privacy	البيانات بتاعتي في امان ولا لا
+privacy	هل معلوماتي محفوظة بسرية
+privacy	وين بتروح بيانات المحل
+privacy	في حد غيري يشوف حساباتي
+privacy	هل ترسلون بياناتي الى سيرفر
+privacy	خصوصية بياناتي كيف
+languages	ما اللغات التي تفهمها
+languages	بتفهم أي لغات
+languages	كم لغة تعرف
+languages	تفهم عربي
+languages	هل تتكلم الانجليزية
+languages	أي لغة تحكي
+languages	ايش اللغات اللي تتكلمها يا هدهد
+languages	بتعرف اردو ولا لا
+languages	هل تفهم لغات أخرى غير العربية
+languages	بأي لغة اقدر اكلمك
+date_time	كم الساعة الآن
+date_time	ما تاريخ اليوم
+date_time	اليوم كم في الشهر
+date_time	النهارده ايه
+date_time	اليوم أي يوم
+date_time	الساعة كام دلوقتي
+date_time	كم التاريخ الهجري اليوم
+date_time	اليوم سبت ولا أحد
+date_time	قديش الساعة
+date_time	ايش تاريخ اليوم يا أخي
+today_summary	ملخص اليوم
+today_summary	اعطني ملخص اليوم لو سمحت
+today_summary	ايش المطلوب مني اليوم
+today_summary	ماذا يجب أن أفعل اليوم
+today_summary	شو في شغل معلق اليوم
+today_summary	ايه اللي مستنيني النهارده
+today_summary	ما الأمور التي تحتاج انتباهي اليوم
+today_summary	خلاصة اليوم يا هدهد
+today_summary	وش عندي اليوم
+today_summary	ما هي مهام اليوم المعلقة
+sales_today	كم بعنا اليوم
+sales_today	مبيعات اليوم
+sales_today	قديش مبيعات اليوم
+sales_today	كم بلغت المبيعات اليوم
+sales_today	بعنا بكام النهارده
+sales_today	كم المبيعات اليوم يا أخي
+sales_today	اجمالي مبيعات اليوم كم
+sales_today	اليوم كم بعت
+sales_today	ما هي مبيعات اليوم
+sales_today	طيب مبيعات النهارده وصلت كام
+sales_period	كم بعنا أمس
+sales_period	مبيعات هذا الاسبوع
+sales_period	كم مبيعات الاسبوع الماضي
+sales_period	مبيعات هذا الشهر كم
+sales_period	كم بعنا الشهر الماضي
+sales_period	بعنا بكام امبارح
+sales_period	قديش مبيعات هالاسبوع
+sales_period	اجمالي مبيعات الشهر اللي فات
+sales_period	كم بلغت المبيعات في الشهر الحالي
+sales_period	مبيعات الاسبوع اللي راح يا أخي
+profit	كم الربح هذا الشهر
+profit	ربح اليوم كم
+profit	كم ربحنا أمس
+profit	ارباح هذا الاسبوع
+profit	كسبنا كام الشهر اللي فات
+profit	ما صافي الربح للشهر الحالي
+profit	قديش ربحنا الاسبوع الماضي
+profit	المكسب بتاع النهارده كام
+profit	كم ارباحي هالشهر يا أخي
+profit	هل ربحنا هذا الاسبوع ام خسرنا
+to_get	كم لي عند الزبائن
+to_get	اجمالي الديون التي لي
+to_get	كم المبلغ المستحق لي عند الناس
+to_get	كل اللي ليا عند العملاء كام
+to_get	اجمالي المبالغ المطلوبة من العملاء
+to_get	قديش الي عند الزباين كلهم
+to_get	كم باقي لنا عند الناس
+to_get	اللي لي بره كم
+to_get	مجموع ما يجب أن أستلمه من العملاء
+to_get	كم اجمالي ديون الزبائن للمحل
+to_give	كم علي للناس
+to_give	كم المبلغ الذي يجب أن أدفعه
+to_give	اجمالي الديون التي علي
+to_give	كل اللي عليا للموردين كام
+to_give	قديش علي ديون
+to_give	كم المحل مديون
+to_give	مجموع ما علي دفعه للموردين
+to_give	اللي علينا للتجار كم
+to_give	كم باقي علينا ندفع
+to_give	كم اجمالي المستحقات التي على المحل
+who_owes_most	من أكثر زبون عليه دين
+who_owes_most	مين اكتر واحد عليه فلوس
+who_owes_most	من صاحب أكبر دين عندي
+who_owes_most	اكبر مديون مين
+who_owes_most	أي عميل عليه أكبر مبلغ
+who_owes_most	مين اكثر واحد مديون لي
+who_owes_most	من هم اكثر العملاء مديونية
+who_owes_most	اعلى دين عند مين يا أخي
+who_owes_most	وش اكبر دين عندنا وعلى مين
+who_owes_most	مين الزبون اللي عليه اكبر حساب
+not_paid	من لم يدفع
+not_paid	مين اللي ما دفع
+not_paid	من المتأخرون في السداد
+not_paid	مين متأخر عن الدفع
+not_paid	الزبائن اللي ما سددوا
+not_paid	مين لسه ما دفعش
+not_paid	من تأخر في الدفع يا أخي
+not_paid	اعطني قائمة المتأخرين عن السداد
+not_paid	مين اللي عليه دفعات متأخرة
+not_paid	أي عملاء لم يسددوا حتى الان
+likely_payers	من سيدفع اليوم
+likely_payers	مين متوقع يدفع اليوم
+likely_payers	مين عادة يدفع في هالايام
+likely_payers	من المحتمل ان يسدد اليوم
+likely_payers	مين هيدفع النهارده
+likely_payers	أي زبائن يدفعون عادة في هذا الوقت
+likely_payers	مين ممكن يسدد اليوم يا أخي
+likely_payers	من نتوقع منه دفعة اليوم
+likely_payers	مين المفروض يدفع هاليومين
+likely_payers	اليوم مين راح يدفع
+collected	كم حصلنا اليوم
+collected	كم استلمنا من الزبائن اليوم
+collected	المبالغ المحصلة أمس
+collected	كم التحصيل هذا الاسبوع
+collected	حصلنا كام الاسبوع اللي فات
+collected	كم استلمنا هذا الشهر من العملاء
+collected	قديش قبضنا الشهر الماضي
+collected	الفلوس اللي جت من الزباين النهارده كام
+collected	كم سددوا لنا الزبائن امس
+collected	اجمالي التحصيل هالشهر يا أخي
+drawer	كم في الدرج
+drawer	كم الكاش في الصندوق
+drawer	النقد الموجود في الدرج كم
+drawer	اريد اغلاق اليوم
+drawer	خلينا نعد الكاش
+drawer	في كام في الدرج دلوقتي
+drawer	كم الكاش اللي بيدي
+drawer	تقفيل اليومية
+drawer	جرد الصندوق لو سمحت
+drawer	قديش في بالجارور مصاري
+expiring	ما البضاعة التي ستنتهي صلاحيتها قريبا
+expiring	ايش اللي قربت صلاحيته تنتهي
+expiring	المنتجات القريبة من الانتهاء
+expiring	في حاجة هتنتهي صلاحيتها قريب
+expiring	شو البضاعة اللي تاريخها قرب يخلص
+expiring	أي اصناف قاربت على انتهاء الصلاحية
+expiring	البضاعة المنتهية قريبا يا أخي
+expiring	وش اللي بينتهي تاريخه قريب
+expiring	هل يوجد شيء صلاحيته على وشك الانتهاء
+expiring	اعرض لي الاصناف قريبة الانتهاء
+low_stock	ما البضاعة التي قاربت على النفاد
+low_stock	ايش اللي ناقص عندنا من المخزون
+low_stock	ماذا يجب ان اطلب
+low_stock	الاصناف الناقصة في المخزون
+low_stock	ايه اللي ناقص في الستوك
+low_stock	شو لازم اطلب بضاعة
+low_stock	أي منتجات كميتها قليلة
+low_stock	المخزون المنخفض يا أخي
+low_stock	وش الاصناف اللي كميتها قربت تخلص
+low_stock	ماذا نحتاج ان نشتري للمحل
+party_balance	كم حساب {NAME}
+party_balance	رصيد {NAME}
+party_balance	كم على {NAME}
+party_balance	{NAME} عليه كام
+party_balance	قديش حساب {NAME} عندي
+party_balance	كم باقي على {NAME} يا أخي
+party_balance	اعرض لي حساب {NAME}
+party_balance	كم لي عند {NAME}
+party_balance	كم علينا ل {NAME}
+party_balance	{NAME} كم رصيده
+party_phone	رقم هاتف {NAME}
+party_phone	ما رقم جوال {NAME}
+party_phone	اعطني رقم {NAME}
+party_phone	رقم تليفون {NAME} ايه
+party_phone	شو رقم موبايل {NAME}
+party_phone	{NAME} وش رقمه
+party_phone	اريد رقم هاتف {NAME} لو سمحت
+party_phone	عندك رقم {NAME}
+party_phone	رقم جوال {NAME} يا أخي
+party_phone	ابغى اتصل على {NAME} كم رقمه
+party_last_payment	متى آخر مرة دفع {NAME}
+party_last_payment	آخر دفعة من {NAME}
+party_last_payment	{NAME} امتى دفع اخر مرة
+party_last_payment	متى سدد {NAME} آخر مرة
+party_last_payment	اخر مرة {NAME} دفع فيها كانت متى
+party_last_payment	كم كانت آخر دفعة من {NAME} ومتى
+party_last_payment	اخر سداد ل {NAME}
+party_last_payment	ايمتى اخر مرة دفع {NAME}
+party_last_payment	{NAME} متى اخر دفعة له يا أخي
+party_last_payment	ما تاريخ آخر دفعة من {NAME}
+party_limit	ما حد الائتمان ل {NAME}
+party_limit	كم حد الدين المسموح ل {NAME}
+party_limit	حد {NAME} كم
+party_limit	سقف الدين بتاع {NAME} كام
+party_limit	كم اقصى دين اعطيه ل {NAME}
+party_limit	{NAME} حده كام
+party_limit	قديش سقف الدين ل {NAME}
+party_limit	حد الائتمان الخاص ب {NAME} لو سمحت
+party_limit	كم الحد الاقصى لحساب {NAME}
+party_limit	هل تجاوز {NAME} حد الائتمان
+party_promise	متى وعد {NAME} ان يدفع
+party_promise	أي يوم وعدني {NAME} بالسداد
+party_promise	{NAME} وعد يدفع امتى
+party_promise	موعد وعد {NAME} بالدفع
+party_promise	ما اليوم الذي وعد فيه {NAME} بالسداد
+party_promise	{NAME} قال بيدفع أي يوم
+party_promise	ايمتى وعدنا {NAME} يدفع
+party_promise	تاريخ وعد الدفع ل {NAME}
+party_promise	{NAME} وعدني بأي تاريخ يا أخي
+party_promise	ما هو يوم الوعد المسجل ل {NAME}
+party_when_pays	متى سيدفع {NAME}
+party_when_pays	{NAME} هيدفع امتى
+party_when_pays	متى راح يسدد {NAME}
+party_when_pays	ايمتى بيدفع {NAME}
+party_when_pays	متى تتوقع ان يدفع {NAME}
+party_when_pays	{NAME} متى يسدد عادة
+party_when_pays	متى ممكن يدفع {NAME} يا أخي
+party_when_pays	{NAME} حيدفع امتى تقريبا
+party_when_pays	متى نتوقع السداد من {NAME}
+party_when_pays	{NAME} بيسدد متى برأيك
+party_details	تفاصيل {NAME}
+party_details	بيانات {NAME}
+party_details	ما عنوان {NAME}
+party_details	{NAME} من أي قرية
+party_details	اسم والد {NAME}
+party_details	{NAME} ساكن فين
+party_details	اعطني معلومات {NAME} كاملة
+party_details	وين ساكن {NAME}
+party_details	معلومات {NAME} لو سمحت
+party_details	ابن من {NAME} ومن اين هو
+entry_gave	اعطيت {NAME} 500
+entry_gave	{NAME} اخذ 1200 دين
+entry_gave	سجل على {NAME} 300
+entry_gave	{NAME} خد بضاعة ب 750 على الحساب
+entry_gave	اديت {NAME} 2000 سلف
+entry_gave	اكتب على {NAME} 450 دين
+entry_gave	{NAME} استلف مني 5000
+entry_gave	بعت ل {NAME} بالدين ب 900
+entry_gave	عطيت {NAME} 1500 بالآجل يا أخي
+entry_gave	{NAME} اخذ اغراض ب 250 وما دفع، سجلها عليه
+entry_got	{NAME} دفع 500
+entry_got	استلمت من {NAME} 1200
+entry_got	{NAME} سدد 300
+entry_got	وصلني من {NAME} 2000
+entry_got	{NAME} ادى 750 كاش
+entry_got	قبضت من {NAME} 5000
+entry_got	سجل دفعة 450 من {NAME}
+entry_got	{NAME} سدد 900 من دينه
+entry_got	جاني من {NAME} 1500
+entry_got	{NAME} دفع لي 250 يا أخي
+goods_price	كم سعر {ITEM}
+goods_price	بكم {ITEM}
+goods_price	{ITEM} بكام
+goods_price	سعر {ITEM}
+goods_price	قديش سعر {ITEM}
+goods_price	كم ثمن {ITEM} يا أخي
+goods_price	{ITEM} سعره كم
+goods_price	ما سعر بيع {ITEM}
+goods_price	بكم نبيع {ITEM}
+goods_price	سعر {ITEM} كام دلوقتي
+goods_stock	كم باقي من {ITEM}
+goods_stock	كم {ITEM} في المخزون
+goods_stock	عندنا {ITEM}
+goods_stock	{ITEM} فاضل منه كام
+goods_stock	قديش ضل من {ITEM}
+goods_stock	مخزون {ITEM}
+goods_stock	كم الكمية المتوفرة من {ITEM}
+goods_stock	{ITEM} موجود ولا خلص
+goods_stock	كم حبة {ITEM} عندنا يا أخي
+goods_stock	ستوك {ITEM} كم
+goods_suppliers	من ارخص مورد ل {ITEM}
+goods_suppliers	مين يعطينا {ITEM} بأرخص سعر
+goods_suppliers	اسعار شراء {ITEM}
+goods_suppliers	بنشتري {ITEM} بكام من كل مورد
+goods_suppliers	أي مورد سعره اقل في {ITEM}
+goods_suppliers	من اين نشتري {ITEM} ارخص
+goods_suppliers	مين بيورد {ITEM} ارخص
+goods_suppliers	قارن اسعار الموردين ل {ITEM}
+goods_suppliers	سعر شراء {ITEM} عند الموردين
+goods_suppliers	{ITEM} ارخص عند أي تاجر
+goods_buyers	من اشترى {ITEM}
+goods_buyers	مين اخذ {ITEM}
+goods_buyers	مين اللي اشترى {ITEM}
+goods_buyers	أي زبائن اشتروا {ITEM}
+goods_buyers	{ITEM} مين اشتراه
+goods_buyers	من هم مشترو {ITEM}
+goods_buyers	مين بيشتري {ITEM} عندنا
+goods_buyers	اعرض لي من اشترى {ITEM}
+goods_buyers	{ITEM} راح لمين
+goods_buyers	وش الزباين اللي خذوا {ITEM}
+goods_sold	كم بعنا من {ITEM} اليوم
+goods_sold	كم بعنا {ITEM} هذا الشهر
+goods_sold	{ITEM} اتباع منه كام امبارح
+goods_sold	كم مبيعات {ITEM} هذا الاسبوع
+goods_sold	قديش بعنا {ITEM} الشهر الماضي
+goods_sold	كم حبة {ITEM} انباعت الاسبوع الماضي
+goods_sold	مبيعات {ITEM} اليوم
+goods_sold	كم انباع من {ITEM} هالشهر
+goods_sold	{ITEM} بعنا منه كم امس
+goods_sold	الكمية المباعة من {ITEM} هذا الاسبوع
+shop_info	ما اسم المحل المسجل
+shop_info	عنوان المحل
+shop_info	رقم هاتف المحل
+shop_info	ايش اسم محلي في التطبيق
+shop_info	عنوان المحل المحفوظ عندك ايه
+shop_info	شو رقم تليفون المحل المسجل
+shop_info	بيانات المحل
+shop_info	اسم الدكان المكتوب في البرنامج
+shop_info	اعرض معلومات المحل لو سمحت
+shop_info	وش عنوان دكاني المسجل
+count_customers	كم عدد الزبائن
+count_customers	كم زبون عندي
+count_customers	عندي كام عميل
+count_customers	كم عدد الموردين
+count_customers	قديش عدد الزباين
+count_customers	كم مورد مسجل عندنا
+count_customers	عدد العملاء
+count_customers	كم عميل ومورد في الدفتر
+count_customers	الزبائن كم واحد يا أخي
+count_customers	كام مورد متسجل
+count_products	كم عدد المنتجات
+count_products	كم صنف عندي
+count_products	عندي كام منتج
+count_products	عدد الاصناف
+count_products	قديش عدد الاصناف بالمحل
+count_products	كم منتج مسجل في التطبيق
+count_products	المنتجات كم واحد
+count_products	كم نوع بضاعة عندنا
+count_products	عدد المنتجات يا أخي
+count_products	كام صنف متسجل
+bills_today	كم فاتورة مورد اضفنا اليوم
+bills_today	فواتير الموردين اليوم
+bills_today	كم فاتورة شراء دخلت امس
+bills_today	فواتير المشتريات هذا الاسبوع
+bills_today	كام فاتورة مورد اتضافت الاسبوع اللي فات
+bills_today	كم قيمة فواتير الموردين هذا الشهر
+bills_today	فواتير الشراء الشهر الماضي كم
+bills_today	هل اضفنا فواتير موردين اليوم
+bills_today	قديش فواتير الموردين اللي سجلناها اليوم
+bills_today	كم بلغت فواتير المشتريات امس
+invoices_today	كم فاتورة عملنا للزبائن اليوم
+invoices_today	الفواتير اللي اصدرناها اليوم
+invoices_today	كم فاتورة اصدرنا امس
+invoices_today	الفواتير الصادرة هذا الاسبوع
+invoices_today	عملنا كام فاتورة للعملاء الاسبوع اللي فات
+invoices_today	كم انفويس طلعنا هذا الشهر
+invoices_today	الفواتير الصادرة الشهر الماضي كم
+invoices_today	هل اصدرنا فواتير اليوم
+invoices_today	قديش فواتير طلعنا للزباين اليوم
+invoices_today	كم فاتورة مبيعات كتبنا امس
+tickets_today	كم عملية بيع على الكاونتر اليوم
+tickets_today	كم ايصال طلعنا اليوم
+tickets_today	عدد مبيعات الكاونتر امس
+tickets_today	كم وصل بيع هذا الاسبوع
+tickets_today	كام ايصال اتعمل الاسبوع اللي فات
+tickets_today	عدد ايصالات الكاشير هذا الشهر
+tickets_today	كم بيعة كاونتر الشهر الماضي
+tickets_today	كم تذكرة بيع اليوم
+tickets_today	قديش وصل طلع من الكاشير اليوم
+tickets_today	عدد عمليات البيع المباشر امس
+entries_today	كم قيد كتبنا اليوم
+entries_today	كم قيد في الدفتر اليوم
+entries_today	عدد القيود المسجلة امس
+entries_today	كم قيد دخلنا هذا الاسبوع
+entries_today	كام قيد اتكتب الاسبوع اللي فات
+entries_today	عدد قيود الدفتر هذا الشهر
+entries_today	كم قيد سجلنا الشهر الماضي
+entries_today	قيود اليوم كم عددها
+entries_today	قديش قيد كتبنا بالدفتر اليوم
+entries_today	كم مرة سجلت في دفتر الديون امس
+calculator_uses	كم مرة استخدمت الحاسبة اليوم
+calculator_uses	هل استعملت الآلة الحاسبة اليوم
+calculator_uses	استخدام الحاسبة امس كم مرة
+calculator_uses	كم مرة فتحت الحاسبة هذا الاسبوع
+calculator_uses	استخدمت الكالكوليتر كام مرة الاسبوع اللي فات
+calculator_uses	عدد مرات استخدام الحاسبة هذا الشهر
+calculator_uses	كم عملية حسبت بالحاسبة الشهر الماضي
+calculator_uses	هل حسبت شي بالحاسبة اليوم
+calculator_uses	قديش مرة استعملت الحاسبة اليوم
+calculator_uses	الحاسبة اشتغلت كم مرة امس
+app_opens	كم مرة فتحت التطبيق اليوم
+app_opens	كم مرة دخلت البرنامج اليوم
+app_opens	عدد مرات فتح التطبيق امس
+app_opens	فتحت التطبيق كم مرة هذا الاسبوع
+app_opens	فتحت الابلكيشن كام مرة الاسبوع اللي فات
+app_opens	كم مرة انفتح التطبيق هذا الشهر
+app_opens	عدد مرات الدخول للتطبيق الشهر الماضي
+app_opens	اليوم كم مرة شغلت التطبيق
+app_opens	قديش مرة فتحت البرنامج اليوم
+app_opens	كم مرة فتحنا التطبيق امس يا أخي
+cheques_status	ما حالة الشيكات
+cheques_status	الشيكات المعلقة
+cheques_status	هل يوجد شيكات مستحقة
+cheques_status	في شيكات مرتجعة
+cheques_status	أي شيك لسه ما اتصرفش
+cheques_status	كم شيك عندي ما انصرف
+cheques_status	الشيكات اللي موعدها قرب
+cheques_status	شو وضع الشيكات يا أخي
+cheques_status	هل رجع أي شيك
+cheques_status	اعرض لي الشيكات المستحقة
+plans_status	ما حالة خطط التقسيط
+plans_status	الاقساط المستحقة
+plans_status	كم قسط متأخر
+plans_status	في اقساط لازم تتدفع
+plans_status	وضع الاقساط ايه
+plans_status	أي اقساط مستحقة على الزبائن
+plans_status	خطط الاقساط عندي
+plans_status	شو وضع التقسيط يا أخي
+plans_status	كم خطة تقسيط مفتوحة
+plans_status	اعرض لي الاقساط القادمة
+staff_salary	رواتب الموظفين
+staff_salary	كم راتب مستحق للعمال
+staff_salary	هل دفعنا رواتب الموظفين
+staff_salary	السلف اللي اخذها الموظفين
+staff_salary	مرتبات العمال اتدفعت ولا لسه
+staff_salary	كم باقي من رواتب الشغيلة
+staff_salary	مين من الموظفين اخذ سلفة
+staff_salary	شو وضع رواتب العمال يا أخي
+staff_salary	الرواتب المستحقة للموظفين
+staff_salary	كم علي رواتب للموظفين
+deliveries	ما البضاعة التي وصلت اليوم
+deliveries	ايش وصلنا بضاعة اليوم
+deliveries	البضاعة اللي جت امبارح
+deliveries	ماذا استلمنا من الموردين هذا الاسبوع
+deliveries	ايه البضاعة اللي دخلت الاسبوع اللي فات
+deliveries	البضاعة الواردة هذا الشهر
+deliveries	شو اجانا بضاعة الشهر الماضي
+deliveries	هل وصلت بضاعة اليوم
+deliveries	وش البضاعة اللي نزلت عندنا امس
+deliveries	ما الذي ورد الى المحل من الموردين اليوم
+activity	ماذا حدث في التطبيق اليوم
+activity	ايش اللي تعدل اليوم
+activity	مين غير حاجة في الدفتر امبارح
+activity	ما الذي حذف هذا الاسبوع
+activity	ايه اللي اتمسح الاسبوع اللي فات
+activity	سجل النشاط لهذا الشهر
+activity	من عدل في البيانات الشهر الماضي
+activity	هل حذف احد شيئا اليوم
+activity	شو صار بالبرنامج اليوم
+activity	وش التعديلات اللي صارت امس
+backup_status	هل تم عمل نسخة احتياطية
+backup_status	متى آخر نسخة احتياطية
+backup_status	الباك اب اتعمل ولا لا
+backup_status	اخر باك أب كان امتى
+backup_status	هل النسخ الاحتياطي شغال
+backup_status	متى اخذنا اخر نسخة احتياطية يا أخي
+backup_status	ايمتى اخر باك اب
+backup_status	هل انحفظت النسخة الاحتياطية
+backup_status	وش وضع النسخة الاحتياطية
+backup_status	النسخة الاحتياطية تمت ولا لا
+book_summary	ملخص الدفتر كله
+book_summary	دفتري
+book_summary	كل بياناتي
+book_summary	الحساب العام
+book_summary	اعطني ملخص كامل للدفتر
+book_summary	خلاصة حساباتي كلها
+book_summary	عايز اشوف الدفتر كله على بعضه
+book_summary	شو وضع الدفتر بشكل عام
+book_summary	ملخص كل الحسابات يا أخي
+book_summary	نظرة عامة على دفتر المحل
+cashbook_today	مصاريف اليوم
+cashbook_today	كم صرفنا اليوم
+cashbook_today	الداخل والخارج في دفتر النقدية اليوم
+cashbook_today	كم المصروفات امس
+cashbook_today	مصاريف هذا الاسبوع
+cashbook_today	صرفنا كام الاسبوع اللي فات
+cashbook_today	الفلوس الداخلة والخارجة في دفتر الكاش هذا الشهر
+cashbook_today	مصروفات الشهر الماضي في دفتر الكاش
+cashbook_today	قديش مصاريف المحل اليوم
+cashbook_today	دفتر النقدية امس، كم دخل وكم خرج
+returns_today	ما البضاعة المرتجعة اليوم
+returns_today	كم مرتجع اليوم
+returns_today	المرتجعات امس
+returns_today	في بضاعة رجعت النهارده
+returns_today	كم مرتجع هذا الاسبوع
+returns_today	ايه البضاعة اللي اترجعت الاسبوع اللي فات
+returns_today	مرتجعات هذا الشهر
+returns_today	كم بضاعة رجعوها الزباين الشهر الماضي
+returns_today	شو رجع بضاعة اليوم
+returns_today	هل ارجع احد بضاعة امس
+help_howto	كيف اعمل فاتورة
+help_howto	كيف آخذ نسخة احتياطية
+help_howto	كيف اضيف زبون جديد
+help_howto	ازاي اضيف منتج
+help_howto	كيف اطبع كشف حساب
+help_howto	علمني كيف ارسل تذكير واتساب
+help_howto	ازاي اغير لغة التطبيق
+help_howto	كيف اسجل قيد في الدفتر
+help_howto	شلون اضيف مورد يا أخي
+help_howto	ما طريقة ادخال فاتورة مورد
+act_fly	طير
+act_fly	طير وورني
+act_fly	هل تستطيع الطيران
+act_fly	حلق يا هدهد
+act_fly	طير شوي خليني اشوف
+act_fly	ممكن تطير
+act_fly	يلا طير وفرجيني
+act_fly	بتعرف تطير
+act_fly	طير حول الشاشة لو سمحت
+act_fly	ورينا طيرانك يا هدهد
+act_dance	ارقص
+act_dance	ارقص يا هدهد
+act_dance	ممكن ترقص
+act_dance	هل تستطيع الرقص
+act_dance	ارقص لي شوي
+act_dance	يلا ارقص وورني
+act_dance	بتعرف ترقص
+act_dance	ورينا رقصتك
+act_dance	ارقص شوية لو سمحت
+act_dance	ابغاك ترقص لي
+act_jump	اقفز
+act_jump	نط
+act_jump	نط يا هدهد
+act_jump	هل تستطيع القفز
+act_jump	اقفز لي مرة
+act_jump	ممكن تنط
+act_jump	سوي حركة
+act_jump	اعمل لي خدعة
+act_jump	يلا نط وورني
+act_jump	بتعرف تنط

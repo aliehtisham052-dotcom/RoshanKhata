@@ -56,6 +56,8 @@ class ShopNameActivity : BaseActivity() {
     private lateinit var etName: EditText
     private lateinit var etPhone: EditText
     private lateinit var btnStart: MaterialButton
+    /** What Hudhud calls the owner (13 Nov 2026): this phone's alone, like his voice. */
+    private lateinit var etOwner: EditText
     private lateinit var country: ShopCountry
     /** The country the phone itself names (SIM, network, its languages), if any. */
     private var region: String? = null
@@ -72,6 +74,7 @@ class ShopNameActivity : BaseActivity() {
 
         etName = findViewById(R.id.etShopName)
         etPhone = findViewById(R.id.etShopPhone)
+        etOwner = findViewById(R.id.etOwnerName)
         btnStart = findViewById(R.id.btnShopNameContinue)
 
         region = DeviceRegion.of(this)
@@ -86,6 +89,7 @@ class ShopNameActivity : BaseActivity() {
         if (savedInstanceState == null) {
             BusinessProfile.businessName(this)?.let { etName.setText(it) }
             BusinessProfile.businessPhone(this)?.let { etPhone.setText(nationalPart(it)) }
+            com.innovation313.roshankhata.ui.HudhudPrefs.callMe(this)?.let { etOwner.setText(it) }
         }
 
         etName.addTextChangedListener(object : TextWatcher {
@@ -197,11 +201,12 @@ class ShopNameActivity : BaseActivity() {
         return if (country.dialing.isNotEmpty() && kept.startsWith(code)) kept.removePrefix(code).trimStart() else kept
     }
 
-    /** Keeps everything on the page: the name, the phone and the country. */
+    /** Keeps everything on the page: the name, the phone, the country, and what Hudhud calls the owner. */
     private fun save() {
         BusinessProfile.setBusinessName(this, etName.text.toString().trim().ifEmpty { null })
         BusinessProfile.setBusinessPhone(this, fullPhone())
         applyCountry(country)
+        com.innovation313.roshankhata.ui.HudhudPrefs.setCallMe(this, etOwner.text?.toString())
     }
 
     private fun applyCountry(c: ShopCountry) {

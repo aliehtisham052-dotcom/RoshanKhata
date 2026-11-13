@@ -1037,16 +1037,16 @@
     <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
     <string name="hudhud_name">Hudhud</string>
     <string name="hudhud_ask">Hudhud se poochein…</string>
-    <string name="hudhud_hello">Apne khate ke baare mein poochein. Main isi phone par aap ke khate mein dekh kar batata hoon.</string>
+    <string name="hudhud_hello">Apne khate ke baare mein poochein. Har jawab isi phone par aap ke apne khate se aata hai.</string>
     <string name="hudhud_salaam_reply">Wa alaikum assalam!</string>
     <string name="hudhud_listening">Sun raha hoon…</string>
     <string name="hudhud_thinking">Khate mein dekh raha hoon…</string>
     <string name="hudhud_speaking">Bata raha hoon</string>
     <string name="hudhud_replay">Dobara sunein</string>
-    <string name="hudhud_unknown">Is ka jawab abhi mujhe nahi aata, main sirf aap ka khata jaanta hoon. Aap pooch sakte hain:</string>
+    <string name="hudhud_unknown">Yeh aap ke khate mein nahi mila. Is ke qareeb tareen sawal, jin ka jawab de sakta hoon, neeche hain.</string>
     <string name="hudhud_owner_only">Ye raqam sirf maalik ya manager dekh sakte hain.</string>
     <string name="hudhud_quiet">Home par balance chhupa hai, is liye main raqam yahan likhta hoon, bolta nahi.</string>
-    <string name="hudhud_no_voice">Is phone mein is zaban ki awaaz nahi, is liye jawab yahan likha hai.</string>
+    <string name="hudhud_no_voice">Is phone mein is zaban ki awaaz nahi. Jawab yahan likha hai; awaaz ki settings se awaaz li ja sakti hai.</string>
     <string name="hudhud_voice_on">Hudhud ki awaaz chalu hai</string>
     <string name="hudhud_voice_off">Hudhud ki awaaz band hai</string>
     <string name="hudhud_chip_backup">Aakhri backup kab hua?</string>
@@ -4296,19 +4296,19 @@
     <string name="hudhud_voice_more">Mazeed awaazen lein</string>
     <string name="hudhud_voice_none_here">Is phone mein abhi is zaban ki awaaz nahi. Mazeed awaazen lein daba kar muft download karein.</string>
     <string name="hudhud_voice_try">Sun kar dekhein</string>
-    <string name="hudhud_voice_sample">Assalam-o-Alaikum! Main Hudhud hoon, aap ki dukaan ka munshi. Apne khate ke baare mein kuch bhi poochein.</string>
+    <string name="hudhud_voice_sample">Main Hudhud hoon, aap ki dukaan ka munshi. Meri awaaz aisi hai.</string>
     <string name="hudhud_listen_title">Sunne ka tareeqa</string>
     <string name="hudhud_listen_box">Abhi phone ka voice search dabba istemal hota hai. Mic ki ijazat dein to Hudhud khud sunega.</string>
     <string name="hudhud_listen_ready">Hudhud khud sunta hai, internet ke baghair bhi.</string>
     <string name="hudhud_listen_pack">Hudhud internet ke saath khud sunta hai. Apni zaban download karein to internet ke baghair bhi sunega.</string>
     <string name="hudhud_listen_online">Hudhud internet ke saath khud sunta hai. Is phone mein is zaban ka offline pack nahi.</string>
     <string name="hudhud_settings">Awaaz ki settings</string>
-    <string name="hudhud_chat_how">Alhamdulillah, main bilkul theek hoon, poochne ka shukriya! Aap ka khata mere paas mehfooz hai. Sunayein, aaj dukaan kaisi chal rahi hai?</string>
-    <string name="hudhud_chat_who">Main Hudhud hoon, aap ki dukaan ka munshi. Isi phone par aap ke khate mein dekh kar likh kar bhi batata hoon aur bol kar bhi. Poochein: Aap kya bata sakte hain?</string>
-    <string name="hudhud_chat_thanks">Koi baat nahi! Jab zaroorat ho, main haazir hoon.</string>
-    <string name="hudhud_chat_bye">Allah Hafiz! Aap ka khata yahin mehfooz hai.</string>
-    <string name="hudhud_chat_praise">Shukriya! Mehnat to aap ki hai, main to bas hisaab rakhta hoon.</string>
-    <string name="hudhud_chat_fine">Masha Allah, sun kar khushi hui! Batayein, aaj kya dekhein?</string>
+    <string name="hudhud_chat_how">Alhamdulillah, sab theek hai, shukriya. Jo dekhna ho, poochein.</string>
+    <string name="hudhud_chat_who">Main Hudhud hoon, aap ki dukaan ka munshi. Isi phone par aap ka khata dekh kar likh kar aur bol kar jawab deta hoon.</string>
+    <string name="hudhud_chat_thanks">Koi baat nahi.</string>
+    <string name="hudhud_chat_bye">Khuda hafiz. Aap ka khata isi phone par mehfooz hai.</string>
+    <string name="hudhud_chat_praise">Shukriya.</string>
+    <string name="hudhud_chat_fine">Sun kar khushi hui. Jo dekhna ho, poochein.</string>
     <string name="hudhud_can_intro">Aap ke khate se main yeh sab bata sakta hoon:</string>
     <string name="hudhud_can_dues">Kis ne aap ko dena hai, aap ne kis ko dena hai, aur kisi ka bhi baqaya: bas naam bolein</string>
     <string name="hudhud_can_sales">Bikri aur munafa: aaj, kal, is hafte, is mahine ya pichhle mahine</string>
@@ -4316,12 +4316,10 @@
     <string name="hudhud_can_pay">Aaj kaun paise dega, aur koi gahak aam tor par kab deta hai</string>
     <string name="hudhud_can_entry">Entry bol kar (“Ali ko 500 diye”): main form bhar deta hoon, Mehfooz Karein aap dabate hain</string>
     <string name="hudhud_can_more">Aakhri backup kab hua, aur app ka koi bhi hissa kaise chalayein</string>
-    <string name="hudhud_can_chat">Aur thori si gup shup: mera haal poochein!</string>
-    <string name="hudhud_can_spoken">Main aap ke liye yeh sab kar sakta hoon, poori list neeche hai. Koi sawal dabayein, ya bas mujh se poochein.</string>
+    <string name="hudhud_can_chat">Salam dua aur mukhtasar guftagu</string>
     <string name="hudhud_chip_abilities">Aap kya bata sakte hain?</string>
     <string name="hudhud_greet_named">%1$s, %2$s!</string>
     <string name="hudhud_more_on_screen">Baqi screen par likha hai.</string>
-    <string name="hudhud_unknown_try">Mujh se poochein “Aap kya bata sakte hain?” to main sab kuch dikha dunga.</string>
 
     <!-- Hudhud Brain v2 (13 Nov 2026): a customer's and an item's facts, the shop, the day, counts, where things stand, what happened. -->
     <string name="hudhud_l_balance">Balance</string>
@@ -4368,7 +4366,7 @@
     <string name="hudhud_about_version">Roshan Khata ka version %1$s.</string>
     <string name="hudhud_owner_unnamed">Aap ne abhi mujhe apna naam nahi bataya. Meri awaaz ki settings mein likh dein, main aap ko isi naam se pukaroon ga.</string>
     <string name="hudhud_owner_named">Main aap ko %1$s kehta hoon. Meri awaaz ki settings mein ise badal sakte hain.</string>
-    <string name="hudhud_intro">Main Hudhud hoon, aap ki dukaan ka munshi. Apne khate ke baare mein kuch bhi poochein — bol kar ya likh kar.</string>
+    <string name="hudhud_intro">Main Hudhud hoon, aap ki dukaan ka munshi. Apne khate ke baare mein bol kar ya likh kar poochein.</string>
     <string name="hudhud_l_islamic">Islami tareekh</string>
     <string name="hudhud_l_time">Waqt</string>
     <string name="hudhud_hijri_note">Ye calendar se nikali gayi hai; chaand ke hisaab se ek din ka farq ho sakta hai.</string>
@@ -4404,8 +4402,6 @@
     <string name="hudhud_t_collected">Wusool hui raqam</string>
     <string name="hudhud_l_from_customers">Gahakon se</string>
     <string name="hudhud_l_cashbook_in">Cashbook ki aamdani</string>
-    <string name="hudhud_need_name">Kis ka? Naam ke saath poochein — jaise “Ali ka number”.</string>
-    <string name="hudhud_did_you_mean">Kya aap ka matlab hai:</string>
     <string name="hudhud_can_people">Kisi gahak ka number, aakhri adaigi, hadd ya wada — naam le kar poochein</string>
     <string name="hudhud_can_goods">Kisi item ki qeemat, stock, khareed rate aur kis supplier ka sasta hai</string>
     <string name="hudhud_can_book">Aaj ki invoices, aaya hua maal, aayi hui raqam, aur kis ne kya badla</string>
@@ -4426,4 +4422,37 @@
     <string name="hudhud_chip_book">Mera khata</string>
     <string name="hudhud_chip_activity">Aaj kya kya hua</string>
     <string name="hudhud_chip_collected">Aaj kitni raqam aayi</string>
+    <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
+    <string name="hudhud_took_as">Samjha: %1$s</string>
+    <string name="hudhud_act_fly">Dekhiye, main udta hoon.</string>
+    <string name="hudhud_act_dance">Dekhiye, mera raqs.</string>
+    <string name="hudhud_act_jump">Dekhiye, main phudakta hoon.</string>
+    <string name="hudhud_chat_can_talk">Ji, main sun raha hoon. Apna sawal poochein.</string>
+    <string name="hudhud_chat_address">Ji, farmaiye.</string>
+    <string name="hudhud_chat_address_named">Ji %1$s, farmaiye.</string>
+    <string name="hudhud_salaam_reply_named">Wa alaikum assalam, %1$s!</string>
+    <string name="hudhud_need_phone">Haaliya gahakon ke number</string>
+    <string name="hudhud_need_payment">Haaliya gahakon ki aakhri adaigi</string>
+    <string name="hudhud_need_limit">Haaliya gahakon ki udhaar ki hadd</string>
+    <string name="hudhud_need_promise">Haaliya gahakon ke waade ke din</string>
+    <string name="hudhud_need_recent">Haaliya gahak</string>
+    <string name="hudhud_need_hint">Kisi ek gahak ke liye naam bhi kahein: “Ali ka number”.</string>
+    <string name="hudhud_no_phone_short">Number nahi</string>
+    <string name="hudhud_t_cashbook">Cashbook</string>
+    <string name="hudhud_cashbook_none">Is arse mein cashbook mein kuch nahi likha gaya.</string>
+    <string name="hudhud_l_net">Khalis</string>
+    <string name="hudhud_t_returns">Wapsi</string>
+    <string name="hudhud_returns_none">Is arse mein koi maal wapas nahi aaya.</string>
+    <string name="hudhud_l_returned_worth">Wapas aaye maal ki maliyat</string>
+    <string name="hudhud_l_refunded">Wapas ki gayi raqam</string>
+    <string name="hudhud_l_total">Kul</string>
+    <string name="hudhud_l_since_counting">Ginti shuru hone se ab tak</string>
+    <string name="hudhud_count_none">Is arse mein koi nahi.</string>
+    <string name="hudhud_none_yet">Abhi koi nahi.</string>
+    <string name="hudhud_chip_cashbook">Aaj ki cashbook</string>
+    <string name="hudhud_chip_returns">Aaj ki wapsi</string>
+    <string name="hudhud_voice_fallback">Is phone mein %1$s awaaz nahi, is liye Hudhud %2$s mein bolta hai. Awaaz ki settings se phone ki apni awaaz li ja sakti hai.</string>
+    <string name="hudhud_style_professional">Professional</string>
+    <string name="hudhud_name_say">Woh apna naam kaise bole</string>
+    <string name="hudhud_name_say_help">Agar is phone ki awaaz mein us ka naam theek na lage to doosra tareeqa chunein. Har tareeqa chunte hi sunai deta hai.</string>
 </resources>

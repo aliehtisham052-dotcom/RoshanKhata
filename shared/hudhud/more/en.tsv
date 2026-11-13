@@ -1,0 +1,975 @@
+who_are_you	hey who is this
+who_are_you	your name?
+who_are_you	who am I talking to here
+who_are_you	buddy what do they call you
+who_are_you	tell me bro, you who
+who_are_you	what's this bird name
+who_are_you	introduce yourself please
+who_are_you	okay first tell me who you are
+who_are_you	are you Hudhud or someone else
+who_are_you	who you
+who_are_you	what should I call you my friend
+who_are_you	you are who exactly, I did not get it
+who_are_you	your good name please
+who_are_you	hoo are you
+who_are_you	what is you name
+abilities	what all can you do for my shop
+abilities	in what way you can help me buddy
+abilities	what are you kept here for
+abilities	what work you do
+abilities	your use?
+abilities	okay so what things can I ask you
+abilities	buddy tell me what you know about my shop
+abilities	what kind of questions you answer
+abilities	can you help in my business or not
+abilities	what is your job here
+abilities	list out what you can tell
+abilities	which which things you know
+abilities	I am new here, what can I ask from you
+abilities	what can you due for me
+abilities	show me what you are good for
+how_are_you	how's it going buddy
+how_are_you	you okay?
+how_are_you	all good at your end buddy
+how_are_you	how are you today my friend
+how_are_you	how you feeling
+how_are_you	everything fine at your side
+how_are_you	what's up, you doing well
+how_are_you	hey how is life
+how_are_you	you good bro
+how_are_you	how is your health
+how_are_you	are you alright today
+how_are_you	how do you do, okay
+how_are_you	hope you are fine
+how_are_you	how are yoo
+how_are_you	how r u
+can_talk	listening or not
+can_talk	hello, can you hear me
+can_talk	you there or not
+can_talk	will you talk to me a bit
+can_talk	is anyone there
+can_talk	are you awake buddy
+can_talk	can I talk to you for a minute
+can_talk	you getting my voice
+can_talk	testing, do you hear this
+can_talk	am I audible
+can_talk	please answer, are you online
+can_talk	do you listen when I speak
+can_talk	is the mic working, can you hear
+can_talk	are you hear
+can_talk	can we chat a little
+address	hey Hudhud buddy
+address	brother
+address	my dear brother
+address	sir ji
+address	hey
+address	Hudhud ji
+address	bhai jaan
+address	oh buddy
+address	my friend
+address	listen bro
+address	hello mister
+address	boss
+address	excuse me
+address	oh brother
+address	Hood hood
+salaam	assalamu alaikum brother
+salaam	salam alaikum bro
+salaam	assalam alaikum wa rahmatullah
+salaam	salaam dear Hudhud
+salaam	assalamualaikum
+salaam	as salam o alaikum buddy
+salaam	salam bhai jaan
+salaam	assalamu alaikum wa rahmatullahi wa barakatuhu Hudhud
+salaam	salaam alaikum sir
+salaam	slam
+salaam	asalam alekum
+salaam	salam to you Hudhud
+salaam	assalam alaikum my friend
+salaam	salaam everyone
+salaam	a salam walekum
+hello	hello buddy Hudhud
+hello	hi there buddy
+hello	hey hello
+hello	good afternoon
+hello	good evening Hudhud
+hello	good morning buddy
+hello	hi bro
+hello	hello hello hello
+hello	namaste
+hello	greetings friend
+hello	hiya
+hello	good day
+hello	very good morning to you
+hello	helo
+hello	high Hudhud
+thanks	thanks buddy
+thanks	thanks a lot
+thanks	thank you Hudhud bro
+thanks	many many thanks
+thanks	thanks bro
+thanks	okay thank you
+thanks	thank you very much
+thanks	thanks for helping me out
+thanks	thankyou
+thanks	much appreciated
+thanks	that helped, thanks
+thanks	thanks dear
+thanks	ok thanks
+thanks	tanks
+thanks	thank u
+bye	bye Hudhud
+bye	see you
+bye	see you later bro
+bye	ok bye
+bye	good night
+bye	okay I am leaving, bye
+bye	take care
+bye	see you tomorrow morning
+bye	bye for now
+bye	allah hafiz
+bye	khuda hafiz
+bye	talk to you later
+bye	catch you later buddy
+bye	buy buy
+bye	by Hudhud
+praise	good job
+praise	nice work buddy
+praise	you are very smart buddy
+praise	excellent
+praise	wow, that was quick
+praise	you are the best
+praise	great job Hudhud
+praise	brilliant
+praise	you are so clever
+praise	perfect answer
+praise	superb bro
+praise	I like you, you work well
+praise	very nice
+praise	shabash
+praise	gud job
+owner_name	my name?
+owner_name	tell my name
+owner_name	do you know my name
+owner_name	who am I then
+owner_name	buddy do you remember my name
+owner_name	what name is saved for me
+owner_name	say my name
+owner_name	by what name do you know me
+owner_name	you know me or not
+owner_name	what is the owner's name
+owner_name	okay tell me, what am I called
+owner_name	whose shop is this, what is my name
+owner_name	which name you have of me
+owner_name	what is mine name
+owner_name	what's my nam
+maker	who created you
+maker	your maker is who
+maker	who developed this app
+maker	you are made by which company
+maker	who is behind this app
+maker	which people built you
+maker	who is your owner, I mean who made you
+maker	whose app is this, who made it
+maker	who programmed you buddy
+maker	tell me the name of the company that made you
+maker	made by who
+maker	your creator?
+maker	where were you made and by whom
+maker	who maid you
+maker	who make this app
+app_about	what does this app do actually
+app_about	what is this application for
+app_about	what is this khata app
+app_about	tell me something about this app
+app_about	explain this app to me
+app_about	what kind of app is Roshan Khata
+app_about	what is this app used for
+app_about	buddy what is this software
+app_about	is this a ledger app or what
+app_about	about this app
+app_about	Roshan Khata is for what
+app_about	give me introduction of this app
+app_about	what is the purpose of Roshan Khata
+app_about	what is this ap
+app_about	roshan cut a what is it
+privacy	is my data private
+privacy	who all can see my data
+privacy	can anybody else read my khata
+privacy	is my information safe here
+privacy	does my data go to some server
+privacy	will you share my data with anyone
+privacy	my customers' numbers are safe or not
+privacy	where do you store my records
+privacy	is this app secure
+privacy	can the company see my accounts
+privacy	data safe?
+privacy	buddy is my hisab leaked anywhere
+privacy	do you sell my data
+privacy	is my date a safe
+privacy	my data saved where, on phone or internet
+languages	which languages do you know
+languages	do you understand Urdu
+languages	can you speak Bengali
+languages	how many languages can you talk
+languages	you know only English or more
+languages	in which language can I ask you
+languages	do you speak my language
+languages	languages?
+languages	can I talk in Hindi with you
+languages	which all languages this app has
+languages	are you able to understand Arabic
+languages	what languages are supported
+languages	buddy which language you understand best
+languages	which language you no
+languages	wich languages you speak
+date_time	today's date
+date_time	what day is it
+date_time	time now please
+date_time	what is the time please
+date_time	which date is today
+date_time	today is Friday or Saturday
+date_time	tell me date and day
+date_time	what month is going on
+date_time	buddy what time now
+date_time	is it Monday today
+date_time	Islamic date today please
+date_time	date?
+date_time	how much time is it now
+date_time	what is the dat today
+date_time	what's the thyme
+today_summary	give me today's summary
+today_summary	what needs my attention today
+today_summary	anything pending for today
+today_summary	what work is there today
+today_summary	brief me for today
+today_summary	what is important today
+today_summary	what do I have to look at today
+today_summary	okay buddy what is on my plate today
+today_summary	today's to do
+today_summary	any reminders for today
+today_summary	whom should I call today and what else is pending
+today_summary	start my day, what should I see first
+today_summary	what is waiting for me today
+today_summary	todays sumary
+today_summary	what should I due today
+sales_today	how much did I sell today
+sales_today	today sale total
+sales_today	how much business today
+sales_today	what is today's sale amount
+sales_today	sale so far today
+sales_today	total sold today please
+sales_today	how much goods sold today in rupees
+sales_today	buddy today's sale how much
+sales_today	today selling how much done
+sales_today	what is my sale figure for today
+sales_today	till now how much sale happened today
+sales_today	today's sales total tell me quick
+sales_today	sold today?
+sales_today	how much sail today
+sales_today	todays sells
+sales_period	yesterday's sales
+sales_period	how much did I sell yesterday
+sales_period	total sale this week
+sales_period	last week how much sale
+sales_period	sales this month
+sales_period	last month's sale total
+sales_period	how much business last month
+sales_period	what was sold this week in total
+sales_period	buddy how was the sale yesterday
+sales_period	this month sale so far
+sales_period	sale of last week please
+sales_period	compare nothing, just tell last month sales
+sales_period	how much I sold in this month
+sales_period	yesterdays sail
+sales_period	last weak sales
+profit	profit this month
+profit	how much did I earn this month
+profit	what is today's profit
+profit	profit yesterday
+profit	last month profit
+profit	my earning this week
+profit	how much I made last week
+profit	am I in profit or loss this month
+profit	net profit please
+profit	how much margin I earned today
+profit	buddy what did I earn last month
+profit	total profit of this week tell me
+profit	kamai how much this month
+profit	how much prophet this month
+profit	profet today
+to_get	how much is my total receivable
+to_get	total udhaar in market
+to_get	how much money is stuck with customers
+to_get	all customers together owe how much
+to_get	my total dues to collect
+to_get	how much I will get from people
+to_get	total outstanding from customers
+to_get	what is the total credit given
+to_get	buddy how much is to receive overall
+to_get	sum of all customer balances
+to_get	how much have I to take from market
+to_get	my money outside total
+to_get	to get total?
+to_get	how much mony I have to get
+to_get	total recievable
+to_give	how much I owe in total
+to_give	total payable to suppliers
+to_give	how much do I have to pay people
+to_give	my total debt
+to_give	what do I owe to suppliers altogether
+to_give	how much money is on me
+to_give	total amount I must give
+to_give	how much have I to pay in market
+to_give	all suppliers together, how much I owe
+to_give	my liabilities total
+to_give	buddy how much I have to return to others
+to_give	total to give please
+to_give	to pay total?
+to_give	how much I oh in total
+to_give	total payble
+who_owes_most	who is my biggest debtor
+who_owes_most	which customer owes most money to me
+who_owes_most	top debtor
+who_owes_most	whose udhaar is biggest
+who_owes_most	who has the largest dues on him
+who_owes_most	number one customer in pending amount
+who_owes_most	on whom is the most money
+who_owes_most	who took the most credit and not cleared
+who_owes_most	biggest balance is on which customer
+who_owes_most	buddy tell me the one who owes maximum
+who_owes_most	which party has highest outstanding
+who_owes_most	who has to give me the most
+who_owes_most	largest debtor name please
+who_owes_most	who owns me the most
+who_owes_most	who oes most
+not_paid	who is not paying
+not_paid	who did not pay yet
+not_paid	list of late payers
+not_paid	who is late in giving payment
+not_paid	which customers are overdue
+not_paid	who is delaying my money
+not_paid	whose payment has gone overdue
+not_paid	who all have not cleared dues for long
+not_paid	defaulters list
+not_paid	buddy who is not giving money back
+not_paid	whose date passed and still no payment
+not_paid	show customers with late payments
+not_paid	overdue people?
+not_paid	who has not payed
+not_paid	late pears list
+likely_payers	who may pay today
+likely_payers	who is expected to pay today
+likely_payers	from whom can I expect money today
+likely_payers	who usually pays on these days
+likely_payers	whose payment may come today
+likely_payers	who pays around this date
+likely_payers	any customer likely to give money today
+likely_payers	who should pay today as per habit
+likely_payers	buddy who is going to pay me today
+likely_payers	which customers normally pay this time of month
+likely_payers	today payment expected from whom
+likely_payers	who can pay today
+likely_payers	expected payers today?
+likely_payers	who will pay to day
+likely_payers	who likely pay today
+collected	how much collected today
+collected	money received from customers today
+collected	total recovery today
+collected	how much payment came today
+collected	yesterday how much did customers pay
+collected	collection this week
+collected	how much did I recover last week
+collected	payments received this month
+collected	last month total collection
+collected	how much udhaar came back today
+collected	buddy how much money came in from customers yesterday
+collected	customers paid how much this week
+collected	recovery of this month so far
+collected	how much collect today
+collected	money recieved today
+drawer	cash in drawer
+drawer	how much cash do I have in hand
+drawer	drawer cash now
+drawer	how much should be in the cash box
+drawer	I want to close the day now
+drawer	let us count the cash
+drawer	what should the till have now
+drawer	close the day please
+drawer	cash counter total
+drawer	how much cash in galla
+drawer	buddy tell drawer amount, I am closing shop
+drawer	day closing, how much cash should be there
+drawer	is the drawer cash matching
+drawer	cash in draw
+drawer	how much cash in the door
+expiring	which items are expiring
+expiring	what expires soon
+expiring	near expiry goods
+expiring	any medicine expiring soon
+expiring	which stock is going to expire next month
+expiring	show me expiry list
+expiring	anything expiring this week
+expiring	which batches are about to expire
+expiring	what is close to expiry date
+expiring	buddy any item whose date is finishing
+expiring	goods going bad soon
+expiring	expiry coming for which products
+expiring	which things will expire in 60 days
+expiring	what is expiring son
+expiring	near expire items
+low_stock	which items are low
+low_stock	what is finishing in the shop
+low_stock	what should I order
+low_stock	low stock list
+low_stock	what stock is about to finish
+low_stock	which products need reorder
+low_stock	what is short in stock
+low_stock	anything running out
+low_stock	what goods I have to buy again
+low_stock	buddy which items are almost gone
+low_stock	tell me what to order from supplier
+low_stock	which things are below minimum level
+low_stock	shortage of which item
+low_stock	what is running lo
+low_stock	low stok items
+party_balance	{NAME}'s account
+party_balance	how much {NAME} has to give
+party_balance	balance of {NAME} please
+party_balance	{NAME} owes how much
+party_balance	show {NAME} hisab
+party_balance	what is on {NAME}
+party_balance	how much is pending on {NAME}
+party_balance	how much do I owe {NAME}
+party_balance	{NAME} total dues
+party_balance	buddy check {NAME} khata, how much is left
+party_balance	{NAME} how much remaining
+party_balance	tell me {NAME} outstanding amount
+party_balance	what is the account position of {NAME}
+party_balance	{NAME} balence
+party_balance	{NAME} ka balance
+party_phone	{NAME} number
+party_phone	{NAME} mobile number
+party_phone	what is the number of {NAME}
+party_phone	give {NAME} contact
+party_phone	{NAME} phone?
+party_phone	I want to call {NAME}, tell number
+party_phone	contact number of {NAME} please
+party_phone	which number is saved for {NAME}
+party_phone	{NAME} whatsapp number
+party_phone	buddy find me {NAME}'s phone
+party_phone	show the mobile of {NAME}
+party_phone	on what number can I reach {NAME}
+party_phone	{NAME} cell number tell
+party_phone	{NAME} fone number
+party_phone	{NAME} phone numbar
+party_last_payment	last payment of {NAME}
+party_last_payment	when {NAME} paid last time
+party_last_payment	{NAME} last time gave money when
+party_last_payment	on which date did {NAME} pay last
+party_last_payment	how many days since {NAME} paid
+party_last_payment	last payment date of {NAME} please
+party_last_payment	when did I last get money from {NAME}
+party_last_payment	{NAME} last paid how much and when
+party_last_payment	the previous payment from {NAME} was when
+party_last_payment	buddy when was {NAME}'s last payment
+party_last_payment	what was the last amount {NAME} deposited
+party_last_payment	last time {NAME} paid?
+party_last_payment	{NAME} final payment came on which day
+party_last_payment	when did {NAME} last pay me
+party_last_payment	{NAME} last payed when
+party_limit	{NAME} limit
+party_limit	credit limit of {NAME}
+party_limit	how much credit can I give {NAME}
+party_limit	what limit is set for {NAME}
+party_limit	{NAME} udhaar limit
+party_limit	up to how much can {NAME} take on credit
+party_limit	has {NAME} crossed the limit
+party_limit	how much limit is left for {NAME}
+party_limit	limit for {NAME} please
+party_limit	buddy what is the max credit for {NAME}
+party_limit	{NAME}'s limit is how much
+party_limit	is {NAME} over his credit limit
+party_limit	maximum udhaar allowed to {NAME}
+party_limit	{NAME} credit limet
+party_limit	{NAME} cradit limit
+party_promise	when did {NAME} promise to pay
+party_promise	{NAME} promise date
+party_promise	{NAME} gave which date for paying
+party_promise	promised day of {NAME} please
+party_promise	what day did {NAME} say he will pay
+party_promise	which date {NAME} has committed
+party_promise	{NAME}'s promise?
+party_promise	what was the promise of {NAME}
+party_promise	on what date had {NAME} promised
+party_promise	buddy which day {NAME} gave his word for
+party_promise	date promised by {NAME} please
+party_promise	{NAME} said he will pay on which day
+party_promise	what is the due date {NAME} promised
+party_promise	{NAME} promis date
+party_promise	{NAME} promised witch day
+party_when_pays	when {NAME} will pay
+party_when_pays	{NAME} will pay when
+party_when_pays	when can I expect the money from {NAME} bro
+party_when_pays	by when will {NAME} clear dues
+party_when_pays	when is {NAME} likely to pay
+party_when_pays	{NAME} going to pay when
+party_when_pays	how soon will {NAME} pay
+party_when_pays	when will I get money from {NAME}
+party_when_pays	buddy when do you think {NAME} pays
+party_when_pays	when does {NAME} normally pay up
+party_when_pays	is {NAME} going to pay this week
+party_when_pays	{NAME} payment expected when
+party_when_pays	when should I expect {NAME} to pay up
+party_when_pays	when will {NAME} pey
+party_when_pays	wen will {NAME} pay
+party_details	details of {NAME}
+party_details	{NAME} full details
+party_details	where does {NAME} live
+party_details	{NAME} address
+party_details	which village is {NAME} from
+party_details	what is {NAME}'s father name
+party_details	show {NAME} profile
+party_details	tell me about {NAME}
+party_details	{NAME} info please
+party_details	who is {NAME}, show his record
+party_details	buddy open {NAME}'s details
+party_details	{NAME} is from where
+party_details	all information of {NAME}
+party_details	{NAME} detials
+party_details	{NAME} adress
+entry_gave	{NAME} took 500
+entry_gave	gave 750 to {NAME}
+entry_gave	I gave {NAME} 3000 on credit
+entry_gave	write 1500 udhaar to {NAME}
+entry_gave	{NAME} took goods of 2200
+entry_gave	given 400 to {NAME}
+entry_gave	{NAME} has taken 900 from me
+entry_gave	add 6000 credit on {NAME}
+entry_gave	I lent {NAME} 10000
+entry_gave	buddy note it, {NAME} took 350 udhaar
+entry_gave	sold goods worth 1800 to {NAME} on credit
+entry_gave	put 250 on {NAME}'s account, he took sugar
+entry_gave	{NAME} borrowed 5000
+entry_gave	{NAME} tuk 600
+entry_gave	gave {NAME} 1200 rupee
+entry_got	{NAME} gave 500
+entry_got	received 750 from {NAME}
+entry_got	{NAME} paid me 3000
+entry_got	got 1500 from {NAME} today
+entry_got	{NAME} deposited 2200
+entry_got	{NAME} has returned 400
+entry_got	write 900 received from {NAME}
+entry_got	{NAME} cleared 6000
+entry_got	I got 10000 from {NAME}
+entry_got	buddy note it, {NAME} paid 350
+entry_got	payment of 1800 came from {NAME}
+entry_got	{NAME} gave back 250
+entry_got	collected 5000 from {NAME}
+entry_got	{NAME} payed 600
+entry_got	recieved 1200 from {NAME}
+goods_price	price of {ITEM}
+goods_price	{ITEM} rate
+goods_price	how much is one {ITEM}
+goods_price	{ITEM} for how much
+goods_price	what rate do I sell {ITEM}
+goods_price	selling price of {ITEM} please
+goods_price	{ITEM} price?
+goods_price	how much one {ITEM} costs to customer
+goods_price	at what price we give {ITEM}
+goods_price	buddy what is the rate of {ITEM}
+goods_price	{ITEM} cash price and credit price
+goods_price	what to charge for {ITEM}
+goods_price	customer is asking {ITEM} rate, tell fast
+goods_price	{ITEM} prise
+goods_price	{ITEM} rat tell
+goods_stock	how much {ITEM} is there
+goods_stock	{ITEM} quantity
+goods_stock	do we have {ITEM}
+goods_stock	is {ITEM} in stock
+goods_stock	{ITEM} how many left
+goods_stock	how many pieces of {ITEM} are remaining
+goods_stock	{ITEM} stock?
+goods_stock	check stock of {ITEM}
+goods_stock	is {ITEM} finished or still there
+goods_stock	buddy how much {ITEM} is lying in the shop
+goods_stock	remaining {ITEM} please
+goods_stock	how many bags of {ITEM} we have
+goods_stock	{ITEM} available how much
+goods_stock	{ITEM} stok
+goods_stock	how much {ITEM} is lift
+goods_suppliers	who sells {ITEM} cheapest to me
+goods_suppliers	purchase rate of {ITEM}
+goods_suppliers	{ITEM} buying price
+goods_suppliers	from which supplier is {ITEM} cheaper
+goods_suppliers	at what rate did I buy {ITEM}
+goods_suppliers	who supplies {ITEM} to us
+goods_suppliers	{ITEM} cost price from each supplier
+goods_suppliers	which company gives best rate for {ITEM}
+goods_suppliers	last purchase rate of {ITEM}
+goods_suppliers	buddy from whom should I buy {ITEM}
+goods_suppliers	suppliers of {ITEM} and their rates
+goods_suppliers	where do I get {ITEM} at lowest rate
+goods_suppliers	{ITEM} supplier?
+goods_suppliers	{ITEM} purchas rate
+goods_suppliers	who gives {ITEM} cheep
+goods_buyers	who took {ITEM} from the shop
+goods_buyers	who buys {ITEM}
+goods_buyers	{ITEM} buyers
+goods_buyers	which customer purchased {ITEM}
+goods_buyers	to whom did I sell {ITEM}
+goods_buyers	who all bought {ITEM} this month
+goods_buyers	customers of {ITEM}
+goods_buyers	{ITEM} went to which customers
+goods_buyers	who has taken {ITEM} from me
+goods_buyers	buddy tell me who bought {ITEM}
+goods_buyers	list the people who purchased {ITEM}
+goods_buyers	{ITEM} sold to who
+goods_buyers	who are the buyers of {ITEM}
+goods_buyers	who bot {ITEM}
+goods_buyers	who brought {ITEM}
+goods_sold	how much {ITEM} sold
+goods_sold	{ITEM} sale today
+goods_sold	how many {ITEM} went today
+goods_sold	{ITEM} sold yesterday
+goods_sold	how much {ITEM} did I sell this week
+goods_sold	last week {ITEM} sale
+goods_sold	{ITEM} sale this month
+goods_sold	how many {ITEM} were sold last month
+goods_sold	quantity of {ITEM} sold today
+goods_sold	buddy how much {ITEM} we sold this month
+goods_sold	total {ITEM} sold yesterday please
+goods_sold	{ITEM} sold how many pieces this week
+goods_sold	sale of {ITEM} in last month
+goods_sold	how much {ITEM} soled today
+goods_sold	{ITEM} sould this month
+shop_info	my shop name
+shop_info	what is the name of my shop
+shop_info	address of my shop
+shop_info	shop phone number
+shop_info	what address is saved for the shop
+shop_info	which number is on my shop profile
+shop_info	my business name?
+shop_info	tell my shop details
+shop_info	what is my shop's address in the app
+shop_info	shop name and address please
+shop_info	buddy what is written as my shop name
+shop_info	my shop's mobile number saved here
+shop_info	what is the shop's tax number
+shop_info	my shop adress
+shop_info	shop nam
+count_customers	how many customers
+count_customers	number of customers
+count_customers	count my customers
+count_customers	how many parties in my khata now
+count_customers	how many suppliers do I have
+count_customers	total suppliers
+count_customers	customers count?
+count_customers	how many people are in my ledger
+count_customers	how many customers are added till now
+count_customers	buddy how many customers we have
+count_customers	total number of customers and suppliers
+count_customers	how many accounts are in my book
+count_customers	suppliers how many
+count_customers	how many costumers
+count_customers	how many customer I has
+count_products	how many products
+count_products	number of items
+count_products	count my products please
+count_products	how many items are added
+count_products	total goods in list
+count_products	how many kinds of goods I have
+count_products	products count?
+count_products	how many medicines are in my list
+count_products	how many different items in the shop
+count_products	buddy how many products we have
+count_products	total number of products please
+count_products	how many items I added till now
+count_products	product list has how many
+count_products	how many prodacts
+count_products	how many product I has
+bills_today	supplier bills today
+bills_today	how many bills added today
+bills_today	how many purchase bills today
+bills_today	bills of suppliers yesterday
+bills_today	how much was added in supplier bills today
+bills_today	purchase bills this week
+bills_today	how many supplier bills last week
+bills_today	supplier bills this month total
+bills_today	last month how many purchase bills
+bills_today	buddy did I add any supplier bill today
+bills_today	total amount of supplier bills yesterday
+bills_today	bills entered from suppliers this week
+bills_today	supplier bill today?
+bills_today	suplier bills today
+bills_today	how many supplier bill I ad today
+invoices_today	invoices today
+invoices_today	how many invoices were made today
+invoices_today	invoice count today
+invoices_today	did I make any invoice today
+invoices_today	invoices yesterday
+invoices_today	how many invoices this week
+invoices_today	last week invoices
+invoices_today	invoices of this month
+invoices_today	how many invoices last month
+invoices_today	buddy how many invoices we made today
+invoices_today	total invoices created yesterday
+invoices_today	number of invoices made this week please
+invoices_today	invoice today?
+invoices_today	how many invoises today
+invoices_today	in voices made today
+tickets_today	counter sales today
+tickets_today	how many receipts today
+tickets_today	how many tickets cut today
+tickets_today	number of counter sales made today
+tickets_today	receipts count yesterday
+tickets_today	how many counter bills this week
+tickets_today	counter receipts last week
+tickets_today	how many tickets this month
+tickets_today	last month counter sales count
+tickets_today	buddy how many slips cut at counter today
+tickets_today	how many customers billed at counter today
+tickets_today	count of counter sales yesterday please
+tickets_today	tickets today?
+tickets_today	how many reciepts today
+tickets_today	counter sells how many today
+entries_today	entries today
+entries_today	how many entries were written today
+entries_today	how many khata entries today
+entries_today	entry count today
+entries_today	how many entries yesterday
+entries_today	entries this week
+entries_today	how many entries last week
+entries_today	entries written this month
+entries_today	last month how many entries
+entries_today	buddy how many entries we did today
+entries_today	number of ledger entries made yesterday
+entries_today	how many times I wrote in khata today
+entries_today	entries today?
+entries_today	how many entrys today
+entries_today	how many entry I rite today
+calculator_uses	calculator used today
+calculator_uses	how many times I used the calculator today
+calculator_uses	did anyone here use the calculator today
+calculator_uses	calculator use count
+calculator_uses	how much was the calculator used yesterday
+calculator_uses	calculator used this week how many times
+calculator_uses	did I open the calculator today
+calculator_uses	how many sums done on calculator today
+calculator_uses	calculator usage today
+calculator_uses	buddy was calculator used today or not
+calculator_uses	how many calculations today
+calculator_uses	number of times calculator ran yesterday
+calculator_uses	calculator today?
+calculator_uses	calculater used today
+calculator_uses	how many time calculator use today
+app_opens	app opened today
+app_opens	how many times I opened the app today
+app_opens	how often was the app opened today
+app_opens	app open count
+app_opens	how many times was the app opened yesterday
+app_opens	app opens in this week
+app_opens	did I open the app yesterday
+app_opens	how many times this app started today
+app_opens	app usage today, how many opens
+app_opens	buddy how many times I came to the app today
+app_opens	number of app opens this month
+app_opens	how many times app was opened last week
+app_opens	app opens today?
+app_opens	how many times app opend today
+app_opens	how many time I open ap today
+cheques_status	cheques pending
+cheques_status	which cheques are pending
+cheques_status	any cheque due today
+cheques_status	cheque status
+cheques_status	any bounced cheque
+cheques_status	how many cheques are to be cleared
+cheques_status	which cheque is due this week
+cheques_status	show me the pending cheques
+cheques_status	has any cheque bounced
+cheques_status	buddy what is the position of cheques
+cheques_status	cheques due and cleared tell me
+cheques_status	how many cheques are in hand
+cheques_status	cheques?
+cheques_status	any checks pending
+cheques_status	pending cheks
+plans_status	instalment plans please
+plans_status	any instalment due today
+plans_status	which instalments are still pending
+plans_status	how many plans are running
+plans_status	instalment status
+plans_status	whose instalment is late
+plans_status	installments due this week
+plans_status	show running instalment plans
+plans_status	how many instalments are overdue
+plans_status	buddy what about the instalment plans
+plans_status	which customer's qist is due
+plans_status	plans status please
+plans_status	qist plans?
+plans_status	instalmant plans status
+plans_status	any installment do
+staff_salary	staff salary
+staff_salary	salary due
+staff_salary	how much salary is pending
+staff_salary	who took advance this month
+staff_salary	staff advances
+staff_salary	how much I have to pay the workers
+staff_salary	which worker's pay is due
+staff_salary	salaries of this month
+staff_salary	how much advance did the staff take this month
+staff_salary	buddy how much salary is left to give
+staff_salary	employee salaries status
+staff_salary	whose pay is pending and how much
+staff_salary	salary?
+staff_salary	staf salary
+staff_salary	staff celery due
+deliveries	goods came today
+deliveries	what stock arrived today
+deliveries	which goods came in yesterday
+deliveries	what did suppliers send today
+deliveries	stock received this week
+deliveries	what came in last week
+deliveries	goods arrived this month
+deliveries	what goods came from suppliers last month
+deliveries	any delivery today
+deliveries	buddy what maal came today
+deliveries	which items were received yesterday
+deliveries	new stock that came this week please
+deliveries	delivery today?
+deliveries	what goods cam today
+deliveries	goods recieved today
+activity	what happened today
+activity	today's activity
+activity	what was changed today
+activity	who edited something today
+activity	what was deleted today
+activity	did anyone delete an entry
+activity	show today's changes
+activity	who did what today
+activity	any entry edited yesterday
+activity	buddy what all happened in the app today
+activity	who changed the entries
+activity	what did the staff do in the app today
+activity	activity log please
+activity	what hapend today
+activity	what was edit today
+backup_status	backup done?
+backup_status	is the backup done
+backup_status	last backup when, tell
+backup_status	when did I last take backup
+backup_status	is my data backed up
+backup_status	backup status please
+backup_status	was today's backup taken
+backup_status	how old is my backup
+backup_status	did the backup happen today
+backup_status	buddy is backup okay or not
+backup_status	when was backup made last time
+backup_status	has Drive backup run
+backup_status	last backup date please
+backup_status	is back up done
+backup_status	when was last bakup
+book_summary	my whole khata
+book_summary	summary of my ledger
+book_summary	overall position
+book_summary	complete account summary
+book_summary	full summary of my book
+book_summary	how is my whole business account
+book_summary	total picture of my khata
+book_summary	show all my accounts in short
+book_summary	my entire hisab
+book_summary	buddy give me the whole khata summary
+book_summary	overall summary of everything
+book_summary	what is my complete ledger position
+book_summary	khata summary?
+book_summary	my hole khata
+book_summary	over all account sumary
+cashbook_today	today's cashbook
+cashbook_today	money in and out today
+cashbook_today	today's expenses
+cashbook_today	how much expense today
+cashbook_today	cash in cash out today
+cashbook_today	what did I spend today
+cashbook_today	cashbook of yesterday
+cashbook_today	expenses this week
+cashbook_today	money out last week
+cashbook_today	cashbook this month
+cashbook_today	last month expenses total
+cashbook_today	buddy how much kharcha today
+cashbook_today	how much money went out and came in yesterday
+cashbook_today	todays expences
+cashbook_today	cash book to day
+returns_today	returns today
+returns_today	what was returned today
+returns_today	goods returned today
+returns_today	any return yesterday
+returns_today	how much goods came back today
+returns_today	returns in this week
+returns_today	what did customers return last week
+returns_today	returns of this month
+returns_today	how many returns last month
+returns_today	buddy did anyone return goods today
+returns_today	total amount of returns yesterday
+returns_today	which items came back this week
+returns_today	return today?
+returns_today	what was retuned today
+returns_today	goods return to day
+help_howto	how to make an invoice
+help_howto	how do I take backup
+help_howto	how to add a new customer
+help_howto	how can I add a product
+help_howto	how to print a receipt
+help_howto	how do I send a reminder
+help_howto	how to change the language
+help_howto	how do I restore my backup
+help_howto	teach me how to make a supplier bill
+help_howto	buddy how to delete an entry
+help_howto	how can I set a credit limit
+help_howto	where do I close the day, how to do it
+help_howto	how to share a statement on whatsapp
+help_howto	how to ad a customer
+help_howto	how do I make in voice
+act_fly	fly for me
+act_fly	fly around
+act_fly	fly and show
+act_fly	can you fly a little
+act_fly	show me how you fly
+act_fly	buddy fly once
+act_fly	take a flight
+act_fly	fly up please
+act_fly	spread your wings and fly
+act_fly	okay now fly
+act_fly	fly high Hudhud
+act_fly	do some flying
+act_fly	you are a bird, fly then
+act_fly	fli and show
+act_fly	fly a round
+act_dance	do a dance
+act_dance	dance please
+act_dance	show me a dance
+act_dance	dance a little buddy
+act_dance	can you dance for me
+act_dance	let us see you dance
+act_dance	okay now dance
+act_dance	do some dancing Hudhud
+act_dance	dance once
+act_dance	dance with joy
+act_dance	come on dance bro
+act_dance	you know dancing, show it
+act_dance	hey dance and show
+act_dance	dans for me
+act_dance	do a dense
+act_jump	do a jump
+act_jump	jump please
+act_jump	hop for me
+act_jump	show me a trick
+act_jump	jump once buddy
+act_jump	can you hop
+act_jump	do a trick buddy
+act_jump	jump up
+act_jump	okay now jump high
+act_jump	hop around Hudhud
+act_jump	do some jumping
+act_jump	let us see your trick
+act_jump	hey jump and show
+act_jump	jamp for me
+act_jump	do a jum

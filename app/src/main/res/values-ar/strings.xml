@@ -1125,16 +1125,16 @@
     <!-- Hudhud, the shop's assistant (12 Nov 2026): his bar on Home and his sheet. -->
     <string name="hudhud_name">هُدهُد</string>
     <string name="hudhud_ask">اسأل هُدهُد…</string>
-    <string name="hudhud_hello">اسأل عن دفترك. أبحث في دفترك أنت، هنا على هذا الهاتف.</string>
+    <string name="hudhud_hello">اسأل عن دفترك. كل إجابة من دفترك أنت، على هذا الهاتف.</string>
     <string name="hudhud_salaam_reply">وعليكم السلام!</string>
     <string name="hudhud_listening">أستمع…</string>
     <string name="hudhud_thinking">أبحث في دفترك…</string>
     <string name="hudhud_speaking">أتحدث</string>
     <string name="hudhud_replay">استمع مرة أخرى</string>
-    <string name="hudhud_unknown">لا أعرف جواب هذا بعد، فأنا أعرف دفترك فقط. يمكنك أن تسأل:</string>
+    <string name="hudhud_unknown">لم أجد هذا في دفترك. أقرب الأسئلة التي أستطيع الإجابة عنها في الأسفل.</string>
     <string name="hudhud_owner_only">هذا الرقم يراه المالك أو المدير فقط.</string>
     <string name="hudhud_quiet">الرصيد مخفي في الشاشة الرئيسية، لذا أكتب المبالغ هنا ولا أنطقها.</string>
-    <string name="hudhud_no_voice">لا يوجد في هذا الهاتف صوت لهذه اللغة، لذا الجواب مكتوب هنا.</string>
+    <string name="hudhud_no_voice">لا يوجد في هذا الهاتف صوت لهذه اللغة. الإجابة مكتوبة هنا؛ ويمكن تنزيل صوت من إعدادات الصوت.</string>
     <string name="hudhud_voice_on">صوت هُدهُد يعمل</string>
     <string name="hudhud_voice_off">صوت هُدهُد متوقف</string>
     <string name="hudhud_chip_backup">متى كانت آخر نسخة احتياطية؟</string>
@@ -4581,19 +4581,19 @@
     <string name="hudhud_voice_more">أصوات أخرى</string>
     <string name="hudhud_voice_none_here">لا يوجد في هذا الهاتف صوت لهذه اللغة بعد. اضغط أصوات أخرى ونزّل واحدًا مجانًا.</string>
     <string name="hudhud_voice_try">استمع إلى مثال</string>
-    <string name="hudhud_voice_sample">مرحبًا! أنا هُدهُد، محاسب متجرك. اسألني أي شيء عن دفترك.</string>
+    <string name="hudhud_voice_sample">أنا هُدهُد، محاسب متجرك. هكذا يبدو صوتي.</string>
     <string name="hudhud_listen_title">طريقة الاستماع</string>
     <string name="hudhud_listen_box">يستخدم الآن نافذة البحث الصوتي في الهاتف. اسمح بالميكروفون ليسمع هُدهُد بنفسه.</string>
     <string name="hudhud_listen_ready">يسمع هُدهُد بنفسه، حتى دون إنترنت.</string>
     <string name="hudhud_listen_pack">يسمع هُدهُد بنفسه مع الإنترنت. نزّل لغتك ليسمع دونه أيضًا.</string>
     <string name="hudhud_listen_online">يسمع هُدهُد بنفسه ما دام الإنترنت موجودًا. لا توجد في هذا الهاتف حزمة دون اتصال لهذه اللغة.</string>
     <string name="hudhud_settings">إعدادات الصوت</string>
-    <string name="hudhud_chat_how">الحمد لله، أنا بخير، شكرًا على سؤالك! دفترك في أمان معي. أخبرني، كيف حال المتجر اليوم؟</string>
-    <string name="hudhud_chat_who">أنا هُدهُد، محاسب متجرك. أبحث في دفترك على هذا الهاتف وأخبرك كتابةً وبصوت عالٍ. اسألني: ماذا يمكنك أن تخبرني؟</string>
-    <string name="hudhud_chat_thanks">على الرحب والسعة! أنا هنا متى احتجتني.</string>
-    <string name="hudhud_chat_bye">في أمان الله! دفترك يبقى في أمان هنا.</string>
-    <string name="hudhud_chat_praise">شكرًا! التعب تعبك، وأنا أحفظ الحساب فقط.</string>
-    <string name="hudhud_chat_fine">يسعدني ذلك! ماذا نرى اليوم؟</string>
+    <string name="hudhud_chat_how">الحمد لله، كل شيء بخير، شكرًا. اسأل عما تريد معرفته.</string>
+    <string name="hudhud_chat_who">أنا هُدهُد، محاسب متجرك. أقرأ دفترك على هذا الهاتف وأجيب كتابةً وبالصوت.</string>
+    <string name="hudhud_chat_thanks">العفو.</string>
+    <string name="hudhud_chat_bye">مع السلامة. دفترك محفوظ على هذا الهاتف.</string>
+    <string name="hudhud_chat_praise">شكرًا لك.</string>
+    <string name="hudhud_chat_fine">يسعدني ذلك. اسأل عما تريد معرفته.</string>
     <string name="hudhud_can_intro">هذا ما أستطيع أن أخبرك به من دفترك:</string>
     <string name="hudhud_can_dues">من عليه لك، ولمن عليك، ورصيد أي شخص: قل الاسم فقط</string>
     <string name="hudhud_can_sales">المبيعات والربح: اليوم، أمس، هذا الأسبوع، هذا الشهر أو الشهر الماضي</string>
@@ -4601,12 +4601,10 @@
     <string name="hudhud_can_pay">من سيدفع اليوم، ومتى يدفع العميل عادةً</string>
     <string name="hudhud_can_entry">قيد كما حدث («أعطيت علي 500»): أملأ النموذج، وأنت تضغط حفظ</string>
     <string name="hudhud_can_more">آخر نسخة احتياطية، وكيف تستعمل أي جزء من التطبيق</string>
-    <string name="hudhud_can_chat">وقليل من الدردشة: اسألني عن حالي!</string>
-    <string name="hudhud_can_spoken">هذا ما أستطيع فعله لك، والقائمة كلها في الأسفل. اضغط سؤالًا، أو اسألني فقط.</string>
+    <string name="hudhud_can_chat">التحية ومحادثة قصيرة</string>
     <string name="hudhud_chip_abilities">ماذا يمكنك أن تخبرني؟</string>
     <string name="hudhud_greet_named">%1$s يا %2$s!</string>
     <string name="hudhud_more_on_screen">الباقي مكتوب على الشاشة.</string>
-    <string name="hudhud_unknown_try">اسألني «ماذا يمكنك أن تخبرني؟» وسأريك كل ما أعرفه.</string>
 
     <!-- Hudhud Brain v2 (13 Nov 2026): a customer's and an item's facts, the shop, the day, counts, where things stand, what happened. -->
     <string name="hudhud_l_balance">الرصيد</string>
@@ -4653,7 +4651,7 @@
     <string name="hudhud_about_version">إصدار روشن كهاتا %1$s.</string>
     <string name="hudhud_owner_unnamed">لم تخبرني باسمك بعد. اكتبه في إعدادات صوتي، وسأناديك به.</string>
     <string name="hudhud_owner_named">أناديك %1$s. يمكنك تغييره في إعدادات صوتي.</string>
-    <string name="hudhud_intro">أنا هُدهُد، محاسب متجرك. اسألني أي شيء عن دفترك — بصوتك أو كتابةً.</string>
+    <string name="hudhud_intro">أنا هُدهُد، محاسب متجرك. اسأل عن دفترك بصوتك أو كتابةً.</string>
     <string name="hudhud_l_islamic">التاريخ الهجري</string>
     <string name="hudhud_l_time">الوقت</string>
     <string name="hudhud_hijri_note">محسوب بالتقويم؛ وقد يختلف يومًا بحسب رؤية الهلال.</string>
@@ -4689,8 +4687,6 @@
     <string name="hudhud_t_collected">المبالغ المحصّلة</string>
     <string name="hudhud_l_from_customers">من العملاء</string>
     <string name="hudhud_l_cashbook_in">دخل دفتر النقد</string>
-    <string name="hudhud_need_name">لمن؟ اسأل مع الاسم — مثل «رقم علي».</string>
-    <string name="hudhud_did_you_mean">هل تقصد:</string>
     <string name="hudhud_can_people">رقم عميل، وآخر دفعة منه، وحدّه أو وعده — اسأل مع الاسم</string>
     <string name="hudhud_can_goods">سعر صنف ومخزونه وسعر شرائه، وأي مورّد أرخص</string>
     <string name="hudhud_can_book">فواتير اليوم، والبضائع الواردة، والمبالغ المحصّلة، ومن غيّر ماذا</string>
@@ -4711,4 +4707,37 @@
     <string name="hudhud_chip_book">دفتري</string>
     <string name="hudhud_chip_activity">ماذا جرى اليوم</string>
     <string name="hudhud_chip_collected">كم تحصّل اليوم</string>
+    <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
+    <string name="hudhud_took_as">فهمتُ السؤال: %1$s</string>
+    <string name="hudhud_act_fly">شاهدني أطير.</string>
+    <string name="hudhud_act_dance">شاهدني أرقص.</string>
+    <string name="hudhud_act_jump">شاهدني أقفز.</string>
+    <string name="hudhud_chat_can_talk">نعم، أسمعك. تفضل بسؤالك.</string>
+    <string name="hudhud_chat_address">نعم، تفضل.</string>
+    <string name="hudhud_chat_address_named">نعم يا %1$s، تفضل.</string>
+    <string name="hudhud_salaam_reply_named">وعليكم السلام يا %1$s!</string>
+    <string name="hudhud_need_phone">أرقام آخر العملاء</string>
+    <string name="hudhud_need_payment">آخر دفعات العملاء الأخيرين</string>
+    <string name="hudhud_need_limit">حدود الائتمان لآخر العملاء</string>
+    <string name="hudhud_need_promise">مواعيد الدفع لآخر العملاء</string>
+    <string name="hudhud_need_recent">آخر العملاء</string>
+    <string name="hudhud_need_hint">لعميل واحد، اذكر اسمه: “رقم علي”.</string>
+    <string name="hudhud_no_phone_short">لا رقم</string>
+    <string name="hudhud_t_cashbook">النقد</string>
+    <string name="hudhud_cashbook_none">لم يُسجَّل شيء في النقد خلال هذه المدة.</string>
+    <string name="hudhud_l_net">الصافي</string>
+    <string name="hudhud_t_returns">المرتجعات</string>
+    <string name="hudhud_returns_none">لم تُرجَع أي بضاعة خلال هذه المدة.</string>
+    <string name="hudhud_l_returned_worth">قيمة البضاعة المرتجعة</string>
+    <string name="hudhud_l_refunded">المبلغ المسترد</string>
+    <string name="hudhud_l_total">الإجمالي</string>
+    <string name="hudhud_l_since_counting">منذ بدء العدّ</string>
+    <string name="hudhud_count_none">لا شيء خلال هذه المدة.</string>
+    <string name="hudhud_none_yet">لا شيء بعد.</string>
+    <string name="hudhud_chip_cashbook">دفتر النقد اليوم</string>
+    <string name="hudhud_chip_returns">مرتجعات اليوم</string>
+    <string name="hudhud_voice_fallback">لا يوجد في هذا الهاتف صوت %1$s، لذلك يتحدث هُدهُد بـ%2$s. يمكن تنزيل صوت الهاتف من إعدادات الصوت.</string>
+    <string name="hudhud_style_professional">احترافي</string>
+    <string name="hudhud_name_say">كيف ينطق اسمه</string>
+    <string name="hudhud_name_say_help">إن لم يُنطق اسمه صحيحًا بصوت هذا الهاتف، فاختر طريقة أخرى. تُسمع كل طريقة عند اختيارها.</string>
 </resources>

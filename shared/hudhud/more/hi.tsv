@@ -1,0 +1,975 @@
+who_are_you	तुम हो कौन
+who_are_you	आपका परिचय
+who_are_you	अपना नाम तो बताओ
+who_are_you	नाम?
+who_are_you	यार तू है कौन
+who_are_you	भाई ज़रा अपना परिचय दो
+who_are_you	ये पक्षी कौन है
+who_are_you	अप कौन हो
+who_are_you	आपको क्या कहकर बुलाऊं
+who_are_you	तेरा नाम क्या रखा है
+who_are_you	सुनो जी आप हैं कौन आख़िर
+who_are_you	अच्छा तो तुम कौन हुए
+who_are_you	तुम कौन सी चीज़ हो
+who_are_you	मैं किससे बात कर रहा हूं
+who_are_you	अपने बारे में बताओ कौन हो
+abilities	क्या क्या कर लेते हो
+abilities	तुम किस काम के हो
+abilities	तुम्हारा काम क्या है
+abilities	मुझे क्या क्या बता सकते हो भाई
+abilities	आपसे क्या क्या पूछ सकता हूं
+abilities	तुमसे क्या पूछूं
+abilities	काम क्या है तेरा
+abilities	कुछ आता भी है तुम्हें
+abilities	यार तू मेरी क्या मदद करेगा
+abilities	आप क्या क्या बता सकते हो
+abilities	अपनी ख़ूबियां बताओ
+abilities	कौन कौन से सवाल का जवाब देते हो
+abilities	तुम्हें दुकान के बारे में क्या क्या मालूम है
+abilities	हेल्प क्या कर सकते हो मेरी
+abilities	ज़रा बताओ तुम किस किस चीज़ में काम आते हो
+how_are_you	कैसे हो भाई
+how_are_you	ठीक हो
+how_are_you	और सुनाओ क्या हाल हैं
+how_are_you	तबीयत कैसी है
+how_are_you	हाल?
+how_are_you	सब ख़ैरियत है
+how_are_you	क्या हाल चाल हैं जनाब के
+how_are_you	तुम ठीक ठाक हो ना
+how_are_you	कैसा है तू
+how_are_you	आपकी तबीयत ठीक है
+how_are_you	और भाई कैसा चल रहा है
+how_are_you	सब बढ़िया
+how_are_you	मज़े में हो
+how_are_you	क्या हाल हे
+how_are_you	सुनो जी आप कैसे हो आज
+can_talk	सुन रहे हो ना
+can_talk	हेलो सुनाई दे रहा है
+can_talk	तुम हो वहां
+can_talk	आवाज़ आ रही है मेरी
+can_talk	बात करोगे मुझसे
+can_talk	क्या तुम बोल सकते हो
+can_talk	मुझे सुन पा रहे हो
+can_talk	हो या सो गए
+can_talk	यार जवाब तो दो सुन रहे हो कि नहीं
+can_talk	तुम बोलते भी हो
+can_talk	मेरे साथ बातचीत कर सकते हो
+can_talk	अप सुन रहे हैं
+can_talk	माइक चल रहा है मेरी आवाज़ पहुंच रही है
+can_talk	कोई है उधर
+can_talk	ज़रा बोलो तो सही सुनते हो या नहीं
+address	जनाब ए आली
+address	सुनो भई
+address	हुदहुद साहब
+address	उस्ताद
+address	यार
+address	ओए हुदहुद
+address	भाई साहब
+address	सुनिए जी
+address	अरे भाई
+address	हुदहुद भाई
+address	भैया जी
+address	सुनो तो
+address	ऐ दोस्त
+address	प्यारे भाई
+address	हुद हुद
+salaam	अस्सलाम अलैकुम व रहमतुल्लाह भाई
+salaam	सलाम भाई
+salaam	असलाम अलेकुम
+salaam	अस्सलामु अलैकुम हुदहुद
+salaam	सलाम जी
+salaam	सलाम अलैकुम जनाब
+salaam	अस्सलाम अलैकुम यार
+salaam	सलाम अलैकुम भाई जान
+salaam	अस्सलाम अलैकुम व रहमतुल्लाहि व बरकातुहू
+salaam	सलाम दोस्त
+salaam	सलामालेकुम
+salaam	सलाम है भाई
+salaam	अस्सलाम अलैकुम जी
+salaam	सलाम अर्ज़ है
+salaam	सलाम वालेकुम भाई
+hello	हेलो भाई साहब
+hello	हाय हुदहुद
+hello	अरे हेलो
+hello	गुड ईवनिंग
+hello	सुप्रभात जी
+hello	हेलो हेलो
+hello	हाय दोस्त
+hello	नमस्ते जी
+hello	नमस्कार भाई
+hello	हलो
+hello	आदाब अर्ज़ है
+hello	राम राम
+hello	गुड आफ्टरनून
+hello	हाय जी
+hello	गुड मॉर्निंग हुदहुद
+thanks	शुक्रिया जी
+thanks	थैंक्स
+thanks	बहुत मेहरबानी
+thanks	थैंक यू भाई
+thanks	धन्यवाद जी
+thanks	शुक्रिया यार
+thanks	बड़ा एहसान
+thanks	थैंक्स अ लॉट
+thanks	मेहरबानी आपकी
+thanks	बहुत बहुत धन्यवाद
+thanks	थैंक यू हुदहुद
+thanks	बहुत बहुत शुक्रिया
+thanks	शुक्रिया दोस्त
+thanks	तेरा शुक्रिया
+thanks	शुकरिया
+bye	बाय बाय यार
+bye	चलता हूं
+bye	फिर मिलेंगे
+bye	अच्छा ख़ुदा हाफ़िज़
+bye	ओके बाय
+bye	अल्लाह हाफ़िज़ भाई
+bye	टाटा बाय
+bye	अब मैं चलता हूं फिर मिलते हैं
+bye	शुभ रात्रि
+bye	गुड नाइट
+bye	चलो फिर बाद में बात होगी
+bye	बाय हुदहुद
+bye	नमस्ते चलता हूं
+bye	कल मिलते हैं यार बाय
+bye	अच्छा तो चलते हैं
+praise	वाह
+praise	ज़बरदस्त
+praise	कमाल कर दिया
+praise	तुम बहुत अच्छे हो
+praise	गुड जॉब हुदहुद
+praise	बहुत ख़ूब
+praise	मज़ा आ गया यार तू तो बड़ा तेज़ है
+praise	शाबाश हुदहुद
+praise	क्या बात है तेरी
+praise	वेरी गुड
+praise	बढ़िया
+praise	भाई तू तो हीरो निकला
+praise	बहुत अच्छा काम किया
+praise	आप बहुत जबरदस्त हो
+praise	दिल ख़ुश कर दिया
+owner_name	मैं कौन हूं भला
+owner_name	मेरा नाम?
+owner_name	तुम मुझे किस नाम से जानते हो
+owner_name	मुझे पहचानते हो
+owner_name	बताओ तो मैं कौन हूं
+owner_name	मेरा नाम पता है तुम्हें
+owner_name	आपके पास मेरा नाम क्या लिखा है
+owner_name	तू मुझे क्या कहके बुलाता है
+owner_name	यार मेरा नाम याद है तुझे
+owner_name	मुझे क्या बुलाते हो तुम
+owner_name	मेरा नाम बता
+owner_name	मुझे जानते भी हो कि नहीं
+owner_name	ज़रा बताओ तुम मुझे किस नाम से पुकारते हो
+owner_name	मेरा नाम क्या सेव है तुम्हारे पास
+owner_name	अच्छा मेरा नाम बोलो
+maker	किसने बनाया तुम्हें
+maker	तुम्हारा मालिक कौन है
+maker	ये ऐप किसकी है
+maker	बनाने वाली कंपनी का नाम
+maker	किस कंपनी का ऐप है ये
+maker	तुम्हें कहां बनाया गया
+maker	डेवलपर कौन है इस ऐप का
+maker	रोशन खाता किसने बनाया
+maker	यार तुझे किसने पैदा किया
+maker	आपको किसने बनाया
+maker	इस ऐप के पीछे कौन लोग हैं
+maker	ये सॉफ्टवेयर किसका बनाया हुआ है
+maker	किसने तैयार की ये ऐप
+maker	तुम्हारा उस्ताद कौन है जिसने तुम्हें बनाया
+maker	कंपनी कौन सी है तुम्हारी
+app_about	ये क्या ऐप है
+app_about	रोशन खाता के बारे में बताओ
+app_about	ये ऐप क्या करती है
+app_about	इस ऐप का काम क्या है
+app_about	ऐप का परिचय
+app_about	यह एप्लिकेशन किसलिए है
+app_about	रोशन खाता में क्या क्या है
+app_about	भाई ये ऐप है क्या चीज़
+app_about	इस ऐप का फ़ायदा क्या है
+app_about	रोशन खाता क्या हे
+app_about	ये खाता ऐप किस चीज़ की है
+app_about	ज़रा इस ऐप की जानकारी दो क्या क्या होता है इसमें
+app_about	ऐप किस मक़सद के लिए बनी
+app_about	ये सॉफ्टवेयर क्या काम आता है
+app_about	रोशन खाता ऐप समझाओ
+privacy	मेरा डेटा कहां जाता है
+privacy	डेटा सेफ़ है ना
+privacy	कोई और तो मेरा हिसाब नहीं देख सकता
+privacy	मेरा खाता किसी सर्वर पर तो नहीं
+privacy	डेटा सुरक्षित?
+privacy	मेरी जानकारी कहीं लीक तो नहीं होगी
+privacy	तुम मेरा डेटा किसी को देते हो
+privacy	यार मेरे ग्राहकों के नंबर कहीं बाहर तो नहीं जाते
+privacy	मेरा डेटा किसके पास है
+privacy	प्राइवेसी का क्या सिस्टम है
+privacy	डेटा चोरी तो नहीं हो सकता
+privacy	मेरा हिसाब किताब महफ़ूज़ है
+privacy	क्या कंपनी मेरा डेटा देखती है
+privacy	मेरा रिकॉर्ड फ़ोन में ही रहता है या इंटरनेट पर
+privacy	क्या मेरी बातें रिकॉर्ड होती हैं
+languages	कौन कौन सी भाषा आती है
+languages	हिंदी समझते हो
+languages	तुम कितनी लैंग्वेज बोलते हो
+languages	क्या तुम पंजाबी समझते हो
+languages	लैंग्वेज कौन सी हैं
+languages	उर्दू में बात कर सकते हो
+languages	आपको कितनी भाषाएं आती हैं
+languages	किस भाषा में पूछूं तुमसे
+languages	बंगाली आती है तुम्हें
+languages	भाषाएं?
+languages	तुम इंग्लिश भी समझ लेते हो या सिर्फ़ हिंदी
+languages	यार तू कौन कौन सी बोली समझता है
+languages	अरबी में जवाब दोगे
+languages	कौन सी जबान समझते हो
+languages	ऐप कितनी भाषाओं में चलती है
+date_time	आज क्या डेट है
+date_time	टाइम?
+date_time	कितने बज गए
+date_time	आज कौन सा दिन है भाई
+date_time	तारीख़ बताओ
+date_time	आज शुक्रवार है क्या
+date_time	अभी क्या वक़्त हुआ है
+date_time	अज क्या तारीख है
+date_time	घड़ी में क्या टाइम है
+date_time	आज कौन सी तिथि है
+date_time	महीने की कौन सी तारीख़ चल रही है
+date_time	इस्लामी तारीख़ क्या है आज
+date_time	दिन कौन सा है आज
+date_time	यार टाइम बता ज़रा
+date_time	आज सोमवार है या मंगल
+today_summary	आज क्या क्या करना है
+today_summary	आज का काम
+today_summary	आज किस चीज़ पर ध्यान दूं
+today_summary	सुबह की रिपोर्ट दो
+today_summary	आज के ज़रूरी काम बताओ
+today_summary	आज क्या देखना है मुझे
+today_summary	आज का हाल सुनाओ दुकान का
+today_summary	भाई आज क्या क्या रह गया है
+today_summary	आज की लिस्ट बताओ क्या क्या पेंडिंग
+today_summary	अज का सार
+today_summary	आज कौन कौन से काम बाक़ी हैं
+today_summary	आज दुकान में किस पर ध्यान चाहिए
+today_summary	दिन का ख़ुलासा सुना दो
+today_summary	आज के लिए क्या है
+today_summary	आज की ब्रीफिंग
+sales_today	आज की सेल
+sales_today	आज कितने का माल बिका
+sales_today	आज की बिक्री कितनी रही
+sales_today	सेल कितनी हुई आज
+sales_today	आज टोटल सेल बताओ
+sales_today	भाई आज दुकान पर कितने की सेल हुई
+sales_today	आज की सेल कितनी हे
+sales_today	आज कितने रुपये का सामान बेचा
+sales_today	आज की सेल का टोटल
+sales_today	आज कितनी कितनी बिक्री हुई
+sales_today	अभी तक आज की बिक्री कितनी हो गई
+sales_today	आज का सेल फ़िगर
+sales_today	यार आज कितने की बिक्री हुई है बता
+sales_today	आज बेचा कितना
+sales_today	आज की कुल बिक्री
+sales_period	कल की सेल
+sales_period	इस हफ़्ते की सेल
+sales_period	पिछले महीने कितनी सेल हुई थी
+sales_period	लास्ट वीक की बिक्री
+sales_period	कल कितने का माल निकला था दुकान से
+sales_period	इस महीने अब तक कितना बिका
+sales_period	पिछले हफ़्ते की बिक्री बताओ
+sales_period	पिछले महीने की टोटल सेल
+sales_period	भाई कल दुकान पर कितनी बिक्री रही
+sales_period	इस हफ़्ते कितने का सामान बेचा
+sales_period	कल की सेल कितनी रही थी
+sales_period	इस मंथ की सेल बताओ ज़रा
+sales_period	पिछले हफ़्ते कितना कितना बिका
+sales_period	महीने भर की बिक्री कितनी हुई
+sales_period	लास्ट मंथ सेल
+profit	मुनाफ़ा?
+profit	आज का प्रॉफिट
+profit	इस हफ़्ते कितना कमाया
+profit	पिछले हफ़्ते का मुनाफ़ा बताओ
+profit	कल कितनी बचत हुई
+profit	इस महीने कितना फ़ायदा हुआ
+profit	कमाई कितनी हुई इस महीने
+profit	लास्ट मंथ का प्रॉफिट
+profit	भाई आज कितना कमाया हमने
+profit	इस हफ़्ते का नफ़ा कितना रहा
+profit	आज का मुनाफा कितना हे
+profit	महीने का नेट प्रॉफिट बताओ
+profit	कल कितना लाभ रहा दुकान को
+profit	पिछले महीने की कमाई क्या रही
+profit	यार ख़र्चा निकाल के इस महीने कितना बचा
+to_get	कुल लेना कितना है
+to_get	उधार कितना फैला हुआ है
+to_get	टोटल रिसीवेबल
+to_get	ग्राहकों की तरफ़ कुल कितनी रक़म है
+to_get	मेरा कितना पैसा बाहर है
+to_get	लोगों ने कुल कितना देना है मुझे
+to_get	सब ग्राहकों का मिलाकर उधार कितना है
+to_get	लेने वाली रक़म बताओ
+to_get	कुल बकाया कितना लेना है
+to_get	टोटल उधारी मार्केट में
+to_get	भाई मुझे सबसे मिलाकर कितने लेने हैं
+to_get	कितना पैसा वसूल करना बाक़ी है कुल
+to_get	मुझे कुल कितना लेना हे
+to_get	सबका उधार जोड़ो कितना बनता है
+to_get	लेना टोटल
+to_give	कुल देना कितना है
+to_give	मैंने लोगों का कितना देना है
+to_give	टोटल पेएबल
+to_give	कंपनियों का कितना बकाया है मेरे ज़िम्मे
+to_give	सप्लायरों का कुल कितना देना है
+to_give	मुझ पर कितना उधार चढ़ा हुआ है
+to_give	देने वाली रक़म बताओ
+to_give	कुल भुगतान कितना करना है मुझे
+to_give	भाई मैंने सबको मिलाकर कितना देना है
+to_give	मेरे ज़िम्मे कितने पैसे हैं
+to_give	देना टोटल
+to_give	डीलरों को कितना देना रह गया
+to_give	मुझे कुल कितना देना हे
+to_give	मार्केट का कितना देना है मुझे
+to_give	यार मेरी देनदारी कितनी बन गई है सब मिलाके
+who_owes_most	सबसे बड़ा उधार वाला कौन
+who_owes_most	टॉप उधार किसका
+who_owes_most	किसकी तरफ़ सबसे ज़्यादा रक़म है
+who_owes_most	सबसे ज़्यादा किसने देना है
+who_owes_most	नंबर वन बकायादार
+who_owes_most	किस ग्राहक पर सबसे ज़्यादा पैसा है
+who_owes_most	सबसे बड़ी रक़म किसके ज़िम्मे है
+who_owes_most	भाई सबसे मोटा उधार किसका चल रहा है
+who_owes_most	कौन सा कस्टमर सबसे ज़्यादा कर्ज़दार है
+who_owes_most	सबसे जादा उधार किस पर है
+who_owes_most	सबसे ज़्यादा लेना किससे है
+who_owes_most	किस एक बंदे ने सबसे ज़्यादा पैसे रोके हुए हैं
+who_owes_most	टॉप डेटर कौन है
+who_owes_most	सबसे ऊपर किसका नाम है उधार में
+who_owes_most	उधारी में सबसे आगे कौन
+not_paid	किसने पैसे नहीं दिए
+not_paid	लेट वाले कौन हैं
+not_paid	किन लोगों का भुगतान लेट है
+not_paid	कौन पैसे दबा के बैठा है
+not_paid	किस किस का उधार पुराना हो गया
+not_paid	ओवरड्यू कस्टमर
+not_paid	पैसे रोकने वाले ग्राहक बताओ
+not_paid	किसने वादा करके नहीं दिया
+not_paid	कौन कौन अभी तक नहीं दे रहा
+not_paid	देर से देने वाले कौन कौन हैं
+not_paid	भाई किस किस की पेमेंट लेट चल रही है
+not_paid	किसने काफ़ी दिनों से कुछ नहीं दिया
+not_paid	किसने पेसे नही दिए
+not_paid	देरी किस किस की है
+not_paid	बकाया न चुकाने वाले कौन हैं
+likely_payers	आज किससे पैसे आएंगे
+likely_payers	आज कौन कौन देगा
+likely_payers	आज किसके देने की बारी है
+likely_payers	आज किनसे वसूली की उम्मीद है
+likely_payers	आज पैसे देने वाले कौन
+likely_payers	भाई आज किस किस के पैसे आने का चांस है
+likely_payers	इन दिनों कौन देता है पैसे
+likely_payers	आज किसके पास जाऊं पैसे लेने
+likely_payers	आज कौन कौन दे सकता है
+likely_payers	आज किससे मिलने की आस है
+likely_payers	अज कौन पैसे देगा
+likely_payers	आज किसकी पेमेंट एक्सपेक्टेड है
+likely_payers	इस वक़्त आम तौर पर कौन भुगतान करता है
+likely_payers	आज किस किस ने देने हैं
+likely_payers	यार आज कोई देने वाला है या नहीं
+collected	आज की वसूली
+collected	आज कितना पैसा आया ग्राहकों से
+collected	कल कितने पैसे वसूल हुए
+collected	इस हफ़्ते की रिकवरी कितनी है
+collected	आज कस्टमरों से कितना मिला
+collected	पिछले हफ़्ते कितनी वसूली हुई
+collected	इस महीने कितनी रक़म वसूल हुई
+collected	आज उधार वापस कितना आया
+collected	रिकवरी?
+collected	भाई आज लोगों ने कितने पैसे जमा करवाए
+collected	पिछले महीने कितना पैसा वापस आया
+collected	अज कितनी वसूली हुई
+collected	कल ग्राहकों से कितनी पेमेंट आई
+collected	आज कैश और ऑनलाइन मिलाकर कितनी वसूली हुई
+collected	इस हफ़्ते उधार वालों ने कितना दिया
+drawer	गल्ला
+drawer	गल्ले में कितने पैसे हैं
+drawer	कैश गिन लूं ज़रा
+drawer	दिन बंद करो
+drawer	दराज़ का कैश बताओ
+drawer	हाथ में कितना नक़द है
+drawer	गल्ला गिनती करना है
+drawer	क्लोज़िंग करनी है आज की
+drawer	भाई गल्ले में कितना होना चाहिए अभी
+drawer	कैश ड्रॉअर में कितना पड़ा है
+drawer	नक़दी कितनी है दुकान में
+drawer	गले में कितना कैश पड़ा है
+drawer	आज का दिन क्लोज़ कर दो
+drawer	गल्ला मिलाना है
+drawer	काउंटर की दराज़ में कितनी रक़म होनी चाहिए
+expiring	एक्सपायरी वाला माल
+expiring	क्या एक्सपायर होने वाला है
+expiring	कौन सी दवाई की एक्सपायरी क़रीब है
+expiring	जिस माल की तारीख़ ख़त्म हो रही है वो बताओ
+expiring	नियर एक्सपायरी आइटम
+expiring	कौन कौन सा माल ख़राब होने वाला है तारीख़ से
+expiring	एक्सपायर होने वाली चीज़ें
+expiring	किस बैच की एक्सपायरी आ रही है
+expiring	भाई कौन सा स्टॉक एक्सपायर हो जाएगा जल्दी
+expiring	अगले महीने क्या क्या एक्सपायर होगा
+expiring	एक्सपायरी चेक करो
+expiring	कौनसा माल एक्सपायर हो रहा हे
+expiring	मियाद ख़त्म होने वाला सामान
+expiring	किन चीज़ों की डेट निकलने वाली है
+expiring	पुरानी तारीख़ वाला माल कौन सा पड़ा है
+low_stock	क्या कम है
+low_stock	कम स्टॉक वाला माल
+low_stock	क्या मंगवाना है
+low_stock	कौन सी चीज़ें ख़त्म हो रही हैं
+low_stock	ऑर्डर किस किस का देना है
+low_stock	क्या क्या थोड़ा रह गया है
+low_stock	लो स्टॉक आइटम
+low_stock	किस माल की कमी है दुकान में
+low_stock	भाई क्या क्या मंगवाना पड़ेगा
+low_stock	स्टॉक कम किस किस का है
+low_stock	कौन सा सामान ख़त्म होने के क़रीब है
+low_stock	रीऑर्डर लिस्ट बताओ
+low_stock	क्या क्या खतम होने लगा है
+low_stock	कौन सा माल दोबारा लेना है
+low_stock	शेल्फ़ पर क्या क्या ख़त्म हो रहा है
+party_balance	{NAME} का बैलेंस
+party_balance	{NAME} का कितना बनता है
+party_balance	{NAME} की तरफ़ कितना है
+party_balance	{NAME} से कितना लेना है
+party_balance	{NAME} को कितना देना है
+party_balance	{NAME} का उधार कितना है
+party_balance	{NAME} का खाता खोलो
+party_balance	भाई {NAME} का हिसाब बताना ज़रा
+party_balance	{NAME} का बकाया
+party_balance	{NAME} पर कितने पैसे हैं
+party_balance	{NAME} का हिसाप कितना हे
+party_balance	{NAME} का अकाउंट दिखाओ
+party_balance	{NAME} का टोटल क्या बन गया
+party_balance	यार {NAME} के कितने पैसे रहते हैं
+party_balance	{NAME} हिसाब
+party_phone	{NAME} का फ़ोन
+party_phone	{NAME} का मोबाइल नंबर
+party_phone	{NAME} का नंबर क्या है
+party_phone	{NAME} को कॉल करनी है नंबर दो
+party_phone	{NAME} का कॉन्टैक्ट नंबर
+party_phone	{NAME} का नंबर बताओ
+party_phone	{NAME} का संपर्क नंबर
+party_phone	भाई {NAME} का नंबर है तुम्हारे पास
+party_phone	{NAME} का व्हाट्सऐप नंबर
+party_phone	{NAME} नंबर
+party_phone	{NAME} का नम्बर बता
+party_phone	{NAME} का फ़ोन नंबर लिखा है क्या
+party_phone	{NAME} से संपर्क कैसे करूं नंबर क्या है
+party_phone	{NAME} का सेल नंबर दिखाओ
+party_phone	ज़रा {NAME} का मोबाइल बताना
+party_last_payment	{NAME} ने आख़िरी दफ़ा कब दिया
+party_last_payment	{NAME} की लास्ट पेमेंट
+party_last_payment	{NAME} ने पिछली बार कब पैसे दिए थे
+party_last_payment	{NAME} की आख़िरी वसूली कब हुई
+party_last_payment	{NAME} ने आख़िरी बार कितने दिए और कब
+party_last_payment	{NAME} से आख़िरी पैसे कब मिले थे
+party_last_payment	{NAME} का पिछला भुगतान कब का है
+party_last_payment	{NAME} लास्ट टाइम कब देके गया
+party_last_payment	भाई {NAME} ने आख़िरी पेमेंट कब की थी
+party_last_payment	{NAME} की आखरी पेमेंट कब आई
+party_last_payment	{NAME} ने कब से पैसे नहीं दिए
+party_last_payment	{NAME} का आख़िरी जमा कब हुआ था
+party_last_payment	{NAME} आख़िरी भुगतान
+party_last_payment	{NAME} ने पिछले दिनों कब दिए थे पैसे
+party_last_payment	यार {NAME} ने लास्ट कब पैसे जमा करवाए
+party_limit	{NAME} की लिमिट
+party_limit	{NAME} की उधार लिमिट कितनी है
+party_limit	{NAME} को कितने तक उधार देना है
+party_limit	{NAME} की हद क्या रखी है
+party_limit	{NAME} की क्रेडिट लिमिट बताओ
+party_limit	{NAME} की लिमिट कितनी बची है
+party_limit	{NAME} को और उधार दे सकते हैं क्या लिमिट में
+party_limit	{NAME} की उधार की सीमा
+party_limit	भाई {NAME} की लिमिट कितनी सेट है
+party_limit	{NAME} कितने तक उधार ले सकता है
+party_limit	{NAME} की लिमट कितनी हे
+party_limit	{NAME} ने लिमिट क्रॉस कर ली है क्या
+party_limit	{NAME} की ज़्यादा से ज़्यादा उधार की रक़म
+party_limit	{NAME} लिमिट
+party_limit	{NAME} का क्रेडिट कितने तक अलाउड है
+party_promise	{NAME} का वादा
+party_promise	{NAME} ने कब का वादा किया है
+party_promise	{NAME} ने कौन सा दिन दिया था पैसे देने का
+party_promise	{NAME} की वादे की तारीख़
+party_promise	{NAME} ने किस तारीख़ का कहा है
+party_promise	{NAME} का प्रॉमिस किस दिन का है
+party_promise	{NAME} ने क्या तारीख़ बोली थी
+party_promise	भाई {NAME} ने किस दिन का बोला था
+party_promise	{NAME} ने पैसे देने का वादा कब का किया
+party_promise	{NAME} का वादा कब का हे
+party_promise	{NAME} ने कौन सी डेट दी है
+party_promise	{NAME} की वादे वाली तारीख़ बताओ
+party_promise	{NAME} ने ज़बान किस दिन की दी थी
+party_promise	{NAME} वादा तारीख़
+party_promise	{NAME} ने जो दिन बताया था वो कौन सा था
+party_when_pays	{NAME} कब पैसे देगा
+party_when_pays	{NAME} कब देगा पैसे
+party_when_pays	{NAME} से कब मिलने की उम्मीद है
+party_when_pays	{NAME} की पेमेंट कब आएगी
+party_when_pays	{NAME} कब तक भुगतान करेगा
+party_when_pays	{NAME} कब दे सकता है
+party_when_pays	कब देगा {NAME}
+party_when_pays	भाई {NAME} के पैसे कब आएंगे
+party_when_pays	{NAME} अक्सर किन दिनों में देता है
+party_when_pays	{NAME} कब देगा पेसे
+party_when_pays	{NAME} से वसूली कब होगी
+party_when_pays	{NAME} कितने दिन में दे देगा
+party_when_pays	{NAME} का पैसा कब तक आ जाएगा
+party_when_pays	अंदाज़ा बताओ {NAME} कब देगा
+party_when_pays	{NAME} देगा कब
+party_details	{NAME} की डिटेल्स
+party_details	{NAME} का एड्रेस
+party_details	{NAME} कहां रहता है
+party_details	{NAME} का गांव कौन सा है
+party_details	{NAME} के पापा का नाम
+party_details	{NAME} की जानकारी दिखाओ
+party_details	{NAME} किसका बेटा है
+party_details	{NAME} का घर कहां है
+party_details	भाई {NAME} के बारे में क्या क्या लिखा है
+party_details	{NAME} का पूरा ब्योरा
+party_details	{NAME} कहां का रहने वाला है
+party_details	{NAME} का पता क्या हे
+party_details	{NAME} के पिता जी कौन हैं
+party_details	{NAME} कौन है कहां से है
+party_details	{NAME} विवरण
+entry_gave	{NAME} को 800 उधार दिए
+entry_gave	{NAME} 1500 का सामान ले गया उधार पर
+entry_gave	{NAME} को 250 का आटा दिया उधार
+entry_gave	{NAME} के खाते में 3000 उधार लिखो
+entry_gave	{NAME} ने 600 की दवाई उधार ली
+entry_gave	मैंने {NAME} को 5000 नक़द दिए
+entry_gave	{NAME} को 450 का कपड़ा उधार दिया है
+entry_gave	{NAME} को 10000 दिए हैं
+entry_gave	भाई {NAME} 700 का माल उधार ले गया है
+entry_gave	{NAME} को 1200 उधार दिया
+entry_gave	{NAME} पर 900 चढ़ा दो उधार ले गया है
+entry_gave	{NAME} ने 2500 का सीमेंट उधार उठाया
+entry_gave	{NAME} को 150 का रिचार्ज उधार दिया
+entry_gave	अज {NAME} को 4000 कर्ज़ दिया
+entry_gave	{NAME} को दिए 300
+entry_got	{NAME} ने 800 दे दिए
+entry_got	{NAME} से 1500 आए
+entry_got	{NAME} ने 250 जमा करवा दिए
+entry_got	{NAME} ने 3000 वापस किए
+entry_got	{NAME} से 600 वसूल किए
+entry_got	{NAME} 5000 दे गया है
+entry_got	{NAME} ने 450 चुकाए
+entry_got	मुझे {NAME} से 10000 मिल गए
+entry_got	भाई {NAME} ने 700 जमा कराए हैं
+entry_got	{NAME} ने 1200 दिया
+entry_got	{NAME} की तरफ़ से 900 आ गए
+entry_got	{NAME} ने 2500 ऑनलाइन भेजे हैं
+entry_got	{NAME} से 150 लिए
+entry_got	अज {NAME} ने 4000 का भुगतान किया
+entry_got	{NAME} से मिले 300
+goods_price	{ITEM} रेट
+goods_price	{ITEM} की क़ीमत
+goods_price	{ITEM} क्या भाव है
+goods_price	{ITEM} कितने में बेचना है
+goods_price	{ITEM} का दाम बताओ
+goods_price	{ITEM} का प्राइस क्या है
+goods_price	{ITEM} का नक़द रेट और उधार रेट
+goods_price	भाई {ITEM} कितने का दे रहे हैं हम
+goods_price	{ITEM} की सेल प्राइस
+goods_price	{ITEM} का भाव क्या चल रहा है आजकल
+goods_price	{ITEM} का रेट क्या हे
+goods_price	{ITEM} किस भाव बिकता है
+goods_price	{ITEM} के कितने पैसे लेने हैं ग्राहक से
+goods_price	{ITEM} प्राइस
+goods_price	ज़रा {ITEM} का रेट देखना
+goods_stock	{ITEM} स्टॉक
+goods_stock	{ITEM} कितना रहता है
+goods_stock	{ITEM} के कितने पीस पड़े हैं
+goods_stock	{ITEM} है दुकान में
+goods_stock	{ITEM} कितनी मात्रा में मौजूद है
+goods_stock	{ITEM} का कितना माल बचा
+goods_stock	{ITEM} ख़त्म तो नहीं हुआ
+goods_stock	भाई {ITEM} कितना पड़ा है गोदाम में
+goods_stock	{ITEM} की कितनी बोरी बची हैं
+goods_stock	{ITEM} मौजूद है क्या
+goods_stock	{ITEM} का स्टाक कितना हे
+goods_stock	{ITEM} के कितने डिब्बे रहते हैं
+goods_stock	{ITEM} शेल्फ़ पर कितना है
+goods_stock	{ITEM} उपलब्ध है
+goods_stock	{ITEM} कितना कितना बचा है
+goods_suppliers	{ITEM} सस्ता कौन देता है
+goods_suppliers	{ITEM} का ख़रीद रेट
+goods_suppliers	{ITEM} किससे लेना सस्ता पड़ेगा
+goods_suppliers	{ITEM} की परचेज़ प्राइस क्या थी
+goods_suppliers	{ITEM} किस सप्लायर का रेट कम है
+goods_suppliers	{ITEM} कहां से मंगवाते हैं हम
+goods_suppliers	{ITEM} पिछली बार कितने में ख़रीदा था
+goods_suppliers	{ITEM} के सप्लायर बताओ
+goods_suppliers	भाई {ITEM} किस कंपनी से सस्ता मिलता है
+goods_suppliers	{ITEM} किस डीलर से आता है
+goods_suppliers	{ITEM} की ख़रीद कितने की है
+goods_suppliers	{ITEM} का परचेज रेट क्या हे
+goods_suppliers	{ITEM} सबसे कम रेट पर कौन दे रहा है
+goods_suppliers	{ITEM} किस किस से लिया है और किस भाव
+goods_suppliers	{ITEM} सप्लायर
+goods_buyers	{ITEM} किसने लिया
+goods_buyers	{ITEM} किस किस को बेचा
+goods_buyers	{ITEM} कौन लेके गया था
+goods_buyers	{ITEM} के ग्राहक कौन हैं
+goods_buyers	{ITEM} किन लोगों ने ख़रीदा है
+goods_buyers	{ITEM} किसको दिया था
+goods_buyers	{ITEM} लेने वाले कौन कौन हैं
+goods_buyers	भाई {ITEM} किस किस कस्टमर ने उठाया
+goods_buyers	{ITEM} किसने खरीदा हे
+goods_buyers	{ITEM} के बायर्स बताओ
+goods_buyers	{ITEM} किस किस के पास गया है
+goods_buyers	{ITEM} सबसे ज़्यादा कौन लेता है
+goods_buyers	{ITEM} कौन कौन ख़रीदता है
+goods_buyers	{ITEM} ख़रीदने वालों की लिस्ट
+goods_buyers	{ITEM} किसने लिया था आज
+goods_sold	{ITEM} की सेल
+goods_sold	{ITEM} आज कितना बिका
+goods_sold	{ITEM} कितना निकला इस हफ़्ते
+goods_sold	इस महीने {ITEM} की कितनी बिक्री हुई
+goods_sold	{ITEM} के कितने पीस बिके
+goods_sold	कल {ITEM} कितना बिका था
+goods_sold	{ITEM} कितना बेचा गया
+goods_sold	पिछले महीने {ITEM} कितना बिका
+goods_sold	भाई {ITEM} कितना बिक गया अब तक
+goods_sold	{ITEM} की कितनी बोरी बिकी हैं
+goods_sold	{ITEM} कितना बिका हे
+goods_sold	{ITEM} की बिक्री बताओ
+goods_sold	अज {ITEM} के कितने डिब्बे निकले
+goods_sold	{ITEM} कितने का बिका इस महीने
+goods_sold	{ITEM} बिका कितना
+shop_info	दुकान का नाम
+shop_info	मेरी दुकान का पता
+shop_info	दुकान का नंबर क्या सेव है
+shop_info	शॉप का एड्रेस बताओ
+shop_info	ऐप में दुकान का क्या नाम लिखा है
+shop_info	मेरी शॉप की डिटेल्स
+shop_info	बिज़नेस प्रोफ़ाइल में क्या लिखा है
+shop_info	दुकान का फ़ोन नंबर
+shop_info	भाई मेरी दुकान का नाम क्या डाला हुआ है
+shop_info	कारोबार का नाम क्या है
+shop_info	दुकान का पता क्या लिखा हे
+shop_info	शॉप का कॉन्टैक्ट नंबर कौन सा है
+shop_info	दुकान की जानकारी दिखाओ
+shop_info	मेरे बिज़नेस का नाम और एड्रेस
+shop_info	इनवॉइस पर दुकान का क्या नाम आता है
+count_customers	कस्टमर कितने हैं
+count_customers	कुल ग्राहक
+count_customers	कितने लोग हैं मेरे खाते में
+count_customers	सप्लायरों की संख्या
+count_customers	मेरे कितने कस्टमर बन गए
+count_customers	टोटल पार्टियां कितनी हैं
+count_customers	ग्राहक कितने हैं मेरे पास
+count_customers	कितने खातेदार हैं
+count_customers	भाई कुल कितने कस्टमर ऐड हैं
+count_customers	कितने सप्लायर ऐड किए हैं मैंने
+count_customers	कितने गराहक हैं
+count_customers	कस्टमर और सप्लायर कितने कितने हैं
+count_customers	खाते में कितने नाम हैं
+count_customers	टोटल कस्टमर्स
+count_customers	कितनी कंपनियों से माल लेता हूं गिनती बताओ
+count_products	प्रोडक्ट्स कितने हैं
+count_products	कुल कितना सामान ऐड है
+count_products	कितने आइटम्स हैं
+count_products	कितनी क़िस्म का माल है दुकान में
+count_products	टोटल प्रोडक्ट्स
+count_products	प्रोडक्ट लिस्ट में कितनी चीज़ें हैं
+count_products	कितने आइटम डाले हुए हैं
+count_products	भाई कुल कितने प्रोडक्ट बना रखे हैं
+count_products	कितनी दवाइयां ऐड हैं
+count_products	माल की कितनी वैरायटी है
+count_products	कितने प्रोडक्ट हे कुल
+count_products	आइटम की गिनती बताओ
+count_products	सामान की संख्या कितनी है
+count_products	कितने प्रोडक्ट सेव हैं ऐप में
+count_products	कुल चीज़ें कितनी
+bills_today	आज कितने बिल आए
+bills_today	आज सप्लायर के कितने बिल डाले
+bills_today	कल कितने के बिल चढ़ाए थे
+bills_today	इस हफ़्ते कितने का माल बिल पर आया
+bills_today	आज के सप्लायर बिल्स
+bills_today	इस महीने कितने सप्लायर बिल ऐड हुए
+bills_today	पिछले हफ़्ते कितने बिल बने थे सप्लायर के
+bills_today	आज ख़रीद के कितने बिल लिखे
+bills_today	भाई आज कंपनी के कितने बिल एंटर हुए
+bills_today	पिछले महीने कितने के बिल आए थे
+bills_today	अज कितने बिल ऐड हुए
+bills_today	आज परचेज़ बिल कितने हैं
+bills_today	कल सप्लायर बिल कितने की रक़म के थे
+bills_today	इस हफ़्ते ख़रीदारी के बिल कितने
+bills_today	आज कितने कितने के बिल चढ़े हैं सप्लायर के
+invoices_today	आज के इनवॉइस
+invoices_today	आज कितने इनवॉइस कटे
+invoices_today	कल कितनी इनवॉइस बनाई
+invoices_today	इस महीने कुल कितने इनवॉइस बना डाले
+invoices_today	आज इनवॉइस कितनी बनी हैं
+invoices_today	पिछले हफ़्ते कितने इनवॉइस बने थे
+invoices_today	आज कोई इनवॉइस बनी है
+invoices_today	इस हफ़्ते के इनवॉइस बताओ
+invoices_today	भाई आज कितनी इनवॉइस निकाली हमने
+invoices_today	पिछले महीने कितनी इनवॉइस बनी थीं
+invoices_today	अज कितनी इनवाइस बनी
+invoices_today	आज कोटेशन और इनवॉइस कितनी बनी
+invoices_today	कल के इनवॉइस कितने थे
+invoices_today	इनवॉइस कितनी हुई आज
+invoices_today	आज कितने की इनवॉइस बनी हैं
+tickets_today	आज कितनी रसीदें
+tickets_today	आज काउंटर पर कितने टिकट कटे
+tickets_today	आज कितनी पर्चियां बनीं
+tickets_today	कल काउंटर सेल की कितनी रसीद बनी
+tickets_today	आज काउंटर से कितनी पर्ची कटी
+tickets_today	इस हफ़्ते कितने टिकट बने काउंटर पर
+tickets_today	आज काउंटर सेल कितनी दफ़ा हुई
+tickets_today	इस महीने काउंटर की कितनी रसीदें बनीं
+tickets_today	आज रसीदों की गिनती
+tickets_today	भाई आज काउंटर पर कितनी रसीद कटी हैं
+tickets_today	पिछले हफ़्ते कितनी काउंटर रसीदें थीं
+tickets_today	अज कितनी रसीद बनी
+tickets_today	आज काउंटर सेल के कितने टिकट
+tickets_today	कल कितनी रसीदें कटी थीं
+tickets_today	पिछले महीने काउंटर पर कितने टिकट बने
+entries_today	आज की एंट्रीज़
+entries_today	आज कितनी एंट्री लिखी
+entries_today	कल खाते में कितनी एंट्रियां हुई थीं
+entries_today	आज कितनी प्रविष्टियां हुईं
+entries_today	इस हफ़्ते कितनी एंट्री लिखी गई
+entries_today	आज खाते में कितना कुछ लिखा गया गिनती बताओ
+entries_today	इस महीने कितनी एंट्रियां हुईं
+entries_today	आज एंट्री कितनी हुई हैं
+entries_today	भाई आज कितनी एंट्रियां डाली हैं हमने
+entries_today	पिछले हफ़्ते कितनी एंट्रियां लिखी थीं
+entries_today	अज कितनी एंट्री हुई
+entries_today	आज खाता एंट्रियों की संख्या
+entries_today	कल कितनी एंट्री चढ़ाई थीं
+entries_today	पिछले महीने कितनी एंट्री हुई थीं
+entries_today	एंट्रियां कितनी आज
+calculator_uses	कैलकुलेटर कितनी बार चला आज
+calculator_uses	आज कैलकुलेटर यूज़ हुआ क्या
+calculator_uses	आज कितने हिसाब कैलकुलेटर पर किए
+calculator_uses	कल कैलकुलेटर चला था
+calculator_uses	इस हफ़्ते कैलकुलेटर कितनी दफ़ा यूज़ हुआ
+calculator_uses	आज कैलकुलेटर कितनी मर्तबा खुला
+calculator_uses	कैलकुलेटर का इस्तेमाल आज
+calculator_uses	इस महीने कैलकुलेटर कितनी बार चलाया
+calculator_uses	भाई आज कैलकुलेटर पर कितनी बार हिसाब लगाया
+calculator_uses	पिछले हफ़्ते कैलकुलेटर कितना यूज़ हुआ
+calculator_uses	अज कैलकुलेटर कितनी बार चला
+calculator_uses	आज कैलकुलेटर से कितने जोड़ किए
+calculator_uses	कल कैलकुलेटर कितनी बार इस्तेमाल किया
+calculator_uses	कैलकुलेटर आज खोला था किसी ने
+calculator_uses	पिछले महीने कैलकुलेटर कितनी दफ़ा चला
+app_opens	ऐप कितनी बार खुली आज
+app_opens	आज ऐप कितनी मर्तबा खोली
+app_opens	आज कितनी दफ़ा ऐप ओपन की
+app_opens	कल ऐप कितनी बार खुली थी
+app_opens	इस हफ़्ते ऐप कितनी दफ़ा खोली गई
+app_opens	आज ऐप खोलने की गिनती
+app_opens	इस महीने ऐप कितनी बार ओपन हुई
+app_opens	आज मैंने ऐप कितनी बार खोली
+app_opens	भाई आज ये ऐप कितनी दफ़ा चली
+app_opens	पिछले हफ़्ते ऐप कितनी बार खुली थी
+app_opens	अज ऐप कितनी बार खुली
+app_opens	ऐप ओपन्स आज के
+app_opens	कल कितनी बार ऐप ओपन की थी
+app_opens	पिछले महीने ऐप कितनी मर्तबा खुली
+app_opens	आज रोशन खाता कितनी बार खोला गया
+cheques_status	चेक
+cheques_status	चेक का स्टेटस
+cheques_status	कौन से चेक पेंडिंग हैं
+cheques_status	कोई चेक बाउंस तो नहीं हुआ
+cheques_status	किस चेक की डेट आने वाली है
+cheques_status	चेक कितने पड़े हैं क्लियर होने वाले
+cheques_status	बाउंस चेक कौन से हैं
+cheques_status	आज किस चेक की तारीख़ है
+cheques_status	भाई चेकों का क्या सीन है
+cheques_status	कितने चेक क्लियर हो गए
+cheques_status	चैक का क्या हाल हे
+cheques_status	बैंक में लगाने वाले चेक कौन से हैं
+cheques_status	चेक कितने के पेंडिंग हैं
+cheques_status	ड्यू चेक बताओ
+cheques_status	किस किस का चेक पड़ा हुआ है
+plans_status	क़िस्तें
+plans_status	क़िस्तों का हिसाब
+plans_status	किसकी क़िस्त आज है
+plans_status	कितने प्लान चल रहे हैं
+plans_status	इंस्टॉलमेंट का स्टेटस
+plans_status	किसकी क़िस्त लेट है
+plans_status	क़िस्त प्लान का हाल बताओ
+plans_status	अगली क़िस्त किसकी और कब है
+plans_status	भाई क़िस्तों वाले खातों का क्या हाल है
+plans_status	कितनी क़िस्तें आ चुकी हैं कितनी रहती हैं
+plans_status	किस्तो का क्या हाल हे
+plans_status	इंस्टॉलमेंट प्लान कितने हैं
+plans_status	इस महीने किस किस की क़िस्त आनी है
+plans_status	ड्यू क़िस्तें बताओ
+plans_status	क़िस्त पर दिया माल किस किस का चल रहा है
+staff_salary	तनख़्वाह
+staff_salary	स्टाफ़ की सैलरी
+staff_salary	कर्मचारियों को कितना देना है
+staff_salary	किसकी तनख़्वाह बाक़ी है
+staff_salary	एडवांस किस किस ने लिया
+staff_salary	इस महीने का वेतन दिया जा चुका है
+staff_salary	लड़कों की सैलरी कितनी बनती है
+staff_salary	स्टाफ़ का एडवांस कितना है
+staff_salary	भाई काम वालों की तनख़्वाह का क्या हिसाब है
+staff_salary	सैलरी ड्यू किस किस की है
+staff_salary	तनखा कितनी देनी हे
+staff_salary	नौकर ने कितना एडवांस ले रखा है
+staff_salary	वर्कर्स की पगार बताओ
+staff_salary	तनख़्वाह देने का वक़्त आ गया क्या
+staff_salary	स्टाफ़ को कुल कितना देना बनता है
+deliveries	आज क्या आया
+deliveries	आज माल आया है
+deliveries	कल कौन कौन सा सामान आया था
+deliveries	इस हफ़्ते सप्लायर से क्या क्या आया
+deliveries	आज की डिलीवरी
+deliveries	आज कंपनी से कितना माल उतरा
+deliveries	पिछले हफ़्ते क्या माल आया था
+deliveries	इस महीने कितना माल आया है
+deliveries	भाई आज कौन सी गाड़ी का माल उतरा है
+deliveries	कल सप्लायर ने क्या भेजा था
+deliveries	अज क्या माल आया
+deliveries	आज स्टॉक में क्या नया आया
+deliveries	पिछले महीने कौन कौन सा माल आया था
+deliveries	आज किस सप्लायर का माल पहुंचा
+deliveries	माल की आमद आज की
+activity	आज क्या हुआ
+activity	आज किसने क्या किया
+activity	आज क्या एडिट हुआ
+activity	कल किसने एंट्री डिलीट की थी
+activity	आज ऐप में क्या बदलाव हुआ
+activity	इस हफ़्ते क्या क्या डिलीट हुआ
+activity	आज की एक्टिविटी
+activity	किसने क्या छेड़ा है आज
+activity	भाई आज किसने खाते में गड़बड़ की है
+activity	पिछले हफ़्ते किसने क्या बदला था
+activity	अज क्या क्या हुआ ऐप में
+activity	कल क्या क्या बदला गया
+activity	किसने क्या किया की हिस्ट्री दिखाओ
+activity	इस महीने कौन सी एंट्रियां मिटाई गईं
+activity	आज कोई वॉइड या डिलीट हुआ है
+backup_status	बैकअप
+backup_status	बैकअप कब हुआ था
+backup_status	आज बैकअप हुआ
+backup_status	बैकअप ले लिया है क्या
+backup_status	लास्ट बैकअप
+backup_status	मेरा डेटा बैकअप है ना
+backup_status	आख़िरी बार बैकअप कब बना
+backup_status	ड्राइव पर बैकअप गया है
+backup_status	भाई बैकअप हो रहा है या नहीं
+backup_status	बैकअप का स्टेटस
+backup_status	बेकअप हुआ हे क्या
+backup_status	कितने दिन से बैकअप नहीं हुआ
+backup_status	बैकअप ठीक चल रहा है
+backup_status	पिछला बैकअप किस दिन का है
+backup_status	बैकअप कब का पड़ा है
+book_summary	पूरा हिसाब
+book_summary	मेरे खाते का ख़ुलासा
+book_summary	सब कुछ बताओ मेरे खाते का
+book_summary	ओवरऑल हिसाब क्या है
+book_summary	मेरा टोटल डेटा
+book_summary	खाते की पूरी तस्वीर दिखाओ
+book_summary	सारे खाते की समरी
+book_summary	कुल मिलाकर क्या पोज़ीशन है
+book_summary	भाई मेरे पूरे कारोबार का हिसाब सुना दो
+book_summary	मेरा पूरा खाता एक नज़र में
+book_summary	मेरा खाता क्या कहता हे
+book_summary	दुकान का मुकम्मल हिसाब किताब
+book_summary	ओवरऑल अकाउंट बताओ
+book_summary	सबका सब हिसाब
+book_summary	पूरी बही का हाल
+cashbook_today	आज का ख़र्चा
+cashbook_today	कैश बुक
+cashbook_today	आज कितना पैसा आया और कितना गया
+cashbook_today	कल के ख़र्चे बताओ
+cashbook_today	आज कैशबुक में क्या क्या लिखा है
+cashbook_today	इस हफ़्ते कितना ख़र्चा हुआ
+cashbook_today	आज के ख़र्च
+cashbook_today	इस महीने कैश बुक में कितना आया कितना निकला
+cashbook_today	भाई आज दुकान के ख़र्चे कितने हुए
+cashbook_today	पिछले हफ़्ते का ख़र्चा कितना था
+cashbook_today	अज का खर्चा कितना हे
+cashbook_today	आज मनी इन मनी आउट बताओ
+cashbook_today	कल कैश बुक का क्या हिसाब था
+cashbook_today	पिछले महीने के ख़र्चे कितने थे
+cashbook_today	आज चाय पानी किराया वग़ैरह में कितना गया
+returns_today	आज की वापसी
+returns_today	आज क्या वापस आया
+returns_today	आज कितने रिटर्न हुए
+returns_today	कल कितना माल वापस हुआ था
+returns_today	इस हफ़्ते के रिटर्न
+returns_today	आज किसने माल वापस किया
+returns_today	इस महीने कितना सामान वापस आया
+returns_today	आज कोई चीज़ वापस हुई
+returns_today	भाई आज ग्राहकों ने क्या क्या वापस किया
+returns_today	पिछले हफ़्ते कितनी वापसी हुई थी
+returns_today	अज कितना माल वापिस आया
+returns_today	आज रिटर्न कितने के हुए
+returns_today	कल कोई रिटर्न आया था
+returns_today	पिछले महीने कितने का माल वापस आया
+returns_today	वापस आया हुआ माल आज का
+help_howto	इनवॉइस कैसे बनाऊं
+help_howto	बैकअप कैसे लूं
+help_howto	कस्टमर कैसे ऐड करते हैं
+help_howto	एंट्री कैसे लिखते हैं
+help_howto	बिल कैसे डालूं सप्लायर का
+help_howto	रिमाइंडर कैसे भेजते हैं व्हाट्सऐप पर
+help_howto	नया प्रोडक्ट कैसे बनाऊं
+help_howto	स्टेटमेंट कैसे निकालते हैं
+help_howto	भाई काउंटर सेल कैसे करते हैं इसमें
+help_howto	चेक कैसे दर्ज करूं
+help_howto	भाषा कैसे बदलते हैं
+help_howto	पीडीएफ केसे बनाते हैं
+help_howto	ऐप लॉक कैसे लगाते हैं
+help_howto	डेटा रिस्टोर करने का तरीक़ा बताओ
+help_howto	दिन बंद कैसे करते हैं तरीक़ा समझाओ
+act_fly	उड़ के दिखाओ ना हुदहुद
+act_fly	उड़ कर दिखाओ ज़रा
+act_fly	उड़ो
+act_fly	तुम उड़ सकते हो क्या
+act_fly	एक चक्कर लगा के आओ उड़ के
+act_fly	उड़ान भरो
+act_fly	परवाज़ करो
+act_fly	हवा में उड़ो
+act_fly	भाई ज़रा उड़ के तो दिखा
+act_fly	फ़्लाई करो
+act_fly	उड के दिखा
+act_fly	उड़ना आता है तुम्हें
+act_fly	पंख फैला के उड़ो
+act_fly	उड़ जा
+act_fly	स्क्रीन पर इधर उधर उड़ो
+act_dance	नाचो
+act_dance	डांस दिखाओ
+act_dance	थोड़ा नाच के दिखाओ
+act_dance	नाचना आता है
+act_dance	भांगड़ा डालो
+act_dance	तुम नाच सकते हो
+act_dance	हो जाए एक डांस फिर
+act_dance	ठुमका लगाओ
+act_dance	भाई ज़रा डांस तो करके दिखा
+act_dance	झूम के दिखाओ
+act_dance	डांस करो ना
+act_dance	नाच नाच
+act_dance	गरबा करो
+act_dance	डांस करना आता है तुम्हें
+act_dance	चलो नाच शुरू करो
+act_jump	कूदो
+act_jump	जंप
+act_jump	उछलो
+act_jump	एक छलांग लगाओ
+act_jump	कूद के दिखाओ
+act_jump	तुम उछल सकते हो
+act_jump	फुदको ज़रा
+act_jump	जंप मारो
+act_jump	भाई एक जंप तो लगा के दिखा
+act_jump	कोई करतब दिखाओ
+act_jump	जंप करो ना
+act_jump	उछल कूद करो
+act_jump	कलाबाज़ी लगाओ
+act_jump	कूद सकते हो क्या
+act_jump	ऊपर नीचे कूदो
