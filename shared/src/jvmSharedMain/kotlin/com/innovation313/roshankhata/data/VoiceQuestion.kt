@@ -32,6 +32,8 @@ object VoiceQuestion {
         // 12 Nov 2026 (Hudhud): the app's own chip words, so a chip typed as it reads is understood.
         "expiring", "expired", "ختم ٿيندڙ")
     private val NOT_PAID = listOf("nahi diya", "nahin diya", "paisa nahi", "not paid", "hasn't paid", "havent paid", "belum bayar",
+        // 13 Nov 2026 (Hudhud Brain v2): "kaun nahi de raha", the present and the plural.
+        "nahi diye", "nahin diye", "nahi de raha", "nahi de rahe", "nahi de rahi", "nahi deta", "nahi dete",
         "belum membayar", "نہیں دیا", "نہیں دیے", "نہیں دئیے", "ادا نہیں", "نه ڏنو", "نه ڏنا", "لم يدفع", "لم يسدد", "پرداخت نکرده",
         "नहीं दिया", "नहीं दिए", "দেয়নি", "দেননি", "পরিশোধ করেনি")
     private val MOST = listOf("sab se zyada", "sabse zyada", "sab se ziada", "most", "highest", "biggest", "terbanyak", "paling",
@@ -46,7 +48,9 @@ object VoiceQuestion {
         "terjual", "بکری", "فروخت", "بیچا", "بیچی", "وڪرو", "وڪري", "مبيعات", "بيع", "فروش", "बिक्री", "बेचा", "बेची",
         "বিক্রি", "বিক্রয়",
         // 12 Nov 2026 (Hudhud): "aaj kitna bika", "how much did I sell".
-        "sell", "selling", "bika", "biki", "bikay", "بکا", "بکی", "बिका", "बिकी")
+        "sell", "selling", "bika", "biki", "bikay", "بکا", "بکی", "बिका", "बिकी",
+        // 13 Nov 2026 (Hudhud's chips): Sindhi's "got sold", Arabic's "what was sold".
+        "وڪاميو", "وڪاميا", "مباع")
     private val TODAY = listOf("aaj", "today", "hari ini", "آج", "اڄ", "اليوم", "امروز", "आज", "আজ")
 
     // The windows' words (12 Nov 2026). Urdu writes "kal" (yesterday) and "kul" (total) alike, so in its own script

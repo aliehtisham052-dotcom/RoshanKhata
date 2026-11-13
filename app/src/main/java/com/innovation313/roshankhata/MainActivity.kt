@@ -230,7 +230,7 @@ class MainActivity : BaseActivity() {
      */
     private fun bindHudhud() {
         val face = findViewById<View>(R.id.ivHudhudFace) ?: return
-        face.setOnClickListener { com.innovation313.roshankhata.ui.HudhudSheet.open(this) }
+        face.setOnClickListener { com.innovation313.roshankhata.ui.HudhudSheet.open(this, intro = true) }
         findViewById<View>(R.id.hudhudPill).setOnClickListener {
             com.innovation313.roshankhata.ui.HudhudSheet.open(this, typing = true)
         }

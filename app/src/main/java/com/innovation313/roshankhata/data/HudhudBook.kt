@@ -58,7 +58,9 @@ object HudhudBook {
         val figure: String,
         val sub: String?,
         val amount: Double? = null,
-        val isGiven: Boolean = true
+        val isGiven: Boolean = true,
+        /** A row that is not a customer (a product, a staff member): tapped, this screen opens instead. */
+        val open: Class<*>? = null
     )
 
     data class Answer(
@@ -82,7 +84,11 @@ object HudhudBook {
         /** The words to say, written with a context in the voice's language; null says nothing. */
         val spoken: ((Context) -> String)? = null,
         /** What the card's button does instead of opening a screen (the sheet's own: download the language). */
-        val doIt: (() -> Unit)? = null
+        val doIt: (() -> Unit)? = null,
+        /** "Did you mean": the questions offered as chips under the card (13 Nov 2026). */
+        val options: List<Hudhud.Ask> = emptyList(),
+        /** The button opens Hudhud's voice settings (what he calls the owner). */
+        val voiceSettings: Boolean = false
     )
 
     /** A help page Hudhud can point to: a question from Help, or a feature's first-open sheet. */
@@ -100,7 +106,28 @@ object HudhudBook {
             Page("faq_delete", R.string.faq_q_delete, R.string.faq_a_delete, RecycleBinActivity::class.java),
             Page("faq_language", R.string.faq_q_language, R.string.faq_a_language, LanguageActivity::class.java),
             Page("faq_data", R.string.faq_q_data, R.string.faq_a_data, null)
-        ) + FeatureIntro.Topic.values().map { Page(FEATURE + it.key, it.title, it.body, screenOf(it)) }
+        ) + FeatureIntro.Topic.values().map { Page(FEATURE + it.key, it.title, it.body, screenOf(it)) } + listOf(
+            // 13 Nov 2026 (Brain v2): every screen the owner may ask for by name, with its own title and words, so
+            // "invoice kahan hai" or "rate list kholo" opens it — those without a first-open sheet of their own.
+            Page("screen_khata", R.string.coach_title_nav_khata, R.string.coach_desc_nav_khata, KhataActivity::class.java),
+            Page("screen_bills", R.string.coach_title_bills, R.string.coach_desc_bills, com.innovation313.roshankhata.BillsActivity::class.java),
+            Page("screen_products", R.string.coach_title_products, R.string.coach_desc_products, com.innovation313.roshankhata.ProductsActivity::class.java),
+            Page("screen_insights", R.string.coach_title_insights, R.string.coach_desc_insights, InsightsActivity::class.java),
+            Page("screen_card", R.string.coach_title_bizcard, R.string.coach_desc_bizcard, com.innovation313.roshankhata.BusinessCardActivity::class.java),
+            Page("screen_calc", R.string.coach_title_calc, R.string.coach_desc_calc, CalculatorActivity::class.java),
+            Page("screen_zakat", R.string.tile_zakat, R.string.zakat_subtitle, com.innovation313.roshankhata.ZakatActivity::class.java),
+            Page("screen_rates", R.string.rate_list_title, R.string.rate_list_subtitle, com.innovation313.roshankhata.RateListActivity::class.java),
+            Page("screen_purchase_rates", R.string.sr_title, R.string.sr_subtitle, com.innovation313.roshankhata.SupplierRatesActivity::class.java),
+            Page("screen_cashflow", R.string.cf_title, R.string.cf_subtitle, com.innovation313.roshankhata.CashFlowActivity::class.java),
+            Page("screen_sales_report", R.string.sales_report_title, R.string.sales_report_title, SalesReportActivity::class.java),
+            Page("screen_posters", R.string.poster_title, R.string.poster_subtitle, com.innovation313.roshankhata.PosterActivity::class.java),
+            Page("screen_seasons", R.string.tile_seasons, R.string.season_subtitle, com.innovation313.roshankhata.SeasonsActivity::class.java),
+            Page("screen_schemes", R.string.schemes_title, R.string.schemes_subtitle, com.innovation313.roshankhata.SchemesActivity::class.java),
+            Page("screen_audit", R.string.audit_title, R.string.audit_subtitle, com.innovation313.roshankhata.AuditActivity::class.java),
+            Page("screen_lapsed", R.string.lapsed_title, R.string.lapsed_title, com.innovation313.roshankhata.LapsedActivity::class.java),
+            Page("screen_aging", R.string.aging_title, R.string.aging_title, com.innovation313.roshankhata.AgingActivity::class.java),
+            Page("screen_bin", R.string.tile_bin, R.string.faq_a_delete, RecycleBinActivity::class.java)
+        )
     }
 
     /** No else: a feature sheet added later does not build until it says which screen Hudhud opens for it. */
@@ -138,7 +165,8 @@ object HudhudBook {
                 p.key,
                 tongues.joinToString(" ") { it.getString(p.title) },
                 tongues.joinToString(" ") { it.getString(p.body) },
-                feature = p.key.startsWith(FEATURE)
+                // A feature's or a screen's title is never a customer's name; a question's may be (محفوظ, "keep").
+                feature = !p.key.startsWith("faq_")
             )
         }
     }
@@ -155,6 +183,17 @@ object HudhudBook {
         label = greeting(context),
         lines = listOf(context.getString(R.string.hudhud_hello)),
         spoken = { w -> greeting(w) + " " + w.getString(R.string.hudhud_hello) }
+    )
+
+    /**
+     * His own introduction when his face is tapped (13 Nov 2026, the owner: "tap karein to wo bole, main Hudhud hoon,
+     * aap mujh se poochhein"): who he is and to ask; the day's first time with the greeting and the owner's name.
+     */
+    fun intro(context: Context, greet: Boolean) = Answer(
+        Mood.CALM,
+        label = greeting(context),
+        lines = listOf(context.getString(R.string.hudhud_intro)),
+        spoken = { w -> (if (greet) greeting(w) + " " else "") + w.getString(R.string.hudhud_intro) }
     )
 
     /** What he says when the book could not be read. */
@@ -182,6 +221,19 @@ object HudhudBook {
             Hudhud.Ask.Abilities -> abilities(context)
             is Hudhud.Ask.Chat -> chat(context, ask)
             Hudhud.Ask.Unknown -> unknown(context)
+            // Brain v2 (13 Nov 2026): the wider knowledge, each by its screen's own rule (HudhudFacts).
+            is Hudhud.Ask.Person -> HudhudFacts.person(context, dao, ask.ids, ask.facet, parties)
+            is Hudhud.Ask.Goods -> HudhudFacts.goods(context, dao, ask.ids, ask.facet, ask.window)
+            is Hudhud.Ask.Shop -> HudhudFacts.shop(context, ask.facet)
+            is Hudhud.Ask.About -> HudhudFacts.about(context, ask.topic)
+            Hudhud.Ask.Clock -> HudhudFacts.clock(context)
+            is Hudhud.Ask.Count -> HudhudFacts.count(context, dao, ask.thing, ask.window, parties)
+            is Hudhud.Ask.Status -> HudhudFacts.status(context, dao, ask.of, parties)
+            is Hudhud.Ask.Deliveries -> HudhudFacts.deliveries(context, dao, ask.window)
+            is Hudhud.Ask.Activity -> HudhudFacts.activity(context, dao, ask.window)
+            is Hudhud.Ask.Collected -> HudhudFacts.collected(context, dao, ask.window)
+            Hudhud.Ask.NeedName -> HudhudFacts.needName(context)
+            is Hudhud.Ask.DidYouMean -> HudhudFacts.didYouMean(context, ask.options)
         }
 
     /**
@@ -199,6 +251,11 @@ object HudhudBook {
             if (RadarUi.on(context)) lines += "\u2022 " + context.getString(R.string.hudhud_can_pay)
         }
         if (!ViewerMode.isOn(context)) lines += "\u2022 " + context.getString(R.string.hudhud_can_entry)
+        // 13 Nov 2026 (Brain v2): a customer's facts, goods, what happened, the shop and the day.
+        lines += "\u2022 " + context.getString(R.string.hudhud_can_people)
+        lines += "\u2022 " + context.getString(R.string.hudhud_can_goods)
+        if (reports) lines += "\u2022 " + context.getString(R.string.hudhud_can_book)
+        lines += "\u2022 " + context.getString(R.string.hudhud_can_shop)
         lines += "\u2022 " + context.getString(R.string.hudhud_can_more)
         lines += "\u2022 " + context.getString(R.string.hudhud_can_chat)
         return Answer(Mood.GOOD, lines = lines, spoken = { it.getString(R.string.hudhud_can_spoken) })
@@ -229,7 +286,7 @@ object HudhudBook {
      * What he does not know: the card points at the chips under it ("You can ask:") and at the list of what he knows;
      * he says the first sentence and where the list is.
      */
-    private fun unknown(context: Context) = Answer(
+    internal fun unknown(context: Context) = Answer(
         Mood.CALM, lines = listOf(context.getString(R.string.hudhud_unknown_try), context.getString(R.string.hudhud_unknown)),
         spoken = { firstSentence(it.getString(R.string.hudhud_unknown)) + " " + it.getString(R.string.hudhud_unknown_try) }
     )
@@ -351,7 +408,7 @@ object HudhudBook {
     }
 
     /** The heading of a sale or a profit over a span. */
-    private fun periodLabel(measure: Hudhud.Measure, window: VoiceQuestion.Window): Int = when (measure) {
+    internal fun periodLabel(measure: Hudhud.Measure, window: VoiceQuestion.Window): Int = when (measure) {
         Hudhud.Measure.SALES -> when (window) {
             VoiceQuestion.Window.TODAY -> R.string.vq_sales_today
             VoiceQuestion.Window.YESTERDAY -> R.string.hudhud_sales_yesterday
@@ -371,7 +428,7 @@ object HudhudBook {
     }
 
     /** A span of days in the date filter's own words. */
-    private fun windowWord(window: VoiceQuestion.Window): Int = when (window) {
+    internal fun windowWord(window: VoiceQuestion.Window): Int = when (window) {
         VoiceQuestion.Window.TODAY -> R.string.range_today
         VoiceQuestion.Window.YESTERDAY -> R.string.range_yesterday
         VoiceQuestion.Window.THIS_WEEK -> R.string.range_this_week
@@ -530,7 +587,7 @@ object HudhudBook {
     private fun shortDay(t: Long) = DateWords.format("d MMM", t)
 
     /** Several customers the words could be: each offered, his page a tap away. */
-    private fun pick(context: Context, found: List<PartyWithBalance>) = Answer(
+    internal fun pick(context: Context, found: List<PartyWithBalance>) = Answer(
         Mood.CALM,
         label = context.getString(R.string.hudhud_pick_party),
         rows = found.map { Row(it.id, it.name, money(abs(it.balance)), side(context, it.balance)) },
@@ -642,7 +699,7 @@ object HudhudBook {
     }
 
     /** Which way a balance runs, in the Khata list's own words. */
-    private fun side(context: Context, balance: Double): String = context.getString(
+    internal fun side(context: Context, balance: Double): String = context.getString(
         when {
             Money.isPositive(balance) -> R.string.you_will_get
             Money.isNegative(balance) -> R.string.you_will_give
@@ -722,13 +779,218 @@ object HudhudBook {
         return if (end in 1 until SAY_AT_MOST) text.substring(0, end + 1) else text.take(SAY_AT_MOST)
     }
 
+    // ------------------------------------------------------------------------------------------ chips
+
+    /** A chip's words for [ask] (13 Nov 2026: next steps, "did you mean", the day's own questions); null: no chip. */
+    fun chipLabel(c: Context, ask: Hudhud.Ask): String? = when (ask) {
+        is Hudhud.Ask.Figure -> c.getString(labelOf(ask.kind))
+        is Hudhud.Ask.Period -> c.getString(periodLabel(ask.measure, ask.window))
+        Hudhud.Ask.Abilities -> c.getString(R.string.hudhud_chip_abilities)
+        Hudhud.Ask.Today -> c.getString(R.string.hudhud_chip_today)
+        Hudhud.Ask.BackupStatus -> c.getString(R.string.hudhud_chip_backup)
+        Hudhud.Ask.Drawer -> c.getString(R.string.hudhud_chip_drawer)
+        is Hudhud.Ask.WhenPays -> c.getString(if (ask.ids.isEmpty()) R.string.hudhud_chip_likely else R.string.hudhud_chip_when_pays)
+        is Hudhud.Ask.Chat -> if (ask.talk == Hudhud.Talk.WHO_ARE_YOU) c.getString(R.string.hudhud_chip_who) else null
+        is Hudhud.Ask.About -> when (ask.topic) {
+            Hudhud.AboutTopic.OWNER_NAME -> c.getString(R.string.hudhud_chip_my_name)
+            Hudhud.AboutTopic.MAKER -> c.getString(R.string.hudhud_chip_maker)
+            Hudhud.AboutTopic.PRIVACY -> c.getString(R.string.hudhud_chip_privacy)
+            else -> null
+        }
+        is Hudhud.Ask.Shop -> when (ask.facet) {
+            Hudhud.ShopFacet.NAME -> c.getString(R.string.business_name)
+            Hudhud.ShopFacet.PHONE -> c.getString(R.string.hudhud_chip_shop_phone)
+            Hudhud.ShopFacet.ALL -> c.getString(R.string.hudhud_chip_shop)
+            else -> null
+        }
+        Hudhud.Ask.NeedName -> c.getString(R.string.hudhud_chip_someone)
+        Hudhud.Ask.Clock -> c.getString(R.string.hudhud_chip_date)
+        is Hudhud.Ask.Parties -> if (ask.ids.size == 1) c.getString(R.string.hudhud_l_balance) else null
+        is Hudhud.Ask.Person -> c.getString(
+            when (ask.facet) {
+                Hudhud.Facet.PHONE -> R.string.hudhud_l_phone
+                Hudhud.Facet.DETAILS -> R.string.hudhud_chip_details
+                Hudhud.Facet.LAST_PAYMENT -> R.string.hudhud_l_last_payment
+                Hudhud.Facet.LAST_ENTRY -> R.string.hudhud_l_last_entry
+                Hudhud.Facet.SINCE -> R.string.hudhud_l_since
+                Hudhud.Facet.LIMIT -> R.string.credit_limit
+                Hudhud.Facet.PROMISE -> R.string.hudhud_l_promise
+                Hudhud.Facet.ENTRIES -> R.string.hudhud_l_entries
+            }
+        )
+        is Hudhud.Ask.Goods -> c.getString(
+            when (ask.facet) {
+                Hudhud.GoodsFacet.OVERVIEW -> R.string.hudhud_chip_details
+                Hudhud.GoodsFacet.PRICE -> R.string.hudhud_l_price
+                Hudhud.GoodsFacet.STOCK -> R.string.hudhud_l_stock
+                Hudhud.GoodsFacet.COST -> R.string.hudhud_l_cost
+                Hudhud.GoodsFacet.SUPPLIERS -> R.string.hudhud_chip_suppliers
+                Hudhud.GoodsFacet.LAST_IN -> R.string.hudhud_l_last_in
+                Hudhud.GoodsFacet.BUYERS -> R.string.hudhud_chip_buyers
+                Hudhud.GoodsFacet.SOLD -> R.string.hudhud_chip_sold
+            }
+        )
+        is Hudhud.Ask.Count -> {
+            val title = when (ask.thing) {
+                Hudhud.Thing.CUSTOMERS -> R.string.hudhud_t_customers
+                Hudhud.Thing.SUPPLIERS -> R.string.hudhud_t_suppliers
+                Hudhud.Thing.PRODUCTS -> R.string.tile_products
+                Hudhud.Thing.STAFF -> R.string.hudhud_t_staff
+                Hudhud.Thing.ENTRIES -> R.string.hudhud_l_entries
+                Hudhud.Thing.INVOICES -> R.string.invoices
+                Hudhud.Thing.BILLS -> R.string.supplier_bills
+                Hudhud.Thing.TICKETS -> R.string.hudhud_t_tickets
+                Hudhud.Thing.CALCULATIONS -> R.string.hudhud_t_calculations
+                Hudhud.Thing.APP_OPENS -> R.string.hudhud_t_app_opens
+            }
+            val w = ask.window
+            if (w == null) c.getString(title) else c.getString(title) + " \u00B7 " + c.getString(windowWord(w))
+        }
+        is Hudhud.Ask.Status -> c.getString(
+            when (ask.of) {
+                Hudhud.StatusOf.CHEQUES -> R.string.cheques
+                Hudhud.StatusOf.PLANS -> R.string.nav_plans
+                Hudhud.StatusOf.BILLS -> R.string.supplier_bills
+                Hudhud.StatusOf.LOW_STOCK -> R.string.hudhud_t_low
+                Hudhud.StatusOf.BOOK -> R.string.hudhud_chip_book
+                Hudhud.StatusOf.STAFF -> R.string.hudhud_t_salary
+            }
+        )
+        is Hudhud.Ask.Deliveries -> c.getString(R.string.hudhud_t_deliveries)
+        is Hudhud.Ask.Activity -> c.getString(R.string.hudhud_chip_activity)
+        is Hudhud.Ask.Collected -> c.getString(R.string.hudhud_chip_collected)
+        else -> null
+    }
+
+    /**
+     * What to ask next after [ask] (13 Nov 2026, the owner: "recommendation automatically pick kare"): the questions
+     * that follow from this answer, each one tap — about the same customer or product, the same figure on another day,
+     * or the page beside it. Figures behind REPORTS are offered only to those who may see them.
+     */
+    fun next(c: Context, ask: Hudhud.Ask): List<Hudhud.Ask> {
+        val reports = Access.can(Access.Permission.REPORTS)
+        val radar = reports && RadarUi.on(c)
+        val today = VoiceQuestion.Window.TODAY
+        fun person(id: Long, f: Hudhud.Facet) = Hudhud.Ask.Person(listOf(id), f)
+        val out: List<Hudhud.Ask> = when (ask) {
+            is Hudhud.Ask.Parties -> ask.ids.singleOrNull()?.let { id ->
+                listOfNotNull(person(id, Hudhud.Facet.PHONE), person(id, Hudhud.Facet.LAST_PAYMENT),
+                    if (radar) Hudhud.Ask.WhenPays(listOf(id)) else null, person(id, Hudhud.Facet.DETAILS))
+            }.orEmpty()
+            is Hudhud.Ask.Person -> ask.ids.singleOrNull()?.let { id ->
+                listOf(Hudhud.Ask.Parties(listOf(id))) + listOf(
+                    Hudhud.Facet.PHONE, Hudhud.Facet.LAST_PAYMENT, Hudhud.Facet.LIMIT, Hudhud.Facet.PROMISE, Hudhud.Facet.DETAILS
+                ).filter { it != ask.facet }.map { person(id, it) }
+            }.orEmpty()
+            is Hudhud.Ask.WhenPays -> ask.ids.singleOrNull()?.let { id ->
+                listOf(Hudhud.Ask.Parties(listOf(id)), person(id, Hudhud.Facet.LAST_PAYMENT), person(id, Hudhud.Facet.PROMISE))
+            } ?: listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST), Hudhud.Ask.Figure(VoiceQuestion.Kind.NOT_PAID))
+            is Hudhud.Ask.Moved -> ask.ids.singleOrNull()?.let { id -> listOf(Hudhud.Ask.Parties(listOf(id)), person(id, Hudhud.Facet.LAST_PAYMENT)) }.orEmpty()
+            is Hudhud.Ask.Goods -> ask.ids.singleOrNull()?.let { id ->
+                listOf(Hudhud.GoodsFacet.PRICE, Hudhud.GoodsFacet.STOCK, Hudhud.GoodsFacet.SUPPLIERS, Hudhud.GoodsFacet.BUYERS, Hudhud.GoodsFacet.LAST_IN)
+                    .filter { it != ask.facet }.map { Hudhud.Ask.Goods(listOf(id), it) }
+            }.orEmpty()
+            is Hudhud.Ask.Figure -> when (ask.kind) {
+                VoiceQuestion.Kind.SALES_TODAY -> listOf(Hudhud.Ask.Period(Hudhud.Measure.SALES, VoiceQuestion.Window.YESTERDAY),
+                    Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_MONTH), Hudhud.Ask.Collected(today), Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH))
+                VoiceQuestion.Kind.SALES_MONTH -> listOf(Hudhud.Ask.Period(Hudhud.Measure.SALES, VoiceQuestion.Window.LAST_MONTH),
+                    Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH), Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
+                VoiceQuestion.Kind.PROFIT_MONTH -> listOf(Hudhud.Ask.Period(Hudhud.Measure.PROFIT, VoiceQuestion.Window.LAST_MONTH),
+                    Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_MONTH))
+                VoiceQuestion.Kind.TO_GET -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST), Hudhud.Ask.WhenPays(emptyList()),
+                    Hudhud.Ask.Figure(VoiceQuestion.Kind.NOT_PAID))
+                VoiceQuestion.Kind.TO_GIVE -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.BILLS), Hudhud.Ask.Deliveries())
+                VoiceQuestion.Kind.WHO_OWES_MOST -> listOf(Hudhud.Ask.WhenPays(emptyList()), Hudhud.Ask.Figure(VoiceQuestion.Kind.NOT_PAID),
+                    Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
+                VoiceQuestion.Kind.NOT_PAID -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST), Hudhud.Ask.WhenPays(emptyList()))
+                VoiceQuestion.Kind.EXPIRING -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.LOW_STOCK), Hudhud.Ask.Deliveries())
+            }
+            is Hudhud.Ask.Period -> if (ask.measure == Hudhud.Measure.SALES) {
+                listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY), Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_MONTH))
+            } else {
+                listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH), Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_MONTH))
+            }
+            is Hudhud.Ask.Count -> when (ask.thing) {
+                Hudhud.Thing.INVOICES -> listOf(Hudhud.Ask.Count(Hudhud.Thing.INVOICES, VoiceQuestion.Window.YESTERDAY),
+                    Hudhud.Ask.Count(Hudhud.Thing.INVOICES, VoiceQuestion.Window.THIS_MONTH), Hudhud.Ask.Activity(today))
+                Hudhud.Thing.BILLS -> listOf(Hudhud.Ask.Deliveries(), Hudhud.Ask.Status(Hudhud.StatusOf.BILLS))
+                Hudhud.Thing.APP_OPENS -> listOf(Hudhud.Ask.Count(Hudhud.Thing.CALCULATIONS, today), Hudhud.Ask.Activity(today))
+                Hudhud.Thing.CALCULATIONS -> listOf(Hudhud.Ask.Count(Hudhud.Thing.APP_OPENS, today), Hudhud.Ask.Activity(today))
+                Hudhud.Thing.CUSTOMERS -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET), Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST),
+                    Hudhud.Ask.Count(Hudhud.Thing.SUPPLIERS))
+                Hudhud.Thing.SUPPLIERS -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GIVE), Hudhud.Ask.Status(Hudhud.StatusOf.BILLS),
+                    Hudhud.Ask.Count(Hudhud.Thing.CUSTOMERS))
+                Hudhud.Thing.PRODUCTS -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.LOW_STOCK), Hudhud.Ask.Figure(VoiceQuestion.Kind.EXPIRING))
+                Hudhud.Thing.STAFF -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.STAFF))
+                Hudhud.Thing.ENTRIES -> listOf(Hudhud.Ask.Activity(today), Hudhud.Ask.Collected(today))
+                Hudhud.Thing.TICKETS -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY), Hudhud.Ask.Collected(today))
+            }
+            is Hudhud.Ask.Status -> when (ask.of) {
+                Hudhud.StatusOf.CHEQUES -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.PLANS), Hudhud.Ask.Collected(today))
+                Hudhud.StatusOf.PLANS -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.CHEQUES), Hudhud.Ask.WhenPays(emptyList()))
+                Hudhud.StatusOf.BILLS -> listOf(Hudhud.Ask.Deliveries(), Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GIVE))
+                Hudhud.StatusOf.LOW_STOCK -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.EXPIRING), Hudhud.Ask.Deliveries())
+                Hudhud.StatusOf.BOOK -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET), Hudhud.Ask.Activity(today), Hudhud.Ask.BackupStatus)
+                Hudhud.StatusOf.STAFF -> listOf(Hudhud.Ask.Count(Hudhud.Thing.STAFF), Hudhud.Ask.Activity(today))
+            }
+            is Hudhud.Ask.Deliveries -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.BILLS), Hudhud.Ask.Status(Hudhud.StatusOf.LOW_STOCK))
+            is Hudhud.Ask.Activity -> listOf(Hudhud.Ask.Collected(today), Hudhud.Ask.Deliveries(today), Hudhud.Ask.Count(Hudhud.Thing.INVOICES, today))
+            is Hudhud.Ask.Collected -> listOf(Hudhud.Ask.Activity(today), Hudhud.Ask.Drawer, Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
+            Hudhud.Ask.Clock -> listOf(Hudhud.Ask.Today, Hudhud.Ask.Activity(today))
+            is Hudhud.Ask.Chat -> if (ask.talk == Hudhud.Talk.WHO_ARE_YOU) {
+                listOf(Hudhud.Ask.Abilities, Hudhud.Ask.About(Hudhud.AboutTopic.MAKER), Hudhud.Ask.About(Hudhud.AboutTopic.PRIVACY))
+            } else {
+                listOf(Hudhud.Ask.Abilities, Hudhud.Ask.Today)
+            }
+            is Hudhud.Ask.About -> listOf(Hudhud.Ask.Abilities, Hudhud.Ask.Chat(Hudhud.Talk.WHO_ARE_YOU), Hudhud.Ask.About(Hudhud.AboutTopic.PRIVACY))
+            is Hudhud.Ask.Shop -> listOf(Hudhud.Ask.Shop(Hudhud.ShopFacet.ALL), Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))
+            Hudhud.Ask.Today -> listOf(Hudhud.Ask.Activity(today), Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY), Hudhud.Ask.Collected(today))
+            Hudhud.Ask.BackupStatus -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))
+            Hudhud.Ask.Drawer -> listOf(Hudhud.Ask.Collected(today), Hudhud.Ask.Activity(today))
+            Hudhud.Ask.Abilities -> listOf(Hudhud.Ask.Today, Hudhud.Ask.Clock, Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))
+            else -> emptyList()
+        }
+        return out.filter { a -> a != ask && (reports || !needsReports(a)) }.distinct().take(MAX_NEXT)
+    }
+
+    /** A question whose answer is a figure only the owner or a manager may see. */
+    private fun needsReports(a: Hudhud.Ask): Boolean = when (a) {
+        is Hudhud.Ask.Figure, is Hudhud.Ask.Period, is Hudhud.Ask.Collected, is Hudhud.Ask.Activity, Hudhud.Ask.Drawer,
+        is Hudhud.Ask.WhenPays -> true
+        is Hudhud.Ask.Status -> a.of == Hudhud.StatusOf.STAFF
+        is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD
+        else -> false
+    }
+
+    /**
+     * The day's own questions, first among his chips when the sheet opens (13 Nov 2026): what the bell has now — a
+     * cheque or a plan due, a bill, low stock, the drawer, the backup, a late payer — asked in one tap.
+     */
+    suspend fun suggested(c: Context, dao: KhataDao): List<Hudhud.Ask> {
+        val reports = Access.can(Access.Permission.REPORTS)
+        val alerts = runCatching { HomeAlerts.compute(c, dao) { Format.money(it) } }.getOrDefault(emptyList())
+        return alerts.mapNotNull { a ->
+            when (a.kind) {
+                HomeAlerts.Kind.CHEQUE -> Hudhud.Ask.Status(Hudhud.StatusOf.CHEQUES)
+                HomeAlerts.Kind.PLAN -> Hudhud.Ask.Status(Hudhud.StatusOf.PLANS)
+                HomeAlerts.Kind.BILL -> Hudhud.Ask.Status(Hudhud.StatusOf.BILLS)
+                HomeAlerts.Kind.STOCK -> Hudhud.Ask.Status(Hudhud.StatusOf.LOW_STOCK)
+                HomeAlerts.Kind.EXPIRING -> if (reports) Hudhud.Ask.Figure(VoiceQuestion.Kind.EXPIRING) else null
+                HomeAlerts.Kind.DRAWER -> if (reports) Hudhud.Ask.Drawer else null
+                HomeAlerts.Kind.BACKUP, HomeAlerts.Kind.BACKUP_FAILED, HomeAlerts.Kind.BACKUP_OTHER_PHONE -> Hudhud.Ask.BackupStatus
+                HomeAlerts.Kind.LATE -> if (reports && RadarUi.on(c)) Hudhud.Ask.WhenPays(emptyList()) else null
+                else -> null
+            }
+        }.distinct().take(MAX_NEXT - 1)
+    }
+
     // ------------------------------------------------------------------------------------------ the words
 
     /** A figure as every screen writes it: the minus outside the left-to-right seal, as Insights writes it. */
     fun money(v: Double): String = (if (v < 0) "\u2212" else "") + Format.moneyLtr(v)
 
     /** A figure as it is said: "12,400 rupees" for the rupee, else the figure and the book's sign. */
-    private fun said(words: Context, v: Double): String {
+    internal fun said(words: Context, v: Double): String {
         val digits = Format.plain(abs(v))
         val amount = if (Currency.symbol == Currency.DEFAULT) words.getString(R.string.paisa_rupees, digits)
         else "$digits ${Currency.symbol}"
@@ -738,6 +1000,8 @@ object HudhudBook {
     /** A feature sheet's page key begins so; a question-and-answer page's with "faq_". */
     private const val FEATURE = "intro_"
     private const val TOP = 5
+    /** Next-step chips under an answer. */
+    private const val MAX_NEXT = 4
     /** Customers offered for an entry whose name was not made out: voice entry's picker, cut to a card's length. */
     private const val PICK = 6
     private const val DAY_MS = 24L * 60 * 60 * 1000

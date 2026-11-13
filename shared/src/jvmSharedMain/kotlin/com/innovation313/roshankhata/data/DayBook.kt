@@ -49,7 +49,12 @@ object DayBook {
         /** A staff payment's kind ([Payroll.ADVANCE] / [Payroll.SALARY]). */
         val staffKind: Int = 0,
         /** The row it was read from (an entry's, a cashbook row's, a bill's or a payment's id): with [kind], its key. */
-        val ref: Long = 0
+        val ref: Long = 0,
+        /**
+         * A khata row's party is a customer (13 Nov 2026, Hudhud's "money in"): a supplier's "I got" is goods that came
+         * on credit, not money. True for every row that is not a khata entry.
+         */
+        val customer: Boolean = true
     ) {
         /** Money that came to the shop: a khata "I got" or cashbook income. */
         val isIn: Boolean get() = kind == Kind.GOT || kind == Kind.CASH_IN
@@ -60,7 +65,7 @@ object DayBook {
         dao.dayBookEntries(from, to).forEach { e ->
             out += Row(e.timestamp, if (e.isGiven) Kind.GAVE else Kind.GOT, e.partyName, e.paymentMethod, e.amount,
                 listOfNotNull(e.entryNumber.takeIf { it.isNotBlank() }, e.note?.takeIf { it.isNotBlank() }).joinToString(" · ").ifEmpty { null },
-                loan = e.isQarzeHasna, ref = e.id)
+                loan = e.isQarzeHasna, ref = e.id, customer = e.isCustomer)
         }
         dao.cashbookRowsBetween(from, to).forEach { c ->
             out += Row(c.timestamp, if (c.isIncome) Kind.CASH_IN else Kind.CASH_OUT, c.category, c.paymentMethod, c.amount,

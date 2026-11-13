@@ -2633,6 +2633,18 @@ Each of these cost a build or a bug.
 91. **Snackbar's swipe-away belongs to CoordinatorLayout.** A Snackbar (or a card shown like one) in
     `android.R.id.content`, a FrameLayout, cannot be swiped aside; the Saved card carries its own (`SwipeAwayLayout`).
 
+92. **One spelling, two words in two languages.** "رقم" is a telephone number in Arabic and an amount of money in
+    Urdu; "من" is "who" in Arabic and "me" in Persian; "کی" is "of" in Urdu and "when" in Persian; "آیا" is "came" in
+    Urdu and a question's start in Persian; "تو" is Urdu's "then" and Persian's "you". Such a word is never put in one
+    concept for everyone: the sentence's own language decides (`HudhudMind.arabicOnly`: no letter or little word only
+    Urdu, Sindhi or Persian writes) or a phrase does ("دفتر من"). Found only by reading the app's own chip words in all
+    nine languages — HudhudWordsTest holds them (13 Nov 2026).
+
+93. **The shared module's plain Kotlin can be compiled without Gradle.** Maven is closed in this session, but Gradle's
+    own `kotlin-compiler-embeddable` (2.0.21, in /opt/gradle/lib) compiles the pure shared files with two stand-ins
+    (`words.W` and `hijriUmmAlQura`) and a small JUnit stand-in, and runs their tests in 15 s (13 Nov 2026: Hudhud's
+    whole engine, 164 tests, before any push). Only plain JVM code: the app's Android files still need CI.
+
 ---
 
 ## Working with the owner
@@ -3064,3 +3076,53 @@ bundled: his ears and voice are the phone's own (+0 MB). Not tried on a real pho
   a grey square. **The Saved card swipes away** sideways (`SwipeAwayLayout`, lesson 91). **Import from Contacts'
   two prompts are by design**: the app's card says why, then Android's own dialog — once; not changed. **The
   customer link dialog** works and is honest; a preview of what the customer will see is the owner's call.
+
+### 13 Nov 2026: Hudhud Brain v2 — he reads the whole book, in all nine languages (phone; CI only)
+
+The owner: "Hudhud ko har cheez ka pata ho… accuracy 100%, fake data nahi… kya, se, main, ko aa jaye to bhi samjhe…
+tamam languages mein". Deterministic and offline (no model, +0 MB); every answer only READS, by the rule of the
+screen it opens. Not tried on a real phone.
+
+- **The engine** (`HudhudMind`, shared, internal): each word means one or more concepts (`C`, 82 of them — YOU, NAME,
+  PHONE, LIMIT, PRICE, SUPPLIER, CAME, CREDIT…), in the nine languages and their scripts, many from the app's own
+  translations; a question is the set of concepts, in any order, with any little words between (the cause before: a
+  phrase matched only as one unbroken run, so "aap ka kya naam hai" failed). Matching, most certain first: the word,
+  its joined pieces (Arabic's article in front and, in an Arabic sentence, its "-k"/"-i" behind; Bengali endings;
+  English plural; Indonesian -nya/-mu/-ku), phrases, then by sound within one letter (Roman words of five letters or
+  more, never a book name). Soft words that are also name parts (Malik, Store, Din…) count only when no name is found.
+  Words that differ by language: lesson 92.
+- **What he now answers** (`Hudhud.Ask`: Person, Goods, Shop, About, Clock, Count, Status, Deliveries, Activity,
+  Collected, NeedName, DidYouMean; the app's `HudhudFacts`): a customer's number (shown, never said aloud), details,
+  first and last entry, last payment, limit and how much of it is used, promised day; a product's price, stock (by
+  `Valuation`), cost, each supplier's last rate cheapest first with its day, last delivery, who bought it, how much sold;
+  the shop's profile (a field never filled is said to be empty); about the app, its maker (Innovation 313), privacy,
+  languages, version; the owner's name; today's date with the Hijri date by calendar (said to be worked out — the
+  moon may differ by a day) and the Jalali where the shop keeps it; how many customers, suppliers, products, staff,
+  entries, invoices, bills and counter sales (a span, or today with the whole book's count); cheques, plans, unpaid
+  bills, low stock, salaries due (`Payroll`), the whole book; goods that came in on bills; what happened today and who
+  did it (the day book's rows and the audit log — edits, deletes, voids, by whom); money that came in by way of paying.
+  Figures, costs, salaries and activity need REPORTS. "Whose?" (`NeedName`) when a facet names nobody; a choice
+  (`DidYouMean`) when a word could be three things ("number": the shop's or somebody's).
+- **Talk carries on** (`before`): a bare question after a customer's or a product's answer is about him or it —
+  "number?", "aakhri adaigi", "udhaar ki hadd", "kab dega?", "rate?", "kis ne khareeda" — with no "uska"; a figure
+  word stays the shop's figure ("aaj ki sale"), naming the product asks the product's. A question back ("whose?",
+  "did you mean") keeps the one the talk was about.
+- **Names across scripts** (`Hudhud.acrossScripts`): a name saved in Roman letters and asked in Urdu or Arabic script
+  ("بشیر" for "Bashir") meets it when the Latin spelling is the other with only vowels put in; "Bushra" is not "بشیر".
+  Only when the name search found nobody; a choice of at most five.
+- **App's own counts** (`UsageLog`): app opens (the screens on show going from none to one; a turn of the phone is not
+  one) and calculator sums (a real sum, not a figure carried over), one number a day for 40 days, in prefs
+  "usage_log" — never in the book, a backup or a sync, never what was opened or worked out. Counted from the day this
+  build first runs; Hudhud says since when. Both privacy policies' section 11 say so.
+- **The sheet**: his face says who he is (`hudhud_intro`, aloud each time while his voice is on); chips are the
+  answer's next questions (`HudhudBook.next`, at most four, REPORTS-filtered), the choices offered, or the nearest
+  questions to words he could not place (`Hudhud.closest`); the day's own (what the bell has) while his first card is
+  up (`HudhudBook.suggested`). A row can open a screen (`Row.open`).
+- Strings (nine languages): hudhud_l_* (labels), hudhud_t_* (titles), hudhud_chip_* (17), hudhud_about_*,
+  hudhud_can_people/_goods/_book/_shop, hudhud_intro, hudhud_owner_named/_unnamed, hudhud_need_name,
+  hudhud_did_you_mean and the "none" lines (102 keys). Tests: HudhudMindTest (44, nine languages — any order,
+  fillers, typos, follow-ups, raqam, names across scripts), HudhudWordsTest (desktop: every new chip in all nine,
+  typed alone or after a customer's or a product's answer), HudhudOnDeviceTest (a real book: a customer's number, a
+  product's price, customers counted, today's date, the face's introduction).
+- **Not yet:** a product name across scripts ("यूरिया" for "Urea"); "Ali ne Urea kab liya" (a customer and a product in
+  one question); Windows.

@@ -172,6 +172,9 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     override fun onStart() {
         super.onStart()
+        // Every screen, the doors included: the app coming to the front is counted on this phone (Hudhud's check and
+        // balance, 13 Nov 2026: UsageLog).
+        com.innovation313.roshankhata.data.UsageLog.screenStarted(this)
         if (javaClass.simpleName in BEFORE_THE_BOOK) return
         val away = com.innovation313.roshankhata.data.AppLock.Away
         if (away.bookStarted(android.os.SystemClock.elapsedRealtime()) { com.innovation313.roshankhata.data.AppLock.required(this) }) {
@@ -186,6 +189,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+        com.innovation313.roshankhata.data.UsageLog.screenStopped(isChangingConfigurations)
         if (javaClass.simpleName !in BEFORE_THE_BOOK) {
             com.innovation313.roshankhata.data.AppLock.Away.bookStopped(android.os.SystemClock.elapsedRealtime())
         }

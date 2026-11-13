@@ -180,6 +180,59 @@ class HudhudOnDeviceTest {
         }
     }
 
+    /**
+     * 13 Nov 2026 (Brain v2): what he now reads from a real book — a customer's number, a product's price, how many
+     * customers, today's date — each by the screen's own rule; and his face says who he is. Made-up names (lesson 80).
+     */
+    @Test
+    fun heReadsTheBookBeyondBalances() {
+        val dao = KhataDatabase.get(context).khataDao()
+        runBlocking {
+            if (dao.partiesWithBalanceOnce().none { it.name == "Gulnaz Kiryana" }) {
+                dao.insertParty(Party(name = "Gulnaz Kiryana", phone = "03000000003"))
+            }
+            val p = dao.findOrCreateProduct(name = "Tarnab Powder")
+            dao.updateProduct(p.copy(salePrice = 1234.0))
+        }
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            /** The figure he answers [question] with, on a sheet of its own. */
+            fun figureOf(question: String): String {
+                scenario.onActivity { a -> HudhudSheet.open(a)?.dismiss() }
+                assertTrue("the last sheet did not close", waitFor(3000) { !HudhudSheet.isOpen() })
+                var figure: TextView? = null
+                scenario.onActivity { a ->
+                    figure = HudhudSheet.open(a, ask = question, speak = false)?.findViewById(R.id.tvHudFigure)
+                }
+                waitFor(5000) { figure?.visibility == View.VISIBLE && !figure?.text.isNullOrBlank() }
+                var text = ""
+                InstrumentationRegistry.getInstrumentation().runOnMainSync { text = figure?.text?.toString().orEmpty() }
+                return text
+            }
+            val number = figureOf("Gulnaz Kiryana ka number")
+            assertEquals("her number, got: $number", "03000000003", number.filter { it.isDigit() })
+            val price = figureOf("Tarnab Powder ka rate")
+            assertEquals("its price, got: $price", "1234", price.filter { it.isDigit() })
+            val customers = figureOf("kitne customer hain").filter { it.isDigit() }
+            assertTrue("no count of customers, got: $customers", (customers.toIntOrNull() ?: 0) >= 1)
+            val year = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR).toString()
+            val date = figureOf("aaj ki tareekh kya hai")
+            assertTrue("today's date without the year, got: $date", date.contains(year))
+
+            // His face: who he is, every time.
+            scenario.onActivity { a -> HudhudSheet.open(a)?.dismiss() }
+            assertTrue(waitFor(3000) { !HudhudSheet.isOpen() })
+            var intro = ""
+            var lines: TextView? = null
+            scenario.onActivity { a ->
+                intro = a.getString(R.string.hudhud_intro)
+                a.findViewById<View>(R.id.ivHudhudFace).performClick()
+                // The face opened the sheet; open() hands back the one on show.
+                lines = HudhudSheet.open(a)?.findViewById(R.id.tvHudLines)
+            }
+            assertTrue("his face did not say who he is, got: ${lines?.text}", waitFor(5000) { lines?.text?.toString() == intro })
+        }
+    }
+
     @Test
     fun theMorningGreetingShowsOnceAndOpensToday() {
         CoachMarkController.markRun(context)

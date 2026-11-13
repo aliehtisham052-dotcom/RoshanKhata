@@ -78,10 +78,67 @@ object Hudhud {
 
         /** Nothing Hudhud knows; he says so and offers what he can answer. */
         object Unknown : Ask()
+
+        // 13 Nov 2026, the owner: "har angle se Hudhud ko pata hona chahiye… lekin accuracy, fake data nahi". Each
+        // of these is read from the book by the rule of the screen it names, and only read.
+
+        /** A named customer's or supplier's fact other than his balance: his number, last payment, limit… */
+        data class Person(val ids: List<Long>, val facet: Facet) : Ask()
+
+        /** A product the question names: its price, stock, purchase rate, suppliers, last delivery, buyers, sale. */
+        data class Goods(val ids: List<Long>, val facet: GoodsFacet, val window: VoiceQuestion.Window? = null) : Ask()
+
+        /** The shop's own profile: its name, address, phone, tax number… */
+        data class Shop(val facet: ShopFacet) : Ask()
+
+        /** About Hudhud and the app: what the app is, who made them, where the book stays, the languages, the owner. */
+        data class About(val topic: AboutTopic) : Ask()
+
+        /** Today's date, the Islamic date and the time. */
+        object Clock : Ask()
+
+        /** How many of something there are, or were made over a span of days ([window]; none: all of them). */
+        data class Count(val thing: Thing, val window: VoiceQuestion.Window? = null) : Ask()
+
+        /** Where one of the book's pages stands: cheques, plans, supplier bills, low stock, the whole book. */
+        data class Status(val of: StatusOf) : Ask()
+
+        /** Goods that came in from suppliers (their bills) over a span of days, newest first. */
+        data class Deliveries(val window: VoiceQuestion.Window? = null) : Ask()
+
+        /** What happened in the book over a span of days, and who did it: the owner's check and balance. */
+        data class Activity(val window: VoiceQuestion.Window? = null) : Ask()
+
+        /** Two or three things the words could mean: each offered as a tap, never guessed. */
+        data class DidYouMean(val options: List<Ask>) : Ask()
+
+        /** Money that came in over a span of days: customers' payments and the cashbook's income (the day book's rule). */
+        data class Collected(val window: VoiceQuestion.Window? = null) : Ask()
+
+        /** A question about somebody that names nobody ("uska number", "limit kitni hai"): he asks whose. */
+        object NeedName : Ask()
     }
 
     /** What a [Ask.Period] adds up. */
     enum class Measure { SALES, PROFIT }
+
+    /** What is asked about a named customer or supplier, beside his balance. */
+    enum class Facet { PHONE, DETAILS, LAST_PAYMENT, LAST_ENTRY, SINCE, LIMIT, PROMISE, ENTRIES }
+
+    /** What is asked about a product: everything at once ([OVERVIEW]) when only its name is said. */
+    enum class GoodsFacet { OVERVIEW, PRICE, STOCK, COST, SUPPLIERS, LAST_IN, BUYERS, SOLD }
+
+    /** The shop's profile, one field or [ALL]. */
+    enum class ShopFacet { ALL, NAME, ADDRESS, PHONE, EMAIL, TAX, BANK, CURRENCY, COUNTRY, TRADE }
+
+    /** About Hudhud and the app. */
+    enum class AboutTopic { APP, MAKER, PRIVACY, LANGUAGES, VERSION, OWNER_NAME }
+
+    /** What can be counted. */
+    enum class Thing { CUSTOMERS, SUPPLIERS, PRODUCTS, STAFF, ENTRIES, INVOICES, BILLS, TICKETS, CALCULATIONS, APP_OPENS }
+
+    /** A page whose standing can be told. */
+    enum class StatusOf { CHEQUES, PLANS, BILLS, LOW_STOCK, BOOK, STAFF }
 
     /** The small talk he answers. */
     enum class Talk { HOW_ARE_YOU, WHO_ARE_YOU, THANKS, BYE, PRAISE, FINE }
@@ -100,15 +157,31 @@ object Hudhud {
      * The first of the recogniser's guesses Hudhud knows, with that guess; else the first guess, not known. [language]
      * is the recogniser's (a Persian or Indonesian figure is read its own way, as voice entry reads it).
      */
-    fun understand(candidates: List<String>, names: List<Name>, topics: List<Topic>, language: String? = null): Pair<String, Ask> {
+    /**
+     * [goods]: the shop's products by name, so "Urea ka rate" is the product's. [before]: what the last question on
+     * the sheet was taken for, so "uska number?" or "aur kal?" carry on from it (13 Nov 2026). A guess that is only a
+     * choice ([Ask.DidYouMean]) gives way to a later guess Hudhud knows outright.
+     */
+    fun understand(
+        candidates: List<String>, names: List<Name>, topics: List<Topic>, language: String? = null,
+        goods: List<Name> = emptyList(), before: Ask? = null
+    ): Pair<String, Ask> {
+        var choice: Pair<String, Ask>? = null
         for (c in candidates) {
-            val ask = understand(c, names, topics, language)
+            val ask = understand(c, names, topics, language, goods, before)
+            if (ask is Ask.DidYouMean) {
+                if (choice == null) choice = c to ask
+                continue
+            }
             if (ask != Ask.Unknown) return c to ask
         }
-        return (candidates.firstOrNull() ?: "") to Ask.Unknown
+        return choice ?: ((candidates.firstOrNull() ?: "") to Ask.Unknown)
     }
 
-    fun understand(heard: String, names: List<Name>, topics: List<Topic>, language: String? = null): Ask {
+    fun understand(
+        heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
+        goods: List<Name> = emptyList(), before: Ask? = null
+    ): Ask {
         val said = words(heard)
         if (said.isEmpty()) return Ask.Unknown
         val joined = said.joinToString(" ")
@@ -117,6 +190,13 @@ object Hudhud {
         // A sentence that is nothing but small talk, or "what can you tell me" (13 Nov 2026): taken before any name,
         // so "Allah Hafiz" is a goodbye and not a customer called Hafiz; one with any other word goes on as before.
         talk(said, whole = true)?.let { return it }
+        // What each word means, in any order (13 Nov 2026, Brain v2): "aap ka kya naam hai" and "naam kya hai aap ka"
+        // are one question. A word the book knows as somebody's or a product's name is never read by its sound.
+        val figureWords = VoiceQuestion.keywordsIn(joined)
+        val mind = HudhudMind.read(said) { w ->
+            w in QUIET_SET || w in DAY_WORDS || w in figureWords || knownName(w, names) || knownName(w, goods)
+        }
+        aboutHim(mind, joined)?.let { return it }
         val entry = VoiceEntry.parse(heard, emptyList(), language)
         val asking = heard.any { it == '?' || it == '\u061F' } || has(joined, QUESTION) || said.first() in ASKS_FIRST
         // An entry said as a fact: the form opens filled in, the owner saves it (voice entry's own reading).
@@ -128,26 +208,464 @@ object Hudhud {
         }
         val figure = VoiceQuestion.classify(heard)
         val window = VoiceQuestion.windowOf(heard)
-        val named = namedIn(said, names, topics)
-        val willPay = has(joined, WILL_PAY) || ((has(joined, WHEN) || has(joined, WHO)) && has(joined, PAY))
+        val named = whoIsNamed(said, names, topics, mind, window)
+        val product = if (named.isEmpty()) whoIsNamed(said, goods, topics, mind, window) else emptyList()
+        // "When did he last pay" is the past: only a payment still to come is the Radar's.
+        val willPay = (has(joined, WILL_PAY) || ((has(joined, WHEN) || has(joined, WHO)) && has(joined, PAY))) &&
+            !mind.has(HudhudMind.C.LAST) && "did" !in said
+        followUp(mind, named, product, figure, window, willPay, before)?.let { return it }
+        // "Uska number" with nobody before it: he asks whose, he does not guess.
+        if (mind.has(HudhudMind.C.HIS) && named.isEmpty() && product.isEmpty() && !willPay && figure == null &&
+            (before == null || (partyOf(before) == null && goodsOf(before) == null)) && !mind.any(HudhudMind.C.DATA, HudhudMind.C.ACCOUNT) &&
+            facetOf(mind).let { it != null && (it != Facet.DETAILS || mind.any(HudhudMind.C.FATHER, HudhudMind.C.VILLAGE, HudhudMind.C.ADDRESS)) }
+        ) return Ask.NeedName
         if (named.isNotEmpty()) {
             if (willPay) return Ask.WhenPays(named)
+            facetOf(mind)?.let { return Ask.Person(named, it) }
             if (figure == null || figure == VoiceQuestion.Kind.TO_GET || figure == VoiceQuestion.Kind.TO_GIVE) {
                 if (window != null && given != null && amount == null) return Ask.Moved(named, window, got = !given)
                 return Ask.Parties(named)
             }
         }
+        if (product.isNotEmpty()) goodsAsk(mind, product, figure, window)?.let { return it }
+        // "Kitne cheque baqi hain": the cheques' own "baqi", not what the khata is owed.
+        if (figure in OWED_FIGURES && mind.any(HudhudMind.C.CHEQUE, HudhudMind.C.PLAN, HudhudMind.C.BILL, HudhudMind.C.SALARY, HudhudMind.C.STAFF)) {
+            book(mind, window)?.let { return it }
+        }
+        if (figure in OWED_FIGURES && mind.any(HudhudMind.C.LIMIT, HudhudMind.C.PROMISE) && named.isEmpty() && product.isEmpty()) {
+            return Ask.NeedName
+        }
         if (figure != null) return figureOver(figure, window)
         if (willPay && (has(joined, WHEN) || has(joined, WHO))) return Ask.WhenPays(emptyList())
         if (has(joined, BACKUP)) return Ask.BackupStatus
         if (has(joined, DRAWER)) return Ask.Drawer
+        book(mind, window)?.let { return it }
         if (has(joined, TODAY_ASK)) return Ask.Today
         helpOf(said, topics)?.let { return Ask.Help(it) }
         // Small talk inside a longer sentence ("thanks a lot", "kaise ho yaar sab theek"): only when nothing else fits.
         talk(said, whole = false)?.let { return it }
         if (has(joined, SALAAM)) return Ask.Salaam
         if (has(joined, HELLO)) return Ask.Hello
+        guess(mind)?.let { return it }
         return Ask.Unknown
+    }
+
+    // ------------------------------------------------------------------------------------------- Brain v2
+
+    private fun quiet(w: String) = w in QUIET_SET || HudhudMind.meaningOf(w) == AND_ONLY
+
+    private val AND_ONLY = setOf(HudhudMind.C.AND)
+
+    private val OWED_FIGURES = setOf(VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.TO_GIVE, VoiceQuestion.Kind.NOT_PAID)
+
+    /** Quiet, and the words of a span of days ("aaj", "kal", "is hafte"): for questions that take a day. */
+    private fun quietOrDay(w: String) = quiet(w) || w in DAY_WORDS
+
+    /**
+     * About Hudhud himself, the app, the owner and the day \u2014 asked in any order, with any little words: his name ("aap
+     * ka kya naam hai", "naam batao apna", "ye kaun hai"), how he is, what he can tell, who made him, what the app is,
+     * the languages, the version, where the book stays, the owner's own name, today's date. Only when the sentence is
+     * nothing else: a word that could be somebody's name sends the question on.
+     */
+    private fun aboutHim(m: HudhudMind.Read, joined: String): Ask? {
+        val salaam = has(joined, SALAAM)
+        fun only(vararg cs: HudhudMind.C) = m.onlyOf(cs.toSet(), ::quiet)
+        val you = m.any(HudhudMind.C.YOU, HudhudMind.C.THIS, HudhudMind.C.OWN, HudhudMind.C.APP)
+        // "Hudhud", or a hello with nothing else: he answers with what he can do.
+        if (m.all == setOf(HudhudMind.C.YOU) && only(HudhudMind.C.YOU) && m.said.size <= 3) return Ask.Hello
+        if ((you || m.has(HudhudMind.C.ME)) && m.any(HudhudMind.C.NAME, HudhudMind.C.WHO) && !m.any(HudhudMind.C.MADE, HudhudMind.C.MAKER) &&
+            only(HudhudMind.C.YOU, HudhudMind.C.THIS, HudhudMind.C.OWN, HudhudMind.C.APP, HudhudMind.C.ME, HudhudMind.C.NAME,
+                HudhudMind.C.WHO, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.KNOW, HudhudMind.C.ABLE)
+        ) return if (mineIsNearer(m)) Ask.About(AboutTopic.OWNER_NAME) else Ask.Chat(Talk.WHO_ARE_YOU, salaam)
+        if (m.has(HudhudMind.C.YOU) && m.has(HudhudMind.C.WHAT) && only(HudhudMind.C.YOU, HudhudMind.C.WHAT, HudhudMind.C.TELL)) {
+            return Ask.Chat(Talk.WHO_ARE_YOU, salaam)
+        }
+        if (m.has(HudhudMind.C.HEALTH) && only(HudhudMind.C.HEALTH, HudhudMind.C.YOU, HudhudMind.C.WHAT, HudhudMind.C.HOW_IS, HudhudMind.C.TELL)) {
+            return Ask.Chat(Talk.HOW_ARE_YOU, salaam)
+        }
+        if (m.has(HudhudMind.C.YOU) && m.has(HudhudMind.C.HOW_IS) && only(HudhudMind.C.YOU, HudhudMind.C.HOW_IS, HudhudMind.C.WHAT)) {
+            return Ask.Chat(Talk.HOW_ARE_YOU, salaam)
+        }
+        if (m.any(HudhudMind.C.ABLE, HudhudMind.C.KNOW) && m.has(HudhudMind.C.WHAT) &&
+            only(HudhudMind.C.ABLE, HudhudMind.C.KNOW, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.DO, HudhudMind.C.YOU, HudhudMind.C.ALL)
+        ) return Ask.Abilities
+        if ((m.has(HudhudMind.C.MAKER) || (m.has(HudhudMind.C.WHO) && m.has(HudhudMind.C.MADE))) &&
+            only(HudhudMind.C.MAKER, HudhudMind.C.WHO, HudhudMind.C.MADE, HudhudMind.C.YOU, HudhudMind.C.APP,
+                HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.NAME)
+        ) return Ask.About(AboutTopic.MAKER)
+        if (m.has(HudhudMind.C.APP) && m.any(HudhudMind.C.WHAT, HudhudMind.C.INFO, HudhudMind.C.TELL) &&
+            only(HudhudMind.C.APP, HudhudMind.C.WHAT, HudhudMind.C.INFO, HudhudMind.C.TELL, HudhudMind.C.ALL, HudhudMind.C.THIS)
+        ) return Ask.About(AboutTopic.APP)
+        if (m.has(HudhudMind.C.LANGUAGE) &&
+            only(HudhudMind.C.LANGUAGE, HudhudMind.C.WHICH, HudhudMind.C.WHAT, HudhudMind.C.HOW_MANY, HudhudMind.C.YOU,
+                HudhudMind.C.KNOW, HudhudMind.C.ABLE, HudhudMind.C.TELL, HudhudMind.C.ALL, HudhudMind.C.DO, HudhudMind.C.APP)
+        ) return Ask.About(AboutTopic.LANGUAGES)
+        if (m.has(HudhudMind.C.VERSION) &&
+            only(HudhudMind.C.VERSION, HudhudMind.C.APP, HudhudMind.C.WHAT, HudhudMind.C.WHICH, HudhudMind.C.YOU, HudhudMind.C.TELL)
+        ) return Ask.About(AboutTopic.VERSION)
+        if (m.has(HudhudMind.C.SAFE) &&
+            only(HudhudMind.C.SAFE, HudhudMind.C.DATA, HudhudMind.C.YOU, HudhudMind.C.APP, HudhudMind.C.WHAT, HudhudMind.C.WHERE,
+                HudhudMind.C.ME, HudhudMind.C.TELL, HudhudMind.C.ALL, HudhudMind.C.INFO, HudhudMind.C.HIS, HudhudMind.C.WHO,
+                HudhudMind.C.CAME, HudhudMind.C.ACCOUNT) ||
+            m.has(HudhudMind.C.DATA) && m.has(HudhudMind.C.WHERE) &&
+            only(HudhudMind.C.DATA, HudhudMind.C.WHERE, HudhudMind.C.ME, HudhudMind.C.YOU, HudhudMind.C.APP, HudhudMind.C.WHAT,
+                HudhudMind.C.CAME, HudhudMind.C.TELL, HudhudMind.C.INFO, HudhudMind.C.HIS)
+        ) return Ask.About(AboutTopic.PRIVACY)
+        if (clock(m)) return Ask.Clock
+        return null
+    }
+
+    /**
+     * "Your name" or "my name": the word for whose stands nearest the name ("may I know your name" is his, "do you know
+     * my name" the owner's); with only "my", the owner's; a tie is his — the sheet is a talk with him.
+     */
+    private fun mineIsNearer(m: HudhudMind.Read): Boolean {
+        val anchor = m.said.indices.firstOrNull { HudhudMind.C.NAME in m.at(it) }
+            ?: m.said.indices.firstOrNull { HudhudMind.C.WHO in m.at(it) } ?: return false
+        // A word that is itself "my name" or "your name" (اسمي, اسمك, namaku, namamu) decides.
+        val own = m.at(anchor)
+        if (HudhudMind.C.ME in own && HudhudMind.C.YOU !in own) return true
+        if (HudhudMind.C.YOU in own) return false
+        fun nearest(vararg cs: HudhudMind.C): Int = m.said.indices
+            // "Hudhud" said to him is calling him, not "your".
+            .filter { i -> i != anchor && m.said[i] !in HIS_OWN_NAME && cs.any { it in m.at(i) } }
+            .minOfOrNull { kotlin.math.abs(it - anchor) } ?: Int.MAX_VALUE
+        return nearest(HudhudMind.C.ME) < nearest(HudhudMind.C.YOU, HudhudMind.C.OWN, HudhudMind.C.THIS, HudhudMind.C.APP)
+    }
+
+    private val HIS_OWN_NAME: Set<String> by lazy {
+        listOf("hudhud", "hoopoe", "ہدہد", "هدهد", "हुदहुद", "হুদহুদ", "الهدهد").map { norm(it) }.toSet()
+    }
+
+    /** Today's date, the day or the time: "aaj kya tareekh hai", "aaj kaunsa din hai", "kitne baje hain". */
+    private fun clock(m: HudhudMind.Read): Boolean {
+        val days = setOf(HudhudMind.C.DAY, HudhudMind.C.THIS)
+        if (m.has(HudhudMind.C.DATE) && m.onlyOf(
+                setOf(HudhudMind.C.DATE, HudhudMind.C.WHAT, HudhudMind.C.WHICH, HudhudMind.C.HOW_MANY, HudhudMind.C.TELL,
+                    HudhudMind.C.TIME, HudhudMind.C.YOU, HudhudMind.C.ME) + days, ::quietOrDay
+            )
+        ) return true
+        if (m.has(HudhudMind.C.DAY) && m.any(HudhudMind.C.WHICH, HudhudMind.C.WHAT) && m.said.any { it in TODAY_WORDS } &&
+            m.onlyOf(setOf(HudhudMind.C.WHICH, HudhudMind.C.WHAT, HudhudMind.C.TELL) + days, ::quietOrDay)
+        ) return true
+        return m.has(HudhudMind.C.TIME) && m.any(HudhudMind.C.WHAT, HudhudMind.C.HOW_MANY) &&
+            m.onlyOf(setOf(HudhudMind.C.TIME, HudhudMind.C.WHAT, HudhudMind.C.HOW_MANY, HudhudMind.C.TELL) + days, ::quietOrDay)
+    }
+
+    /**
+     * What is asked about a named customer or supplier beside his balance; null when only the balance is (his name
+     * alone, "ka hisaab", "kitna baqaya"). "Kab dega" (when he will pay) is the Radar's and is taken before this.
+     */
+    private fun facetOf(m: HudhudMind.Read): Facet? = when {
+        m.has(HudhudMind.C.PHONE) -> Facet.PHONE
+        m.has(HudhudMind.C.LIMIT) -> Facet.LIMIT
+        m.has(HudhudMind.C.PROMISE) -> Facet.PROMISE
+        m.has(HudhudMind.C.SINCE_WHEN) || (m.has(HudhudMind.C.FIRST) && m.any(HudhudMind.C.ENTRY, HudhudMind.C.WHEN, HudhudMind.C.DATE, HudhudMind.C.PAYMENT)) -> Facet.SINCE
+        m.has(HudhudMind.C.PAYMENT) && m.any(HudhudMind.C.LAST, HudhudMind.C.WHEN, HudhudMind.C.DATE) -> Facet.LAST_PAYMENT
+        m.has(HudhudMind.C.LAST) || (m.has(HudhudMind.C.ENTRY) && m.any(HudhudMind.C.WHEN, HudhudMind.C.DATE)) -> Facet.LAST_ENTRY
+        m.any(HudhudMind.C.ENTRY, HudhudMind.C.TIMES) && m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.ALL) -> Facet.ENTRIES
+        m.any(HudhudMind.C.FATHER, HudhudMind.C.VILLAGE, HudhudMind.C.ADDRESS, HudhudMind.C.INFO, HudhudMind.C.WHERE, HudhudMind.C.NAME) -> Facet.DETAILS
+        m.has(HudhudMind.C.WHO) && !m.any(HudhudMind.C.PAYMENT, HudhudMind.C.ENTRY, HudhudMind.C.HOW_MANY) -> Facet.DETAILS
+        else -> null
+    }
+
+    /**
+     * What is asked about a named product: its suppliers' rates (cheaper, dearer, from whom), when it last came, its
+     * purchase rate, who bought it, what is left, its price, how much of it sold; everything when only its name is
+     * said. A figure the product does not change (this month's profit, what expires) is left to the figure.
+     */
+    private fun goodsAsk(m: HudhudMind.Read, ids: List<Long>, figure: VoiceQuestion.Kind?, window: VoiceQuestion.Window?): Ask? {
+        val sold = figure == VoiceQuestion.Kind.SALES_TODAY || figure == VoiceQuestion.Kind.SALES_MONTH
+        val buyers = (m.has(HudhudMind.C.WHO) && m.has(HudhudMind.C.BOUGHT) && !m.has(HudhudMind.C.PRICE)) || m.has(HudhudMind.C.CUSTOMER)
+        val facet = when {
+            sold -> GoodsFacet.SOLD
+            m.any(HudhudMind.C.CHEAP, HudhudMind.C.DEAR, HudhudMind.C.SUPPLIER, HudhudMind.C.FROM_WHOM) -> GoodsFacet.SUPPLIERS
+            m.has(HudhudMind.C.CAME) && m.any(HudhudMind.C.LAST, HudhudMind.C.WHEN, HudhudMind.C.DATE) -> GoodsFacet.LAST_IN
+            buyers -> GoodsFacet.BUYERS
+            m.has(HudhudMind.C.COST) || (m.has(HudhudMind.C.BOUGHT) && m.has(HudhudMind.C.HOW_MANY) && !m.has(HudhudMind.C.WHO)) -> GoodsFacet.COST
+            m.has(HudhudMind.C.WHO) && m.has(HudhudMind.C.BOUGHT) -> GoodsFacet.BUYERS
+            m.any(HudhudMind.C.STOCK, HudhudMind.C.LEFT, HudhudMind.C.PENDING) || figure == VoiceQuestion.Kind.TO_GET ||
+                figure == VoiceQuestion.Kind.TO_GIVE -> GoodsFacet.STOCK
+            m.has(HudhudMind.C.PRICE) -> GoodsFacet.PRICE
+            figure == null -> GoodsFacet.OVERVIEW
+            else -> return null
+        }
+        val w = if (facet != GoodsFacet.SOLD) window
+        else window ?: if (figure == VoiceQuestion.Kind.SALES_TODAY) VoiceQuestion.Window.TODAY else VoiceQuestion.Window.THIS_MONTH
+        return Ask.Goods(ids, facet, w)
+    }
+
+    /**
+     * The rest of the book, when nobody and no product is named: the shop's profile, goods that came in, how many of
+     * something, where cheques, plans, bills and stock stand, what happened today and who did it, the whole book.
+     */
+    private fun book(m: HudhudMind.Read, window: VoiceQuestion.Window?): Ask? {
+        val mine = m.any(HudhudMind.C.SHOP, HudhudMind.C.ME, HudhudMind.C.OWN)
+        val his = m.has(HudhudMind.C.HIS)
+        // Money that came in: "aaj kitne paise aaye", "aaj kitni wasooli hui", "money in today".
+        val page = m.any(HudhudMind.C.CHEQUE, HudhudMind.C.PLAN, HudhudMind.C.BILL, HudhudMind.C.STAFF, HudhudMind.C.SALARY, HudhudMind.C.INVOICE)
+        if (!page && (m.has(HudhudMind.C.CAME) && m.has(HudhudMind.C.MONEY) ||
+                m.has(HudhudMind.C.PAYMENT) && (m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.ALL) || window != null) && !m.has(HudhudMind.C.LAST))
+        ) return Ask.Collected(window)
+        // A customer's or a supplier's number, address, limit or promise with no name: whose? ("kisi gahak ka number").
+        if (m.any(HudhudMind.C.PHONE, HudhudMind.C.ADDRESS) && m.any(HudhudMind.C.CUSTOMER, HudhudMind.C.SUPPLIER) &&
+            !m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.ALL)
+        ) return Ask.NeedName
+        when {
+            m.has(HudhudMind.C.OWNER) && m.has(HudhudMind.C.WHO) && m.has(HudhudMind.C.SHOP) -> return Ask.About(AboutTopic.OWNER_NAME)
+            m.has(HudhudMind.C.EMAIL) && !his -> return Ask.Shop(ShopFacet.EMAIL)
+            m.has(HudhudMind.C.TAX) && !m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.INVOICE) -> return Ask.Shop(ShopFacet.TAX)
+            m.has(HudhudMind.C.BANK) && !his -> return Ask.Shop(ShopFacet.BANK)
+            m.has(HudhudMind.C.CURRENCY) -> return Ask.Shop(ShopFacet.CURRENCY)
+            m.has(HudhudMind.C.COUNTRY) && !his -> return Ask.Shop(ShopFacet.COUNTRY)
+            m.has(HudhudMind.C.SHOP) && m.has(HudhudMind.C.TRADE) -> return Ask.Shop(ShopFacet.TRADE)
+            mine && m.has(HudhudMind.C.NAME) -> return Ask.Shop(ShopFacet.NAME)
+            m.has(HudhudMind.C.PHONE) && mine && !his -> return Ask.Shop(ShopFacet.PHONE)
+            // "Number" alone: the shop's, or somebody's whose name was not said.
+            m.has(HudhudMind.C.PHONE) && !his && !m.any(HudhudMind.C.CUSTOMER, HudhudMind.C.SUPPLIER, HudhudMind.C.STAFF) ->
+                return Ask.DidYouMean(listOf(Ask.Shop(ShopFacet.PHONE), Ask.NeedName))
+            m.has(HudhudMind.C.ADDRESS) && !his && !m.any(HudhudMind.C.CUSTOMER, HudhudMind.C.SUPPLIER) -> return Ask.Shop(ShopFacet.ADDRESS)
+            m.has(HudhudMind.C.SHOP) && m.any(HudhudMind.C.INFO, HudhudMind.C.ALL, HudhudMind.C.TELL) &&
+                !m.any(HudhudMind.C.HAPPENED, HudhudMind.C.REPORT) -> return Ask.Shop(ShopFacet.ALL)
+            m.has(HudhudMind.C.SHOP) && m.onlyOf(setOf(HudhudMind.C.SHOP, HudhudMind.C.WHAT, HudhudMind.C.ME), ::quiet) ->
+                return Ask.Shop(ShopFacet.ALL)
+        }
+        // The staff's salary still to pay this month: "salary kitni deni hai", "kis ki tankhwah baqi hai".
+        if (m.has(HudhudMind.C.SALARY) && (m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.PENDING, HudhudMind.C.WHO, HudhudMind.C.ALL) || window != null)) {
+            return Ask.Status(StatusOf.STAFF)
+        }
+        val many = m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.ALL) || window != null
+        // Goods that came in: "aaj kis supplier se maal aaya", "aakhri delivery kab aayi".
+        if (m.has(HudhudMind.C.CAME) && !m.has(HudhudMind.C.PAYMENT) && !(m.has(HudhudMind.C.BILL) && m.has(HudhudMind.C.HOW_MANY)) &&
+            (m.any(HudhudMind.C.GOODS, HudhudMind.C.SUPPLIER, HudhudMind.C.BILL, HudhudMind.C.LAST) || m.has(HudhudMind.C.WHEN)) ||
+            m.has(HudhudMind.C.SUPPLIER) && m.any(HudhudMind.C.FROM_WHOM, HudhudMind.C.WHICH, HudhudMind.C.WHO) && m.any(HudhudMind.C.GOODS, HudhudMind.C.CAME)
+        ) return Ask.Deliveries(window)
+        when {
+            m.has(HudhudMind.C.CALCULATOR) && (m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.TIMES, HudhudMind.C.HAPPENED, HudhudMind.C.USED) || window != null) ->
+                return Ask.Count(Thing.CALCULATIONS, window)
+            (m.has(HudhudMind.C.APP) && m.any(HudhudMind.C.OPEN, HudhudMind.C.TIMES, HudhudMind.C.HOW_MANY)) ||
+                (m.has(HudhudMind.C.OPEN) && m.has(HudhudMind.C.TIMES)) -> return Ask.Count(Thing.APP_OPENS, window)
+            m.has(HudhudMind.C.INVOICE) && m.has(HudhudMind.C.SUPPLIER) && m.has(HudhudMind.C.PENDING) -> return Ask.Status(StatusOf.BILLS)
+            m.has(HudhudMind.C.INVOICE) && m.has(HudhudMind.C.SUPPLIER) && many -> return Ask.Count(Thing.BILLS, window)
+            m.has(HudhudMind.C.INVOICE) && (many || m.has(HudhudMind.C.MADE)) -> return Ask.Count(Thing.INVOICES, window)
+            m.has(HudhudMind.C.BILL) && m.has(HudhudMind.C.PENDING) -> return Ask.Status(StatusOf.BILLS)
+            m.has(HudhudMind.C.BILL) && many -> return Ask.Count(Thing.BILLS, window)
+            m.has(HudhudMind.C.TICKET) && (many || m.has(HudhudMind.C.MADE)) -> return Ask.Count(Thing.TICKETS, window)
+            m.has(HudhudMind.C.ENTRY) && (many || m.has(HudhudMind.C.MADE)) -> return Ask.Count(Thing.ENTRIES, window)
+            m.has(HudhudMind.C.CUSTOMER) && m.has(HudhudMind.C.HOW_MANY) -> return Ask.Count(Thing.CUSTOMERS)
+            m.has(HudhudMind.C.SUPPLIER) && m.has(HudhudMind.C.HOW_MANY) -> return Ask.Count(Thing.SUPPLIERS)
+            m.has(HudhudMind.C.STAFF) && m.has(HudhudMind.C.HOW_MANY) -> return Ask.Count(Thing.STAFF)
+            m.any(HudhudMind.C.GOODS, HudhudMind.C.STOCK) && m.has(HudhudMind.C.LOW) -> return Ask.Status(StatusOf.LOW_STOCK)
+            m.has(HudhudMind.C.GOODS) && m.has(HudhudMind.C.HOW_MANY) -> return Ask.Count(Thing.PRODUCTS)
+        }
+        val asks = m.any(HudhudMind.C.PENDING, HudhudMind.C.HOW_MANY, HudhudMind.C.WHEN, HudhudMind.C.ALL, HudhudMind.C.WHICH, HudhudMind.C.WHO) ||
+            window != null
+        when {
+            m.has(HudhudMind.C.CHEQUE) && asks -> return Ask.Status(StatusOf.CHEQUES)
+            m.has(HudhudMind.C.PLAN) && asks -> return Ask.Status(StatusOf.PLANS)
+            m.has(HudhudMind.C.STOCK) && m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.WHAT, HudhudMind.C.ALL, HudhudMind.C.WHICH) ->
+                return Ask.Status(StatusOf.LOW_STOCK)
+        }
+        // What happened and who did it: "aaj kya kya hua", "aaj ki report", "kis ne kya delete kiya".
+        if (m.has(HudhudMind.C.REPORT) && !m.any(HudhudMind.C.CUSTOMER, HudhudMind.C.GOODS) ||
+            m.has(HudhudMind.C.HAPPENED) && m.any(HudhudMind.C.WHAT, HudhudMind.C.ALL) && m.onlyOf(ACTIVITY_OK, ::quietOrDay) ||
+            m.any(HudhudMind.C.EDITED, HudhudMind.C.DELETED) && m.any(HudhudMind.C.WHO, HudhudMind.C.WHAT, HudhudMind.C.HOW_MANY, HudhudMind.C.ALL)
+        ) return Ask.Activity(window)
+        // The whole book: "jitna data hai uski information", "khate ki maloomat", "mera hisaab".
+        if (m.any(HudhudMind.C.DATA, HudhudMind.C.INFO, HudhudMind.C.ACCOUNT) && m.onlyOf(BOOK_OK, ::quietOrDay)) return Ask.Status(StatusOf.BOOK)
+        // "Aakhri entry" with nobody named: the book's last entry (its summary says when), or somebody's.
+        if (m.has(HudhudMind.C.ENTRY) && m.has(HudhudMind.C.LAST) && !m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.PAYMENT)) {
+            return Ask.DidYouMean(listOf(Ask.Status(StatusOf.BOOK), Ask.NeedName))
+        }
+        // Somebody's limit, promise, father or village, with no name: he asks whose.
+        if (m.any(HudhudMind.C.LIMIT, HudhudMind.C.PROMISE, HudhudMind.C.FATHER, HudhudMind.C.VILLAGE) ||
+            m.has(HudhudMind.C.PAYMENT) && m.has(HudhudMind.C.LAST)
+        ) return Ask.NeedName
+        return null
+    }
+
+    /** A word that alone could be his name, the owner's or the shop's: the three are offered, none guessed. */
+    private fun guess(m: HudhudMind.Read): Ask? {
+        if (m.has(HudhudMind.C.NAME) && m.onlyOf(setOf(HudhudMind.C.NAME, HudhudMind.C.WHAT, HudhudMind.C.TELL), ::quiet)) {
+            return Ask.DidYouMean(listOf(Ask.Chat(Talk.WHO_ARE_YOU), Ask.About(AboutTopic.OWNER_NAME), Ask.Shop(ShopFacet.NAME)))
+        }
+        return null
+    }
+
+    /**
+     * A question that carries on from the last answer on the sheet (13 Nov 2026): "uska number?" (the one it was
+     * about), "aur Bashir ka?" (someone else, the same question), "aur kal?" (the same figure, another span of days),
+     * "aur DAP?" (another product). Only when the sentence asks nothing of its own.
+     */
+    private fun followUp(
+        m: HudhudMind.Read, named: List<Long>, product: List<Long>, figure: VoiceQuestion.Kind?,
+        window: VoiceQuestion.Window?, willPay: Boolean, before: Ask?
+    ): Ask? {
+        if (before == null) return null
+        val plain = m.all.all { it in FOLLOW_OK }
+        if (m.has(HudhudMind.C.HIS) && named.isEmpty() && product.isEmpty()) {
+            partyOf(before)?.let { ids ->
+                if (willPay) return Ask.WhenPays(ids)
+                facetOf(m)?.let { return Ask.Person(ids, it) }
+                if (window != null && m.has(HudhudMind.C.PAYMENT)) {
+                    val got = (before as? Ask.Moved)?.got ?: true
+                    return Ask.Moved(ids, window, got)
+                }
+                if (figure == null || figure == VoiceQuestion.Kind.TO_GET || figure == VoiceQuestion.Kind.TO_GIVE) return Ask.Parties(ids)
+            }
+            goodsOf(before)?.let { ids -> goodsAsk(m, ids, figure, window)?.let { return it } }
+        }
+        // A bare question about the one the last answer was about, with no "uska" (13 Nov 2026: the chips' own words,
+        // typed or said — "number?", "aakhri adaigi", "waade ka din", "tafseel", "kab dega?", "rate?", "stock?").
+        // Nobody else is named and the sentence asks nothing of its own; a figure word stays the shop's figure, except
+        // the "udhaar" of "udhaar ki hadd" (a limit) and of a promise.
+        if (named.isEmpty() && product.isEmpty()) {
+            partyOf(before)?.takeIf { it.size == 1 }?.let { ids ->
+                if (willPay && !m.has(HudhudMind.C.WHO)) return Ask.WhenPays(ids)
+                val facet = facetOf(m) ?: bareFacet(m)
+                val ownWords = figure == null || (figure in OWED_FIGURES && facet in OWED_FACETS)
+                if (facet != null && ownWords && m.onlyOf(PERSON_OK, ::quietOrDay)) return Ask.Person(ids, facet)
+                if (figure == null && m.has(HudhudMind.C.ACCOUNT) && m.onlyOf(BALANCE_OK, ::quiet)) return Ask.Parties(ids)
+            }
+            goodsOf(before)?.takeIf { it.size == 1 }?.let { ids ->
+                if (figure == null && GOODS_FACETS.any { m.has(it) } && m.onlyOf(GOODS_OK, ::quietOrDay)) {
+                    goodsAsk(m, ids, null, window)?.let { return it }
+                }
+            }
+        }
+        if (named.isNotEmpty() && figure == null && !willPay && plain) {
+            when (before) {
+                is Ask.Person -> if (window == null) return Ask.Person(named, before.facet)
+                is Ask.WhenPays -> if (window == null && before.ids.isNotEmpty()) return Ask.WhenPays(named)
+                is Ask.Moved -> return Ask.Moved(named, window ?: before.window, before.got)
+                else -> {}
+            }
+        }
+        if (product.isNotEmpty() && named.isEmpty() && plain && before is Ask.Goods) {
+            return Ask.Goods(product, before.facet, window ?: before.window)
+        }
+        if (named.isEmpty() && product.isEmpty() && figure == null && window != null && plain) {
+            return when (before) {
+                is Ask.Figure -> when (before.kind) {
+                    VoiceQuestion.Kind.SALES_TODAY, VoiceQuestion.Kind.SALES_MONTH -> figureOver(VoiceQuestion.Kind.SALES_MONTH, window)
+                    VoiceQuestion.Kind.PROFIT_MONTH -> figureOver(VoiceQuestion.Kind.PROFIT_MONTH, window)
+                    else -> null
+                }
+                is Ask.Period -> figureOver(
+                    if (before.measure == Measure.SALES) VoiceQuestion.Kind.SALES_MONTH else VoiceQuestion.Kind.PROFIT_MONTH, window
+                )
+                is Ask.Moved -> Ask.Moved(before.ids, window, before.got)
+                is Ask.Count -> Ask.Count(before.thing, window)
+                is Ask.Deliveries -> Ask.Deliveries(window)
+                is Ask.Activity -> Ask.Activity(window)
+                is Ask.Goods -> Ask.Goods(before.ids, before.facet, window)
+                else -> null
+            }
+        }
+        return null
+    }
+
+    /** A facet word said alone after a customer: his entries, his last payment. */
+    private fun bareFacet(m: HudhudMind.Read): Facet? = when {
+        m.has(HudhudMind.C.ENTRY) -> Facet.ENTRIES
+        m.has(HudhudMind.C.PAYMENT) -> Facet.LAST_PAYMENT
+        else -> null
+    }
+
+    /** Facets a figure's word may stand in ("udhaar ki hadd": a limit, not what the khata is owed). */
+    private val OWED_FACETS = setOf(Facet.LIMIT, Facet.PROMISE)
+
+    /** What a bare question about a customer may say: his facts' words and the little words around them. */
+    private val PERSON_OK = setOf(
+        HudhudMind.C.PHONE, HudhudMind.C.LIMIT, HudhudMind.C.PROMISE, HudhudMind.C.SINCE_WHEN, HudhudMind.C.FIRST,
+        HudhudMind.C.ENTRY, HudhudMind.C.WHEN, HudhudMind.C.DATE, HudhudMind.C.DAY, HudhudMind.C.PAYMENT, HudhudMind.C.LAST,
+        HudhudMind.C.TIMES, HudhudMind.C.HOW_MANY, HudhudMind.C.ALL, HudhudMind.C.FATHER, HudhudMind.C.VILLAGE,
+        HudhudMind.C.ADDRESS, HudhudMind.C.INFO, HudhudMind.C.WHERE, HudhudMind.C.NAME, HudhudMind.C.WHO, HudhudMind.C.CREDIT,
+        HudhudMind.C.PENDING, HudhudMind.C.KNOW, HudhudMind.C.HAPPENED, HudhudMind.C.AND, HudhudMind.C.WHAT, HudhudMind.C.TELL,
+        HudhudMind.C.HIS, HudhudMind.C.THIS
+    )
+
+    /** "Balance?", "hisaab?" after a customer: his balance. */
+    private val BALANCE_OK = setOf(
+        HudhudMind.C.ACCOUNT, HudhudMind.C.HOW_MANY, HudhudMind.C.PENDING, HudhudMind.C.MONEY, HudhudMind.C.ALL,
+        HudhudMind.C.CREDIT, HudhudMind.C.AND, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.HIS, HudhudMind.C.THIS
+    )
+
+    /** The words that ask something of a product. */
+    private val GOODS_FACETS = listOf(
+        HudhudMind.C.PRICE, HudhudMind.C.STOCK, HudhudMind.C.LEFT, HudhudMind.C.COST, HudhudMind.C.CHEAP, HudhudMind.C.DEAR,
+        HudhudMind.C.SUPPLIER, HudhudMind.C.FROM_WHOM, HudhudMind.C.CAME, HudhudMind.C.BOUGHT, HudhudMind.C.CUSTOMER,
+        HudhudMind.C.INFO
+    )
+
+    /** What a bare question about a product may say beside them. */
+    private val GOODS_OK = GOODS_FACETS.toSet() + setOf(
+        HudhudMind.C.LAST, HudhudMind.C.WHEN, HudhudMind.C.DATE, HudhudMind.C.DAY, HudhudMind.C.WHO, HudhudMind.C.HOW_MANY,
+        HudhudMind.C.ALL, HudhudMind.C.PENDING, HudhudMind.C.CREDIT, HudhudMind.C.GOODS, HudhudMind.C.WHICH, HudhudMind.C.TIMES,
+        HudhudMind.C.HAPPENED, HudhudMind.C.AND, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.HIS, HudhudMind.C.THIS
+    )
+
+    /** The customers or suppliers an answer was about, for "uska\u2026". */
+    private fun partyOf(a: Ask): List<Long>? = when (a) {
+        is Ask.Parties -> a.ids
+        is Ask.Person -> a.ids
+        is Ask.WhenPays -> a.ids
+        is Ask.Moved -> a.ids
+        is Ask.Entry -> a.ids
+        else -> null
+    }?.takeIf { it.isNotEmpty() }
+
+    /** The product an answer was about, for "iska rate\u2026". */
+    private fun goodsOf(a: Ask): List<Long>? = (a as? Ask.Goods)?.ids?.takeIf { it.isNotEmpty() }
+
+    /** One of the book's own names (a customer, a supplier, a product), recognised outright. */
+    private fun knownName(w: String, names: List<Name>): Boolean =
+        names.isNotEmpty() && NameSearch.scoreSpoken(names, listOf(w)) { it.name }.any { it.strongHits > 0 }
+
+    /**
+     * Whoever (or whichever product) the words name. A concept word that is also a common name part ("Malik", "Store",
+     * "Din") is looked at only when the plain words name nobody; then a single such word gives way to a question about
+     * the shop ("dukaan ka malik kaun hai" is not a customer called Malik), while two of them together still name
+     * someone ("Malik Store ka number").
+     */
+    private fun whoIsNamed(
+        said: List<String>, names: List<Name>, topics: List<Topic>, m: HudhudMind.Read, window: VoiceQuestion.Window?
+    ): List<Long> {
+        if (names.isEmpty()) return emptyList()
+        namedIn(said, names, topics, soft = false).takeIf { it.isNotEmpty() }?.let { return it }
+        val soft = said.count { HudhudMind.isSoftWord(it) }
+        if (soft == 0) return emptyList()
+        val loose = namedIn(said, names, topics, soft = true)
+        if (loose.isNotEmpty() && soft < 2 && book(m, window) != null) return emptyList()
+        return loose
+    }
+
+    /**
+     * Some likely questions for words he could not place (13 Nov 2026): offered as taps under "You can ask", nearest
+     * first, at most three; none when the words point nowhere.
+     */
+    fun closest(heard: String): List<Ask> {
+        val said = words(heard)
+        if (said.isEmpty()) return emptyList()
+        val m = HudhudMind.read(said)
+        val out = LinkedHashSet<Ask>()
+        fun on(vararg cs: HudhudMind.C) = m.any(*cs)
+        if (on(HudhudMind.C.NAME, HudhudMind.C.YOU)) out += Ask.Chat(Talk.WHO_ARE_YOU)
+        if (on(HudhudMind.C.PHONE, HudhudMind.C.ADDRESS, HudhudMind.C.SHOP, HudhudMind.C.EMAIL, HudhudMind.C.BANK)) out += Ask.Shop(ShopFacet.ALL)
+        if (on(HudhudMind.C.CUSTOMER)) out += Ask.Count(Thing.CUSTOMERS)
+        if (on(HudhudMind.C.SUPPLIER, HudhudMind.C.CAME, HudhudMind.C.BILL)) out += Ask.Deliveries(null)
+        if (on(HudhudMind.C.GOODS, HudhudMind.C.STOCK, HudhudMind.C.PRICE, HudhudMind.C.LOW)) out += Ask.Status(StatusOf.LOW_STOCK)
+        if (on(HudhudMind.C.CHEQUE)) out += Ask.Status(StatusOf.CHEQUES)
+        if (on(HudhudMind.C.PLAN)) out += Ask.Status(StatusOf.PLANS)
+        if (on(HudhudMind.C.INVOICE)) out += Ask.Count(Thing.INVOICES, VoiceQuestion.Window.TODAY)
+        if (on(HudhudMind.C.DATE, HudhudMind.C.DAY, HudhudMind.C.TIME)) out += Ask.Clock
+        if (on(HudhudMind.C.CALCULATOR)) out += Ask.Count(Thing.CALCULATIONS, VoiceQuestion.Window.TODAY)
+        if (on(HudhudMind.C.APP, HudhudMind.C.OPEN)) out += Ask.Count(Thing.APP_OPENS, VoiceQuestion.Window.TODAY)
+        if (on(HudhudMind.C.REPORT, HudhudMind.C.HAPPENED, HudhudMind.C.EDITED, HudhudMind.C.DELETED)) out += Ask.Activity(VoiceQuestion.Window.TODAY)
+        if (on(HudhudMind.C.MONEY, HudhudMind.C.PAYMENT)) out += Ask.Collected(VoiceQuestion.Window.TODAY)
+        if (on(HudhudMind.C.SALARY, HudhudMind.C.STAFF)) out += Ask.Status(StatusOf.STAFF)
+        if (on(HudhudMind.C.DATA, HudhudMind.C.INFO, HudhudMind.C.ALL, HudhudMind.C.ACCOUNT)) out += Ask.Status(StatusOf.BOOK)
+        return out.take(3)
     }
 
     /**
@@ -198,7 +716,7 @@ object Hudhud {
     private fun partiesOf(names: List<Name>, nameWords: List<String>): List<Long> {
         if (names.isEmpty() || nameWords.isEmpty()) return emptyList()
         NameSearch.confidentMatch(names, nameWords) { it.name }?.let { return listOf(it.id) }
-        return nearBest(names, nameWords)
+        return nearBest(names, nameWords).ifEmpty { acrossScripts(names, nameWords) }
     }
 
     /** Every name the said words recognise (not merely come near) and that scores close to the best, at most five. */
@@ -207,6 +725,49 @@ object Hudhud {
         val best = scored.firstOrNull()?.score ?: return emptyList()
         if (best <= 0.0) return emptyList()
         return scored.takeWhile { it.score >= best * NEAR_BEST }.take(MAX_NAMES).map { it.item.id }
+    }
+
+    /**
+     * A name saved in one script and said in the other (13 Nov 2026): Urdu, Sindhi, Arabic and Persian leave the short
+     * vowels unwritten, so a recogniser's "بشیر" folds to "bsir" while the book's "Bashir" folds to "basir", and the
+     * name search finds only a near miss — a question in Urdu about a customer saved in Roman letters found nobody.
+     * Here a word meets a word of a name when one is in those scripts, the other in Latin letters, and the Latin
+     * spelling is the other with only vowels put in ("b[a]sir"); "Bushra" ("busra") is not "بشیر" ("bsir"). Every name
+     * met so is offered, at most five — a choice, as [nearBest] gives one; none when more would be.
+     */
+    private fun acrossScripts(names: List<Name>, words: List<String>): List<Long> {
+        val said = words.map { it to arabicScript(it) }.map { (w, a) -> NameSearch.fold(w) to a }.filter { it.first.length >= 3 }
+        if (said.none { it.second } && names.none { n -> n.name.any { c -> c in '\u0600'..'\u06FF' } }) return emptyList()
+        val met = names.filter { n ->
+            val parts = n.name.split(' ', '-', '.').filter { it.isNotBlank() }.map { NameSearch.fold(it) to arabicScript(it) }
+                .filter { it.first.isNotEmpty() }
+            said.any { (w, wArabic) ->
+                parts.any { (p, pArabic) ->
+                    when {
+                        wArabic && !pArabic -> vowelsPutIn(w, p)
+                        !wArabic && pArabic -> vowelsPutIn(p, w)
+                        else -> false
+                    }
+                }
+            }
+        }
+        return if (met.size in 1..MAX_NAMES) met.map { it.id } else emptyList()
+    }
+
+    private fun arabicScript(w: String) = w.any { it in '\u0600'..'\u06FF' }
+
+    /** [latin] is [bare] with only vowels added to it: "basir" is "bsir" with an "a"; "busra" is not. */
+    private fun vowelsPutIn(bare: String, latin: String): Boolean {
+        if (latin.length < bare.length || bare.length < 3) return false
+        var i = 0
+        for (c in latin) {
+            when {
+                i < bare.length && c == bare[i] -> i++
+                c in "aeiou" -> {}
+                else -> return false
+            }
+        }
+        return i == bare.length
     }
 
     // ------------------------------------------------------------------------------------------------ the greeting
@@ -312,7 +873,7 @@ object Hudhud {
     private val PAY = listOf("pay", "pays", "paying", "repay", "bayar", "membayar", "melunasi")
 
     /** "When", for "kab dega"; Persian's کی is left out (Urdu's "of"), its چه وقت kept. */
-    private val WHEN = listOf("kab", "kb", "when", "کب", "कब", "কবে", "ڪڏهن", "متى", "چه وقت", "چه زمانی", "kapan")
+    private val WHEN = listOf("kab", "kb", "when", "کب", "कब", "কবে", "ڪڏهن", "متى", "چه وقت", "چه زمانی", "کی می", "kapan")
 
     /** "Who", for "aaj kaun dega". */
     private val WHO = listOf("kaun", "kon", "who", "کون", "कौन", "কে", "কারা", "ڪير", "من", "چه کسی", "siapa")
@@ -566,21 +1127,92 @@ object Hudhud {
      * owner, never a guess. Only words left once the question's own words are set aside are looked at, and only
      * words of three letters or more.
      */
-    private fun namedIn(said: List<String>, names: List<Name>, topics: List<Topic>): List<Long> {
+    private fun namedIn(said: List<String>, names: List<Name>, topics: List<Topic>, soft: Boolean = true): List<Long> {
         if (names.isEmpty()) return emptyList()
         val features = topics.filter { it.feature }.flatMap { words(it.title) }.toSet()
         val asked = VoiceQuestion.keywordsIn(said.joinToString(" "))
+        // Brain v2 (13 Nov 2026): a word Hudhud reads as a concept ("number", "rate", "aakhri") is not a name either;
+        // a common name part that is also a concept ("Malik", "Store") only when [soft].
         val left = said.filter { w ->
             w.length >= 3 && w.any { it.isLetter() } && w !in STOP_SET && w !in INTENT_SET &&
-                w !in asked && w !in features
-        }
+                w !in asked && w !in features && !HudhudMind.isHardWord(w) && (soft || !HudhudMind.isSoftWord(w))
+        }.map { bengaliStem(it) }
         if (left.isEmpty()) return emptyList()
         NameSearch.confidentMatch(names, left) { it.name }?.let { return listOf(it.id) }
-        return nearBest(names, left)
+        return nearBest(names, left).ifEmpty { acrossScripts(names, left) }
     }
+
+    /**
+     * A Bengali name with its case ending ("আলীর", Ali's): the ending comes off, so the name meets the book's "Ali"
+     * outright rather than only coming near it (13 Nov 2026, every language: the owner).
+     */
+    private fun bengaliStem(w: String): String {
+        if (w.isEmpty() || w[0] !in 'ঀ'..'৿') return w
+        for (end in BENGALI_NAME_ENDS) {
+            if (w.length > end.length + 1 && w.endsWith(end)) return w.dropLast(end.length)
+        }
+        return w
+    }
+
+    private val BENGALI_NAME_ENDS by lazy { listOf("এর", "ের", "কে", "র").map { norm(it) } }
 
     private const val NEAR_BEST = 0.6
     private const val MAX_NAMES = 5
+
+    // ------------------------------------------------------------------------------------------------ Brain v2 words
+
+    /** Words that ask nothing by themselves: the little words between, a greeting, a friendly "yaar", "what's" tail. */
+    private val QUIET_SET: Set<String> by lazy {
+        (STOP + FILLER + SALAAM + SALAAM_TAIL + HELLO + QUIET_MORE).flatMap { words(it) }.toSet()
+    }
+
+    private val QUIET_MORE = listOf(
+        "hoon", "hun", "hu", "tha", "thi", "thay", "hy", "h", "good", "shubh", "full", "zara", "please", "pls", "jitna",
+        "jitni", "jitne", "jo", "jis", "s", "t", "d", "ll", "re", "ve", "m", "am", "be", "it", "batana", "btana",
+        "bataen", "batayen", "bataiye", "bataye", "batado", "dein", "den", "de", "na", "to", "hi", "ab", "please",
+        "ہوں", "تھا", "تھی", "جو", "جتنا", "ذرا", "हूँ", "हूं", "था", "थी", "जो", "जितना", "जरा",
+        "আছে", "আছেন", "হয়", "ছিল", "هو", "هي", "هل", "است", "هست", "هستی", "هستید", "بود", "را",
+        "آهيو", "آهين", "adalah", "ialah", "sih", "kah", "may", "about", "baare", "bare", "mutalliq", "بارے", "बारे",
+        "التي", "الذي", "ٿا", "jata", "jati", "jate", "jaata", "goes", "جاتا", "जाता", "do", "khate", "khatay", "khaate",
+        "खाते", "खाता", "apakah", "ہا", "ہای", "ای", "yang",
+        // "in" in four tongues ("in stock", "اسٽاڪ ۾", "في المخزون"), Sindhi's "of", and Urdu's "to" (then) — Persian's
+        // informal "you", which a question to Hudhud does not need ("چه کسی تو را ساخت").
+        "in", "۾", "في", "جا", "تو"
+    )
+
+    /** The words of a span of days, which a question about the day or its activity may carry. */
+    private val DAY_WORDS: Set<String> by lazy {
+        listOf(
+            "aaj", "today", "kal", "yesterday", "hafta", "hafte", "week", "mahina", "mahine", "month", "is", "iss", "this",
+            "pichle", "pichla", "pichhle", "last", "previous", "guzishta", "آج", "کل", "ہفتہ", "ہفتے", "مہینہ", "مہینے", "ماہ",
+            "پچھلے", "گزشتہ", "اس", "आज", "कल", "हफ्ता", "हफ्ते", "सप्ताह", "महीना", "महीने", "माह", "पिछले", "इस", "আজ",
+            "আজকের", "গতকাল", "সপ্তাহ", "মাস", "গত", "এই", "اڄ", "ڪالهه", "هفتو", "هفتي", "مهينو", "مهيني", "اليوم", "أمس",
+            "امس", "أسبوع", "اسبوع", "شهر", "الماضي", "هذا", "امروز", "دیروز", "هفته", "ماه", "گذشته", "این", "hari", "ini",
+            "kemarin", "minggu", "pekan", "bulan", "lalu"
+        ).map { norm(it) }.toSet()
+    }
+
+    /** "Today", for "aaj kaunsa din hai". */
+    private val TODAY_WORDS: Set<String> by lazy {
+        listOf("aaj", "today", "آج", "आज", "আজ", "আজকে", "اڄ", "اليوم", "امروز", "ini").map { norm(it) }.toSet()
+    }
+
+    /** What a question about the day's activity may also say ("aaj dukaan mein kya kya hua"). */
+    private val ACTIVITY_OK = setOf(
+        HudhudMind.C.HAPPENED, HudhudMind.C.WHAT, HudhudMind.C.ALL, HudhudMind.C.SHOP, HudhudMind.C.TELL, HudhudMind.C.ME,
+        HudhudMind.C.WHO, HudhudMind.C.DO, HudhudMind.C.REPORT, HudhudMind.C.APP, HudhudMind.C.THIS, HudhudMind.C.DAY,
+        HudhudMind.C.ENTRY, HudhudMind.C.AND
+    )
+
+    /** What a question about the whole book may also say ("jitna data hai uski information"). */
+    private val BOOK_OK = setOf(
+        HudhudMind.C.DATA, HudhudMind.C.INFO, HudhudMind.C.ALL, HudhudMind.C.HOW_MANY, HudhudMind.C.WHAT, HudhudMind.C.TELL,
+        HudhudMind.C.ME, HudhudMind.C.SHOP, HudhudMind.C.APP, HudhudMind.C.KNOW, HudhudMind.C.HIS, HudhudMind.C.THIS,
+        HudhudMind.C.YOU, HudhudMind.C.ACCOUNT
+    )
+
+    /** What a follow-up may say beside the name, product or span it changes ("aur", "uska", "kya"). */
+    private val FOLLOW_OK = setOf(HudhudMind.C.AND, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.HIS, HudhudMind.C.THIS)
 
     // ------------------------------------------------------------------------------------------------ help pages
 

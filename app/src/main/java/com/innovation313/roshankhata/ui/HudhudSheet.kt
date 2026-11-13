@@ -100,6 +100,7 @@ object HudhudSheet {
      * Opens the sheet, or brings back the one already open. [ask] is answered at once (the proofs, a chip from
      * elsewhere), [listen] starts the microphone, [typing] puts the cursor in the box, [today] answers with today's
      * summary (the morning greeting on Home); [speak] false keeps him silent for this sheet (the screen proofs).
+     * [intro]: opened from his face — he introduces himself aloud each time (13 Nov 2026, the owner).
      */
     fun open(
         activity: Activity,
@@ -107,7 +108,8 @@ object HudhudSheet {
         listen: Boolean = false,
         typing: Boolean = false,
         speak: Boolean = true,
-        today: Boolean = false
+        today: Boolean = false,
+        intro: Boolean = false
     ): BottomSheetDialog? {
         if (activity.isFinishing || activity.isDestroyed) return null
         val host = activity as? ComponentActivity ?: return null
@@ -125,7 +127,7 @@ object HudhudSheet {
         sheet.show()
         KeyboardFollow.dialog(sheet)
         shown = WeakReference(sheet)
-        ui.start(ask, listen, typing, today)
+        ui.start(ask, listen, typing, today, intro)
         return sheet
     }
 
@@ -160,6 +162,8 @@ object HudhudSheet {
         val prefs = host.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
         var pose = Pose.IDLE
+        /** The card he opened with: while it is on show, the chips are the day's own and his usual ones. */
+        var helloCard: HudhudBook.Answer? = null
         var front: ImageView = poseA
         var last: HudhudBook.Answer? = null
         var job: Job? = null
@@ -210,11 +214,22 @@ object HudhudSheet {
 
         val topics: List<Hudhud.Topic> by lazy { HudhudBook.topics(host) }
 
+        /** The shop's products by name, read once for the sheet: "Urea ka rate" is the product's (13 Nov 2026). */
+        val goods: Deferred<List<Hudhud.Name>> = host.lifecycleScope.async(Dispatchers.IO) {
+            try { dao.productsOnce().map { Hudhud.Name(it.id, it.name) } } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
+        }
+
+        /** What the last question was taken for, so "uska number?" or "aur kal?" carry on from it. */
+        var before: Hudhud.Ask? = null
+
+        /** The day's own questions (what the bell has), first among the chips until something is asked. */
+        var starters: List<Hudhud.Ask> = emptyList()
+
         var voiceOn: Boolean
             get() = prefs.getBoolean(KEY_VOICE, true)
             set(value) { prefs.edit().putBoolean(KEY_VOICE, value).apply() }
 
-        fun start(ask: String?, listenNow: Boolean, typing: Boolean, today: Boolean) {
+        fun start(ask: String?, listenNow: Boolean, typing: Boolean, today: Boolean, intro: Boolean) {
             // He faces into the sheet: the drawings look right, so they are turned in right-to-left.
             if (view.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
                 poseA.scaleX = -1f
@@ -244,13 +259,30 @@ object HudhudSheet {
                 val enter = event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN
                 if (action == EditorInfo.IME_ACTION_SEND || enter) { sendTyped(); true } else false
             }
-            buildChips()
+            showChips(emptyList())
+            // The day's own questions first (what the bell has now), once they are read.
+            host.lifecycleScope.launch {
+                val day = try { withContext(Dispatchers.IO) { HudhudBook.suggested(ctx, dao) } } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
+                if (!closed && day.isNotEmpty()) {
+                    starters = day
+                    if (last === helloCard) showChips(emptyList())
+                }
+            }
             // His voice wakes with the sheet when it is on, so the first answer is not kept waiting for it.
             if (speakAllowed && voiceOn) voice.warmUp()
             // He greets aloud once a day, the first time he is opened just to talk (not for a question already asked).
             val greet = speakAllowed && voiceOn && ask == null && !listenNow && !today && HudhudPrefs.helloDue(ctx)
             if (greet) HudhudPrefs.helloSaid(ctx)
-            show(HudhudBook.hello(ctx), speak = greet)
+            if (intro && ask == null && !listenNow && !today) {
+                // Tapped on his face: who he is and to ask, aloud every time his voice is on; the greeting the day's first.
+                val card = HudhudBook.intro(ctx, greet)
+                helloCard = card
+                show(card, speak = speakAllowed && voiceOn)
+            } else {
+                val card = HudhudBook.hello(ctx)
+                helloCard = card
+                show(card, speak = greet)
+            }
             breathe()
             when {
                 ask != null -> question(listOf(ask), spoken = false)
@@ -453,14 +485,14 @@ object HudhudSheet {
         private fun question(candidates: List<String>, spoken: Boolean) {
             // The recogniser's language, so a Persian or Indonesian amount is read its own way (voice entry's rule).
             val language = Locale.getDefault().toLanguageTag()
-            answer(candidates.first(), spoken) { names ->
-                Hudhud.understand(candidates, names, topics, language)
+            answer(candidates.first(), spoken) { names, products ->
+                Hudhud.understand(candidates, names, topics, language, products, before)
             }
         }
 
         /** A chip: its question is known already, and its own words are what was asked. */
         private fun chip(words: String, ask: Hudhud.Ask) {
-            answer(words, spoken = false) { words to ask }
+            answer(words, spoken = false) { _, _ -> words to ask }
         }
 
         /**
@@ -471,7 +503,9 @@ object HudhudSheet {
         private fun asked(words: String, spoken: Boolean): String =
             ctx.getString(if (spoken) R.string.vq_heard else R.string.hudhud_you_asked, Format.isolate(words))
 
-        private fun answer(heardFirst: String, spoken: Boolean, understand: (List<Hudhud.Name>) -> Pair<String, Hudhud.Ask>) {
+        private fun answer(
+            heardFirst: String, spoken: Boolean, understand: (List<Hudhud.Name>, List<Hudhud.Name>) -> Pair<String, Hudhud.Ask>
+        ) {
             job?.cancel()
             speakJob?.cancel()
             if (ears.listening) {
@@ -499,17 +533,30 @@ object HudhudSheet {
                 val result = try {
                     val known = parties.await()
                     val names = known.map { Hudhud.Name(it.id, it.name) }
-                    val (heard, ask) = withContext(Dispatchers.Default) { understand(names) }
-                    heard to withContext(Dispatchers.IO) { HudhudBook.answer(ctx, dao, ask, known) }
+                    val products = goods.await()
+                    val (heard, ask) = withContext(Dispatchers.Default) { understand(names, products) }
+                    Triple(heard, ask, withContext(Dispatchers.IO) { HudhudBook.answer(ctx, dao, ask, known) })
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    heardFirst to HudhudBook.failed(ctx)
+                    Triple(heardFirst, null, HudhudBook.failed(ctx))
                 }
                 view.removeCallbacks(later)
                 if (closed) return@launch
-                tvHeard.text = asked(result.first, spoken)
-                show(result.second, speak = true)
+                val (heard, ask, answer) = result
+                tvHeard.text = asked(heard, spoken)
+                show(answer, speak = true)
+                // What comes next: the answer's own next questions, the choices it offers, or the nearest he knows.
+                // A question back ("whose?", "did you mean") keeps the one the talk was about.
+                if (ask != null && ask !is Hudhud.Ask.DidYouMean && ask != Hudhud.Ask.Unknown && ask != Hudhud.Ask.NeedName) before = ask
+                showChips(
+                    when {
+                        ask is Hudhud.Ask.DidYouMean -> ask.options
+                        ask == Hudhud.Ask.Unknown -> Hudhud.closest(heard)
+                        ask != null -> HudhudBook.next(ctx, ask)
+                        else -> emptyList()
+                    }
+                )
             }
         }
 
@@ -529,8 +576,15 @@ object HudhudSheet {
                 row.findViewById<TextView>(R.id.tvHudRowFigure).text = r.figure
                 row.findViewById<TextView>(R.id.tvHudRowSub).textOrGone(r.sub)
                 row.setOnClickListener {
+                    val screen = r.open
                     val amount = r.amount
-                    openParty(r.partyId, if (amount != null) HudhudBook.entryForm(amount, r.isGiven) else null)
+                    when {
+                        screen != null -> {
+                            sheet.dismiss()
+                            host.startActivity(Intent(host, screen))
+                        }
+                        r.partyId > 0 -> openParty(r.partyId, if (amount != null) HudhudBook.entryForm(amount, r.isGiven) else null)
+                    }
                 }
                 TextFit.relax(row)
                 rows.addView(row)
@@ -587,10 +641,16 @@ object HudhudSheet {
         }
 
         private fun showButtons(a: HudhudBook.Answer) {
-            val canOpen = a.open != null || a.openParty != null || a.doIt != null
+            val canOpen = a.open != null || a.openParty != null || a.doIt != null || a.voiceSettings
             btnOpen.visibility = if (canOpen) View.VISIBLE else View.GONE
             (btnOpen as? TextView)?.setText(a.openLabel ?: R.string.vq_open)
-            btnOpen.setOnClickListener { a.doIt?.invoke() ?: go(a) }
+            btnOpen.setOnClickListener {
+                when {
+                    a.voiceSettings -> HudhudVoiceSheet.show(host)
+                    a.doIt != null -> a.doIt.invoke()
+                    else -> go(a)
+                }
+            }
             btnReplay.visibility = if (canSay(a)) View.VISIBLE else View.GONE
             buttons.visibility = if (canOpen || canSay(a)) View.VISIBLE else View.GONE
         }
@@ -675,32 +735,48 @@ object HudhudSheet {
 
         // ------------------------------------------------------------------------------------- chips
 
-        /** The questions he knows, as chips: the figures only for those who may see them (REPORTS). */
-        private fun buildChips() {
-            chips.removeAllViews()
+        /** The questions he always knows, as chips: the figures only for those who may see them (REPORTS). */
+        private fun usualChips(): List<Hudhud.Ask> {
             val reports = Access.can(Access.Permission.REPORTS)
-            val list = buildList<Pair<Int, Hudhud.Ask>> {
+            return buildList {
                 // What he can tell first (13 Nov 2026): nobody has to guess what to ask him.
-                add(R.string.hudhud_chip_abilities to Hudhud.Ask.Abilities)
+                add(Hudhud.Ask.Abilities)
                 // What needs the owner today: his morning's question.
-                add(R.string.hudhud_chip_today to Hudhud.Ask.Today)
-                if (reports) add(R.string.vq_sales_today to Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
+                add(Hudhud.Ask.Today)
+                if (reports) add(Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
                 // Who is in his usual paying days (the Payment Radar, where it is on).
-                if (reports && RadarUi.on(ctx)) add(R.string.hudhud_chip_likely to Hudhud.Ask.WhenPays(emptyList()))
-                if (reports) add(R.string.vq_who_owes_most to Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST))
-                add(R.string.hudhud_chip_backup to Hudhud.Ask.BackupStatus)
+                if (reports && RadarUi.on(ctx)) add(Hudhud.Ask.WhenPays(emptyList()))
+                if (reports) add(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST))
+                if (reports) add(Hudhud.Ask.Activity(VoiceQuestion.Window.TODAY))
+                add(Hudhud.Ask.BackupStatus)
                 if (reports) {
-                    add(R.string.hudhud_chip_drawer to Hudhud.Ask.Drawer)
-                    add(R.string.vq_profit_month to Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH))
-                    add(R.string.vq_to_get to Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
-                    add(R.string.vq_to_give to Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GIVE))
-                    add(R.string.vq_not_paid to Hudhud.Ask.Figure(VoiceQuestion.Kind.NOT_PAID))
-                    add(R.string.vq_expiring to Hudhud.Ask.Figure(VoiceQuestion.Kind.EXPIRING))
+                    add(Hudhud.Ask.Drawer)
+                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH))
+                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
+                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GIVE))
+                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.NOT_PAID))
+                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.EXPIRING))
                 }
+                add(Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))
+                add(Hudhud.Ask.Clock)
+            }
+        }
+
+        /**
+         * The chips under the card (13 Nov 2026): [first] — what follows from the answer, the choices it offers, or the
+         * nearest questions to words he could not place — then the day's own (while his first card is up) and his
+         * usual ones; each once, each with its own words.
+         */
+        private fun showChips(first: List<Hudhud.Ask>) {
+            chips.removeAllViews()
+            val list = LinkedHashMap<Hudhud.Ask, String>()
+            val opening = last === helloCard
+            for (a in first + (if (opening) starters else emptyList()) + usualChips()) {
+                if (a in list) continue
+                HudhudBook.chipLabel(ctx, a)?.let { list[a] = it }
             }
             val density = ctx.resources.displayMetrics.density
-            for ((label, ask) in list) {
-                val words = ctx.getString(label)
+            for ((ask, words) in list) {
                 val chip = TextView(ctx).apply {
                     text = words
                     textSize = 14f
@@ -718,6 +794,8 @@ object HudhudSheet {
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { marginEnd = (8 * density).toInt() })
             }
+            // A new set is read from its start.
+            (chips.parent as? android.widget.HorizontalScrollView)?.scrollTo(0, 0)
         }
 
         // ------------------------------------------------------------------------------------- Hudhud himself

@@ -139,10 +139,11 @@ class CalculatorActivity : BaseActivity() {
         val value = Calc.evalPad(expression) ?: return
         val typed = display(expression)
         val answer = Calc.trim(value)
-        // Only a real sum goes in the history, not "3400 = 3400".
+        // Only a real sum goes in the history, not "3400 = 3400" — and only a real sum is counted (Hudhud, 13 Nov 2026).
         if (typed.trim() != answer) {
             history += "$typed = ${Format.signedIfNegative(value)}"
             while (history.size > 3) history.removeAt(0)
+            com.innovation313.roshankhata.data.UsageLog.calculated(this)
         }
         expression = answer
         render()

@@ -62,4 +62,74 @@ class HudhudWordsTest {
         }
         assertEquals(wrong.joinToString("\n"), 0, wrong.size)
     }
+
+    // 13 Nov 2026 (Brain v2): the new chips, typed or said as they read, in all nine — and those shown under a
+    // customer's or a product's answer carry on from him or from it, with no "uska".
+
+    private val book = listOf(Hudhud.Name(1, "Abid Ali"), Hudhud.Name(2, "Bashir Ahmad"), Hudhud.Name(3, "Naeem Khan"))
+    private val goods = listOf(Hudhud.Name(101, "Urea"), Hudhud.Name(102, "DAP"))
+
+    private fun wrongOf(cases: Map<String, Hudhud.Ask>, before: Hudhud.Ask? = null, names: List<Hudhud.Name> = emptyList()): List<String> {
+        val wrong = ArrayList<String>()
+        for (tag in languages) {
+            val words = desktopWords(Locale.forLanguageTag(tag))
+            for ((name, ask) in cases) {
+                val label = words.text(name)
+                val got = Hudhud.understand(label, names, emptyList(), null, goods, before)
+                if (got != ask) wrong += "$tag $name \"$label\" -> $got"
+            }
+        }
+        return wrong
+    }
+
+    @Test fun `Brain v2's own chips are understood as themselves, in all nine languages`() {
+        val today = VoiceQuestion.Window.TODAY
+        val wrong = wrongOf(mapOf(
+            "hudhud_chip_date" to Hudhud.Ask.Clock,
+            "hudhud_chip_maker" to Hudhud.Ask.About(Hudhud.AboutTopic.MAKER),
+            "hudhud_chip_privacy" to Hudhud.Ask.About(Hudhud.AboutTopic.PRIVACY),
+            "hudhud_chip_who" to Hudhud.Ask.Chat(Hudhud.Talk.WHO_ARE_YOU),
+            "hudhud_chip_my_name" to Hudhud.Ask.About(Hudhud.AboutTopic.OWNER_NAME),
+            "hudhud_chip_shop" to Hudhud.Ask.Shop(Hudhud.ShopFacet.ALL),
+            "hudhud_chip_shop_phone" to Hudhud.Ask.Shop(Hudhud.ShopFacet.PHONE),
+            "hudhud_chip_someone" to Hudhud.Ask.NeedName,
+            "hudhud_chip_book" to Hudhud.Ask.Status(Hudhud.StatusOf.BOOK),
+            "hudhud_chip_activity" to Hudhud.Ask.Activity(today),
+            "hudhud_chip_collected" to Hudhud.Ask.Collected(today),
+            // A product's "sold this month" typed alone is the shop's month (naming the product asks the product's).
+            "hudhud_chip_sold" to Hudhud.Ask.Figure(Kind.SALES_MONTH)
+        ))
+        assertEquals(wrong.joinToString("\n"), 0, wrong.size)
+    }
+
+    @Test fun `a customer's chips carry on from him, in all nine languages`() {
+        val him = listOf(2L)
+        val wrong = wrongOf(mapOf(
+            "hudhud_l_phone" to Hudhud.Ask.Person(him, Hudhud.Facet.PHONE),
+            "hudhud_chip_details" to Hudhud.Ask.Person(him, Hudhud.Facet.DETAILS),
+            "hudhud_l_last_payment" to Hudhud.Ask.Person(him, Hudhud.Facet.LAST_PAYMENT),
+            "hudhud_l_last_entry" to Hudhud.Ask.Person(him, Hudhud.Facet.LAST_ENTRY),
+            "hudhud_l_promise" to Hudhud.Ask.Person(him, Hudhud.Facet.PROMISE),
+            "credit_limit" to Hudhud.Ask.Person(him, Hudhud.Facet.LIMIT),
+            "hudhud_l_since" to Hudhud.Ask.Person(him, Hudhud.Facet.SINCE),
+            "hudhud_l_entries" to Hudhud.Ask.Person(him, Hudhud.Facet.ENTRIES),
+            "hudhud_chip_when_pays" to Hudhud.Ask.WhenPays(him),
+            "hudhud_l_balance" to Hudhud.Ask.Parties(him)
+        ), before = Hudhud.Ask.Person(him, Hudhud.Facet.PHONE), names = book)
+        assertEquals(wrong.joinToString("\n"), 0, wrong.size)
+    }
+
+    @Test fun `a product's chips carry on from it, in all nine languages`() {
+        val urea = listOf(101L)
+        val wrong = wrongOf(mapOf(
+            "hudhud_l_price" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.PRICE),
+            "hudhud_l_stock" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.STOCK),
+            "hudhud_l_cost" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.COST),
+            "hudhud_chip_suppliers" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.SUPPLIERS),
+            "hudhud_chip_buyers" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.BUYERS),
+            "hudhud_l_last_in" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.LAST_IN),
+            "hudhud_chip_details" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.OVERVIEW)
+        ), before = Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.PRICE), names = book)
+        assertEquals(wrong.joinToString("\n"), 0, wrong.size)
+    }
 }
