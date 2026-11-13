@@ -4483,4 +4483,21 @@
     <string name="hudhud_style_professional">حرفه‌ای</string>
     <string name="hudhud_name_say">نامش را چگونه بگوید</string>
     <string name="hudhud_name_say_help">اگر نامش با صدای این گوشی درست شنیده نمی‌شود، روش دیگری برگزینید. هر روش با انتخابش شنیده می‌شود.</string>
+
+    <!-- Hudhud's check of a test build (14 Nov 2026, HudhudCheck). -->
+    <string name="hudhud_check_title">بررسی پاسخ‌های هدهد</string>
+    <string name="hudhud_check_switch">هر پاسخ را درست یا نادرست علامت بزنید</string>
+    <string name="hudhud_check_count">%1$d پاسخ · %2$d درست · %3$d نادرست · %4$d%% درست</string>
+    <string name="hudhud_check_none">%1$d پاسخ · هنوز علامتی نخورده. فهرست روی همین گوشی می‌ماند.</string>
+    <string name="hudhud_check_ask">آیا این پاسخ درست بود؟</string>
+    <string name="hudhud_check_right">درست</string>
+    <string name="hudhud_check_wrong">نادرست</string>
+    <string name="hudhud_check_marked_right">درست علامت خورد</string>
+    <string name="hudhud_check_marked_wrong">نادرست علامت خورد</string>
+    <string name="hudhud_check_share">ارسال فهرست</string>
+    <string name="hudhud_check_clear">پاک کردن فهرست</string>
+    <string name="hudhud_check_nothing">هنوز پاسخی در فهرست نیست.</string>
+    <string name="hudhud_check_cleared">فهرست پاک شد.</string>
+    <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
+    <string name="hudhud_about_name_story">نام من به نسبت هدهد حضرت سلیمان علیه‌السلام گذاشته شده که برای او خبر راست می‌آورد. من هم از دفتر خود شما خبر راست می‌آورم؛ سازندگان من می‌خواهند هر حسابی با راستی و امانت باشد.</string>
 </resources>

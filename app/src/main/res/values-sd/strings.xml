@@ -4483,4 +4483,21 @@
     <string name="hudhud_style_professional">پروفيشنل</string>
     <string name="hudhud_name_say">هو پنهنجو نالو ڪيئن چوي</string>
     <string name="hudhud_name_say_help">جيڪڏهن هن فون جي آواز ۾ هن جو نالو صحيح نه لڳي ته ٻيو طريقو چونڊيو. هر طريقو چونڊڻ سان ٻڌڻ ۾ اچي ٿو.</string>
+
+    <!-- Hudhud's check of a test build (14 Nov 2026, HudhudCheck). -->
+    <string name="hudhud_check_title">هُدهُد جي جوابن جي جاچ</string>
+    <string name="hudhud_check_switch">هر جواب کي صحيح يا غلط جو نشان لڳايو</string>
+    <string name="hudhud_check_count">%1$d جواب · %2$d صحيح · %3$d غلط · %4$d%% صحيح</string>
+    <string name="hudhud_check_none">%1$d جواب · اڃا ڪو نشان ناهي لڳو. لسٽ هن ئي فون ۾ رهي ٿي.</string>
+    <string name="hudhud_check_ask">ڇا هي جواب صحيح هو؟</string>
+    <string name="hudhud_check_right">صحيح</string>
+    <string name="hudhud_check_wrong">غلط</string>
+    <string name="hudhud_check_marked_right">صحيح جو نشان لڳي ويو</string>
+    <string name="hudhud_check_marked_wrong">غلط جو نشان لڳي ويو</string>
+    <string name="hudhud_check_share">لسٽ موڪليو</string>
+    <string name="hudhud_check_clear">لسٽ صاف ڪريو</string>
+    <string name="hudhud_check_nothing">لسٽ ۾ اڃا ڪو جواب ناهي.</string>
+    <string name="hudhud_check_cleared">لسٽ صاف ٿي وئي.</string>
+    <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
+    <string name="hudhud_about_name_story">منهنجو نالو حضرت سليمان عليه السلام جي هُدهُد جي نسبت سان رکيو ويو آهي، جيڪو هنن وٽ سچي خبر آڻيندو هو. مان به اوهان جي پنهنجي ڪتاب مان سچي خبر آڻيان ٿو؛ مون کي ٺاهيندڙ چاهين ٿا ته هر حساب سچائي ۽ ايمانداري سان هجي.</string>
 </resources>

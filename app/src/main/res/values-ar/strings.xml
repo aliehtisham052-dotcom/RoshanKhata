@@ -4740,4 +4740,21 @@
     <string name="hudhud_style_professional">احترافي</string>
     <string name="hudhud_name_say">كيف ينطق اسمه</string>
     <string name="hudhud_name_say_help">إن لم يُنطق اسمه صحيحًا بصوت هذا الهاتف، فاختر طريقة أخرى. تُسمع كل طريقة عند اختيارها.</string>
+
+    <!-- Hudhud's check of a test build (14 Nov 2026, HudhudCheck). -->
+    <string name="hudhud_check_title">فحص إجابات هُدهُد</string>
+    <string name="hudhud_check_switch">ضع علامة صحيح أو خطأ على كل إجابة</string>
+    <string name="hudhud_check_count">%1$d إجابة · %2$d صحيحة · %3$d خاطئة · %4$d%% صحيحة</string>
+    <string name="hudhud_check_none">%1$d إجابة · لم تُعلَّم أي إجابة بعد. تبقى القائمة على هذا الهاتف.</string>
+    <string name="hudhud_check_ask">هل كانت هذه الإجابة صحيحة؟</string>
+    <string name="hudhud_check_right">صحيحة</string>
+    <string name="hudhud_check_wrong">خاطئة</string>
+    <string name="hudhud_check_marked_right">عُلِّمت صحيحة</string>
+    <string name="hudhud_check_marked_wrong">عُلِّمت خاطئة</string>
+    <string name="hudhud_check_share">أرسل القائمة</string>
+    <string name="hudhud_check_clear">امسح القائمة</string>
+    <string name="hudhud_check_nothing">لا توجد إجابات في القائمة بعد.</string>
+    <string name="hudhud_check_cleared">مُسحت القائمة.</string>
+    <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
+    <string name="hudhud_about_name_story">سُمّيتُ بهذا الاسم نسبةً إلى هدهد نبي الله سليمان عليه السلام، الذي جاءه بالخبر الصادق. وأنا أيضًا آتيك بالخبر الصادق من دفترك أنت؛ ومن صنعني يريد أن يكون كل حساب بالصدق والأمانة.</string>
 </resources>

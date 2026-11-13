@@ -47,4 +47,8 @@
     <cache-path
         name="proofs"
         path="proofs/" />
+    <!-- Hudhud's check list, shared by the owner from his settings (HudhudCheck). -->
+    <cache-path
+        name="hudhud"
+        path="hudhud/" />
 </paths>

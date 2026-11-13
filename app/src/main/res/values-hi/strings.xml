@@ -4503,4 +4503,21 @@
     <string name="hudhud_style_professional">प्रोफेशनल</string>
     <string name="hudhud_name_say">वह अपना नाम कैसे बोले</string>
     <string name="hudhud_name_say_help">अगर इस मोबाइल की आवाज में उसका नाम ठीक न लगे तो दूसरा तरीका चुनें। हर तरीका चुनते ही सुनाई देता है।</string>
+
+    <!-- Hudhud's check of a test build (14 Nov 2026, HudhudCheck). -->
+    <string name="hudhud_check_title">हुदहुद के जवाबों की जाँच</string>
+    <string name="hudhud_check_switch">हर जवाब को सही या गलत का निशान लगाएँ</string>
+    <string name="hudhud_check_count">%1$d जवाब · %2$d सही · %3$d गलत · %4$d%% सही</string>
+    <string name="hudhud_check_none">%1$d जवाब · अभी कोई निशान नहीं लगा। सूची इसी फ़ोन में रहती है।</string>
+    <string name="hudhud_check_ask">क्या यह जवाब सही था?</string>
+    <string name="hudhud_check_right">सही</string>
+    <string name="hudhud_check_wrong">गलत</string>
+    <string name="hudhud_check_marked_right">सही का निशान लग गया</string>
+    <string name="hudhud_check_marked_wrong">गलत का निशान लग गया</string>
+    <string name="hudhud_check_share">सूची भेजें</string>
+    <string name="hudhud_check_clear">सूची साफ़ करें</string>
+    <string name="hudhud_check_nothing">सूची में अभी कोई जवाब नहीं।</string>
+    <string name="hudhud_check_cleared">सूची साफ़ हो गई।</string>
+    <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
+    <string name="hudhud_about_name_story">मेरा नाम हज़रत सुलैमान (अलैहिस्सलाम) के हुदहुद की निस्बत से रखा गया है, जो उनके पास सच्ची ख़बर लाता था। मैं भी आपकी अपनी किताब से सच्ची ख़बर लाता हूँ; मुझे बनाने वाले चाहते हैं कि हर हिसाब सच्चाई और ईमानदारी से हो।</string>
 </resources>

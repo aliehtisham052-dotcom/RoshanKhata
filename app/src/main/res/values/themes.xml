@@ -1007,7 +1007,9 @@
     -->
     <style name="SegmentButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
+        <!-- match_parent in the group's wrap_content row: every segment as tall as the tallest, so Urdu and Latin
+             words never leave one segment higher than the rest (with the group's baselineAligned off). -->
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:minHeight">48dp</item>
         <item name="android:minWidth">0dp</item>

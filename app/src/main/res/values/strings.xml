@@ -4668,4 +4668,21 @@
     <string name="hudhud_style_professional">Professional</string>
     <string name="hudhud_name_say">How he says his name</string>
     <string name="hudhud_name_say_help">If his name sounds wrong in this phone\'s voice, choose another way. Each is heard when chosen.</string>
+
+    <!-- Hudhud's check of a test build (14 Nov 2026, HudhudCheck). -->
+    <string name="hudhud_check_title">Check Hudhud\'s answers</string>
+    <string name="hudhud_check_switch">Mark every answer right or wrong</string>
+    <string name="hudhud_check_count">%1$d answers · %2$d right · %3$d wrong · %4$d%% right</string>
+    <string name="hudhud_check_none">%1$d answers · none marked yet. The list stays on this phone.</string>
+    <string name="hudhud_check_ask">Was this answer right?</string>
+    <string name="hudhud_check_right">Right</string>
+    <string name="hudhud_check_wrong">Wrong</string>
+    <string name="hudhud_check_marked_right">Marked right</string>
+    <string name="hudhud_check_marked_wrong">Marked wrong</string>
+    <string name="hudhud_check_share">Share the list</string>
+    <string name="hudhud_check_clear">Clear the list</string>
+    <string name="hudhud_check_nothing">No answers in the list yet.</string>
+    <string name="hudhud_check_cleared">The list is cleared.</string>
+    <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
+    <string name="hudhud_about_name_story">My name comes from the hoopoe, the hudhud of Prophet Sulaiman (peace be upon him), who brought him true news. I bring you true news too, from your own book; the people who made me want every account kept with truth and honesty.</string>
 </resources>

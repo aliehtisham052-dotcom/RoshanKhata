@@ -105,6 +105,9 @@ class HeroStage(
     private var swapChain: SwapChain? = null
     private var liveW = 0
     private var liveH = 0
+    /** The size the view was last projected for, so a frame drawn at any other size is caught. */
+    private var projW = 0
+    private var projH = 0
     private var running = false
     private var startNanos = 0L
     private var destroyed = false
@@ -149,6 +152,8 @@ class HeroStage(
 
     private fun project(w: Int, h: Int) {
         if (w <= 0 || h <= 0) return
+        projW = w
+        projH = h
         view.setViewport(Viewport(0, 0, w, h))
         camera.setProjection(hero.fov, w.toDouble() / h, 0.1, 50.0, Camera.Fov.VERTICAL)
     }
@@ -242,6 +247,10 @@ class HeroStage(
             // With the phone's animations off nothing moves, so nothing is redrawn
             // either: the GPU (a software one on a test emulator) rests.
             if (!motion && !dirty) return
+            // The live surface is drawn at its own size, whatever drew last on the shared view (a still, a video
+            // frame): a projection left at another size showed the clock twice as large, pushed up and right
+            // (the owner's phone, 13 Nov 2026).
+            if (liveW > 0 && liveH > 0 && (projW != liveW || projH != liveH)) project(liveW, liveH)
             pose(if (motion) (frameTimeNanos - startNanos) / 1e9f else 0f, live = motion)
             val sc = swapChain ?: return
             if (uiHelper?.isReadyToRender == true && renderer.beginFrame(sc, frameTimeNanos)) {
@@ -274,9 +283,12 @@ class HeroStage(
             }
 
             override fun onResized(width: Int, height: Int) {
-                liveW = width
-                liveH = height
-                project(width, height)
+                // Filament's UiHelper says 0 x 0 when it attaches to a TextureView whose surface already exists
+                // (onStart after a share, a design swiped to on the same view): the view's own size is then the truth.
+                val (w, h) = LiveSize.pick(width, height, target.width, target.height)
+                liveW = w
+                liveH = h
+                project(w, h)
                 dirty = true
             }
         })
@@ -413,3 +425,12 @@ private const val TAG = "Poster3D"
 
 /** How long [HeroStage.still] waits for the GPU once the frame is handed over. */
 private const val WAIT_MS = 20_000L
+
+/**
+ * The live view's size: what Filament reported, else — 0 x 0, as its UiHelper reports when it attaches to a surface that
+ * already exists — the view's own laid-out size. Pure, so a test holds it.
+ */
+internal object LiveSize {
+    fun pick(reportedW: Int, reportedH: Int, viewW: Int, viewH: Int): Pair<Int, Int> =
+        if (reportedW > 0 && reportedH > 0) reportedW to reportedH else viewW.coerceAtLeast(0) to viewH.coerceAtLeast(0)
+}

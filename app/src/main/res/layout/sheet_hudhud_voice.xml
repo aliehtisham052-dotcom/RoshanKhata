@@ -251,5 +251,62 @@
             style="@style/BackupOutlineButton"
             android:layout_marginTop="10dp"
             android:visibility="gone" />
+
+        <!-- The owner's check of a test build (14 Nov 2026, HudhudCheck): right or wrong under every answer, the
+             counts here, the list shared or cleared. Off by default; kept on this phone only. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="@string/hudhud_check_title"
+            android:textAlignment="viewStart"
+            android:textColor="@color/ink"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/swHudCheck"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:minHeight="48dp"
+            android:text="@string/hudhud_check_switch"
+            android:textAlignment="viewStart"
+            android:textColor="@color/ink"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvHudCheckCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:accessibilityLiveRegion="polite"
+            android:textAlignment="viewStart"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnHudCheckShare"
+                style="@style/BackupOutlineButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/hudhud_check_share" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnHudCheckClear"
+                style="@style/BackupOutlineButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="@string/hudhud_check_clear" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -4503,4 +4503,21 @@
     <string name="hudhud_style_professional">পেশাদার</string>
     <string name="hudhud_name_say">সে নিজের নাম কীভাবে বলবে</string>
     <string name="hudhud_name_say_help">এই ফোনের কণ্ঠে তার নাম ঠিক না শোনালে অন্য উপায় বেছে নিন। বেছে নিলেই প্রতিটি শোনা যায়।</string>
+
+    <!-- Hudhud's check of a test build (14 Nov 2026, HudhudCheck). -->
+    <string name="hudhud_check_title">হুদহুদের উত্তর যাচাই</string>
+    <string name="hudhud_check_switch">প্রতিটি উত্তরে সঠিক বা ভুল চিহ্ন দিন</string>
+    <string name="hudhud_check_count">%1$dটি উত্তর · %2$dটি সঠিক · %3$dটি ভুল · %4$d%% সঠিক</string>
+    <string name="hudhud_check_none">%1$dটি উত্তর · এখনও কোনো চিহ্ন দেওয়া হয়নি। তালিকাটি এই ফোনেই থাকে।</string>
+    <string name="hudhud_check_ask">এই উত্তরটি কি সঠিক ছিল?</string>
+    <string name="hudhud_check_right">সঠিক</string>
+    <string name="hudhud_check_wrong">ভুল</string>
+    <string name="hudhud_check_marked_right">সঠিক চিহ্ন দেওয়া হলো</string>
+    <string name="hudhud_check_marked_wrong">ভুল চিহ্ন দেওয়া হলো</string>
+    <string name="hudhud_check_share">তালিকা পাঠান</string>
+    <string name="hudhud_check_clear">তালিকা মুছুন</string>
+    <string name="hudhud_check_nothing">তালিকায় এখনও কোনো উত্তর নেই।</string>
+    <string name="hudhud_check_cleared">তালিকা মুছে ফেলা হলো।</string>
+    <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
+    <string name="hudhud_about_name_story">আমার নাম হযরত সুলাইমান (আলাইহিস সালাম)-এর হুদহুদ পাখির নামে রাখা হয়েছে, যে তাঁর কাছে সত্য খবর আনত। আমিও আপনার নিজের খাতা থেকে সত্য খবর আনি; যাঁরা আমাকে বানিয়েছেন তাঁরা চান প্রতিটি হিসাব সততা ও আমানতদারির সাথে থাকুক।</string>
 </resources>

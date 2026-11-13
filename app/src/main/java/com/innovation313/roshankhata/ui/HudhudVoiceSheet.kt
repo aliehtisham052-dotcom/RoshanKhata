@@ -26,7 +26,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.HudhudSay
+import com.innovation313.roshankhata.data.string
 import java.util.Locale
 
 /**
@@ -82,11 +84,16 @@ object HudhudVoiceSheet {
         val btnSample: View = view.findViewById(R.id.btnHudSample)
         val tvListen: TextView = view.findViewById(R.id.tvHudListen)
         val btnListen: MaterialButton = view.findViewById(R.id.btnHudListen)
+        val swCheck: android.widget.CompoundButton = view.findViewById(R.id.swHudCheck)
+        val tvCheckCount: TextView = view.findViewById(R.id.tvHudCheckCount)
+        val btnCheckShare: View = view.findViewById(R.id.btnHudCheckShare)
+        val btnCheckClear: View = view.findViewById(R.id.btnHudCheckClear)
         var micAsk: ActivityResultLauncher<String>? = null
         var closed = false
 
         fun start() {
             view.findViewById<View>(R.id.btnHudVoiceClose).setOnClickListener { sheet.dismiss() }
+            startCheck()
 
             etCallMe.setText(HudhudPrefs.callMe(ctx).orEmpty())
             etCallMe.setOnEditorActionListener { _, action, _ ->
@@ -127,6 +134,31 @@ object HudhudVoiceSheet {
 
         private fun saveName() {
             HudhudPrefs.setCallMe(ctx, etCallMe.text?.toString())
+        }
+
+        /** The owner's check of a test build (14 Nov 2026, [HudhudCheck]): the switch, the counts, Share and Clear. */
+        private fun startCheck() {
+            swCheck.isChecked = HudhudCheck.isOn(ctx)
+            swCheck.setOnCheckedChangeListener { _, on -> HudhudCheck.setOn(ctx, on) }
+            showCheckCount()
+            btnCheckShare.setOnClickListener {
+                if (!HudhudCheck.share(host)) {
+                    android.widget.Toast.makeText(ctx, R.string.hudhud_check_nothing, android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+            btnCheckClear.setOnClickListener {
+                HudhudCheck.clear(ctx)
+                showCheckCount()
+                android.widget.Toast.makeText(ctx, R.string.hudhud_check_cleared, android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        private fun showCheckCount() {
+            val c = HudhudCheck.counts(ctx)
+            val percent = c.percent
+            // Figures in 0-9 in every language, as every screen writes them (Digits' rule).
+            tvCheckCount.text = if (percent == null) Digits.string(ctx.resources, R.string.hudhud_check_none, c.asked)
+            else Digits.string(ctx.resources, R.string.hudhud_check_count, c.asked, c.right, c.wrong, percent)
         }
 
         /**

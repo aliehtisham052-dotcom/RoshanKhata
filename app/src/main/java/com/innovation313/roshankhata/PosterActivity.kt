@@ -213,6 +213,17 @@ class PosterActivity : BaseActivity() {
         frame.addOnLayoutChangeListener { _, l, t, r, b, ol, ot, or, ob ->
             if (r - l != or - ol || b - t != ob - ot) frame.post { placeHero() }
         }
+        // The Design step's last row (the language) must clear the bar whatever arrives after the first fit — the
+        // design strip's pictures, a font, a larger text size: measured again whenever the row or the bar moves
+        // (13 Nov 2026, the owner's photo: the row ended under the bar). Only at the page's top, where the fit
+        // measures what the eye first sees; the fit itself stops once the change is under 4 dp.
+        val refit = View.OnLayoutChangeListener { _, _, t, _, b, _, ot, _, ob ->
+            if (step == 1 && (t != ot || b != ob) &&
+                findViewById<android.widget.ScrollView>(R.id.posterScroll).scrollY == 0
+            ) frame.post { fitDesignStep() }
+        }
+        toggleLang.addOnLayoutChangeListener(refit)
+        btnStepNext.addOnLayoutChangeListener(refit)
 
         occasion = PosterOccasion.byKey(prefs.getString(KEY_OCCASION, null))
         lang = prefs.getString(KEY_LANG + shopKey, null)?.takeIf { it in LANGS } ?: defaultLanguage()

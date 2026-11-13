@@ -4455,4 +4455,21 @@
     <string name="hudhud_style_professional">Professional</string>
     <string name="hudhud_name_say">Woh apna naam kaise bole</string>
     <string name="hudhud_name_say_help">Agar is phone ki awaaz mein us ka naam theek na lage to doosra tareeqa chunein. Har tareeqa chunte hi sunai deta hai.</string>
+
+    <!-- Hudhud's check of a test build (14 Nov 2026, HudhudCheck). -->
+    <string name="hudhud_check_title">Hudhud ke jawabon ki jaanch</string>
+    <string name="hudhud_check_switch">Har jawab ko sahi ya ghalat ka nishan lagayein</string>
+    <string name="hudhud_check_count">%1$d jawab · %2$d sahi · %3$d ghalat · %4$d%% sahi</string>
+    <string name="hudhud_check_none">%1$d jawab · abhi koi nishan nahi laga. List isi phone mein rehti hai.</string>
+    <string name="hudhud_check_ask">Kya yeh jawab sahi tha?</string>
+    <string name="hudhud_check_right">Sahi</string>
+    <string name="hudhud_check_wrong">Ghalat</string>
+    <string name="hudhud_check_marked_right">Sahi ka nishan lag gaya</string>
+    <string name="hudhud_check_marked_wrong">Ghalat ka nishan lag gaya</string>
+    <string name="hudhud_check_share">List bhejein</string>
+    <string name="hudhud_check_clear">List saaf karein</string>
+    <string name="hudhud_check_nothing">List mein abhi koi jawab nahi.</string>
+    <string name="hudhud_check_cleared">List saaf ho gayi.</string>
+    <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
+    <string name="hudhud_about_name_story">Mera naam Hazrat Sulaiman (alaihis salam) ke Hudhud ki nisbat se rakha gaya hai, jo un ke paas sachchi khabar laata tha. Main bhi aap ki apni kitab se sachchi khabar laata hoon; mujhe banane wale chahte hain ke har hisaab sachchai aur imaandari se ho.</string>
 </resources>

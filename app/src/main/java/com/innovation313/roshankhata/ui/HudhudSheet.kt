@@ -160,6 +160,10 @@ object HudhudSheet {
         val buttons: View = view.findViewById(R.id.hudButtons)
         val btnOpen: View = view.findViewById(R.id.btnHudOpen)
         val btnReplay: View = view.findViewById(R.id.btnHudReplay)
+        val checkRow: View = view.findViewById(R.id.hudCheckRow)
+        val tvCheck: TextView = view.findViewById(R.id.tvHudCheck)
+        val btnRight: View = view.findViewById(R.id.btnHudRight)
+        val btnWrong: View = view.findViewById(R.id.btnHudWrong)
         val chips: LinearLayout = view.findViewById(R.id.hudChips)
         val etAsk: EditText = view.findViewById(R.id.etHudAsk)
         val btnMic: ImageButton = view.findViewById(R.id.btnHudMic)
@@ -566,6 +570,7 @@ object HudhudSheet {
                 if (closed) return@launch
                 tvHeard.text = asked(result.heard, spoken)
                 show(result.answer, speak = true)
+                offerCheck(result.heard, result.ask, result.answer)
                 // What the talk is about now, so "uska number?" or "aur kal?" carry on: a guess counts as what it was
                 // taken for; a list of names offered ("whose?") keeps the one before.
                 val taken = (result.ask as? Hudhud.Ask.Guessed)?.ask ?: result.ask
@@ -574,6 +579,36 @@ object HudhudSheet {
                 }
                 showChips(result.next)
             }
+        }
+
+        /**
+         * The owner's check of a test build (14 Nov 2026, [HudhudCheck]): with it on, the answer is written down on this
+         * phone and he marks it right or wrong under the card; off, the row is never shown and nothing is written.
+         */
+        private fun offerCheck(heard: String, ask: Hudhud.Ask?, answer: HudhudBook.Answer) {
+            checkRow.visibility = View.GONE
+            if (!HudhudCheck.isOn(ctx)) return
+            val language = ctx.resources.configuration.locales[0].toLanguageTag()
+            host.lifecycleScope.launch {
+                val row = withContext(Dispatchers.IO) {
+                    runCatching { HudhudCheck.record(ctx, heard, HudhudCheck.describe(ask), HudhudCheck.heading(answer), language) }
+                        .getOrNull()
+                } ?: return@launch
+                if (closed) return@launch
+                tvCheck.setText(R.string.hudhud_check_ask)
+                btnRight.isEnabled = true
+                btnWrong.isEnabled = true
+                btnRight.setOnClickListener { markCheck(row, right = true) }
+                btnWrong.setOnClickListener { markCheck(row, right = false) }
+                checkRow.visibility = View.VISIBLE
+            }
+        }
+
+        private fun markCheck(row: Int, right: Boolean) {
+            btnRight.isEnabled = false
+            btnWrong.isEnabled = false
+            tvCheck.setText(if (right) R.string.hudhud_check_marked_right else R.string.hudhud_check_marked_wrong)
+            host.lifecycleScope.launch(Dispatchers.IO) { runCatching { HudhudCheck.mark(ctx, row, right) } }
         }
 
         /** A question answered: what was heard, what it was taken for, the answer, and the chips that follow it. */
@@ -600,6 +635,8 @@ object HudhudSheet {
         // ------------------------------------------------------------------------------------- the card
 
         private fun show(a: HudhudBook.Answer, speak: Boolean) {
+            // A check row belongs to the answer it was offered under; any other card shows none (offerCheck brings it back).
+            checkRow.visibility = View.GONE
             last = a
             tvTook.textOrGone(a.tookAs)
             tvLabel.textOrGone(a.label)

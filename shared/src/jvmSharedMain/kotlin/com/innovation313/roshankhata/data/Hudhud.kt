@@ -153,7 +153,11 @@ object Hudhud {
     enum class ShopFacet { ALL, NAME, ADDRESS, PHONE, EMAIL, TAX, BANK, CURRENCY, COUNTRY, TRADE }
 
     /** About Hudhud and the app. */
-    enum class AboutTopic { APP, MAKER, PRIVACY, LANGUAGES, VERSION, OWNER_NAME }
+    enum class AboutTopic {
+        APP, MAKER, PRIVACY, LANGUAGES, VERSION, OWNER_NAME,
+        /** "Why is your name Hudhud?" (14 Nov 2026, the owner): the hoopoe of Prophet Sulaiman, who brought true news. */
+        NAME_STORY
+    }
 
     /** What can be counted. */
     enum class Thing { CUSTOMERS, SUPPLIERS, PRODUCTS, STAFF, ENTRIES, INVOICES, BILLS, TICKETS, CALCULATIONS, APP_OPENS }
@@ -372,6 +376,17 @@ object Hudhud {
             return if (top.label.startsWith("goods_") && p >= SENSE_OVERRULE) theirs()?.takeIf { it is Ask.Goods && it.ids.isNotEmpty() } ?: ruled
             else ruled
         }
+        // A question that asks for the way ("kaise", "kahan", "tareeqa", "how", "where", "کیسے"…) and whose words the rules
+        // found on one of the app's own help pages is asked of that page; the sense, which learnt few such sentences, may
+        // read it as another meaning only when all but certain. 14 Nov 2026, the owner's 12,082 questions run through
+        // him: of the 2,554 that asked the way, the rules had found a page for about 2,250 and the sense turned some 1,000
+        // of those into a figure, a count, "about the app" or small talk.
+        // "Why is your name Hudhud?" is read by the rules alone (a why with his name or "your name"): the bank has no such
+        // meaning, and the sense was all but sure such a sentence asked who he is.
+        if (ruled is Ask.About && ruled.topic == AboutTopic.NAME_STORY) return ruled
+        if (ruled is Ask.Help && asksTheWay(heard)) {
+            return if (p >= SENSE_OVERRULE) theirs() ?: ruled else ruled
+        }
         return when (groundOf(ruled)) {
             Ground.NONE -> {
                 val ask = theirs() ?: return ruled
@@ -447,6 +462,7 @@ object Hudhud {
             AboutTopic.APP, AboutTopic.VERSION -> "app_about"
             AboutTopic.PRIVACY -> "privacy"
             AboutTopic.LANGUAGES -> "languages"
+            AboutTopic.NAME_STORY -> "name_story"
         }
         Ask.Clock -> "date_time"
         Ask.Today -> "today_summary"
@@ -552,6 +568,7 @@ object Hudhud {
             "app_about" -> Ask.About(AboutTopic.APP)
             "privacy" -> Ask.About(AboutTopic.PRIVACY)
             "languages" -> Ask.About(AboutTopic.LANGUAGES)
+            "name_story" -> Ask.About(AboutTopic.NAME_STORY)
             "date_time" -> Ask.Clock
             "today_summary" -> Ask.Today
             "sales_today" -> figureOver(VoiceQuestion.Kind.SALES_TODAY, window)
@@ -731,6 +748,12 @@ object Hudhud {
             // Only called by his name: "ji, haazir hoon" (13 Nov 2026).
             else -> Ask.Chat(Talk.ADDRESS)
         }
+        // "Why is your name Hudhud?", "Hudhud kyun?" (14 Nov 2026, the owner): the story of his name — a why with his
+        // name, or with "your name"; "customer ka naam kyun nahi aa raha" names nobody's name of his and goes on.
+        val calledByName = m.said.any { it in HIS_OWN_NAME }
+        if (has(joined, WHY) && (calledByName || (m.has(HudhudMind.C.YOU) && m.has(HudhudMind.C.NAME))) &&
+            !m.any(HudhudMind.C.MADE, HudhudMind.C.MAKER) && !mineIsNearer(m)
+        ) return Ask.About(AboutTopic.NAME_STORY)
         if ((you || m.has(HudhudMind.C.ME)) && m.any(HudhudMind.C.NAME, HudhudMind.C.WHO) && !m.any(HudhudMind.C.MADE, HudhudMind.C.MAKER) &&
             only(HudhudMind.C.YOU, HudhudMind.C.THIS, HudhudMind.C.OWN, HudhudMind.C.APP, HudhudMind.C.ME, HudhudMind.C.NAME,
                 HudhudMind.C.WHO, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.KNOW, HudhudMind.C.ABLE)
@@ -790,6 +813,13 @@ object Hudhud {
             .minOfOrNull { kotlin.math.abs(it - anchor) } ?: Int.MAX_VALUE
         return nearest(HudhudMind.C.ME) < nearest(HudhudMind.C.YOU, HudhudMind.C.OWN, HudhudMind.C.THIS, HudhudMind.C.APP)
     }
+
+    /** "Why", in the nine languages: the story of his name ([aboutHim]). */
+    private val WHY = listOf(
+        "kyun", "kyon", "kyu", "kiyon", "kiun", "kis liye", "kisliye", "kis wajah", "why", "how come",
+        "کیوں", "کس لیے", "کس وجہ", "ڇو", "ڇالاءِ", "لماذا", "لما", "ليش", "چرا", "برای چه", "क्यों", "किस लिए", "কেন",
+        "kenapa", "mengapa"
+    )
 
     private val HIS_OWN_NAME: Set<String> by lazy {
         listOf("hudhud", "hoopoe", "ہدہد", "هدهد", "हुदहुद", "হুদহুদ", "الهدهد").map { norm(it) }.toSet()
@@ -1737,7 +1767,9 @@ object Hudhud {
      */
     private fun helpOf(said: List<String>, topics: List<Topic>): String? {
         if (topics.isEmpty()) return null
-        val q = said.filter { it.length >= 3 && it !in STOP_SET && norm(it) !in HOW_SET }.distinct()
+        // The words that only ask (how, where) say nothing of the page: "kahan" found the data page's title
+        // ("Mera data kahan rehta hai?") for every "… kahan hai" (14 Nov 2026, the owner's question lists).
+        val q = said.filter { it.length >= 3 && it !in STOP_SET && norm(it) !in HOW_SET && norm(it) !in WAY_SET }.distinct()
         if (q.isEmpty()) return null
         val docs = topics.map { t -> words(t.title).toSet() to words(t.text).toSet() }
         fun hit(w: String, set: Set<String>) = set.any { d ->
@@ -1763,4 +1795,18 @@ object Hudhud {
     }
 
     private val HOW_SET: Set<String> by lazy { HOW.flatMap { words(it) }.toSet() }
+
+    /** The words that ask for the way to do something or the place it is done: [HOW] and "where" in the nine languages. */
+    private val WAY: List<String> by lazy {
+        HOW + listOf(
+            "kahan", "kahaan", "kahan se", "kidhar", "kithe", "kithon", "where", "which button", "kaunsa button", "konsa button",
+            "کہاں", "کدھر", "کس طرح", "کہاں سے", "ڪٿي", "ڪٿان", "طريقو", "أين", "وين", "طريقة", "کجا", "روش",
+            "कहाँ", "कहां", "किस तरह", "কোথায়", "কোথা থেকে", "উপায়", "di mana", "dimana", "langkah"
+        )
+    }
+
+    private val WAY_SET: Set<String> by lazy { WAY.flatMap { words(it) }.toSet() }
+
+    /** Whether [heard] asks for the way (or the place) rather than a figure ([decide]'s help pages). */
+    internal fun asksTheWay(heard: String): Boolean = has(words(heard).joinToString(" "), WAY)
 }

@@ -4432,4 +4432,21 @@
     <string name="hudhud_style_professional">Profesional</string>
     <string name="hudhud_name_say">Cara dia menyebut namanya</string>
     <string name="hudhud_name_say_help">Jika namanya terdengar salah dengan suara ponsel ini, pilih cara lain. Setiap cara terdengar saat dipilih.</string>
+
+    <!-- Hudhud's check of a test build (14 Nov 2026, HudhudCheck). -->
+    <string name="hudhud_check_title">Periksa jawaban Hudhud</string>
+    <string name="hudhud_check_switch">Tandai setiap jawaban benar atau salah</string>
+    <string name="hudhud_check_count">%1$d jawaban · %2$d benar · %3$d salah · %4$d%% benar</string>
+    <string name="hudhud_check_none">%1$d jawaban · belum ada yang ditandai. Daftar tetap di ponsel ini.</string>
+    <string name="hudhud_check_ask">Apakah jawaban ini benar?</string>
+    <string name="hudhud_check_right">Benar</string>
+    <string name="hudhud_check_wrong">Salah</string>
+    <string name="hudhud_check_marked_right">Ditandai benar</string>
+    <string name="hudhud_check_marked_wrong">Ditandai salah</string>
+    <string name="hudhud_check_share">Bagikan daftar</string>
+    <string name="hudhud_check_clear">Hapus daftar</string>
+    <string name="hudhud_check_nothing">Belum ada jawaban di daftar.</string>
+    <string name="hudhud_check_cleared">Daftar dihapus.</string>
+    <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
+    <string name="hudhud_about_name_story">Nama saya diambil dari burung hudhud milik Nabi Sulaiman alaihissalam, yang membawakan kabar yang benar kepadanya. Saya pun membawa kabar yang benar dari buku Anda sendiri; pembuat saya ingin setiap hitungan dijaga dengan jujur dan amanah.</string>
 </resources>

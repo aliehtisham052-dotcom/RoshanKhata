@@ -28,10 +28,11 @@ import kotlin.coroutines.resume
  *
  * 13 Nov 2026, the owner: "English aur Urdu ke ilawa doosri zabanon mein bolta hi nahi… poori statement bole… awaaz
  * professional ho… gap kabhi bahut kam, kabhi bahut zyada":
- *  - **Which voice** ([plan]): the app's language when the phone has a voice for it; else the nearest language it has,
- *    in that language's own words — never one language's words read by another's voice. Sindhi falls to Urdu, Urdu
- *    and Roman Urdu are said from the Urdu words (an Urdu voice is made for the Urdu script), Hindi to Urdu, every
- *    other to English; the sheet says once that it speaks another language and where to get the voice.
+ *  - **Which voice** ([plan]): the app's language when the phone has a voice for it, and no other (14 Nov 2026,
+ *    the owner): Urdu and Roman Urdu are said from the Urdu words (an Urdu voice is made for the Urdu script); a
+ *    language the phone has no voice for (Sindhi, on every phone checked) is not spoken in another — the card says
+ *    there is no voice for it and where to get one. (13 Nov it fell to the nearest: Sindhi to Urdu, Hindi to Urdu,
+ *    the rest to English.)
  *  - **How it sounds**: the owner's style ([HudhudStyle], professional by default: the phone's own pace and pitch)
  *    and the voice he chose among the phone's own ([HudhudPrefs.voiceName]).
  *  - **Even pauses**: the whole answer is one utterance, so the voice keeps its own rhythm between sentences — no
@@ -215,14 +216,13 @@ class HudhudVoice(context: Context) {
         }
     }
 
-    /** The languages to try, in order, for the app's own: its own first, then the nearest the phone may have. */
-    private fun chain(key: String): List<String> = when (key) {
-        "ur" -> listOf("ur", "hi", "en")
-        "sd" -> listOf("sd", "ur", "hi", "en")
-        "hi" -> listOf("hi", "ur", "en")
-        "en" -> listOf("en")
-        else -> listOf(key, "en")
-    }
+    /**
+     * The languages to try for the app's own: only its own (14 Nov 2026, the owner: "Sindhi ko Urdu mein na bole" —
+     * each language is spoken in its own words and its own voice, or not at all). Before, a phone with no Sindhi voice
+     * spoke Urdu, and one with no Urdu voice spoke Hindi or English; now the card says there is no voice for the
+     * language ([R.string.hudhud_no_voice]) and the answer is read on the screen. Roman Urdu is Urdu ([appKey]).
+     */
+    private fun chain(key: String): List<String> = listOf(key)
 
     /** The voice's locale for a language key, as the engine names its voices. */
     private fun localeOf(key: String): Locale = when (key) {

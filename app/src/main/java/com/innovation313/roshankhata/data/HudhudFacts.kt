@@ -385,6 +385,7 @@ internal object HudhudFacts {
         Hudhud.AboutTopic.MAKER -> said(c, R.string.hudhud_about_maker, AboutActivity::class.java)
         Hudhud.AboutTopic.PRIVACY -> said(c, R.string.hudhud_about_privacy, AboutActivity::class.java)
         Hudhud.AboutTopic.LANGUAGES -> said(c, R.string.hudhud_about_languages, LanguageActivity::class.java)
+        Hudhud.AboutTopic.NAME_STORY -> Answer(Mood.GOOD, lines = listOf(c.getString(R.string.hudhud_about_name_story)))
         Hudhud.AboutTopic.VERSION -> {
             val version = runCatching { c.packageManager.getPackageInfo(c.packageName, 0).versionName }.getOrNull() ?: "?"
             Answer(Mood.CALM, lines = listOf(c.getString(R.string.hudhud_about_version, version)), open = AboutActivity::class.java)

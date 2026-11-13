@@ -260,6 +260,49 @@
                         android:src="@drawable/ic_volume_on"
                         app:tint="@color/brand_green_text" />
                 </LinearLayout>
+
+                <!-- The owner's check of a test build (14 Nov 2026, HudhudCheck): while it is on, each answer is
+                     marked right or wrong here and kept on this phone, so the build's success rate is counted. -->
+                <LinearLayout
+                    android:id="@+id/hudCheckRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvHudCheck"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/hudhud_check_ask"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/text_muted"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnHudRight"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minHeight="44dp"
+                        android:text="@string/hudhud_check_right"
+                        android:textAllCaps="false"
+                        android:textColor="@color/brand_green_text" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnHudWrong"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:minHeight="44dp"
+                        android:text="@string/hudhud_check_wrong"
+                        android:textAllCaps="false"
+                        android:textColor="@color/brand_green_text" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

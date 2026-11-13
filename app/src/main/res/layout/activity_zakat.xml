@@ -93,6 +93,7 @@
               choice and its effect are visible.
             -->
             <com.google.android.material.button.MaterialButtonToggleGroup
+                android:baselineAligned="false"
                 android:id="@+id/toggleNisab"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -138,6 +139,7 @@
               asking for it is how a price of 66 got entered for silver.
             -->
             <com.google.android.material.button.MaterialButtonToggleGroup
+                android:baselineAligned="false"
                 android:id="@+id/toggleUnit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
