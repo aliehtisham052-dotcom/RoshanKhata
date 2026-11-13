@@ -2743,6 +2743,19 @@ Each of these cost a build or a bug.
     with HudhudModelTest and HudhudWordsTest, run from `shared/`. Run it after every retrain and before the push. And when
     a chip is misread, ask first whether the chip's own words say two things ("Money in" is the Cashbook's button) (13 Nov 2026).
 
+113. **A borderless ripple belongs to a background, never a foreground.** As `android:background` it is drawn on the
+    nearest parent's surface, a circle; as `android:foreground` it is drawn in the view's own canvas and cut to the
+    view's rectangle — on Hudhud's stage a grey box behind a character (the owner's video, 13 Nov 2026). A character
+    answers a touch with its own movement; a focus ring is for the keyboard.
+
+114. **Two drawings swapped quickly are frames of one motion only if they line up where the eye looks.** Hudhud's wing
+    beat swapped two poses whose heads were 9 dp apart: the eye followed the head and saw shaking, not wings. Measure the
+    offset (match the heads), draw the frame shifted by it, and check by overlaying the two (13 Nov 2026).
+
+115. **What lands on a view follows it while in the air.** A landing place worked out at take-off is stale as soon as
+    the layout under it changes (a sheet that fits its content shrank while Hudhud flew). Move the flier's layer with
+    the target before every frame (a pre-draw listener), and ease the layout change itself (13 Nov 2026).
+
 ---
 
 ## Working with the owner
@@ -3432,3 +3445,23 @@ for a doubtful one; a professional voice with even pauses; every language spoken
   "money that came"). HudhudWordsTest can be run locally (lesson 112).
 - **Not yet:** Windows has no Hudhud; Roman Urdu now reads lowest on the held-out set (88%); the sense knows only what the
   bank teaches — a new kind of question needs sentences in the bank and the sense learnt again.
+- **His acts, from the owner's screen recording (13 Nov 2026, 13 s, read frame by frame at 30 and 54 fps):**
+  - A tap on him showed a grey box: the stage's foreground was `selectableItemBackgroundBorderless`, and a borderless
+    ripple drawn as a foreground is cut to the view's rectangle (lesson 113); while he hopped out of it, the box stood
+    empty. `fg_hudhud_stage` rings him only for keyboard focus; his act is the answer to a touch.
+  - He landed 50 dp above his stage and then jumped into it: "I didn't catch that" made the sheet shorter while he was in
+    the air, and his landing place had been worked out at take-off. He flies in a layer over the window that a
+    pre-draw listener moves with his stage every frame (`HudhudActs.follow`, lesson 115), so every act ends on the stage.
+  - The sheet itself dropped in one frame: `SheetEase` leads the sheet's height to its new content over 260 ms
+    (`MotionKit.STANDARD`) — only when what the sheet shows changed height, never for the keyboard or insets; the part
+    that scrolls takes up the difference, so the box and chips at the foot do not move. Animations off: at once.
+  - His wing beat shook his head: "happy" (wings up) and "idle" (folded) are two poses, the head 27 of 512 lower and 12
+    to the right in "happy", so swapping them nine times a second jumped his head about 9 dp. In the air "happy" is
+    drawn with its head on "idle"'s (`HAPPY_HEAD_X/Y`, measured by matching the heads; `ScaleType.MATRIX`, `frame`); on
+    the ground the drawings keep their shared feet (lesson 114).
+  - He took off folded whatever the stage showed and landed in a pose the stage did not show; now he takes off in the
+    stage's drawing and lands in the one it shows when he is back (`current`, `settle`). The way down starts gently from
+    his hover (it darted at full speed) and he turns in 160 ms instead of flipping. Pose changes on the stage: the new
+    drawing comes in on top and the old one goes in the second half (both fading at once left him half see-through).
+  - Not changed, the owner's to decide: proper flight drawings (wings mid and down) would make the beat a real flap;
+    a soft ground shadow while he hops; whether a tap while he listens should play an act. Not seen on a phone yet.

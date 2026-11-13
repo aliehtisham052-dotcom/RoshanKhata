@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hudhud's stage answers a touch with one of his own acts, never a grey ripple (13 Nov 2026, the owner's video): the
+  borderless ripple was the stage's foreground, so it was cut to the stage's rectangle, and a grey box stood where he
+  had been while he hopped out of it. Only someone moving with a keyboard or a switch needs to see that he is the
+  one in focus: a ring round him, in the app's green.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="oval">
+            <stroke
+                android:width="2dp"
+                android:color="@color/brand_green_text" />
+        </shape>
+    </item>
+</selector>

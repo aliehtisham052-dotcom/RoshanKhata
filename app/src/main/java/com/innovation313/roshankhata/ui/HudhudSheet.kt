@@ -177,8 +177,10 @@ object HudhudSheet {
         var micAsk: ActivityResultLauncher<String>? = null
         var speakJob: Job? = null
         var voiceJob: Job? = null
-        /** His acts, over the sheet's whole window. */
-        val acts = HudhudActs(stage, listOf(poseA, poseB)) { sheet.window?.decorView as? ViewGroup }
+        /** His acts, over the sheet's whole window: off in the pose the stage shows, back in the one it shows then. */
+        val acts = HudhudActs(stage, listOf(poseA, poseB), { pose.drawing }) { sheet.window?.decorView as? ViewGroup }
+        /** The sheet grows and shrinks to each answer smoothly (13 Nov 2026, the owner's video: it dropped in one frame). */
+        var ease: SheetEase? = null
         var breath: ValueAnimator? = null
         var closed = false
 
@@ -258,6 +260,7 @@ object HudhudSheet {
             }
             view.findViewById<View>(R.id.btnHudClose).setOnClickListener { sheet.dismiss() }
             stage.setOnClickListener { tapped() }
+            ease = SheetEase.attach(view, scroll.getChildAt(0) ?: scroll)
             // Its icon is drawn white: tinted here too, so it shows even where the layout's tint is not read.
             TextViewCompat.setCompoundDrawableTintList(
                 btnSettings, ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.brand_green_text))
@@ -313,6 +316,8 @@ object HudhudSheet {
         fun close() {
             closed = true
             acts.stop()
+            ease?.stop()
+            ease = null
             job?.cancel()
             speakJob?.cancel()
             voiceJob?.cancel()
@@ -905,16 +910,21 @@ object HudhudSheet {
             back.setImageResource(p.drawing)
             val fromFront = front
             front = back
+            back.animate().cancel()
+            fromFront.animate().cancel()
+            // The new drawing is the one on top.
+            back.translationZ = 1f
+            fromFront.translationZ = 0f
             if (!Motion.enabled(ctx)) {
                 back.alpha = 1f
                 fromFront.alpha = 0f
                 return
             }
-            back.animate().cancel()
-            fromFront.animate().cancel()
+            // It comes in over the old one, and the old one goes only once the new one is half there: two drawings
+            // fading through each other at the same time left him half see-through for a moment (13 Nov 2026).
             back.alpha = 0f
-            back.animate().alpha(1f).setDuration(POSE_MS).start()
-            fromFront.animate().alpha(0f).setDuration(POSE_MS).start()
+            back.animate().alpha(1f).setStartDelay(0).setDuration(POSE_MS).setInterpolator(MotionKit.STANDARD).start()
+            fromFront.animate().alpha(0f).setStartDelay(POSE_MS / 2).setDuration(POSE_MS / 2).setInterpolator(MotionKit.STANDARD).start()
         }
 
         private fun setState(words: Int?) {

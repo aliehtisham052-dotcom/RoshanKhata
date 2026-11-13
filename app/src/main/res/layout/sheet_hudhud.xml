@@ -36,7 +36,8 @@
         android:orientation="horizontal">
 
         <!-- A tap on Hudhud plays one of his acts (13 Nov 2026, the owner: "touch karne par kabhi urre, kabhi pankh
-             maare"): HudhudActs, over the window above the sheet. -->
+             maare"): HudhudActs, over the window above the sheet. His act is the answer to the touch: no ripple
+             (fg_hudhud_stage only rings him for keyboard focus; the ripple was cut to a grey box). -->
         <FrameLayout
             android:id="@+id/hudStage"
             android:layout_width="96dp"
@@ -45,7 +46,7 @@
             android:clickable="true"
             android:contentDescription="@string/hudhud_name"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackgroundBorderless">
+            android:foreground="@drawable/fg_hudhud_stage">
 
             <ImageView
                 android:id="@+id/ivHudPoseA"
