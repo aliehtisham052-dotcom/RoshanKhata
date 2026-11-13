@@ -4634,7 +4634,7 @@
     <string name="hudhud_chip_sold">Sold this month</string>
     <string name="hudhud_chip_book">My book</string>
     <string name="hudhud_chip_activity">What happened today</string>
-    <string name="hudhud_chip_collected">Money in today</string>
+    <string name="hudhud_chip_collected">Payments received today</string>
     <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
     <string name="hudhud_took_as">Taken as: %1$s</string>
     <string name="hudhud_act_fly">Watch me fly.</string>

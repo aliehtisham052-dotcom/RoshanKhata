@@ -2735,6 +2735,14 @@ Each of these cost a build or a bug.
     sentence. Look for such a gap in the code before writing more of the bank — and never write bank sentences to fit
     the held-out misses: that measures memory, not understanding (13 Nov 2026).
 
+112. **A sense learnt again is checked against the app's own chips, not only the held-out set.** Every retrain moves
+    every language a little; the Arabic one passed 155 shared tests and the held-out floor, then failed CI on one Farsi
+    chip (HudhudWordsTest is a desktop test, it reads the app's strings.xml) — no APK that day. It runs locally without
+    Gradle (lesson 93): stub `Words` as a plain interface with a `desktopWords` that opens
+    `app/src/main/res/<folder>/<file>`, copy XmlWords without its `expect` line plus a plain `pluralCategory`, compile
+    with HudhudModelTest and HudhudWordsTest, run from `shared/`. Run it after every retrain and before the push. And when
+    a chip is misread, ask first whether the chip's own words say two things ("Money in" is the Cashbook's button) (13 Nov 2026).
+
 ---
 
 ## Working with the owner
@@ -3357,9 +3365,10 @@ for a doubtful one; a professional voice with even pauses; every language spoken
   surely named person into something else (0.92); where the rules found nothing, the sense's reading is answered at 0.60 and,
   from 0.30, answered with "Taken as: …" written over the card (`Ask.Guessed`, `hudhud_took_as`) and the other meanings as
   chips — never a question back. "Did you mean" answers its first meaning the same way.
-- **Held-out** (1,170 sentences never learnt from): rules alone 50%, rules and sense 92% (91% before the article fix
-  below) — Arabic 92 (was 83), Bengali 93, English 93, Farsi 91 (88), Hindi 88 (90), Indonesian 91 (93), Sindhi 93, Urdu
-  90, Roman Urdu 93 (91). One perceptron learns every language at once, so a change for one moves the others a little. The owner's own sentences from his screenshots
+- **Held-out** (1,170 sentences never learnt from): rules alone 50%, rules and sense 91% (1,067; 92% after the article
+  fix below, before the Farsi chip's five sentences) — Arabic 90 (was 83 before the article fix), Bengali 90, English 93,
+  Farsi 90, Hindi 93, Indonesian 90, Sindhi 92, Urdu 92, Roman Urdu 88. One perceptron learns every language at once and
+  every sentence added reshuffles its learning, so a change for one moves the others by a few points either way. The owner's own sentences from his screenshots
   read right (a local probe). A sentence in no shape the bank knows can still be misread: the card says what it was taken as.
 - **Answers from the book** (`HudhudFacts`): `Ask.NeedName(facet)` — a fact with nobody named ("customer ka number", "kis
   ki limit") lists the five latest customers with it; `Ask.Cashbook(window)` — money in, money out, the net and the rows
@@ -3414,5 +3423,12 @@ for a doubtful one; a professional voice with even pauses; every language spoken
 - **Sindhi is spoken in Urdu by design:** Google's Text-to-Speech has no Sindhi voice (its 70 languages list Urdu
   (Pakistan), not Sindhi — support.google.com/accessibility/android/answer/11101402, checked 13 Nov 2026), so the
   plan falls back to Urdu and says so on the card.
-- **Not yet:** Windows has no Hudhud; Hindi now reads lowest (88%); the sense knows only what the bank teaches — a new kind of
-  question needs sentences in the bank and the sense learnt again.
+- **The chips after the retrain (13 Nov 2026, the build of f5fd011 failed on HudhudWordsTest):** the Arabic retrain made
+  the sense 0.99 sure that Farsi's "امروز چه گذشت" (what happened today, `hudhud_chip_activity`) asked the date — the bank
+  had "گذشت" only as "last" (هفته گذشته), never as "happened" — so it overruled the rules' right reading. Five Farsi
+  sentences with "گذشت" as "happened" went into `more/fa.tsv` (not the chip's own sentence) and the sense learnt again;
+  that turned English "Money in today" (`hudhud_chip_collected`) into the cashbook — "Money in" is the Cashbook's own
+  button, so the chip said two things: it reads "Payments received today" now (the other eight languages already said
+  "money that came"). HudhudWordsTest can be run locally (lesson 112).
+- **Not yet:** Windows has no Hudhud; Roman Urdu now reads lowest on the held-out set (88%); the sense knows only what the
+  bank teaches — a new kind of question needs sentences in the bank and the sense learnt again.
