@@ -273,7 +273,7 @@ class HudhudVoice(context: Context) {
             if (said == null) { listener.onDone(); return@withEngine }
             val s = style ?: HudhudPrefs.style(app)
             runCatching {
-                t.setSpeechRate(s.rate)
+                t.setSpeechRate(s.rate * HudhudPrefs.pace(app))
                 t.setPitch(s.pitch)
             }
             this.listener = listener

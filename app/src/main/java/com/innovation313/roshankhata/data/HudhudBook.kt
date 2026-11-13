@@ -60,7 +60,9 @@ object HudhudBook {
         val amount: Double? = null,
         val isGiven: Boolean = true,
         /** A row that is not a customer (a product, a staff member): tapped, this screen opens instead. */
-        val open: Class<*>? = null
+        val open: Class<*>? = null,
+        /** A row that answers a question when tapped (14 Nov 2026: "which product?" lists products, each its own ask). */
+        val ask: Hudhud.Ask? = null
     )
 
     data class Answer(
@@ -92,6 +94,8 @@ object HudhudBook {
         val options: List<Hudhud.Ask> = emptyList(),
         /** The button opens Hudhud's voice settings (what he calls the owner). */
         val voiceSettings: Boolean = false,
+        /** "Open" shows the automations' own window (14 Nov 2026), where the owner turns them on or off. */
+        val automations: Boolean = false,
         /** The question this answers: the sheet asks it again in the voice's language when that is another (Roman Urdu). */
         val ask: Hudhud.Ask? = null,
         /**
@@ -104,7 +108,9 @@ object HudhudBook {
         /** One of his little acts, played on the sheet (13 Nov 2026, the owner: "urr ke dikhao"). */
         val act: Hudhud.Move? = null,
         /** Values the card shows and the voice never says (a phone number, an account number, an email, a tax number). */
-        val secrets: List<String> = emptyList()
+        val secrets: List<String> = emptyList(),
+        /** A change to how he speaks, asked of him (14 Nov 2026): the sheet makes it as the card arrives. */
+        val voice: Hudhud.VoiceChange? = null
     )
 
     /** A help page Hudhud can point to: a question from Help, or a feature's first-open sheet. */
@@ -205,12 +211,21 @@ object HudhudBook {
      * His own introduction when his face is tapped (13 Nov 2026, the owner: "tap karein to wo bole, main Hudhud hoon,
      * aap mujh se poochhein"): who he is and to ask; the day's first time with the greeting and the owner's name.
      */
-    fun intro(context: Context, greet: Boolean) = Answer(
-        Mood.CALM,
-        label = greeting(context),
-        lines = listOf(context.getString(R.string.hudhud_intro)),
-        spoken = { w -> (if (greet) greeting(w) + " " else "") + w.getString(R.string.hudhud_intro) }
-    )
+    fun intro(context: Context, greet: Boolean): Answer {
+        // The first time he meets the owner (14 Nov 2026, the owner: "data mehfooz hai, ye bhi bataye — professionally,
+        // har baat pe nahi"): once, that the book stays on this phone; after that only when asked ("data mehfooz hai?").
+        val privacy = HudhudPrefs.privacyDue(context)
+        if (privacy) HudhudPrefs.privacyTold(context)
+        return Answer(
+            Mood.CALM,
+            label = greeting(context),
+            lines = listOfNotNull(context.getString(R.string.hudhud_intro), if (privacy) context.getString(R.string.hudhud_privacy_once) else null),
+            spoken = { w ->
+                (if (greet) greeting(w) + " " else "") + w.getString(R.string.hudhud_intro) +
+                    (if (privacy) " " + w.getString(R.string.hudhud_privacy_once) else "")
+            }
+        )
+    }
 
     /** What he says when the book could not be read. */
     fun failed(context: Context) = Answer(Mood.CARE, lines = listOf(context.getString(R.string.hudhud_unknown)))
@@ -253,6 +268,11 @@ object HudhudBook {
             is Hudhud.Ask.Cashbook -> HudhudFacts.cashbook(context, dao, ask.window)
             is Hudhud.Ask.Returns -> HudhudFacts.returns(context, dao, ask.window)
             is Hudhud.Ask.Act -> act(context, ask.move)
+            is Hudhud.Ask.Voice -> voiceChange(context, ask.change)
+            is Hudhud.Ask.TopGoods -> HudhudFacts.topGoods(context, dao, ask.window)
+            Hudhud.Ask.Qarz -> HudhudFacts.qarz(context, dao, parties)
+            Hudhud.Ask.Automations -> HudhudFacts.automations(context)
+            is Hudhud.Ask.NeedGoods -> HudhudFacts.needGoods(context, dao, ask.facet)
             // Tell, never ask (13 Nov 2026): a guess is answered, with what it was taken as over the card; "did you
             // mean" answers its first meaning the same way and offers the others as chips.
             is Hudhud.Ask.Guessed -> guessed(context, dao, ask.ask, parties, emptyList())
@@ -275,6 +295,27 @@ object HudhudBook {
     }
 
     /** One of his acts: the sheet plays it; the card says it in a word. */
+    /**
+     * A change to how he speaks (14 Nov 2026): the sheet makes it ([Answer.voice]) and the card says it in one line;
+     * "again" is answered by the sheet with the last answer (this line only when there is none yet).
+     */
+    private fun voiceChange(context: Context, change: Hudhud.VoiceChange): Answer = Answer(
+        Mood.CALM,
+        lines = listOf(context.getString(
+            when (change) {
+                Hudhud.VoiceChange.AGAIN -> R.string.hudhud_v_again_none
+                Hudhud.VoiceChange.SLOWER -> R.string.hudhud_v_slower
+                Hudhud.VoiceChange.FASTER -> R.string.hudhud_v_faster
+                Hudhud.VoiceChange.QUIET -> R.string.hudhud_v_quiet
+                Hudhud.VoiceChange.OFF -> R.string.hudhud_v_off
+                Hudhud.VoiceChange.ON -> R.string.hudhud_v_on
+                Hudhud.VoiceChange.VOLUME -> R.string.hudhud_v_volume
+            }
+        )),
+        quiet = change == Hudhud.VoiceChange.QUIET || change == Hudhud.VoiceChange.OFF || change == Hudhud.VoiceChange.VOLUME,
+        voice = change
+    )
+
     private fun act(context: Context, move: Hudhud.Move): Answer = Answer(
         Mood.GOOD,
         lines = listOf(context.getString(
@@ -910,6 +951,9 @@ object HudhudBook {
         is Hudhud.Ask.Deliveries -> c.getString(R.string.hudhud_t_deliveries)
         is Hudhud.Ask.Activity -> c.getString(R.string.hudhud_chip_activity)
         is Hudhud.Ask.Collected -> c.getString(R.string.hudhud_chip_collected)
+        is Hudhud.Ask.TopGoods -> c.getString(R.string.hudhud_t_top_goods)
+        Hudhud.Ask.Qarz -> c.getString(R.string.hudhud_t_qarz)
+        Hudhud.Ask.Automations -> c.getString(R.string.auto_title)
         else -> null
     }
 
@@ -945,7 +989,8 @@ object HudhudBook {
                 VoiceQuestion.Kind.SALES_TODAY -> listOf(Hudhud.Ask.Period(Hudhud.Measure.SALES, VoiceQuestion.Window.YESTERDAY),
                     Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_MONTH), Hudhud.Ask.Collected(today), Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH))
                 VoiceQuestion.Kind.SALES_MONTH -> listOf(Hudhud.Ask.Period(Hudhud.Measure.SALES, VoiceQuestion.Window.LAST_MONTH),
-                    Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH), Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
+                    Hudhud.Ask.TopGoods(VoiceQuestion.Window.THIS_MONTH), Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH),
+                    Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
                 VoiceQuestion.Kind.PROFIT_MONTH -> listOf(Hudhud.Ask.Period(Hudhud.Measure.PROFIT, VoiceQuestion.Window.LAST_MONTH),
                     Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_MONTH))
                 VoiceQuestion.Kind.TO_GET -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST), Hudhud.Ask.WhenPays(emptyList()),
@@ -1012,7 +1057,7 @@ object HudhudBook {
     /** A question whose answer is a figure only the owner or a manager may see. */
     private fun needsReports(a: Hudhud.Ask): Boolean = when (a) {
         is Hudhud.Ask.Figure, is Hudhud.Ask.Period, is Hudhud.Ask.Collected, is Hudhud.Ask.Activity, Hudhud.Ask.Drawer,
-        is Hudhud.Ask.WhenPays, is Hudhud.Ask.Cashbook -> true
+        is Hudhud.Ask.WhenPays, is Hudhud.Ask.Cashbook, is Hudhud.Ask.TopGoods, Hudhud.Ask.Qarz -> true
         is Hudhud.Ask.Status -> a.of == Hudhud.StatusOf.STAFF
         is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD
         else -> false

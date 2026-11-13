@@ -4500,4 +4500,26 @@
     <string name="hudhud_check_cleared">لسٽ صاف ٿي وئي.</string>
     <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
     <string name="hudhud_about_name_story">منهنجو نالو حضرت سليمان عليه السلام جي هُدهُد جي نسبت سان رکيو ويو آهي، جيڪو هنن وٽ سچي خبر آڻيندو هو. مان به اوهان جي پنهنجي ڪتاب مان سچي خبر آڻيان ٿو؛ مون کي ٺاهيندڙ چاهين ٿا ته هر حساب سچائي ۽ ايمانداري سان هجي.</string>
+    <string name="hudhud_v_again_none">اڃا مون توهان کي ڪجهه نه ٻڌايو آهي. پنهنجي کاتي بابت ڪجهه به پڇو، يا هيٺ ڪو سوال دٻايو.</string>
+    <string name="hudhud_v_slower">ٺيڪ آهي، هاڻي مان ٿورو آهستي ڳالهائيندس.</string>
+    <string name="hudhud_v_faster">ٺيڪ آهي، هاڻي مان ٿورو تيز ڳالهائيندس.</string>
+    <string name="hudhud_v_quiet">ٺيڪ آهي. جڏهن چاهيو پڇي وٺو.</string>
+    <string name="hudhud_v_off">منهنجو آواز بند آهي. مان جواب لکي ڏيندس؛ ٻيهر ٻڌڻ لاءِ مٿي اسپيڪر دٻايو.</string>
+    <string name="hudhud_v_on">منهنجو آواز کلي ويو. هاڻي مان جواب ڳالهائي ٻڌائيندس.</string>
+    <string name="hudhud_v_volume">فون جي آواز وارن بٽڻن سان منهنجو آواز اوچو يا هلڪو ڪريو.</string>
+    <string name="hudhud_t_top_goods">سڀ کان وڌيڪ وڪامندڙ مال</string>
+    <string name="hudhud_top_goods_none">انهن ڏينهن ۾ ڪجهه به نه وڪاميو.</string>
+    <string name="hudhud_t_qarz">قرض حسنه</string>
+    <string name="hudhud_qarz_note">قرض حسنه اها رقم آهي جيڪا ڪنهن به نفعي کان سواءِ ڏني وڃي. اها گراهڪ جي کاتي ۾ قرض حسنه جي اختيار سان لکي ويندي آهي، ۽ زڪوات جي اسڪرين ان کي الڳ ڳڻي ٿي.</string>
+    <string name="hudhud_qarz_none">ڪو به قرض حسنه واپس اچڻ باقي ناهي.</string>
+    <string name="hudhud_auto_on">آن</string>
+    <string name="hudhud_auto_off">بند</string>
+    <string name="hudhud_auto_line">هر هڪ پنهنجي وقت تي ٻڌائي ٿو ۽ ڪم جي جاءِ کولي ٿو. ڪو به پاڻ کان پيغام نٿو موڪلي نه داخلا لکي ٿو. بدلائڻ لاءِ کوليو دٻايو.</string>
+    <string name="hudhud_need_goods">ڪهڙو مال؟</string>
+    <string name="hudhud_need_goods_line">مال جو نالو ٻڌايو، يا هيٺان چونڊيو.</string>
+    <string name="hudhud_privacy_once">توهان جو کاتو هن ئي فون تي رهي ٿو. مان هر جواب هتان ئي پڙهي ڏيان ٿو ۽ ڪنهن سان به شيئر نٿو ڪريان.</string>
+    <plurals name="hudhud_qarz_people">
+        <item quantity="one">%1$d ماڻهوءَ کي اڃا واپس ڪرڻو آهي</item>
+        <item quantity="other">%1$d ماڻهن کي اڃا واپس ڪرڻو آهي</item>
+    </plurals>
 </resources>

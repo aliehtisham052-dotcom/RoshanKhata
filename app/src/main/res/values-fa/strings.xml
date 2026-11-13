@@ -4500,4 +4500,26 @@
     <string name="hudhud_check_cleared">فهرست پاک شد.</string>
     <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
     <string name="hudhud_about_name_story">نام من به نسبت هدهد حضرت سلیمان علیه‌السلام گذاشته شده که برای او خبر راست می‌آورد. من هم از دفتر خود شما خبر راست می‌آورم؛ سازندگان من می‌خواهند هر حسابی با راستی و امانت باشد.</string>
+    <string name="hudhud_v_again_none">هنوز چیزی به شما نگفته‌ام. هر چیزی دربارهٔ دفترتان بپرسید، یا یکی از پرسش‌های پایین را بزنید.</string>
+    <string name="hudhud_v_slower">باشه، کمی آهسته‌تر حرف می‌زنم.</string>
+    <string name="hudhud_v_faster">باشه، کمی تندتر حرف می‌زنم.</string>
+    <string name="hudhud_v_quiet">باشه. هر وقت خواستید بپرسید.</string>
+    <string name="hudhud_v_off">صدایم خاموش است. پاسخ‌ها را می‌نویسم؛ برای شنیدن دوباره، بلندگوی بالا را بزنید.</string>
+    <string name="hudhud_v_on">صدایم روشن شد. پاسخ‌ها را بلند می‌گویم.</string>
+    <string name="hudhud_v_volume">دکمه‌های صدای گوشی صدای مرا بلندتر یا آرام‌تر می‌کنند.</string>
+    <string name="hudhud_t_top_goods">پرفروش‌ترین‌ها</string>
+    <string name="hudhud_top_goods_none">در این روزها چیزی فروخته نشد.</string>
+    <string name="hudhud_t_qarz">قرض‌الحسنه</string>
+    <string name="hudhud_qarz_note">قرض‌الحسنه پولی است که بدون هیچ سودی قرض داده می‌شود. در دفتر مشتری با گزینهٔ قرض‌الحسنه نوشته می‌شود و صفحهٔ زکات آن را جدا حساب می‌کند.</string>
+    <string name="hudhud_qarz_none">هیچ قرض‌الحسنه‌ای برای برگشتن باقی نمانده است.</string>
+    <string name="hudhud_auto_on">روشن</string>
+    <string name="hudhud_auto_off">خاموش</string>
+    <string name="hudhud_auto_line">هر کدام در ساعت خود خبر می‌دهد و جای کار را باز می‌کند. هیچ‌کدام خودش پیامی نمی‌فرستد و ثبتی نمی‌نویسد. برای تغییر، باز کردن را بزنید.</string>
+    <string name="hudhud_need_goods">کدام کالا؟</string>
+    <string name="hudhud_need_goods_line">نام کالا را بگویید، یا یکی را از پایین انتخاب کنید.</string>
+    <string name="hudhud_privacy_once">دفتر شما روی همین گوشی می‌ماند. هر پاسخ را همین‌جا از آن می‌خوانم و با کسی به اشتراک نمی‌گذارم.</string>
+    <plurals name="hudhud_qarz_people">
+        <item quantity="one">%1$d نفر هنوز باید برگرداند</item>
+        <item quantity="other">%1$d نفر هنوز باید برگردانند</item>
+    </plurals>
 </resources>

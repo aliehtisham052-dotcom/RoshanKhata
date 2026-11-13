@@ -4449,4 +4449,25 @@
     <string name="hudhud_check_cleared">Daftar dihapus.</string>
     <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
     <string name="hudhud_about_name_story">Nama saya diambil dari burung hudhud milik Nabi Sulaiman alaihissalam, yang membawakan kabar yang benar kepadanya. Saya pun membawa kabar yang benar dari buku Anda sendiri; pembuat saya ingin setiap hitungan dijaga dengan jujur dan amanah.</string>
+    <string name="hudhud_v_again_none">Saya belum memberi tahu apa pun. Tanyakan apa saja tentang buku Anda, atau ketuk pertanyaan di bawah.</string>
+    <string name="hudhud_v_slower">Baik, saya akan bicara sedikit lebih pelan.</string>
+    <string name="hudhud_v_faster">Baik, saya akan bicara sedikit lebih cepat.</string>
+    <string name="hudhud_v_quiet">Baik. Tanyakan kapan saja.</string>
+    <string name="hudhud_v_off">Suara saya mati. Saya akan menulis jawaban; ketuk speaker di atas untuk mendengar saya lagi.</string>
+    <string name="hudhud_v_on">Suara saya menyala. Saya akan mengucapkan jawaban.</string>
+    <string name="hudhud_v_volume">Tombol volume ponsel Anda membuat suara saya lebih keras atau lebih pelan.</string>
+    <string name="hudhud_t_top_goods">Paling laris</string>
+    <string name="hudhud_top_goods_none">Tidak ada yang terjual pada hari-hari ini.</string>
+    <string name="hudhud_t_qarz">Qardhul Hasan</string>
+    <string name="hudhud_qarz_note">Qardhul Hasan adalah uang yang dipinjamkan tanpa keuntungan apa pun. Dicatat di buku pelanggan dengan pilihan Qardhul Hasan, dan layar Zakat menghitungnya tersendiri.</string>
+    <string name="hudhud_qarz_none">Tidak ada Qardhul Hasan yang masih harus kembali.</string>
+    <string name="hudhud_auto_on">Aktif</string>
+    <string name="hudhud_auto_off">Mati</string>
+    <string name="hudhud_auto_line">Masing-masing memberi tahu pada jamnya dan membuka tempat untuk bertindak. Tidak ada yang mengirim pesan atau menulis catatan sendiri. Ketuk Buka untuk mengubahnya.</string>
+    <string name="hudhud_need_goods">Produk yang mana?</string>
+    <string name="hudhud_need_goods_line">Sebutkan nama produknya, atau ketuk salah satu di bawah.</string>
+    <string name="hudhud_privacy_once">Buku Anda tetap di ponsel ini. Saya membaca setiap jawaban darinya di sini dan tidak membagikannya kepada siapa pun.</string>
+    <plurals name="hudhud_qarz_people">
+        <item quantity="other">%1$d orang masih harus mengembalikan</item>
+    </plurals>
 </resources>

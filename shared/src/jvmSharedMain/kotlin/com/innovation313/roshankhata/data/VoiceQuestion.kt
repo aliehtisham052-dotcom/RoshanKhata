@@ -193,13 +193,45 @@ object VoiceQuestion {
             saysAny(t, PROFIT) -> Kind.PROFIT_MONTH
             saysAny(t, EXPIRING) -> Kind.EXPIRING
             saysAny(t, NOT_PAID) -> Kind.NOT_PAID
+            // "Sab se zyada kis ko dena hai" is whom the shop owes most: the shop's payables, not who owes it most.
+            saysAny(t, MOST) && saysAny(t, TO_GIVE) && !owedToTheShop(t) -> Kind.TO_GIVE
             saysAny(t, MOST) && (saysAny(t, DEBT) || saysAny(t, TO_GET)) -> Kind.WHO_OWES_MOST
             saysAny(t, SALES) -> if (saysAny(t, TODAY)) Kind.SALES_TODAY else Kind.SALES_MONTH
-            saysAny(t, TO_GIVE) -> Kind.TO_GIVE
-            saysAny(t, TO_GET) || saysAny(t, DEBT) -> Kind.TO_GET
+            // Which way the money is owed, by who gives (14 Nov 2026, the owner's sentences): "kis kis ne mera paisa dena
+            // hai" says "dena" but somebody else gives — the shop's to get; "mera qarz", "supplier ka baqaya" are what the
+            // shop owes — its to give.
+            saysAny(t, TO_GIVE) -> if (owedToTheShop(t)) Kind.TO_GET else Kind.TO_GIVE
+            saysAny(t, TO_GET) || saysAny(t, DEBT) -> if (owedByTheShop(t)) Kind.TO_GIVE else Kind.TO_GET
             else -> null
         }
     }
+
+    /** Somebody else is the one who gives: "kis ne dena hai", "logon ne dene hain", "who owes me". */
+    private fun owedToTheShop(t: String): Boolean = saysAny(t, OTHERS_GIVE)
+
+    /** The shop is the one who owes: its own debt, or a supplier's balance with nothing to take ("supplier ka baqaya"). */
+    private fun owedByTheShop(t: String): Boolean =
+        saysAny(t, MY_DEBT) || (saysAny(t, SUPPLIER_SIDE) && !saysAny(t, TO_GET) && !saysAny(t, OTHERS_GIVE))
+
+    private val OTHERS_GIVE = listOf(
+        "kis ne", "kisne", "kis kis ne", "logon ne", "logo ne", "unhon ne", "unhone", "us ne", "usne", "customer ne",
+        "customers ne", "gahak ne", "gahakon ne", "who owes me", "owes me", "owe me", "owing me",
+        "کس نے", "کس کس نے", "لوگوں نے", "انہوں نے", "اس نے", "گاہک نے", "किस ने", "किसने", "लोगों ने", "उसने", "ग्राहक ने",
+        "কে দেবে", "কারা দেবে", "আমাকে দেবে", "من يدين لي", "يدينون لي", "به من بدهکار", "siapa yang berutang"
+    )
+
+    private val MY_DEBT = listOf(
+        "mera qarz", "meri qarz", "mere qarz", "mera karz", "mere zimme", "mere zime", "mujh par", "mujhpar", "humara qarz",
+        "my debt", "i owe", "we owe", "میرا قرض", "میرے ذمے", "مجھ پر", "ہمارا قرض", "मेरा कर्ज", "मेरा क़र्ज़", "मेरे जिम्मे",
+        "मुझ पर", "আমার ঋণ", "আমার দেনা", "ديني", "علي دين", "بدهی من", "منهنجو قرض", "utang saya", "hutang saya"
+    )
+
+    /** A supplier's side of the book: what is owed there is the shop's to pay. */
+    private val SUPPLIER_SIDE = listOf(
+        "supplier", "suppliers", "company", "kampani", "maal wale", "maal wala", "distributor", "wholesaler",
+        "سپلائر", "کمپنی", "مال والے", "सप्लायर", "कंपनी", "সাপ্লায়ার", "কোম্পানি", "المورد", "الموردين", "تامین کننده",
+        "تأمین‌کننده", "سپلائر", "pemasok", "supplier"
+    )
 
     /** The first of the recogniser's guesses that is a question this app knows. */
     fun classify(candidates: List<String>): Pair<String, Kind>? =

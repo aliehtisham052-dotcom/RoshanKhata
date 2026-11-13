@@ -2756,6 +2756,18 @@ Each of these cost a build or a bug.
     the layout under it changes (a sheet that fits its content shrank while Hudhud flew). Move the flier's layer with
     the target before every frame (a pre-draw listener), and ease the layout change itself (13 Nov 2026).
 
+
+116. **A retrain is judged on the owner's kind of question, not only the held-out set.** Adding AI-written how-to
+    sentences to the bank raised the held-out set by four and dropped the owner's own list from 55 to 47 (14 Nov 2026);
+    it was reverted. `HudhudOwnerSetTest` holds his sentences with floors.
+
+117. **Filament's UiHelper says 0×0 when a TextureView is attached again.** `TextureViewHandler` calls
+    `onSurfaceTextureAvailable(st, 0, 0)` for a surface that already exists, so the poster's live 3D kept a still's
+    projection — the clock went up and to the right, magnified. Take the view's own size (`LiveSize.pick`) and project
+    again whenever the size the camera was set for differs.
+
+118. **A reading made on purpose is protected from the sense.** A help page is MEDIUM ground and the sense at 0.60 turned
+    "bill banao" into a count of supplier bills; deliberate routes are listed in `decide` (`featureNamed`, the new asks).
 ---
 
 ## Working with the owner
@@ -3238,6 +3250,45 @@ screen it opens. Not tried on a real phone.
 - **Not yet:** a product name across scripts ("यूरिया" for "Urea"); "Ali ne Urea kab liya" (a customer and a product in
   one question); Windows.
 
+### 14 Nov 2026: Hudhud reads the owner's own questions (phone; CI only — nothing tried on a real phone)
+
+The owner's night of lists (00:00–01:00): two short lists (200 sentences) and 1,000 sentences, 50 meanings × 20 ways
+(master v18 outside the repository: 13,183 unique questions). Measured by `HudhudOwnerSetTest` on made-up names:
+
+- **Before → after:** short lists 128 → 138 of 200; the 1,000 sentences 511 → 686; held-out 1,067 of 1,170 unchanged.
+  The floors are this build's figures — raise them, never lower them. Acceptance per meaning is in the resource files
+  (owner_set.tsv, owner_1000.tsv): a figure from the book, the person or product named, or the help page of a screen
+  Hudhud has no figure for. Never fit the bank to these sets (lesson 111); the rules were fixed by class.
+- **Rules by class** (`Hudhud.byFeature`, before figures, only with nobody and no product named): a feature named by its
+  own word opens its page if the book offers it (Zakat/nisab, seasons/fasal/Kharif/Rabi, schemes, posters, cards — a
+  customer's card is `intro_customer_qr` —, cash flow and "agle 30 din"/andaza, invoices and "bill banao/PDF/print",
+  another shop/karobar → `faq_business`, utility bills and kiraya → `intro_cashbook`, delete/undo/bin → `faq_delete` /
+  `screen_bin`); "aaj ka khata/hisaab", "din kaisa raha" → Today; "samajh nahi aa raha", "madad chahiye" → Abilities;
+  "maine kis se saman khareeda", "supplier se maal liya" → Deliveries (the owner's screenshot opened purchase orders'
+  help); udhaar given in a span → Activity(window). `decide` never lets the sense turn these (`featureNamed`).
+- **New asks:** `Voice(AGAIN, SLOWER, FASTER, QUIET, OFF, ON, VOLUME)` — only when the sentence is nothing else ("phir se
+  Ali ka hisaab" is Ali's); the sheet repeats the last real answer (`lastReal`), keeps a pace (`HudhudPrefs.pace`,
+  0.6–1.5, times the style's rate), stops, turns his voice off/on; louder is the phone's buttons. `TopGoods(window)`
+  (Insights' `topProductsBetween`, REPORTS), `Qarz` (Zakat's split, `observeZakatBalancesByParty`, REPORTS),
+  `Automations` (each one's state and hour; Open shows `AutomationsDialog` — he changes nothing himself), `NeedGoods`
+  (a product's fact with none named: products as rows that ask, `Row.ask` — the cross-question).
+- **The app's language first** (the owner: some words are alike in several languages): `HudhudMind.read(said,
+  language)` and `arabicOnly(said, language)` read a sentence that could be either in the app's language; Arabic only
+  for an Arabic app or with a word only Arabic writes (`ONLY_ARABIC_WORDS`). The sense is unchanged (it learnt without).
+- **He listens with his body:** leans in from his feet with the voice (`attend`, smoothed RMS, 6° at the loudest, never
+  during an act), nods when a word arrives (`onPartial` → `bob`), turns to listen while the owner types and eases back
+  1.6 s after (`easeAfterTyping`). No new drawings: eye contact needs a front-facing pose (not drawn).
+- **Privacy, once:** the first introduction adds `hudhud_privacy_once` (the book stays on this phone; he shares it with no
+  one); after that only when asked (About:PRIVACY). **Why "Hudhud":** `AboutTopic.NAME_STORY` (`hudhud_about_name_story`).
+- **The owner's check of a test build:** More → Hudhud's voice → the check switch (`HudhudCheck`, `CheckLog`): each answer
+  is written to `files/hudhud_check.tsv` on this phone (3,000 rows at most), Right/Wrong under the card, the count and
+  percentage in the settings, Share as a TSV. Off by default; nothing leaves the phone unless he shares it.
+- **Also:** the poster's live 3D after a still or a video (Filament's UiHelper reports 0×0 on reattach — `LiveSize`,
+  re-projected each frame, lesson 117); the language row and Zakat's toggles no longer baseline-align their segments.
+- **Not done, by decision:** a new automation (a "cheques due" notice) — it touches both platforms' workers and settings
+  and cannot be compiled here; an on-device language model (Gemini Nano runs only on some flagship phones and is not in
+  the emulator; MediaPipe/Gemma is hundreds of MB) — Hudhud stays rules + the learnt sense, figures always from the book.
+
 ### The posters, a high-end pass (13 Nov 2026, branch poster-highend-13nov — the owner: "study the posters deeply, point out every flaw per niche, improve them, commit, do not push yet")
 
 The stills and the flat fallbacks (thumbnails, phones without 3D, Windows). **Not touched, another session's:** PosterMotion,
@@ -3433,9 +3484,10 @@ for a doubtful one; a professional voice with even pauses; every language spoken
   159 and 426):** the voice took the grouping comma for a break. `HudhudSay.plainFigure` hands it the figure whole
   ("141768 رپيا"), a decimal only when there are real paise ("1250.50"); every other comma-grouped figure (another
   currency, a count) loses its commas too (`COMMA_GROUPED`). HudhudSayTest holds both screenshots' figures.
-- **Sindhi is spoken in Urdu by design:** Google's Text-to-Speech has no Sindhi voice (its 70 languages list Urdu
-  (Pakistan), not Sindhi — support.google.com/accessibility/android/answer/11101402, checked 13 Nov 2026), so the
-  plan falls back to Urdu and says so on the card.
+- **Each language speaks only its own (14 Nov 2026, the owner: "Sindhi Urdu mein nahi bolni chahiye"):** the plan no
+  longer falls back to another language (`HudhudVoice.chain` is the app's language alone). Google's Text-to-Speech has
+  no Sindhi voice (support.google.com/accessibility/android/answer/11101402, checked 13 Nov 2026), so a Sindhi phone
+  without one gets the written answer and `hudhud_no_voice` once.
 - **The chips after the retrain (13 Nov 2026, the build of f5fd011 failed on HudhudWordsTest):** the Arabic retrain made
   the sense 0.99 sure that Farsi's "امروز چه گذشت" (what happened today, `hudhud_chip_activity`) asked the date — the bank
   had "گذشت" only as "last" (هفته گذشته), never as "happened" — so it overruled the rules' right reading. Five Farsi

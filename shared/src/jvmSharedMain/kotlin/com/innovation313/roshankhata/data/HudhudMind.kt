@@ -458,10 +458,22 @@ internal object HudhudMind {
         ).map { norm(it) }.toSet()
     }
 
-    /** A sentence in Arabic: Arabic letters, and nothing only Urdu, Sindhi or Persian would write. */
-    internal fun arabicOnly(said: List<String>): Boolean =
+    /**
+     * A sentence in Arabic: Arabic letters, and nothing only Urdu, Sindhi or Persian would write. With the app's own
+     * [language] known (14 Nov 2026, the owner: "the selected language comes first, then the others — some words are
+     * alike in several languages"), a sentence that could be either is read in that language: Arabic only for an
+     * Arabic app, or when a word only Arabic writes is in it ("هل", "ماذا", "اليوم").
+     */
+    internal fun arabicOnly(said: List<String>, language: String? = null): Boolean =
         said.any { w -> w.any { it in '\u0600'..'\u06FF' } } &&
-            said.none { w -> w in NOT_ARABIC_WORDS || w.any { it in NOT_ARABIC_LETTERS } }
+            said.none { w -> w in NOT_ARABIC_WORDS || w.any { it in NOT_ARABIC_LETTERS } } &&
+            (language == null || language.startsWith("ar") || said.any { it in ONLY_ARABIC_WORDS })
+
+    /** Little words only Arabic writes, after [norm]: they say an Arabic sentence whatever the app's language. */
+    private val ONLY_ARABIC_WORDS: Set<String> by lazy {
+        listOf("هل", "ماذا", "اليوم", "هذا", "هذه", "التي", "الذي", "إلى", "عن", "كيف", "متى", "أين", "لماذا", "أريد", "عندي",
+            "لدي", "يا", "أعطني", "اعرض", "كم عدد").map { norm(it) }.toSet()
+    }
 
     /**
      * Arabic's "your" and "my" joined to a word's end, in an Arabic sentence only: "صنعك" (made you), "بياناتي" (my
@@ -537,7 +549,7 @@ internal object HudhudMind {
      * Reads [said] (already normalised and split). [isName] answers whether a word is one of the book's own names;
      * only words it says no to may be read by sound.
      */
-    fun read(said: List<String>, isName: (String) -> Boolean = { false }): Read {
+    fun read(said: List<String>, language: String? = null, isName: (String) -> Boolean = { false }): Read {
         val meanings = MutableList<Set<C>>(said.size) { emptySet() }
         // Phrases first: their words take the phrase's meaning together ("ka pata" is an address).
         val covered = BooleanArray(said.size)
@@ -555,7 +567,7 @@ internal object HudhudMind {
                 }
             }
         }
-        val arabic = arabicOnly(said)
+        val arabic = arabicOnly(said, language)
         for (i in said.indices) {
             val w = said[i]
             // Persian's "my" after its noun ("دفتر من") is not Arabic's "who": the phrase alone says what it is.

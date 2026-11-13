@@ -131,6 +131,27 @@ object Hudhud {
         data class Act(val move: Move) : Ask()
 
         /**
+         * A change to how he speaks, asked of him (14 Nov 2026, the owner's list: "phir se batao", "ahista bolo", "chup ho
+         * jao", "awaaz band karo"): only when the sentence is nothing else, so "phir se Ali ka hisaab batao" is Ali's.
+         */
+        data class Voice(val change: VoiceChange) : Ask()
+
+        /** What sold most over a span of days (14 Nov 2026: "sab se zyada kya bik raha hai"), by Sale Insights' rule. */
+        data class TopGoods(val window: VoiceQuestion.Window? = null) : Ask()
+
+        /** The Qarz-e-Hasna in the book (14 Nov 2026): lent without profit and still to come back, by Zakat's own rule. */
+        object Qarz : Ask()
+
+        /** The automations (14 Nov 2026): which are on and at what hour. Changed only on their own screen, by the owner. */
+        object Automations : Ask()
+
+        /**
+         * A product's fact with no product named ("is cheez ka stock", "khad kis kis ne li", 14 Nov 2026): he tells which
+         * products he can answer for, as chips, instead of guessing one.
+         */
+        data class NeedGoods(val facet: GoodsFacet) : Ask()
+
+        /**
          * What he took a sentence to mean when nothing fitted it exactly (13 Nov 2026, the owner: "aap ka kaam batana
          * hai, poochhna nahi"): [ask] is answered, and the card says what he took it as, so a wrong guess is seen.
          */
@@ -139,6 +160,9 @@ object Hudhud {
 
     /** His little acts. */
     enum class Move { FLY, DANCE, JUMP }
+
+    /** How he is asked to speak: the last answer again, slower, faster, stop now, his voice off or on, or louder. */
+    enum class VoiceChange { AGAIN, SLOWER, FASTER, QUIET, OFF, ON, VOLUME }
 
     /** What a [Ask.Period] adds up. */
     enum class Measure { SALES, PROFIT }
@@ -222,14 +246,49 @@ object Hudhud {
         goods: List<Name> = emptyList(), before: Ask? = null
     ): Ask {
         val ruled = byRules(heard, names, topics, language, goods, before)
-        if (!HudhudSense.ready || words(heard).isEmpty()) return ruled
+        if (!HudhudSense.ready || words(heard).isEmpty()) return byWay(heard, ruled)
         val guesses = HudhudSense.rank(
             heard,
             isName = { w -> w !in QUIET_SET && w !in VOCATIVE_SET && !HudhudMind.isHardWord(w) && knownName(w, names) },
             isItem = { w -> w !in QUIET_SET && !HudhudMind.isHardWord(w) && knownName(w, goods) }
         )
-        return decide(heard, ruled, guesses, names, topics, language, goods, before)
+        return byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, before))
     }
+
+    /**
+     * Money that came in is never the answer to money that went out (14 Nov 2026, the owner's sentences: "aaj maine kis
+     * ko kitna diya", "aaj supplier ko kitna diya", "aaj kis ko payment ki" were all answered with the day's collections).
+     * The shop paying somebody is the day's dealings ([Ask.Activity]: who, which way, how much); its spending
+     * ("kharcha") is the cashbook's money out ([Ask.Cashbook]). A sentence that also says who paid the shop
+     * ("kis kis ne payment ki", "wasooli") stays money in.
+     */
+    private fun byWay(heard: String, a: Ask): Ask {
+        val came = (a as? Ask.Collected) ?: ((a as? Ask.Guessed)?.ask as? Ask.Collected) ?: return a
+        val joined = words(heard).joinToString(" ")
+        if (!has(joined, PAID_OUT) || has(joined, CAME_IN)) return a
+        return if (has(joined, SPENT)) Ask.Cashbook(came.window) else Ask.Activity(came.window)
+    }
+
+    /** The shop paying out: "maine … diya", "kis ko", "adaigi ki", "kharcha", "I paid"… in the nine languages. */
+    private val PAID_OUT = listOf(
+        "maine", "mainay", "main ne", "mai ne", "hum ne", "humne", "hamne", "kis ko", "kisko", "kis kis ko", "ko diya",
+        "ko diye", "ko di", "ko payment", "adaigi ki", "ada ki", "payment ki", "payment kar", "kharcha", "kharch", "kharche",
+        "bahar gaye", "bahar gaya", "i paid", "i gave", "we paid", "paid out", "spent", "money out", "went out", "to whom",
+        "میں نے", "ہم نے", "کس کو", "کسے", "کو دیا", "کو دیے", "کو دی", "ادائیگی کی", "خرچ", "خرچہ", "خرچے", "باہر گئے",
+        "मैंने", "हमने", "किस को", "किसको", "को दिया", "को दिए", "खर्च", "আমি দিয়েছি", "কাকে", "খরচ", "دفعت", "أنفقت", "لمن",
+        "پرداخت کردم", "دادم", "به کی", "خرج", "مون ڏنا", "ڪنهن کي", "saya bayar", "saya membayar", "kepada siapa", "pengeluaran"
+    )
+
+    /** The shop being paid: kept as money in even with a word of paying in it. */
+    private val CAME_IN = listOf(
+        "kis ne", "kisne", "kis kis ne", "wasooli", "wusooli", "wasool", "mile", "mila", "aaye", "aaya", "aayi", "received",
+        "collected", "came in", "got paid", "وصولی", "وصول", "ملے", "آئے", "کس نے", "किस ने", "किसने", "वसूली", "मिले",
+        "আদায়", "পেয়েছি", "استلمت", "تحصيل", "دریافت", "diterima"
+    )
+
+    /** Spending, the cashbook's money out. */
+    private val SPENT = listOf("kharcha", "kharch", "kharche", "spent", "expense", "expenses", "خرچ", "خرچہ", "خرچے", "खर्च",
+        "খরচ", "مصروف", "مصاريف", "هزینه", "pengeluaran")
 
     /** The sense's own reading of [heard] (tests: how far it reaches alone); null when the bank finds nothing. */
     internal fun bySense(heard: String, names: List<Name>, topics: List<Topic>, language: String?, goods: List<Name>): Pair<Ask, Double>? {
@@ -384,6 +443,11 @@ object Hudhud {
         // "Why is your name Hudhud?" is read by the rules alone (a why with his name or "your name"): the bank has no such
         // meaning, and the sense was all but sure such a sentence asked who he is.
         if (ruled is Ask.About && ruled.topic == AboutTopic.NAME_STORY) return ruled
+        // A feature named by its own word (14 Nov 2026), and the asks only the rules make: never turned by the sense.
+        if (ruled is Ask.Help && featureNamed(heard)) return ruled
+        if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods) {
+            return ruled
+        }
         if (ruled is Ask.Help && asksTheWay(heard)) {
             return if (p >= SENSE_OVERRULE) theirs() ?: ruled else ruled
         }
@@ -527,7 +591,8 @@ object Hudhud {
             Move.DANCE -> "act_dance"
             Move.JUMP -> "act_jump"
         }
-        Ask.Unknown, is Ask.DidYouMean, is Ask.NeedName, is Ask.Guessed -> null
+        Ask.Unknown, is Ask.DidYouMean, is Ask.NeedName, is Ask.Guessed, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
+        Ask.Automations, is Ask.NeedGoods -> null
     }
 
     /**
@@ -649,6 +714,7 @@ object Hudhud {
         if (how) helpOf(said, topics)?.let { return Ask.Help(it) }
         // A sentence that is nothing but small talk, or "what can you tell me" (13 Nov 2026): taken before any name,
         // so "Allah Hafiz" is a goodbye and not a customer called Hafiz; one with any other word goes on as before.
+        voiceChange(said, joined)?.let { return Ask.Voice(it) }
         talk(said, whole = true)?.let { return it }
         // Only a calling and nothing asked (13 Nov 2026, the owner: "bhai jaan" opened a customer called "...Bhai"):
         // he answers to being called — "ji, haazir hoon" — and looks for nobody.
@@ -660,7 +726,7 @@ object Hudhud {
         // What each word means, in any order (13 Nov 2026, Brain v2): "aap ka kya naam hai" and "naam kya hai aap ka"
         // are one question. A word the book knows as somebody's or a product's name is never read by its sound.
         val figureWords = VoiceQuestion.keywordsIn(joined)
-        val mind = HudhudMind.read(said) { w ->
+        val mind = HudhudMind.read(said, language) { w ->
             w in QUIET_SET || w in DAY_WORDS || w in figureWords || knownName(w, names) || knownName(w, goods)
         }
         aboutHim(mind, joined)?.let { return it }
@@ -680,6 +746,7 @@ object Hudhud {
         // "When did he last pay" is the past: only a payment still to come is the Radar's.
         val willPay = (has(joined, WILL_PAY) || ((has(joined, WHEN) || has(joined, WHO)) && has(joined, PAY))) &&
             !mind.has(HudhudMind.C.LAST) && "did" !in said
+        if (named.isEmpty() && product.isEmpty()) byFeature(said, joined, mind, window, topics)?.let { return it }
         followUp(mind, named, product, figure, window, willPay, before)?.let { return it }
         // "Aap ko kisi cheez ka pata hai?" asks what he knows (13 Nov 2026, the owner's screenshot: it was read as the
         // shop's address, "ka pata"); with a name it is about that person ("aap ko Ali ka pata hai").
@@ -719,6 +786,248 @@ object Hudhud {
         guess(mind)?.let { return it }
         return Ask.Unknown
     }
+
+    // ------------------------------------------------------------------------------------------- Asked of him, 14 Nov
+
+    /**
+     * How he is asked to speak (14 Nov 2026, the owner's 1,000 sentences, "Samajh nahi aya, dobara"): the change, when
+     * the sentence holds nothing but its words, his name, "his voice" and small words — "phir se Ali ka hisaab batao"
+     * asks Ali's account. "Awaaz tez karo" is louder, which only the phone's own buttons can do; "tez bolo" is faster.
+     */
+    private fun voiceChange(said: List<String>, joined: String): VoiceChange? {
+        val voiceWord = has(joined, VOICE_WORDS)
+        val change = when {
+            has(joined, VOICE_OFF) -> VoiceChange.OFF
+            has(joined, VOICE_ON) -> VoiceChange.ON
+            voiceWord && has(joined, LOUDER) -> VoiceChange.VOLUME
+            has(joined, SLOWER) -> VoiceChange.SLOWER
+            has(joined, FASTER) -> VoiceChange.FASTER
+            has(joined, SAY_AGAIN) -> VoiceChange.AGAIN
+            has(joined, BE_QUIET) -> VoiceChange.QUIET
+            else -> return null
+        }
+        val own = (VOICE_OFF + VOICE_ON + LOUDER + SLOWER + FASTER + SAY_AGAIN + BE_QUIET + VOICE_WORDS + PLEASE_DO)
+            .flatMap { words(it) }.toSet()
+        return change.takeIf { said.all { it in own || it in QUIET_SET || it in VOCATIVE_SET || it in HIS_OWN_NAME } }
+    }
+
+    private val VOICE_WORDS = listOf("awaaz", "awaz", "aawaz", "awaaz ko", "voice", "sound", "volume", "آواز", "اواز", "صوت",
+        "الصوت", "صدا", "صدای", "آواز را", "آواز کي", "आवाज़", "आवाज", "আওয়াজ", "আওয়াজ", "কণ্ঠ", "suara")
+    private val PLEASE_DO = listOf("karo", "kar do", "kardo", "kijiye", "kariye", "karein", "please", "plz", "zara", "thora",
+        "thoda", "jee", "ji", "mein", "se", "کرو", "کریں", "کیجیے", "کردو", "ذرا", "تھوڑا", "مہربانی", "کر", "من فضلك", "لو سمحت",
+        "لطفا", "لطفاً", "کن", "بکن", "करो", "करें", "कीजिए", "ज़रा", "थोड़ा", "करुन", "করো", "করুন", "একটু", "tolong", "coba",
+        "bolo", "bolein", "boliye", "baat", "بولو", "بولیں", "بات", "बोलो", "बोलिए", "বলো", "বলুন", "bicara", "بگو", "صحبت کن",
+        "تكلم", "تحدث")
+    private val VOICE_OFF = listOf("awaaz band", "awaz band", "awaaz bund", "voice off", "mute", "sound off", "awaaz khatam",
+        "آواز بند", "صوت إيقاف", "اكتم الصوت", "كتم الصوت", "صدا را قطع", "بی‌صدا", "آواز بند ڪريو", "आवाज़ बंद", "आवाज बंद",
+        "আওয়াজ বন্ধ", "আওয়াজ বন্ধ", "matikan suara", "suara mati", "bisukan")
+    private val VOICE_ON = listOf("awaaz chalu", "awaz chalu", "awaaz on", "awaz on", "awaaz kholo", "voice on", "unmute",
+        "sound on", "bol kar batao", "bol ke batao", "آواز کھولو", "آواز چلاؤ", "آواز آن", "شغل الصوت", "صدا را روشن",
+        "आवाज़ चालू", "आवाज चालू", "আওয়াজ চালু", "আওয়াজ চালু", "nyalakan suara", "suara nyala")
+    private val LOUDER = listOf("tez", "tez karo", "oonchi", "unchi", "buland", "zor se", "louder", "loud", "dheemi", "halki",
+        "kam karo", "تیز", "اونچی", "بلند", "ارفع", "أعلى", "بلندتر", "تيز", "तेज़", "तेज", "ऊंची", "জোরে", "বাড়াও", "keras")
+    private val SLOWER = listOf("ahista", "aahista", "ahesta", "ahista bolo", "dheere", "dhire", "araam se bolo", "aram se bolo",
+        "slow", "slowly", "slower", "speak slowly", "آہستہ", "آهستہ", "آرام سے بولو", "ببطء", "أبطأ", "آهسته", "آهسته‌تر",
+        "آهستي", "धीरे", "धीमे", "आराम से बोलो", "আস্তে", "ধীরে", "pelan", "pelan pelan", "lebih pelan", "perlahan")
+    private val FASTER = listOf("tez bolo", "jaldi bolo", "jaldi jaldi", "faster", "speak faster", "quicker", "تیز بولو",
+        "جلدی بولو", "أسرع", "بسرعة", "سریع‌تر", "تندتر", "تيز ڳالهايو", "तेज़ बोलो", "तेज बोलो", "जल्दी बोलो", "দ্রুত বলো",
+        "তাড়াতাড়ি বলো", "lebih cepat", "cepat")
+    private val SAY_AGAIN = listOf("phir se", "phir", "dobara", "dubara", "do bara", "ek baar phir", "ek dafa phir", "phir batao",
+        "wohi sawal dobara", "wohi sawal", "repeat", "say again", "say it again", "again", "once more", "one more time",
+        "samajh nahi aya", "samajh nahi aaya", "samajh nahin aaya", "samjha nahi", "didn't understand", "did not understand",
+        "batao", "sunao", "kaho", "پھر سے", "پھر", "دوبارہ", "ایک بار پھر", "سمجھ نہیں آیا", "سمجھ نہیں آئی", "بتاؤ",
+        "بتائیں", "سناؤ", "سنائیں", "کہو", "مرة أخرى", "مرة ثانية", "أعد", "كرر", "لم أفهم", "ما فهمت", "دوباره", "یک بار دیگر",
+        "تکرار کن", "نفهمیدم", "ٻيهر", "وري", "سمجهه ۾ نه آيو", "ٻڌايو", "फिर से", "फिर", "दोबारा", "एक बार फिर", "समझ नहीं आया",
+        "बताओ", "सुनाओ", "আবার", "আরেকবার", "বুঝিনি", "বুঝতে পারিনি", "বলো", "ulangi", "sekali lagi", "tidak paham",
+        "nggak ngerti", "lagi")
+    private val BE_QUIET = listOf("chup", "chup ho jao", "chup karo", "chupp", "khamosh", "bas karo", "bas", "rehne do",
+        "rehnay do", "chhodo", "chodo", "stop", "be quiet", "stop talking", "enough", "never mind", "چپ", "چپ ہو جاؤ", "خاموش",
+        "بس کرو", "بس", "رہنے دو", "چھوڑو", "اسكت", "توقف", "كفى", "خلاص", "ساکت", "بسه", "ول کن", "خاموش ٿي وڃو", "بس ڪريو",
+        "چپ ٿي وڃ", "चुप", "चुप हो जाओ", "बस करो", "बस", "रहने दो", "छोड़ो", "চুপ", "থামো", "থাক", "ব্যস", "diam", "berhenti",
+        "sudah", "cukup")
+
+    /**
+     * The book's features named by their own word (14 Nov 2026, the owner's 1,000 sentences: "Zakat ka hisaab karo" was
+     * read as tickets, "Doosri dukan kholo" as the shop's profile, "Bill ka PDF banao" as a count of supplier bills).
+     * The pages Hudhud has no figure for open through their help page, which says what the screen does and opens it —
+     * only a page this book offers ([topics]). Qarz-e-Hasna, the best sellers and the automations he answers himself.
+     */
+    private fun byFeature(
+        said: List<String>, joined: String, m: HudhudMind.Read, window: VoiceQuestion.Window?, topics: List<Topic>
+    ): Ask? {
+        fun page(key: String): Ask? = if (topics.any { it.key == key }) Ask.Help(key) else null
+        val counting = m.has(HudhudMind.C.HOW_MANY)
+        if (has(joined, QARZ)) return Ask.Qarz
+        if (has(joined, ZAKAT)) page("screen_zakat")?.let { return it }
+        if (has(joined, AUTOMATION)) return Ask.Automations
+        if (has(joined, BUSINESSES)) page("faq_business")?.let { return it }
+        if (has(joined, SEASONS)) page("screen_seasons")?.let { return it }
+        if (has(joined, SCHEMES)) page("screen_schemes")?.let { return it }
+        if (has(joined, POSTERS)) page("screen_posters")?.let { return it }
+        if (has(joined, CARDS)) {
+            page(if (m.has(HudhudMind.C.CUSTOMER)) "intro_customer_qr" else "screen_card")?.let { return it }
+        }
+        val expiry = VoiceQuestion.classify(joined) == VoiceQuestion.Kind.EXPIRING
+        if (has(joined, CASH_FLOW) || (has(joined, AHEAD) && !expiry && !has(joined, CAME_ALREADY) &&
+                !m.any(HudhudMind.C.STOCK, HudhudMind.C.LEFT, HudhudMind.C.CHEQUE, HudhudMind.C.PLAN))
+        ) {
+            page("screen_cashflow")?.let { return it }
+        }
+        val billWord = has(joined, BILL_WORDS)
+        if (!counting && (has(joined, DOCUMENTS) || (billWord && has(joined, MAKE_DOC) && !has(joined, UTILITY) &&
+                !has(joined, SUPPLIER_SIDE_WORDS)))
+        ) page("intro_documents")?.let { return it }
+        if (has(joined, UTILITY)) page("intro_cashbook")?.let { return it }
+        // Putting an entry right, or bringing back what was deleted: he cannot do it himself, the help page says how.
+        if (has(joined, BIN_WORDS)) page("screen_bin")?.let { return it }
+        if (has(joined, FIX_WORDS) && (m.any(HudhudMind.C.ENTRY, HudhudMind.C.CUSTOMER) || has(joined, FIX_WHAT))) {
+            page("faq_delete")?.let { return it }
+        }
+        // "Aaj ka khata", "aaj ka hisaab kitab", "aaj ka din kaisa raha": the day's own summary, not the whole book.
+        if ((window == VoiceQuestion.Window.TODAY && has(joined, ACCOUNT_OF_DAY) && VoiceQuestion.classify(joined) == null &&
+                !m.any(HudhudMind.C.WHO, HudhudMind.C.ENTRY, HudhudMind.C.CHEQUE, HudhudMind.C.CAME)) ||
+            has(joined, DAY_WENT)
+        ) return Ask.Today
+        // Someone who does not yet know his way ("mujhe samajh nahi aa raha", "pehle kya seekhun", "madad chahiye"):
+        // what he can do, as a list to tap.
+        if (has(joined, GUIDE_ME)) return Ask.Abilities
+        // Goods the shop bought (14 Nov 2026, the owner's screenshot: "آج میں نے کس سے سامان خریدا" opened the purchase
+        // orders' help): what came in on the suppliers' bills, over the days asked.
+        if ((has(joined, BOUGHT) && (has(joined, I_WE) || m.has(HudhudMind.C.FROM_WHOM) || has(joined, SUPPLIER_SIDE_WORDS))) ||
+            (has(joined, SUPPLIER_SIDE_WORDS) && has(joined, GOODS_CAME))
+        ) return Ask.Deliveries(window)
+        if (has(joined, BEST_SELLING) || (has(joined, MOST) && has(joined, SELLING)) || (has(joined, WHAT_ALL) && has(joined, SELLING))) {
+            return Ask.TopGoods(window)
+        }
+        if (window != null && m.has(HudhudMind.C.CREDIT) && has(joined, TOOK_OR_GAVE) && !has(joined, PAID_BACK)) {
+            return Ask.Activity(window)
+        }
+        if (has(joined, SOME_GOODS) && VoiceQuestion.classify(joined) == null) {
+            val facet = when {
+                m.has(HudhudMind.C.PRICE) -> GoodsFacet.PRICE
+                m.has(HudhudMind.C.COST) -> GoodsFacet.COST
+                m.any(HudhudMind.C.STOCK, HudhudMind.C.LEFT) -> GoodsFacet.STOCK
+                m.has(HudhudMind.C.SUPPLIER) -> GoodsFacet.SUPPLIERS
+                m.any(HudhudMind.C.BOUGHT, HudhudMind.C.FROM_WHOM, HudhudMind.C.CUSTOMER, HudhudMind.C.WHO) -> GoodsFacet.BUYERS
+                else -> null
+            }
+            if (facet != null) return Ask.NeedGoods(facet)
+        }
+        return null
+    }
+
+    /** Whether [heard] names one of the features [byFeature] opens by its page. */
+    private fun featureNamed(heard: String): Boolean {
+        val joined = words(heard).joinToString(" ")
+        return listOf(ZAKAT, BUSINESSES, SEASONS, SCHEMES, POSTERS, CARDS, CASH_FLOW, AHEAD, DOCUMENTS, UTILITY).any { has(joined, it) } ||
+            (has(joined, BILL_WORDS) && has(joined, MAKE_DOC))
+    }
+
+    private val QARZ = listOf("qarz e hasna", "qarze hasna", "qarz hasna", "qarzehasna", "qarz e hasana", "qarz e husna",
+        "karz e hasna", "qarz-e-hasna", "قرض حسنہ", "قرضِ حسنہ", "قرض حسنه", "قرض الحسن", "قرضا حسنا", "قرض حسن",
+        "قرض‌الحسنه", "قرض الحسنه", "قرض حسنو", "क़र्ज़ ए हसना", "कर्ज़ ए हसना", "कर्ज ए हसना", "क़र्ज़-ए-हसना", "করজে হাসানা",
+        "কর্জে হাসানা", "কর্জে হাসানাহ", "qardhul hasan", "qardh hasan", "pinjaman kebajikan")
+    private val ZAKAT = listOf("zakat", "zakaat", "zakath", "zakāt", "nisab", "nisaab", "زکوٰۃ", "زکوۃ", "زکات", "زكاة",
+        "الزكاة", "زکوات", "زڪوات", "نصاب", "النصاب", "ज़कात", "जकात", "निसाब", "যাকাত", "জাকাত", "নিসাব", "zakat mal")
+    private val AUTOMATION = listOf("automation", "automations", "automatic", "khud ba khud", "khudkar", "آٹومیشن",
+        "آٹومیشنز", "خودکار", "أتمتة", "تلقائي", "اتوماسیون", "آٽوميشن", "ऑटोमेशन", "স্বয়ংক্রিয়", "অটোমেশন", "otomatis",
+        "otomasi")
+    private val BUSINESSES = listOf("doosri dukan", "dusri dukan", "doosre karobar", "dono dukan", "dono dukanon",
+        "dukanon", "dukaanon", "har dukan", "pehli dukan", "ek dukan", "kisi aur dukan", "naye shehar", "naya karobar",
+        "karobar add", "karobar badlo", "karobar badalna", "karobar select", "karobar ka naam", "kaun sa karobar",
+        "dukan badlo", "dukan badalni", "ghar ka khata", "ghar ka kharcha alag", "another shop", "other shop", "both shops",
+        "second shop", "switch shop", "new business", "دوسری دکان", "دونوں دکان", "دکانوں", "نیا کاروبار", "کاروبار بدلو",
+        "دکان بدلو", "متجر آخر", "المتاجر", "نشاط جديد", "مغازه دیگر", "کسب‌وکار جدید", "مغازه‌ها", "ٻيو دڪان", "دڪانن",
+        "दूसरी दुकान", "दोनों दुकान", "दुकानों", "नया कारोबार", "अन्य दोकान", "অন্য দোকান", "দুই দোকান", "দোকানগুলো",
+        "নতুন ব্যবসা", "toko lain", "toko kedua", "usaha baru", "ganti toko")
+    private val SEASONS = listOf("season", "seasons", "fasal", "fasl", "faslon", "kharif", "khareef", "rabi", "rabbi",
+        "harvest", "فصل", "فصلوں", "خریف", "ربیع", "سیزن", "خريف", "ربيع", "موسم الحصاد", "سيزن", "سیزن", "فصل", "खरीफ",
+        "रबी", "फसल", "सीज़न", "सीजन", "ফসল", "মৌসুম", "খরিফ", "রবি", "musim", "panen", "musim tanam")
+    private val SCHEMES = listOf("scheme", "schemes", "skeem", "iskeem", "اسکیم", "سکیم", "اسکیمیں", "اسڪيم", "عرض الشركة",
+        "طرح فروش", "स्कीम", "স্কিম", "skema", "skema promo")
+    private val POSTERS = listOf("poster", "posters", "ishtehar", "ishtihar", "اشتہار", "پوسٹر", "پوستر", "ملصق", "पोस्टर",
+        "পোস্টার", "spanduk", "brosur")
+    private val CARDS = listOf("card", "cards", "visiting card", "business card", "dukan card", "کارڈ", "کارت", "کارت ویزیت",
+        "بطاقة", "بطاقة عمل", "ڪارڊ", "कार्ड", "विजिटिंग कार्ड", "কার্ড", "ভিজিটিং কার্ড", "kartu", "kartu nama")
+    private val CASH_FLOW = listOf("cash flow", "cashflow", "andaza", "andaaza", "forecast", "tangi", "kam padenge",
+        "kam pad jayenge", "aana jana", "کیش فلو", "اندازہ", "تنگی", "التدفق النقدي", "توقع", "جریان نقدی", "پیش‌بینی",
+        "انداز", "कैश फ्लो", "अंदाज़ा", "पूर्वानुमान", "ক্যাশ ফ্লো", "পূর্বাভাস", "arus kas", "perkiraan")
+    private val AHEAD = listOf("agle", "agla", "agli", "aainda", "ainda", "aane wale", "aane wali", "aane wala", "anay walay",
+        "next", "coming", "upcoming", "اگلے", "اگلا", "اگلی", "آئندہ", "آنے والے", "آنے والی", "القادم", "القادمة", "المقبل",
+        "المقبلة", "آینده", "بعدی", "ايندڙ", "ايندڙ", "अगले", "अगला", "आने वाले", "आगामी", "আগামী", "সামনের", "berikutnya",
+        "mendatang", "depan")
+    private val DOCUMENTS = listOf("invoice", "invoices", "quotation", "challan", "proforma", "انوائس", "کوٹیشن", "چالان",
+        "فاتورة", "عرض سعر", "فاکتور", "پیش‌فاکتور", "انوائيس", "इनवॉइस", "कोटेशन", "চালান", "ইনভয়েস", "কোটেশন", "faktur",
+        "penawaran")
+    private val BILL_WORDS = listOf("bill", "bills", "bil", "بل", "بِل", "بلز", "بلوں", "صورتحساب", "بل جو", "बिल", "বিল",
+        "nota", "tagihan")
+    private val BIN_WORDS = listOf("recycle bin", "bin kholo", "bin", "delete hui", "delete kiya hua", "mit gaya", "mit gayi",
+        "ghalti se mit", "wapas lana", "wapas laao", "restore", "undelete", "ری سائیکل بن", "بن کھولو", "واپس لانا", "سلة المحذوفات",
+        "استرجاع", "سطل بازیافت", "بازگردانی", "रीसायकल बिन", "वापस लाना", "রিসাইকেল বিন", "ফিরিয়ে আনা", "tempat sampah", "pulihkan")
+    private val FIX_WORDS = listOf("delete", "hata do", "hatao", "mita do", "mitao", "galat", "ghalat", "theek karni", "theek karna",
+        "sahi karni", "badalni", "badalna", "badlo", "undo", "edit", "correct", "wrong", "ڈیلیٹ", "ہٹا دو", "مٹا دو", "غلط",
+        "درست کرنی", "ٹھیک کرنی", "بدلنی", "حذف", "احذف", "خطأ", "تعديل", "اصلاح", "ویرایش", "اشتباه", "غلط ٿي", "ڊليٽ", "हटा दो",
+        "गलत", "ग़लत", "ठीक करनी", "बदलनी", "डिलीट", "মুছে", "মুছুন", "ভুল", "ঠিক করতে", "বদলাতে", "hapus", "salah", "ubah",
+        "perbaiki")
+    private val FIX_WHAT = listOf("raqam", "amount", "aadmi", "tareekh", "date", "entry", "indiraaj", "khata", "رقم", "اندراج",
+        "تاریخ", "کھاتہ", "قيد", "مبلغ", "ثبت", "مبلغ", "रकम", "तारीख", "एंट्री", "টাকা", "তারিখ", "এন্ট্রি", "jumlah", "tanggal",
+        "catatan")
+    private val ACCOUNT_OF_DAY = listOf("khata", "khaata", "hisaab", "hisab", "hisaab kitab", "bahi", "bahi khata", "lena dena",
+        "len den", "roznamcha", "summary", "khulasa", "account", "کھاتہ", "کھاتا", "حساب", "حساب کتاب", "لین دین",
+        "روزنامچہ", "خلاصہ", "الحساب", "ملخص", "حساب‌ها", "کاتو", "حساب ڪتاب", "खाता", "हिसाब", "लेन देन",
+        "बही", "খাতা", "হিসাব", "লেনদেন", "buku", "ringkasan")
+    private val DAY_WENT = listOf("din kaisa raha", "din kesa raha", "aaj kaisa raha", "aaj ka din kaisa", "how was today",
+        "how did today go", "دن کیسا رہا", "آج کیسا رہا", "كيف كان اليوم", "امروز چطور بود", "ڏينهن ڪيئن رهيو", "दिन कैसा रहा",
+        "আজকের দিন কেমন", "hari ini bagaimana")
+    private val GUIDE_ME = listOf("samajh nahi aa raha", "samajh nahin aa raha", "samajh nahi aata", "kya seekhun",
+        "pehle kya seekhun", "pehle kya karun", "sab features", "features batao", "training", "sikhao", "sikha do",
+        "button kahan", "madad chahiye", "help me", "how to use", "kaise chalaun", "kaise use karun", "guide me",
+        "سمجھ نہیں آ رہا", "سکھاؤ", "سکھا دو", "رہنمائی", "مدد چاہیے", "لا أفهم", "ساعدني", "علمني", "متوجه نمی‌شوم",
+        "راهنمایی", "کمکم کن", "سمجهه ۾ نٿو اچي", "سيکاريو", "मदद चाहिए", "समझ नहीं आ रहा", "सिखाओ", "বুঝতে পারছি না",
+        "শেখাও", "সাহায্য দরকার", "tidak mengerti", "ajari", "bantu saya")
+    private val BOUGHT = listOf("khareeda", "kharida", "khareedi", "kharidi", "khareede", "kharide", "khareeday", "kharid kiya",
+        "bought", "purchased", "purchase kiya", "mangwaya", "mangwayi", "mangwaye", "خریدا", "خریدی", "خریدے", "منگوایا",
+        "منگوائی", "اشتريت", "اشترينا", "شريت", "خریدم", "خریدیم", "خرید کردم", "خريد ڪيو", "ورتو", "खरीदा", "खरीदी", "खरीदे",
+        "मंगवाया", "কিনেছি", "কিনলাম", "কিনেছিলাম", "membeli", "beli", "dibeli", "kubeli")
+    private val I_WE = listOf("maine", "main ne", "mein ne", "mene", "hum ne", "humne", "hamne", "میں نے", "ہم نے", "i", "we",
+        "मैंने", "मैने", "हमने", "আমি", "আমরা", "saya", "aku", "kami", "من", "ما", "أنا", "نحن", "مون", "اسان")
+    private val GOODS_CAME = listOf("maal liya", "maal aaya", "maal aya", "maal bheja", "saman aaya", "saman aya", "maal mila",
+        "goods came", "stock came", "مال لیا", "مال آیا", "سامان آیا", "مال بھیجا", "माल लिया", "माल आया", "সামগ্রী এসেছে",
+        "মাল এসেছে", "barang datang", "barang masuk")
+    private val SUPPLIER_SIDE_WORDS = listOf("supplier", "suppliers", "company", "dealer", "mill", "maal wale", "maal wala",
+        "سپلائر", "کمپنی", "ڈیلر", "المورد", "الشركة", "تامین‌کننده", "شرکت", "سپلائر", "सप्लायर", "कंपनी", "সরবরাহকারী",
+        "কোম্পানি", "pemasok", "perusahaan")
+    private val CAME_ALREADY = listOf("aaye", "aye", "aaya", "aya", "aai", "aayi", "mile", "mila", "came", "آئے", "آیا", "ملے",
+        "आए", "आया", "মিলেছে", "এসেছে", "datang")
+    private val MAKE_DOC = listOf("banana", "banao", "bana do", "banaun", "banayen", "bhejo", "bhejna", "bhej do", "pdf",
+        "print", "copy", "naqal", "cancel", "design", "template", "letterhead", "muhar", "stamp", "make", "create", "send",
+        "بناؤ", "بنانا", "بنائیں", "بھیجو", "بھیجنا", "پرنٹ", "اعمل", "أرسل", "بساز", "بفرست", "بڻايو", "موڪليو", "बनाओ",
+        "बनाना", "भेजो", "प्रिंट", "বানাও", "তৈরি", "পাঠাও", "প্রিন্ট", "buat", "kirim", "cetak")
+    private val UTILITY = listOf("bijli", "bijlee", "gas ka", "gas bill", "pani ka bill", "internet ka bill", "internet bill", "kiraya", "kiraaya",
+        "kiraye", "rent", "electricity", "بجلی", "گیس", "کرایہ", "کرایا", "الكهرباء", "الإيجار", "برق", "گاز", "اجاره",
+        "بجلي", "ڪرايو", "बिजली", "गैस", "किराया", "বিদ্যুৎ", "গ্যাস", "ভাড়া", "listrik", "sewa")
+    private val BEST_SELLING = listOf("top selling", "best selling", "bestseller", "best seller", "top item", "top items",
+        "tez chal raha", "zyada bikti", "zyada bikta", "zyada bik raha", "zyada bik rahi", "سب سے زیادہ بکنے", "زیادہ بکتا",
+        "الأكثر مبيعا", "الأكثر مبيعاً", "پرفروش", "سڀ کان وڌيڪ وڪرو", "सबसे ज़्यादा बिकने", "सबसे ज्यादा बिकने", "সবচেয়ে বেশি বিক্রি",
+        "terlaris", "paling laku")
+    private val MOST = listOf("sab se zyada", "sabse zyada", "sab se ziada", "most", "top", "سب سے زیادہ", "الأكثر", "بیشترین",
+        "سڀ کان وڌيڪ", "सबसे ज़्यादा", "सबसे ज्यादा", "সবচেয়ে বেশি", "paling banyak", "paling")
+    private val SELLING = listOf("bik", "bikta", "bikti", "bika", "biki", "bik raha", "bikri", "sale", "sales", "becha",
+        "bechi", "sold", "selling", "sell", "بکا", "بکی", "بکتا", "بکتی", "فروخت", "بيع", "مبيعا", "مبيعاً", "فروش", "فروخته",
+        "وڪرو", "बिका", "बिकी", "बिकता", "बिक्री", "বিক্রি", "terjual", "laku")
+    private val WHAT_ALL = listOf("kya kya", "kaun kaun", "what all", "کیا کیا", "کون کون", "ماذا", "چه چیزهایی", "ڇا ڇا",
+        "क्या क्या", "কী কী", "apa saja")
+    private val TOOK_OR_GAVE = listOf("liya", "liye", "li", "diya", "diye", "di", "gaya", "gaye", "hua", "hue", "chadha",
+        "barha", "utha", "took", "gave", "given", "taken", "لیا", "لی", "دیا", "دی", "گیا", "ہوا", "چڑھا", "أخذ", "أعطى",
+        "گرفت", "داد", "ورتو", "ڏنو", "लिया", "दिया", "गया", "हुआ", "নিল", "নিয়েছে", "দিল", "দিয়েছি", "হয়েছে", "ambil",
+        "diambil", "kasih", "beri")
+    private val PAID_BACK = listOf("utara", "utaara", "chukaya", "chuka diya", "wapas", "jama", "paid back", "repaid",
+        "اتارا", "چکایا", "واپس", "جمع", "سدد", "پرداخت", "ادا", "उतारा", "चुकाया", "वापस", "জমা", "শোধ", "dibayar", "lunas")
+    private val SOME_GOODS = listOf("ye cheez", "yeh cheez", "is cheez", "iss cheez", "is item", "ye item", "yeh item",
+        "is maal", "ye maal", "is dawai", "ye dawai", "is product", "ye product", "this item", "this product", "khad", "dawai",
+        "beej", "spray", "is cheez ka", "یہ چیز", "اس چیز", "اس آئٹم", "یہ مال", "اس مال", "کھاد", "دوائی", "بیج", "سپرے",
+        "هذا المنتج", "هذه السلعة", "این کالا", "این جنس", "اهو سامان", "هي شيءِ", "यह चीज़", "इस चीज़", "इस आइटम", "खाद", "दवाई",
+        "बीज", "এই জিনিস", "এই পণ্য", "সার", "ওষুধ", "বীজ", "barang ini", "produk ini", "pupuk", "obat", "benih")
 
     // ------------------------------------------------------------------------------------------- Brain v2
 

@@ -4472,4 +4472,26 @@
     <string name="hudhud_check_cleared">List saaf ho gayi.</string>
     <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
     <string name="hudhud_about_name_story">Mera naam Hazrat Sulaiman (alaihis salam) ke Hudhud ki nisbat se rakha gaya hai, jo un ke paas sachchi khabar laata tha. Main bhi aap ki apni kitab se sachchi khabar laata hoon; mujhe banane wale chahte hain ke har hisaab sachchai aur imaandari se ho.</string>
+    <string name="hudhud_v_again_none">Abhi maine aap ko kuch nahi bataya. Apne khate ke baare mein kuch bhi poochhein, ya neeche koi sawal dabayein.</string>
+    <string name="hudhud_v_slower">Theek hai, ab main zara aahista bolunga.</string>
+    <string name="hudhud_v_faster">Theek hai, ab main zara tez bolunga.</string>
+    <string name="hudhud_v_quiet">Theek hai. Jab chahein poochh lijiye.</string>
+    <string name="hudhud_v_off">Meri awaaz band hai. Main jawab likh kar dunga; dobara sunne ke liye upar speaker dabayein.</string>
+    <string name="hudhud_v_on">Meri awaaz khul gayi. Ab main jawab bol kar bataunga.</string>
+    <string name="hudhud_v_volume">Phone ke awaaz wale button se meri awaaz oonchi ya dheemi karein.</string>
+    <string name="hudhud_t_top_goods">Sab se zyada bikne wala maal</string>
+    <string name="hudhud_top_goods_none">In dinon mein kuch nahi bika.</string>
+    <string name="hudhud_t_qarz">Qarz-e-Hasna</string>
+    <string name="hudhud_qarz_note">Qarz-e-Hasna woh raqam hai jo baghair kisi munafe ke di jaye. Yeh gahak ke khate mein Qarz-e-Hasna ke ikhtiyar ke saath likha jata hai, aur Zakat ki screen ise alag ginti hai.</string>
+    <string name="hudhud_qarz_none">Koi Qarz-e-Hasna wapas aana baqi nahi.</string>
+    <string name="hudhud_auto_on">On</string>
+    <string name="hudhud_auto_off">Band</string>
+    <string name="hudhud_auto_line">Har ek apne waqt par batata hai aur kaam ki jagah kholta hai. Koi bhi khud se paigham nahi bhejta na indiraaj likhta hai. Badalne ke liye Kholein dabayein.</string>
+    <string name="hudhud_need_goods">Kaun sa maal?</string>
+    <string name="hudhud_need_goods_line">Maal ka naam batayein, ya neeche se chun lein.</string>
+    <string name="hudhud_privacy_once">Aap ka khata isi phone par rehta hai. Main har jawab yahin se parh kar deta hoon aur kisi se share nahi karta.</string>
+    <plurals name="hudhud_qarz_people">
+        <item quantity="one">%1$d shakhs ko abhi wapas karna hai</item>
+        <item quantity="other">%1$d afraad ko abhi wapas karna hai</item>
+    </plurals>
 </resources>

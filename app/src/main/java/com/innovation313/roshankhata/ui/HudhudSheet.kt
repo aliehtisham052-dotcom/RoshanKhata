@@ -199,6 +199,8 @@ object HudhudSheet {
                 if (closed) return
                 tvHeard.visibility = View.VISIBLE
                 tvHeard.text = asked(words, spoken = true)
+                // A word reached him: a small nod that he caught it, as a listener does.
+                if (words.isNotBlank()) bob()
             }
 
             override fun onLevel(level: Float) {
@@ -206,6 +208,7 @@ object HudhudSheet {
                 val scale = 1f + MIC_GROW * level
                 btnMic.scaleX = scale
                 btnMic.scaleY = scale
+                attend(level)
             }
 
             override fun onHeard(guesses: List<String>) {
@@ -272,6 +275,16 @@ object HudhudSheet {
             btnSettings.setOnClickListener { HudhudVoiceSheet.show(host) }
             btnReplay.setOnClickListener { last?.let { say(it) } }
             btnMic.setOnClickListener { listen() }
+            etAsk.addTextChangedListener(object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: android.text.Editable?) {
+                    if (closed || s.isNullOrEmpty() || ears.listening || job?.isActive == true) return
+                    if (pose != Pose.LISTENING && pose != Pose.TALKING) showPose(Pose.LISTENING)
+                    etAsk.removeCallbacks(easeAfterTyping)
+                    etAsk.postDelayed(easeAfterTyping, EASE_AFTER_TYPING_MS)
+                }
+            })
             etAsk.setOnEditorActionListener { _, action, event ->
                 val enter = event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN
                 if (action == EditorInfo.IME_ACTION_SEND || enter) { sendTyped(); true } else false
@@ -421,6 +434,32 @@ object HudhudSheet {
             btnMic.animate().cancel()
             btnMic.scaleX = 1f
             btnMic.scaleY = 1f
+            heardLevel = 0f
+            if (!acts.busy) stage.animate().rotation(0f).setDuration(SIT_BACK_MS).start()
+        }
+
+        /** The voice he is hearing, smoothed so he leans with it and does not tremble with every sound. */
+        private var heardLevel = 0f
+
+        /**
+         * He listens to the voice (14 Nov 2026, the owner: "jab hum baat karein to us ki movement hum se related ho"):
+         * he leans in, from his feet, towards the microphone as the voice rises and settles back as it falls; with the
+         * phone's animations off he stays still. Never while one of his acts has the stage.
+         */
+        private fun attend(level: Float) {
+            if (acts.busy) return
+            heardLevel = heardLevel * 0.7f + level * 0.3f
+            if (stage.width > 0) {
+                stage.pivotX = stage.width / 2f
+                stage.pivotY = stage.height.toFloat()
+            }
+            val forward = if (view.layoutDirection == View.LAYOUT_DIRECTION_RTL) -1f else 1f
+            stage.rotation = forward * LEAN_DEG * heardLevel
+        }
+
+        /** While the owner types, he turns to listen; a little after the typing stops he is at ease again. */
+        private val easeAfterTyping = Runnable {
+            if (!closed && pose == Pose.LISTENING && !ears.listening && job?.isActive != true) last?.let { settle(it.mood) } ?: showPose(Pose.IDLE)
         }
 
         /**
@@ -558,7 +597,9 @@ object HudhudSheet {
                     val names = known.map { Hudhud.Name(it.id, it.name) }
                     val products = goods.await()
                     val (heard, ask) = withContext(Dispatchers.Default) { understand(names, products) }
-                    val answer = withContext(Dispatchers.IO) { HudhudBook.answer(ctx, dao, ask, known) }
+                    // "Phir se batao", "samajh nahi aya": the last answer again, as it was (14 Nov 2026).
+                    val again = (ask as? Hudhud.Ask.Voice)?.change == Hudhud.VoiceChange.AGAIN
+                    val answer = lastReal.takeIf { again } ?: withContext(Dispatchers.IO) { HudhudBook.answer(ctx, dao, ask, known) }
                     val next = withContext(Dispatchers.Default) { chipsFor(heard, ask, answer, names, products) }
                     Answered(heard, ask, answer, next)
                 } catch (e: CancellationException) {
@@ -574,7 +615,9 @@ object HudhudSheet {
                 // What the talk is about now, so "uska number?" or "aur kal?" carry on: a guess counts as what it was
                 // taken for; a list of names offered ("whose?") keeps the one before.
                 val taken = (result.ask as? Hudhud.Ask.Guessed)?.ask ?: result.ask
-                if (taken != null && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown && taken !is Hudhud.Ask.NeedName) {
+                if (taken != null && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown && taken !is Hudhud.Ask.NeedName &&
+                    taken !is Hudhud.Ask.Voice && taken !is Hudhud.Ask.NeedGoods
+                ) {
                     before = taken
                 }
                 showChips(result.next)
@@ -634,7 +677,26 @@ object HudhudSheet {
 
         // ------------------------------------------------------------------------------------- the card
 
+        /** The last answer that was an answer (not a change to his voice): what "phir se batao" shows again. */
+        private var lastReal: HudhudBook.Answer? = null
+
+        /**
+         * A change to how he speaks, asked of him (14 Nov 2026, the owner's list: "ahista bolo", "chup ho jao", "awaaz
+         * band karo"): made at once, kept on this phone; a new pace is heard in the very line that says it.
+         */
+        private fun change(c: Hudhud.VoiceChange) {
+            when (c) {
+                Hudhud.VoiceChange.SLOWER -> HudhudPrefs.setPace(ctx, HudhudPrefs.pace(ctx) - HudhudPrefs.PACE_STEP)
+                Hudhud.VoiceChange.FASTER -> HudhudPrefs.setPace(ctx, HudhudPrefs.pace(ctx) + HudhudPrefs.PACE_STEP)
+                Hudhud.VoiceChange.QUIET -> { speakJob?.cancel(); voice.stop() }
+                Hudhud.VoiceChange.OFF -> { voiceOn = false; showVoiceSwitch(); speakJob?.cancel(); voice.stop() }
+                Hudhud.VoiceChange.ON -> { voiceOn = true; showVoiceSwitch(); if (speakAllowed) voice.warmUp() }
+                Hudhud.VoiceChange.AGAIN, Hudhud.VoiceChange.VOLUME -> {}
+            }
+        }
+
         private fun show(a: HudhudBook.Answer, speak: Boolean) {
+            if (a.voice == null) lastReal = a
             // A check row belongs to the answer it was offered under; any other card shows none (offerCheck brings it back).
             checkRow.visibility = View.GONE
             last = a
@@ -653,7 +715,9 @@ object HudhudSheet {
                 row.setOnClickListener {
                     val screen = r.open
                     val amount = r.amount
+                    val rowAsk = r.ask
                     when {
+                        rowAsk != null -> chip(r.name, rowAsk)
                         screen != null -> {
                             sheet.dismiss()
                             host.startActivity(Intent(host, screen))
@@ -667,6 +731,7 @@ object HudhudSheet {
             }
             showButtons(a)
             note(null)
+            a.voice?.let { change(it) }
             // One of his acts, asked for ("urr ke dikhao"): it plays as the card arrives.
             a.act?.let { move -> stage.post { if (!closed && last === a) acts.play(HudhudActs.Act.of(move)) } }
             if (speak && canSay(a)) {
@@ -716,12 +781,13 @@ object HudhudSheet {
         }
 
         private fun showButtons(a: HudhudBook.Answer) {
-            val canOpen = a.open != null || a.openParty != null || a.doIt != null || a.voiceSettings
+            val canOpen = a.open != null || a.openParty != null || a.doIt != null || a.voiceSettings || a.automations
             btnOpen.visibility = if (canOpen) View.VISIBLE else View.GONE
             (btnOpen as? TextView)?.setText(a.openLabel ?: R.string.vq_open)
             btnOpen.setOnClickListener {
                 when {
                     a.voiceSettings -> HudhudVoiceSheet.show(host)
+                    a.automations -> AutomationsDialog.show(host)
                     a.doIt != null -> a.doIt.invoke()
                     else -> go(a)
                 }
@@ -1045,6 +1111,10 @@ object HudhudSheet {
     private const val STALE_MS = 10_000L
     /** How much the microphone grows with a loud voice while he listens. */
     private const val MIC_GROW = 0.14f
+    /** How far he leans towards a voice at its loudest, in degrees. */
+    private const val LEAN_DEG = 6f
+    private const val SIT_BACK_MS = 220L
+    private const val EASE_AFTER_TYPING_MS = 1600L
     /** The flap he answers a tap on his face with, once the sheet has risen. */
     private const val ARRIVE_ACT_MS = 380L
 }

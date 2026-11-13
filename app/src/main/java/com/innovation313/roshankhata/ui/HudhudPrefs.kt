@@ -18,6 +18,12 @@ object HudhudPrefs {
     private const val KEY_MIC_DENIED = "mic_denied"
     private const val KEY_HELLO_DAY = "hello_day"
     private const val KEY_NAME_WAY = "name_way_"
+    private const val KEY_PACE = "voice_pace"
+    private const val KEY_PRIVACY_TOLD = "privacy_told"
+    /** One "slower" or "faster" (14 Nov 2026): a tenth of his pace, kept between 0.6 and 1.5 of the style's own. */
+    const val PACE_STEP = 0.1f
+    private const val PACE_MIN = 0.6f
+    private const val PACE_MAX = 1.5f
 
     /** The longest name he is given to say. */
     const val CALL_ME_MAX = 30
@@ -63,6 +69,20 @@ object HudhudPrefs {
     }
 
     /** The owner said no to the microphone: Hudhud uses the phone's voice-search box and does not ask again. */
+    /** Whether he has yet told the owner, once, that the book stays on this phone (14 Nov 2026). */
+    fun privacyDue(context: Context): Boolean = !prefs(context).getBoolean(KEY_PRIVACY_TOLD, false)
+
+    fun privacyTold(context: Context) {
+        prefs(context).edit().putBoolean(KEY_PRIVACY_TOLD, true).apply()
+    }
+
+    /** How much faster or slower than his style he speaks, asked of him ("ahista bolo"): 1 is the style's own pace. */
+    fun pace(context: Context): Float = prefs(context).getFloat(KEY_PACE, 1f).coerceIn(PACE_MIN, PACE_MAX)
+
+    fun setPace(context: Context, pace: Float) {
+        prefs(context).edit().putFloat(KEY_PACE, pace.coerceIn(PACE_MIN, PACE_MAX)).apply()
+    }
+
     fun micDenied(context: Context): Boolean = prefs(context).getBoolean(KEY_MIC_DENIED, false)
 
     fun setMicDenied(context: Context, denied: Boolean) {

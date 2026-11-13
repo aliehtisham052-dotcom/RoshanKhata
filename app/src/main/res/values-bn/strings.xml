@@ -4520,4 +4520,26 @@
     <string name="hudhud_check_cleared">তালিকা মুছে ফেলা হলো।</string>
     <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
     <string name="hudhud_about_name_story">আমার নাম হযরত সুলাইমান (আলাইহিস সালাম)-এর হুদহুদ পাখির নামে রাখা হয়েছে, যে তাঁর কাছে সত্য খবর আনত। আমিও আপনার নিজের খাতা থেকে সত্য খবর আনি; যাঁরা আমাকে বানিয়েছেন তাঁরা চান প্রতিটি হিসাব সততা ও আমানতদারির সাথে থাকুক।</string>
+    <string name="hudhud_v_again_none">এখনো আমি আপনাকে কিছু বলিনি। আপনার খাতা নিয়ে যা খুশি জিজ্ঞেস করুন, বা নিচের কোনো প্রশ্নে চাপ দিন।</string>
+    <string name="hudhud_v_slower">ঠিক আছে, এখন একটু আস্তে বলব।</string>
+    <string name="hudhud_v_faster">ঠিক আছে, এখন একটু দ্রুত বলব।</string>
+    <string name="hudhud_v_quiet">ঠিক আছে। যখন খুশি জিজ্ঞেস করবেন।</string>
+    <string name="hudhud_v_off">আমার কণ্ঠ বন্ধ। আমি উত্তর লিখে দেব; আবার শুনতে ওপরের স্পিকারে চাপ দিন।</string>
+    <string name="hudhud_v_on">আমার কণ্ঠ চালু হলো। এখন উত্তর বলে শোনাব।</string>
+    <string name="hudhud_v_volume">ফোনের ভলিউম বোতাম দিয়ে আমার আওয়াজ বাড়ান বা কমান।</string>
+    <string name="hudhud_t_top_goods">সবচেয়ে বেশি বিক্রি হওয়া মাল</string>
+    <string name="hudhud_top_goods_none">এই দিনগুলোতে কিছুই বিক্রি হয়নি।</string>
+    <string name="hudhud_t_qarz">কর্জে হাসানা</string>
+    <string name="hudhud_qarz_note">কর্জে হাসানা হলো কোনো লাভ ছাড়া দেওয়া ঋণ। এটি গ্রাহকের খাতায় কর্জে হাসানা বিকল্প দিয়ে লেখা হয়, আর যাকাতের স্ক্রিন এটি আলাদা গোনে।</string>
+    <string name="hudhud_qarz_none">ফেরত আসার মতো কোনো কর্জে হাসানা বাকি নেই।</string>
+    <string name="hudhud_auto_on">চালু</string>
+    <string name="hudhud_auto_off">বন্ধ</string>
+    <string name="hudhud_auto_line">প্রতিটি নিজের সময়ে জানায় আর কাজের জায়গা খোলে। কোনোটিই নিজে থেকে বার্তা পাঠায় না বা এন্ট্রি লেখে না। বদলাতে খুলুন চাপুন।</string>
+    <string name="hudhud_need_goods">কোন মাল?</string>
+    <string name="hudhud_need_goods_line">মালের নাম বলুন, বা নিচ থেকে একটি বেছে নিন।</string>
+    <string name="hudhud_privacy_once">আপনার খাতা এই ফোনেই থাকে। আমি প্রতিটি উত্তর এখান থেকেই পড়ে দিই আর কারও সঙ্গে শেয়ার করি না।</string>
+    <plurals name="hudhud_qarz_people">
+        <item quantity="one">%1$d জনের এখনো ফেরত দেওয়া বাকি</item>
+        <item quantity="other">%1$d জনের এখনো ফেরত দেওয়া বাকি</item>
+    </plurals>
 </resources>

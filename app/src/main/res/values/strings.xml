@@ -4685,4 +4685,26 @@
     <string name="hudhud_check_cleared">The list is cleared.</string>
     <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
     <string name="hudhud_about_name_story">My name comes from the hoopoe, the hudhud of Prophet Sulaiman (peace be upon him), who brought him true news. I bring you true news too, from your own book; the people who made me want every account kept with truth and honesty.</string>
+    <string name="hudhud_v_again_none">I haven\'t told you anything yet. Ask me anything about your khata, or tap a question below.</string>
+    <string name="hudhud_v_slower">All right, I\'ll speak a little more slowly.</string>
+    <string name="hudhud_v_faster">All right, I\'ll speak a little faster.</string>
+    <string name="hudhud_v_quiet">All right. Ask me whenever you like.</string>
+    <string name="hudhud_v_off">My voice is off. I\'ll write my answers; tap the speaker at the top to hear me again.</string>
+    <string name="hudhud_v_on">My voice is on. I\'ll say my answers aloud.</string>
+    <string name="hudhud_v_volume">Your phone\'s volume buttons make me louder or quieter.</string>
+    <string name="hudhud_t_top_goods">Best sellers</string>
+    <string name="hudhud_top_goods_none">Nothing was sold in these days.</string>
+    <string name="hudhud_t_qarz">Qarz-e-Hasna</string>
+    <string name="hudhud_qarz_note">Qarz-e-Hasna is money lent with no profit on it. It is written in the customer\'s khata with the Qarz-e-Hasna option, and the Zakat screen counts it on its own.</string>
+    <string name="hudhud_qarz_none">No Qarz-e-Hasna is still to come back.</string>
+    <string name="hudhud_auto_on">On</string>
+    <string name="hudhud_auto_off">Off</string>
+    <string name="hudhud_auto_line">Each one tells you at its hour and opens the place to act. None of them sends a message or writes an entry by itself. Tap Open to change them.</string>
+    <string name="hudhud_need_goods">Which product?</string>
+    <string name="hudhud_need_goods_line">Tell me the product\'s name, or tap one below.</string>
+    <string name="hudhud_privacy_once">Your book stays on this phone. I read every answer from it here and share it with no one.</string>
+    <plurals name="hudhud_qarz_people">
+        <item quantity="one">%1$d person still has it to return</item>
+        <item quantity="other">%1$d people still have it to return</item>
+    </plurals>
 </resources>

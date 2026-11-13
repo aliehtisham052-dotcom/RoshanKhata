@@ -4520,4 +4520,26 @@
     <string name="hudhud_check_cleared">सूची साफ़ हो गई।</string>
     <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
     <string name="hudhud_about_name_story">मेरा नाम हज़रत सुलैमान (अलैहिस्सलाम) के हुदहुद की निस्बत से रखा गया है, जो उनके पास सच्ची ख़बर लाता था। मैं भी आपकी अपनी किताब से सच्ची ख़बर लाता हूँ; मुझे बनाने वाले चाहते हैं कि हर हिसाब सच्चाई और ईमानदारी से हो।</string>
+    <string name="hudhud_v_again_none">अभी मैंने आपको कुछ नहीं बताया। अपने खाते के बारे में कुछ भी पूछें, या नीचे कोई सवाल दबाएँ।</string>
+    <string name="hudhud_v_slower">ठीक है, अब मैं थोड़ा धीरे बोलूँगा।</string>
+    <string name="hudhud_v_faster">ठीक है, अब मैं थोड़ा तेज़ बोलूँगा।</string>
+    <string name="hudhud_v_quiet">ठीक है। जब चाहें पूछ लीजिए।</string>
+    <string name="hudhud_v_off">मेरी आवाज़ बंद है। मैं जवाब लिखकर दूँगा; दोबारा सुनने के लिए ऊपर स्पीकर दबाएँ।</string>
+    <string name="hudhud_v_on">मेरी आवाज़ चालू हो गई। अब मैं जवाब बोलकर बताऊँगा।</string>
+    <string name="hudhud_v_volume">फ़ोन के आवाज़ वाले बटन से मेरी आवाज़ ऊँची या धीमी करें।</string>
+    <string name="hudhud_t_top_goods">सबसे ज़्यादा बिकने वाला माल</string>
+    <string name="hudhud_top_goods_none">इन दिनों में कुछ नहीं बिका।</string>
+    <string name="hudhud_t_qarz">क़र्ज़-ए-हसना</string>
+    <string name="hudhud_qarz_note">क़र्ज़-ए-हसना वह रकम है जो बिना किसी मुनाफ़े के दी जाए। यह ग्राहक के खाते में क़र्ज़-ए-हसना के विकल्प के साथ लिखी जाती है, और ज़कात की स्क्रीन इसे अलग गिनती है।</string>
+    <string name="hudhud_qarz_none">कोई क़र्ज़-ए-हसना वापस आना बाक़ी नहीं।</string>
+    <string name="hudhud_auto_on">चालू</string>
+    <string name="hudhud_auto_off">बंद</string>
+    <string name="hudhud_auto_line">हर एक अपने समय पर बताता है और काम की जगह खोलता है। कोई भी खुद से संदेश नहीं भेजता न एंट्री लिखता है। बदलने के लिए खोलें दबाएँ।</string>
+    <string name="hudhud_need_goods">कौन सा माल?</string>
+    <string name="hudhud_need_goods_line">माल का नाम बताएँ, या नीचे से चुन लें।</string>
+    <string name="hudhud_privacy_once">आपका खाता इसी फ़ोन पर रहता है। मैं हर जवाब यहीं से पढ़कर देता हूँ और किसी से शेयर नहीं करता।</string>
+    <plurals name="hudhud_qarz_people">
+        <item quantity="one">%1$d व्यक्ति को अभी लौटाना है</item>
+        <item quantity="other">%1$d लोगों को अभी लौटाना है</item>
+    </plurals>
 </resources>

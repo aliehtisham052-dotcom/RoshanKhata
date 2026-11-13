@@ -4757,4 +4757,30 @@
     <string name="hudhud_check_cleared">مُسحت القائمة.</string>
     <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
     <string name="hudhud_about_name_story">سُمّيتُ بهذا الاسم نسبةً إلى هدهد نبي الله سليمان عليه السلام، الذي جاءه بالخبر الصادق. وأنا أيضًا آتيك بالخبر الصادق من دفترك أنت؛ ومن صنعني يريد أن يكون كل حساب بالصدق والأمانة.</string>
+    <string name="hudhud_v_again_none">لم أخبرك بشيء بعد. اسألني أي شيء عن دفترك، أو اضغط سؤالاً بالأسفل.</string>
+    <string name="hudhud_v_slower">حسنًا، سأتكلم أبطأ قليلاً.</string>
+    <string name="hudhud_v_faster">حسنًا، سأتكلم أسرع قليلاً.</string>
+    <string name="hudhud_v_quiet">حسنًا. اسألني متى شئت.</string>
+    <string name="hudhud_v_off">صوتي متوقف. سأكتب إجاباتي؛ اضغط مكبر الصوت في الأعلى لتسمعني مرة أخرى.</string>
+    <string name="hudhud_v_on">صوتي يعمل. سأقول إجاباتي بصوت مسموع.</string>
+    <string name="hudhud_v_volume">أزرار الصوت في هاتفك ترفع صوتي أو تخفضه.</string>
+    <string name="hudhud_t_top_goods">الأكثر مبيعًا</string>
+    <string name="hudhud_top_goods_none">لم يُبع شيء في هذه الأيام.</string>
+    <string name="hudhud_t_qarz">قرض حسن</string>
+    <string name="hudhud_qarz_note">القرض الحسن مال يُقرض بلا أي ربح. يُكتب في دفتر العميل مع خيار القرض الحسن، وشاشة الزكاة تحسبه وحده.</string>
+    <string name="hudhud_qarz_none">لا يوجد قرض حسن باقٍ ليعود.</string>
+    <string name="hudhud_auto_on">يعمل</string>
+    <string name="hudhud_auto_off">متوقف</string>
+    <string name="hudhud_auto_line">كل واحدة تخبرك في ساعتها وتفتح مكان العمل. لا ترسل أي منها رسالة ولا تكتب قيدًا من تلقاء نفسها. اضغط فتح لتغييرها.</string>
+    <string name="hudhud_need_goods">أي منتج؟</string>
+    <string name="hudhud_need_goods_line">قل لي اسم المنتج، أو اختر واحدًا بالأسفل.</string>
+    <string name="hudhud_privacy_once">دفترك يبقى على هذا الهاتف. أقرأ كل إجابة منه هنا ولا أشاركه مع أحد.</string>
+    <plurals name="hudhud_qarz_people">
+        <item quantity="zero">عدد من عليهم ردّه: %1$d</item>
+        <item quantity="one">عدد من عليهم ردّه: %1$d</item>
+        <item quantity="two">عدد من عليهم ردّه: %1$d</item>
+        <item quantity="few">عدد من عليهم ردّه: %1$d</item>
+        <item quantity="many">عدد من عليهم ردّه: %1$d</item>
+        <item quantity="other">عدد من عليهم ردّه: %1$d</item>
+    </plurals>
 </resources>

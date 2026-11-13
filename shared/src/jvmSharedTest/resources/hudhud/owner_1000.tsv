@@ -1,0 +1,1002 @@
+# The owner's 1,000 sentences (14 Nov 2026): 50 meanings, 20 ways each, as his customers and he would ask.
+# id<TAB>sentence<TAB>meaning<TAB>answers that are right (a reading starting with any of them; | between)
+K0001	Aaj khate mein kitne paise hain	1	Drawer
+K0002	Galla mein abhi kitna cash hai	1	Drawer
+K0003	Mere paas is waqt kitne paise hain	1	Drawer
+K0004	Dukan mein kitna cash pada hai	1	Drawer
+K0005	Cash kitna bacha hai	1	Drawer
+K0006	Abhi ka cash batao	1	Drawer
+K0007	Hath mein kitni raqam hai	1	Drawer
+K0008	Aaj ki cash position kya hai	1	Drawer
+K0009	Draw mein kitne paise hone chahiyen	1	Drawer
+K0010	Gallay mein kitni naqdi hai	1	Drawer
+K0011	Kitne paise mere paas mojood hain	1	Drawer
+K0012	Cash balance dikhao	1	Drawer
+K0013	Naqad kitna hai	1	Drawer
+K0014	Abhi dukan mein kitni raqam hai	1	Drawer
+K0015	Aaj subah se ab tak kitna cash hai	1	Drawer
+K0016	Galla check karo kitna hai	1	Drawer
+K0017	Hisaab ke mutabiq mere paas kitne paise hain	1	Drawer
+K0018	Kitne paise bache hain mere paas	1	Drawer
+K0019	Cash in hand kitna hai	1	Drawer
+K0020	Abhi kitni naqdi hai	1	Drawer
+K0021	Aaj ka khata	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0022	Aaj ka hisaab batao	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0023	Aaj ka poora hisaab dikhao	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0024	Aaj kya kya hua dukan mein	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0025	Aaj ki summary do	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0026	Aaj ka khulasa batao	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0027	Aaj ki report	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0028	Aaj ka lena dena	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0029	Aaj ka din kaisa raha	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0030	Aaj ki sari entries dikhao	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0031	Aaj ka roznamcha	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0032	Aaj ki cashbook dikhao	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0033	Aaj ke sab len den	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0034	Aaj ka kul hisaab kitab	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0035	Aaj ka total kya bana	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0036	Aaj dukan ka haal batao	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0037	Aaj ki tamam entries ka total	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0038	Aaj ka bahi khata kholo	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0039	Aaj ka hisaab kitab samjha do	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0040	Aaj ki raat ka hisaab karna hai	2	Today|Activity|Count:ENTRIES:TODAY|Cashbook
+K0041	Galla gin liya, farq kitna hai	3	Drawer|Help:intro_cashbook|Cashbook
+K0042	Cash mein kami to nahi	3	Drawer|Help:intro_cashbook|Cashbook
+K0043	Hisaab aur galla barabar hain	3	Drawer|Help:intro_cashbook|Cashbook
+K0044	Galla kam kyun nikla	3	Drawer|Help:intro_cashbook|Cashbook
+K0045	Galla zyada nikla, kyun	3	Drawer|Help:intro_cashbook|Cashbook
+K0046	Aaj ke galle ka milan karo	3	Drawer|Help:intro_cashbook|Cashbook
+K0047	Closing kaise karun	3	Drawer|Help:intro_cashbook|Cashbook
+K0048	Aaj ki closing batao	3	Drawer|Help:intro_cashbook|Cashbook
+K0049	Drawer ginti karni hai	3	Drawer|Help:intro_cashbook|Cashbook
+K0050	Cash mismatch kahan hai	3	Drawer|Help:intro_cashbook|Cashbook
+K0051	Paise kam lag rahe hain, check karo	3	Drawer|Help:intro_cashbook|Cashbook
+K0052	Roz ka galla kaise milaun	3	Drawer|Help:intro_cashbook|Cashbook
+K0053	Dukan band karte waqt kya dekhun	3	Drawer|Help:intro_cashbook|Cashbook
+K0054	Aaj ka galla close karo	3	Drawer|Help:intro_cashbook|Cashbook
+K0055	Gallay mein kitna farq hai	3	Drawer|Help:intro_cashbook|Cashbook
+K0056	Entry bhool gaya to farq kaise nikalun	3	Drawer|Help:intro_cashbook|Cashbook
+K0057	Cash ginti ke baad kya karun	3	Drawer|Help:intro_cashbook|Cashbook
+K0058	Aaj ka opening cash kitna tha	3	Drawer|Help:intro_cashbook|Cashbook
+K0059	Subah ka cash kitna tha	3	Drawer|Help:intro_cashbook|Cashbook
+K0060	Kal ki closing kitni thi	3	Drawer|Help:intro_cashbook|Cashbook
+K0061	Aaj ki total sale	4	Figure:SALES_TODAY|Period:SALES|Today
+K0062	Aaj kitna maal bika	4	Figure:SALES_TODAY|Period:SALES|Today
+K0063	Aaj ki bikri kitni hui	4	Figure:SALES_TODAY|Period:SALES|Today
+K0064	Aaj dukan ne kitna kamaya	4	Figure:SALES_TODAY|Period:SALES|Today
+K0065	Aaj ka bechna kitna hua	4	Figure:SALES_TODAY|Period:SALES|Today
+K0066	Sale kitni hui aaj	4	Figure:SALES_TODAY|Period:SALES|Today
+K0067	Aaj gallay mein kitna jama hua	4	Figure:SALES_TODAY|Period:SALES|Today
+K0068	Aaj kitne ka kaam hua	4	Figure:SALES_TODAY|Period:SALES|Today
+K0069	Aaj ki kul bikri	4	Figure:SALES_TODAY|Period:SALES|Today
+K0070	Abhi tak aaj kitna bika	4	Figure:SALES_TODAY|Period:SALES|Today
+K0071	Aaj ka sale ka total batao	4	Figure:SALES_TODAY|Period:SALES|Today
+K0072	Aaj ki bikri ki raqam	4	Figure:SALES_TODAY|Period:SALES|Today
+K0073	Aaj kitne rupay ki sale hui	4	Figure:SALES_TODAY|Period:SALES|Today
+K0074	Aaj ka karobar kitna hua	4	Figure:SALES_TODAY|Period:SALES|Today
+K0075	Aaj ka bill total kitna bana	4	Figure:SALES_TODAY|Period:SALES|Today
+K0076	Aaj kitna beecha	4	Figure:SALES_TODAY|Period:SALES|Today
+K0077	Aaj ki sale dikhao	4	Figure:SALES_TODAY|Period:SALES|Today
+K0078	Subah se ab tak ki sale	4	Figure:SALES_TODAY|Period:SALES|Today
+K0079	Aaj ka dhandha kaisa raha	4	Figure:SALES_TODAY|Period:SALES|Today
+K0080	Aaj ki aamdan kitni hui	4	Figure:SALES_TODAY|Period:SALES|Today
+K0081	Kal ki sale kitni thi	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0082	Kal kitna maal bika	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0083	Parson ki bikri batao	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0084	Is hafte ki total sale	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0085	Is hafte kitna bika	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0086	Pichle hafte ki sale kitni thi	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0087	Is mahine ki total sale	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0088	Is mahine kitna kaam hua	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0089	Pichle mahine ki bikri kitni thi	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0090	Is saal ki kul sale	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0091	Is season ki sale batao	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0092	Pichli fasal mein kitna bika tha	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0093	Mahine ka bechna batao	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0094	Hafta bhar ki sale	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0095	Monday ko kitna bika	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0096	Eid ke din kitni sale hui thi	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0097	Pehli tareekh se ab tak ki sale	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0098	Pichle 7 din ki sale	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0099	Pichle 30 din ki sale	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0100	Aaj tak ki total bikri	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0101	Naqad sale kitni hui	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0102	Udhaar sale kitni hui	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0103	Cash aur udhaar alag alag batao	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0104	Aaj kitna naqad bika, kitna udhaar	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0105	Is mahine naqad kitna aur udhaar kitna	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0106	Naqad ka total batao	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0107	Udhaar ka total batao	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0108	Kitna maal paise le kar becha	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0109	Kitna maal bina paise diye gaya	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0110	Cash sale aur credit sale ka farq	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0111	Udhaar zyada gaya ya naqad	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0112	Aaj ka naqad bechna	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0113	Aaj ka udhaar bechna	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0114	Kitni sale par abhi paise nahi mile	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0115	Kitni sale ke paise aa chuke hain	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0116	Naqad aur udhaar ka hissa kitna hai	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0117	Is hafte udhaar kitna gaya	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0118	Is hafte cash kitna aya	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0119	Mere zyada customers udhaar lete hain ya naqad	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0120	Udhaar ka percent kitna hai	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
+K0121	Kal se aaj ki sale zyada hai ya kam	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0122	Is hafte pichle hafte se behtar hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0123	Is mahine pichle mahine se zyada bika	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0124	Aaj aur kal ka muqabla karo	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0125	Is saal aur pichle saal ki sale	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0126	Sale gir rahi hai ya barh rahi hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0127	Is mahine sale kam kyun hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0128	Pichle mahine se kitna farq hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0129	Kis hafte mein sab se zyada bika	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0130	Kaun sa din sab se achha raha	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0131	Sab se kam sale kis din hui	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0132	Sale ka graph dikhao	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0133	Is mahine ka trend kya hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0134	Is season mein pichle season se behtar hoon	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0135	Sale mein kitna izafa hua	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0136	Sale mein kitni kami aayi	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0137	Roz ki sale ka average kitna hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0138	Hafte ke kaun se din rush hota hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0139	Mahine ke kaun se din sale zyada hoti hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0140	Meri sale kaisi ja rahi hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0141	Sab se zyada kya bik raha hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0142	Kaun si cheez sab se zyada bikti hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0143	Top selling item kaun sa hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0144	Is mahine kis cheez ki sab se zyada sale hui	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0145	Sab se kam kya bikta hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0146	Kaun sa maal chal nahi raha	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0147	Kaun sa maal tez chal raha hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0148	Sab se zyada kis item se kamai hui	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0149	Kaun si cheez ne sab se zyada faida diya	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0150	Kaun si cheez par nuqsan hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0151	Aaj kya kya bika	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0152	Aaj kaun si cheez zyada gayi	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0153	Sab se mehnga item kaun sa bika	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0154	Bestseller batao	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0155	Kis maal ki demand zyada hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0156	Kaun sa maal mein paisa phansa hua hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0157	Kaun si cheez dobara mangwani chahiye	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0158	Kis cheez ki sale mausam ke saath badhti hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0159	Is season ka sab se achha item	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0160	Kaun sa item hafte mein kitna bikta hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
+K0161	Aaj kitna udhaar hua	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0162	Aaj kis ne udhaar liya	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0163	Aaj kis ko udhaar diya maine	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0164	Aaj ki udhaar sale kitni hai	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0165	Aaj kitna maal udhaar gaya	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0166	Aaj naye udhaar kitne hain	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0167	Aaj kitne logon ne udhaar liya	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0168	Aaj sab se zyada udhaar kis ne liya	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0169	Aaj ka udhaar ka total	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0170	Aaj udhaar ki list dikhao	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0171	Aaj kis kis ko maal chhoda	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0172	Aaj bina paise ke kisko diya	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0173	Aaj ka udhaar kitna barha	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0174	Aaj ke udhaar mein kis ka naam hai	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0175	Aaj kis ka khata barha	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0176	Aaj kitne rupay udhaar gaye	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0177	Aaj udhaar par kya kya gaya	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0178	Aaj ki credit entries batao	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0179	Udhaar ki aaj ki raqam	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0180	Aaj udhaar kis kis par chadha	9	Activity|Today|Count:ENTRIES:TODAY|Period:CREDIT|Credit
+K0181	Is hafte kis ne udhaar liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0182	Is mahine kis kis ne udhaar liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0183	Kal kis ko udhaar diya tha	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0184	Pichle hafte kis ne maal udhaar liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0185	Sab se zyada udhaar is mahine kis ne liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0186	Naye customers jinhon ne udhaar liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0187	Kis ne pehli dafa udhaar liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0188	Aaj kal kis ka udhaar barh raha hai	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0189	Kis ne bohat udhaar utha liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0190	Kis ne is hafte do dafa udhaar liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0191	Kis ka khata is mahine sab se zyada barha	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0192	Kis ko udhaar band karna chahiye	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0193	Kis ne limit se zyada udhaar liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0194	Udhaar lene wale customers ki list	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0195	Pichle 7 din mein kis kis ne udhaar liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0196	Is season mein sab se zyada udhaar kis ne liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0197	Kis ne bina paise ke maal liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0198	Kitne logon ne is mahine udhaar liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0199	Kis ne aaj tak udhaar nahi liya	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0200	Naqad lene wale customers kaun hain	10	Help:screen_seasons|Activity|Period:CREDIT|Credit|Figure:WHO_OWES_MOST|Help:screen_khata
+K0201	Aaj kis ne paise diye	11	Collected|Activity|Cashbook
+K0202	Aaj kitni wasooli hui	11	Collected|Activity|Cashbook
+K0203	Aaj kis kis ne payment ki	11	Collected|Activity|Cashbook
+K0204	Aaj kitne paise wapas aaye	11	Collected|Activity|Cashbook
+K0205	Aaj kis ne udhaar utara	11	Collected|Activity|Cashbook
+K0206	Aaj kis ne hisaab saaf kiya	11	Collected|Activity|Cashbook
+K0207	Aaj kis se paise mile	11	Collected|Activity|Cashbook
+K0208	Aaj kitne logon ne qist di	11	Collected|Activity|Cashbook
+K0209	Aaj aane wale paise kitne aaye	11	Collected|Activity|Cashbook
+K0210	Aaj ki recovery batao	11	Collected|Activity|Cashbook
+K0211	Aaj ki wasooli ka total	11	Collected|Activity|Cashbook
+K0212	Aaj kis ne mera qarz wapas kiya	11	Collected|Activity|Cashbook
+K0213	Aaj kis ne jama karaya	11	Collected|Activity|Cashbook
+K0214	Aaj ka jama kitna hua	11	Collected|Activity|Cashbook
+K0215	Aaj kitna paisa wapas mila	11	Collected|Activity|Cashbook
+K0216	Aaj ki payment received dikhao	11	Collected|Activity|Cashbook
+K0217	Aaj kis ne cash de diya	11	Collected|Activity|Cashbook
+K0218	Aaj kis ne bank mein bheja	11	Collected|Activity|Cashbook
+K0219	Aaj kitne logon ne chuka diya	11	Collected|Activity|Cashbook
+K0220	Aaj ki wasooli ki list	11	Collected|Activity|Cashbook
+K0221	Is mahine kis ne payment di	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0222	Is hafte kitni wasooli hui	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0223	Kal kis ne paise diye	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0224	Pichle hafte ki recovery kitni thi	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0225	Is mahine ki total wasooli	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0226	Sab se zyada payment kis ne ki	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0227	Kis ne poora hisaab chuka diya	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0228	Kis ne thori thori payment ki	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0229	Kis ne aakhri baar kab paise diye	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0230	Is season mein kitni recovery hui	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0231	Kis ne payment dene ka wada tora	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0232	Kis ne payment kam di	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0233	Sab se achha payment dene wala kaun hai	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0234	Kaun hamesha waqt par paise deta hai	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0235	Kis ne is mahine ek paisa nahi diya	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0236	Pichle 30 din mein kitni wasooli hui	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0237	Is saal ki kul wasooli	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0238	Wasooli barh rahi hai ya kam	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0239	Payment ki list date ke saath dikhao	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0240	Aaj tak ki recovery kitni hai	12	Help:screen_seasons|Collected|Activity|Figure:NOT_PAID|WhenPays|NeedName:LAST_PAYMENT|NeedName:PROMISE|Help:intro_radar
+K0241	Aaj maine kis ko kitna diya	13	Activity|Cashbook|Moved|PaidOut
+K0242	Aaj kis kis ko paise diye	13	Activity|Cashbook|Moved|PaidOut
+K0243	Aaj kitne paise bahar gaye	13	Activity|Cashbook|Moved|PaidOut
+K0244	Aaj ki adaigi kis ko ki	13	Activity|Cashbook|Moved|PaidOut
+K0245	Aaj kis ko payment ki	13	Activity|Cashbook|Moved|PaidOut
+K0246	Aaj supplier ko kitna diya	13	Activity|Cashbook|Moved|PaidOut
+K0247	Aaj mere paise kahan gaye	13	Activity|Cashbook|Moved|PaidOut
+K0248	Aaj kis par kharcha kiya	13	Activity|Cashbook|Moved|PaidOut
+K0249	Aaj ki total ada-shuda raqam batao	13	Activity|Cashbook|Moved|PaidOut
+K0250	Aaj kis ko kitna chuka diya	13	Activity|Cashbook|Moved|PaidOut
+K0251	Aaj kis ko raqam bheji	13	Activity|Cashbook|Moved|PaidOut
+K0252	Aaj ki payment out ka total	13	Activity|Cashbook|Moved|PaidOut
+K0253	Aaj ka jo diya woh batao	13	Activity|Cashbook|Moved|PaidOut
+K0254	Aaj kis ko aur kitna dena baqi hai	13	Activity|Cashbook|Moved|PaidOut
+K0255	Aaj ke diye hue paise ki list	13	Activity|Cashbook|Moved|PaidOut
+K0256	Aaj jo paise nikle woh kahan gaye	13	Activity|Cashbook|Moved|PaidOut
+K0257	Aaj kis ko udhaar chukaya	13	Activity|Cashbook|Moved|PaidOut
+K0258	Aaj ki sab adaigian dikhao	13	Activity|Cashbook|Moved|PaidOut
+K0259	Aaj maine kya kya chukaya	13	Activity|Cashbook|Moved|PaidOut
+K0260	Aaj ka bahar jaane wala cash	13	Activity|Cashbook|Moved|PaidOut
+K0261	Supplier ko pichli payment kab ki thi	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0262	Is mahine supplier ko kitna diya	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0263	Kis supplier ko kitne paise diye	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0264	Company ko kitni payment ki	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0265	Maal wale ko kitna chuka diya	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0266	Is hafte kis supplier ko dena hai	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0267	Supplier ki payment ka record dikhao	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0268	Kis supplier ko sab se zyada diya	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0269	Kis supplier ko abhi tak kuch nahi diya	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0270	Supplier se is mahine kitna maal liya	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0271	Supplier ka kitna baqaya hai	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0272	Supplier ko advance diya tha woh kitna bacha	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0273	Supplier ki kist kab deni hai	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0274	Dealer ko kitna dena hai	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0275	Mill wale ko kitna dena hai	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0276	Supplier ka khata dikhao	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0277	Supplier ne kitna maal bheja	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0278	Supplier ko aaj kitna diya	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0279	Kis supplier ko payment late ho gayi	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0280	Supplier ke saath hisaab kab saaf hua tha	14	Figure:TO_GIVE|Status:BILLS|Activity|Deliveries|NeedName|Help:screen_bills|Cashbook|PaidOut|Help:screen_purchase_rates
+K0281	Aaj ka kharcha kitna hua	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0282	Is mahine kharcha kitna hua	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0283	Sab se bara kharcha kaun sa tha	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0284	Is hafte kharcha kahan hua	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0285	Kiraya kab diya tha	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0286	Bijli ka bill kitna aaya	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0287	Mulazim ki tankhwah kitni gayi	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0288	Dukan ke kharche ki list	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0289	Zati kharcha kitna hua	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0290	Chai pani ka kharcha kitna hai	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0291	Gaari ka kharcha batao	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0292	Is mahine ke tamam kharche	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0293	Kharcha kahan kam ho sakta hai	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0294	Roz ka kharcha kitna hai	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0295	Pichle mahine kharcha kitna tha	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0296	Kharche mein kya sab se zyada hai	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0297	Kitna kharcha dukan ka aur kitna ghar ka	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0298	Mehngai ki wajah se kharcha kitna barha	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0299	Is saal ka kul kharcha	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0300	Kharcha aur kamai ka farq batao	15	Cashbook|Help:intro_cashbook|Status:STAFF
+K0301	Mujhe kis se kitne paise lene hain	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0302	Mera kitna paisa bahar phansa hua hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0303	Total lena kitna hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0304	Logon ke zimme kitna hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0305	Kis kis ne mera paisa dena hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0306	Baqaya kitna hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0307	Total baqaya batao	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0308	Customers se kul kitna lena hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0309	Mera paisa kis kis ke paas hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0310	Lene wali raqam batao	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0311	Abhi tak ka kul lena	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0312	Bazaar mein kitna paisa phansa hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0313	Kitne paise wasool karne baqi hain	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0314	Total receivable kitna hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0315	Mere hisse ka kitna baqi hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0316	Mujhe kitne paise milne hain	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0317	Udhaar ka total kitna hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0318	Sab ka mila ke kitna lena hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0319	Bahar kitna paisa pada hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0320	Kitna paisa wapas aana hai	16	Figure:TO_GET|Figure:WHO_OWES_MOST
+K0321	Mujhe kis ko kitne dene hain	17	Figure:TO_GIVE|Status:BILLS
+K0322	Mere zimme kitna hai	17	Figure:TO_GIVE|Status:BILLS
+K0323	Total dena kitna hai	17	Figure:TO_GIVE|Status:BILLS
+K0324	Kis kis supplier ka kitna baqaya hai	17	Figure:TO_GIVE|Status:BILLS
+K0325	Kis ki raqam deni hai is hafte	17	Figure:TO_GIVE|Status:BILLS
+K0326	Sab se zyada kis ko dena hai	17	Figure:TO_GIVE|Status:BILLS
+K0327	Company ka kitna dena hai	17	Figure:TO_GIVE|Status:BILLS
+K0328	Maal wale ko kitna dena hai	17	Figure:TO_GIVE|Status:BILLS
+K0329	Mera qarz kitna hai	17	Figure:TO_GIVE|Status:BILLS
+K0330	Kis ki payment late ho gayi	17	Figure:TO_GIVE|Status:BILLS
+K0331	Total payable kitna hai	17	Figure:TO_GIVE|Status:BILLS
+K0332	Mujhe kitna chukana hai	17	Figure:TO_GIVE|Status:BILLS
+K0333	Kis kis ka paisa mere paas hai	17	Figure:TO_GIVE|Status:BILLS
+K0334	Dene wali raqam batao	17	Figure:TO_GIVE|Status:BILLS
+K0335	Abhi tak ka kul dena	17	Figure:TO_GIVE|Status:BILLS
+K0336	Kitna qarz baqi hai	17	Figure:TO_GIVE|Status:BILLS
+K0337	Kis ko aaj tak nahi diya	17	Figure:TO_GIVE|Status:BILLS
+K0338	Kis ka maal ka paisa baqi hai	17	Figure:TO_GIVE|Status:BILLS
+K0339	Sab ko mila ke kitna dena hai	17	Figure:TO_GIVE|Status:BILLS
+K0340	Mere upar kitna bojh hai	17	Figure:TO_GIVE|Status:BILLS
+K0341	Sab se zyada udhaar kis ke zimme hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0342	Sab se bara baqayadar kaun hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0343	Top 5 udhaar wale batao	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0344	Sab se zyada paisa kis ne dena hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0345	Kis ka khata sab se bhaari hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0346	Zyada udhaar wale customers ki list	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0347	Kis par sab se zyada bharosa kiya hua hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0348	Kis ka baqaya 10 hazaar se zyada hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0349	Kitne logon ka baqaya 50 hazaar se upar hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0350	Sab se chhota baqaya kis ka hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0351	Kis ka hisaab bilkul saaf hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0352	Kis ka khata zero hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0353	Kis ke paas mera sab se zyada paisa hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0354	Bade baqayadar dikhao	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0355	Sab se zyada udhaar wala gaon kaun sa hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0356	Sab se zyada len den kis ke saath hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0357	Mere sab se bade customers kaun hain	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0358	Sab se zyada maal kis ne liya	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0359	Kis ka udhaar barhta hi ja raha hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0360	Kaun sa customer sab se bhaari hai	18	Figure:WHO_OWES_MOST|Figure:TO_GET|Figure:NOT_PAID
+K0361	Kis ka udhaar sab se purana hai	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0362	Kis ne 30 din se payment nahi di	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0363	Kis ne 60 din se kuch nahi diya	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0364	Kis ka udhaar bohat dair se baqi hai	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0365	Late payment wale kaun hain	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0366	Kis ne wada tora hai	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0367	Kis ki tareekh guzar gayi	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0368	Purane khate dikhao	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0369	Kis ka hisaab 3 mahine se pada hai	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0370	Kis ne mahine se zyada ho gaya aur nahi diya	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0371	Kis ka hisaab bohat purana ho gaya	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0372	Kis ne is hafte bhi nahi diya	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0373	Kis ko yaad dilana zaroori hai	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0374	Kis ki wasooli mushkil lag rahi hai	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0375	Kis ka udhaar doob sakta hai	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0376	Kis ne bohat dair se rabta nahi kiya	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0377	Kaun payment dene mein sust hai	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0378	Kis ne kab se kuch nahi diya	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0379	Kis ka aakhri len den kab hua tha	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0380	Purane baqaye ki list	19	Figure:NOT_PAID|Help:screen_aging|Help:intro_followup|WhenPays|NeedName
+K0381	Ali Raza ka hisaab dikhao	20	Parties|Person
+K0382	Ali Raza ke kitne paise baqaya hain	20	Parties|Person
+K0383	Ali Raza ka khata kholo	20	Parties|Person
+K0384	Ali Raza se kitna lena hai	20	Parties|Person
+K0385	Ali ka kitna bacha hai	20	Parties|Person
+K0386	Ali Raza ka kitna udhaar hai	20	Parties|Person
+K0387	Ali Raza ke zimme kitna hai	20	Parties|Person
+K0388	Ali Raza ka balance batao	20	Parties|Person
+K0389	Ali Raza ka total kya bana	20	Parties|Person
+K0390	Ali Raza par kitna chadha hua hai	20	Parties|Person
+K0391	Ali Raza ne kitna dena hai	20	Parties|Person
+K0392	Ali Raza ki raqam batao	20	Parties|Person
+K0393	Ali Raza ka baqaya kya hai	20	Parties|Person
+K0394	Ali Raza ka sab hisaab	20	Parties|Person
+K0395	Ali Raza ka khata check karo	20	Parties|Person
+K0396	Ali Raza ka hisaab kitab sunao	20	Parties|Person
+K0397	Ali Raza ka lena kitna hai	20	Parties|Person
+K0398	Ali Raza ka dena kitna hai	20	Parties|Person
+K0399	Ali Raza ko mujhe kitne dene hain	20	Parties|Person
+K0400	Ali ke kitne paise phase hain	20	Parties|Person
+K0401	Ali Raza ne aakhri dafa kab diya	21	Parties|Person|Moved|WhenPays
+K0402	Ali Raza ne pichli baar kitna diya	21	Parties|Person|Moved|WhenPays
+K0403	Ali Raza ne kitna maal liya hai	21	Parties|Person|Moved|WhenPays
+K0404	Ali Raza ko kya kya diya	21	Parties|Person|Moved|WhenPays
+K0405	Ali Raza ki payment history dikhao	21	Parties|Person|Moved|WhenPays
+K0406	Ali Raza ne is mahine kitna liya	21	Parties|Person|Moved|WhenPays
+K0407	Ali Raza ka pehla len den kab hua	21	Parties|Person|Moved|WhenPays
+K0408	Ali Raza kab se khata chala raha hai	21	Parties|Person|Moved|WhenPays
+K0409	Ali Raza ne kitni dafa payment ki	21	Parties|Person|Moved|WhenPays
+K0410	Ali Raza ka purana hisaab dikhao	21	Parties|Person|Moved|WhenPays
+K0411	Ali Raza ne is saal kitna maal liya	21	Parties|Person|Moved|WhenPays
+K0412	Ali Raza ko aakhri baar kab maal diya	21	Parties|Person|Moved|WhenPays
+K0413	Ali Raza ka sab se bara udhaar kitna tha	21	Parties|Person|Moved|WhenPays
+K0414	Ali Raza waqt par deta hai ya nahi	21	Parties|Person|Moved|WhenPays
+K0415	Ali Raza ne kab kab wada tora	21	Parties|Person|Moved|WhenPays
+K0416	Ali Raza ke saath kitna karobar hua	21	Parties|Person|Moved|WhenPays
+K0417	Ali Raza ne kya kya khareeda	21	Parties|Person|Moved|WhenPays
+K0418	Ali Raza ki entries date ke saath	21	Parties|Person|Moved|WhenPays
+K0419	Ali Raza ka pichla mahina kaisa tha	21	Parties|Person|Moved|WhenPays
+K0420	Ali Raza par kitna bharosa kar sakta hun	21	Parties|Person|Moved|WhenPays
+K0421	Ali Raza ko 500 ka udhaar likho	22	Entry|Help|Parties|Person
+K0422	Ali Raza se 1000 mile	22	Entry|Help|Parties|Person
+K0423	Ali Raza ne 2000 diye likh do	22	Entry|Help|Parties|Person
+K0424	Ali Raza ko do bori khad di	22	Entry|Help|Parties|Person
+K0425	Ali Raza ka naya udhaar likhna hai	22	Entry|Help|Parties|Person
+K0426	Ali Raza ki payment likhni hai	22	Entry|Help|Parties|Person
+K0427	Ali Raza ke khate mein jama karo	22	Entry|Help|Parties|Person
+K0428	Ali Raza ke khate mein entry daalo	22	Entry|Help|Parties|Person
+K0429	Ali Raza ko 5 kilo maal diya	22	Entry|Help|Parties|Person
+K0430	Ali Raza se aaj paise liye	22	Entry|Help|Parties|Person
+K0431	Ali Raza ka hisaab barhao	22	Entry|Help|Parties|Person
+K0432	Ali Raza ka hisaab kam karo	22	Entry|Help|Parties|Person
+K0433	Naya udhaar likho	22	Entry|Help|Parties|Person
+K0434	Payment likhni hai	22	Entry|Help|Parties|Person
+K0435	Kisi ke paise jama karne hain	22	Entry|Help|Parties|Person
+K0436	Entry kaise likhun	22	Entry|Help|Parties|Person
+K0437	Ali Raza ko 3 hazaar ka maal diya	22	Entry|Help|Parties|Person
+K0438	Ali Raza ne adha paisa diya baqi baad mein	22	Entry|Help|Parties|Person
+K0439	Ali Raza ki entry galat likh gayi	22	Entry|Help|Parties|Person
+K0440	Ali Raza ka aaj ka len den likho	22	Entry|Help|Parties|Person
+K0441	Is mahine kitna faida hua	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0442	Munafa kitna hai	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0443	Nuqsan to nahi hua	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0444	Aaj ka munafa kitna hua	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0445	Is hafte kitna kamaya	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0446	Kitna bacha is mahine	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0447	Total profit kitna hai	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0448	Faida batao	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0449	Kamai kitni hui	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0450	Is saal ka munafa	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0451	Pichle mahine kitna munafa tha	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0452	Kitne ka nuqsan hua	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0453	Kisi cheez par nuqsan to nahi	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0454	Kharcha nikal kar kitna bacha	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0455	Mera asal munafa kitna hai	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0456	Dukan chal rahi hai ya nahi	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0457	Mahine ka hisaab: faida ya ghata	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0458	Is season ka faida kitna hua	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0459	Net profit kitna hai	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0460	Safi kamai kitni hai	23	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights
+K0461	Kamai aur kharcha ka farq batao	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0462	Pichle mahine se behtar raha	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0463	Is mahine kamai zyada hai ya kharcha	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0464	Kharcha kamai se zyada to nahi	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0465	Faida barh raha hai ya ghat raha hai	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0466	Kis cheez par faida zyada hai	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0467	Kis cheez par faida kam hai	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0468	Sab se zyada munafa kis item par hai	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0469	Sab se kam munafa kis par hai	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0470	Kis customer se zyada faida hua	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0471	Kharche kahan kam kar sakta hun	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0472	Pichle saal se is saal munafa kaisa hai	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0473	Is hafte aur pichle hafte ka faida	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0474	Kaun sa mahina sab se achha raha	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0475	Kaun sa mahina sab se kamzor raha	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0476	Munafe ka graph dikhao	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0477	Meri dukan ki sehat kaisi hai	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0478	Kya mein nuqsan mein ja raha hun	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0479	Faida kitne percent hai	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0480	Qeemat kharid aur bikri ka farq kitna hai	24	Figure:PROFIT_MONTH|Period:PROFIT|Help:screen_insights|Cashbook|TopGoods
+K0481	Is cheez ka stock kitna hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0482	Kitna maal dukan mein hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0483	Khad ki kitni bori bachi hain	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0484	Dawai ka kitna stock hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0485	Kaun si cheez khatam hone wali hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0486	Kaun sa maal kam reh gaya	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0487	Maal kitne ka pada hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0488	Total stock ki qeemat kitni hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0489	Beej ka kitna stock hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0490	Is item ki kitni quantity baqi hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0491	Godaam mein kitna maal hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0492	Kaun si cheez khatam ho gayi	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0493	Kam stock wali cheezen dikhao	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0494	Stock list dikhao	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0495	Stock mein kitna paisa phansa hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0496	Kaun sa maal zyada pada hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0497	Kaun si cheez mangwani hai	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0498	Aaj kitna stock kam hua	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0499	Is cheez ka stock zero to nahi	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0500	Stock ginti ke baad farq kaise theek karun	25	NeedGoods|Status:LOW_STOCK|Goods|Count:PRODUCTS|Help:screen_products|NeedName:STOCK
+K0501	Kaun sa maal expire hone wala hai	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0502	Kis dawai ki date nikalne wali hai	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0503	Expiry wali cheezen dikhao	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0504	Is mahine kaun sa maal expire hoga	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0505	Expire shuda maal kaun sa hai	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0506	Purana maal kaun sa hai	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0507	Date guzarne wale item	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0508	Kis cheez ki expiry qareeb hai	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0509	Kaun sa maal jaldi bechna chahiye	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0510	Kitna maal expire ho chuka hai	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0511	Expiry se nuqsan kitna hua	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0512	Is cheez ki expiry kab hai	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0513	Agle mahine kya expire hoga	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0514	Expiry alert kaise lagaun	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0515	Kaun se batch ki date aa gayi	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0516	Pehle kaun sa maal nikalna hai	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0517	Expire hone se pehle kya bechun	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0518	Kaun sa maal wapas karna hai	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0519	Kis supplier ko expire maal wapas dun	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0520	Aaj kis maal ki date khatam hui	26	Figure:EXPIRING|Help:intro_expiry|Goods
+K0521	Is cheez ka rate kya hai	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0522	Is cheez ki qeemat kya hai	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0523	Is ki kharid qeemat kya thi	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0524	Is cheez par kitna faida hai	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0525	Rate list dikhao	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0526	Aaj ke rate kya hain	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0527	Rate kaise badlun	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0528	Sab cheezon ka rate batao	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0529	Is cheez ka sab se sasta supplier kaun hai	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0530	Kis supplier ka rate kam hai	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0531	Rate list WhatsApp par bhejo	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0532	Pichli baar is cheez ka rate kya tha	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0533	Qeemat kitni barhi	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0534	Mehnga maal kaun sa hai	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0535	Sasta maal kahan se milega	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0536	Is item ka supplier ka rate batao	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0537	Dono suppliers ka rate muqabla karo	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0538	Kharid aur bikri ka farq kitna hai	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0539	Ye cheez kis rate par bechun	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0540	Rate ka picture banao	27	NeedGoods|Goods|Help:screen_rates|Help:screen_purchase_rates|Help:screen_products|NeedName
+K0541	Aaj kaun sa cheque aana hai	28	Status:CHEQUES|Help:intro_cheques
+K0542	Is hafte kitne cheque aane hain	28	Status:CHEQUES|Help:intro_cheques
+K0543	Cheque kis ka hai	28	Status:CHEQUES|Help:intro_cheques
+K0544	Kaun sa cheque bounce hua	28	Status:CHEQUES|Help:intro_cheques
+K0545	Cheque ki tareekh kab hai	28	Status:CHEQUES|Help:intro_cheques
+K0546	Maine kis ko cheque diya hai	28	Status:CHEQUES|Help:intro_cheques
+K0547	Kis ne mujhe cheque diya hai	28	Status:CHEQUES|Help:intro_cheques
+K0548	Cheque ki list dikhao	28	Status:CHEQUES|Help:intro_cheques
+K0549	Cheque clear ho gaya	28	Status:CHEQUES|Help:intro_cheques
+K0550	Kaun sa cheque wapas aaya	28	Status:CHEQUES|Help:intro_cheques
+K0551	Cheque ka total kitna hai	28	Status:CHEQUES|Help:intro_cheques
+K0552	Is mahine ke cheque batao	28	Status:CHEQUES|Help:intro_cheques
+K0553	Naya cheque likhna hai	28	Status:CHEQUES|Help:intro_cheques
+K0554	Cheque ki yaad dahani lagao	28	Status:CHEQUES|Help:intro_cheques
+K0555	Cheque kal clear hona hai	28	Status:CHEQUES|Help:intro_cheques
+K0556	Aaj kis ka cheque lagana hai	28	Status:CHEQUES|Help:intro_cheques
+K0557	Bounce hone wale cheque kis ke hain	28	Status:CHEQUES|Help:intro_cheques
+K0558	Cheque se kitna paisa aane wala hai	28	Status:CHEQUES|Help:intro_cheques
+K0559	Cheque se kitna dena hai	28	Status:CHEQUES|Help:intro_cheques
+K0560	Purane cheque dikhao	28	Status:CHEQUES|Help:intro_cheques
+K0561	Aaj kis ki qist aani hai	29	Status:PLANS|Help:intro_plans
+K0562	Is hafte kis ki kist hai	29	Status:PLANS|Help:intro_plans
+K0563	Qist ki agli tareekh kab hai	29	Status:PLANS|Help:intro_plans
+K0564	Kis ne kist nahi di	29	Status:PLANS|Help:intro_plans
+K0565	Kist ka total kitna hai	29	Status:PLANS|Help:intro_plans
+K0566	Naya qist plan banana hai	29	Status:PLANS|Help:intro_plans
+K0567	Kis ki kist late hai	29	Status:PLANS|Help:intro_plans
+K0568	Qist wale customers dikhao	29	Status:PLANS|Help:intro_plans
+K0569	Kis ki kitni kistein baqi hain	29	Status:PLANS|Help:intro_plans
+K0570	Qist ki list dikhao	29	Status:PLANS|Help:intro_plans
+K0571	Is mahine kitni kist aayi	29	Status:PLANS|Help:intro_plans
+K0572	Ali Raza ki kist kitni hai	29	Status:PLANS|Help:intro_plans
+K0573	Kist kaise banaun	29	Status:PLANS|Help:intro_plans
+K0574	Kis ne poori qist chuka di	29	Status:PLANS|Help:intro_plans
+K0575	Qist ka reminder bhejo	29	Status:PLANS|Help:intro_plans
+K0576	Is mahine ki qisten kitni aani hain	29	Status:PLANS|Help:intro_plans
+K0577	Kist ka paisa aaj aaya	29	Status:PLANS|Help:intro_plans
+K0578	Kist badalni hai	29	Status:PLANS|Help:intro_plans
+K0579	Kist kam karni hai	29	Status:PLANS|Help:intro_plans
+K0580	Qistoon ka hisaab dikhao	29	Status:PLANS|Help:intro_plans
+K0581	Bijli ka bill kab dena hai	30	Cashbook|Help:intro_cashbook
+K0582	Gas ka bill kitna aaya	30	Cashbook|Help:intro_cashbook
+K0583	Is mahine ke bills batao	30	Cashbook|Help:intro_cashbook
+K0584	Kaun sa bill baqi hai	30	Cashbook|Help:intro_cashbook
+K0585	Kiraya kab dena hai	30	Cashbook|Help:intro_cashbook
+K0586	Bill ki aakhri tareekh kab hai	30	Cashbook|Help:intro_cashbook
+K0587	Bills ki list dikhao	30	Cashbook|Help:intro_cashbook
+K0588	Is hafte kaun se bill dene hain	30	Cashbook|Help:intro_cashbook
+K0589	Pani ka bill kitna hai	30	Cashbook|Help:intro_cashbook
+K0590	Internet ka bill kab hai	30	Cashbook|Help:intro_cashbook
+K0591	Naya bill add karna hai	30	Cashbook|Help:intro_cashbook
+K0592	Bill ada ho gaya likh do	30	Cashbook|Help:intro_cashbook
+K0593	Kaun sa bill late ho gaya	30	Cashbook|Help:intro_cashbook
+K0594	Bills ka total kitna hai	30	Cashbook|Help:intro_cashbook
+K0595	Har mahine ke fixed kharche batao	30	Cashbook|Help:intro_cashbook
+K0596	Bill ki yaad dahani lagao	30	Cashbook|Help:intro_cashbook
+K0597	Dukan ka kiraya kitna hai	30	Cashbook|Help:intro_cashbook
+K0598	Tax ki date kab hai	30	Cashbook|Help:intro_cashbook
+K0599	Is mahine ke wajib kharche	30	Cashbook|Help:intro_cashbook
+K0600	Bills mein kitna bacha	30	Cashbook|Help:intro_cashbook
+K0601	Aaj kis ko yaad dilana hai	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0602	Kis ko payment ka message bhejun	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0603	Kis ko phone karna hai	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0604	Aaj kin se paise mangne hain	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0605	Follow up ki list dikhao	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0606	Customer ko reminder kaise bhejun	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0607	Sab ko ek saath message bhejo	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0608	WhatsApp par yaad dahani bhejo	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0609	Kis ko aaj yaad dilana zaroori hai	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0610	Reminder lagao	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0611	Kal kis se paise mangne hain	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0612	Kis ka aaj phone karna hai	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0613	Aaj ke kaam batao	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0614	Kya kya karna baqi hai	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0615	Kis ko payment ki request bhejun	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0616	Ali Raza ko yaad dilao	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0617	Kis ko ab tak yaad nahi dilaya	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0618	Yaad dahani ka message likh do	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0619	Kis ko pehle yaad dilana chahiye	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0620	Aaj kis ki wasooli ki baari hai	31	Help:intro_followup|WhenPays|Figure:NOT_PAID|Today|Likely
+K0621	Kis ne aaj ka wada kiya tha	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0622	Kis ne wada tor diya	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0623	Kis ka wada kal ka hai	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0624	Wada ki list dikhao	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0625	Is hafte kis ne dene ka wada kiya	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0626	Ali Raza ne kab ka wada kiya hai	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0627	Naya wada likhna hai	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0628	Wada kitne ka tha	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0629	Kis ne wada pura kiya	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0630	Kis ne baar baar wada tora	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0631	Wade wali tareekh guzar gayi	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0632	Kis ka wada aaj khatam ho raha hai	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0633	Wade ka hisaab dikhao	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0634	Kis ne kal dene ka kaha tha	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0635	Wada badalna hai	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0636	Kis ke wade par bharosa nahi	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0637	Kis ne kitna dene ka wada kiya	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0638	Aaj kitne wade hain	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0639	Wade ki yaad dahani lagao	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0640	Kis ka wada poora hua	32	NeedName:PROMISE|Person:PROMISE|WhenPays|Help:intro_radar|Promises
+K0641	Naya bill banana hai	33	Help:intro_documents|Count:INVOICES
+K0642	Bill WhatsApp par bhejo	33	Help:intro_documents|Count:INVOICES
+K0643	Bill ka PDF banao	33	Help:intro_documents|Count:INVOICES
+K0644	Purana bill dobara dikhao	33	Help:intro_documents|Count:INVOICES
+K0645	Galat bill cancel karo	33	Help:intro_documents|Count:INVOICES
+K0646	Bill mein discount dena hai	33	Help:intro_documents|Count:INVOICES
+K0647	Invoice banana hai	33	Help:intro_documents|Count:INVOICES
+K0648	Invoice ka template badlo	33	Help:intro_documents|Count:INVOICES
+K0649	Bill par dukan ki muhar lagao	33	Help:intro_documents|Count:INVOICES
+K0650	Bill par naam aur number likhna hai	33	Help:intro_documents|Count:INVOICES
+K0651	Is customer ka bill dikhao	33	Help:intro_documents|Count:INVOICES
+K0652	Aaj ke sab bill dikhao	33	Help:intro_documents|Count:INVOICES
+K0653	Bill ki copy chahiye	33	Help:intro_documents|Count:INVOICES
+K0654	Bill print karna hai	33	Help:intro_documents|Count:INVOICES
+K0655	Bill mein cheez add karo	33	Help:intro_documents|Count:INVOICES
+K0656	Bill mein qeemat badlo	33	Help:intro_documents|Count:INVOICES
+K0657	Bill ka total kitna bana	33	Help:intro_documents|Count:INVOICES
+K0658	Bill ka design alag chahiye	33	Help:intro_documents|Count:INVOICES
+K0659	Letterhead wala bill banao	33	Help:intro_documents|Count:INVOICES
+K0660	Pichle bill ka naqal banao	33	Help:intro_documents|Count:INVOICES
+K0661	Is mahine ki report banao	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0662	Report PDF mein bhejo	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0663	Report kisi ko kaise bhejun	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0664	Saal bhar ki report dikhao	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0665	Customer ki report banao	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0666	Khate ki report chahiye	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0667	Munafa nuqsan ki report	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0668	Aaj ki report dikhao	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0669	Hafte ki report	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0670	Supplier ki report	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0671	Stock ki report	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0672	Tax ke liye hisaab chahiye	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0673	Inspector ko dikhane ka record chahiye	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0674	Bank ko dikhane ke liye report	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0675	Pichle saal ki report dikhao	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0676	Report Excel mein chahiye	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0677	Report print karni hai	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0678	Pura hisaab ek page par dikhao	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0679	Report ka khulasa batao	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0680	Hisaab ka register dikhao	34	Help|Today|Activity|Figure|Period|Status:BOOK
+K0681	Mera data kaise save rakhun	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0682	Backup kaise lun	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0683	Backup kab liya tha	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0684	Phone badal lun to hisaab wapas kaise aayega	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0685	Data kahan save hai	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0686	Backup Google Drive par kaise bhejun	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0687	Purana backup wapas karo	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0688	Mera data mehfooz hai	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0689	Phone kho gaya to hisaab bach jayega	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0690	Backup ka reminder lagao	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0691	Auto backup chalu karo	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0692	Backup mein kitna data hai	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0693	Aakhri backup kab hua	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0694	Backup nahi ho raha kya karun	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0695	Naye phone mein khata kaise laun	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0696	Snapshot kya hota hai	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0697	Purani halat par wapas jana hai	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0698	Kal ka hisaab wapas chahiye	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0699	Data kho gaya wapas laa do	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0700	Backup kitne din purana hai	35	BackupStatus|Help:faq_backup|Help:faq_restore|Help:intro_backup|About:PRIVACY|Help:faq_snapshot
+K0701	App ka lock kaise lagaun	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0702	Password kaise badlun	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0703	Mera data kisi ko nazar to nahi aata	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0704	Fingerprint lagao	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0705	PIN bhool gaya	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0706	Lock hata do	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0707	Koi dusra khata dekh sakta hai	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0708	Staff ko kya kya dikhe	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0709	Privacy kaisi hai	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0710	Screenshot band karna hai	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0711	Khata chhupa kar rakhna hai	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0712	Lock lagane ke baad bhool gaya to	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0713	Naya PIN banana hai	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0714	App ko safe kaise karun	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0715	Mulazim se hisaab chhupana hai	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0716	Mera data internet par jata hai	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0717	Account bina internet ke chalega	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0718	Kya mera data koi dekh sakta hai	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0719	Safety ke liye kya karun	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0720	Lock ki setting kahan hai	36	Help:faq_lock|About:PRIVACY|Help:faq_data|Help:faq_hide
+K0721	App ki zaban Urdu karo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0722	Zaban badalni hai	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0723	English mein kar do	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0724	Sindhi mein dikhao	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0725	Awaaz band karo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0726	Awaaz tez karo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0727	Dukan ka naam badalna hai	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0728	Dukan ki type badalni hai	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0729	Mera naam badlo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0730	Setting kahan hai	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0731	Font bara karo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0732	Hudhud ki awaaz slow karo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0733	Subah ki salam band karo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0734	Notification band karo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0735	Theme badlo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0736	Currency badalni hai	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0737	Tareekh ka format badlo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0738	App ko naya karo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0739	Language ki setting kholo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0740	Dukan ki maloomat badlo	37	Help:faq_language|About:LANGUAGES|Shop|Help|Command|Voice
+K0741	Galat entry delete karo	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0742	Delete hui entry wapas kaise aayegi	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0743	Recycle bin kholo	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0744	Customer delete karna hai	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0745	Customer wapas lana hai	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0746	Ghalti se mit gaya	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0747	Entry theek karni hai	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0748	Entry badalni hai	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0749	Aakhri entry hata do	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0750	Aakhri kaam undo karo	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0751	Delete kiya hua khata wapas chahiye	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0752	Do customers ek hain, milao	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0753	Duplicate customer hata do	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0754	Ek hi naam do dafa hai	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0755	Entry do dafa likh gayi	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0756	Galat raqam likh gayi	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0757	Galat aadmi ke naam par likh gayi	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0758	Entry ki tareekh badalni hai	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0759	Khata band karna hai	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0760	Khata dobara kholna hai	38	Help:faq_delete|Help:screen_bin|Help:faq_snapshot
+K0761	Naya customer kaise add karun	39	Help|About:APP|Abilities
+K0762	Naya item kaise daalun	39	Help|About:APP|Abilities
+K0763	Contacts se customer kaise laun	39	Help|About:APP|Abilities
+K0764	Supplier kaise add karun	39	Help|About:APP|Abilities
+K0765	Pehle kya seekhun	39	Help|About:APP|Abilities
+K0766	Is app mein sab se pehle kya karun	39	Help|About:APP|Abilities
+K0767	Khata kaise likhte hain	39	Help|About:APP|Abilities
+K0768	Hisaab kaise dekhun	39	Help|About:APP|Abilities
+K0769	Mujhe samajh nahi aa raha	39	Help|About:APP|Abilities
+K0770	Mujhe app ke baare mein batao	39	Help|About:APP|Abilities
+K0771	Is app mein kya kya hai	39	Help|About:APP|Abilities
+K0772	Mujhe sab features batao	39	Help|About:APP|Abilities
+K0773	Kaun sa button kahan hai	39	Help|About:APP|Abilities
+K0774	Madad chahiye	39	Help|About:APP|Abilities
+K0775	App mein masla hai kahan batayun	39	Help|About:APP|Abilities
+K0776	Koi ghalti ho gayi	39	Help|About:APP|Abilities
+K0777	App atak raha hai	39	Help|About:APP|Abilities
+K0778	Nayi cheez kya aayi hai	39	Help|About:APP|Abilities
+K0779	Is app ko tez kaise chalaun	39	Help|About:APP|Abilities
+K0780	Mujhe training chahiye	39	Help|About:APP|Abilities
+K0781	Assalam o alaikum	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0782	Hudhud kaise ho	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0783	Tum kaun ho	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0784	Aap kya kar sakte ho	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0785	Aap ka naam kya hai	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0786	Tum kya kya jante ho	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0787	Mera naam kya hai	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0788	Mujhe mera naam batao	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0789	Shukriya	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0790	Jazak Allah	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0791	Bohat achhe	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0792	Aap ne meri madad ki	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0793	Phir se batao	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0794	Dobara sunao	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0795	Ahista bolo	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0796	Tez bolo	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0797	Chup ho jao	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0798	Rehne do	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0799	Theek hai	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0800	Khuda hafiz	40	Voice|Abilities|Chat|Salaam|About|Hello|Again|Voice
+K0801	Meri zakat kitni banti hai	41	Help:screen_zakat
+K0802	Zakat ka hisaab karo	41	Help:screen_zakat
+K0803	Nisaab kitna hai	41	Help:screen_zakat
+K0804	Is saal zakat kitni hai	41	Help:screen_zakat
+K0805	Zakat kis par farz hai	41	Help:screen_zakat
+K0806	Maal ki zakat kaise nikalun	41	Help:screen_zakat
+K0807	Dukan ke maal par zakat kitni hai	41	Help:screen_zakat
+K0808	Udhaar par zakat kaise lagti hai	41	Help:screen_zakat
+K0809	Zakat ki tareekh kab hai	41	Help:screen_zakat
+K0810	Pichle saal zakat kitni di thi	41	Help:screen_zakat
+K0811	Zakat ka calculator kholo	41	Help:screen_zakat
+K0812	Cash aur maal mila kar zakat batao	41	Help:screen_zakat
+K0813	Zakat ke liye total asasa kitna hai	41	Help:screen_zakat
+K0814	Zakat de di likh do	41	Help:screen_zakat
+K0815	Zakat kis ko dun	41	Help:screen_zakat
+K0816	Zakat kitni baqi hai	41	Help:screen_zakat
+K0817	Zakat ka saal kab pura hoga	41	Help:screen_zakat
+K0818	Sone chandi par zakat kitni hai	41	Help:screen_zakat
+K0819	Zakat ka hisaab kaise samjhun	41	Help:screen_zakat
+K0820	Zakat ki yaad dahani lagao	41	Help:screen_zakat
+K0821	Maine kis ko qarz-e-hasna diya hai	42	Help:faq_qarz|Qarz
+K0822	Qarz-e-hasna kitna wapas aana hai	42	Help:faq_qarz|Qarz
+K0823	Qarz-e-hasna ki list dikhao	42	Help:faq_qarz|Qarz
+K0824	Naya qarz-e-hasna likhna hai	42	Help:faq_qarz|Qarz
+K0825	Kis ne qarz-e-hasna wapas kar diya	42	Help:faq_qarz|Qarz
+K0826	Qarz-e-hasna mein koi sood to nahi	42	Help:faq_qarz|Qarz
+K0827	Qarz-e-hasna kis ne liya	42	Help:faq_qarz|Qarz
+K0828	Qarz-e-hasna ka total kitna hai	42	Help:faq_qarz|Qarz
+K0829	Qarz-e-hasna aur udhaar mein farq kya hai	42	Help:faq_qarz|Qarz
+K0830	Qarz-e-hasna ki wapsi ki tareekh kab hai	42	Help:faq_qarz|Qarz
+K0831	Qarz-e-hasna kis ka baqi hai	42	Help:faq_qarz|Qarz
+K0832	Qarz-e-hasna ki kist banao	42	Help:faq_qarz|Qarz
+K0833	Qarz-e-hasna maaf kar diya likh do	42	Help:faq_qarz|Qarz
+K0834	Qarz-e-hasna ka hisaab dikhao	42	Help:faq_qarz|Qarz
+K0835	Ali Raza ko qarz-e-hasna diya	42	Help:faq_qarz|Qarz
+K0836	Qarz-e-hasna ki yaad dahani lagao	42	Help:faq_qarz|Qarz
+K0837	Maine kisi se qarz-e-hasna liya hai	42	Help:faq_qarz|Qarz
+K0838	Qarz-e-hasna wale kis se lena hai	42	Help:faq_qarz|Qarz
+K0839	Qarz-e-hasna kitni raqam ka tha	42	Help:faq_qarz|Qarz
+K0840	Qarz-e-hasna alag se dikhao	42	Help:faq_qarz|Qarz
+K0841	Mulazim ki tankhwah kitni baqi hai	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0842	Mulazim ko kitna diya	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0843	Aaj kis ne kaam kiya	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0844	Mulazim ki hazri dikhao	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0845	Mulazim ka advance kitna hai	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0846	Naya mulazim add karna hai	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0847	Mulazim ka hisaab dikhao	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0848	Is mahine tankhwah kitni gayi	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0849	Mulazim ne kitni chhutti ki	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0850	Mulazim ko kya kya access hai	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0851	Mulazim ne kitni sale ki	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0852	Mulazim ki tankhwah likho	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0853	Mulazim se paise wapas lene hain	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0854	Mulazim ka khata kholo	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0855	Kaun sa mulazim zyada kaam kar raha hai	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0856	Mulazim ko hata do	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0857	Mulazim ko kitna dena hai	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0858	Mulazim ne aaj kya likha	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0859	Mulazim ki entry kaun si hai	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0860	Staff ka total kharcha kitna hai	43	Status:STAFF|Count:STAFF|Help:intro_staff
+K0861	Is fasal ka hisaab kitna hai	44	Help:screen_seasons
+K0862	Pichli fasal se muqabla karo	44	Help:screen_seasons
+K0863	Is season mein kitna udhaar gaya	44	Help:screen_seasons
+K0864	Fasal par kitna wasool hona hai	44	Help:screen_seasons
+K0865	Kharif ka hisaab dikhao	44	Help:screen_seasons
+K0866	Rabi ka hisaab dikhao	44	Help:screen_seasons
+K0867	Naya season shuru karna hai	44	Help:screen_seasons
+K0868	Season band karna hai	44	Help:screen_seasons
+K0869	Is season ki sale kitni hai	44	Help:screen_seasons
+K0870	Season ki wasooli kitni hui	44	Help:screen_seasons
+K0871	Kis ki fasal par paisa baqi hai	44	Help:screen_seasons
+K0872	Kisaan ka hisaab dikhao	44	Help:screen_seasons
+K0873	Fasal kaatne par kis ne dena hai	44	Help:screen_seasons
+K0874	Season ke hisaab se kis ne dena hai	44	Help:screen_seasons
+K0875	Gandum ke season ka hisaab	44	Help:screen_seasons
+K0876	Kapaas ke season ka hisaab	44	Help:screen_seasons
+K0877	Dhaan ke season ka hisaab	44	Help:screen_seasons
+K0878	Is season ka munafa kitna hua	44	Help:screen_seasons
+K0879	Pichle season ka udhaar baqi hai	44	Help:screen_seasons
+K0880	Naye season ka stock kitna chahiye	44	Help:screen_seasons
+K0881	Kaun si scheme chal rahi hai	45	Help:screen_schemes
+K0882	Scheme ka kitna faida hua	45	Help:screen_schemes
+K0883	Nayi scheme banani hai	45	Help:screen_schemes
+K0884	Scheme band karni hai	45	Help:screen_schemes
+K0885	Is scheme mein kis ne hissa liya	45	Help:screen_schemes
+K0886	Scheme ka kitna maal gaya	45	Help:screen_schemes
+K0887	Company ki scheme kya hai	45	Help:screen_schemes
+K0888	Scheme par kitna discount hai	45	Help:screen_schemes
+K0889	Scheme ki aakhri tareekh kab hai	45	Help:screen_schemes
+K0890	Kis customer ne scheme poori ki	45	Help:screen_schemes
+K0891	Scheme ka inaam kis ko dena hai	45	Help:screen_schemes
+K0892	Scheme ki list dikhao	45	Help:screen_schemes
+K0893	Scheme ka hisaab dikhao	45	Help:screen_schemes
+K0894	Scheme mein kitna maal bik gaya	45	Help:screen_schemes
+K0895	Scheme se mujhe kitna milna hai	45	Help:screen_schemes
+K0896	Company se scheme ka paisa kab aayega	45	Help:screen_schemes
+K0897	Scheme mein kaun sa item hai	45	Help:screen_schemes
+K0898	Scheme ka target kitna hai	45	Help:screen_schemes
+K0899	Scheme kitni poori hui	45	Help:screen_schemes
+K0900	Nayi scheme ka message bhejo	45	Help:screen_schemes
+K0901	Doosri dukan kholo	46	Help:faq_business
+K0902	Dukan badlo	46	Help:faq_business
+K0903	Meri doosri dukan ka hisaab dikhao	46	Help:faq_business
+K0904	Dono dukanon ka alag alag hisaab	46	Help:faq_business
+K0905	Naya karobar add karna hai	46	Help:faq_business
+K0906	Kaun si dukan zyada chal rahi hai	46	Help:faq_business
+K0907	Pehli dukan ka cash kitna hai	46	Help:faq_business
+K0908	Doosri dukan ki sale kitni hai	46	Help:faq_business
+K0909	Kaun sa karobar select hai	46	Help:faq_business
+K0910	Karobar ka naam badlo	46	Help:faq_business
+K0911	Dono ka total ek saath dikhao	46	Help:faq_business
+K0912	Ek dukan ka maal doosri mein bhejna hai	46	Help:faq_business
+K0913	Ghar ka khata alag rakhna hai	46	Help:faq_business
+K0914	Dukan aur ghar ka kharcha alag karo	46	Help:faq_business
+K0915	Naye shehar ki dukan add karo	46	Help:faq_business
+K0916	Ek dukan ka khata band karo	46	Help:faq_business
+K0917	Kisi aur dukan ka hisaab kaise dekhun	46	Help:faq_business
+K0918	Har dukan ka munafa batao	46	Help:faq_business
+K0919	Kaun si dukan mein nuqsan hai	46	Help:faq_business
+K0920	Mujhe sab dukanon ki list dikhao	46	Help:faq_business
+K0921	Aaj ki offer ka poster banao	47	Help:screen_posters|Help:screen_card
+K0922	Dukan card share karo	47	Help:screen_posters|Help:screen_card
+K0923	WhatsApp status ke liye poster	47	Help:screen_posters|Help:screen_card
+K0924	Naya poster chahiye	47	Help:screen_posters|Help:screen_card
+K0925	Dukan ka card banana hai	47	Help:screen_posters|Help:screen_card
+K0926	Card par logo lagao	47	Help:screen_posters|Help:screen_card
+K0927	Card par number likhna hai	47	Help:screen_posters|Help:screen_card
+K0928	Card ka design badlo	47	Help:screen_posters|Help:screen_card
+K0929	Card WhatsApp par bhejo	47	Help:screen_posters|Help:screen_card
+K0930	Rate ka poster banao	47	Help:screen_posters|Help:screen_card
+K0931	Scheme ka poster banao	47	Help:screen_posters|Help:screen_card
+K0932	Eid ka poster banao	47	Help:screen_posters|Help:screen_card
+K0933	Dukan ka address card par daalo	47	Help:screen_posters|Help:screen_card
+K0934	Card ki PDF banao	47	Help:screen_posters|Help:screen_card
+K0935	Card ka QR code banao	47	Help:screen_posters|Help:screen_card
+K0936	Poster mein dukan ka naam daalo	47	Help:screen_posters|Help:screen_card
+K0937	Purana poster dikhao	47	Help:screen_posters|Help:screen_card
+K0938	Poster print karna hai	47	Help:screen_posters|Help:screen_card
+K0939	Visiting card chahiye	47	Help:screen_posters|Help:screen_card
+K0940	Nayi offer ki tasveer banao	47	Help:screen_posters|Help:screen_card
+K0941	Agle 30 din mein kitna aayega	48	Help:screen_cashflow|CashFlow
+K0942	Agle 30 din mein kitna jayega	48	Help:screen_cashflow|CashFlow
+K0943	Agle hafte kitne paise aane hain	48	Help:screen_cashflow|CashFlow
+K0944	Agle hafte kitne dene hain	48	Help:screen_cashflow|CashFlow
+K0945	Cash ka andaza lagao	48	Help:screen_cashflow|CashFlow
+K0946	Agle mahine kitna cash chahiye	48	Help:screen_cashflow|CashFlow
+K0947	Kab paise kam padenge	48	Help:screen_cashflow|CashFlow
+K0948	Aane wale kharche batao	48	Help:screen_cashflow|CashFlow
+K0949	Is hafte kya kya aana jana hai	48	Help:screen_cashflow|CashFlow
+K0950	Kal kitne paise aane hain	48	Help:screen_cashflow|CashFlow
+K0951	Kal kitne dene hain	48	Help:screen_cashflow|CashFlow
+K0952	Agle 7 din ka hisaab	48	Help:screen_cashflow|CashFlow
+K0953	Aane wali kistein aur cheque	48	Help:screen_cashflow|CashFlow
+K0954	Paise ki tangi kab hogi	48	Help:screen_cashflow|CashFlow
+K0955	Mere paas agle mahine kitna bachega	48	Help:screen_cashflow|CashFlow
+K0956	Aane wale 15 din ka cash flow	48	Help:screen_cashflow|CashFlow
+K0957	Kis tareekh ko sab se zyada dena hai	48	Help:screen_cashflow|CashFlow
+K0958	Kis tareekh ko sab se zyada aana hai	48	Help:screen_cashflow|CashFlow
+K0959	Agle mahine ka andaza do	48	Help:screen_cashflow|CashFlow
+K0960	Aage ke hisaab ki tasveer dikhao	48	Help:screen_cashflow|CashFlow
+K0961	Ye cheez kis kis ne li	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0962	Is dawai ka kis ne udhaar liya	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0963	Khad kis kis ne li	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0964	Is item ke customers dikhao	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0965	Beej kis ne khareeda	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0966	Kis ne is mahine ye maal liya	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0967	Is cheez ka sab se bara customer kaun hai	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0968	Is cheez par kis ka paisa baqi hai	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0969	Kis ko ye maal dobara chahiye	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0970	Kaun sa customer sirf yahi cheez leta hai	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0971	Is maal ke baqayadar kaun hain	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0972	Is cheez ki sale kis kis ko hui	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0973	Spray kis ne li	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0974	Kis ne kitni bori khad li	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0975	Is cheez ko kis ne wapas kiya	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0976	Kis ne is cheez ka paisa nahi diya	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0977	Ye maal kis ko bheja tha	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0978	Is item ke kitne customers hain	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0979	Kis customer ne kaun si dawai li	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0980	Pichle saal is cheez kis ne li thi	49	NeedGoods|Goods:BUYERS|NeedName:BUYERS|NeedName
+K0981	Samajh nahi aaya	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0982	Dobara batao	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0983	Phir se kaho	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0984	Ye kya hai	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0985	Yeh nahi, doosra batao	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0986	Wohi sawal dobara	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0987	Thora aasan karke batao	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0988	Mera matlab ye nahi tha	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0989	Mujhe ye nahi chahiye	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0990	Pehle wala hisaab dikhao	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0991	Aur batao	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0992	Isi ka detail batao	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0993	Is ka total kya hai	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0994	Is ka muqabla pichle se karo	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0995	Is ko WhatsApp par bhejo	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0996	Isko save karo	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0997	Ye kis ka hisaab hai	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0998	Chhodo, doosri baat karo	50	Voice|Again|Chat|Abilities|Help|About:APP
+K0999	Mujhe kuch aur poochna hai	50	Voice|Again|Chat|Abilities|Help|About:APP
+K1000	Aap ne ghalat bataya	50	Voice|Again|Chat|Abilities|Help|About:APP

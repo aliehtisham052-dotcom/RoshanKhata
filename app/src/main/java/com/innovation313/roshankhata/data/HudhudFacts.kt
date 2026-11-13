@@ -11,6 +11,9 @@ import com.innovation313.roshankhata.ChequesActivity
 import com.innovation313.roshankhata.CounterSaleActivity
 import com.innovation313.roshankhata.DayBookActivity
 import com.innovation313.roshankhata.InvoicesActivity
+import com.innovation313.roshankhata.InsightsActivity
+import com.innovation313.roshankhata.ZakatActivity
+import com.innovation313.roshankhata.AndroidAutomationSettings
 import com.innovation313.roshankhata.KhataActivity
 import com.innovation313.roshankhata.LanguageActivity
 import com.innovation313.roshankhata.PlansActivity
@@ -878,6 +881,81 @@ internal object HudhudFacts {
 
     private val EDITS = setOf(AuditAction.ENTRY_EDITED, AuditAction.CASH_EDITED, AuditAction.PRICE_CHANGED, AuditAction.STOCK_ADJUSTED)
     private val DELETES = setOf(AuditAction.ENTRY_DELETED, AuditAction.CASH_DELETED, AuditAction.PARTY_DELETED)
+
+    /**
+     * What sold most over [window] (this month when none is said; 14 Nov 2026, the owner's list: "sab se zyada kya bik
+     * raha hai"): Sale Insights' own count ([KhataDao.topProductsBetween]), quantities as sold, never a guess at money.
+     */
+    suspend fun topGoods(c: Context, dao: KhataDao, window: VoiceQuestion.Window?): Answer {
+        val w = window ?: VoiceQuestion.Window.THIS_MONTH
+        val (from, to) = Hudhud.span(w)
+        val top = dao.topProductsBetween(from, to, TOP)
+        val label = heading(c, R.string.hudhud_t_top_goods, w)
+        if (!reports()) return ownerOnly(c, label)
+        if (top.isEmpty()) {
+            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_top_goods_none)),
+                open = InsightsActivity::class.java)
+        }
+        val rows = top.map { s ->
+            Row(0, s.name, Format.qty(s.qty, s.unit), null, open = InsightsActivity::class.java)
+        }
+        return Answer(Mood.GOOD, label = label, figure = top.first().name, rows = rows, open = InsightsActivity::class.java)
+    }
+
+    /**
+     * The Qarz-e-Hasna in the book (14 Nov 2026): lent without profit and still to come back, by Zakat's own split
+     * ([KhataDao.observeZakatBalancesByParty]), the five largest by name, and what it is in one plain line.
+     */
+    suspend fun qarz(c: Context, dao: KhataDao, parties: List<PartyWithBalance>): Answer {
+        val label = c.getString(R.string.hudhud_t_qarz)
+        val note = c.getString(R.string.hudhud_qarz_note)
+        if (!reports()) return ownerOnly(c, label)
+        val owed = dao.observeZakatBalancesByParty().first().filter { it.qarz > 0.005 }.sortedByDescending { it.qarz }
+        if (owed.isEmpty()) {
+            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_qarz_none), note),
+                open = KhataActivity::class.java)
+        }
+        val byId = parties.associateBy { it.id }
+        val rows = owed.take(TOP).mapNotNull { q -> byId[q.partyId]?.let { p -> Row(p.id, p.name, HudhudBook.money(q.qarz), null) } }
+        return Answer(Mood.CALM, label = label, figure = HudhudBook.money(owed.sumOf { it.qarz }), rows = rows,
+            lines = listOf(c.resources.getQuantityString(R.plurals.hudhud_qarz_people, owed.size, owed.size), note),
+            open = ZakatActivity::class.java, money = true)
+    }
+
+    /**
+     * The automations (14 Nov 2026, the owner: "automations ka bhi Hudhud se link"): which are on and at what hour, on
+     * this phone. He changes none of them: "Open" shows their own window, where the owner does.
+     */
+    fun automations(c: Context): Answer {
+        val settings = AndroidAutomationSettings(c)
+        val words = AndroidWords(c)
+        val rows = Automations.Kind.values().map { k ->
+            val hour = java.util.Calendar.getInstance().apply {
+                set(java.util.Calendar.HOUR_OF_DAY, settings.hour(k)); set(java.util.Calendar.MINUTE, 0)
+            }.timeInMillis
+            Row(0, words.text(k.word), c.getString(if (settings.isOn(k)) R.string.hudhud_auto_on else R.string.hudhud_auto_off),
+                if (settings.isOn(k)) c.getString(R.string.auto_at_time, DateWords.format("h:mm a", hour)) else null)
+        }
+        return Answer(Mood.CALM, label = c.getString(R.string.auto_title), rows = rows,
+            lines = listOf(c.getString(R.string.hudhud_auto_line)), automations = true)
+    }
+
+    /**
+     * A product's fact asked with no product named (14 Nov 2026: "is cheez ka stock kitna hai", "khad kis kis ne li"):
+     * he tells which products he can answer for — the month's best sellers first, then the rest — each a tap away.
+     */
+    suspend fun needGoods(c: Context, dao: KhataDao, facet: Hudhud.GoodsFacet): Answer {
+        val products = dao.productsOnce()
+        val label = c.getString(R.string.hudhud_need_goods)
+        if (products.isEmpty()) {
+            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.no_products)), open = ProductsActivity::class.java)
+        }
+        val (from, to) = Hudhud.span(VoiceQuestion.Window.THIS_MONTH)
+        val best = dao.topProductsBetween(from, to, TOP).map { it.name.lowercase(Locale.ROOT) }
+        val ordered = products.sortedWith(compareBy({ best.indexOf(it.name.lowercase(Locale.ROOT)).let { i -> if (i < 0) Int.MAX_VALUE else i } }, { it.name }))
+        val rows = ordered.take(TOP).map { p -> Row(0, p.name, "", null, ask = Hudhud.Ask.Goods(listOf(p.id), facet)) }
+        return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_need_goods_line)), rows = rows)
+    }
 
     private const val TOP = 5
     /** Every product's sales in the span (the product asked for is found among them by its name). */

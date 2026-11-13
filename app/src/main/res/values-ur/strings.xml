@@ -4472,4 +4472,26 @@
     <string name="hudhud_check_cleared">فہرست صاف ہو گئی۔</string>
     <!-- Why his name is Hudhud (14 Nov 2026, the owner). -->
     <string name="hudhud_about_name_story">میرا نام حضرت سلیمان علیہ السلام کے ہُدہُد کی نسبت سے رکھا گیا ہے، جو اُن کے پاس سچی خبر لاتا تھا۔ میں بھی آپ کی اپنی کتاب سے سچی خبر لاتا ہوں؛ مجھے بنانے والے چاہتے ہیں کہ ہر حساب سچائی اور ایمانداری سے ہو۔</string>
+    <string name="hudhud_v_again_none">ابھی میں نے آپ کو کچھ نہیں بتایا۔ اپنے کھاتے کے بارے میں کچھ بھی پوچھیں، یا نیچے کوئی سوال دبائیں۔</string>
+    <string name="hudhud_v_slower">ٹھیک ہے، اب میں ذرا آہستہ بولوں گا۔</string>
+    <string name="hudhud_v_faster">ٹھیک ہے، اب میں ذرا تیز بولوں گا۔</string>
+    <string name="hudhud_v_quiet">ٹھیک ہے۔ جب چاہیں پوچھ لیجیے۔</string>
+    <string name="hudhud_v_off">میری آواز بند ہے۔ میں جواب لکھ کر دوں گا؛ دوبارہ سننے کے لیے اوپر اسپیکر دبائیں۔</string>
+    <string name="hudhud_v_on">میری آواز کھل گئی۔ اب میں جواب بول کر بتاؤں گا۔</string>
+    <string name="hudhud_v_volume">فون کے آواز والے بٹن سے میری آواز اونچی یا دھیمی کریں۔</string>
+    <string name="hudhud_t_top_goods">سب سے زیادہ بکنے والا مال</string>
+    <string name="hudhud_top_goods_none">ان دنوں میں کچھ نہیں بکا۔</string>
+    <string name="hudhud_t_qarz">قرضِ حسنہ</string>
+    <string name="hudhud_qarz_note">قرضِ حسنہ وہ رقم ہے جو بغیر کسی منافع کے دی جائے۔ یہ گاہک کے کھاتے میں قرضِ حسنہ کے اختیار کے ساتھ لکھا جاتا ہے، اور زکوٰۃ کی اسکرین اسے الگ گنتی ہے۔</string>
+    <string name="hudhud_qarz_none">کوئی قرضِ حسنہ واپس آنا باقی نہیں۔</string>
+    <string name="hudhud_auto_on">آن</string>
+    <string name="hudhud_auto_off">بند</string>
+    <string name="hudhud_auto_line">ہر ایک اپنے وقت پر بتاتا ہے اور کام کی جگہ کھولتا ہے۔ کوئی بھی خود سے پیغام نہیں بھیجتا نہ اندراج لکھتا ہے۔ بدلنے کے لیے کھولیں دبائیں۔</string>
+    <string name="hudhud_need_goods">کون سا مال؟</string>
+    <string name="hudhud_need_goods_line">مال کا نام بتائیں، یا نیچے سے چن لیں۔</string>
+    <string name="hudhud_privacy_once">آپ کا کھاتہ اسی فون پر رہتا ہے۔ میں ہر جواب یہیں سے پڑھ کر دیتا ہوں اور کسی سے شیئر نہیں کرتا۔</string>
+    <plurals name="hudhud_qarz_people">
+        <item quantity="one">%1$d شخص کو ابھی واپس کرنا ہے</item>
+        <item quantity="other">%1$d افراد کو ابھی واپس کرنا ہے</item>
+    </plurals>
 </resources>

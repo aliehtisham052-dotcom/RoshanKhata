@@ -1,0 +1,202 @@
+# The owner's own kind of questions (14 Nov 2026): two lists he sent, short and spoken, as people really ask.
+# id<TAB>sentence<TAB>answers that are right (a reading starting with any of them; | between)
+L001	Ali Raza ke kitne paise baqaya hain?	Parties|Person
+L002	Sab se zyada udhaar kis ke zimme hai?	Figure:WHO_OWES_MOST
+L003	Aaj kis kis ne paise dene hain?	WhenPays|Figure:NOT_PAID|NeedName:PROMISE
+L004	Is mahine kis ne payment di?	Collected
+L005	Kis customer ka khata sab se purana hai?	Help:screen_aging|Figure:NOT_PAID|Figure:WHO_OWES_MOST
+L006	Ali Raza ka aakhri hisaab kab hua tha?	Person
+L007	Kis ne 30 din se payment nahi di?	Figure:NOT_PAID
+L008	Mere total customers kitne hain?	Count:CUSTOMERS
+L009	Kitne customers ka baqaya 10,000 se zyada hai?	Figure:TO_GET
+L010	Ali Raza ne pichli dafa kitne diye the?	Person:LAST_PAYMENT|Moved
+L011	Naya customer kaise add karun?	Help:screen_khata
+L012	Ek customer ka khata band kaise karun?	Help:faq_delete|Help:screen_bin
+L013	Do ek jaise naam wale customers ko ek kaise karun?	Help:screen_duplicates
+L014	Ali Raza ka poora khata dikhao.	Parties|Person
+L015	Kis customer ne wada kiya tha ke aaj dega?	NeedName:PROMISE|WhenPays
+L016	Mujhe kis supplier ko kitne paise dene hain?	Figure:TO_GIVE
+L017	Is hafte kis supplier ko payment deni hai?	Figure:TO_GIVE|Status:BILLS
+L018	Sab se zyada kis supplier ka qarz hai?	Figure:TO_GIVE
+L019	Supplier ko pichli payment kab ki thi?	NeedName:LAST_PAYMENT|Person
+L020	Supplier se kitna maal liya is mahine?	Deliveries
+L021	Supplier ka naya bill kaise likhun?	Help:screen_bills
+L022	Kis supplier ka hisaab sab se purana hai?	Figure:TO_GIVE|Help:screen_aging|Status:BILLS
+L023	Total payable kitna hai?	Figure:TO_GIVE
+L024	Supplier ko advance diya tha, wo kitna bacha?	Figure:TO_GIVE|NeedName
+L025	Supplier ka khata kaise dekhun?	Help:screen_khata
+L026	Aaj kitna cash aya?	Collected|Cashbook
+L027	Aaj kitna cash gaya?	Cashbook|Activity
+L028	Galla (drawer) mein abhi kitne paise hone chahiyen?	Drawer
+L029	Aaj ki kul bikri kitni hui?	Figure:SALES_TODAY
+L030	Kal ka cash kitna tha?	Drawer|Cashbook
+L031	Is hafte ka cash hisaab batao.	Cashbook
+L032	Is mahine kharcha kitna hua?	Cashbook
+L033	Sab se bara kharcha kya tha?	Cashbook
+L034	Dukan ka kiraya kab likha tha?	Cashbook|Activity
+L035	Cash aur bank ka alag hisaab dikhao.	Cashbook|Drawer
+L036	Cashbook mein galat entry kaise theek karun?	Help:intro_cashbook
+L037	Aaj ki closing kaise karun?	Help:intro_cashbook
+L038	Galla gina ho to farq kaise pata karun?	Help:intro_cashbook
+L039	Zati kharcha aur dukan ka kharcha alag kaise karun?	Help:intro_cashbook|Cashbook
+L040	Aaj ka munafa kitna hua?	Period:PROFIT|Figure:PROFIT_MONTH
+L041	Aaj kya kya bika?	Today|Figure:SALES_TODAY|Count:TICKETS
+L042	Is mahine sab se zyada kya bika?	Figure:SALES_MONTH|Help:screen_sales_report|Help:screen_insights
+L043	Kal ki bikri aur aaj ki bikri ka muqabla karo.	Figure:SALES_TODAY|Period:SALES
+L044	Naya bill kaise banaun?	Help:intro_documents|Help:intro_counter|Help:screen_bills
+L045	Bill mein discount kaise dun?	Help:faq_percent|Help:intro_counter|Help:intro_documents
+L046	Bill WhatsApp par kaise bhejun?	Help:intro_documents|Help:screen_bills
+L047	Purana bill dobara kaise dekhun?	Help:intro_documents|Help:screen_bills
+L048	Galat bill kaise cancel karun?	Help:intro_documents|Help:screen_bills|Help:intro_counter
+L049	Naqad aur udhaar bikri alag alag batao.	Figure:SALES_TODAY|Figure:SALES_MONTH|Help:screen_sales_report
+L050	Is hafte kitna maal kharida?	Deliveries
+L051	Kis cheez par sab se zyada munafa hai?	Help:screen_insights|Figure:PROFIT_MONTH|Help:screen_sales_report
+L052	Kis cheez par nuqsan ho raha hai?	Help:screen_insights|Help:screen_sales_report
+L053	Wapsi (return) kaise likhun?	Returns|Help:intro_counter
+L054	Maal ki kharid qeemat aur bikri qeemat kaise lagaun?	Help:screen_products|Help:screen_rates
+L055	Is saal ki kul bikri kitni hai?	Figure:SALES_MONTH|Period:SALES|Help:screen_sales_report
+L056	Kaun si cheez khatam hone wali hai?	Status:LOW_STOCK
+L057	Is item ka stock kitna bacha hai?	NeedName|Goods|Status:LOW_STOCK
+L058	Kitna maal dukan mein pada hai, uski qeemat kya hai?	Goods|Help:screen_products
+L059	Expiry wala maal kab khatam hoga?	Figure:EXPIRING
+L060	Kaun si cheez bohat dair se nahi bik rahi?	Help:screen_insights|Help:screen_sales_report
+L061	Naya item kaise add karun?	Help:screen_products
+L062	Stock kam ho to yaad dilao.	Status:LOW_STOCK
+L063	Is item ki qeemat kaise badlun?	Help:screen_rates|Help:screen_products
+L064	Stock ginti ke baad farq kaise theek karun?	Help:screen_products
+L065	Kaun si cheez kis supplier se aati hai?	Deliveries|Help:screen_purchase_rates
+L066	Aaj kis ko yaad dilana hai?	WhenPays|Figure:NOT_PAID
+L067	Kis ko payment ka message bhejun?	Figure:NOT_PAID|WhenPays
+L068	Wada ki tareekh kab hai, kis ki?	NeedName:PROMISE|WhenPays
+L069	Kis ne wada tor diya?	NeedName:PROMISE|WhenPays
+L070	Customer ko reminder kaise bhejun?	Help:intro_followup
+L071	Is hafte kitni wasooli hui?	Collected
+L072	Wasooli kam kyun hui?	Collected|Help:screen_insights
+L073	Kis customer par bharosa kar sakta hun?	WhenPays|Help:intro_radar
+L074	Aaj kaun sa cheque clear hona hai?	Status:CHEQUES
+L075	Bounce hone wale cheque kaun se hain?	Status:CHEQUES
+L076	Is hafte kitne cheque aane hain?	Status:CHEQUES
+L077	Bijli, gas ka bill kab dena hai?	Status:BILLS|Help:screen_bills|Figure:TO_GIVE
+L078	Kisti (installment) ki agli tareekh kab hai?	Status:PLANS
+L079	Is mahine ke tamam wajib kharche batao.	Cashbook|Status:BILLS
+L080	Kaun si payment late ho gayi hai?	Figure:NOT_PAID
+L081	Is mahine ka munafa nuqsan batao.	Figure:PROFIT_MONTH|Period:PROFIT
+L082	Pichle mahine se is mahine ka muqabla karo.	Period:SALES|Period:PROFIT|Help:screen_insights|Figure:SALES_MONTH
+L083	Meri dukan ki sehat kaisi hai?	Status:BOOK|Today|Help:screen_insights
+L084	Kaun sa din sab se zyada bikri hoti hai?	Help:screen_sales_report|Help:screen_insights
+L085	Sab se acha customer kaun hai?	Help:screen_insights|Help:screen_sales_report
+L086	Report PDF mein kaise banaun?	Help:screen_sales_report|Help:screen_insights
+L087	Report kisi ko kaise bhejun?	Help:screen_sales_report|Help:screen_insights
+L088	Saal ka hisaab kab tak dekh sakta hun?	Help:faq_data|About
+L089	Tax ke liye kya hisaab chahiye?	Unknown|Help:screen_sales_report|Abilities
+L090	Mere kharche kahan kam ho sakte hain?	Help:screen_insights|Cashbook|Unknown|Abilities
+L091	Mera data kaise save rakhun (backup)?	Help:faq_backup|Help:intro_backup|BackupStatus
+L092	Phone badal lun to hisaab kaise wapas aayega?	Help:faq_restore|Help:faq_backup|Help:intro_backup
+L093	Mera data kisi ko nazar to nahi aata?	About:PRIVACY|Help:faq_data
+L094	App ka password ya lock kaise lagaun?	Help:faq_lock
+L095	Do dukanon ka hisaab alag kaise rakhun?	Help:faq_business
+L096	Naam ya dukan ki maloomat kaise badlun?	Shop
+L097	Internet na ho to bhi app chalegi?	About:APP|About:PRIVACY|Help:faq_data
+L098	Ghalti se entry delete ho gayi, wapas kaise aayegi?	Help:faq_delete|Help:screen_bin
+L099	Aap kaun ho aur kya kya kar sakte ho?	Abilities|Chat:WHO_ARE_YOU
+L100	Mujhe is app mein sab se pehle kya seekhna chahiye?	Abilities|About:APP|Today
+P001	Aaj ka khata	Drawer|Cashbook|Today
+P002	Aaj khate mein kitne paise hain?	Drawer|Cashbook|Today
+P003	Galla mein kitna cash hai?	Drawer|Cashbook|Today
+P004	Abhi dukan mein kitne paise hain?	Drawer|Cashbook|Today
+P005	Aaj ka hisaab batao	Drawer|Cashbook|Today
+P006	Mere paas kitna cash hai?	Drawer|Cashbook|Today
+P007	Aaj ki cash position kya hai?	Drawer|Cashbook|Today
+P008	Aaj kitne paise bane?	Drawer|Cashbook|Today
+P009	Draw mein kitna hona chahiye?	Drawer|Cashbook|Today
+P010	Cash kitna bacha hai?	Drawer|Cashbook|Today
+P011	Aaj ki total sale?	Figure:SALES|Period:SALES|Today
+P012	Aaj kitna maal bika?	Figure:SALES|Period:SALES|Today
+P013	Aaj ki bikri kitni hui?	Figure:SALES|Period:SALES|Today
+P014	Aaj dukan ne kitna kamaya?	Figure:SALES|Period:SALES|Today
+P015	Aaj ka bechna kitna hua?	Figure:SALES|Period:SALES|Today
+P016	Sale kitni hui aaj?	Figure:SALES|Period:SALES|Today
+P017	Aaj ka gallay ka jama kitna hai?	Figure:SALES|Period:SALES|Today
+P018	Aaj kitne ka kaam hua?	Figure:SALES|Period:SALES|Today
+P019	Kal se aaj ki sale zyada hai ya kam?	Figure:SALES|Period:SALES|Today
+P020	Is mahine ki total sale kitni hai?	Figure:SALES|Period:SALES|Today
+P021	Aaj maine kis ko kitna diya?	Activity|Cashbook
+P022	Aaj kis kis ko paise diye?	Activity|Cashbook
+P023	Aaj kitne paise bahar gaye?	Activity|Cashbook
+P024	Aaj ki adaigi kis ko ki?	Activity|Cashbook
+P025	Aaj kis ko payment ki?	Activity|Cashbook
+P026	Aaj supplier ko kitna diya?	Activity|Cashbook
+P027	Aaj ka kharcha kitna hua?	Activity|Cashbook
+P028	Aaj mere paise kahan gaye?	Activity|Cashbook
+P029	Aaj kis par kharcha kiya?	Activity|Cashbook
+P030	Aaj ki total ada-shuda raqam batao	Activity|Cashbook
+P031	Aaj kitna udhaar hua?	Activity|Count:ENTRIES|Today
+P032	Aaj kis ne udhaar liya?	Activity|Count:ENTRIES|Today
+P033	Aaj kis ko udhaar diya maine?	Activity|Count:ENTRIES|Today
+P034	Aaj ki udhaar sale kitni hai?	Activity|Count:ENTRIES|Today
+P035	Aaj kitna maal udhaar gaya?	Activity|Count:ENTRIES|Today
+P036	Aaj naye udhaar kitne hain?	Activity|Count:ENTRIES|Today
+P037	Aaj kitne logon ne udhaar liya?	Activity|Count:ENTRIES|Today
+P038	Aaj sab se zyada udhaar kis ne liya?	Activity|Count:ENTRIES|Today
+P039	Aaj naqad kitna, udhaar kitna?	Activity|Count:ENTRIES|Today
+P040	Aaj ka udhaar ka total	Activity|Count:ENTRIES|Today
+P041	Aaj kis ne paise diye?	Collected|Status:PLANS|Activity
+P042	Aaj kitni wasooli hui?	Collected|Status:PLANS|Activity
+P043	Aaj kis kis ne payment ki?	Collected|Status:PLANS|Activity
+P044	Aaj kitne paise wapas aaye?	Collected|Status:PLANS|Activity
+P045	Aaj kis ne udhaar utara?	Collected|Status:PLANS|Activity
+P046	Aaj kis ne hisaab saaf kiya?	Collected|Status:PLANS|Activity
+P047	Aaj ke jama paise kis kis ke hain?	Collected|Status:PLANS|Activity
+P048	Aaj kis se paise mile?	Collected|Status:PLANS|Activity
+P049	Aaj kitne logon ne qist di?	Collected|Status:PLANS|Activity
+P050	Aaj aane wale paise kitne aaye?	Collected|Status:PLANS|Activity
+P051	Mujhe kis se kitne paise lene hain?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P052	Mera kitna paisa bahar phansa hua hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P053	Total lena kitna hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P054	Logon ke zimme kitna hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P055	Kis kis ne mera paisa dena hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P056	Sab se zyada kis ne dena hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P057	Baqaya kitna hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P058	Kis ka udhaar sab se purana hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P059	Aaj kis se paise mangne hain?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P060	Kis ne wada kiya tha aaj ka?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P061	Mujhe kis ko kitne dene hain?	Figure:TO_GIVE|Status:BILLS
+P062	Mere zimme kitna hai?	Figure:TO_GIVE|Status:BILLS
+P063	Total dena kitna hai?	Figure:TO_GIVE|Status:BILLS
+P064	Supplier ka kitna baqaya hai?	Figure:TO_GIVE|Status:BILLS
+P065	Kis ki raqam deni hai is hafte?	Figure:TO_GIVE|Status:BILLS
+P066	Sab se zyada kis ko dena hai?	Figure:TO_GIVE|Status:BILLS
+P067	Company ka kitna dena hai?	Figure:TO_GIVE|Status:BILLS
+P068	Maal wale ko kitna dena hai?	Figure:TO_GIVE|Status:BILLS
+P069	Mera qarz kitna hai?	Figure:TO_GIVE|Status:BILLS
+P070	Kis ki payment late ho gayi?	Figure:TO_GIVE|Status:BILLS
+P071	Is mahine kitna faida hua?	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P072	Munafa kitna hai?	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P073	Nuqsan to nahi hua?	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P074	Is mahine kharcha kitna hua?	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P075	Sab se bara kharcha kaun sa tha?	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P076	Is hafte kitna bacha?	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P077	Kamai aur kharcha ka farq batao	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P078	Pichle mahine se behtar raha?	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P079	Kis cheez par faida zyada hai?	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P080	Dukan chal rahi hai ya nahi?	Figure:PROFIT_MONTH|Period:PROFIT|Cashbook|Status:BOOK
+P081	Ali Raza ka hisaab dikhao	Parties|Person|Moved|WhenPays
+P082	Ali Raza ke kitne paise baqaya hain?	Parties|Person|Moved|WhenPays
+P083	Ali Raza ne kitna diya hai?	Parties|Person|Moved|WhenPays
+P084	Ali Raza se kitna lena hai?	Parties|Person|Moved|WhenPays
+P085	Ali Raza ka khata kholo	Parties|Person|Moved|WhenPays
+P086	Ali Raza ne aakhri dafa kab diya?	Parties|Person|Moved|WhenPays
+P087	Ali Raza ko kitna maal diya?	Parties|Person|Moved|WhenPays
+P088	Ali Raza ko yaad dilao	Parties|Person|Moved|WhenPays
+P089	Ali Raza par kitna bharosa karun?	Parties|Person|Moved|WhenPays
+P090	Ali ka kitna bacha hai?	Parties|Person|Moved|WhenPays
+P091	Kaun si cheez khatam ho rahi hai?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
+P092	Kis maal ki date nikalne wali hai?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
+P093	Aaj kaun sa cheque aana hai?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
+P094	Aaj kis ko yaad dilana hai?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
+P095	Is cheez ka stock kitna hai?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
+P096	Kaun sa maal nahi bik raha?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
+P097	Aaj kis ki kist aani hai?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
+P098	Kaun sa cheque wapas aaya?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
+P099	Aaj ka kaam kya kya baqi hai?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
+P100	Mujhe aaj kya dekhna chahiye?	Status:LOW_STOCK|Figure:EXPIRING|Status:CHEQUES|WhenPays|Status:PLANS|Today|NeedName|Goods
