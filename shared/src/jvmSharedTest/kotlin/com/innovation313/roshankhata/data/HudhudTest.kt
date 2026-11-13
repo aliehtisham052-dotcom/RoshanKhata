@@ -177,4 +177,50 @@ class HudhudTest {
         assertEquals(Hudhud.Greeting.EVENING, Hudhud.greeting(ShopCountry.UNITED_KINGDOM, 19))
         assertEquals(Hudhud.Greeting.EVENING, Hudhud.greeting(ShopCountry.OTHER, 2))
     }
+
+    // 13 Nov 2026: what he can tell, and a little talk.
+
+    @Test fun `what he can tell, asked in several languages and as a lone help`() {
+        assertEquals(Ask.Abilities, ask("Aap kya bata sakte hain?"))
+        assertEquals(Ask.Abilities, ask("what can you do"))
+        assertEquals(Ask.Abilities, ask("آپ کیا بتا سکتے ہیں؟"))
+        assertEquals(Ask.Abilities, ask("ماذا يمكنك أن تخبرني؟"))
+        assertEquals(Ask.Abilities, ask("help"))
+        assertEquals(Ask.Abilities, ask("Hudhud madad"))
+    }
+
+    @Test fun `small talk is answered, and a salaam with it is answered too`() {
+        assertEquals(Ask.Chat(Hudhud.Talk.HOW_ARE_YOU), ask("kaise ho"))
+        assertEquals(Ask.Chat(Hudhud.Talk.HOW_ARE_YOU), ask("Hudhud kya haal hai yaar"))
+        assertEquals(Ask.Chat(Hudhud.Talk.HOW_ARE_YOU, salaam = true), ask("Assalam o alaikum, kaise hain?"))
+        assertEquals(Ask.Chat(Hudhud.Talk.HOW_ARE_YOU), ask("how are you"))
+        assertEquals(Ask.Chat(Hudhud.Talk.HOW_ARE_YOU), ask("apa kabar"))
+        assertEquals(Ask.Chat(Hudhud.Talk.HOW_ARE_YOU), ask("কেমন আছেন"))
+        assertEquals(Ask.Chat(Hudhud.Talk.WHO_ARE_YOU), ask("tum kaun ho"))
+        assertEquals(Ask.Chat(Hudhud.Talk.WHO_ARE_YOU), ask("آپ کا نام کیا ہے"))
+        assertEquals(Ask.Chat(Hudhud.Talk.THANKS), ask("shukriya"))
+        assertEquals(Ask.Chat(Hudhud.Talk.THANKS), ask("धन्यवाद"))
+        assertEquals(Ask.Chat(Hudhud.Talk.THANKS), ask("thanks a lot"))
+        assertEquals(Ask.Chat(Hudhud.Talk.BYE), ask("Allah Hafiz"))
+        assertEquals(Ask.Chat(Hudhud.Talk.PRAISE), ask("shabash"))
+        assertEquals(Ask.Chat(Hudhud.Talk.FINE), ask("main theek hoon"))
+    }
+
+    @Test fun `a name that small talk also uses stays a name`() {
+        val book = names + listOf(Hudhud.Name(7, "Hafiz Sabir"), Hudhud.Name(8, "Kamal Din"))
+        val hafiz = Hudhud.understand("Hafiz Sabir ka baqaya", book, topics)
+        assertTrue("$hafiz", hafiz is Ask.Parties && hafiz.ids.first() == 7L)
+        val kamal = Hudhud.understand("Kamal", book, topics)
+        assertTrue("$kamal", kamal is Ask.Parties && kamal.ids.first() == 8L)
+        // A customer named beside "kaise ho" is still that customer.
+        val ali = ask("Ali Raza kaise ho")
+        assertTrue("$ali", ali is Ask.Parties && ali.ids.first() == 1L)
+    }
+
+    @Test fun `small talk never takes a figure, today's summary or an entry`() {
+        assertEquals(Ask.Figure(Kind.SALES_TODAY), ask("shukriya, aaj ki bikri kitni hai"))
+        assertEquals(Ask.Today, ask("good morning"))
+        val entry = ask("shukriya Bashir ko 500 diye")
+        assertTrue("$entry", entry is Ask.Entry)
+    }
 }

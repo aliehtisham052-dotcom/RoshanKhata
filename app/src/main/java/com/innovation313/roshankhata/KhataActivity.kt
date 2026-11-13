@@ -63,6 +63,8 @@ import com.innovation313.roshankhata.data.Digits
 class KhataActivity : BaseActivity() {
 
     companion object {
+        /** How long after coming back the list's first update is still "the customer just written to moving". */
+        private const val RETURN_WINDOW_MS = 3000L
         /** How long after the list's first rows the day's safety copy starts ([startDailyCopy]). */
         private const val DAILY_COPY_DELAY_MS = 4_000L
 
@@ -161,6 +163,14 @@ class KhataActivity : BaseActivity() {
      */
     private var shownView: List<Any>? = null
     private var partyAnimator: RecyclerView.ItemAnimator? = null
+
+    /**
+     * When this screen came back into view (13 Nov 2026): the list's first update after that — the customer just
+     * written to moving up — is put in place without the reorder animation, which ran into the fold-back's own
+     * moving of that row and left rows lying over each other; the rows are made plain once it has landed.
+     */
+    private var cameBackAt = 0L
+    private var resumedBefore = false
     private var customerCount = 0
     private var supplierCount = 0
 
@@ -1077,9 +1087,11 @@ class KhataActivity : BaseActivity() {
         val rv = findViewById<RecyclerView>(R.id.rvParties)
         val swap = shownView != null && shownView != view
         shownView = view
+        val justBack = android.os.SystemClock.uptimeMillis() - cameBackAt < RETURN_WINDOW_MS
         // A new list: no moves or fades. The same list updated (a balance, a
-        // new entry): the usual gentle animation, put back here.
-        rv.itemAnimator = if (swap) null else partyAnimator
+        // new entry): the usual gentle animation, put back here — except the
+        // first update after coming back from a customer (cameBackAt).
+        rv.itemAnimator = if (swap || justBack) null else partyAnimator
         // A typed search starts at the top (7 Oct). submitList keeps whatever
         // scroll the list had, so the best match — now ranked first — could
         // sit above the viewport while the owner read the third-best.
@@ -1087,6 +1099,8 @@ class KhataActivity : BaseActivity() {
         lastQuery = query
         adapter.submitList(sorted) {
             if (scrollUp || swap) rv.scrollToPosition(0)
+            // The update landed while the fold-back may still be running: every row plain once it is over.
+            if (justBack) com.innovation313.roshankhata.ui.RowToScreen.settle(rv)
         }
         renderFilterState()
         paintTypeTabs()
@@ -1258,6 +1272,8 @@ class KhataActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (resumedBefore) cameBackAt = android.os.SystemClock.uptimeMillis()
+        resumedBefore = true
         // A row that grew into a ledger is shown again even if its fold-back was cut short.
         com.innovation313.roshankhata.ui.RowToScreen.settle(findViewById(R.id.rvParties))
         // Balance hidden or shown on Home while this screen sat in the back

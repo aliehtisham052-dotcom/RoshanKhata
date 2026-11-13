@@ -20,7 +20,9 @@ import com.innovation313.roshankhata.R
  * second bar asked about WhatsApp. This is one card instead, above the I gave / I got bar: the
  * gold-ringed tick drawing itself, a title, the line of what was written (way · amount · number),
  * and up to two actions - Undo and Send on WhatsApp. It goes by itself after [millis] or with a
- * swipe; TalkBack users get it until they move on (Snackbar's own rule).
+ * sideways swipe ([SwipeAwayLayout], 13 Nov 2026: Snackbar's own swipe works only inside a
+ * CoordinatorLayout, which these screens are not); TalkBack users get it until they move on
+ * (Snackbar's own rule).
  *
  * Above 120% text the actions go under the words, so the words keep the card's width
  * ([TextFit.stackWhenLarge], lesson 58).
@@ -98,7 +100,13 @@ object SavedCard {
         else TextFit.stackWhenLarge(card.findViewById(R.id.savedText), actions)
 
         TextFit.relax(card)
-        shell.addView(card)
+        // Swiped sideways, the whole card (its shell) follows the finger and goes.
+        val swipe = SwipeAwayLayout(activity).apply {
+            mover = shell
+            onGone = { bar.dismiss() }
+        }
+        swipe.addView(card)
+        shell.addView(swipe, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         if (anchor != null && anchor.isShown) bar.anchorView = anchor
         // The list's own foot, as it was before any card; a card shown over another keeps the first one's figure.
         val listFoot = list?.let { rv -> (rv.getTag(R.id.saved_card_list_pad) as? Int) ?: rv.paddingBottom.also { rv.setTag(R.id.saved_card_list_pad, it) } }

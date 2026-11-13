@@ -85,6 +85,23 @@
                 android:textAlignment="viewStart"
                 android:textColor="@color/brand_green_text"
                 android:textSize="14sp" />
+
+            <!-- His voice settings (13 Nov 2026): under his name, not a third button in this row, which left his
+                 name a few letters wide on a 360 dp phone at 150% (lesson 58). -->
+            <TextView
+                android:id="@+id/btnHudSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:text="@string/hudhud_settings"
+                android:textAlignment="viewStart"
+                android:textColor="@color/brand_green_text"
+                android:textSize="13sp"
+                app:drawableStartCompat="@drawable/ic_tune"
+                app:drawableTint="@color/brand_green_text" />
         </LinearLayout>
 
         <ImageButton

@@ -41,13 +41,15 @@ class HudhudWordsTest {
         assertEquals(wrong.joinToString("\n"), 0, wrong.size)
     }
 
-    /** Hudhud's own chips (12 Nov 2026): the backup, the drawer, today's summary and who will pay, in all nine. */
+    /** Hudhud's own chips (12 Nov 2026): the backup, the drawer, today's summary, who will pay and what he can tell, in all nine. */
     @Test fun `every one of Hudhud's own chips is understood as itself, in all nine languages`() {
         val own = mapOf(
             "hudhud_chip_backup" to Hudhud.Ask.BackupStatus,
             "hudhud_chip_drawer" to Hudhud.Ask.Drawer,
             "hudhud_chip_today" to Hudhud.Ask.Today,
-            "hudhud_chip_likely" to Hudhud.Ask.WhenPays(emptyList())
+            "hudhud_chip_likely" to Hudhud.Ask.WhenPays(emptyList()),
+            // 13 Nov 2026: "what can you tell me", the list of what he knows.
+            "hudhud_chip_abilities" to Hudhud.Ask.Abilities
         )
         val wrong = ArrayList<String>()
         for (tag in languages) {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- More-menu icon for Hudhud's voice (13 Nov 2026): a speaker and two sound arcs, one ink (fi_violet_b: dark by day,
+     light by night), as the other More icons. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="@color/fi_violet_b" android:pathData="M3,9.5h4l5,-4.5v14l-5,-4.5h-4z" />
+    <path android:fillColor="#00000000" android:strokeColor="@color/fi_violet_b" android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M15.5,9A4.2,4.2 0 0 1 15.5,15 M18.5,6A8.4,8.4 0 0 1 18.5,18" />
+</vector>

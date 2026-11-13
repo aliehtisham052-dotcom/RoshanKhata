@@ -130,6 +130,56 @@ class HudhudOnDeviceTest {
         }
     }
 
+    /**
+     * 13 Nov 2026: his first chip's own words bring the list of what he can do, and "kaise ho" a word of his own —
+     * small talk, never a customer's name or a figure. Whatever the app's language, the chip's label is understood
+     * (HudhudWordsTest holds all nine).
+     */
+    @Test
+    fun heSaysWhatHeCanDoAndHowHeIs() {
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            var lines: TextView? = null
+            var intro = ""
+            scenario.onActivity { a ->
+                intro = a.getString(R.string.hudhud_can_intro)
+                val sheet = HudhudSheet.open(a, ask = a.getString(R.string.hudhud_chip_abilities), speak = false)
+                lines = sheet?.findViewById(R.id.tvHudLines)
+            }
+            assertTrue(
+                "no list of what he can do, got: ${lines?.text}",
+                waitFor(5000) { lines?.text?.toString()?.startsWith(intro) == true }
+            )
+            var how = ""
+            scenario.onActivity { a ->
+                how = a.getString(R.string.hudhud_chat_how)
+                HudhudSheet.open(a)?.dismiss()
+            }
+            assertTrue("the sheet did not close", waitFor(3000) { !HudhudSheet.isOpen() })
+            scenario.onActivity { a ->
+                lines = HudhudSheet.open(a, ask = "kaise ho", speak = false)?.findViewById(R.id.tvHudLines)
+            }
+            assertTrue("no word of his own for kaise ho, got: ${lines?.text}", waitFor(5000) { lines?.text?.toString() == how })
+        }
+    }
+
+    /** His voice settings open with a style chosen and say how he listens on this phone (no microphone asked here). */
+    @Test
+    fun hisVoiceSettingsOpen() {
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            var style: android.widget.RadioGroup? = null
+            var listen: TextView? = null
+            var sheet: com.google.android.material.bottomsheet.BottomSheetDialog? = null
+            scenario.onActivity { a ->
+                sheet = com.innovation313.roshankhata.ui.HudhudVoiceSheet.show(a)
+                style = sheet?.findViewById(R.id.rgHudStyle)
+                listen = sheet?.findViewById(R.id.tvHudListen)
+            }
+            assertTrue("no style chosen", waitFor(3000) { (style?.checkedRadioButtonId ?: -1) != -1 })
+            assertTrue("how he listens was not said", waitFor(5000) { !listen?.text.isNullOrBlank() })
+            scenario.onActivity { sheet?.dismiss() }
+        }
+    }
+
     @Test
     fun theMorningGreetingShowsOnceAndOpensToday() {
         CoachMarkController.markRun(context)

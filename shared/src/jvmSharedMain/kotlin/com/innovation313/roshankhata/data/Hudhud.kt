@@ -14,12 +14,13 @@ import kotlin.math.ln
  * understood beside the answer, so a misheard question shows as the wrong question, never as a wrong figure for the
  * right one; and when nothing fits it says so ([Ask.Unknown]) rather than guess.
  *
- * The order a question is read in: a "how" question asks for a help page first; then an entry said as a fact ("Ali ko
+ * The order a question is read in: a "how" question asks for a help page first; then a sentence that is only small
+ * talk or "what can you tell me" (13 Nov 2026: how he is, who he is, thanks, goodbye, praise); then an entry said as a fact ("Ali ko
  * 500 diye": an amount and which way it went, no question word), which only opens the form filled in; then a customer
  * or supplier the question names — when he will pay ("kab dega"), what he paid or took over a span of days ("Ali ne
  * kal kitna diya"), else his balance — unless it asks one of the figures, which wins ("aaj ki sale" is today's sale
  * even in a book with a party called Sale); one of VoiceQuestion's figures, over the span of days it names; who is
- * likely to pay now; the backup; the drawer; today's summary; a help page; a greeting. A figure's word counts only as
+ * likely to pay now; the backup; the drawer; today's summary; a help page; small talk inside a longer sentence; a greeting. A figure's word counts only as
  * a whole word ([VoiceQuestion.classify]): "Saleem" and "Ali Wholesale" are names, not the sales.
  */
 object Hudhud {
@@ -66,12 +67,24 @@ object Hudhud {
         /** What needs the owner today: the morning's summary, and "good morning". */
         object Today : Ask()
 
+        /** "What can you tell me?" (13 Nov 2026, the owner): the list of what Hudhud knows, so nobody has to guess. */
+        object Abilities : Ask()
+
+        /**
+         * A little talk with him (13 Nov 2026, the owner: "haal chaal… friendly environment"): how he is, who he is,
+         * thanks, goodbye, praise, and "I'm fine" back. [salaam]: it came with a salaam, which he answers first.
+         */
+        data class Chat(val talk: Talk, val salaam: Boolean = false) : Ask()
+
         /** Nothing Hudhud knows; he says so and offers what he can answer. */
         object Unknown : Ask()
     }
 
     /** What a [Ask.Period] adds up. */
     enum class Measure { SALES, PROFIT }
+
+    /** The small talk he answers. */
+    enum class Talk { HOW_ARE_YOU, WHO_ARE_YOU, THANKS, BYE, PRAISE, FINE }
 
     /** A customer or supplier of the book, as the question may name him. */
     data class Name(val id: Long, val name: String)
@@ -101,6 +114,9 @@ object Hudhud {
         val joined = said.joinToString(" ")
         val how = has(joined, HOW)
         if (how) helpOf(said, topics)?.let { return Ask.Help(it) }
+        // A sentence that is nothing but small talk, or "what can you tell me" (13 Nov 2026): taken before any name,
+        // so "Allah Hafiz" is a goodbye and not a customer called Hafiz; one with any other word goes on as before.
+        talk(said, whole = true)?.let { return it }
         val entry = VoiceEntry.parse(heard, emptyList(), language)
         val asking = heard.any { it == '?' || it == '\u061F' } || has(joined, QUESTION) || said.first() in ASKS_FIRST
         // An entry said as a fact: the form opens filled in, the owner saves it (voice entry's own reading).
@@ -127,6 +143,8 @@ object Hudhud {
         if (has(joined, DRAWER)) return Ask.Drawer
         if (has(joined, TODAY_ASK)) return Ask.Today
         helpOf(said, topics)?.let { return Ask.Help(it) }
+        // Small talk inside a longer sentence ("thanks a lot", "kaise ho yaar sab theek"): only when nothing else fits.
+        talk(said, whole = false)?.let { return it }
         if (has(joined, SALAAM)) return Ask.Salaam
         if (has(joined, HELLO)) return Ask.Hello
         return Ask.Unknown
@@ -321,6 +339,176 @@ object Hudhud {
     /** "Hello", "hi". */
     private val HELLO = listOf("hello", "helo", "hi", "hey", "ہیلو", "हेलो", "हैलो", "হ্যালো", "halo", "مرحبا")
 
+    // ------------------------------------------------------------------------------------------------ small talk
+
+    /**
+     * Small talk, or "what can you tell me" (13 Nov 2026). [whole]: only when every word of the sentence is the
+     * talk's own, a question's little word, a greeting or a friendly filler ("yaar", "bhai") — then it is answered
+     * before any name is looked for. Else (the loose reading, last of all) when the talk is said anywhere; "I'm fine"
+     * and a lone "help" are taken only whole, they mean too much inside a longer sentence.
+     */
+    private fun talk(said: List<String>, whole: Boolean): Ask? {
+        val joined = said.joinToString(" ")
+        val salaam = has(joined, SALAAM)
+        val found: Pair<Ask, List<String>> = when {
+            has(joined, ABILITIES) -> Ask.Abilities to ABILITIES
+            has(joined, HOW_ARE_YOU) -> Ask.Chat(Talk.HOW_ARE_YOU, salaam) to HOW_ARE_YOU
+            has(joined, WHO_ARE_YOU) -> Ask.Chat(Talk.WHO_ARE_YOU, salaam) to WHO_ARE_YOU
+            has(joined, THANKS) -> Ask.Chat(Talk.THANKS, salaam) to THANKS
+            has(joined, BYE) -> Ask.Chat(Talk.BYE, salaam) to BYE
+            has(joined, PRAISE) -> Ask.Chat(Talk.PRAISE, salaam) to PRAISE
+            whole && has(joined, FINE) -> Ask.Chat(Talk.FINE, salaam) to FINE
+            whole && has(joined, HELP_ALONE) -> Ask.Abilities to HELP_ALONE
+            else -> return null
+        }
+        if (!whole) return found.first
+        val own = found.second.flatMap { words(it) }.toSet()
+        return if (said.all { it in own || it in STOP_SET || it in FILLER_SET || it in GREETING_SET }) found.first else null
+    }
+
+    /**
+     * "What can you tell me / what can you do", in the nine languages. Each language's chip says one of these
+     * (hudhud_chip_abilities; HudhudWordsTest holds every chip to it).
+     */
+    private val ABILITIES = listOf(
+        "kya bata sakte", "kya bta sakte", "kya bata sakty", "kia bata sakte", "kya kar sakte", "kya kr sakte",
+        "kya kar sakty", "kia kar sakte", "kya kya bata", "kya kya kar", "kya kya pooch", "kya kya puch",
+        "kya pooch sakta", "kya puch sakta", "kya pooch sakti", "tum kya karte", "aap kya karte", "tumhara kaam",
+        "aap ka kaam", "kya madad kar sakte",
+        "what can you tell", "what can you do", "what do you do", "what can i ask", "what can you help",
+        "what else can you", "what are you able", "what do you know", "your features",
+        "کیا بتا سکتے", "کیا کر سکتے", "کیا کیا بتا", "کیا کیا کر", "کیا پوچھ سکتا", "کیا پوچھ سکتی", "کیا کیا پوچھ",
+        "آپ کا کام", "تمہارا کام", "کیا مدد کر سکتے",
+        "क्या बता सकते", "क्या कर सकते", "क्या क्या बता", "क्या क्या कर", "क्या पूछ सकता", "क्या पूछ सकती",
+        "आपका काम", "तुम्हारा काम", "क्या मदद कर सकते",
+        "কী বলতে পারেন", "কি বলতে পারেন", "কী বলতে পারো", "কি বলতে পারো", "কী করতে পারেন", "কি করতে পারেন",
+        "কী করতে পারো", "কি করতে পারো", "কী জিজ্ঞাসা করতে পারি", "কি জিজ্ঞাসা করতে পারি",
+        "ماذا يمكنك", "ماذا تستطيع", "ماذا تعرف", "بماذا تساعد", "بماذا يمكنك", "ماذا يمكنك أن تخبرني",
+        "چه کارهایی", "چه کارهایی می‌توانی بکنی", "چه کاری می‌توانی", "چه کار می‌توانی", "چه چیزهایی",
+        "چی می‌تونی", "چه می‌توانی", "چه کمکی",
+        "ڇا ٻڌائي سگهو", "ڇا ڪري سگهو", "ڇا ٻڌائي سگهين", "ڇا ڪري سگهين", "توهان ڇا ٻڌائي سگهو ٿا",
+        "bisa apa saja", "kamu bisa apa", "anda bisa apa", "apa yang bisa kamu", "apa yang bisa anda",
+        "apa yang bisa anda lakukan", "apa saja yang bisa"
+    )
+
+    /** "How are you", "kya haal hai", "sunao". */
+    private val HOW_ARE_YOU = listOf(
+        "kaise ho", "kese ho", "kaisay ho", "kaise hain", "kese hain", "kaisay hain", "kaise hai", "kya haal", "kia haal",
+        "kya hal", "kia hal", "haal chaal", "hal chal", "haal hai", "sunao", "sunaao", "sunaen", "kya chal raha",
+        "how are you", "how r u", "how are u", "how's it going", "hows it going", "how is it going", "how are things",
+        "how do you do", "how you doing",
+        "کیسے ہو", "کیسے ہیں", "کیا حال", "حال چال", "حال ہے", "سناؤ", "سنائیں", "کیا چل رہا",
+        "कैसे हो", "कैसे हैं", "क्या हाल", "हाल चाल", "हालचाल", "सुनाओ",
+        "কেমন আছো", "কেমন আছেন", "কেমন আছিস", "কী খবর", "কি খবর",
+        "كيف حالك", "كيف الحال", "كيفك", "شلونك", "كيف أنت",
+        "حالت چطوره", "حالت چطور است", "حال شما", "حالتون چطوره", "چطوری", "خوبی",
+        "ڪيئن آهيو", "ڪيئن آهين", "ڇا حال", "حال احوال",
+        "apa kabar", "gimana kabar", "bagaimana kabar", "kabar kamu", "kabar anda"
+    )
+
+    /** "Who are you", "what is your name". */
+    private val WHO_ARE_YOU = listOf(
+        "kaun ho", "kon ho", "kaun hain", "kon hain", "tum kaun", "aap kaun", "ap kon", "tumhara naam", "aap ka naam",
+        "apka naam", "tumhara nam", "apna naam",
+        "who are you", "what is your name", "whats your name", "what's your name", "your name",
+        "کون ہو", "کون ہیں", "آپ کون", "تم کون", "آپ کا نام", "تمہارا نام", "اپنا نام",
+        "कौन हो", "कौन हैं", "आप कौन", "तुम कौन", "आपका नाम", "तुम्हारा नाम",
+        "তুমি কে", "আপনি কে", "তোমার নাম", "আপনার নাম",
+        "من أنت", "ما اسمك", "اسمك",
+        "تو کی هستی", "شما کی هستید", "اسمت چیه", "اسم شما", "اسمت",
+        "توهان ڪير آهيو", "تون ڪير آهين", "توهان جو نالو", "تنهنجو نالو",
+        "siapa kamu", "kamu siapa", "siapa anda", "anda siapa", "siapa namamu", "nama kamu", "nama anda"
+    )
+
+    /** Thanks. */
+    private val THANKS = listOf(
+        "shukriya", "shukria", "shukarya", "shukriyah", "thanks", "thank you", "thank u", "thanku", "thx",
+        "jazakallah", "jazak allah", "meharbani", "mehrbani",
+        "شکریہ", "جزاک اللہ", "مہربانی",
+        "शुक्रिया", "धन्यवाद", "थैंक यू", "मेहरबानी",
+        "ধন্যবাদ", "শুকরিয়া", "থ্যাংক ইউ",
+        "شكرا", "جزاك الله", "مشكور",
+        "مرسی", "ممنون", "ممنونم", "سپاس", "متشکرم", "تشکر",
+        "مهرباني", "شڪريو", "ٿورا",
+        "terima kasih", "terimakasih", "makasih", "trims"
+    )
+
+    /** Goodbye; a lone "Hafiz" is a name, so only the whole "Allah Hafiz". */
+    private val BYE = listOf(
+        "allah hafiz", "allah hafez", "khuda hafiz", "khudahafiz", "allahhafiz", "fi amanillah", "bye", "bye bye",
+        "goodbye", "good bye", "good night", "see you", "phir milenge", "phir milte",
+        "اللہ حافظ", "خدا حافظ", "فی امان اللہ", "پھر ملیں گے", "پھر ملتے ہیں", "شب بخیر",
+        "अलविदा", "फिर मिलेंगे", "फिर मिलते हैं", "बाय", "शुभ रात्रि", "अल्लाह हाफ़िज़", "खुदा हाफ़िज़",
+        "আল্লাহ হাফেজ", "খোদা হাফেজ", "বিদায়", "আবার দেখা হবে", "শুভ রাত্রি",
+        "مع السلامة", "في أمان الله", "وداعا", "تصبح على خير", "إلى اللقاء",
+        "خداحافظ", "خدانگهدار", "بدرود",
+        "الله حافظ", "موڪلاڻي",
+        "sampai jumpa", "selamat tinggal", "dadah", "selamat malam", "sampai nanti"
+    )
+
+    /**
+     * Praise. Words that are also people's names (Kamal, Mumtaz, Azeem, Bagus) are only in a phrase here: said alone
+     * they ask for that customer.
+     */
+    private val PRAISE = listOf(
+        "shabash", "shaabash", "shabaash", "zabardast", "zabrdast", "bohat khoob", "bahut khoob", "bohat acha",
+        "bohat achha", "kamal kar diya", "kamaal kar diya", "kamal hai", "kamaal hai", "mashallah", "masha allah",
+        "mashaallah", "wah",
+        "well done", "good job", "great job", "great", "awesome", "excellent", "nice", "very good", "good work", "amazing",
+        "شاباش", "زبردست", "بہت خوب", "بہت اچھا", "کمال کر دیا", "کمال ہے", "ماشاءاللہ", "ماشااللہ", "ماشا اللہ", "واہ",
+        "शाबाश", "बहुत बढ़िया", "बढ़िया", "जबरदस्त", "कमाल कर दिया", "कमाल है", "बहुत खूब", "वाह",
+        "সাবাশ", "দারুণ", "খুব ভালো", "চমৎকার", "অসাধারণ",
+        "أحسنت", "رائع", "ما شاء الله", "ماشاء الله",
+        "آفرین", "عالی", "دمت گرم", "ماشالله", "ماشاالله", "خیلی خوب",
+        "شاباس", "واه", "ڪمال ڪري ڇڏيو",
+        "hebat", "mantap", "keren", "luar biasa", "bagus sekali", "kerja bagus"
+    )
+
+    /** "I'm fine" — his own question back ("How's the shop today?") answered. Whole sentences only. */
+    private val FINE = listOf(
+        "theek", "thik", "theek hoon", "thik hoon", "theek hun", "main theek", "sab theek", "alhamdulillah",
+        "alhamdolillah", "al hamdulillah", "fine", "i'm fine", "im fine", "i am fine", "good", "i'm good", "im good",
+        "all good", "doing well",
+        "ٹھیک", "ٹھیک ہوں", "میں ٹھیک", "سب ٹھیک", "الحمدللہ", "الحمد للہ",
+        "ठीक", "ठीक हूँ", "ठीक हूं", "मैं ठीक", "सब ठीक",
+        "ভালো আছি", "ভাল আছি", "ভালো", "আলহামদুলিল্লাহ",
+        "بخير", "أنا بخير", "الحمد لله",
+        "خوبم", "خوب هستم", "من خوبم",
+        "ٺيڪ", "ٺيڪ آهيان", "الحمدلله", "خير آهي",
+        "baik", "baik baik saja", "kabar baik", "alhamdulillah baik", "sehat"
+    )
+
+    /** A lone "help" / "madad": what he can do. Whole sentences only ("cheque help" is the Cheques page). */
+    private val HELP_ALONE = listOf(
+        "help", "help me", "help chahiye", "madad", "madad karo", "madad karein", "madad chahiye",
+        "مدد", "مدد کریں", "مدد چاہیے", "मदद", "मदद करो", "सहायता", "সাহায্য", "সাহায্য করুন",
+        "مساعدة", "ساعدني", "کمک", "کمک کن", "مدد ڪريو", "bantuan", "tolong", "bantu saya"
+    )
+
+    /** Friendly words around small talk ("yaar", "dost", "jaan"): they do not make it a question about anyone. */
+    private val FILLER = listOf(
+        "yaar", "yar", "dost", "jaan", "jani", "pyare", "pyaare", "bro", "buddy", "friend", "dear", "achha", "acha",
+        "accha", "ok", "okay", "oye", "oy", "janab", "sahab", "sahib", "o",
+        "یار", "دوست", "جان", "جانی", "پیارے", "اچھا", "جناب", "صاحب",
+        "यार", "दोस्त", "अच्छा", "जनाब", "साहब",
+        "বন্ধু", "ভাই", "আচ্ছা",
+        "يا", "صديقي", "عزيزي",
+        "عزیزم",
+        "teman", "kak", "mas", "pak", "bu", "dong", "ya"
+    )
+
+    private val FILLER_SET: Set<String> by lazy { FILLER.flatMap { words(it) }.toSet() }
+
+    /** The rest of a salaam, never a name: "alaikum" after "assalam o". */
+    private val SALAAM_TAIL = listOf(
+        "alaikum", "alaykum", "alaikom", "alekum", "aleikum", "walaikum", "wa", "warahmatullah", "wabarakatuh",
+        "علیکم", "عليكم", "عليڪم", "ورحمۃ", "ورحمة", "وبرکاتہ", "وبركاته",
+        "अलैकुम", "আলাইকুম"
+    )
+
+    /** A salaam or a hello said with the talk ("Assalam o alaikum, kaise hain?"). */
+    private val GREETING_SET: Set<String> by lazy { (SALAAM + SALAAM_TAIL + HELLO).flatMap { words(it) }.toSet() }
+
     /**
      * Words a question is made of that name nobody: question words, the little words between them and the words
      * for a balance, in the nine languages. A name is looked for only among what is left, so "Kabir" is not found
@@ -366,7 +554,7 @@ object Hudhud {
 
     /** The single words of the intents above, and the words for money moving: never taken for a name either. */
     private val INTENT_SET: Set<String> by lazy {
-        listOf(HOW, BACKUP, DRAWER, SALAAM, HELLO, WILL_PAY, PAY, WHEN, WHO, TODAY_ASK, VoiceEntry.directionWords())
+        listOf(HOW, BACKUP, DRAWER, SALAAM, SALAAM_TAIL, HELLO, WILL_PAY, PAY, WHEN, WHO, TODAY_ASK, VoiceEntry.directionWords())
             .flatten().flatMap { words(it) }.toSet()
     }
 

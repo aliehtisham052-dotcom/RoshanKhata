@@ -27,6 +27,7 @@ import com.innovation313.roshankhata.StaffActivity
 import com.innovation313.roshankhata.screens.ReportPeriod
 import com.innovation313.roshankhata.ui.FeatureIntro
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.ui.HudhudPrefs
 import com.innovation313.roshankhata.ui.NameSearch
 import com.innovation313.roshankhata.ui.RadarUi
 import kotlinx.coroutines.flow.first
@@ -79,7 +80,9 @@ object HudhudBook {
         /** An amount of money: not said aloud while Home's balance is hidden. */
         val money: Boolean = false,
         /** The words to say, written with a context in the voice's language; null says nothing. */
-        val spoken: ((Context) -> String)? = null
+        val spoken: ((Context) -> String)? = null,
+        /** What the card's button does instead of opening a screen (the sheet's own: download the language). */
+        val doIt: (() -> Unit)? = null
     )
 
     /** A help page Hudhud can point to: a question from Help, or a feature's first-open sheet. */
@@ -147,7 +150,12 @@ object HudhudBook {
     }
 
     /** What Hudhud says when his sheet opens. */
-    fun hello(context: Context) = Answer(Mood.CALM, lines = listOf(context.getString(R.string.hudhud_hello)))
+    fun hello(context: Context) = Answer(
+        Mood.CALM,
+        label = greeting(context),
+        lines = listOf(context.getString(R.string.hudhud_hello)),
+        spoken = { w -> greeting(w) + " " + w.getString(R.string.hudhud_hello) }
+    )
 
     /** What he says when the book could not be read. */
     fun failed(context: Context) = Answer(Mood.CARE, lines = listOf(context.getString(R.string.hudhud_unknown)))
@@ -171,13 +179,59 @@ object HudhudBook {
             )
             Hudhud.Ask.Hello -> Answer(Mood.CALM, lines = listOf(context.getString(R.string.hudhud_hello)),
                 spoken = { it.getString(R.string.hudhud_hello) })
+            Hudhud.Ask.Abilities -> abilities(context)
+            is Hudhud.Ask.Chat -> chat(context, ask)
             Hudhud.Ask.Unknown -> unknown(context)
         }
 
-    /** What he does not know: the card points at the chips under it ("You can ask:"); he says only the first sentence. */
+    /**
+     * What he can tell (13 Nov 2026, the owner: "aap kya bata sakte ho" — the list): what this person may see of it,
+     * as lines; the chips under the card ask each of them in a tap. Said aloud, one sentence pointing at the list.
+     */
+    private fun abilities(context: Context): Answer {
+        val reports = Access.can(Access.Permission.REPORTS)
+        val lines = ArrayList<String>()
+        lines += context.getString(R.string.hudhud_can_intro)
+        if (reports) {
+            lines += "\u2022 " + context.getString(R.string.hudhud_can_dues)
+            lines += "\u2022 " + context.getString(R.string.hudhud_can_sales)
+            lines += "\u2022 " + context.getString(R.string.hudhud_can_drawer)
+            if (RadarUi.on(context)) lines += "\u2022 " + context.getString(R.string.hudhud_can_pay)
+        }
+        if (!ViewerMode.isOn(context)) lines += "\u2022 " + context.getString(R.string.hudhud_can_entry)
+        lines += "\u2022 " + context.getString(R.string.hudhud_can_more)
+        lines += "\u2022 " + context.getString(R.string.hudhud_can_chat)
+        return Answer(Mood.GOOD, lines = lines, spoken = { it.getString(R.string.hudhud_can_spoken) })
+    }
+
+    /**
+     * A little talk (13 Nov 2026, the owner: haal chaal, "bade pyaar se"): a warm short reply that turns back to the
+     * shop. A salaam with it is answered first.
+     */
+    private fun chat(context: Context, ask: Hudhud.Ask.Chat): Answer {
+        val res = when (ask.talk) {
+            Hudhud.Talk.HOW_ARE_YOU -> R.string.hudhud_chat_how
+            Hudhud.Talk.WHO_ARE_YOU -> R.string.hudhud_chat_who
+            Hudhud.Talk.THANKS -> R.string.hudhud_chat_thanks
+            Hudhud.Talk.BYE -> R.string.hudhud_chat_bye
+            Hudhud.Talk.PRAISE -> R.string.hudhud_chat_praise
+            Hudhud.Talk.FINE -> R.string.hudhud_chat_fine
+        }
+        fun words(w: Context) = (if (ask.salaam) w.getString(R.string.hudhud_salaam_reply) + " " else "") + w.getString(res)
+        val mood = when (ask.talk) {
+            Hudhud.Talk.WHO_ARE_YOU, Hudhud.Talk.BYE -> Mood.CALM
+            else -> Mood.GOOD
+        }
+        return Answer(mood, lines = listOf(words(context)), spoken = { w -> words(w) })
+    }
+
+    /**
+     * What he does not know: the card points at the chips under it ("You can ask:") and at the list of what he knows;
+     * he says the first sentence and where the list is.
+     */
     private fun unknown(context: Context) = Answer(
-        Mood.CALM, lines = listOf(context.getString(R.string.hudhud_unknown)),
-        spoken = { firstSentence(it.getString(R.string.hudhud_unknown)) }
+        Mood.CALM, lines = listOf(context.getString(R.string.hudhud_unknown_try), context.getString(R.string.hudhud_unknown)),
+        spoken = { firstSentence(it.getString(R.string.hudhud_unknown)) + " " + it.getString(R.string.hudhud_unknown_try) }
     )
 
     /** The words each of VoiceQuestion's figures goes by. */
@@ -538,10 +592,13 @@ object HudhudBook {
         else -> context.getString(R.string.hudhud_greet_clear)
     }
 
-    /** The greeting by the shop's country and the hour ([Hudhud.greeting], the owner's rule). */
+    /**
+     * The greeting by the shop's country and the hour ([Hudhud.greeting], the owner's rule), with what the owner asked
+     * to be called when he gave it ("Assalam-o-Alaikum, Ali bhai!", 13 Nov 2026).
+     */
     fun greeting(context: Context, now: Long = System.currentTimeMillis()): String {
         val hour = Calendar.getInstance().apply { timeInMillis = now }.get(Calendar.HOUR_OF_DAY)
-        return context.getString(
+        val word = context.getString(
             when (Hudhud.greeting(BusinessProfile.country(context), hour)) {
                 Hudhud.Greeting.SALAAM -> R.string.hudhud_greet_salaam
                 Hudhud.Greeting.MORNING -> R.string.hudhud_greet_morning
@@ -549,6 +606,8 @@ object HudhudBook {
                 Hudhud.Greeting.EVENING -> R.string.hudhud_greet_evening
             }
         )
+        val name = HudhudPrefs.callMe(context) ?: return word
+        return context.getString(R.string.hudhud_greet_named, word.trimEnd('!', '\uFF01', ' '), Format.isolate(name))
     }
 
     /** An amount with its heading: glad of more than nothing unless it is what the shop owes ([calm]). */
@@ -652,7 +711,8 @@ object HudhudBook {
             label = context.getString(page.title),
             lines = listOf(context.getString(page.body)),
             open = page.open,
-            spoken = { w -> firstSentence(w.getString(page.body)) }
+            // Said in full when short, else its first sentences and that the rest is on the screen (13 Nov 2026).
+            spoken = { w -> HudhudSpeech.upTo(w.getString(page.body), SAY_HELP, w.getString(R.string.hudhud_more_on_screen)) }
         )
     }
 
@@ -683,4 +743,6 @@ object HudhudBook {
     private const val DAY_MS = 24L * 60 * 60 * 1000
     private const val OLD_BACKUP_DAYS = 7
     private const val SAY_AT_MOST = 220
+    /** How much of a help page is said aloud before "the rest is on the screen". */
+    private const val SAY_HELP = 320
 }

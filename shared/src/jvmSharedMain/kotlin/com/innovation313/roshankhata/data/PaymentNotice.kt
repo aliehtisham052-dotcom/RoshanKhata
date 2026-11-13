@@ -493,13 +493,20 @@ object PaymentNotice {
      * [country]'s first, then the best sounding. Null when there is none, and the chime plays instead.
      */
     fun <V> offlineVoice(voices: Collection<V>, language: String, country: String, facts: (V) -> VoiceFacts): V? =
+        offlineVoices(voices, language, country, facts).firstOrNull()
+
+    /**
+     * Every voice [offlineVoice] could take, best first (13 Nov 2026, Hudhud's voice choice): on the phone, of
+     * [language], [country]'s first, then the best sounding; voices of one grade keep the engine's order.
+     */
+    fun <V> offlineVoices(voices: Collection<V>, language: String, country: String, facts: (V) -> VoiceFacts): List<V> =
         voices.map { it to facts(it) }
             .filter { (_, f) -> !f.needsNetwork && !f.notInstalled && f.language.equals(language, ignoreCase = true) }
             .sortedWith(
                 compareByDescending<Pair<V, VoiceFacts>> { (_, f) -> country.isNotEmpty() && f.country.equals(country, ignoreCase = true) }
                     .thenByDescending { (_, f) -> f.quality }
             )
-            .firstOrNull()?.first
+            .map { it.first }
 
     // ------------------------------------------------------------------------------------------- the door
 

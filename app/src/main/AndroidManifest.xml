@@ -51,6 +51,18 @@
         android:maxSdkVersion="28" />
 
     <!--
+      Hudhud listens himself (13 Nov 2026, ui/HudhudEars): Android's SpeechRecognizer needs the app to hold the
+      microphone. Asked only when the owner taps Hudhud's microphone (or in Hudhud's voice settings), with Hudhud's own
+      line on why, never at launch. Nothing is recorded or kept: the phone's speech service hands back text, on the
+      phone itself when it has the language. Refused, Hudhud uses the phone's voice-search box as before.
+      A microphone is not required to install the app (the permission would otherwise make Play require one).
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+
+    <!--
       Android 11 and up hides other apps from this one unless they are named.
       Without this the system's speech recogniser looks absent and the mic
       does nothing at all, silently.

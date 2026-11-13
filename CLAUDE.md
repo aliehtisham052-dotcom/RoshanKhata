@@ -2617,6 +2617,22 @@ Each of these cost a build or a bug.
     words were drawn on one line and the bubble kept two lines' height (a963f5d's proof). Change a size after the
     pass — `post { }` from the layout callback, as Home's balance does.
 
+89. **A result comes back before its screen is resumed.** The voice-search box hands its words to onActivityResult
+    while it still holds the microphone and the sound: Hudhud's quick answers (a choice of names) were said into that
+    and lost, slow ones (a sum) came late enough to be heard, so "the speaker is on but he says nothing until Hear
+    again" (the owner, 13 Nov 2026). Before the speaker or the microphone is used after another screen: wait for
+    this one (`lifecycle.withResumed`, then the window's focus, then a breath).
+
+90. **A recycled row keeps every transform an animation left on it.** A shared-element return, the platform's
+    reenter transition and an item animator's move set translation, scale or alpha on a row; one cut off mid-flight
+    and handed to another customer kept them — cards over each other and gaps between (the owner's photos, 1 and 13
+    Nov 2026; making the row visible again was not enough). A row is made plain whole (`RowToScreen.plain`:
+    translation X/Y/Z, scale, rotation, clip bounds, animation matrix), the list ends its animations before settling,
+    and the first update after coming back has no item animator.
+
+91. **Snackbar's swipe-away belongs to CoordinatorLayout.** A Snackbar (or a card shown like one) in
+    `android.R.id.content`, a FrameLayout, cannot be swiped aside; the Saved card carries its own (`SwipeAwayLayout`).
+
 ---
 
 ## Working with the owner
@@ -3006,3 +3022,45 @@ Phone only (Windows has none yet). Named Billy in the mockups until 12 Nov (the 
   isolated in its sentence (`Format.isolate`: a question that begins with a figure keeps it in front in an Urdu
   line — an English question wrapping in an Urdu sentence is the normal layout, not a fault); the bell's expiry row reads
   "Batches expiring within 60 days: 1" (it said "1 batches"; the bell's other counts still need plurals).
+
+### 13 Nov 2026: Hudhud listens himself, says every answer, talks a little (phone; CI only)
+
+The owner's round: no voice-search box ("Hudhud se direct poochhein"), an answer said without Hear again, two or
+three ways of speaking, "aap kya bata sakte ho" and a little haal-chaal, and no growth in the app's size. Nothing
+bundled: his ears and voice are the phone's own (+0 MB). Not tried on a real phone.
+
+- **His voice says every answer while it is on** (the owner: "jab upar on hai to neeche bhi awaaz aani chahiye"),
+  however it was asked; the old "voice in, voice out" is gone. The bug: an answer was said the moment the
+  voice-search box gave its words back, before the screen was resumed (lesson 89) — now `sayWhenHere`: resumed, the
+  sheet's window focused (at most 1.5 s), 250 ms, then said; not said if the app was left meanwhile (10 s). He turns
+  to speak as the answer lands. A part the engine drops is tried once more (700 ms), an 8 s start watchdog, then
+  `hudhud_voice_failed` on the card — never silent without saying so. An amount is still not said while Home's
+  balance is hidden. His greeting (now with the owner's chosen name, `hudhud_greet_named`) is said once a day when
+  the sheet is opened just to talk (`HudhudPrefs.helloDue`).
+- **His voice** (`HudhudVoice`, `HudhudStyle`, `HudhudPrefs`; More → Hudhud's voice and the sheet's "Voice
+  settings", `HudhudVoiceSheet`): the phone's offline voices only (`PaymentNotice.offlineVoices`, by name so "Voice 1"
+  stays Voice 1, at most six offered), three styles — Gentle 0.95/1.0, Lively 1.08/1.15, Serious 0.9/0.86 (rate/pitch)
+  — heard at once when chosen, the phone's own voice downloads (`ACTION_INSTALL_TTS_DATA`), what he calls the owner
+  (30 letters). An answer is said a sentence at a time with 280 ms between (`HudhudSpeech.parts`, shared); a help
+  page is said up to 320 letters of whole sentences, then "the rest is on the screen". Kept on this phone only.
+- **His ears** (`HudhudEars`, RECORD_AUDIO — asked only from his microphone or his settings, after `hudhud_mic_why`;
+  `uses-feature microphone required=false`): Android's SpeechRecognizer without a box, the words shown as heard, the
+  microphone growing with the voice and a stop button while open (a stop before it opens cancels; after, what was
+  said is answered). On the phone itself when it has the language (Android 12+; Android 13+ asks the phone which it
+  has — `checkRecognitionSupport` — and can download the phone's own pack, `triggerModelDownload`), else online,
+  else he says why (`Trouble`: nothing heard, offline, a pack to download, not offline here, busy). Refused the
+  microphone: the voice-search box as before, `EXTRA_PREFER_OFFLINE` without internet. Voice entry on Khata keeps
+  the box. Both privacy policies (sections 11, 24, permissions) say what goes where.
+- **What he can tell and a little talk** (`Hudhud.Ask.Abilities`, `Ask.Chat(Talk, salaam)`, nine languages): his
+  first chip is "What can you tell me?" — the list, by what this person may see (REPORTS, the Radar, a helper's
+  phone); how are you, who are you, thanks, bye, praise, "theek hoon" — a warm line that turns back to the shop, a
+  salaam answered first. Talk is understood only when every word is talk's own (before names: "Ali Raza kaise ho" is
+  Ali; names that are talk words — Hafiz, Kamal — stay names), and never takes a figure, today or an entry.
+  "I can't answer this yet" points at the list. HudhudTest (+4), HudhudSpeechTest, HudhudWordsTest (the chip in
+  nine languages), HudhudOnDeviceTest (+2: the list and "kaise ho"; his settings open).
+- **The Khata list** (the owner's photos: cards over each other, gaps between; "fixed on the 12th, still not"):
+  lesson 90 — `RowToScreen.plain` resets every transform, `settleNow` ends the list's animations first, the first
+  update within 3 s of coming back has no item animator; the card's press is a rounded ripple (`fg_party_card`), not
+  a grey square. **The Saved card swipes away** sideways (`SwipeAwayLayout`, lesson 91). **Import from Contacts'
+  two prompts are by design**: the app's card says why, then Android's own dialog — once; not changed. **The
+  customer link dialog** works and is honest; a preview of what the customer will see is the owner's call.

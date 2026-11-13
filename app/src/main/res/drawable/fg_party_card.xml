@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Khata row's touch (13 Nov 2026, the owner's photo): the pressed shade and the ripple keep to the card's own
+     rounded shape (bg_party_card's 16 dp corners), instead of a square grey block standing out round the card. -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/white" />
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+</ripple>
