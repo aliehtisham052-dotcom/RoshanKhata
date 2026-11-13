@@ -3407,5 +3407,12 @@ for a doubtful one; a professional voice with even pauses; every language spoken
   now internal) a word with "ال", "وال", "بال", "فال", "كال" or "لل" in front also gives the sense the word without it —
   its word, sound and three-letter pieces (`HudhudSense.articleless`, at least three letters left). No bank sentence
   added; the sense learnt again (sense.bin ≈365 KB, 14,212 pieces). Shared Hudhud and Voice tests: 155 pass locally.
+- **Whole figures to the voice (13 Nov 2026, the owner's phone: "Rs 141,768" heard as 141 rupees and 768, "Rs 159,426" as
+  159 and 426):** the voice took the grouping comma for a break. `HudhudSay.plainFigure` hands it the figure whole
+  ("141768 رپيا"), a decimal only when there are real paise ("1250.50"); every other comma-grouped figure (another
+  currency, a count) loses its commas too (`COMMA_GROUPED`). HudhudSayTest holds both screenshots' figures.
+- **Sindhi is spoken in Urdu by design:** Google's Text-to-Speech has no Sindhi voice (its 70 languages list Urdu
+  (Pakistan), not Sindhi — support.google.com/accessibility/android/answer/11101402, checked 13 Nov 2026), so the
+  plan falls back to Urdu and says so on the card.
 - **Not yet:** Windows has no Hudhud; Hindi now reads lowest (88%); the sense knows only what the bank teaches — a new kind of
   question needs sentences in the bank and the sense learnt again.

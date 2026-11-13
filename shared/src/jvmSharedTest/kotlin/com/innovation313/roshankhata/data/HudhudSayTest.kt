@@ -38,9 +38,17 @@ class HudhudSayTest {
 
     @Test fun `the shop's rupees are said in words, other money is left as written`() {
         val rupees: (String) -> String = { "$it rupees" }
-        assertEquals("Today's sale: 12,400 rupees.", HudhudSay.forVoice("Today's sale: Rs 12,400.", "en", rupees = rupees))
-        assertEquals("Paid 1,250.50 rupees", HudhudSay.forVoice("Paid ₹1,250.50", "en", rupees = rupees))
+        assertEquals("Today's sale: 12400 rupees.", HudhudSay.forVoice("Today's sale: Rs 12,400.", "en", rupees = rupees))
+        assertEquals("Paid 1250.50 rupees", HudhudSay.forVoice("Paid ₹1,250.50", "en", rupees = rupees))
         assertEquals("Rp 5.000", HudhudSay.forVoice("Rp 5.000", "in", rupees = rupees))
+        // The whole figure, never broken at its grouping marks (13 Nov 2026, the owner's phone said "Rs 141,768" as 141 and 768).
+        assertEquals("آج کی بکری 159426 روپے", HudhudSay.forVoice("آج کی بکری Rs 159,426", "ur", rupees = { "$it روپے" }))
+        assertEquals("141768 رپيا", HudhudSay.forVoice("Rs 141,768", "sd", rupees = { "$it رپيا" }))
+        assertEquals("159426 rupees", HudhudSay.forVoice("Rs 1,59,426", "en", rupees = rupees))
+        assertEquals("500 rupees", HudhudSay.forVoice("Rs 500.00", "en", rupees = rupees))
+        assertEquals("1250.50 rupees", HudhudSay.forVoice("Rs 1.250,50", "in", rupees = rupees))
+        assertEquals("1000000 rupees", HudhudSay.forVoice("Rs 1,000,000", "en", rupees = rupees))
+        assertEquals("SAR 12400 and 1218 customers", HudhudSay.forVoice("SAR 12,400 and 1,218 customers", "en"))
         // "Rs" inside a word is no money.
         assertEquals("Mrs 5", HudhudSay.forVoice("Mrs 5", "en", rupees = rupees))
     }
