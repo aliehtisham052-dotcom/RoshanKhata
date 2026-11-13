@@ -273,7 +273,8 @@ object Hudhud {
     private val PAID_OUT = listOf(
         "maine", "mainay", "main ne", "mai ne", "hum ne", "humne", "hamne", "kis ko", "kisko", "kis kis ko", "ko diya",
         "ko diye", "ko di", "ko payment", "adaigi ki", "ada ki", "payment ki", "payment kar", "kharcha", "kharch", "kharche",
-        "bahar gaye", "bahar gaya", "i paid", "i gave", "we paid", "paid out", "spent", "money out", "went out", "to whom",
+        "bahar gaye", "bahar gaya", "ko kitna diya", "ko kitne diye", "supplier ko", "jo diya", "diye hue", "chukaya",
+        "chuka diya", "payment out", "paise nikle", "paise bahar", "raqam bheji", "i paid", "i gave", "we paid", "paid out", "spent", "money out", "went out", "to whom",
         "میں نے", "ہم نے", "کس کو", "کسے", "کو دیا", "کو دیے", "کو دی", "ادائیگی کی", "خرچ", "خرچہ", "خرچے", "باہر گئے",
         "मैंने", "हमने", "किस को", "किसको", "को दिया", "को दिए", "खर्च", "আমি দিয়েছি", "কাকে", "খরচ", "دفعت", "أنفقت", "لمن",
         "پرداخت کردم", "دادم", "به کی", "خرج", "مون ڏنا", "ڪنهن کي", "saya bayar", "saya membayar", "kepada siapa", "pengeluaran"
@@ -899,7 +900,9 @@ object Hudhud {
         if (has(joined, BEST_SELLING) || (has(joined, MOST) && has(joined, SELLING)) || (has(joined, WHAT_ALL) && has(joined, SELLING))) {
             return Ask.TopGoods(window)
         }
-        if (window != null && m.has(HudhudMind.C.CREDIT) && has(joined, TOOK_OR_GAVE) && !has(joined, PAID_BACK)) {
+        if (window != null && m.has(HudhudMind.C.CREDIT) && !has(joined, PAID_BACK) && !has(joined, UNTIL_NOW) &&
+            (has(joined, TOOK_OR_GAVE) || window == VoiceQuestion.Window.TODAY)
+        ) {
             return Ask.Activity(window)
         }
         if (has(joined, SOME_GOODS) && VoiceQuestion.classify(joined) == null) {
@@ -919,7 +922,8 @@ object Hudhud {
     /** Whether [heard] names one of the features [byFeature] opens by its page. */
     private fun featureNamed(heard: String): Boolean {
         val joined = words(heard).joinToString(" ")
-        return listOf(ZAKAT, BUSINESSES, SEASONS, SCHEMES, POSTERS, CARDS, CASH_FLOW, AHEAD, DOCUMENTS, UTILITY).any { has(joined, it) } ||
+        return listOf(ZAKAT, BUSINESSES, SEASONS, SCHEMES, POSTERS, CARDS, CASH_FLOW, AHEAD, DOCUMENTS, UTILITY, BIN_WORDS, FIX_WORDS)
+            .any { has(joined, it) } ||
             (has(joined, BILL_WORDS) && has(joined, MAKE_DOC))
     }
 
@@ -961,6 +965,10 @@ object Hudhud {
         "penawaran")
     private val BILL_WORDS = listOf("bill", "bills", "bil", "بل", "بِل", "بلز", "بلوں", "صورتحساب", "بل جو", "बिल", "বিল",
         "nota", "tagihan")
+    /** "Aaj tak", "ab tak": until now — the whole book, not a day. */
+    private val UNTIL_NOW = listOf("aaj tak", "ab tak", "abhi tak", "till now", "so far", "until now", "آج تک", "اب تک",
+        "حتى الآن", "تا امروز", "تا حالا", "اڄ تائين", "आज तक", "अब तक", "আজ পর্যন্ত", "এখন পর্যন্ত", "sampai hari ini",
+        "sejauh ini")
     private val BIN_WORDS = listOf("recycle bin", "bin kholo", "bin", "delete hui", "delete kiya hua", "mit gaya", "mit gayi",
         "ghalti se mit", "wapas lana", "wapas laao", "restore", "undelete", "ری سائیکل بن", "بن کھولو", "واپس لانا", "سلة المحذوفات",
         "استرجاع", "سطل بازیافت", "بازگردانی", "रीसायकल बिन", "वापस लाना", "রিসাইকেল বিন", "ফিরিয়ে আনা", "tempat sampah", "pulihkan")

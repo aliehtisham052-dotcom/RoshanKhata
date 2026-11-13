@@ -3255,7 +3255,7 @@ screen it opens. Not tried on a real phone.
 The owner's night of lists (00:00–01:00): two short lists (200 sentences) and 1,000 sentences, 50 meanings × 20 ways
 (master v18 outside the repository: 13,183 unique questions). Measured by `HudhudOwnerSetTest` on made-up names:
 
-- **Before → after:** short lists 128 → 138 of 200; the 1,000 sentences 511 → 686; held-out 1,067 of 1,170 unchanged.
+- **Before → after:** short lists 128 → 142 of 200; the 1,000 sentences 511 → 711; held-out 1,067 of 1,170 unchanged.
   The floors are this build's figures — raise them, never lower them. Acceptance per meaning is in the resource files
   (owner_set.tsv, owner_1000.tsv): a figure from the book, the person or product named, or the help page of a screen
   Hudhud has no figure for. Never fit the bank to these sets (lesson 111); the rules were fixed by class.
@@ -3265,7 +3265,9 @@ The owner's night of lists (00:00–01:00): two short lists (200 sentences) and 
   another shop/karobar → `faq_business`, utility bills and kiraya → `intro_cashbook`, delete/undo/bin → `faq_delete` /
   `screen_bin`); "aaj ka khata/hisaab", "din kaisa raha" → Today; "samajh nahi aa raha", "madad chahiye" → Abilities;
   "maine kis se saman khareeda", "supplier se maal liya" → Deliveries (the owner's screenshot opened purchase orders'
-  help); udhaar given in a span → Activity(window). `decide` never lets the sense turn these (`featureNamed`).
+  help); udhaar given in a span (today's with no verb too, never "aaj tak") → Activity(window); money paid out
+  ("supplier ko kitna diya", "payment out", "chukaya") → the day book, not Collected (`byWay`). `decide` never lets the
+  sense turn these (`featureNamed`, which also holds the bin and fix words — the sense had turned them into acts).
 - **New asks:** `Voice(AGAIN, SLOWER, FASTER, QUIET, OFF, ON, VOLUME)` — only when the sentence is nothing else ("phir se
   Ali ka hisaab" is Ali's); the sheet repeats the last real answer (`lastReal`), keeps a pace (`HudhudPrefs.pace`,
   0.6–1.5, times the style's rate), stops, turns his voice off/on; louder is the phone's buttons. `TopGoods(window)`

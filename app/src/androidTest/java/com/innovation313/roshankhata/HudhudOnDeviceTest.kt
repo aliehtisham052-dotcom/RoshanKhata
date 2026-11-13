@@ -222,14 +222,19 @@ class HudhudOnDeviceTest {
             scenario.onActivity { a -> HudhudSheet.open(a)?.dismiss() }
             assertTrue(waitFor(3000) { !HudhudSheet.isOpen() })
             var intro = ""
+            var privacy = ""
             var lines: TextView? = null
             scenario.onActivity { a ->
                 intro = a.getString(R.string.hudhud_intro)
+                privacy = a.getString(R.string.hudhud_privacy_once)
                 a.findViewById<View>(R.id.ivHudhudFace).performClick()
                 // The face opened the sheet; open() hands back the one on show.
                 lines = HudhudSheet.open(a)?.findViewById(R.id.tvHudLines)
             }
-            assertTrue("his face did not say who he is, got: ${lines?.text}", waitFor(5000) { lines?.text?.toString() == intro })
+            // The first introduction on a phone also says, once, that the book stays on it (14 Nov 2026).
+            assertTrue("his face did not say who he is, got: ${lines?.text}", waitFor(5000) {
+                lines?.text?.toString().let { it == intro || it == intro + "\n" + privacy }
+            })
         }
     }
 
