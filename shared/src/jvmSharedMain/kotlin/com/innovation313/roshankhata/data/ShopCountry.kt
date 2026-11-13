@@ -91,6 +91,15 @@ enum class ShopCountry(
     /** Anywhere else: no calling code assumed, so a number is used as typed. */
     OTHER("", "", "Rs", 2, "Tax ID", Calendar.MONDAY, Calendar.SUNDAY, ShopCalendar.Kind.GREGORIAN, false, "");
 
+    /**
+     * Whether the country is a member state of the Organisation of Islamic Cooperation (Wikipedia, "Member states of the
+     * OIC", checked 12 Nov 2026): where Hudhud greets with "Assalam-o-Alaikum" at any hour, and where a poster's opening
+     * hours offer the Friday-prayer break by default (13 Nov 2026: a shop in India or Fiji was given a "Friday prayers
+     * 1:00 – 2:30" row it had to find and switch off; there the owner who wants it switches it on). One list for both,
+     * so they cannot disagree.
+     */
+    val oic: Boolean get() = this in OIC_MEMBERS
+
     /** Gold and silver are quoted by the tola in Pakistan, India and Bangladesh; by the gram elsewhere. */
     val tola: Boolean get() = this == PAKISTAN || this == INDIA || this == BANGLADESH || this == AFGHANISTAN
 
@@ -99,6 +108,13 @@ enum class ShopCountry(
         if (code.isEmpty()) "" else Locale("", code).getDisplayCountry(locale).ifBlank { code }
 
     companion object {
+        /** The app's countries that are members of the OIC. */
+        private val OIC_MEMBERS = setOf(
+            PAKISTAN, BANGLADESH, SAUDI_ARABIA, UAE, QATAR, OMAN, KUWAIT, BAHRAIN, EGYPT, IRAN, AFGHANISTAN, INDONESIA,
+            MALAYSIA, TURKEY, NIGERIA, IRAQ, JORDAN, LEBANON, SYRIA, PALESTINE, YEMEN, MOROCCO, ALGERIA, TUNISIA, LIBYA,
+            SUDAN, MAURITANIA, TAJIKISTAN
+        )
+
         /** The shop's country now, read with the profile ([refresh] on the phone, FileShopSettings on Windows). */
         @Volatile
         var current: ShopCountry = PAKISTAN

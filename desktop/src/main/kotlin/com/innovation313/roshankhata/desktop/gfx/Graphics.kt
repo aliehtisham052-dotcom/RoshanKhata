@@ -536,8 +536,11 @@ class Path() {
 
 /**
  * androidx.core.graphics.PathParser: SVG path data ("M6.62,10.79c1.44,2.83 …")
- * to a Path. Every command but the elliptical arc (A), which none of the
- * app's icons use; one is refused rather than drawn wrong.
+ * to a Path, every command of the SVG grammar. The elliptical arc (A) came on
+ * 13 Nov 2026 with the shop-type glyphs on the New stock poster, whose rounded
+ * corners are arcs; it is turned into cubic curves by the SVG specification's
+ * endpoint-to-centre rule (at most a quarter turn to each curve), flags 0 or 1
+ * written apart as the app's own icons write them.
  */
 object PathParser {
     private val token = Regex("""[A-Za-z]|[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?""")
@@ -590,6 +593,14 @@ object PathParser {
                     x = ox + num(); y = oy + num()
                     out.quadTo(cx, cy, x, y)
                 }
+                'A' -> {
+                    val rx = num(); val ry = num(); val rot = num()
+                    val large = num(); val sweep = num()
+                    if ((large != 0f && large != 1f) || (sweep != 0f && sweep != 1f)) throw IllegalArgumentException("an arc flag is not 0 or 1")
+                    val nx = ox + num(); val ny = oy + num()
+                    arc(out, x, y, rx, ry, rot, large == 1f, sweep == 1f, nx, ny)
+                    x = nx; y = ny
+                }
                 'Z' -> { out.close(); x = sx; y = sy }
                 else -> throw IllegalArgumentException("path command '$cmd' is not supported")
             }
@@ -597,6 +608,50 @@ object PathParser {
             if (cmd.uppercaseChar() == 'Z' && more()) throw IllegalArgumentException("numbers after Z")
         }
         return out
+    }
+
+    /** One elliptical arc from ([x1], [y1]) to ([x2], [y2]) as cubic curves (SVG 1.1, F.6.5 and F.6.6). */
+    private fun arc(out: Path, x1: Float, y1: Float, rx0: Float, ry0: Float, rotation: Float,
+                    large: Boolean, sweep: Boolean, x2: Float, y2: Float) {
+        if (x1 == x2 && y1 == y2) return
+        var rx = Math.abs(rx0.toDouble())
+        var ry = Math.abs(ry0.toDouble())
+        if (rx == 0.0 || ry == 0.0) { out.lineTo(x2, y2); return }
+        val phi = Math.toRadians(rotation.toDouble())
+        val cosP = Math.cos(phi)
+        val sinP = Math.sin(phi)
+        val dx = (x1 - x2) / 2.0
+        val dy = (y1 - y2) / 2.0
+        val x1p = cosP * dx + sinP * dy
+        val y1p = -sinP * dx + cosP * dy
+        val lambda = x1p * x1p / (rx * rx) + y1p * y1p / (ry * ry)
+        if (lambda > 1.0) { val k = Math.sqrt(lambda); rx *= k; ry *= k }
+        val den = rx * rx * y1p * y1p + ry * ry * x1p * x1p
+        var coef = Math.sqrt(Math.max(0.0, (rx * rx * ry * ry - den) / den))
+        if (large == sweep) coef = -coef
+        val cxp = coef * rx * y1p / ry
+        val cyp = -coef * ry * x1p / rx
+        val cx = cosP * cxp - sinP * cyp + (x1 + x2) / 2.0
+        val cy = sinP * cxp + cosP * cyp + (y1 + y2) / 2.0
+        val theta = Math.atan2((y1p - cyp) / ry, (x1p - cxp) / rx)
+        var delta = Math.atan2((-y1p - cyp) / ry, (-x1p - cxp) / rx) - theta
+        if (!sweep && delta > 0.0) delta -= 2.0 * Math.PI
+        if (sweep && delta < 0.0) delta += 2.0 * Math.PI
+        val n = Math.max(1, Math.ceil(Math.abs(delta) / (Math.PI / 2.0) - 1e-9).toInt())
+        val step = delta / n
+        val t = 4.0 / 3.0 * Math.tan(step / 4.0)
+        fun px(u: Double, v: Double) = (cx + rx * cosP * u - ry * sinP * v).toFloat()
+        fun py(u: Double, v: Double) = (cy + rx * sinP * u + ry * cosP * v).toFloat()
+        var a = theta
+        for (i in 0 until n) {
+            val cosA = Math.cos(a); val sinA = Math.sin(a)
+            val cosB = Math.cos(a + step); val sinB = Math.sin(a + step)
+            val c1u = cosA - t * sinA; val c1v = sinA + t * cosA
+            val c2u = cosB + t * sinB; val c2v = sinB - t * cosB
+            out.cubicTo(px(c1u, c1v), py(c1u, c1v), px(c2u, c2v), py(c2u, c2v), px(cosB, sinB), py(cosB, sinB))
+            a += step
+        }
+        // The curve ends where the data says, whatever the rounding.
     }
 }
 

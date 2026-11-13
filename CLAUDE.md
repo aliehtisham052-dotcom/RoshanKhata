@@ -117,7 +117,7 @@ No account, no server, no ads. Everything stays on the phone.
   **The phone's printed designs run unchanged on the computer**: invoices
   (InvoicePdfExport, InvoiceTemplateKit), business cards (CardTemplates,
   CardGlyphs, CardLogo) and posters (PosterKit, PosterDesigns, PosterFlat,
-  PosterGlyphs, PosterNewStock, PosterWords, PosterMotion, poster3d's Hero,
+  PosterGlyphs, PosterNewStock, PosterFoot, PosterEmblems (written from the trade icons), PosterWords, PosterMotion, poster3d's Hero,
   CoinFace, SealFace, data's Poster and PosterFields) are COPIED by
   `scripts/gen_desktop_invoice.py`, `gen_desktop_cards.py` and
   `gen_desktop_poster.py` (Strings CI fails if stale — re-run after
@@ -2617,6 +2617,33 @@ Each of these cost a build or a bug.
     words were drawn on one line and the bubble kept two lines' height (a963f5d's proof). Change a size after the
     pass — `post { }` from the layout callback, as Home's balance does.
 
+89. **A row added under a design is placed by the design's own arithmetic, never at a fixed height.** The 8 Nov address
+    rows were drawn at fixed heights beneath sign-offs the designs had not moved, so a long address or an email touched
+    the seal, the name or the phone on Fitr, Ramazan, Jumu'ah, 14 August, Adha and Thanks (13 Nov, review item M18).
+    The foot is one pure piece of arithmetic (`PosterFoot.plan` / `column` / `stack`, `PosterFootTest`): a design hands it
+    the top it may not pass (`topLimit`) and draws where it is told; a new foot row goes into it, with a test. The proofs
+    are drawn with a long address AND an email, in Urdu (Nastaliq rows are 58 apart, Latin 48), brand mark on and off.
+
+90. **Letter-spacing is for Latin.** A tracked word in Arabic script is pulled apart letter by letter, and in the desktop
+    proofs Hindi and Bengali words split too ("बं द", "ছা ড়": the signs belong to the letter before them). `PosterKit.canTrack(text)`
+    says whether words may be tracked — ask it before any `letterSpacing` on words (a phone number is digits and keeps its
+    spacing). The phone's own text engine was not run for Indic scripts here; the rule costs a Latin-only look at most.
+
+91. **A default that differs by region reads one property of the shop's country (lesson 29), and a saved choice is never
+    overwritten by it.** The Hours poster's Friday-prayer row was on for every shop. It is now on by default only where
+    `ShopCountry.oic` (the app's 28 OIC member states, Wikipedia 12 Nov 2026 — the same list as Hudhud's salaam, so the two
+    cannot disagree); `PosterFields.fromJson` reads `optBoolean("prayerBreak", default)`, so only a field that was never
+    saved takes it. A second list of countries for the next regional default is the mistake this prevents.
+
+92. **A new use of a stand-in is drawn before it is trusted.** New stock's flat crate wears the shop's own trade emblem
+    (`PosterEmblems`, generated from `ic_trade_*.xml`). All 25 icons use SVG arcs, which the desktop `gfx` PathParser (the
+    android.graphics stand-in) did not know: the first draw threw "path command 'A' is not supported". Found by drawing,
+    not by reading; the stand-in has arcs now. A new picture source is drawn for every trade and the four scripts.
+
+93. **Anything scattered at random is kept off the text.** The background specks sat on the Hours card's words and read
+    as bullets (the 13 Nov proofs). `PosterNewStock.drawBackground(keepClear = panel)` skips specks near a panel; a new
+    design that draws a card over a scattered background passes the card's rectangle.
+
 ---
 
 ## Working with the owner
@@ -3006,3 +3033,48 @@ Phone only (Windows has none yet). Named Billy in the mockups until 12 Nov (the 
   isolated in its sentence (`Format.isolate`: a question that begins with a figure keeps it in front in an Urdu
   line — an English question wrapping in an Urdu sentence is the normal layout, not a fault); the bell's expiry row reads
   "Batches expiring within 60 days: 1" (it said "1 batches"; the bell's other counts still need plurals).
+
+### The posters, a high-end pass (13 Nov 2026, branch poster-highend-13nov — the owner: "study the posters deeply, point out every flaw per niche, improve them, commit, do not push yet")
+
+The stills and the flat fallbacks (thumbnails, phones without 3D, Windows). **Not touched, another session's:** PosterMotion,
+PosterVideo, poster3d/* (Hero, HeroStage, Studio, Ktx, CoinFace, SealFace), assets/poster3d, store/poster3d, the poster3d-probe
+workflow and Poster3dOnDeviceTest/PosterVideoOnDeviceTest; every design still returns the same `PosterMotion.Spec`
+(`PosterNewStock.DUST` is as it was). **Nothing was seen on a phone**: the proofs are the desktop copies drawn headless by a
+harness outside the repo (flat heroes, the container's fonts — not the app's Sora and Nastaliq files), in English, Urdu, Hindi,
+Bengali, Indonesian, Arabic, Farsi and Sindhi, for a dozen trades, with a long address and an email, with no phone number, and
+with the brand mark on and off (it is OFF in the real app, `Branding.ON_POSTERS_AND_CARDS`). No Gradle on that machine (Maven
+Central is closed to it): the pure logic was run for real with kotlinc + JUnitCore on the junit 4.13.2 jar of the Gradle
+distribution (PosterFootTest 20, PosterKitTrackTest 4, PosterFieldsFridayTest 2, the first two of ShopCountryOicTest; the foot's
+constants were changed one at a time and a test failed each time); the Hudhud case of ShopCountryOicTest and everything that
+needs Android were not run — CI is the first real build.
+
+- **The foot (critical, review item M18; lesson 89):** `PosterFoot` (shared by the designs, copied to Windows) is the arithmetic of
+  the bottom of a poster — `plan` for the sign-off designs (seal, phone, address rows, brand mark), `column` for Eid ul-Adha's
+  left column, `stack` for Thank you's centred block (name, phone, address). Each takes the top it may not pass and gives
+  every position back; an address is one row when address and email fit in 900 px and two rows when not (rows 48 apart, 58 in
+  Arabic script); then the seal shrinks (never under `SEAL_FLOOR` 104), the "from" line drops and the rows tighten, in that order,
+  before anything touches. Fitr, Ramazan, Jumu'ah and 14 August call `PosterKit.foot(…)` with their own limits, Adha `column`,
+  Thanks `stack`. Before, a long address or an email touched the seal, the name or the phone on six designs.
+- **New stock for every trade:** the flat crate is an emerald crate on a gold-rimmed plinth whose plaque wears the shop's own trade
+  emblem (`PosterEmblems`, written by `gen_desktop_poster.py` from the 25 `ic_trade_*.xml`; the script refuses an icon that is not
+  two paths on a 24 x 24 canvas, so a changed trade icon changes the poster and CI's `--check` sees it; `TradeVocab.key(context)`
+  names the trade, a book with none is agri as everywhere). Windows' `gfx` PathParser learned SVG arcs for it (lesson 92). The 3D
+  crate of the live preview, the video and the shared still is the other session's and unchanged (poster3d/* has no trade logic).
+- **Friday prayers (lesson 91):** the Hours poster offers the row by default only where `ShopCountry.oic`; a saved choice stays.
+  Hudhud's salaam reads the same property (`Hudhud.greeting`; its private list went). Decided by the owner's norm, one line to
+  revert: `PosterFields.prayerBreak`'s default.
+- **Words and specks (lessons 90, 93):** no letter-spacing on Arabic-script, Devanagari or Bengali words (`PosterKit.canTrack`: the
+  kicker, the closed sign, the custom tag); the Hours card keeps background specks off its text (`drawBackground(keepClear)`).
+- **Tests (CI runs them):** PosterFootTest, PosterKitTrackTest, PosterFieldsFridayTest, PosterEmblemsTest (every `Trade` has an
+  emblem — also cross-checked by a script), ShopCountryOicTest.
+- **Left, with the reason (for the owner):** (1) New stock says one thing three times — kicker "Just arrived", headline "New stock has
+  arrived!", message "Fresh stock is in…" — and a restaurant, salon, tailor or fuel station has no "stock": per-trade occasions and
+  wording (rate board, new collection, fresh today, new menu) need strings in nine languages and a native read for Sindhi and
+  Bengali. (2) Only 14 August is limited to a country (`PosterOccasion.offeredIn`); other national days need each country's verified
+  date, flag and wording. (3) One phone number serves both the call and WhatsApp (a separate WhatsApp number is a profile field); a
+  number is printed as typed (`DuplicateDetector.displayPhone` could shape it). (4) WhatsApp Status's safe zones (what its own
+  buttons cover at the top and foot) are not checked against a real phone. (5) The thumbnails' tick badge and the four-item New stock
+  line size are XML and device matters. (6) The app's own Urdu and Other-script fonts on a phone, and the poster's look at 150% text,
+  were not seen. (7) For the other session: `CoinFace.kt` line 73 still letter-spaces the coin's word in Hindi and Bengali (a
+  one-line fix, `if (PosterKit.canTrack(word))`), and the 3D crate wants the same emblem as its plaque. (8) Known residual: Urdu with
+  two address rows and the brand mark ON lets Thank you's name come within a shadow of the seal.

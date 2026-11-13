@@ -98,6 +98,13 @@ object PosterKit {
 
     fun hasArabic(s: String) = s.any { it in '؀'..'ۿ' || it in 'ݐ'..'ݿ' || it in 'ﭐ'..'﻿' }
 
+    /**
+     * Whether a text may be letter-spaced. Tracking opens a gap inside a word whose letters join (Urdu, Sindhi, Arabic
+     * and Farsi) and cuts the headline line that Devanagari and Bengali hang their letters from: the Hindi kicker read
+     * "अ भी-अ भी आ या" and the closed sign "बं द" (13 Nov). Only Latin words are tracked.
+     */
+    fun canTrack(s: String): Boolean = !hasArabic(s) && s.none { it in '\u0900'..'\u09FF' }
+
     fun initials(name: String): String {
         val words = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
         if (words.isEmpty()) return "★"
@@ -230,7 +237,7 @@ object PosterKit {
     fun kicker(page: Page, text: String, cy: Float, colour: Int = GOLD, size: Float = 33f, spaced: Boolean = true) {
         val p = textPaint(page.context, text, if (page.urdu) size + 6f else size, colour, true, page.locale, page.urdu)
         p.textAlign = Paint.Align.CENTER
-        if (!page.urdu && spaced && !hasArabic(text)) p.letterSpacing = 0.4f
+        if (!page.urdu && spaced && canTrack(text)) p.letterSpacing = 0.4f
         fitWidth(p, text, 760f)
         inkLine(page.c, text, p, W / 2, cy)
         val kw = p.measureText(text) / 2 + 36f
@@ -322,7 +329,7 @@ object PosterKit {
      */
     fun signOff(page: Page, from: String, cy: Float, nameColour: Int = GOLD, fromColour: Int = 0xFF9FE3D6.toInt(),
                 phoneColour: Int = 0xB3F6EBD0.toInt(), inner: Int = 0xFF157A72.toInt(), innerDark: Int = 0xFF04211F.toInt(),
-                sealSize: Float = 138f, showPhone: Boolean = true) {
+                sealSize: Float = 138f, showPhone: Boolean = true, phoneCy: Float = cy + sealSize / 2 + 62f) {
         val c = page.c
         val name = page.shopName
         val np = textPaint(page.context, name, if (page.urdu) 54f else 52f, nameColour, true, page.locale, page.urdu)
@@ -345,8 +352,25 @@ object PosterKit {
                 typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
                 textSize = 36f; color = phoneColour; textAlign = Paint.Align.CENTER; letterSpacing = 0.14f
             }
-            inkLine(c, page.phone.trim(), pp, W / 2, cy + sealSize / 2 + 62f)
+            inkLine(c, page.phone.trim(), pp, W / 2, phoneCy)
         }
+    }
+
+    /**
+     * The whole foot as one block (13 Nov 2026, see [PosterFoot]): the sign-off, the phone under it, the address and
+     * the email, and the app's mark. [cy] and [sealSize] are where the design wants the seal row; it stands there
+     * unless the rows under it need the room, and then it is lifted (never above [topLimit], the lowest the art
+     * above reaches plus its margin) and, if it must, made smaller. No row can overlap another.
+     */
+    fun foot(page: Page, from: String, cy: Float, topLimit: Float = 0f, nameColour: Int = GOLD,
+             fromColour: Int = 0xFF9FE3D6.toInt(), phoneColour: Int = 0xB3F6EBD0.toInt(),
+             addressColour: Int = 0xB3F6EBD0.toInt(), markColour: Int = 0x66F6EBD0,
+             inner: Int = 0xFF157A72.toInt(), innerDark: Int = 0xFF04211F.toInt(), sealSize: Float = 138f) {
+        val plan = PosterFoot.plan(cy, sealSize, !page.phone.isNullOrBlank(), addressLines(page), page.mark != null, topLimit,
+            addressPitch(page))
+        signOff(page, from, plan.cy, nameColour, fromColour, phoneColour, inner, innerDark, plan.sealSize, phoneCy = plan.phoneCy)
+        address(page, plan.addressCy, addressColour)
+        mark(page, markColour, plan.markCy)
     }
 
     /** The gold call button, or nothing if the profile has no phone. */
@@ -396,58 +420,87 @@ object PosterKit {
         inkLine(c, phone, pp, (textLeft + textRight) / 2, cy)
     }
 
+    // The address and the email: the plan says how they stand, so the foot can ask how tall they are before drawing.
+    private const val ADDRESS_ICON = 40f
+    private const val ADDRESS_ICON_GAP = 14f
+    private const val ADDRESS_BETWEEN = 54f
+
     /**
-     * The address and the email under the call button, each with its mark:
-     * on one line when both fit, else the address over the email. Nothing is
-     * drawn for what the owner left out.
+     * How the address and the email stand: [lines] is 1 or 2, [size] the text size of the one line (0 for two), [pitch]
+     * the distance from the first row to the second. An address written in Arabic script (Nastaliq) has tails and
+     * stacked marks that reach into the row under it at the Latin pitch of 48 (13 Nov proofs), so it has 58.
      */
-    fun address(page: Page, cy: Float, colour: Int = 0xD9F6EBD0.toInt(), pin: Int = GOLD) {
+    private class AddressPlan(val items: List<Pair<Int, String>>, val lines: Int, val size: Float, val pitch: Float = PosterFoot.LINE)
+
+    private fun addressPaint(page: Page, text: String, size: Float, colour: Int): TextPaint {
+        val p = if (hasArabic(text)) textPaint(page.context, text, size, colour, false, page.locale, page.urdu)
+            else textPaint(page.context, text, size, colour, false, Locale.ENGLISH, false)
+        p.textAlign = Paint.Align.LEFT
+        return p
+    }
+
+    private fun addressWidth(text: String, p: TextPaint) = ADDRESS_ICON + ADDRESS_ICON_GAP + p.measureText(text)
+
+    /** One line when the address and the email fit 900 wide at 30 or more, else two; null when neither is shown. */
+    private fun addressPlan(page: Page, colour: Int): AddressPlan? {
         val a = page.address?.trim()?.takeIf { it.isNotEmpty() }
         val e = page.email?.trim()?.takeIf { it.isNotEmpty() }
-        if (a == null && e == null) return
+        if (a == null && e == null) return null
         val items = listOfNotNull(a?.let { 0 to it }, e?.let { 1 to it })
-        fun paintFor(text: String, size: Float): TextPaint {
-            val p = if (hasArabic(text)) textPaint(page.context, text, size, colour, false, page.locale, page.urdu)
-                else textPaint(page.context, text, size, colour, false, Locale.ENGLISH, false)
-            p.textAlign = Paint.Align.LEFT
-            return p
+        if (items.size == 1) return AddressPlan(items, 1, 0f)
+        val pitch = if (hasArabic(items[0].second)) PosterFoot.LINE_ARABIC else PosterFoot.LINE
+        var size = if (page.urdu) 38f else 36f
+        while (size >= 30f) {
+            val ps = items.map { addressPaint(page, it.second, size, colour) }
+            val total = addressWidth(items[0].second, ps[0]) + ADDRESS_BETWEEN + addressWidth(items[1].second, ps[1])
+            if (total <= 900f) return AddressPlan(items, 1, size, pitch)
+            size -= 2f
         }
-        val iconSize = 40f
-        val iconGap = 14f
-        val between = 54f
-        fun width(text: String, p: TextPaint) = iconSize + iconGap + p.measureText(text)
-        if (items.size == 2) {
-            var size = if (page.urdu) 38f else 36f
-            while (size >= 30f) {
-                val ps = items.map { paintFor(it.second, size) }
-                val total = width(items[0].second, ps[0]) + between + width(items[1].second, ps[1])
-                if (total <= 900f) {
-                    // Reading order: the address first, from the right on an Urdu poster.
-                    var x = if (page.rtl) W / 2 + total / 2 else W / 2 - total / 2
-                    for ((i, item) in items.withIndex()) {
-                        val w = width(item.second, ps[i])
-                        val left = if (page.rtl) x - w else x
-                        contactItem(page, item.first, item.second, ps[i], left, cy, iconSize, iconGap, pin)
-                        x = if (page.rtl) x - w - between else x + w + between
-                    }
-                    return
-                }
-                size -= 2f
+        return AddressPlan(items, 2, 0f, pitch)
+    }
+
+    /** How many rows [address] draws for this page: 0 with neither an address nor an email, else 1 or 2. */
+    fun addressLines(page: Page): Int = addressPlan(page, 0)?.lines ?: 0
+
+    /** The distance between the first and the second row of [address], when there are two (see [AddressPlan]). */
+    fun addressPitch(page: Page): Float = addressPlan(page, 0)?.pitch ?: PosterFoot.LINE
+
+    /**
+     * The address and the email under the call button, each with its mark:
+     * on one line when both fit, else the address over the email (48 lower, 58 for an Arabic-script address).
+     * Nothing is drawn for what the owner left out.
+     */
+    fun address(page: Page, cy: Float, colour: Int = 0xD9F6EBD0.toInt(), pin: Int = GOLD) {
+        val plan = addressPlan(page, colour) ?: return
+        val items = plan.items
+        if (items.size == 2 && plan.lines == 1) {
+            val ps = items.map { addressPaint(page, it.second, plan.size, colour) }
+            val total = addressWidth(items[0].second, ps[0]) + ADDRESS_BETWEEN + addressWidth(items[1].second, ps[1])
+            // Reading order: the address first, from the right on an Urdu poster.
+            var x = if (page.rtl) W / 2 + total / 2 else W / 2 - total / 2
+            for ((i, item) in items.withIndex()) {
+                val w = addressWidth(item.second, ps[i])
+                val left = if (page.rtl) x - w else x
+                contactItem(page, item.first, item.second, ps[i], left, cy, ADDRESS_ICON, ADDRESS_ICON_GAP, pin)
+                x = if (page.rtl) x - w - ADDRESS_BETWEEN else x + w + ADDRESS_BETWEEN
             }
+            return
+        }
+        if (items.size == 2) {
             // Two lines: the address, then the email under it.
             for ((i, item) in items.withIndex()) {
-                val p = paintFor(item.second, if (page.urdu && hasArabic(item.second)) 36f else 33f)
-                fitWidth(p, item.second, 900f - iconSize - iconGap, floor = 24f)
-                val w = width(item.second, p)
-                contactItem(page, item.first, item.second, p, W / 2 - w / 2, cy + i * 48f, iconSize * 0.9f, iconGap, pin)
+                val p = addressPaint(page, item.second, if (page.urdu && hasArabic(item.second)) 36f else 33f, colour)
+                fitWidth(p, item.second, 900f - ADDRESS_ICON - ADDRESS_ICON_GAP, floor = 24f)
+                val w = addressWidth(item.second, p)
+                contactItem(page, item.first, item.second, p, W / 2 - w / 2, cy + i * plan.pitch, ADDRESS_ICON * 0.9f, ADDRESS_ICON_GAP, pin)
             }
             return
         }
         val (kind, text) = items[0]
-        val p = paintFor(text, if (page.urdu) 39f else 38f)
-        fitWidth(p, text, 860f - iconSize - iconGap, floor = 26f)
-        val w = width(text, p)
-        contactItem(page, kind, text, p, W / 2 - w / 2, cy, iconSize, iconGap, pin)
+        val p = addressPaint(page, text, if (page.urdu) 39f else 38f, colour)
+        fitWidth(p, text, 860f - ADDRESS_ICON - ADDRESS_ICON_GAP, floor = 26f)
+        val w = addressWidth(text, p)
+        contactItem(page, kind, text, p, W / 2 - w / 2, cy, ADDRESS_ICON, ADDRESS_ICON_GAP, pin)
     }
 
     /**

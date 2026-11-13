@@ -56,8 +56,11 @@ object PosterDraw {
  * the poster's language, the owner's own first for an Other shop.
  */
 object TradeVocab {
+    /** The phone's TradeVocab.key: the shop's trade in lower case; a book with none is the old default, agri. */
+    fun key(context: Context): String = context.settings.tradeKey()?.trim()?.lowercase()?.takeIf { it.isNotEmpty() } ?: "agri"
+
     fun items(context: Context): List<String> {
-        val key = context.settings.tradeKey()?.trim()?.lowercase()?.takeIf { it.isNotEmpty() } ?: "agri"
+        val key = key(context)
         fun list(k: String) = runCatching { context.words.list("vocab_${k}_items") }.getOrDefault(emptyList())
         val base = list(key).ifEmpty { list("agri") }
         if (key != "other") return base

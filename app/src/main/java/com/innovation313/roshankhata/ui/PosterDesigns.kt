@@ -124,10 +124,9 @@ object PosterDesigns {
             PosterKit.fitWidth(np, note, panel.width() - 96f, 24f)
             PosterKit.inkLine(c, note, np, W / 2, panel.bottom - 58f)
         }
-        PosterKit.signOff(page, str(page, R.string.poster_from), 1689f)
-        // The address and email ticks reach this design too (M18).
-        PosterKit.address(page, 1852f, colour = 0xB3F6EBD0.toInt())
-        PosterKit.mark(page, cy = 1898f)
+        // The foot is one block (PosterFoot, 13 Nov): sign-off, phone, address, email and mark are placed together,
+        // so none can overlap another and the seal row never climbs into the panel above it.
+        PosterKit.foot(page, str(page, R.string.poster_from), 1689f, topLimit = panel.bottom + 14f)
         return out(head, msg, PosterMotion.Spec(stars = FITR_STARS, glint = head.second))
     }
 
@@ -153,9 +152,11 @@ object PosterDesigns {
         val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 186f else 170f, 84f, 846f)
         val hours = PosterWords.ramazanRows(page.context, page.fields)
         val msg: android.text.StaticLayout?
+        val panelBottom: Float
         if (hours.isEmpty()) {
             PosterKit.kicker(page, str(page, R.string.poster_kicker_ramazan), 1000f, 0xFFB9C8F0.toInt(), size = 30f)
             val panel = RectF(78f, 1100f, W - 78f, 1440f)
+            panelBottom = panel.bottom
             PosterKit.glass(c, panel, fill = 0x14FFFFFF)
             msg = PosterKit.message(page, page.message, panel.centerY(), 0xF2F6EBD4.toInt(), if (page.urdu) 48f else 46f,
                 lines = 3, width = (panel.width() - 108f).toInt())
@@ -166,14 +167,13 @@ object PosterDesigns {
                 if (page.urdu) 44f else 40f, lines = 2, width = 900)
             val top = if (page.urdu) 1170f else 1124f
             val panel = RectF(78f, top, W - 78f, top + PosterKit.rowsHeight(hours.size, true))
+            panelBottom = panel.bottom
             PosterKit.glass(c, panel, fill = 0x14FFFFFF)
             PosterKit.rows(page, panel, hours, title = str(page, R.string.poster_ramazan_hours_title))
         }
-        PosterKit.signOff(page, str(page, R.string.poster_from), 1700f, fromColour = 0xFFB9C8F0.toInt(),
-            inner = 0xFF2A4B9A.toInt(), innerDark = 0xFF0A1430.toInt())
-        // The address and email ticks reach this design too (M18).
-        PosterKit.address(page, 1852f, colour = 0xB3F6EBD0.toInt())
-        PosterKit.mark(page, cy = 1898f)
+        // One block (PosterFoot): the phone stood on the address here before 13 Nov.
+        PosterKit.foot(page, str(page, R.string.poster_from), 1700f, topLimit = panelBottom + 14f,
+            fromColour = 0xFFB9C8F0.toInt(), inner = 0xFF2A4B9A.toInt(), innerDark = 0xFF0A1430.toInt())
         return out(head, msg, PosterMotion.Spec(stars = RAMAZAN_STARS, glint = head.second))
     }
 
@@ -224,28 +224,35 @@ object PosterDesigns {
         val line = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 2f; color = 0x66E7C268 }
         c.drawLine(300f, 1294f, 480f, 1294f, line); c.drawLine(600f, 1294f, 780f, 1294f, line)
         val msg = PosterKit.message(page, page.message, 1400f, 0xD9FBEBD0.toInt(), if (page.urdu) 44f else 42f, lines = 2, width = 900)
-        // The sign-off as a column: seal, "from", name, phone.
-        PosterKit.seal(page.context, c, 540f, 1586f, 60f, page.shopName, page.logo,
+        // The sign-off as a column: seal, "from", name, phone, then the address and the email.
+        val contact = !page.address.isNullOrBlank() || !page.email.isNullOrBlank()
+        // Where the rows stand is PosterFoot's (13 Nov): the address's last row keeps y = 1842, the rows above it are
+        // spaced evenly and lift for a second address row, and the seal shrinks before it can touch the message.
+        // The message's lowest ink: a Nastaliq line box has a deep descent no ink reaches (measured on the 13 Nov proofs,
+        // its ink ends at about 77% of the box's half height), so the box alone would shrink the seal for nothing.
+        val msgInk = if (msg == null) 1340f else 1400f + msg.height / 2f * (if (page.urdu) 0.77f else 1f)
+        val col = PosterFoot.column(PosterKit.addressLines(page), !page.phone.isNullOrBlank(),
+            topLimit = msgInk + (if (page.urdu) 22f else 14f), pitch = PosterKit.addressPitch(page), arabic = page.urdu)
+        PosterKit.seal(page.context, c, 540f, col.sealCy, col.sealR, page.shopName, page.logo,
             0xFFFBEBD0.toInt(), 0xFFE9D3B0.toInt(), 0xFF5A1E2B.toInt())
         val from = str(page, R.string.poster_from)
         val fp = PosterKit.textPaint(page.context, from, 31f, 0xD9FBEBD0.toInt(), false, page.locale, page.urdu)
         if (!page.urdu && !PosterKit.hasArabic(from)) fp.typeface = Typeface.create(InvoiceFonts.playfairDisplay(page.context), Typeface.ITALIC)
         fp.textAlign = Paint.Align.CENTER
         // The sign-off has no spare line, so with an address or email ticked it closes up a little to make one (M18, 8 Nov 2026).
-        val contact = !page.address.isNullOrBlank() || !page.email.isNullOrBlank()
-        PosterKit.inkLine(c, from, fp, W / 2, if (contact) 1678f else 1688f)
+        if (col.showFrom) PosterKit.inkLine(c, from, fp, W / 2, col.fromCy)
         val np = PosterKit.textPaint(page.context, page.shopName, if (page.urdu) 60f else 58f, GOLD, true, page.locale, page.urdu)
         np.textAlign = Paint.Align.CENTER
         PosterKit.fitWidth(np, page.shopName, 860f)
-        PosterKit.inkLine(c, page.shopName, np, W / 2, if (contact) 1736f else 1752f)
+        PosterKit.inkLine(c, page.shopName, np, W / 2, col.nameCy)
         if (!page.phone.isNullOrBlank()) {
             val pp = android.text.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                 typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
                 textSize = 36f; color = 0xB3FBEBD0.toInt(); textAlign = Paint.Align.CENTER; letterSpacing = 0.14f
             }
-            PosterKit.inkLine(c, page.phone.trim(), pp, W / 2, if (contact) 1794f else 1818f)
+            PosterKit.inkLine(c, page.phone.trim(), pp, W / 2, col.phoneCy)
         }
-        if (contact) PosterKit.address(page, 1842f, colour = 0xB3FBEBD0.toInt())
+        if (contact) PosterKit.address(page, col.addressCy, colour = 0xB3FBEBD0.toInt())
         // A gold rule with diamonds along the foot.
         val footY = if (contact) 1880f else 1858f
         c.drawLine(60f, footY, W - 60f, footY, Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 2f; color = 0x80E7C268.toInt() })
@@ -308,7 +315,7 @@ object PosterDesigns {
         val wp = if (PosterKit.hasArabic(word)) PosterKit.greetingPaint(page.context, word, 300f, 0xFFFFE3E6.toInt(), page.locale, page.urdu)
             else android.text.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                 typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
-                textSize = 170f; color = 0xFFFFE3E6.toInt(); letterSpacing = 0.12f
+                textSize = 170f; color = 0xFFFFE3E6.toInt(); letterSpacing = if (PosterKit.canTrack(word)) 0.12f else 0f
             }
         wp.textAlign = Paint.Align.CENTER
         PosterKit.fitWidth(wp, word, sign.width() - 120f, 60f)
@@ -352,17 +359,17 @@ object PosterDesigns {
 
     private fun hours(page: Page): PosterKit.Out {
         val c = page.c
-        PosterNewStock.drawBackground(c, spotlight = false)
+        // The timings, from the owner's choices (PosterWords.hoursRows): open days,
+        // the Friday prayer break, the weekly holiday. The panel is as tall as they need,
+        // centred in the space under the headline. Worked out first: the background's specks keep clear of it.
+        val rows = PosterWords.hoursRows(page.context, page.fields)
+        val panelH = PosterKit.rowsHeight(rows.size, false).coerceAtMost(540f)
+        val panel = RectF(72f, 1191f - panelH / 2, W - 72f, 1191f + panelH / 2)
+        PosterNewStock.drawBackground(c, spotlight = false, keepClear = panel)
         PosterKit.halo(c, 540f, 426f, 380f, 0x4DF3CF6A)
         PosterKit.header(page, top = 54f, sealSize = 90f, centred = true)
         page.drawHero(Hero.HOURS.rect) { fc -> PosterFlat.clock(fc, 540f, 426f, 240f) }
         val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 120f else 112f, 64f, 812f, greeting = false)
-        // The timings, from the owner's choices (PosterWords.hoursRows): open days,
-        // the Friday prayer break, the weekly holiday. The panel is as tall as they need,
-        // centred in the space under the headline.
-        val rows = PosterWords.hoursRows(page.context, page.fields)
-        val panelH = PosterKit.rowsHeight(rows.size, false).coerceAtMost(540f)
-        val panel = RectF(72f, 1191f - panelH / 2, W - 72f, 1191f + panelH / 2)
         PosterKit.glass(c, panel)
         val msgSize = PosterKit.rows(page, panel, rows)
         PosterKit.phonePill(page, RectF(102f, 1494f, W - 102f, 1662f), size = 64f)
@@ -415,23 +422,23 @@ object PosterDesigns {
         shade.shader = RadialGradient(540f, 1560f, 150f, 0x400A3524, 0x000A3524, Shader.TileMode.CLAMP)
         c.save(); c.scale(1f, 0.35f, 540f, 1560f); c.drawCircle(540f, 1560f, 150f, shade); c.restore()
         page.drawHero(Hero.THANKS.rect) { fc -> PosterFlat.seal(page.context, fc, 540f, 1476f, 118f, page.shopName, page.logo) }
+        // The foot stands as on every other poster (PosterFoot.stack, 13 Nov): the name, the phone, then the address and the
+        // email as rows with their marks. They were one grey line shrunk to fit 880, which an ordinary address ran past
+        // the picture's edges; the rows lift for a second address row and stay above the inner border (y = 1860).
+        val st = PosterFoot.stack(1694f, !page.phone.isNullOrBlank(), PosterKit.addressLines(page),
+            PosterKit.addressPitch(page), bottom = if (page.mark != null) 1808f else 1838f, arabic = page.urdu, topLimit = 1610f)
         val np = PosterKit.textPaint(page.context, page.shopName, if (page.urdu) 58f else 54f, INK_GREEN, true, page.locale, page.urdu)
         np.textAlign = Paint.Align.CENTER
         PosterKit.fitWidth(np, page.shopName, 860f)
-        PosterKit.inkLine(c, page.shopName, np, W / 2, 1694f)
-        // The number isolated left-to-right (LRI … PDI): inside an Urdu line its two
-        // groups would swap. Not Format.ltr: its BidiFormatter takes the phone's
-        // language for the context, which is not always the poster's.
-        val bits = listOfNotNull(page.phone?.trim()?.takeIf { it.isNotEmpty() }?.let { "\u2066$it\u2069" },
-            page.address?.trim()?.takeIf { it.isNotEmpty() },
-            page.email?.trim()?.takeIf { it.isNotEmpty() }?.let { "\u2066$it\u2069" })
-        if (bits.isNotEmpty()) {
-            val line = bits.joinToString("  •  ")
-            val lp = PosterKit.textPaint(page.context, line, if (page.urdu) 36f else 34f, 0xFF5F584D.toInt(), false, page.locale, page.urdu)
-            lp.textAlign = Paint.Align.CENTER
-            PosterKit.fitWidth(lp, line, 880f, 24f)
-            PosterKit.inkLine(c, line, lp, W / 2, 1764f)
+        PosterKit.inkLine(c, page.shopName, np, W / 2, st.nameCy)
+        if (!page.phone.isNullOrBlank()) {
+            val pp = android.text.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
+                textSize = 36f; color = 0xCC0F4A33.toInt(); textAlign = Paint.Align.CENTER; letterSpacing = 0.14f
+            }
+            PosterKit.inkLine(c, page.phone.trim(), pp, W / 2, st.phoneCy)
         }
+        PosterKit.address(page, st.addressCy, colour = 0xFF5F584D.toInt(), pin = 0xFFB8862B.toInt())
         PosterKit.mark(page, 0x662A2620, cy = 1830f)
         return out(head, msg, PosterMotion.Spec(glint = head.second))
     }
@@ -456,7 +463,7 @@ object PosterDesigns {
         // The "announcement" tag at the panel's top, reading side's end.
         val tag = str(page, R.string.poster_kicker_custom)
         val tgp = PosterKit.textPaint(page.context, tag, if (page.urdu) 38f else 30f, 0xFF1F1505.toInt(), true, page.locale, page.urdu)
-        if (!page.urdu && !PosterKit.hasArabic(tag)) tgp.letterSpacing = 0.2f
+        if (!page.urdu && PosterKit.canTrack(tag)) tgp.letterSpacing = 0.2f
         val tw = tgp.measureText(tag) + 84f
         val tagR = if (page.rtl) RectF(panel.right - 54f - tw, panel.top + 54f, panel.right - 54f, panel.top + 132f)
             else RectF(panel.left + 54f, panel.top + 54f, panel.left + 54f + tw, panel.top + 132f)
@@ -608,11 +615,8 @@ object PosterDesigns {
             strokeWidth = 6f
             shader = LinearGradient(110f, 0f, W - 110f, 0f, intArrayOf(0x00E7C268, 0xFFE7C268.toInt(), 0x00E7C268), null, Shader.TileMode.CLAMP)
         })
-        // Clear of the mosque's ground line above and the phone line and mark below.
-        PosterKit.signOff(page, str(page, R.string.poster_from), 1690f, sealSize = 120f)
-        // The address and email ticks reach this design too (M18).
-        PosterKit.address(page, 1852f, colour = 0xB3F6EBD0.toInt())
-        PosterKit.mark(page, cy = 1898f)
+        // One block (PosterFoot), kept below the mosque's ground line (y = 1590, 6 thick) with a margin.
+        PosterKit.foot(page, str(page, R.string.poster_from), 1690f, topLimit = 1604f, sealSize = 120f)
         return out(head, msg, PosterMotion.Spec(glint = head.second, embers = RectF(80f, 680f, 1000f, 1600f)))
     }
 
@@ -683,11 +687,9 @@ object PosterDesigns {
         val tl = PosterKit.fitBlock(title, tp, 960, page.rtl, 2, 56f, 1.0f)
         PosterKit.put(c, tl, 60f, 1248f - tl.height / 2f)
         val msg = PosterKit.message(page, page.message, 1420f, PosterKit.GOLD, if (page.urdu) 58f else 50f, lines = 1, width = 900)
-        PosterKit.signOff(page, str(page, R.string.poster_from), 1680f, fromColour = 0xFFB8F0CF.toInt(),
-            inner = 0xFF0E6A38.toInt(), innerDark = 0xFF053019.toInt())
-        // The address and email ticks reach this design too (M18).
-        PosterKit.address(page, 1852f, colour = 0xB3F6EBD0.toInt())
-        PosterKit.mark(page, cy = 1898f)
+        // One block (PosterFoot), under the one-line message (it ends near y = 1450).
+        PosterKit.foot(page, str(page, R.string.poster_from), 1680f, topLimit = 1470f,
+            fromColour = 0xFFB8F0CF.toInt(), inner = 0xFF0E6A38.toInt(), innerDark = 0xFF053019.toInt())
         return PosterKit.Out(tp.textSize, tl.lineCount, msg?.paint?.textSize ?: 0f, msg?.lineCount ?: 0,
             PosterMotion.Spec(flag = PosterMotion.Flag(AZADI_FLAG), fireworks = PosterMotion.Fireworks(AZADI_FIREWORKS)))
     }

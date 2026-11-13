@@ -36,7 +36,8 @@ data class PosterFields(
     val opens: Int = 9 * 60,
     val closes: Int = 20 * 60,
     val holidays: Set<Int> = setOf(ShopCountry.current.weeklyOff),
-    val prayerBreak: Boolean = true,
+    /** The Friday-prayer row: on by default only where the country is an OIC member ([ShopCountry.oic]); the owner's switch decides after. */
+    val prayerBreak: Boolean = ShopCountry.current.oic,
     val breakFrom: Int = 13 * 60,
     val breakTo: Int = 14 * 60 + 30,
 
