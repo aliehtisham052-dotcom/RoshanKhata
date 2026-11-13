@@ -2728,6 +2728,13 @@ Each of these cost a build or a bug.
     layout, and a start gravity then hung it from the right edge in Urdu and Arabic: hang it from LEFT|TOP and place it in
     `doOnLayout` (HudhudActs).
 
+111. **What the rules know about a language, the learnt sense must know too.** HudhudMind took Arabic's joined article
+    off ("الرقص" is "رقص"), the sense's features did not: to it "الرقص" and "رقصة" shared nothing but "ال", so "هل
+    تستطيع الرقص" was read as the bank's one "هل تستطيع الطيران" — flying. Giving the sense the word without its article
+    (`HudhudSense.articleless`, Arabic sentences only) took Arabic's held-out reading from 83% to 92% with no new
+    sentence. Look for such a gap in the code before writing more of the bank — and never write bank sentences to fit
+    the held-out misses: that measures memory, not understanding (13 Nov 2026).
+
 ---
 
 ## Working with the owner
@@ -3350,8 +3357,9 @@ for a doubtful one; a professional voice with even pauses; every language spoken
   surely named person into something else (0.92); where the rules found nothing, the sense's reading is answered at 0.60 and,
   from 0.30, answered with "Taken as: …" written over the card (`Ask.Guessed`, `hudhud_took_as`) and the other meanings as
   chips — never a question back. "Did you mean" answers its first meaning the same way.
-- **Held-out** (1,170 sentences never learnt from): rules alone 50%, rules and sense 91% — Arabic 83, Bengali 93, English
-  93, Farsi 88, Hindi 90, Indonesian 93, Sindhi 93, Urdu 90, Roman Urdu 91. The owner's own sentences from his screenshots
+- **Held-out** (1,170 sentences never learnt from): rules alone 50%, rules and sense 92% (91% before the article fix
+  below) — Arabic 92 (was 83), Bengali 93, English 93, Farsi 91 (88), Hindi 88 (90), Indonesian 91 (93), Sindhi 93, Urdu
+  90, Roman Urdu 93 (91). One perceptron learns every language at once, so a change for one moves the others a little. The owner's own sentences from his screenshots
   read right (a local probe). A sentence in no shape the bank knows can still be misread: the card says what it was taken as.
 - **Answers from the book** (`HudhudFacts`): `Ask.NeedName(facet)` — a fact with nobody named ("customer ka number", "kis
   ki limit") lists the five latest customers with it; `Ask.Cashbook(window)` — money in, money out, the net and the rows
@@ -3395,5 +3403,9 @@ for a doubtful one; a professional voice with even pauses; every language spoken
   shared tests were run locally with Gradle's own compiler (lesson 93); the app's files were read, not compiled — **CI is the
   first build, and nothing was tried on a real phone** (the voices and their fallback, the end of listening, the acts, the
   haptics).
-- **Not yet:** Windows has no Hudhud; Arabic reads lowest (83%); the sense knows only what the bank teaches — a new kind of
+- **Arabic's article in the sense (13 Nov 2026, the same day, lesson 111):** in an Arabic sentence (`HudhudMind.arabicOnly`,
+  now internal) a word with "ال", "وال", "بال", "فال", "كال" or "لل" in front also gives the sense the word without it —
+  its word, sound and three-letter pieces (`HudhudSense.articleless`, at least three letters left). No bank sentence
+  added; the sense learnt again (sense.bin ≈365 KB, 14,212 pieces). Shared Hudhud and Voice tests: 155 pass locally.
+- **Not yet:** Windows has no Hudhud; Hindi now reads lowest (88%); the sense knows only what the bank teaches — a new kind of
   question needs sentences in the bank and the sense learnt again.

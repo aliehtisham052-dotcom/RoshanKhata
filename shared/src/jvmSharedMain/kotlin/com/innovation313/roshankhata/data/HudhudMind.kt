@@ -459,7 +459,7 @@ internal object HudhudMind {
     }
 
     /** A sentence in Arabic: Arabic letters, and nothing only Urdu, Sindhi or Persian would write. */
-    private fun arabicOnly(said: List<String>): Boolean =
+    internal fun arabicOnly(said: List<String>): Boolean =
         said.any { w -> w.any { it in '\u0600'..'\u06FF' } } &&
             said.none { w -> w in NOT_ARABIC_WORDS || w.any { it in NOT_ARABIC_LETTERS } }
 

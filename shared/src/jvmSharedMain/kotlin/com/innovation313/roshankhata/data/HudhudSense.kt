@@ -326,6 +326,7 @@ object HudhudSense {
         if (said.isEmpty()) return emptySet()
         val plain = said.map { if (it == NAME || it == ITEM || it == NUM) "" else it }
         val m = HudhudMind.read(plain)
+        val arabic = HudhudMind.arabicOnly(plain)
         val out = LinkedHashSet<String>()
         said.forEachIndexed { i, w ->
             out += "w:$w"
@@ -337,10 +338,29 @@ object HudhudSense {
                 val b = "#$w#"
                 for (j in 0..b.length - 3) out += "g:" + b.substring(j, j + 3)
             }
+            // Arabic writes "the" joined to its word ("الرقص", "والمبيعات", "للعملاء"): the word without it is the word
+            // too, as HudhudMind reads it (13 Nov 2026, Arabic held out at 83%: "هل تستطيع الرقص" was read as flying
+            // because the bank's only "هل تستطيع ال…" was "الطيران"). Only in an Arabic sentence, never Urdu's "الگ".
+            if (arabic) articleless(w)?.let { stem ->
+                out += "w:$stem"
+                val ks = HudhudMind.skeleton(stem)
+                if (ks.length >= 2) out += "s:$ks"
+                val b = "#$stem#"
+                for (j in 0..b.length - 3) out += "g:" + b.substring(j, j + 3)
+            }
         }
         for (i in 0 until said.size - 1) out += "b:" + said[i] + "_" + said[i + 1]
         return out
     }
+
+    /** Arabic's article joined in front ("ال", "وال", "بال", "فال", "كال", "لل"), taken off; null when none, or under three letters are left. */
+    private fun articleless(w: String): String? {
+        val front = ARTICLES.firstOrNull { w.startsWith(it) } ?: return null
+        return w.substring(front.length).takeIf { it.length >= 3 }
+    }
+
+    /** Longest first, after [VoiceQuestion.normalise] (which writes ك as ک). */
+    private val ARTICLES = listOf("وال", "بال", "فال", "کال", "ال", "لل")
 
     /**
      * The meanings nearest to [heard], best first, at most [top]. [isName] and [isItem] say which words are one of
