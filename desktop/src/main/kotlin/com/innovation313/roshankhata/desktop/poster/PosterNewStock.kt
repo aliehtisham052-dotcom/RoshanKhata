@@ -12,7 +12,7 @@ import com.innovation313.roshankhata.desktop.gfx.Path
 import com.innovation313.roshankhata.desktop.gfx.RadialGradient
 import com.innovation313.roshankhata.desktop.gfx.RectF
 import com.innovation313.roshankhata.desktop.gfx.Shader
-import com.innovation313.roshankhata.desktop.invoice.R
+import com.innovation313.roshankhata.desktop.poster.NewStockWords
 import com.innovation313.roshankhata.desktop.poster.TradeVocab
 import com.innovation313.roshankhata.desktop.poster.Hero
 
@@ -78,12 +78,14 @@ object PosterNewStock {
         val c = page.c
         val context = page.context
         val urdu = page.urdu
+        // The shop's trade words the corner label and the line under the headline (NewStockWords, 13 Nov 2026).
+        val trade = TradeVocab.key(context)
         drawBackground(c)
 
         // The heading is the shop's name alone (12 Oct, the owner: never a list of products).
         PosterKit.header(page, top = 66f, sealSize = 138f)
 
-        PosterKit.kicker(page, context.getString(R.string.poster_kicker_new_stock), 300f, GOLD, size = 33f)
+        PosterKit.kicker(page, NewStockWords.kicker(context, trade), 300f, GOLD, size = 33f)
 
         // Headline in gold foil.
         val head = PosterKit.foilHeadline(page, page.title, if (urdu) 138f else 126f, 72f, 470f, greeting = false)
@@ -91,7 +93,7 @@ object PosterNewStock {
         // The hero: the owner's own photo of the stock if he gave one, else the
         // 3D crate if the phone could render it, else a flat one.
         val photo = page.photo
-        if (photo != null) photoCard(c, photo) else page.drawHero(HERO) { flatCrate(it, TradeVocab.key(context)) }
+        if (photo != null) photoCard(c, photo) else page.drawHero(HERO) { flatCrate(it, trade) }
 
         // What arrived, on a strip of glass: the owner's list, or his trade's usual three.
         val list = page.fields.items.ifEmpty { TradeVocab.items(context).take(3) }
@@ -104,7 +106,7 @@ object PosterNewStock {
         PosterKit.inkLine(c, items, ip, 540f, strip.centerY())
 
         // The owner's line under it.
-        val msg = page.message.ifBlank { context.getString(R.string.poster_new_stock_msg) }
+        val msg = page.message.ifBlank { NewStockWords.message(context, trade) }
         val ml = PosterKit.message(page, msg, 1460f, 0xDDF6EBD0.toInt(), if (urdu) 45f else 46f, lines = 2, italicLatin = true, floor = 34f)
 
         PosterKit.phonePill(page, RectF(102f, 1530f, W - 102f, 1710f))

@@ -173,31 +173,63 @@ object PosterFoot {
      * reach), a second row stands [pitch] over it, the phone 50 over the first, and the name 60 over the phone — or
      * stays at [nameCy], where the design wants it, when that is higher. With nothing but a phone it stands 70 under
      * the name, as it always did; with no phone the address takes that place.
+     *
+     * [markOutside] says the app's mark has left the card's frame (see [stack]); the design then draws it under the frame.
      */
-    class Stack(val nameCy: Float, val phoneCy: Float, val addressCy: Float)
+    class Stack(val nameCy: Float, val phoneCy: Float, val addressCy: Float, val markOutside: Boolean = false)
 
+    /** How far the Thank-you card's name has its ink reach above its centre (Nastaliq's strokes stand much taller). */
+    fun nameHalfOf(arabic: Boolean): Float = if (arabic) 42f else 24f
+
+    /**
+     * [bottom] is where the last address row's ink may end with the app's mark inside the card's frame; [bottomOutside]
+     * where it may end when the mark stands under the frame instead (the same as [bottom] when no mark is drawn).
+     *
+     * Arabic-script rows stand taller (Nastaliq's strokes rise and fall): a little more air above them and under a
+     * name drawn in it, as the Adha column does. When that leaves the name under the picture's own seal ([topLimit]),
+     * the gaps close up, then the rows sink 8 toward the border. Urdu with two address rows and the app's mark inside
+     * the frame is the one combination that still does not fit — no layout does: from the seal's shadow to the border
+     * the name, the phone, two rows and the mark need about 30 more than there is (13 Nov 2026: the name's tails ran
+     * 13 into the seal). The mark is the least important row, so it gives way, not the owner's own: it steps out of the
+     * frame, under it, at the foot of the picture where every other design draws it, and the rows take the room it left
+     * ([bottomOutside]). Layouts that fit with the mark inside are exactly as they were.
+     */
     fun stack(
         nameCy: Float, phone: Boolean, addressLines: Int, pitch: Float, bottom: Float,
-        arabic: Boolean = false, topLimit: Float = 0f
+        arabic: Boolean = false, topLimit: Float = 0f, bottomOutside: Float = bottom
     ): Stack {
         if (addressLines <= 0) return Stack(nameCy, nameCy + 70f, bottom)
-        // The name's ink reaches this far above and below its centre (Nastaliq's strokes stand much taller).
-        val nameHalf = if (arabic) 42f else 24f
-        fun place(gapPhone: Float, gapName: Float, low: Float): Stack {
+        val nameHalf = nameHalfOf(arabic)
+        fun place(gapPhone: Float, gapName: Float, low: Float, outside: Boolean): Stack {
             var first = low - HALF - (addressLines - 1) * pitch
             if (!phone) first = min(first, nameCy + 70f)
             val phoneAt = first - gapPhone
             val nameAt = min(nameCy, (if (phone) phoneAt else first) - gapName)
-            return Stack(nameAt, phoneAt, first)
+            return Stack(nameAt, phoneAt, first, outside)
         }
-        // Arabic-script rows stand taller (Nastaliq's strokes rise and fall): a little more air above them and under a
-        // name drawn in it, as the Adha column does. When that leaves the name under the picture's own seal (topLimit),
-        // the gaps close up, then the rows sink 8 toward the border; a combination that still does not fit (Urdu with
-        // two address rows and the brand mark on) keeps its rows apart and lets the name touch the seal's shadow.
+        fun clears(s: Stack) = topLimit <= 0f || s.nameCy - nameHalf >= topLimit
         val gapPhone = if (pitch > LINE) 58f else 50f
-        var st = place(gapPhone, if (arabic) 68f else 60f, bottom)
-        if (topLimit > 0f && st.nameCy - nameHalf < topLimit) st = place(50f, if (arabic) 58f else 52f, bottom)
-        if (topLimit > 0f && st.nameCy - nameHalf < topLimit) st = place(50f, if (arabic) 58f else 52f, bottom + 8f)
+        val gapName = if (arabic) 68f else 60f
+        val gapNameTight = if (arabic) 58f else 52f
+        // The rungs, in order: the roomy gaps, the gaps closed up, then the rows sunk 8 toward the border.
+        var st = place(gapPhone, gapName, bottom, false)
+        if (clears(st)) return st
+        st = place(50f, gapNameTight, bottom, false)
+        if (clears(st)) return st
+        st = place(50f, gapNameTight, bottom + 8f, false)
+        if (clears(st)) return st
+        if (bottomOutside > bottom) {
+            // The same three rungs with the mark under the frame.
+            for (rung in listOf(
+                Triple(gapPhone, gapName, bottomOutside),
+                Triple(50f, gapNameTight, bottomOutside),
+                Triple(50f, gapNameTight, bottomOutside + 8f)
+            )) {
+                val out = place(rung.first, rung.second, rung.third, true)
+                if (clears(out)) return out
+            }
+        }
+        // Nothing clears the seal (a combination no layout can give): the rows keep their order and their distances.
         return st
     }
 }

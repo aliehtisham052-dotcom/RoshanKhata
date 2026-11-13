@@ -233,7 +233,7 @@ object PosterDesigns {
         // The message's lowest ink: a Nastaliq line box has a deep descent no ink reaches (measured on the 13 Nov proofs,
         // its ink ends at about 77% of the box's half height), so the box alone would shrink the seal for nothing.
         val msgInk = if (msg == null) 1340f else 1400f + msg.height / 2f * (if (page.urdu) 0.77f else 1f)
-        val col = PosterFoot.column(PosterKit.addressLines(page), !page.phone.isNullOrBlank(),
+        val col = PosterFoot.column(PosterKit.addressLines(page), page.contact.any,
             topLimit = msgInk + (if (page.urdu) 22f else 14f), pitch = PosterKit.addressPitch(page), arabic = page.urdu)
         PosterKit.seal(page.context, c, 540f, col.sealCy, col.sealR, page.shopName, page.logo,
             0xFFFBEBD0.toInt(), 0xFFE9D3B0.toInt(), 0xFF5A1E2B.toInt())
@@ -247,13 +247,7 @@ object PosterDesigns {
         np.textAlign = Paint.Align.CENTER
         PosterKit.fitWidth(np, page.shopName, 860f)
         PosterKit.inkLine(c, page.shopName, np, W / 2, col.nameCy)
-        if (!page.phone.isNullOrBlank()) {
-            val pp = com.innovation313.roshankhata.desktop.gfx.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-                typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
-                textSize = 36f; color = 0xB3FBEBD0.toInt(); textAlign = Paint.Align.CENTER; letterSpacing = 0.14f
-            }
-            PosterKit.inkLine(c, page.phone.trim(), pp, W / 2, col.phoneCy)
-        }
+        PosterKit.contactRow(page, col.phoneCy, 0xB3FBEBD0.toInt())
         if (contact) PosterKit.address(page, col.addressCy, colour = 0xB3FBEBD0.toInt())
         // A gold rule with diamonds along the foot.
         val footY = if (contact) 1880f else 1858f
@@ -342,9 +336,10 @@ object PosterDesigns {
             lines = 3, width = (panel.width() - 108f).toInt()) else null
         val rowSize = PosterKit.rows(page, panel, why, label = 0xB3F2EDE8.toInt(), value = 0xFFF2EDE8.toInt(),
             rule = 0x1AFFFFFF)
-        val urgent = page.fields.urgentPhone && !page.phone.isNullOrBlank()
+        val urgent = page.fields.urgentPhone && page.contact.any
         if (urgent) {
-            val call = str(page, R.string.poster_call_urgent)
+            // "Call" only when there is a number to call; a WhatsApp number alone is asked for by message.
+            val call = str(page, if (page.contact.has(PosterContact.Kind.CALL)) R.string.poster_call_urgent else R.string.poster_call_urgent_wa)
             val cp = PosterKit.textPaint(page.context, call, if (page.urdu) 38f else 36f, 0xB3F2EDE8.toInt(), false, page.locale, page.urdu)
             cp.textAlign = Paint.Align.CENTER
             PosterKit.inkLine(c, call, cp, W / 2, 1470f)
@@ -426,22 +421,21 @@ object PosterDesigns {
         page.drawHero(Hero.THANKS.rect) { fc -> PosterFlat.seal(page.context, fc, 540f, 1476f, 118f, page.shopName, page.logo) }
         // The foot stands as on every other poster (PosterFoot.stack, 13 Nov): the name, the phone, then the address and the
         // email as rows with their marks. They were one grey line shrunk to fit 880, which an ordinary address ran past
-        // the picture's edges; the rows lift for a second address row and stay above the inner border (y = 1860).
-        val st = PosterFoot.stack(1694f, !page.phone.isNullOrBlank(), PosterKit.addressLines(page),
-            PosterKit.addressPitch(page), bottom = if (page.mark != null) 1808f else 1838f, arabic = page.urdu, topLimit = 1610f)
+        // the picture's edges; the rows lift for a second address row and stay above the inner border (y = 1860). The app's
+        // mark stands inside the frame (y = 1830) unless the rows need its room to clear the seal: then it steps out under
+        // the frame, where every other design has it (Urdu, two address rows, the mark on: the only such combination).
+        val st = PosterFoot.stack(1694f, page.contact.any, PosterKit.addressLines(page),
+            PosterKit.addressPitch(page), bottom = if (page.mark != null) 1808f else 1838f, arabic = page.urdu, topLimit = 1610f,
+            bottomOutside = 1838f)
         val np = PosterKit.textPaint(page.context, page.shopName, if (page.urdu) 58f else 54f, INK_GREEN, true, page.locale, page.urdu)
         np.textAlign = Paint.Align.CENTER
         PosterKit.fitWidth(np, page.shopName, 860f)
         PosterKit.inkLine(c, page.shopName, np, W / 2, st.nameCy)
-        if (!page.phone.isNullOrBlank()) {
-            val pp = com.innovation313.roshankhata.desktop.gfx.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-                typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
-                textSize = 36f; color = 0xCC0F4A33.toInt(); textAlign = Paint.Align.CENTER; letterSpacing = 0.14f
-            }
-            PosterKit.inkLine(c, page.phone.trim(), pp, W / 2, st.phoneCy)
-        }
+        PosterKit.contactRow(page, st.phoneCy, 0xCC0F4A33.toInt())
         PosterKit.address(page, st.addressCy, colour = 0xFF5F584D.toInt(), pin = 0xFFB8862B.toInt())
-        PosterKit.mark(page, 0x662A2620, cy = 1830f)
+        // Under the frame (its outer line ends at y = 1879.5) there are 40 px to the picture's edge: the mark's ink is held to 30.
+        if (st.markOutside) PosterKit.mark(page, 0x662A2620, cy = 1900f, maxInk = 30f)
+        else PosterKit.mark(page, 0x662A2620, cy = 1830f)
         return out(head, msg, PosterMotion.Spec(glint = head.second))
     }
 

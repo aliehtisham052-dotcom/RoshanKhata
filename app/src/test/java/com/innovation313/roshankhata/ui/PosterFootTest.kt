@@ -240,29 +240,94 @@ class PosterFootTest {
     }
 
     @Test
-    fun `Urdu with two address rows and the mark on is the one combination that cannot clear the seal`() {
-        // Said in the code and the notes: the rows keep their order and their distances, and the name's tails may touch the
-        // seal's shadow (the mark is off in the app as shipped, so the owner does not meet it).
+    fun `Urdu with two address rows and the mark on steps the mark out of the frame and clears the seal`() {
+        // The one combination no layout inside the frame can give (13 Nov 2026): the name's tails ran 13 into the seal. The
+        // mark gives way, not the owner's own rows: it goes under the frame and the rows take the room it left.
+        val s = PosterFoot.stack(1694f, phone = true, addressLines = 2, pitch = PosterFoot.LINE_ARABIC, bottom = 1808f,
+            arabic = true, topLimit = 1610f, bottomOutside = 1838f)
+        assertTrue(s.markOutside)
+        assertTrue(s.nameCy - PosterFoot.nameHalfOf(true) >= 1610f)
+        // The rows keep the distances of the Urdu foot with no mark (the last rung: sunk 8, the gaps closed up).
+        assertEquals(1658f, s.nameCy, delta)
+        assertEquals(1716f, s.phoneCy, delta)
+        assertEquals(1766f, s.addressCy, delta)
+        // The last row's ink (a second row 58 lower, 22 high) ends above the inner border at 1860.
+        assertTrue(s.addressCy + PosterFoot.LINE_ARABIC + 22f <= 1860f)
+    }
+
+    @Test
+    fun `Urdu with two address rows and the mark on only clears the seal by moving the mark`() {
+        // Without the way out (the call as it was) the same foot cannot clear: that is why the mark steps out.
         val s = PosterFoot.stack(1694f, phone = true, addressLines = 2, pitch = PosterFoot.LINE_ARABIC, bottom = 1808f,
             arabic = true, topLimit = 1610f)
+        assertFalse(s.markOutside)
         assertEquals(1628f, s.nameCy, delta)
         assertEquals(1686f, s.phoneCy, delta)
         assertEquals(1736f, s.addressCy, delta)
-        assertTrue(s.nameCy - 42f < 1610f)
+        assertTrue(s.nameCy - PosterFoot.nameHalfOf(true) < 1610f)
+    }
+
+    @Test
+    fun `a foot that fits with the mark inside keeps it there, exactly as before`() {
+        // Latin, two rows, the mark on: the gaps close up and nothing else (the answer of a name that would touch the seal).
+        val latin = PosterFoot.stack(1694f, phone = true, addressLines = 2, pitch = PosterFoot.LINE, bottom = 1808f,
+            arabic = false, topLimit = 1610f, bottomOutside = 1838f)
+        assertFalse(latin.markOutside)
+        assertEquals(1636f, latin.nameCy, delta)
+        assertEquals(1688f, latin.phoneCy, delta)
+        assertEquals(1738f, latin.addressCy, delta)
+        // Urdu, one address row, the mark on: the roomy gaps already clear.
+        val urdu = PosterFoot.stack(1694f, phone = true, addressLines = 1, pitch = PosterFoot.LINE_ARABIC, bottom = 1808f,
+            arabic = true, topLimit = 1610f, bottomOutside = 1838f)
+        assertFalse(urdu.markOutside)
+        assertEquals(1786f, urdu.addressCy, delta)
+        assertEquals(1728f, urdu.phoneCy, delta)
+        assertEquals(1660f, urdu.nameCy, delta)
+    }
+
+    @Test
+    fun `with no mark nothing steps out`() {
+        for (arabic in listOf(false, true)) for (lines in 0..2) for (phone in listOf(true, false)) {
+            val pitch = if (arabic) PosterFoot.LINE_ARABIC else PosterFoot.LINE
+            val s = PosterFoot.stack(1694f, phone, lines, pitch, 1838f, arabic, topLimit = 1610f, bottomOutside = 1838f)
+            assertFalse("arabic $arabic lines $lines phone $phone", s.markOutside)
+        }
+    }
+
+    @Test
+    fun `the mark steps out only when the rows inside the frame could not clear the seal`() {
+        for (lines in 0..2) for (phone in listOf(true, false)) for (arabic in listOf(false, true)) {
+            val pitch = if (arabic) PosterFoot.LINE_ARABIC else PosterFoot.LINE
+            val inside = PosterFoot.stack(1694f, phone, lines, pitch, 1808f, arabic, topLimit = 1610f)
+            val withExit = PosterFoot.stack(1694f, phone, lines, pitch, 1808f, arabic, topLimit = 1610f, bottomOutside = 1838f)
+            val clears = lines == 0 || inside.nameCy - PosterFoot.nameHalfOf(arabic) >= 1610f
+            val label = "lines $lines phone $phone arabic $arabic"
+            assertEquals(label, !clears, withExit.markOutside)
+            // Whenever the rows inside already clear, the answer is the old one, to the pixel.
+            if (clears) {
+                assertEquals(label, inside.nameCy, withExit.nameCy, delta)
+                assertEquals(label, inside.phoneCy, withExit.phoneCy, delta)
+                assertEquals(label, inside.addressCy, withExit.addressCy, delta)
+            }
+        }
     }
 
     @Test
     fun `the stack rows keep their order and stay on the card in every combination`() {
         for (bottom in listOf(1808f, 1838f)) for (lines in 0..2) for (phone in listOf(true, false)) for (arabic in listOf(false, true)) {
             val pitch = if (arabic) PosterFoot.LINE_ARABIC else PosterFoot.LINE
-            val s = PosterFoot.stack(1694f, phone, lines, pitch, bottom, arabic, topLimit = 1610f)
+            val s = PosterFoot.stack(1694f, phone, lines, pitch, bottom, arabic, topLimit = 1610f, bottomOutside = 1838f)
             val label = "bottom $bottom lines $lines phone $phone arabic $arabic"
             if (phone) assertTrue(label, s.nameCy < s.phoneCy)
             if (lines > 0) {
                 assertTrue(label, s.nameCy < s.addressCy)
                 if (phone) assertTrue(label, s.phoneCy < s.addressCy)
-                // The last row's ink ends at the design's bottom, or 8 under it when the stack had to sink to clear the seal.
-                assertTrue(label, s.addressCy + (lines - 1) * pitch + 22f <= bottom + 8f + delta)
+                // The last row's ink ends at the design's bottom (the lower one when the mark stepped out), or 8 under it
+                // when the stack had to sink to clear the seal.
+                val low = if (s.markOutside) 1838f else bottom
+                assertTrue(label, s.addressCy + (lines - 1) * pitch + 22f <= low + 8f + delta)
+                // Whatever the owner chose to show, the name stands clear of the seal's shadow.
+                assertTrue(label, s.nameCy - PosterFoot.nameHalfOf(arabic) >= 1610f)
             }
         }
     }

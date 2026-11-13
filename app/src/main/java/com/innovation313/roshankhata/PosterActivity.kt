@@ -41,7 +41,9 @@ import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.PosterFields
 import com.innovation313.roshankhata.data.PosterOccasion
 import com.innovation313.roshankhata.data.TradeVocab
+import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.LocaleRefresh
+import com.innovation313.roshankhata.ui.PosterContact
 import com.innovation313.roshankhata.ui.PosterDesigns
 import com.innovation313.roshankhata.ui.PosterImage
 import com.innovation313.roshankhata.ui.PosterKit
@@ -229,17 +231,17 @@ class PosterActivity : BaseActivity() {
         buildSendAs()
 
         etTitle.doAfterTextChanged {
-            if (!filling) { save(KEY_TITLE, it?.toString(), occasion.title); render() }
+            if (!filling) { save(KEY_TITLE, it?.toString(), occasion.titleIn(posterContext(), tradeKey())); render() }
             if (!it.isNullOrBlank()) findViewById<TextInputLayout>(R.id.tilTitle).error = null
         }
-        etMessage.doAfterTextChanged { if (!filling) { save(KEY_MSG, it?.toString(), occasion.message); render() } }
+        etMessage.doAfterTextChanged { if (!filling) { save(KEY_MSG, it?.toString(), occasion.messageIn(posterContext(), tradeKey())); render() } }
         buildShopName()
         buildSteps()
         findViewById<View>(R.id.btnTitleOriginal).setOnClickListener {
-            if (occasion.title != 0) etTitle.setText(posterContext().getString(occasion.title))
+            if (occasion.hasWords) etTitle.setText(occasion.titleIn(posterContext(), tradeKey()))
         }
         findViewById<View>(R.id.btnMessageOriginal).setOnClickListener {
-            if (occasion.message != 0) etMessage.setText(posterContext().getString(occasion.message))
+            if (occasion.hasWords) etMessage.setText(occasion.messageIn(posterContext(), tradeKey()))
         }
         btnStatus.setOnClickListener { sharePoster(toWhatsApp = true) }
         btnShare.setOnClickListener { sharePoster(toWhatsApp = false) }
@@ -379,8 +381,11 @@ class PosterActivity : BaseActivity() {
         markDesign()
     }
 
+    /** The shop's trade ([TradeVocab.key]): New stock's words follow it ([NewStockWords]). */
+    private fun tradeKey(): String = TradeVocab.key(this)
+
     /** The design's short name in the app's language. */
-    private fun designName(o: PosterOccasion): String = getString(o.title).trimEnd('!', '!', '۔').let {
+    private fun designName(o: PosterOccasion): String = o.titleIn(this, tradeKey()).trimEnd('!', '!', '۔').let {
         if (it.length > 22) it.take(20) + "…" else it
     }
 
@@ -506,8 +511,8 @@ class PosterActivity : BaseActivity() {
     private fun pageInput(ctx: Context, o: PosterOccasion): PosterImage.Input =
         if (o == occasion) input(animated = false, placeholder = true).copy(heroOverlay = false)
         else PosterImage.Input(o,
-            if (o.title != 0) ctx.getString(o.title) else ctx.getString(R.string.poster_custom_title_hint),
-            if (o.message != 0) ctx.getString(o.message) else ctx.getString(R.string.poster_custom_msg_hint),
+            if (o.hasWords) o.titleIn(ctx, tradeKey()) else ctx.getString(R.string.poster_custom_title_hint),
+            if (o.hasWords) o.messageIn(ctx, tradeKey()) else ctx.getString(R.string.poster_custom_msg_hint),
             shopName(),
             if (fields.showPhone) BusinessProfile.businessPhone(this)?.trim() else null,
             if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
@@ -593,11 +598,12 @@ class PosterActivity : BaseActivity() {
         val name = shopName()
         val phone = BusinessProfile.businessPhone(this)?.trim()
         val lg = logo
+        val trade = tradeKey()
         thumbsJob = lifecycleScope.launch {
             for (o in PosterOccasion.values()) {
                 val small = withContext(Dispatchers.Default) {
-                    val title = if (o.title != 0) ctx.getString(o.title) else ctx.getString(R.string.poster_custom)
-                    val message = if (o.message != 0) ctx.getString(o.message) else ""
+                    val title = if (o.hasWords) o.titleIn(ctx, trade) else ctx.getString(R.string.poster_custom)
+                    val message = if (o.hasWords) o.messageIn(ctx, trade) else ""
                     val (full, _) = PosterImage.draw(ctx, PosterImage.Input(o, title, message, name, phone, null, lg, null,
                         fields = fields, whatsapp = fields.onWhatsapp))
                     Bitmap.createScaledBitmap(full, w, h, true).also { full.recycle() }
@@ -623,8 +629,8 @@ class PosterActivity : BaseActivity() {
             PosterOccasion.RAMAZAN, PosterOccasion.EID_FITR, PosterOccasion.OFFER))
         // Closed and Hours print rows chosen above, not a free line.
         show(R.id.cardMessage, occasion != PosterOccasion.CLOSED && occasion != PosterOccasion.HOURS)
-        findViewById<View>(R.id.btnTitleOriginal).visibility = if (occasion.title != 0) View.VISIBLE else View.INVISIBLE
-        findViewById<View>(R.id.btnMessageOriginal).visibility = if (occasion.message != 0) View.VISIBLE else View.INVISIBLE
+        findViewById<View>(R.id.btnTitleOriginal).visibility = if (occasion.hasWords) View.VISIBLE else View.INVISIBLE
+        findViewById<View>(R.id.btnMessageOriginal).visibility = if (occasion.hasWords) View.VISIBLE else View.INVISIBLE
     }
 
     // ------------------------------------------------------------------ fields
@@ -698,7 +704,16 @@ class PosterActivity : BaseActivity() {
             ask(phone, android.text.InputType.TYPE_CLASS_PHONE) { BusinessProfile.setBusinessPhone(this, it); setFields(fields.copy(showPhone = true)) }
         } else {
             tick(phone, fields.showPhone) { f, v -> f.copy(showPhone = v) }
-            tick(getString(R.string.poster_chip_whatsapp), fields.onWhatsapp) { f, v -> f.copy(onWhatsapp = v) }
+            // "Also on WhatsApp" belongs to the call number; with a WhatsApp number of its own it has nothing to say.
+            if (fields.whatsappNumber.isBlank()) tick(getString(R.string.poster_chip_whatsapp), fields.onWhatsapp) { f, v -> f.copy(onWhatsapp = v) }
+        }
+        // A WhatsApp number that is not the call number (13 Nov 2026): kept with the poster's choices, not in the profile.
+        run {
+            val b = layoutInflater.inflate(R.layout.item_poster_suggest, showGrid, false) as MaterialButton
+            val wa = fields.whatsappNumber
+            b.text = if (wa.isBlank()) getString(R.string.poster_wa_other) else getString(R.string.poster_wa_number_is, Format.ltr(wa))
+            b.setOnClickListener { askWhatsappNumber() }
+            place(b)
         }
         if (BusinessProfile.businessEmail(this).isNullOrBlank()) {
             ask(email, android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS) {
@@ -721,29 +736,43 @@ class PosterActivity : BaseActivity() {
         TextFit.relax(showGrid)
     }
 
-    /** One detail typed in a small window; [onSave] gets it trimmed, never blank. */
-    private fun askValue(label: String, inputType: Int, onSave: (String) -> Unit) {
+    /**
+     * One detail typed in a small window; [onSave] gets it trimmed, never blank. The rest are for a detail that is
+     * kept elsewhere than the shop profile (the WhatsApp number): [initial] is filled in, [message] says where it is
+     * kept, [problem] may refuse a value with its reason, and [onRemove] adds a button that takes the detail away.
+     */
+    private fun askValue(label: String, inputType: Int, initial: String = "", message: Int = R.string.poster_saved_to_profile,
+                         title: String = getString(R.string.poster_add_named, label), problem: (String) -> Int? = { null },
+                         onRemove: (() -> Unit)? = null, onSave: (String) -> Unit) {
         val box = layoutInflater.inflate(R.layout.dialog_poster_value, null)
         val til = box.findViewById<TextInputLayout>(R.id.tilValue)
         val et = box.findViewById<TextInputEditText>(R.id.etValue)
         til.hint = label
         et.inputType = inputType
+        if (initial.isNotEmpty()) { et.setText(initial); et.setSelection(initial.length) }
         // A number or an email reads left to right, whatever the app's language.
         val cls = inputType and android.text.InputType.TYPE_MASK_CLASS
         val variation = inputType and android.text.InputType.TYPE_MASK_VARIATION
         if (cls == android.text.InputType.TYPE_CLASS_PHONE || variation == android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
             et.textDirection = View.TEXT_DIRECTION_LTR
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.poster_add_named, label))
-            .setMessage(R.string.poster_saved_to_profile)
+        val builder = MaterialAlertDialogBuilder(this)
+            .setTitle(title)
+            .setMessage(message)
             .setView(box)
             .setPositiveButton(R.string.save, null)
             .setNegativeButton(R.string.cancel, null)
-            .show()
+        if (onRemove != null) builder.setNeutralButton(R.string.poster_wa_remove, null)
+        val dialog = builder.show()
         dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE).setOnClickListener {
             val v = et.text?.toString()?.trim().orEmpty()
             if (v.isEmpty()) { til.error = getString(R.string.poster_value_needed); return@setOnClickListener }
+            val why = problem(v)
+            if (why != null) { til.error = getString(why); return@setOnClickListener }
             onSave(v)
+            dialog.dismiss()
+        }
+        if (onRemove != null) dialog.getButton(android.content.DialogInterface.BUTTON_NEUTRAL).setOnClickListener {
+            onRemove()
             dialog.dismiss()
         }
         et.requestFocus()
@@ -751,6 +780,24 @@ class PosterActivity : BaseActivity() {
         // After the line above, which sets the whole mode: keep the box above the keyboard (18 Oct).
         com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
         TextFit.relax(box)
+    }
+
+    /**
+     * The WhatsApp number, when it is not the call number (13 Nov 2026). Typed here and kept with the poster's choices
+     * (PosterFields.whatsappNumber), not in the shop profile, so invoices and statements are as they were; the same
+     * window changes it or takes it away. PosterContact decides how it is shown.
+     */
+    private fun askWhatsappNumber() {
+        val label = getString(R.string.poster_wa_other)
+        fun keep(number: String) {
+            setFields(fields.copy(whatsappNumber = number))
+            buildShowGrid()
+        }
+        askValue(label, android.text.InputType.TYPE_CLASS_PHONE, initial = fields.whatsappNumber, message = R.string.poster_wa_other_help,
+            title = label,
+            problem = { typed -> if (PosterContact.kept(typed).isNotEmpty()) null else R.string.poster_wa_number_bad },
+            onRemove = if (fields.whatsappNumber.isBlank()) null else ({ keep("") })
+        ) { typed -> keep(PosterContact.kept(typed)) }
     }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
@@ -1303,8 +1350,8 @@ class PosterActivity : BaseActivity() {
         val ctx = posterContext()
         val appLang = lang == defaultLanguage()
         fun stored(kind: String) = prefs.getString(key(kind), null) ?: if (appLang) prefs.getString(oldKey(kind), null) else null
-        etTitle.setText(stored(KEY_TITLE) ?: occasion.title.takeIf { it != 0 }?.let { ctx.getString(it) } ?: "")
-        etMessage.setText(stored(KEY_MSG) ?: occasion.message.takeIf { it != 0 }?.let { ctx.getString(it) } ?: "")
+        etTitle.setText(stored(KEY_TITLE) ?: occasion.titleIn(ctx, tradeKey()))
+        etMessage.setText(stored(KEY_MSG) ?: occasion.messageIn(ctx, tradeKey()))
         val rtl = PosterKit.urduScript(Locale.forLanguageTag(lang)) || Locale.forLanguageTag(lang).language in listOf("ar", "fa", "sd")
         val dir = if (rtl) View.TEXT_DIRECTION_RTL else View.TEXT_DIRECTION_LTR
         etTitle.textDirection = dir
@@ -1313,10 +1360,11 @@ class PosterActivity : BaseActivity() {
         render()
     }
 
-    private fun save(kind: String, text: String?, default: Int) {
+    /** [default] is the design's own words for this shop ([PosterOccasion.titleIn]); text equal to it is no change of the owner's. */
+    private fun save(kind: String, text: String?, default: String) {
         val t = text?.trim().orEmpty()
         val e = prefs.edit()
-        if (default != 0 && t == posterContext().getString(default)) e.remove(key(kind)) else e.putString(key(kind), t)
+        if (default.isNotEmpty() && t == default) e.remove(key(kind)) else e.putString(key(kind), t)
         e.apply()
     }
 

@@ -68,7 +68,12 @@ data class PosterFields(
     /** The shop's email under the call button (12 Oct). */
     val showEmail: Boolean = true,
     /** The number is on WhatsApp too: the call button carries a chat mark. */
-    val onWhatsapp: Boolean = true
+    val onWhatsapp: Boolean = true,
+    /**
+     * A WhatsApp number of its own, when it is not the call number (13 Nov 2026): typed on the poster screen and kept
+     * here, with the poster's other choices, never in the shop profile. "" = none; see PosterContact for how it is shown.
+     */
+    val whatsappNumber: String = ""
 ) {
     /** Why a shop closes, as the owner picks it; each has its own words in every language. */
     enum class Reason(val key: String) { FRIDAY("friday"), EID("eid"), WEDDING("wedding"), BEREAVEMENT("bereavement"), STRIKE("strike"), HOLIDAY("holiday") }
@@ -97,12 +102,14 @@ data class PosterFields(
         put("eidDays", eidDays)
         put("offerPercent", offerPercent); put("offerDays", offerDays)
         put("showLogo", showLogo); put("showPhone", showPhone); put("showAddress", showAddress); put("showMark", showMark)
-        put("showEmail", showEmail); put("onWhatsapp", onWhatsapp)
+        put("showEmail", showEmail); put("onWhatsapp", onWhatsapp); put("whatsappNumber", whatsappNumber)
     }
 
     companion object {
         const val CUSTOM_REASON = "custom"
         const val MAX_ITEMS = 4
+        /** The longest a kept phone number is (PosterContact.MAX_LENGTH): a longer one in a file is cut. */
+        const val MAX_NUMBER = 24
         private const val PREFS = "poster"
 
         /** Anything missing or unreadable falls back to its default, field by field. */
@@ -134,7 +141,8 @@ data class PosterFields(
                 offerDays = o.optInt("offerDays", d.offerDays).coerceIn(0, 30),
                 showLogo = o.optBoolean("showLogo", d.showLogo), showPhone = o.optBoolean("showPhone", d.showPhone),
                 showAddress = o.optBoolean("showAddress", d.showAddress), showMark = o.optBoolean("showMark", d.showMark),
-                showEmail = o.optBoolean("showEmail", d.showEmail), onWhatsapp = o.optBoolean("onWhatsapp", d.onWhatsapp)
+                showEmail = o.optBoolean("showEmail", d.showEmail), onWhatsapp = o.optBoolean("onWhatsapp", d.onWhatsapp),
+                whatsappNumber = o.optString("whatsappNumber", d.whatsappNumber).trim().take(MAX_NUMBER)
             )
         }
 

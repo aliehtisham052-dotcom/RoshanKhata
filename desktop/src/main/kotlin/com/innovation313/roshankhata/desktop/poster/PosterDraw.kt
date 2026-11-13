@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.desktop.poster
 
+import com.innovation313.roshankhata.data.ShopSettings
 import com.innovation313.roshankhata.desktop.gfx.Bitmap
 import com.innovation313.roshankhata.desktop.gfx.Canvas
 import com.innovation313.roshankhata.desktop.invoice.Context
@@ -57,7 +58,9 @@ object PosterDraw {
  */
 object TradeVocab {
     /** The phone's TradeVocab.key: the shop's trade in lower case; a book with none is the old default, agri. */
-    fun key(context: Context): String = context.settings.tradeKey()?.trim()?.lowercase()?.takeIf { it.isNotEmpty() } ?: "agri"
+    fun key(settings: ShopSettings): String = settings.tradeKey()?.trim()?.lowercase()?.takeIf { it.isNotEmpty() } ?: "agri"
+
+    fun key(context: Context): String = key(context.settings)
 
     fun items(context: Context): List<String> {
         val key = key(context)

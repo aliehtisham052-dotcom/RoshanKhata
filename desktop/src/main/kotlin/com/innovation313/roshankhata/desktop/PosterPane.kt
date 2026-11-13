@@ -37,11 +37,13 @@ import com.innovation313.roshankhata.data.CardLanguage
 import com.innovation313.roshankhata.data.ShopSettings
 import com.innovation313.roshankhata.desktop.invoice.Context
 import com.innovation313.roshankhata.desktop.invoice.ProfileImages
+import com.innovation313.roshankhata.desktop.poster.PosterContact
 import com.innovation313.roshankhata.desktop.poster.PosterDraw
 import com.innovation313.roshankhata.desktop.poster.PosterFields
 import com.innovation313.roshankhata.desktop.poster.PosterInput
 import com.innovation313.roshankhata.desktop.poster.PosterOccasion
 import com.innovation313.roshankhata.desktop.poster.PosterWords
+import com.innovation313.roshankhata.desktop.poster.TradeVocab
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.Words
@@ -114,11 +116,15 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
     val lang = posterLang.code
     val ur = posterLang == CardLanguage.URDU
     val posterWords = remember(lang) { desktopWords(posterLang.locale) }
+    fun context() = Context(posterWords, settings, images, posterLang.rtl, posterLang.locale)
     var occasion by remember(businessId) { mutableStateOf(PosterOccasion.byKey(prefs.get("occasion"))) }
     fun k(key: String) = "${occasion.key}.$lang.$key"
-    fun original(id: String, hint: String) = posterWords.text(id.ifEmpty { hint })
-    var title by remember(businessId, lang, occasion) { mutableStateOf(prefs.get(k("title")) ?: original(occasion.title, W.poster_custom_title_hint)) }
-    var message by remember(businessId, lang, occasion) { mutableStateOf(prefs.get(k("message")) ?: original(occasion.message, W.poster_custom_msg_hint)) }
+    // The design's own words in the poster's language; New stock's follow the shop's trade (NewStockWords, 13 Nov 2026).
+    val trade = TradeVocab.key(settings)
+    fun originalTitle(o: PosterOccasion) = if (o.hasWords) o.titleIn(context(), trade) else posterWords.text(W.poster_custom_title_hint)
+    fun originalMessage(o: PosterOccasion) = if (o.hasWords) o.messageIn(context(), trade) else posterWords.text(W.poster_custom_msg_hint)
+    var title by remember(businessId, lang, occasion) { mutableStateOf(prefs.get(k("title")) ?: originalTitle(occasion)) }
+    var message by remember(businessId, lang, occasion) { mutableStateOf(prefs.get(k("message")) ?: originalMessage(occasion)) }
 
     val d = PosterFields()
     fun flag(key: String, def: Boolean) = prefs.get(key)?.toBooleanStrictOrNull() ?: def
@@ -150,6 +156,8 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
     var showAddress by remember(businessId) { mutableStateOf(flag("showAddress", d.showAddress)) }
     var showEmail by remember(businessId) { mutableStateOf(flag("showEmail", d.showEmail)) }
     var onWhatsapp by remember(businessId) { mutableStateOf(flag("onWhatsapp", d.onWhatsapp)) }
+    // A WhatsApp number of its own (13 Nov 2026), as typed; fields() keeps it only once it has a phone number's digits.
+    var waNumber by remember(businessId) { mutableStateOf(prefs.get("whatsappNumber").orEmpty()) }
     var showMark by remember(businessId) { mutableStateOf(flag("showMark", d.showMark)) }
 
     var picture by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -170,7 +178,8 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
         offerPercent = offerPercent.trim().toIntOrNull()?.coerceIn(1, 90) ?: d.offerPercent,
         offerDays = offerDays.trim().toIntOrNull()?.coerceIn(0, 30) ?: 0,
         showLogo = showLogo, showPhone = showPhone, showAddress = showAddress, showEmail = showEmail,
-        showMark = showMark, onWhatsapp = onWhatsapp
+        showMark = showMark, onWhatsapp = onWhatsapp,
+        whatsappNumber = PosterContact.kept(waNumber)
     )
 
     fun input(): PosterInput {
@@ -185,11 +194,9 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
         )
     }
 
-    fun context() = Context(posterWords, settings, images, posterLang.rtl, posterLang.locale)
-
     fun save() {
-        val o = original(occasion.title, W.poster_custom_title_hint)
-        val m = original(occasion.message, W.poster_custom_msg_hint)
+        val o = originalTitle(occasion)
+        val m = originalMessage(occasion)
         prefs.set(
             mapOf(
                 "lang" to lang, "occasion" to occasion.key,
@@ -200,6 +207,7 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
                 "prayerBreak" to prayerBreak.toString(), "offerPercent" to offerPercent, "offerDays" to offerDays,
                 "showLogo" to showLogo.toString(), "showPhone" to showPhone.toString(), "showAddress" to showAddress.toString(),
                 "showEmail" to showEmail.toString(), "onWhatsapp" to onWhatsapp.toString(), "showMark" to showMark.toString(),
+                "whatsappNumber" to PosterContact.clean(waNumber).takeIf { it.isNotEmpty() },
                 "reason" to reason, "reasonText" to reasonText, "reopen" to reopen, "reopenAt" to reopenAt,
                 "breakFrom" to breakFrom, "breakTo" to breakTo, "holidays" to holidays.sorted().joinToString(","),
                 "dayFrom" to dayFrom, "dayTo" to dayTo, "afterTaraweeh" to afterTaraweeh.toString(), "nightFrom" to nightFrom, "nightTo" to nightTo
@@ -213,7 +221,7 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
     androidx.compose.runtime.DisposableEffect(businessId) { onDispose { runCatching { saveOnLeave.value() } } }
 
     LaunchedEffect(occasion, lang, title, message, items, eidDays, ramazanHours, urgentPhone, opens, closes, prayerBreak,
-        offerPercent, offerDays, showLogo, showPhone, showAddress, showEmail, onWhatsapp, showMark, logo, shop,
+        offerPercent, offerDays, showLogo, showPhone, showAddress, showEmail, onWhatsapp, waNumber, showMark, logo, shop,
         reason, reasonText, reopen, reopenAt, breakFrom, breakTo, holidays, dayFrom, dayTo, afterTaraweeh, nightFrom, nightTo) {
         delay(300)
         val ctx = context()
@@ -239,7 +247,9 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
                 PosterOccasion.offered().chunked(3).forEach { row ->
                     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEach { o ->
-                            val name = word(if (o.title.isEmpty()) W.poster_custom else o.title).trimEnd('!', '！', '۔')
+                            // The pill names the design in the app's language, New stock's by the shop's trade.
+                            val name = (if (o.hasWords) o.titleIn(Context(words, settings, images, false), trade) else word(W.poster_custom))
+                                .trimEnd('!', '！', '۔')
                             FluentPill(name, o == occasion) { save(); occasion = o }
                         }
                     }
@@ -248,9 +258,9 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
             if (shop.isBlank()) Text(word(W.poster_shop_needed), color = c.owedToMe, fontSize = 13.sp)
             PosterField(title, { title = it }, posterWords.text(W.poster_heading_hint))
             PosterField(message, { message = it }, posterWords.text(W.poster_message_hint), single = false)
-            if (occasion.title.isNotEmpty()) TextButton({
-                title = original(occasion.title, W.poster_custom_title_hint)
-                message = original(occasion.message, W.poster_custom_msg_hint)
+            if (occasion.hasWords) TextButton({
+                title = originalTitle(occasion)
+                message = originalMessage(occasion)
             }) { Text(word(W.poster_use_original), color = c.brandGreenText) }
 
             when (occasion) {
@@ -313,7 +323,14 @@ fun PosterPane(settings: ShopSettings, images: ProfileImages, home: File, busine
             Text(word(W.poster_show_on), color = c.ink, fontWeight = FontWeight.Bold)
             Tick(showLogo && hasLogo, word(if (hasLogo) W.poster_chip_logo else W.biz_card_logo_none), enabled = hasLogo) { showLogo = it }
             Tick(showPhone, word(W.poster_chip_phone)) { showPhone = it }
-            Tick(onWhatsapp, word(W.poster_chip_whatsapp)) { onWhatsapp = it }
+            // A WhatsApp number of its own (13 Nov 2026), kept with the poster's choices and never in the shop profile.
+            // The box stays where it is while "On WhatsApp" goes: once a number is typed the two numbers say it.
+            PosterField(waNumber, { waNumber = it.filter { ch -> ch.isDigit() || ch in "+-() " }.take(PosterFields.MAX_NUMBER) },
+                word(W.poster_wa_other))
+            if (waNumber.isNotBlank() && PosterContact.kept(waNumber).isEmpty())
+                Text(word(W.poster_wa_number_bad), color = c.owedToMe, fontSize = 12.sp)
+            else Text(word(W.poster_wa_other_help), color = c.textMuted, fontSize = 12.sp)
+            if (waNumber.isBlank()) Tick(onWhatsapp, word(W.poster_chip_whatsapp)) { onWhatsapp = it }
             Tick(showAddress, word(W.poster_chip_address)) { showAddress = it }
             Tick(showEmail, word(W.poster_chip_email)) { showEmail = it }
             // Off for now (Branding: the owner, 12 Oct 2026), so the switch is not offered, as on the phone.

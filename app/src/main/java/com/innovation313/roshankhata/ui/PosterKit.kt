@@ -75,6 +75,8 @@ object PosterKit {
         val whatsapp: Boolean = false
     ) {
         val urdu = urduScript(locale)
+        /** The numbers this poster shows: the call number and, when the owner gave one, a WhatsApp number of its own. */
+        val contact: PosterContact.Contact = PosterContact.of(phone, whatsapp, fields.whatsappNumber)
         /** Draw the hero here, or its flat stand-in, unless the live 3D view covers the place. */
         fun drawHero(rect: RectF, flat: (Canvas) -> Unit) {
             when {
@@ -347,14 +349,58 @@ object PosterKit {
         np.textAlign = align; fp.textAlign = align
         inkLine(c, from, fp, tx, cy - 36f)
         inkLine(c, name, np, tx, cy + 22f)
-        if (showPhone && !page.phone.isNullOrBlank()) {
-            val pp = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-                typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
-                textSize = 36f; color = phoneColour; textAlign = Paint.Align.CENTER; letterSpacing = 0.14f
+        if (showPhone) contactRow(page, phoneCy, phoneColour)
+    }
+
+    /**
+     * The numbers as one line of text, centred under a sign-off (the Eid, Ramazan, Jumu'ah and 14 August foot, the Adha
+     * column, the Thank-you card). One call number is as it always was: the digits and nothing else. A WhatsApp number
+     * brings the marks (a handset, a chat bubble) so the two can be told apart; two numbers share the line, shrunk
+     * together until both fit in [maxWidth], the call number first on the reading side.
+     */
+    fun contactRow(page: Page, cy: Float, colour: Int, size: Float = 36f, maxWidth: Float = 940f) {
+        val items = page.contact.items
+        if (items.isEmpty()) return
+        val c = page.c
+        fun paint(sz: Float) = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
+            textSize = sz; color = colour; textAlign = Paint.Align.LEFT; letterSpacing = 0.14f
+        }
+        if (items.size == 1 && items[0].kind == PosterContact.Kind.CALL) {
+            val p = paint(size)
+            p.textAlign = Paint.Align.CENTER
+            inkLine(c, items[0].number, p, W / 2, cy)
+            return
+        }
+        var sz = size
+        var ps = items.map { paint(sz) }
+        fun total(): Float = items.indices.sumOf { (CONTACT_MARK * sz / 36f + CONTACT_GAP * sz / 36f + ps[it].measureText(items[it].number)).toDouble() }.toFloat() +
+            (items.size - 1) * CONTACT_BETWEEN * sz / 36f
+        while (total() > maxWidth && sz > 26f) { sz -= 2f; ps = items.map { paint(sz) } }
+        val k = sz / 36f
+        val mark = CONTACT_MARK * k
+        val gap = CONTACT_GAP * k
+        val between = CONTACT_BETWEEN * k
+        // Reading order: the first item on the reading side, from the right on an Urdu poster.
+        var x = if (page.rtl) W / 2 + total() / 2 else W / 2 - total() / 2
+        for ((i, item) in items.withIndex()) {
+            val w = mark + gap + ps[i].measureText(item.number)
+            val left = if (page.rtl) x - w else x
+            val markCx = if (page.rtl) left + w - mark / 2 else left + mark / 2
+            val textX = if (page.rtl) left else left + mark + gap
+            when (item.kind) {
+                PosterContact.Kind.CALL -> PosterGlyphs.call(c, markCx, cy, mark, colour)
+                PosterContact.Kind.WHATSAPP -> PosterGlyphs.chatLine(c, markCx, cy, mark * 1.1f, colour)
             }
-            inkLine(c, page.phone.trim(), pp, W / 2, phoneCy)
+            inkLine(c, item.number, ps[i], textX, cy)
+            x = if (page.rtl) x - w - between else x + w + between
         }
     }
+
+    // The marks and gaps of a contact row at the usual 36 sized text (scaled with the text when a row must shrink).
+    private const val CONTACT_MARK = 34f
+    private const val CONTACT_GAP = 12f
+    private const val CONTACT_BETWEEN = 60f
 
     /**
      * The whole foot as one block (13 Nov 2026, see [PosterFoot]): the sign-off, the phone under it, the address and
@@ -366,45 +412,67 @@ object PosterKit {
              fromColour: Int = 0xFF9FE3D6.toInt(), phoneColour: Int = 0xB3F6EBD0.toInt(),
              addressColour: Int = 0xB3F6EBD0.toInt(), markColour: Int = 0x66F6EBD0,
              inner: Int = 0xFF157A72.toInt(), innerDark: Int = 0xFF04211F.toInt(), sealSize: Float = 138f) {
-        val plan = PosterFoot.plan(cy, sealSize, !page.phone.isNullOrBlank(), addressLines(page), page.mark != null, topLimit,
+        val plan = PosterFoot.plan(cy, sealSize, page.contact.any, addressLines(page), page.mark != null, topLimit,
             addressPitch(page))
         signOff(page, from, plan.cy, nameColour, fromColour, phoneColour, inner, innerDark, plan.sealSize, phoneCy = plan.phoneCy)
         address(page, plan.addressCy, addressColour)
         mark(page, markColour, plan.markCy)
     }
 
-    /** The gold call button, or nothing if the profile has no phone. */
     /**
-     * The call button (12 Oct, redrawn): a gold pill, a coloured disc ringed in
-     * light with the standard filled call mark, the number in 0-9, and, when
-     * the number is on WhatsApp, a chat mark at the pill's other end.
+     * The call button (12 Oct, redrawn): a gold pill, a coloured disc ringed in light with the standard filled call
+     * mark, the number in 0-9, and, when the number is on WhatsApp, a chat mark at the pill's other end. With a
+     * WhatsApp number of its own (13 Nov) the one pill becomes two slimmer ones in the same place, the call number over
+     * the WhatsApp number, each disc with its own mark (a handset, a chat bubble); a WhatsApp number alone is one
+     * pill with the chat mark in its disc. Nothing when the poster shows no number.
      */
     fun phonePill(page: Page, pill: RectF, disc: Int = 0xFF1E6B4A.toInt(), discDark: Int = 0xFF062418.toInt(),
                   glyph: Int = 0xFFFFFFFF.toInt(), size: Float = 69f) {
-        val phone = page.phone?.trim()
-        if (phone.isNullOrBlank()) return
+        val items = page.contact.items
+        if (items.isEmpty()) return
+        if (items.size == 1) {
+            numberPill(page, pill, items[0], page.contact.chatMark, disc, discDark, glyph, size, slim = false)
+            return
+        }
+        val h = (pill.height() - PILL_GAP) / 2f
+        numberPill(page, RectF(pill.left, pill.top, pill.right, pill.top + h), items[0], false, disc, discDark, glyph,
+            size * SLIM_TEXT, slim = true)
+        numberPill(page, RectF(pill.left, pill.bottom - h, pill.right, pill.bottom), items[1], false, disc, discDark, glyph,
+            size * SLIM_TEXT, slim = true)
+    }
+
+    /** The space between the two pills of a call and a WhatsApp number, and how much smaller their numbers are set. */
+    private const val PILL_GAP = 14f
+    private const val SLIM_TEXT = 0.68f
+
+    /** One gold pill for one number: [chatMark] adds the chat mark at its other end, [slim] is the half-height one of a pair. */
+    private fun numberPill(page: Page, pill: RectF, item: PosterContact.Item, chatMark: Boolean, disc: Int, discDark: Int,
+                           glyph: Int, size: Float, slim: Boolean) {
         val c = page.c
         val gold = Paint(Paint.ANTI_ALIAS_FLAG)
         gold.shader = LinearGradient(0f, pill.top, 0f, pill.bottom,
             intArrayOf(0xFFFBE6A2.toInt(), 0xFFE2B44C.toInt(), 0xFFB98322.toInt()), floatArrayOf(0f, 0.48f, 1f), Shader.TileMode.CLAMP)
-        gold.setShadowLayer(42f, 0f, 30f, 0x80000000.toInt())
+        if (slim) gold.setShadowLayer(26f, 0f, 16f, 0x66000000) else gold.setShadowLayer(42f, 0f, 30f, 0x80000000.toInt())
         val r = pill.height() / 2
         c.drawRoundRect(pill, r, r, gold)
         // A fine light edge along the pill's top: it reads as metal, not paint.
         c.drawRoundRect(RectF(pill.left + 3f, pill.top + 3f, pill.right - 3f, pill.bottom - 3f), r - 3f, r - 3f,
             Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 2.5f; color = 0x66FFFFFF })
-        val dr = r - 18f
-        val icx = if (page.rtl) pill.right - 18f - dr else pill.left + 18f + dr
+        val dr = r - if (slim) 10f else 18f
+        val icx = if (page.rtl) pill.right - (if (slim) 10f else 18f) - dr else pill.left + (if (slim) 10f else 18f) + dr
         val cy = pill.centerY()
         val d = Paint(Paint.ANTI_ALIAS_FLAG)
         d.shader = RadialGradient(icx - dr * 0.35f, cy - dr * 0.35f, dr * 1.4f, disc, discDark, Shader.TileMode.CLAMP)
-        d.setShadowLayer(10f, 0f, 4f, 0x55000000)
+        d.setShadowLayer(if (slim) 6f else 10f, 0f, if (slim) 3f else 4f, 0x55000000)
         c.drawCircle(icx, cy, dr, d)
-        c.drawCircle(icx, cy, dr - 7f, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 2.5f; color = 0x59FFFFFF })
-        PosterGlyphs.call(c, icx, cy, dr * 1.05f, glyph)
-        // The chat mark, at the other end.
+        c.drawCircle(icx, cy, dr - if (slim) 5f else 7f, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 2.5f; color = 0x59FFFFFF })
+        when (item.kind) {
+            PosterContact.Kind.CALL -> PosterGlyphs.call(c, icx, cy, dr * 1.05f, glyph)
+            PosterContact.Kind.WHATSAPP -> PosterGlyphs.chat(c, icx, cy, dr * 1.35f, glyph, disc)
+        }
+        // The chat mark, at the other end (the one call number that is also on WhatsApp).
         var chatRoom = 0f
-        if (page.whatsapp) {
+        if (chatMark) {
             val br = r * 0.40f
             val bcx = if (page.rtl) pill.left + 34f + br else pill.right - 34f - br
             PosterGlyphs.chat(c, bcx, cy, br * 2.1f, discDark, 0xFFF3CF6A.toInt())
@@ -414,10 +482,11 @@ object PosterKit {
             typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
             textSize = size; color = 0xFF1F1505.toInt(); textAlign = Paint.Align.CENTER; letterSpacing = 0.02f
         }
-        val textLeft = if (page.rtl) pill.left + 30f + chatRoom else icx + dr + 24f
-        val textRight = if (page.rtl) icx - dr - 24f else pill.right - 30f - chatRoom
-        fitWidth(pp, phone, textRight - textLeft, floor = 40f)
-        inkLine(c, phone, pp, (textLeft + textRight) / 2, cy)
+        val pad = if (slim) 22f else 30f
+        val textLeft = if (page.rtl) pill.left + pad + chatRoom else icx + dr + (if (slim) 18f else 24f)
+        val textRight = if (page.rtl) icx - dr - (if (slim) 18f else 24f) else pill.right - pad - chatRoom
+        fitWidth(pp, item.number, textRight - textLeft, floor = if (slim) 30f else 40f)
+        inkLine(c, item.number, pp, (textLeft + textRight) / 2, cy)
     }
 
     // The address and the email: the plan says how they stand, so the foot can ask how tall they are before drawing.
@@ -522,11 +591,21 @@ object PosterKit {
         inkLine(page.c, text, p, textX, cy)
     }
 
-    /** "Roshan Khata", faint, at the very foot. */
-    fun mark(page: Page, colour: Int = 0x66F6EBD0, cy: Float = 1880f) {
+    /**
+     * "Roshan Khata", faint, at the very foot. With [maxInk] above 0 the words shrink until their ink is at most that
+     * tall, for a mark that must stand in a narrow band (the Thank-you card's, under its frame): the ink of Nastaliq,
+     * Devanagari and Bengali words is far taller than their size.
+     */
+    fun mark(page: Page, colour: Int = 0x66F6EBD0, cy: Float = 1880f, maxInk: Float = 0f) {
         val m = page.mark ?: return
         val p = textPaint(page.context, m, if (page.urdu) 27f else 25f, colour, false, page.locale, page.urdu)
         p.textAlign = Paint.Align.CENTER
+        if (maxInk > 0f) {
+            val b = Rect()
+            p.getTextBounds(m, 0, m.length, b)
+            val ink = (b.bottom - b.top).toFloat()
+            if (ink > maxInk) p.textSize = p.textSize * maxInk / ink
+        }
         inkLine(page.c, m, p, W / 2, cy)
     }
 
