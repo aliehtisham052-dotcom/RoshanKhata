@@ -34,6 +34,9 @@ on:
       # Hudhud's sentence bank, written into the tests' resources (gen_hudhud_bank.py --check).
       - 'shared/hudhud/**'
       - 'scripts/gen_hudhud_bank.py'
+      # Hudhud only reads (check_hudhud_readonly.py).
+      - 'scripts/check_hudhud_readonly.py'
+      - 'scripts/gen_viewer_dao.py'
   pull_request:
     paths:
       - 'app/src/main/res/values*/strings.xml'
@@ -59,6 +62,9 @@ on:
       # Hudhud's sentence bank, written into the tests' resources (gen_hudhud_bank.py --check).
       - 'shared/hudhud/**'
       - 'scripts/gen_hudhud_bank.py'
+      # Hudhud only reads (check_hudhud_readonly.py).
+      - 'scripts/check_hudhud_readonly.py'
+      - 'scripts/gen_viewer_dao.py'
 
 jobs:
   parity:
@@ -90,3 +96,7 @@ jobs:
       # The sense the app ships is learnt from this bank; HudhudModelTest (the build's tests) holds the asset to it.
       - name: Hudhud's sentence bank is current (shared/hudhud -> the tests' bank and held-out set)
         run: python3 scripts/gen_hudhud_bank.py --check
+      # The owner's rule: Hudhud brings the answer and the owner's own tap saves. No file of his may call a DAO write,
+      # run raw SQL, send a message or open a network call (scripts/check_hudhud_readonly.py).
+      - name: Hudhud only reads (no write, no send, no network call in any of his files)
+        run: python3 scripts/check_hudhud_readonly.py

@@ -25,6 +25,17 @@ object HudhudSpeech {
             .joinToString("\n") { it.replace(SPACES, " ").trim() }
             .trim()
 
+    /** A verse's address written after its words — "(27:26)", "(27:16–17)" — which the eye wants and the ear does not. */
+    private val VERSE_REFS = Regex("\\s*\\(\\d{1,3}:\\d{1,3}(?:\\s*[\u2013\\-]\\s*\\d{1,3})?\\)")
+
+    /**
+     * [text] with its verse addresses taken out, for the voice (14 Nov 2026): the faith and story cards print "(27:22)"
+     * after each telling so the owner can find the verse, and a voice would read it as "twenty-seven, twenty-two". Only
+     * this exact shape goes — a time such as "(9:30 pm)" or a name in brackets stays — so it is asked for by the cards
+     * that carry addresses, never done to every answer.
+     */
+    fun withoutVerseRefs(text: String): String = text.replace(VERSE_REFS, "")
+
     /** The sentences of [text], in order, none empty; one part when it has no sentence end at all. */
     fun parts(text: String): List<String> {
         val s = clean(text)

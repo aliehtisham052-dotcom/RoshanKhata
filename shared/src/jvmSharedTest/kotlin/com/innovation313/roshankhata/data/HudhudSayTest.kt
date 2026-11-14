@@ -42,7 +42,8 @@ class HudhudSayTest {
         assertEquals("Paid 1250.50 rupees", HudhudSay.forVoice("Paid ₹1,250.50", "en", rupees = rupees))
         assertEquals("Rp 5.000", HudhudSay.forVoice("Rp 5.000", "in", rupees = rupees))
         // The whole figure, never broken at its grouping marks (13 Nov 2026, the owner's phone said "Rs 141,768" as 141 and 768).
-        assertEquals("آج کی بکری 159426 روپے", HudhudSay.forVoice("آج کی بکری Rs 159,426", "ur", rupees = { "$it روپے" }))
+        // The sale is said as "فروخت" (the sale), never as the goat (HudhudPronounce).
+        assertEquals("آج کی فروخت 159426 روپے", HudhudSay.forVoice("آج کی بکری Rs 159,426", "ur", rupees = { "$it روپے" }))
         assertEquals("141768 رپيا", HudhudSay.forVoice("Rs 141,768", "sd", rupees = { "$it رپيا" }))
         assertEquals("159426 rupees", HudhudSay.forVoice("Rs 1,59,426", "en", rupees = rupees))
         assertEquals("500 rupees", HudhudSay.forVoice("Rs 500.00", "en", rupees = rupees))
@@ -56,5 +57,31 @@ class HudhudSayTest {
     @Test fun `a range's dash is said as the language's to`() {
         assertEquals("Likely 8 Nov to 12 Nov.", HudhudSay.forVoice("Likely 8 Nov – 12 Nov.", "en"))
         assertEquals("8 نومبر سے 12 نومبر", HudhudSay.forVoice("8 نومبر – 12 نومبر", "ur"))
+    }
+
+    @Test fun `another country's money is said in that currency's own words`() {
+        // 14 Nov 2026, the owner: "dirham, euro, dollar — har mulk ki currency ke hisaab se bole".
+        assertEquals("Today's sale: 1250 dirhams.",
+            HudhudSay.forVoice("Today's sale: AED 1,250.", "en", rupees = { "$it dirhams" }, signs = listOf("AED")))
+        assertEquals("Paid 40 euros", HudhudSay.forVoice("Paid \u20AC 40", "en", rupees = { "$it euros" }, signs = listOf("\u20AC")))
+        assertEquals("Paid 12.50 dollars", HudhudSay.forVoice("Paid \$ 12.50", "en", rupees = { "$it dollars" }, signs = listOf("\$")))
+        // The sign is only money when a figure follows it, and never inside a word.
+        assertEquals("EUR is a code", HudhudSay.forVoice("EUR is a code", "en", rupees = { "$it euros" }, signs = listOf("EUR")))
+        assertEquals("XAED 5", HudhudSay.forVoice("XAED 5", "en", rupees = { "$it dirhams" }, signs = listOf("AED")))
+        // The shop's own sign is the only one turned into words: a rupee sign is left alone for a dirham shop.
+        assertEquals("Rs 500 and 20 dirhams",
+            HudhudSay.forVoice("Rs 500 and AED 20", "en", rupees = { "$it dirhams" }, signs = listOf("AED")))
+    }
+
+    @Test fun `dinars are counted to a thousandth, so a fraction of a dinar is not a thousand`() {
+        val dinars: (String) -> String = { "$it dinars" }
+        val kd = listOf("KWD")
+        // "0.500" is half a dinar, "1,250.500" one thousand two hundred and fifty and a half, "1,250" a whole figure.
+        assertEquals("0.500 dinars", HudhudSay.forVoice("KWD 0.500", "en", rupees = dinars, signs = kd, decimals = 3))
+        assertEquals("1250.500 dinars", HudhudSay.forVoice("KWD 1,250.500", "en", rupees = dinars, signs = kd, decimals = 3))
+        assertEquals("1250 dinars", HudhudSay.forVoice("KWD 1,250", "en", rupees = dinars, signs = kd, decimals = 3))
+        assertEquals("12.250 dinars", HudhudSay.forVoice("KWD 12.250", "ar", rupees = dinars, signs = kd, decimals = 3))
+        // A currency counted to the hundredth keeps its old reading: "1.250" there is a group, never 1.25.
+        assertEquals("1250 rupees", HudhudSay.forVoice("Rs 1.250", "en", rupees = { "$it rupees" }))
     }
 }

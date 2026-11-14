@@ -186,6 +186,43 @@ def brand_failures(folder: str, path: Path):
     return out
 
 
+# Hudhud's history and his story (14 Nov 2026, the owner's two rules): the app was PUBLISHED, never "launched",
+# in any language (Hudhud's readers understand the word, he never says it); and the queen of Saba is never
+# given a name the Quran does not give her. Only the history, story and tab strings are held to it.
+HISTORY_KEY = re.compile(
+    r"^hudhud_(t_history|t_story|hist_.*|l_hist_.*|l_days_.*|story_.*|chip_(story|published|hudhud_added|history)|tab_(ask|personal))$")
+LAUNCH_WORDS = re.compile(
+    "launch|lanch|luncur"                                                       # English, Roman Urdu, Indonesian
+    "|لانچ"                                                  # لانچ (Urdu, Sindhi)
+    "|लॉन्च|लांच|लाँच"  # लॉन्च, लांच, लाँच
+    "|লঞ্চ|লাঞ্চ"                   # লঞ্চ, লাঞ্চ
+    "|إطلاق|اطلاق|أطلق|انطلاق"  # إطلاق أطلق انطلاق
+    "|راه[\\s‌]?انداز[یي]",  # راه‌اندازی (Persian)
+    re.I)
+QUEEN_NAMES = re.compile(
+    "bilq|balq|bilkis|bilkees"
+    "|بلقيس|بلقیس|بلقس"                        # بلقيس بلقیس بلقس
+    "|बिल्?क़?ीस"                                                            # बिल्क़ीस बिलकीस
+    "|বিলকিস|বিলকীস|বালকিস",  # বিলকিস বিলকীস বালকিস
+    re.I)
+DIACRITICS = re.compile("[ً-ٰٟ]")
+
+
+def history_failures(folder: str, path: Path):
+    out = []
+    for kind, name, text, el in raw_values(path):
+        if kind != "string" or not HISTORY_KEY.match(name):
+            continue
+        plain = DIACRITICS.sub("", text)
+        found = LAUNCH_WORDS.search(plain)
+        if found:
+            out.append(f"{folder}: {name} says \"{found.group(0)}\"; the app was published, never launched")
+        found = QUEEN_NAMES.search(plain)
+        if found:
+            out.append(f"{folder}: {name} names the queen \"{found.group(0)}\"; the Quran does not name her")
+    return out
+
+
 def glossary_warnings(path: Path):
     out = []
     for kind, name, text, el in raw_values(path):
@@ -239,6 +276,7 @@ def main() -> int:
         path = RES / folder / "strings.xml"
         failures.extend(text_failures(folder, path, unformatted))
         failures.extend(brand_failures(folder, path))
+        failures.extend(history_failures(folder, path))
     warnings = glossary_warnings(RES / "values-b+ur+Latn" / "strings.xml")
 
     for folder in LOCALES:

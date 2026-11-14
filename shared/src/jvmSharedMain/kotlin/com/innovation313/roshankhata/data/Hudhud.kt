@@ -152,6 +152,13 @@ object Hudhud {
         data class NeedGoods(val facet: GoodsFacet) : Ask()
 
         /**
+         * The name the owner asks to be called by (14 Nov 2026, the owner's check logs: "my name is …", "mera naam … hai",
+         * "mujhe … bulao" were read as a question about his name, as the shop's name or as a customer): [name] is kept on
+         * this phone only (HudhudPrefs) and he calls the owner by it from now on. Said by the rules alone, never the sense's.
+         */
+        data class CallMe(val name: String) : Ask()
+
+        /**
          * What he took a sentence to mean when nothing fitted it exactly (13 Nov 2026, the owner: "aap ka kaam batana
          * hai, poochhna nahi"): [ask] is answered, and the card says what he took it as, so a wrong guess is seen.
          */
@@ -180,7 +187,20 @@ object Hudhud {
     enum class AboutTopic {
         APP, MAKER, PRIVACY, LANGUAGES, VERSION, OWNER_NAME,
         /** "Why is your name Hudhud?" (14 Nov 2026, the owner): the hoopoe of Prophet Sulaiman, who brought true news. */
-        NAME_STORY
+        NAME_STORY,
+        /**
+         * Only asked for, never added to another answer (14 Nov 2026, the owner: "har sawal ke jawab mein nahi, sirf us ke
+         * specific sawal par"): Allah's oneness, hamd and sana with the tasbeeh of all creation, and the Prophet's ﷺ risalat.
+         * [HudhudFaith] reads them, and only a sentence of nothing but those words.
+         */
+        TAWHEED, HAMD, RISALAT,
+        /**
+         * The app's own history and Hudhud's own story (14 Nov 2026, the owner: "app kab bani, kab publish hui, Hudhud kab add
+         * hua" and "Hudhud apni aap-beeti sunaye"): when the work began, when the app was published, when Hudhud was added,
+         * the whole timeline, and the hoopoe's story as the Quran tells it with its outcome. Only asked for, never added to
+         * another answer; [HudhudStory] reads them, and only a sentence of nothing but those words.
+         */
+        APP_STARTED, APP_PUBLISHED, HUDHUD_ADDED, APP_JOURNEY, HOOPOE_STORY
     }
 
     /** What can be counted. */
@@ -443,12 +463,20 @@ object Hudhud {
         // of those into a figure, a count, "about the app" or small talk.
         // "Why is your name Hudhud?" is read by the rules alone (a why with his name or "your name"): the bank has no such
         // meaning, and the sense was all but sure such a sentence asked who he is.
-        if (ruled is Ask.About && ruled.topic == AboutTopic.NAME_STORY) return ruled
+        if (ruled is Ask.About && (ruled.topic == AboutTopic.NAME_STORY || ruled.topic in FAITH_TOPICS || ruled.topic in STORY_TOPICS)) return ruled
         // A feature named by its own word (14 Nov 2026), and the asks only the rules make: never turned by the sense.
         if (ruled is Ask.Help && featureNamed(heard)) return ruled
-        if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods) {
+        if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods ||
+            ruled is Ask.CallMe
+        ) {
             return ruled
         }
+        // "<somebody> ne … dene hain" (14 Nov 2026, the owner's check log): somebody else has to give, so the money is the
+        // shop's to get. The sense learnt "mujhe dene hain" (the shop gives) from first-person sentences and turned such a
+        // sentence into the opposite at 0.99; the rules read who the doer is, so their reading stays. Only against a reading
+        // that turns the direction: "Aaj kis kis ne paise dene hain?" asks WHO is to pay (the list of those due, or unpaid),
+        // not what the shop will get in all, and the sense is right to say so (the owner's list, L003).
+        if (ruled is Ask.Figure && ruled.kind in OWED_TO_US && VoiceQuestion.hasOtherDoer(heard) && top.label !in WHO_IS_TO_PAY) return ruled
         if (ruled is Ask.Help && asksTheWay(heard)) {
             return if (p >= SENSE_OVERRULE) theirs() ?: ruled else ruled
         }
@@ -490,6 +518,43 @@ object Hudhud {
     private const val SUGGEST_FLOOR = 0.02
     private const val MAX_SUGGEST = 3
 
+    /** The figures that are money owed TO the shop: kept when the doer of "dene hain" is somebody else ([decide]). */
+    private val OWED_TO_US = setOf(
+        VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.WHO_OWES_MOST, VoiceQuestion.Kind.WHO_OWES_LEAST
+    )
+
+    /** Sense readings that list WHO is to pay (due today, unpaid): a sharper reading of "kis ne dene hain", not its opposite. */
+    private val WHO_IS_TO_PAY = setOf("likely_payers", "not_paid")
+
+    /** Whose the app is: "whose", "who owns", "kis ki", "malik", "milik siapa", "مال کیست", "ڪنهن جي", "কার" — beside the word for the app. */
+    private val WHOSE_APP = listOf(
+        "whose", "who owns", "owner of", "belongs to", "app owner", "kis ki", "kis ka", "kis ke", "kiski", "kiska", "kiske", "malik",
+        "maalik", "کس کی", "کس کا", "کس کے", "مالک", "لمن", "مال کیست", "مال کیه", "ڪنهن جي", "ڪنهن جو", "مالڪ", "किस की", "किस का",
+        "किसकी", "किसका", "मालिक", "কার", "মালিক", "milik", "pemilik", "punya siapa"
+    )
+
+    /** The faith's own questions: read by [HudhudFaith] alone, never turned by the sense ([decide]). */
+    internal val FAITH_TOPICS = setOf(AboutTopic.TAWHEED, AboutTopic.HAMD, AboutTopic.RISALAT)
+
+    private fun faithTopic(t: HudhudFaith.Topic): AboutTopic = when (t) {
+        HudhudFaith.Topic.TAWHEED -> AboutTopic.TAWHEED
+        HudhudFaith.Topic.HAMD -> AboutTopic.HAMD
+        HudhudFaith.Topic.RISALAT -> AboutTopic.RISALAT
+    }
+
+    /** The app's history and his own story: read by [HudhudStory] alone, never turned by the sense ([decide]). */
+    internal val STORY_TOPICS = setOf(
+        AboutTopic.APP_STARTED, AboutTopic.APP_PUBLISHED, AboutTopic.HUDHUD_ADDED, AboutTopic.APP_JOURNEY, AboutTopic.HOOPOE_STORY
+    )
+
+    private fun storyTopic(t: HudhudStory.Topic): AboutTopic = when (t) {
+        HudhudStory.Topic.STARTED -> AboutTopic.APP_STARTED
+        HudhudStory.Topic.PUBLISHED -> AboutTopic.APP_PUBLISHED
+        HudhudStory.Topic.HUDHUD -> AboutTopic.HUDHUD_ADDED
+        HudhudStory.Topic.JOURNEY -> AboutTopic.APP_JOURNEY
+        HudhudStory.Topic.HOOPOE -> AboutTopic.HOOPOE_STORY
+    }
+
     /** Meanings that are talk with him, not a question of the book: words a name may sound like ("kamal", "shukriya"). */
     private val TALK = setOf(
         "who_are_you", "how_are_you", "can_talk", "address", "salaam", "hello", "thanks", "bye", "praise", "abilities",
@@ -500,7 +565,7 @@ object Hudhud {
     private val NO_SLOT = setOf(
         "who_are_you", "abilities", "how_are_you", "can_talk", "address", "salaam", "hello", "thanks", "bye", "praise",
         "owner_name", "maker", "app_about", "privacy", "languages", "date_time", "today_summary", "sales_today",
-        "sales_period", "profit", "to_get", "to_give", "who_owes_most", "not_paid", "likely_payers", "collected",
+        "sales_period", "profit", "to_get", "to_give", "who_owes_most", "who_owes_least", "not_paid", "likely_payers", "collected",
         "drawer", "expiring", "low_stock", "shop_info", "count_customers", "count_products", "bills_today",
         "invoices_today", "tickets_today", "entries_today", "calculator_uses", "app_opens", "cheques_status",
         "plans_status", "staff_salary", "deliveries", "activity", "backup_status", "book_summary", "cashbook_today",
@@ -528,6 +593,11 @@ object Hudhud {
             AboutTopic.PRIVACY -> "privacy"
             AboutTopic.LANGUAGES -> "languages"
             AboutTopic.NAME_STORY -> "name_story"
+            // The faith's own questions have no meaning in the bank: only the rules read them ([HudhudFaith]).
+            AboutTopic.TAWHEED, AboutTopic.HAMD, AboutTopic.RISALAT -> null
+            // The app's history and his story likewise: only [HudhudStory] reads them.
+            AboutTopic.APP_STARTED, AboutTopic.APP_PUBLISHED, AboutTopic.HUDHUD_ADDED, AboutTopic.APP_JOURNEY,
+            AboutTopic.HOOPOE_STORY -> null
         }
         Ask.Clock -> "date_time"
         Ask.Today -> "today_summary"
@@ -538,6 +608,7 @@ object Hudhud {
             VoiceQuestion.Kind.TO_GET -> "to_get"
             VoiceQuestion.Kind.TO_GIVE -> "to_give"
             VoiceQuestion.Kind.WHO_OWES_MOST -> "who_owes_most"
+            VoiceQuestion.Kind.WHO_OWES_LEAST -> "who_owes_least"
             VoiceQuestion.Kind.NOT_PAID -> "not_paid"
             VoiceQuestion.Kind.EXPIRING -> "expiring"
         }
@@ -593,7 +664,7 @@ object Hudhud {
             Move.JUMP -> "act_jump"
         }
         Ask.Unknown, is Ask.DidYouMean, is Ask.NeedName, is Ask.Guessed, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
-        Ask.Automations, is Ask.NeedGoods -> null
+        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe -> null
     }
 
     /**
@@ -643,6 +714,7 @@ object Hudhud {
             "to_get" -> Ask.Figure(VoiceQuestion.Kind.TO_GET)
             "to_give" -> Ask.Figure(VoiceQuestion.Kind.TO_GIVE)
             "who_owes_most" -> Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST)
+            "who_owes_least" -> Ask.Figure(VoiceQuestion.Kind.WHO_OWES_LEAST)
             "not_paid" -> Ask.Figure(VoiceQuestion.Kind.NOT_PAID)
             "expiring" -> Ask.Figure(VoiceQuestion.Kind.EXPIRING)
             "likely_payers" -> Ask.WhenPays(emptyList())
@@ -711,11 +783,19 @@ object Hudhud {
         val said = words(heard)
         if (said.isEmpty()) return Ask.Unknown
         val joined = said.joinToString(" ")
+        // The app's own history and his own story (14 Nov 2026, the owner: "app kab publish hui", "Hudhud kab add hua", "Hudhud
+        // apni aap-beeti sunao"): answered only to a sentence that is nothing but those words, and before the how-to pages ("how
+        // old is the app" holds a "how"). "Ali ki kahani" and "Roshan ka khata kab bana" are never read here: a word of the book
+        // or of somebody's name is never a history's.
+        HudhudStory.read(heard, language) { w -> knownName(w, names) || knownName(w, goods) }?.let { return Ask.About(storyTopic(it)) }
         val how = has(joined, HOW)
         if (how) helpOf(said, topics)?.let { return Ask.Help(it) }
         // A sentence that is nothing but small talk, or "what can you tell me" (13 Nov 2026): taken before any name,
         // so "Allah Hafiz" is a goodbye and not a customer called Hafiz; one with any other word goes on as before.
         voiceChange(said, joined)?.let { return Ask.Voice(it) }
+        // "My name is …", "call me …", "mera naam … hai", "mujhe … bulao" (14 Nov 2026): the owner tells him the name to be
+        // called by. Taken before any name or concept — "mera naam Ali hai" opens no customer called Ali.
+        callMeName(heard)?.let { return Ask.CallMe(it) }
         talk(said, whole = true)?.let { return it }
         // Only a calling and nothing asked (13 Nov 2026, the owner: "bhai jaan" opened a customer called "...Bhai"):
         // he answers to being called — "ji, haazir hoon" — and looks for nobody.
@@ -724,13 +804,16 @@ object Hudhud {
             said.none { w -> HudhudMind.meaningOf(w).any { it in ASKING } } &&
             said.all { it in VOCATIVE_SET || it in QUIET_SET || HudhudMind.meaningOf(it) == YOU_ONLY }
         ) return Ask.Chat(Talk.ADDRESS)
+        // Tawheed, hamd and sana, the Prophet's ﷺ risalat (14 Nov 2026, the owner): answered only to a sentence that is nothing
+        // but those words — "Allah kaun hai", "hamd o sana", "Nabi kareem kaun hain"; "Allah Ditta ka hisaab" is a customer's.
+        HudhudFaith.read(heard) { w -> knownName(w, names) }?.let { return Ask.About(faithTopic(it)) }
         // What each word means, in any order (13 Nov 2026, Brain v2): "aap ka kya naam hai" and "naam kya hai aap ka"
         // are one question. A word the book knows as somebody's or a product's name is never read by its sound.
         val figureWords = VoiceQuestion.keywordsIn(joined)
         val mind = HudhudMind.read(said, language) { w ->
             w in QUIET_SET || w in DAY_WORDS || w in figureWords || knownName(w, names) || knownName(w, goods)
         }
-        aboutHim(mind, joined)?.let { return it }
+        aboutHim(mind, joined) { w -> knownName(w, names) || knownName(w, goods) }?.let { return it }
         val entry = VoiceEntry.parse(heard, emptyList(), language)
         val asking = heard.any { it == '?' || it == '\u061F' } || has(joined, QUESTION) || said.first() in ASKS_FIRST
         // An entry said as a fact: the form opens filled in, the owner saves it (voice entry's own reading).
@@ -787,6 +870,224 @@ object Hudhud {
         guess(mind)?.let { return it }
         return Ask.Unknown
     }
+
+    // ------------------------------------------------------------------------------------------- "Call me …", 14 Nov
+
+    /** A name to be called by is at most this many letters (the phone keeps it in HudhudPrefs.CALL_ME_MAX). */
+    private const val NAME_MAX = 30
+
+    /**
+     * The name the owner asks to be called by (14 Nov 2026, the owner's check logs: "my name is …", "mera naam … hai"
+     * and "mujhe … bulao" were read as a question about his name, as the shop's name or as a customer): the name in
+     * its own script, or null when the sentence is no such statement.
+     *
+     * Two shapes only — the name after "my name (is)", "call me", "mera naam"… in the nine languages, and the name
+     * between "mujhe" and a calling verb ("mujhe Ali bulao", "مجھے علی بلاؤ") — and never "I am …" (as often "I am
+     * tired"). It is a statement and nothing else: a question, a how-to, a sentence with other things in it, a word
+     * that means something to Hudhud and a calling or telling word are never a name, so "mera naam bata do" and "do
+     * you know my name" ask the owner's name and set none. One to three words, 30 letters at most.
+     */
+    internal fun callMeName(heard: String): String? {
+        val raw = ArrayList<String>()
+        val low = ArrayList<String>()
+        for (t in heard.split(NAME_SPLIT)) {
+            val n = norm(t)
+            if (n.isEmpty() || ' ' in n) continue
+            raw += t
+            low += n
+        }
+        if (low.size < 2 || low.size > 14) return null
+        val joined = low.joinToString(" ")
+        if ('?' in heard || '؟' in heard || has(joined, QUESTION) || has(joined, HOW) || low.any { it in ASKS_FIRST }) return null
+        // "My name is Ali", "call me Ali", "mera naam Ali hai", "اسمي علي": the name follows the marker, a copula may come first.
+        findPhrase(low, CALL_ME_BEFORE)?.let { (start, end) ->
+            if (!low.subList(0, start).all(::callLead)) return null
+            var i = end
+            while (i < low.size && low[i] in COPULAS) i++
+            val taken = takeName(raw, low, i) ?: return null
+            return if (low.drop(taken.second).all(::callRest)) taken.first else null
+        }
+        // "Mujhe Ali bulao", "مجھے علی کہو", "মুझে …": the name stands between "me" and the calling verb.
+        findPhrase(low, CALL_ME_TO)?.let { (start, end) ->
+            if (!low.subList(0, start).all(::callLead)) return null
+            var i = end
+            while (i < low.size && (low[i] in SKIP_AFTER_ME || low[i] in COPULAS)) i++
+            val taken = takeName(raw, low, i) ?: return null
+            val rest = low.drop(taken.second)
+            // "Mujhe Ali ne bulaya" is Ali calling him.
+            return if (rest.any { it in CALL_VERBS } && rest.none { it in DOER_MARKS } && rest.all(::callRest)) taken.first else null
+        }
+        return null
+    }
+
+    /** The name's one to three words starting at [from], in their own script, and where the next word stands. */
+    private fun takeName(raw: List<String>, low: List<String>, from: Int): Pair<String, Int>? {
+        val parts = ArrayList<String>()
+        var i = from
+        while (i < low.size && parts.size < 3 && nameWord(low[i])) {
+            val r = raw[i]
+            // A name said in lower case is written with its capital; Arabic scripts have none to change.
+            parts += if (r.none { it.isUpperCase() }) r.replaceFirstChar { it.titlecase(java.util.Locale.ROOT) } else r
+            i++
+        }
+        if (parts.isEmpty()) return null
+        val name = parts.joinToString(" ")
+        return if (name.length <= NAME_MAX) name to i else null
+    }
+
+    /** A word that can be a name: it is no little word, no calling or telling word, no question and means nothing to him. */
+    private fun nameWord(w: String): Boolean =
+        w.length in 2..20 && w !in QUIET_SET && w !in VOCATIVE_SET && w !in FILLER_SET && w !in GREETING_SET &&
+            w !in COPULAS && w !in CALL_VERBS && w !in CALL_REST && w !in DAY_WORDS && w !in NOT_A_NAME &&
+            w !in QUESTION_SET && w !in ASKS_FIRST && !HudhudMind.isHardWord(w)
+
+    /** What may stand before the marker: a calling, a polite lead-in, "can you", "from now on". */
+    private fun callLead(w: String): Boolean =
+        w in VOCATIVE_SET || w in FILLER_SET || w in GREETING_SET || w in CALL_LEAD || w in CALL_REST || w in DAY_WORDS ||
+            pronounLike(w)
+
+    /** What may stand after the name: a copula, "ji", "please", "hamesha", "isi naam se", "yaad rakhna", the calling verb. */
+    private fun callRest(w: String): Boolean =
+        w in COPULAS || w in VOCATIVE_SET || w in FILLER_SET || w in CALL_VERBS || w in CALL_REST || w in DAY_WORDS ||
+            pronounLike(w)
+
+    /** "I", "you", "this", "own", "name": the pronouns and "naam" of "isi naam se bulao". */
+    private fun pronounLike(w: String): Boolean {
+        val m = HudhudMind.meaningOf(w)
+        return m.isNotEmpty() && m.all { it in PRONOUN_CONCEPTS }
+    }
+
+    private val PRONOUN_CONCEPTS = setOf(HudhudMind.C.YOU, HudhudMind.C.ME, HudhudMind.C.THIS, HudhudMind.C.OWN, HudhudMind.C.NAME)
+
+    /** The first run of whole words in [low] that is one of [phrases] (longest first at each place): start and end. */
+    private fun findPhrase(low: List<String>, phrases: List<List<String>>): Pair<Int, Int>? {
+        for (start in low.indices) {
+            for (p in phrases) {
+                if (start + p.size <= low.size && p.indices.all { low[start + it] == p[it] }) return start to start + p.size
+            }
+        }
+        return null
+    }
+
+    /** Spaces and every mark between words: a name's own letters (any script) and their signs stay together. */
+    private val NAME_SPLIT = Regex("[^\\p{L}\\p{M}]+")
+
+    private fun phrasesOf(vararg list: String): List<List<String>> = list.map { words(it) }.filter { it.isNotEmpty() }.sortedByDescending { it.size }
+
+    private fun wordsOf(vararg list: String): Set<String> = list.flatMap { words(it) }.toSet()
+
+    /** The words before the name: "my name is", "call me", "mera naam", "میرا نام", "اسمي", "nama saya", "panggil saya"… */
+    private val CALL_ME_BEFORE: List<List<String>> by lazy {
+        phrasesOf(
+            "my name is", "my name", "my full name is", "my full name", "call me", "address me as", "refer to me as",
+            "i am called", "i m called", "i am known as", "people call me", "everyone calls me", "they call me", "friends call me",
+            "mera naam", "mera nam", "mera name", "mera poora naam", "mera pura naam", "mera puraa naam", "main ka naam",
+            "mai ka naam",
+            "میرا نام", "میرا پورا نام", "मेरा नाम", "मेरा पूरा नाम", "আমার নাম", "আমার পুরো নাম",
+            "اسمي", "نادني", "ناديني", "تناديني", "ادعني", "سمني", "اسم من", "اسمم", "نام من", "نامم",
+            "منهنجو نالو", "منھنجو نالو",
+            "nama saya", "nama aku", "namaku", "nama gue", "nama gua", "panggil saya", "panggil aku", "panggil gue", "panggil gua"
+        )
+    }
+
+    /** "Me", where the name follows and a calling verb comes after it: "mujhe Ali bulao", "منو علی صدا کن". */
+    private val CALL_ME_TO: List<List<String>> by lazy {
+        phrasesOf(
+            "mujhe", "mujhko", "mujh ko", "mjhe", "muje", "mujhay", "mujhy", "mujko", "mjhko",
+            "مجھے", "مجھ کو", "مجھکو", "मुझे", "मुझको", "मुझ को", "আমাকে", "আমায়",
+            "منو", "مرا", "من را", "به من", "بهم", "مون کي", "مونکي", "مانکي"
+        )
+    }
+
+    /** Between "mujhe" and the name: "mujhe aaj se Ali bulana", "mujhe sirf Ali kaho". */
+    private val SKIP_AFTER_ME: Set<String> by lazy {
+        wordsOf(
+            "aaj", "ab", "se", "sirf", "bas", "hamesha", "hameshah", "always", "just", "only", "from", "now", "today", "hi", "to",
+            "toh", "naam", "nam", "name",
+            "آج", "اب", "سے", "صرف", "بس", "ہمیشہ", "ہی", "تو", "نام", "आज", "अब", "से", "सिर्फ", "बस", "हमेशा", "ही", "तो", "नाम",
+            "আজ", "এখন", "থেকে", "শুধু", "সবসময়", "নাম", "امروز", "حالا", "از", "فقط", "همیشه", "نام", "اڄ", "هاڻي", "کان", "هميشه"
+        )
+    }
+
+    /** To call somebody something, in the nine languages (a verb, in every form a voice gives). */
+    private val CALL_VERBS: Set<String> by lazy {
+        wordsOf(
+            "bulao", "bulana", "bulaiye", "bulaiyega", "bulaye", "bulayen", "bulayein", "bulaen", "bulain", "bula", "bulaya",
+            "bulaoge", "pukaro", "pukarna", "pukariye", "pukaren", "pukarein", "kaho", "kehna", "kahiye", "kahen", "kahein",
+            "kehlo", "bolo", "bolna", "boliye", "bolen", "bolein",
+            "بلاؤ", "بلانا", "بلائیے", "بلائیں", "بلایا", "بلاو", "پکارو", "پکارنا", "پکاریں", "پکاریے", "کہو", "کہنا", "کہیں",
+            "کہیے", "بولو", "بولنا", "بولیں", "بلا", "بلاؤں",
+            "बुलाओ", "बुलाना", "बुलाइए", "बुलाएं", "बुलाया", "बुला", "पुकारो", "पुकारना", "कहो", "कहना", "कहिए", "कहें", "बोलो",
+            "बोलना",
+            "ডাকো", "ডাকুন", "ডাকবে", "ডাকবেন", "ডেকো", "ডাকতে", "ডাক", "বলো", "বলুন", "বলবে", "বলবেন",
+            "صدا", "بخوان", "بخوانید", "بگو", "بگویید", "بگین",
+            "سڏيو", "سڏ", "سڏجو", "سڏيندا", "چئو", "چئجو", "سڏين"
+        )
+    }
+
+    /** The doer's mark: "mujhe Ali ne bulaya" — Ali called him. */
+    private val DOER_MARKS: Set<String> by lazy { wordsOf("ne", "نے", "ने", "নে") }
+
+    /** Little words that may stand after the name (and before the marker): the do-verbs and "isi naam se". */
+    private val CALL_REST: Set<String> by lazy {
+        wordsOf(
+            "ke", "ka", "ki", "se", "kehkar", "kehke", "bolkar", "bolke", "bulakar", "karo", "kar", "karna", "karen", "karein",
+            "kare", "kariye", "kijiye", "kijiyega", "kijye", "kijyega", "kro", "krna", "lo", "lijiye", "lijye", "dena", "do",
+            "de", "rakho", "rakhna", "rakhiye", "rakh", "yaad", "yad", "note", "ok", "okay", "theek", "thik", "samjhe", "samjhi",
+            "samjho", "ye", "yeh", "yehi", "isi", "usi", "hi", "to", "toh", "na", "ji", "jee", "jii", "please", "plz", "pls", "ab",
+            "hamesha", "always", "aaj", "now", "from", "on", "as", "set", "remember", "save", "keep", "it", "that", "thanks",
+            "thank", "you", "sir", "shukriya", "shukria", "mehrbani", "meharbani", "can", "could", "would", "will", "kindly",
+            "just", "only", "like", "want", "wish", "prefer", "need", "wanna", "i", "d", "ll",
+            "کے", "کا", "کی", "سے", "کہہ", "کر", "کرو", "کرنا", "کریں", "کریے", "کیجیے", "کیجئے", "لو", "لیجیے", "دینا", "دو", "دے",
+            "رکھو", "رکھنا", "رکھیں", "رکھیے", "یاد", "نوٹ", "ٹھیک", "سمجھے", "یہی", "اسی", "ہی", "تو", "نا", "جی", "اب", "ہمیشہ",
+            "آج", "شکریہ", "مہربانی",
+            "के", "का", "की", "से", "कहकर", "कर", "करो", "करना", "करें", "कीजिए", "कीजिये", "लो", "लीजिए", "देना", "दो", "दे",
+            "रखो", "रखना", "रखें", "याद", "नोट", "ठीक", "समझे", "यही", "इसी", "ही", "तो", "ना", "जी", "अब", "हमेशा", "आज",
+            "शुक्रिया", "मेहरबानी",
+            "করো", "করুন", "রাখো", "রাখুন", "মনে", "ঠিক", "বলে", "নামে", "নাম", "এখন", "সবসময়", "ধন্যবাদ",
+            "کن", "کنید", "بزن", "بزنید", "را", "هم", "ممنون", "لطفا",
+            "ڪريو", "ڪر", "رکو", "ياد", "هاڻي", "هميشه", "مهرباني",
+            "ya", "saja", "aja", "dong", "deh", "nih", "terima", "kasih", "tolong", "ok"
+        )
+    }
+
+    /** What may stand before the marker: "can you", "please", "from now on", "I want you to". */
+    private val CALL_LEAD: Set<String> by lazy {
+        wordsOf(
+            "can", "could", "would", "will", "you", "u", "from", "now", "on", "today", "always", "hereafter", "kindly", "just",
+            "only", "i", "want", "wish", "wanna", "like", "d", "ll", "prefer", "need", "to", "that", "please", "plz", "pls", "so",
+            "well", "and", "listen", "hey", "dekho", "dekhiye", "suno", "suniye", "acha", "achha", "theek", "thik", "ok", "okay",
+            "toh", "to", "phir", "aur", "ji", "aap", "tum", "ab", "se", "aaj", "hamesha", "ye", "yeh", "ek", "baat", "bat",
+            "يمكنك", "ان", "فضلك", "سمحت", "لو", "اب", "سے", "آج", "ہمیشہ", "سنو", "دیکھو", "اچھا", "ٹھیک", "پھر", "اور", "جی",
+            "آپ", "تم", "ایک", "بات", "अब", "से", "आज", "हमेशा", "सुनो", "देखो", "अच्छा", "ठीक", "फिर", "और", "जी", "आप", "तुम",
+            "एक", "बात", "এখন", "থেকে", "আজ", "শোনো", "ঠিক", "আর", "امروز", "حالا", "از", "گوش", "کن", "اڄ", "هاڻي", "کان"
+        )
+    }
+
+    /** "Is", "am", "hai", "ہے", "है", "است", "آهي", "adalah": the copula between the name and what it names. */
+    private val COPULAS: Set<String> by lazy {
+        wordsOf(
+            "is", "s", "am", "are", "hai", "he", "hy", "hain", "hoon", "hun", "hu", "ہے", "ہیں", "ہوں", "ہو", "है", "हैं", "हूं",
+            "হয়", "হলো", "হল", "আছে", "است", "هست", "هستم", "آهي", "ialah", "adalah", "هو"
+        )
+    }
+
+    /** Words that are no name and that no concept or list above holds: places, times, "naam" itself. */
+    private val NOT_A_NAME: Set<String> by lazy {
+        wordsOf(
+            "later", "back", "tomorrow", "tonight", "again", "soon", "if", "at", "by", "par", "pe", "per", "pay", "bhi", "phir",
+            "call", "calling", "refer",
+            "bas", "sirf", "tab", "jab", "pehle", "baad", "parso", "kabhi", "never", "naam", "nam", "name", "bata", "btao", "batao",
+            "samjhao", "dikha", "sunao", "suna", "pata", "baare", "bare", "about", "mutalliq", "kehta", "kehti", "kehte",
+            "bolta", "bolti", "bolte", "zara", "zaroor", "jaldi", "bilkul", "sach", "jhoot", "galat", "sahi", "yeh", "woh",
+            "نام", "نمبر", "پر", "پہ", "پھر", "بس", "صرف", "تب", "جب", "پہلے", "بعد", "کبھی", "بتا", "پتہ", "بارے", "زرا",
+            "ضرور", "جلدی", "بالکل", "सच", "झूठ", "गलत", "सही", "नंबर", "पर", "फिर", "बस", "सिर्फ", "तब", "जब", "पहले", "बाद",
+            "कभी", "बता", "पता", "बारे", "ज़रा", "जरूर", "जल्दी", "बिल्कुल"
+        )
+    }
+
+    /** The question words, one by one: none of them is ever a name. */
+    private val QUESTION_SET: Set<String> by lazy { QUESTION.flatMap { words(it) }.toSet() }
 
     // ------------------------------------------------------------------------------------------- Asked of him, 14 Nov
 
@@ -1114,9 +1415,22 @@ object Hudhud {
      * the languages, the version, where the book stays, the owner's own name, today's date. Only when the sentence is
      * nothing else: a word that could be somebody's name sends the question on.
      */
-    private fun aboutHim(m: HudhudMind.Read, joined: String): Ask? {
+    private fun aboutHim(m: HudhudMind.Read, joined: String, known: (String) -> Boolean = { false }): Ask? {
         val salaam = has(joined, SALAAM)
         fun only(vararg cs: HudhudMind.C) = m.onlyOf(cs.toSet(), ::quiet)
+        // The owner's own name asked with a word or two he does not know in it ("mera naam kya ha", "aap mera naam jante
+        // ho"; a recogniser's slip): up to two such words are let by, never one that is a name of the book.
+        fun onlyOrBare(vararg cs: HudhudMind.C): Boolean {
+            val allowed = cs.toSet()
+            var bare = 0
+            for (i in m.said.indices) {
+                val w = m.said[i]
+                if (quiet(w) || m.at(i).any { it in allowed }) continue
+                if (m.at(i).isEmpty() && !known(w) && ++bare <= 2) continue
+                return false
+            }
+            return true
+        }
         val you = m.any(HudhudMind.C.YOU, HudhudMind.C.THIS, HudhudMind.C.OWN, HudhudMind.C.APP)
         // "Hudhud", or a hello with nothing else: he answers with what he can do.
         if (m.all == setOf(HudhudMind.C.YOU) && only(HudhudMind.C.YOU) && m.said.size <= 3) return when {
@@ -1131,9 +1445,21 @@ object Hudhud {
         if (has(joined, WHY) && (calledByName || (m.has(HudhudMind.C.YOU) && m.has(HudhudMind.C.NAME))) &&
             !m.any(HudhudMind.C.MADE, HudhudMind.C.MAKER) && !mineIsNearer(m)
         ) return Ask.About(AboutTopic.NAME_STORY)
+        // "Whose app is this", "is app ka malik kaun hai", "who owns this app" (14 Nov 2026, the owner: Hudhud himself says who the
+        // developer is, so that anyone who doubts it hears it from him): the app's maker — never the shop's owner ("dukaan ka malik"
+        // has no "app" in it) and never a question about him ("whose app is this" was read as "who are you").
+        // Persian's "مال کیست" holds "مال", which is also "goods": the phrase itself says whose.
+        if ((m.has(HudhudMind.C.APP) || has(joined, listOf("برنامه", "برنامہ"))) && has(joined, WHOSE_APP) &&
+            (has(joined, listOf("مال کیست", "مال کیه")) ||
+                onlyOrBare(HudhudMind.C.APP, HudhudMind.C.THIS, HudhudMind.C.WHO, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.NAME,
+                    HudhudMind.C.MAKER, HudhudMind.C.YOU, HudhudMind.C.OWN)) && !mineIsNearer(m)
+        ) return Ask.About(AboutTopic.MAKER)
         if ((you || m.has(HudhudMind.C.ME)) && m.any(HudhudMind.C.NAME, HudhudMind.C.WHO) && !m.any(HudhudMind.C.MADE, HudhudMind.C.MAKER) &&
-            only(HudhudMind.C.YOU, HudhudMind.C.THIS, HudhudMind.C.OWN, HudhudMind.C.APP, HudhudMind.C.ME, HudhudMind.C.NAME,
-                HudhudMind.C.WHO, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.KNOW, HudhudMind.C.ABLE)
+            (only(HudhudMind.C.YOU, HudhudMind.C.THIS, HudhudMind.C.OWN, HudhudMind.C.APP, HudhudMind.C.ME, HudhudMind.C.NAME,
+                HudhudMind.C.WHO, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.KNOW, HudhudMind.C.ABLE) ||
+                (m.has(HudhudMind.C.ME) && m.has(HudhudMind.C.NAME) && onlyOrBare(HudhudMind.C.YOU, HudhudMind.C.THIS, HudhudMind.C.OWN,
+                    HudhudMind.C.APP, HudhudMind.C.ME, HudhudMind.C.NAME, HudhudMind.C.WHO, HudhudMind.C.WHAT, HudhudMind.C.TELL,
+                    HudhudMind.C.KNOW, HudhudMind.C.ABLE)))
         ) return if (mineIsNearer(m)) Ask.About(AboutTopic.OWNER_NAME) else Ask.Chat(Talk.WHO_ARE_YOU, salaam)
         if (m.has(HudhudMind.C.YOU) && m.has(HudhudMind.C.WHAT) && only(HudhudMind.C.YOU, HudhudMind.C.WHAT, HudhudMind.C.TELL)) {
             return Ask.Chat(Talk.WHO_ARE_YOU, salaam)
@@ -1284,6 +1610,10 @@ object Hudhud {
             m.has(HudhudMind.C.CURRENCY) -> return Ask.Shop(ShopFacet.CURRENCY)
             m.has(HudhudMind.C.COUNTRY) && !his -> return Ask.Shop(ShopFacet.COUNTRY)
             m.has(HudhudMind.C.SHOP) && m.has(HudhudMind.C.TRADE) -> return Ask.Shop(ShopFacet.TRADE)
+            // "Mera naam" is the owner's own name, "dukaan ka naam" the shop's (14 Nov 2026, the owner's check logs: "mera naam
+            // kya hai" with a word he did not know in it answered the shop's name).
+            m.has(HudhudMind.C.NAME) && m.has(HudhudMind.C.ME) && !m.any(HudhudMind.C.SHOP, HudhudMind.C.CUSTOMER, HudhudMind.C.SUPPLIER,
+                HudhudMind.C.GOODS, HudhudMind.C.STAFF) -> return Ask.About(AboutTopic.OWNER_NAME)
             mine && m.has(HudhudMind.C.NAME) -> return Ask.Shop(ShopFacet.NAME)
             m.has(HudhudMind.C.PHONE) && mine && !his -> return Ask.Shop(ShopFacet.PHONE)
             // "Number" alone: the shop's, or somebody's whose name was not said.

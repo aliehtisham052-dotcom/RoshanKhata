@@ -16,7 +16,7 @@ import java.util.Locale
  */
 object VoiceQuestion {
 
-    enum class Kind { PROFIT_MONTH, EXPIRING, NOT_PAID, WHO_OWES_MOST, SALES_TODAY, SALES_MONTH, TO_GIVE, TO_GET }
+    enum class Kind { PROFIT_MONTH, EXPIRING, NOT_PAID, WHO_OWES_MOST, WHO_OWES_LEAST, SALES_TODAY, SALES_MONTH, TO_GIVE, TO_GET }
 
     /**
      * The span of days a figure is asked for (12 Nov 2026, Hudhud): "kal ki sale", "pichle mahine ka munafa". The eight
@@ -41,6 +41,11 @@ object VoiceQuestion {
         "terbesar",
         "سب سے زیادہ", "سڀ کان وڌيڪ", "الأكثر", "أكثر", "اكثر", "بیشترین", "सबसे ज़्यादा", "सबसे ज्यादा",
         "সবচেয়ে বেশি")
+    // The other end of "most" (14 Nov 2026, the owner's check log: "jisne mere sabse kam paise dene hain" was answered with
+    // the shop's total to give). Two spellings of Sindhi's "less" (ھ and ه) and Persian's with and without the half-space.
+    private val LEAST = listOf("sab se kam", "sabse kam", "least", "lowest", "smallest", "fewest", "terkecil", "terendah",
+        "paling sedikit",
+        "سب سے کم", "سڀ کان گھٽ", "سڀ کان گهٽ", "الأقل", "أقل", "اقل", "کمترین", "کم‌ترین", "सबसे कम", "সবচেয়ে কম")
     private val DEBT = listOf("baqaya", "bakaya", "udhar", "udhaar", "qarz", "owe", "owes", "due", "utang", "piutang",
         "بقایا", "ادھار", "قرض", "اڌار", "دين", "ديون", "طلب", "बकाया", "उधार", "क़र्ज़", "कर्ज", "বাকি", "ধার", "পাওনা",
         // 12 Nov 2026 (Hudhud): "Ali ka kitna baqi hai"; "dues", once the words count only whole.
@@ -162,7 +167,7 @@ object VoiceQuestion {
     }
 
     private val ALL: List<String> by lazy {
-        listOf(PROFIT, EXPIRING, NOT_PAID, MOST, DEBT, SALES, TODAY, TO_GIVE, TO_GET, YESTERDAY, WEEK, MONTH, LAST).flatten()
+        listOf(PROFIT, EXPIRING, NOT_PAID, MOST, LEAST, DEBT, SALES, TODAY, TO_GIVE, TO_GET, YESTERDAY, WEEK, MONTH, LAST).flatten()
     }
 
     /**
@@ -195,7 +200,9 @@ object VoiceQuestion {
             saysAny(t, NOT_PAID) -> Kind.NOT_PAID
             // "Sab se zyada kis ko dena hai" is whom the shop owes most: the shop's payables, not who owes it most.
             saysAny(t, MOST) && saysAny(t, TO_GIVE) && !owedToTheShop(t) -> Kind.TO_GIVE
-            saysAny(t, MOST) && (saysAny(t, DEBT) || saysAny(t, TO_GET)) -> Kind.WHO_OWES_MOST
+            // "Kisi ne sabse zyada paise dene hain" says "dene" and somebody else gives: who owes the shop most (14 Nov 2026).
+            saysAny(t, MOST) && owedToUs(t) -> Kind.WHO_OWES_MOST
+            saysAny(t, LEAST) && owedToUs(t) && !owedByTheShop(t) -> Kind.WHO_OWES_LEAST
             saysAny(t, SALES) -> if (saysAny(t, TODAY)) Kind.SALES_TODAY else Kind.SALES_MONTH
             // Which way the money is owed, by who gives (14 Nov 2026, the owner's sentences): "kis kis ne mera paisa dena
             // hai" says "dena" but somebody else gives — the shop's to get; "mera qarz", "supplier ka baqaya" are what the
@@ -206,8 +213,31 @@ object VoiceQuestion {
         }
     }
 
-    /** Somebody else is the one who gives: "kis ne dena hai", "logon ne dene hain", "who owes me". */
-    private fun owedToTheShop(t: String): Boolean = saysAny(t, OTHERS_GIVE)
+    /**
+     * Somebody else is the one who gives: "kis ne dena hai", "logon ne dene hain", "who owes me", and a name before "ne"
+     * ("Zaid ne dene hain": Zaid gives, the shop gets).
+     */
+    private fun owedToTheShop(t: String): Boolean = saysAny(t, OTHERS_GIVE) || otherDoer(t)
+
+    /** Money is the shop's to get: its debtors' words, "lena", or somebody else who has to give. */
+    private fun owedToUs(t: String): Boolean =
+        saysAny(t, DEBT) || saysAny(t, TO_GET) || (saysAny(t, TO_GIVE) && owedToTheShop(t))
+
+    /** The doer's mark in Urdu, Hindi and Roman Urdu ("ne"), normalised. */
+    private val NE_WORDS = setOf("ne", "نے", "ने")
+
+    /** The shop's own "I" and "we" before that mark ("main ne", "hum ne"), normalised: these give, the shop is the doer. */
+    private val SHOP_DOERS = setOf("main", "mai", "mein", "me", "mujh", "hum", "ham", "میں", "ہم", "मैं", "मै", "हम")
+
+    /** [otherDoer] for a sentence as it was said (Hudhud keeps a figure the rules read from it; see his `decide`). */
+    fun hasOtherDoer(heard: String): Boolean = otherDoer(normalise(heard))
+
+    /** Somebody other than the shop is before a lone "ne": a name, "kisi", "logon", "customer"… */
+    internal fun otherDoer(t: String): Boolean {
+        val w = t.split(' ')
+        for (i in 1 until w.size) if (w[i] in NE_WORDS && w[i - 1] !in SHOP_DOERS) return true
+        return false
+    }
 
     /** The shop is the one who owes: its own debt, or a supplier's balance with nothing to take ("supplier ka baqaya"). */
     private fun owedByTheShop(t: String): Boolean =
@@ -216,7 +246,10 @@ object VoiceQuestion {
     private val OTHERS_GIVE = listOf(
         "kis ne", "kisne", "kis kis ne", "logon ne", "logo ne", "unhon ne", "unhone", "us ne", "usne", "customer ne",
         "customers ne", "gahak ne", "gahakon ne", "who owes me", "owes me", "owe me", "owing me",
+        // "Somebody", "the one who" (14 Nov 2026): "kisi ne mujhe paise dene hain", "jisne sabse zyada dene hain".
+        "kisi ne", "kisine", "jis ne", "jisne", "kisi kisi ne",
         "کس نے", "کس کس نے", "لوگوں نے", "انہوں نے", "اس نے", "گاہک نے", "किस ने", "किसने", "लोगों ने", "उसने", "ग्राहक ने",
+        "کسی نے", "جس نے", "किसी ने", "जिसने", "जिस ने",
         "কে দেবে", "কারা দেবে", "আমাকে দেবে", "من يدين لي", "يدينون لي", "به من بدهکار", "siapa yang berutang"
     )
 

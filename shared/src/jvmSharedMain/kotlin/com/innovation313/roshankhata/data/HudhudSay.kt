@@ -54,6 +54,12 @@ object HudhudSay {
     /** "Rs 140,868", "Rs.500", "₹ 1,250.50" — the shop's rupee signs before a figure. */
     private val RUPEES = Regex("(?<![\\p{L}])(?:Rs\\.?|₹)\\s?([0-9](?:[0-9,.]*[0-9])?)")
 
+    /** Any one shop's own currency signs followed by a figure: "AED 1,250", "€ 40", "$ 12.50". */
+    internal fun signPattern(signs: List<String>): Regex {
+        val alternatives = signs.filter { it.isNotBlank() }.sortedByDescending { it.length }.joinToString("|") { Regex.escape(it) }
+        return Regex("(?<![\\p{L}\\p{N}])(?:$alternatives)\\s?([0-9](?:[0-9,.]*[0-9])?)")
+    }
+
     /** "1,218", "SAR 12,400", "1,59,426": digits grouped by commas, the last group three digits. */
     private val COMMA_GROUPED = Regex("(?<![\\d.,])\\d{1,3}(?:,\\d{2,3})*,\\d{3}(?![\\d,])")
 
@@ -63,10 +69,14 @@ object HudhudSay {
      * two digits at the end is the decimal mark (written as "."), and decimals of only zeros go: "141,768" is "141768",
      * "1,59,426" is "159426", "1,250.50" is "1250.50", Indonesian "1.250,50" is "1250.50", "500.00" is "500".
      */
-    internal fun plainFigure(figure: String): String {
+    internal fun plainFigure(figure: String, decimals: Int = 2): String {
         val last = figure.indexOfLast { it == ',' || it == '.' }
         val tail = if (last >= 0) figure.substring(last + 1) else ""
-        val decimal = last >= 0 && tail.length in 1..2 && tail.all { it.isDigit() } &&
+        // A currency counted to a thousandth (Kuwait, Bahrain, Oman, Jordan, Tunisia, Libya: Currency.decimals) writes
+        // "KWD 0.500" and "1,250.500": three digits after a DOT are its fraction, not a group — "0.500" is half a dinar.
+        // Only a dot: the comma stays a grouping mark there, as in "1,250".
+        val fraction = if (decimals >= 3 && last >= 0 && figure[last] == '.') decimals else 2
+        val decimal = last >= 0 && tail.length in 1..fraction && tail.all { it.isDigit() } &&
             (figure.count { it == figure[last] } == 1)
         val whole = (if (decimal) figure.substring(0, last) else figure).filter { it.isDigit() }.ifEmpty { "0" }
         return if (decimal && tail.any { it != '0' }) "$whole.$tail" else whole
@@ -74,13 +84,21 @@ object HudhudSay {
 
     /**
      * [text] as [language]'s voice should get it: his name the [nameWay] way (null: the language's first),
-     * exclamations calm, a range's dash in words, the rupee sign as [rupees] ("%s روپے"; null leaves it).
+     * exclamations calm, a range's dash in words, the shop's currency sign as [rupees] ("%s روپے", "%s dirhams"; null leaves
+     * it). [signs]: the signs [rupees] is for — null is the rupee's own ("Rs", "Rs.", "₹"); a shop of another country
+     * passes its own ("AED", "€", "$"), the sign first and the figure after it as [com.innovation313.roshankhata.ui.Format.money]
+     * prints them (14 Nov 2026, the owner: "dirham, euro, dollar — har mulk ki currency ke hisaab se bole"). [wayOf]: which of
+     * [HudhudPronounce.ways] the owner kept for each word he can choose by ear. [decimals]: how many decimals the
+     * shop's currency is counted to when a figure has a fraction (`Currency.decimals`: 3 for the dinars).
      */
-    fun forVoice(text: String, language: String, nameWay: Int? = null, rupees: ((String) -> String)? = null): String {
+    fun forVoice(
+        text: String, language: String, nameWay: Int? = null, rupees: ((String) -> String)? = null,
+        signs: List<String>? = null, wayOf: (HudhudPronounce.Word) -> Int = { 0 }, decimals: Int = 2
+    ): String {
         val ways = nameWays(language)
         val name = ways.getOrNull(nameWay ?: 0) ?: ways.first()
-        var out = WRITTEN.replace(text) { name }
-        if (rupees != null) out = RUPEES.replace(out) { m -> rupees(plainFigure(m.groupValues[1])) }
+        var out = HudhudPronounce.apply(WRITTEN.replace(text) { name }, language, wayOf)
+        if (rupees != null) out = (signs?.let { signPattern(it) } ?: RUPEES).replace(out) { m -> rupees(plainFigure(m.groupValues[1], decimals)) }
         // Any other figure grouped with commas (another currency, a count): the commas go, for the same reason.
         out = COMMA_GROUPED.replace(out) { m -> m.value.replace(",", "") }
         toWord(language)?.let { to -> out = out.replace(Regex("\\s[\\u2013\\u2014]\\s"), " $to ") }

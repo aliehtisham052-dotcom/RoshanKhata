@@ -45,4 +45,21 @@ class HudhudSpeechTest {
         assertFalse(HudhudSpeech.endsOpen("آج کی بکری بتاؤ"))
         assertFalse(HudhudSpeech.endsOpen(""))
     }
+
+    @Test fun `a verse's address is left out of the voice, nothing else in brackets is`() {
+        assertEquals(
+            "I found a woman ruling over them.",
+            HudhudSpeech.withoutVerseRefs("I found a woman ruling over them (27:23).")
+        )
+        assertEquals("“Sure news”.", HudhudSpeech.withoutVerseRefs("“Sure news” (27:22)."))
+        assertEquals("He said so.", HudhudSpeech.withoutVerseRefs("He said so (27:16\u201317)."))
+        assertEquals("He said so.", HudhudSpeech.withoutVerseRefs("He said so (27:24-26)."))
+        // A place in brackets, a time of day and a plain figure are not an address.
+        assertEquals("from Saba (Sheba) with news", HudhudSpeech.withoutVerseRefs("from Saba (Sheba) with news"))
+        assertEquals("closes at (9:30 pm)", HudhudSpeech.withoutVerseRefs("closes at (9:30 pm)"))
+        assertEquals("Rs (500)", HudhudSpeech.withoutVerseRefs("Rs (500)"))
+        // Said sentence by sentence, nothing is left over after it.
+        val said = HudhudSpeech.parts(HudhudSpeech.withoutVerseRefs("First telling (27:20\u201321). Second telling (27:22)."))
+        assertEquals(listOf("First telling.", "Second telling."), said)
+    }
 }
