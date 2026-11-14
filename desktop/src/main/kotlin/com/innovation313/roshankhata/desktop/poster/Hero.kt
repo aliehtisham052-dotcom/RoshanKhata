@@ -66,7 +66,9 @@ enum class Hero(
         motions = listOf(
             Motion("box", Motion.Kind.SPIN, Motion.Axis.Y, amount = 36f, rest = 35f),
             Motion("box", Motion.Kind.BOB, amount = 0.06f, period = 3.6f)
-        )
+        ),
+        /** Every face wears the shop's own trade glyph ([CrateFace]), not the sprout the model was made with. */
+        face = "crate"
     ),
     EID_FITR(
         asset = "poster3d/eid_fitr.glb",

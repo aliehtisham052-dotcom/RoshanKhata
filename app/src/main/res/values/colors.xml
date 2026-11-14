@@ -449,4 +449,8 @@
     <color name="hudhud_shadow">#26000000</color>
     <!-- A verse he shows (Tawheed, hamd, risalat): a quiet panel beside the words, never a button. -->
     <color name="hudhud_verse_bg">#F5F1E3</color>
+    <!-- Two thin lines. The dark-colour guard reads a solid as a fill, so each line has a colour of its own that stays a
+         mid tone at night (a line carries no words); a text colour is never borrowed for them (lesson 60). -->
+    <color name="hudhud_tab_line">#1B5E3A</color>
+    <color name="hudhud_verse_line">#8A6A15</color>
 </resources>

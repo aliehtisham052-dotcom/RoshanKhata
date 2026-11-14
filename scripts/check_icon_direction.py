@@ -22,8 +22,9 @@ import glob, re, sys
 
 RES = "app/src/main/res"
 # Undo and redo turn with the reading direction too (Material's bidirectionality
-# guidance mirrors them), so the signature pad's Undo may carry it.
-POINTING = re.compile(r'^ic_(arrow_(back|forward)|chevron_(right|left|start|end)|undo|redo)$')
+# guidance mirrors them), so the signature pad's Undo may carry it. So does Hudhud's send
+# plane (14 Nov 2026): it points where the message goes, as Material's own Send icon does.
+POINTING = re.compile(r'^ic_(arrow_(back|forward)|chevron_(right|left|start|end)|undo|redo|hudhud_send)$')
 problems = []
 
 for path in sorted(glob.glob(f"{RES}/drawable*/*.xml")):

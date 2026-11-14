@@ -180,7 +180,9 @@
     <color name="hudhud_sheet">#191D1B</color>
     <color name="hudhud_sky_top">#1F2E27</color>
     <color name="hudhud_sky_bottom">#2A271D</color>
-    <color name="hudhud_branch">#B9A074</color>
+    <color name="hudhud_branch">#A88E64</color>
     <color name="hudhud_shadow">#59000000</color>
     <color name="hudhud_verse_bg">#262A22</color>
+    <color name="hudhud_tab_line">#3FA876</color>
+    <color name="hudhud_verse_line">#B08D2E</color>
 </resources>
