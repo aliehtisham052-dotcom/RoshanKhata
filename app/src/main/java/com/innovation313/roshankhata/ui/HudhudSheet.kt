@@ -45,6 +45,7 @@ import com.innovation313.roshankhata.data.Hudhud
 import com.innovation313.roshankhata.data.HudhudBook
 import com.innovation313.roshankhata.data.HudhudChirp
 import com.innovation313.roshankhata.data.HudhudGate
+import com.innovation313.roshankhata.data.HudhudLook
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.VoiceLanguage
