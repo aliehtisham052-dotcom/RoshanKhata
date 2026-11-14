@@ -4212,6 +4212,8 @@
     <string name="auto_notifications_off">الإشعارات متوقفة لتطبيق روشن كهاتا، فلن يصلك أي منها. شغّلها من إعدادات الهاتف.</string>
     <string name="auto_collect_name">قائمة التحصيل الصباحية</string>
     <string name="auto_collect_title">تحصيل اليوم</string>
+    <string name="auto_cheques_name">تنبيهات الشيكات</string>
+    <string name="auto_cheques_title">شيكات مستحقة</string>
     <string name="auto_dayend_name">ملخص الإغلاق</string>
     <string name="auto_dayend_title">حساب اليوم</string>
     <string name="auto_dayend_body">المبيعات %1$s · المقبوض %2$s · يجب أن يكون في الدرج %3$s</string>
@@ -4251,6 +4253,30 @@
         <item quantity="few">و%1$d دفعات أخرى</item>
         <item quantity="many">و%1$d دفعة أخرى</item>
         <item quantity="other">و%1$d دفعة أخرى</item>
+    </plurals>
+    <plurals name="auto_cheques_in_body">
+        <item quantity="zero">%1$d شيك للإيداع · %2$s</item>
+        <item quantity="one">شيك واحد للإيداع · %2$s</item>
+        <item quantity="two">شيكان للإيداع · %2$s</item>
+        <item quantity="few">%1$d شيكات للإيداع · %2$s</item>
+        <item quantity="many">%1$d شيكًا للإيداع · %2$s</item>
+        <item quantity="other">%1$d شيك للإيداع · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_out_body">
+        <item quantity="zero">%1$d شيك للدفع · %2$s</item>
+        <item quantity="one">شيك واحد للدفع · %2$s</item>
+        <item quantity="two">شيكان للدفع · %2$s</item>
+        <item quantity="few">%1$d شيكات للدفع · %2$s</item>
+        <item quantity="many">%1$d شيكًا للدفع · %2$s</item>
+        <item quantity="other">%1$d شيك للدفع · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_late">
+        <item quantity="zero">منها %1$d فات موعده</item>
+        <item quantity="one">منها شيك واحد فات موعده</item>
+        <item quantity="two">منها شيكان فات موعدهما</item>
+        <item quantity="few">منها %1$d شيكات فات موعدها</item>
+        <item quantity="many">منها %1$d شيكًا فات موعدها</item>
+        <item quantity="other">منها %1$d شيك فات موعدها</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4382,6 +4408,7 @@
     <string name="duplicate_caution_one_digit">رقمان يختلفان في خانة واحدة فقط — ربما خطأ في الكتابة.</string>
     <string name="duplicate_caution_numbers">الاسم نفسه لكن كل رقم مختلف — قد يكونون أشخاصًا مختلفين.</string>
     <string name="auto_collect_desc">من تذكّره اليوم، وكم المبلغ</string>
+    <string name="auto_cheques_desc">شيكات للإيداع أو للدفع حان موعدها اليوم أو فات موعدها</string>
     <string name="auto_reorder_desc">طلب جاهز لما أوشك على النفاد</string>
     <string name="auto_expiry_desc">دفعات قريبة من انتهاء الصلاحية، الأقرب أولًا</string>
     <string name="auto_month_desc">ما أعطيته وما أخذته في الشهر الماضي، في أول كل شهر</string>

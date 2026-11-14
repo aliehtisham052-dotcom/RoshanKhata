@@ -4012,6 +4012,8 @@
     <string name="auto_notifications_off">रोशन खाता की नोटिफ़िकेशन बंद हैं, इसलिए इनमें से कोई भी आप तक नहीं पहुँच सकती। फ़ोन की सेटिंग्स में इन्हें चालू करें।</string>
     <string name="auto_collect_name">सुबह की वसूली सूची</string>
     <string name="auto_collect_title">आज की वसूली</string>
+    <string name="auto_cheques_name">चेक रिमाइंडर</string>
+    <string name="auto_cheques_title">चेक की तारीख़ आ गई</string>
     <string name="auto_dayend_name">दुकान बंद करने का सारांश</string>
     <string name="auto_dayend_title">आज का हिसाब</string>
     <string name="auto_dayend_body">बिक्री %1$s · वसूली %2$s · गल्ले में होना चाहिए %3$s</string>
@@ -4039,6 +4041,18 @@
     <plurals name="auto_expiry_more">
         <item quantity="one">और %1$d बैच</item>
         <item quantity="other">और %1$d बैच</item>
+    </plurals>
+    <plurals name="auto_cheques_in_body">
+        <item quantity="one">%1$d चेक बैंक में लगाना है · %2$s</item>
+        <item quantity="other">%1$d चेक बैंक में लगाने हैं · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_out_body">
+        <item quantity="one">%1$d चेक चुकाना है · %2$s</item>
+        <item quantity="other">%1$d चेक चुकाने हैं · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_late">
+        <item quantity="one">इनमें से %1$d चेक की तारीख़ निकल चुकी है</item>
+        <item quantity="other">इनमें से %1$d चेक की तारीख़ निकल चुकी है</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4166,6 +4180,7 @@
     <string name="duplicate_caution_one_digit">दो नंबरों में सिर्फ़ एक अंक का फ़र्क़ है — शायद लिखने में ग़लती हुई।</string>
     <string name="duplicate_caution_numbers">नाम एक जैसा है पर हर नंबर अलग है — हो सकता है ये अलग-अलग लोग हों।</string>
     <string name="auto_collect_desc">आज किसे याद दिलाना है, और कितना</string>
+    <string name="auto_cheques_desc">बैंक में लगाने और चुकाने वाले चेक, जिनकी तारीख़ आज है या निकल चुकी है</string>
     <string name="auto_reorder_desc">कम होते माल का तैयार ऑर्डर</string>
     <string name="auto_expiry_desc">एक्सपायरी के क़रीब बैच, सबसे पहले वाले ऊपर</string>
     <string name="auto_month_desc">पिछले महीने का दिया और लिया, हर महीने की पहली तारीख़ को</string>

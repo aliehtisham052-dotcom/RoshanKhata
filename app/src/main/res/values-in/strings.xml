@@ -3950,6 +3950,8 @@
     <string name="auto_notifications_off">Notifikasi Roshan Khata mati, jadi tidak satu pun dari ini bisa sampai ke Anda. Nyalakan di pengaturan ponsel.</string>
     <string name="auto_collect_name">Daftar penagihan pagi</string>
     <string name="auto_collect_title">Tagih hari ini</string>
+    <string name="auto_cheques_name">Pengingat cek</string>
+    <string name="auto_cheques_title">Cek jatuh tempo</string>
     <string name="auto_dayend_name">Ringkasan tutup toko</string>
     <string name="auto_dayend_title">Tutup buku hari ini</string>
     <string name="auto_dayend_body">Penjualan %1$s · Diterima %2$s · Seharusnya di laci %3$s</string>
@@ -3974,6 +3976,15 @@
     </plurals>
     <plurals name="auto_expiry_more">
         <item quantity="other">dan %1$d batch lainnya</item>
+    </plurals>
+    <plurals name="auto_cheques_in_body">
+        <item quantity="other">%1$d cek untuk dicairkan · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_out_body">
+        <item quantity="other">%1$d cek untuk dibayar · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_late">
+        <item quantity="other">Dari jumlah itu, %1$d sudah lewat jatuh tempo</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4100,6 +4111,7 @@
     <string name="duplicate_caution_one_digit">Dua nomor hanya beda satu angka — mungkin salah ketik.</string>
     <string name="duplicate_caution_numbers">Namanya sama, tetapi setiap nomor berbeda — mungkin orang yang berbeda.</string>
     <string name="auto_collect_desc">Siapa yang diingatkan hari ini, dan berapa</string>
+    <string name="auto_cheques_desc">Cek untuk dicairkan atau dibayar yang jatuh tempo hari ini, dan yang sudah lewat</string>
     <string name="auto_reorder_desc">Pesanan siap untuk barang yang hampir habis</string>
     <string name="auto_expiry_desc">Batch yang hampir kedaluwarsa, yang tercepat dulu</string>
     <string name="auto_month_desc">Yang diberi dan diterima bulan lalu, setiap tanggal satu</string>

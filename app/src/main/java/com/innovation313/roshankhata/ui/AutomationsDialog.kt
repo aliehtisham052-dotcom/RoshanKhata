@@ -135,6 +135,7 @@ object AutomationsDialog {
     /** What each automation does, in a line under its name. */
     private fun descOf(kind: Automations.Kind): Int = when (kind) {
         Automations.Kind.COLLECT -> R.string.auto_collect_desc
+        Automations.Kind.CHEQUES -> R.string.auto_cheques_desc
         Automations.Kind.REORDER -> R.string.auto_reorder_desc
         Automations.Kind.EXPIRY -> R.string.auto_expiry_desc
         Automations.Kind.MONTH -> R.string.auto_month_desc

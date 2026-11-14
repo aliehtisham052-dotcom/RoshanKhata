@@ -98,8 +98,10 @@ class ChequesActivity : BaseActivity() {
         photoForCheque = savedInstanceState?.getLong(STATE_PHOTO_CHEQUE, -1L)?.takeIf { it > 0 }
         chequeReopen = chequeDraft.saved(savedInstanceState)
         setContentView(R.layout.activity_cheques)
-        // How this works, the first time it opens on this phone (1 Nov 2026).
-        com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CHEQUES)
+        // How this works, the first time it opens on this phone (1 Nov 2026) — not when the cheque reminder
+        // brought the owner here to see what is due: the sheet would stand between him and the list.
+        if (!intent.getBooleanExtra(EXTRA_FROM_NOTICE, false))
+            com.innovation313.roshankhata.ui.FeatureIntro.showOnce(this, com.innovation313.roshankhata.ui.FeatureIntro.Topic.CHEQUES)
 
         // Edge-to-edge, the mechanism proven on the Home screen.
         com.innovation313.roshankhata.ui.ScreenInsets.on(this)
@@ -602,6 +604,8 @@ class ChequesActivity : BaseActivity() {
     }
 
     companion object {
+        /** Set by the Cheque reminders automation's notice (AutomationWorker): the screen opens straight on the list. */
+        const val EXTRA_FROM_NOTICE = "from_notice"
         private const val STATE_PHOTO_CAMERA = "photo_camera_path"
         private const val STATE_PHOTO_PENDING = "photo_pending"
         private const val STATE_PHOTO_CHEQUE = "photo_cheque"

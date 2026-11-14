@@ -3992,6 +3992,8 @@
     <string name="auto_notifications_off">روشن کاتي جا نوٽيفڪيشن بند آهن، تنهن ڪري انهن مان ڪو به اوهان تائين نٿو پهچي سگهي. فون جي سيٽنگز ۾ انهن کي آن ڪريو.</string>
     <string name="auto_collect_name">صبح جي وصولي لسٽ</string>
     <string name="auto_collect_title">اڄ جي وصولي</string>
+    <string name="auto_cheques_name">چيڪ جي ياد ڏياري</string>
+    <string name="auto_cheques_title">چيڪ جي تاريخ اچي وئي</string>
     <string name="auto_dayend_name">دڪان بند ڪرڻ جو خلاصو</string>
     <string name="auto_dayend_title">اڄ جو حساب</string>
     <string name="auto_dayend_body">وڪرو %1$s · وصول %2$s · گلي ۾ هجڻ گهرجي %3$s</string>
@@ -4019,6 +4021,18 @@
     <plurals name="auto_expiry_more">
         <item quantity="one">۽ %1$d ٻيا بيچ</item>
         <item quantity="other">۽ %1$d ٻيا بيچ</item>
+    </plurals>
+    <plurals name="auto_cheques_in_body">
+        <item quantity="one">%1$d چيڪ بينڪ ۾ رکڻو آهي · %2$s</item>
+        <item quantity="other">%1$d چيڪ بينڪ ۾ رکڻا آهن · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_out_body">
+        <item quantity="one">%1$d چيڪ ادا ڪرڻو آهي · %2$s</item>
+        <item quantity="other">%1$d چيڪ ادا ڪرڻا آهن · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_late">
+        <item quantity="one">انهن مان %1$d چيڪ جي تاريخ گذري چڪي آهي</item>
+        <item quantity="other">انهن مان %1$d چيڪن جي تاريخ گذري چڪي آهي</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4146,6 +4160,7 @@
     <string name="duplicate_caution_one_digit">ٻن نمبرن ۾ رڳو هڪ انگ جو فرق آهي — شايد لکڻ ۾ غلطي ٿي آهي.</string>
     <string name="duplicate_caution_numbers">نالو ساڳيو آهي پر هر نمبر الڳ آهي — ٿي سگهي ٿو اهي الڳ ماڻهو هجن.</string>
     <string name="auto_collect_desc">اڄ ڪنهن کي ياد ڏيارڻو آهي، ۽ ڪيترو</string>
+    <string name="auto_cheques_desc">بينڪ ۾ رکڻ ۽ ادا ڪرڻ وارا چيڪ، جن جي تاريخ اڄ آهي يا گذري چڪي آهي</string>
     <string name="auto_reorder_desc">گهٽجندڙ مال جو تيار آرڊر</string>
     <string name="auto_expiry_desc">مدي جي ويجهو بيچ، سڀ کان جلدي وارا پهريان</string>
     <string name="auto_month_desc">گذريل مهيني جو ڏنو ۽ ورتو، هر مهيني جي پهرين تاريخ تي</string>

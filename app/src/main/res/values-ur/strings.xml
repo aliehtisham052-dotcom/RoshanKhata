@@ -3964,6 +3964,8 @@
     <string name="auto_notifications_off">روشن کھاتہ کے نوٹیفکیشن بند ہیں، اس لیے ان میں سے کوئی بھی آپ تک نہیں پہنچ سکتا۔ فون کی سیٹنگز میں انہیں آن کریں۔</string>
     <string name="auto_collect_name">صبح کی وصولی لسٹ</string>
     <string name="auto_collect_title">آج کی وصولی</string>
+    <string name="auto_cheques_name">چیک کی یاد دہانی</string>
+    <string name="auto_cheques_title">چیک کی تاریخ آ گئی</string>
     <string name="auto_dayend_name">دکان بند کرنے کا خلاصہ</string>
     <string name="auto_dayend_title">آج کا حساب</string>
     <string name="auto_dayend_body">فروخت %1$s · وصول %2$s · گلے میں ہونا چاہیے %3$s</string>
@@ -3991,6 +3993,18 @@
     <plurals name="auto_expiry_more">
         <item quantity="one">اور %1$d مزید بیچ</item>
         <item quantity="other">اور %1$d مزید بیچ</item>
+    </plurals>
+    <plurals name="auto_cheques_in_body">
+        <item quantity="one">%1$d چیک بینک میں لگانا ہے · %2$s</item>
+        <item quantity="other">%1$d چیک بینک میں لگانے ہیں · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_out_body">
+        <item quantity="one">%1$d چیک ادا کرنا ہے · %2$s</item>
+        <item quantity="other">%1$d چیک ادا کرنے ہیں · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_late">
+        <item quantity="one">ان میں سے %1$d چیک کی تاریخ گزر چکی ہے</item>
+        <item quantity="other">ان میں سے %1$d چیکوں کی تاریخ گزر چکی ہے</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4118,6 +4132,7 @@
     <string name="duplicate_caution_one_digit">دو نمبروں میں صرف ایک ہندسے کا فرق ہے — شاید لکھنے میں غلطی ہوئی۔</string>
     <string name="duplicate_caution_numbers">نام ایک جیسا ہے مگر ہر نمبر الگ ہے — ہو سکتا ہے یہ الگ الگ لوگ ہوں۔</string>
     <string name="auto_collect_desc">آج کس کو یاد دلانا ہے، اور کتنا</string>
+    <string name="auto_cheques_desc">بینک میں لگانے اور ادا کرنے والے چیک، جن کی تاریخ آج ہے یا گزر چکی</string>
     <string name="auto_reorder_desc">کم ہوتے مال کا تیار آرڈر</string>
     <string name="auto_expiry_desc">میعاد کے قریب بیچ، سب سے پہلے والے اوپر</string>
     <string name="auto_month_desc">پچھلے مہینے کا دیا اور لیا، ہر مہینے کی پہلی تاریخ کو</string>

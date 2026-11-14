@@ -908,6 +908,7 @@ private fun Book(
                         }
                         when (n.kind) {
                             com.innovation313.roshankhata.data.Automations.Kind.COLLECT -> section = Section.FOLLOWUP
+                            com.innovation313.roshankhata.data.Automations.Kind.CHEQUES -> section = Section.CHEQUES
                             com.innovation313.roshankhata.data.Automations.Kind.DAY_END -> section = Section.CASHBOOK
                             com.innovation313.roshankhata.data.Automations.Kind.REORDER -> { orderLowAsked = true; section = Section.ORDERS }
                             com.innovation313.roshankhata.data.Automations.Kind.MONTH -> {
@@ -929,7 +930,11 @@ private fun Book(
         if (reminded) return@LaunchedEffect
         kotlinx.coroutines.delay(4000)
         reminded = true
-        runCatching { Reminders.daily(appPrefs, words, alerts, lastBackupAt) }
+        // Without the rows an automation that is on already says in more detail — the cheques and the expiry (the
+        // phone's sweep does the same; Windows said the expiry twice until 14 Nov 2026).
+        runCatching {
+            Reminders.daily(appPrefs, words, com.innovation313.roshankhata.data.Automations.leftToAutomations(alerts, autoSettings), lastBackupAt)
+        }
     }
     // The second place for the daily copies, looked at once a minute: a stick pulled out or a Drive folder gone
     // stops those copies, and the bell says so (25 Oct 2026, the audit: a failed copy left the bell silent).

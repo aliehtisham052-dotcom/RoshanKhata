@@ -11,10 +11,12 @@ import kotlinx.coroutines.flow.first
 /**
  * The shop's daily work, said at its own time (31 Oct 2026, the owner: "koi automation rakh ke hum behtar
  * tareeqe se manage karein"). The bell and the daily sweep only said THAT something was due; these five
- * say what to do next and open the place to do it:
+ * say what to do next and open the place to do it (six, since the cheque reminders of 14 Nov 2026):
  *
  *  - [Kind.COLLECT] in the morning: who to remind today, by Follow-up's own rule ([FollowUpRank]), with the
  *    total; a tap opens Follow-up and starts its one-by-one WhatsApp queue.
+ *  - [Kind.CHEQUES] in the morning: the cheques to bank and to pay whose day is today, and any past it
+ *    ([ChequesDue], the bell's own rule), with each direction's sum; a tap opens Cheques.
  *  - [Kind.DAY_END] at closing: today's sales and payments and what the drawer should hold
  *    ([DayCloseMath.drawerByTheBooks]); a tap opens the cashbook's Close the day.
  *  - [Kind.REORDER]: products at or under their low level that no open order already carries, each with a
@@ -31,6 +33,9 @@ object Automations {
 
     enum class Kind(val key: String, val defaultHour: Int, val word: String) {
         COLLECT("collect", 9, W.auto_collect_name),
+        // Second, so the list reads in the order of a morning's work. Said-marks are keyed by [key], so putting a
+        // kind in the middle moves nothing that was stored; only the runtime notification id (6001 + ordinal) shifts.
+        CHEQUES("cheques", 9, W.auto_cheques_name),
         REORDER("reorder", 10, W.auto_reorder_name),
         EXPIRY("expiry", 10, W.auto_expiry_name),
         MONTH("month", 9, W.auto_month_name),
@@ -84,7 +89,7 @@ object Automations {
     /** One thing to say: [title] and [body] in the owner's language, and where a tap goes. */
     data class Notice(val kind: Kind, val title: String, val body: String, val extra: Long? = null)
 
-    // ---------------------------------------------------------------- the five
+    // ---------------------------------------------------------------- the six
 
     data class Collect(
         val count: Int,
@@ -230,6 +235,39 @@ object Automations {
         runCatching { Fefo.expiring(dao, DayMath.startOfDay(now) + ExpiryWindow.WARN_MS) }.getOrDefault(emptyList())
             .sortedBy { it.expiryDate }
 
+    /**
+     * The cheques due today or past their day and still pending, by [ChequesDue] — the very rule the bell rows
+     * and the daily count use. Only the first few party names are looked up (the notice names three), not the
+     * whole customer list, so a big book pays for three small reads.
+     */
+    suspend fun cheques(dao: KhataDao, now: Long, tz: TimeZone = TimeZone.getDefault()): ChequesDue.Summary {
+        val end = ChequesDue.endOfToday(now, tz)
+        val due = dao.pendingChequesOnce().filter { ChequesDue.isDue(it, end) }
+        if (due.isEmpty()) return ChequesDue.Summary.NONE
+        // Six ids, oldest cheque first: enough for three names even when a few of the parties have gone.
+        val names = due.sortedBy { it.dueDate }.map { it.partyId }.distinct().take(6)
+            .mapNotNull { id -> dao.getPartyName(id)?.let { id to it } }.toMap()
+        return ChequesDue.summarise(due, names, now, tz)
+    }
+
+    // ---------------------------------------------------------------- one rule for the bell, the sweep and these
+
+    /**
+     * The bell row an automation already says in more detail and with a way to act. A daily sweep that lists the
+     * bell's rows (the phone's ReminderWorker, the computer's tray note) says it only while that automation is
+     * switched OFF: said by both, the owner had the same cheques twice in a morning — and the computer's note
+     * still said the expiry twice after the phone's was mended (14 Nov 2026). One mapping, used by both.
+     */
+    fun coveredBy(kind: LedgerAlerts.Kind): Kind? = when (kind) {
+        LedgerAlerts.Kind.CHEQUE -> Kind.CHEQUES
+        LedgerAlerts.Kind.EXPIRING -> Kind.EXPIRY
+        else -> null
+    }
+
+    /** [alerts] without the rows an automation that is on already says ([coveredBy]). */
+    fun leftToAutomations(alerts: List<LedgerAlerts.Alert>, settings: Settings): List<LedgerAlerts.Alert> =
+        alerts.filter { a -> coveredBy(a.kind)?.let { !settings.isOn(it) } ?: true }
+
     // ---------------------------------------------------------------- what is said
 
     /**
@@ -273,6 +311,15 @@ object Automations {
             val likely = if (c.likely > 0) "\n" + words.text(W.auto_collect_likely, c.likely.toString()) else ""
             Notice(kind, words.text(W.auto_collect_title),
                 words.plural(WP.auto_collect_body, c.count, c.count, money(c.total)) + "\n" + names + likely)
+        }
+        Kind.CHEQUES -> cheques(dao, now, tz).takeIf { it.count > 0 }?.let { c ->
+            // Each direction with its sum, how many of them are past their day, then who — the oldest cheque's first.
+            val lines = mutableListOf<String>()
+            if (c.received > 0) lines += words.plural(WP.auto_cheques_in_body, c.received, c.received, money(c.receivedTotal))
+            if (c.issued > 0) lines += words.plural(WP.auto_cheques_out_body, c.issued, c.issued, money(c.issuedTotal))
+            if (c.late > 0) lines += words.plural(WP.auto_cheques_late, c.late, c.late)
+            if (c.names.isNotEmpty()) lines += c.names.joinToString(", ") { Format.isolate(it) }
+            Notice(kind, words.text(W.auto_cheques_title), lines.joinToString("\n"))
         }
         Kind.DAY_END -> dayEnd(dao, now, tz).takeIf { it.moved }?.let { d ->
             val body = words.text(W.auto_dayend_body, money(d.sales), money(d.received), (if (Money.isNegative(d.drawer)) "\u2212 " else "") + money(d.drawer))

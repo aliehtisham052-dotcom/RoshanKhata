@@ -3992,6 +3992,8 @@
     <string name="auto_notifications_off">اعلان‌های روشن خاتا خاموش است، پس هیچ‌کدام از این‌ها به شما نمی‌رسد. آن‌ها را در تنظیمات گوشی روشن کنید.</string>
     <string name="auto_collect_name">فهرست وصول صبحگاهی</string>
     <string name="auto_collect_title">وصول امروز</string>
+    <string name="auto_cheques_name">یادآوری چک</string>
+    <string name="auto_cheques_title">سررسید چک‌ها</string>
     <string name="auto_dayend_name">خلاصهٔ پایان روز</string>
     <string name="auto_dayend_title">حساب امروز</string>
     <string name="auto_dayend_body">فروش %1$s · دریافتی %2$s · باید در صندوق باشد %3$s</string>
@@ -4019,6 +4021,18 @@
     <plurals name="auto_expiry_more">
         <item quantity="one">و %1$d بچ دیگر</item>
         <item quantity="other">و %1$d بچ دیگر</item>
+    </plurals>
+    <plurals name="auto_cheques_in_body">
+        <item quantity="one">%1$d چک برای وصول · %2$s</item>
+        <item quantity="other">%1$d چک برای وصول · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_out_body">
+        <item quantity="one">%1$d چک برای پرداخت · %2$s</item>
+        <item quantity="other">%1$d چک برای پرداخت · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_late">
+        <item quantity="one">از این میان %1$d چک سررسیدش گذشته است</item>
+        <item quantity="other">از این میان %1$d چک سررسیدشان گذشته است</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4146,6 +4160,7 @@
     <string name="duplicate_caution_one_digit">دو شماره فقط در یک رقم فرق دارند — شاید اشتباه تایپی باشد.</string>
     <string name="duplicate_caution_numbers">نام یکی است اما هر شماره فرق دارد — شاید افراد متفاوتی باشند.</string>
     <string name="auto_collect_desc">امروز به چه کسی و چقدر یادآوری شود</string>
+    <string name="auto_cheques_desc">چک‌هایی که باید وصول یا پرداخت شوند و سررسیدشان امروز است یا گذشته</string>
     <string name="auto_reorder_desc">سفارش آماده برای کالای رو به اتمام</string>
     <string name="auto_expiry_desc">بچ‌های نزدیک به انقضا، نزدیک‌ترین اول</string>
     <string name="auto_month_desc">داده‌ها و گرفته‌های ماه گذشته، در روز اول هر ماه</string>

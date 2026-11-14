@@ -95,6 +95,8 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
         val args = Bundle()
         val target = when (n.kind) {
             Automations.Kind.COLLECT -> { args.putBoolean(FollowUpActivity.EXTRA_START_QUEUE, true); FollowUpActivity::class.java }
+            // The cheque list itself; the flag only keeps its first-open sheet out of the way of what the owner came for.
+            Automations.Kind.CHEQUES -> { args.putBoolean(ChequesActivity.EXTRA_FROM_NOTICE, true); ChequesActivity::class.java }
             Automations.Kind.DAY_END -> { args.putBoolean(CashbookActivity.EXTRA_CLOSE_DAY, true); CashbookActivity::class.java }
             Automations.Kind.REORDER -> { args.putBoolean(OrdersActivity.EXTRA_START_LOW, true); OrdersActivity::class.java }
             Automations.Kind.MONTH -> {

@@ -3964,6 +3964,8 @@
     <string name="auto_notifications_off">Roshan Khata ke notifications band hain, is liye in mein se koi bhi aap tak nahi pohanch sakta. Phone ki settings mein inhein on karein.</string>
     <string name="auto_collect_name">Subah ki wusooli list</string>
     <string name="auto_collect_title">Aaj ki wusooli</string>
+    <string name="auto_cheques_name">Cheque ki yaad dehani</string>
+    <string name="auto_cheques_title">Cheque ki tareekh aa gayi</string>
     <string name="auto_dayend_name">Dukaan band karne ka khulasa</string>
     <string name="auto_dayend_title">Aaj ka hisaab</string>
     <string name="auto_dayend_body">Farokht %1$s · Wusool %2$s · Galle mein hona chahiye %3$s</string>
@@ -3991,6 +3993,18 @@
     <plurals name="auto_expiry_more">
         <item quantity="one">aur %1$d mazeed batch</item>
         <item quantity="other">aur %1$d mazeed batch</item>
+    </plurals>
+    <plurals name="auto_cheques_in_body">
+        <item quantity="one">%1$d cheque bank mein lagana hai · %2$s</item>
+        <item quantity="other">%1$d cheque bank mein lagane hain · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_out_body">
+        <item quantity="one">%1$d cheque ada karna hai · %2$s</item>
+        <item quantity="other">%1$d cheque ada karne hain · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_late">
+        <item quantity="one">Un mein se %1$d cheque ki tareekh guzar chuki hai</item>
+        <item quantity="other">Un mein se %1$d chequon ki tareekh guzar chuki hai</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4118,6 +4132,7 @@
     <string name="duplicate_caution_one_digit">Do numbers mein sirf ek hindse ka farq hai — shayad likhne mein ghalti hui.</string>
     <string name="duplicate_caution_numbers">Naam ek jaisa hai lekin har number alag hai — ho sakta hai yeh alag log hon.</string>
     <string name="auto_collect_desc">Aaj kis ko yaad dilana hai, aur kitna</string>
+    <string name="auto_cheques_desc">Bank mein lagane aur ada karne wale cheque, jin ki tareekh aaj hai ya guzar chuki</string>
     <string name="auto_reorder_desc">Kam hote maal ka tayyar order</string>
     <string name="auto_expiry_desc">Miyaad ke qareeb batch, sab se pehle wale upar</string>
     <string name="auto_month_desc">Pichle mahine ka diya aur liya, har mahine ki pehli tareekh ko</string>

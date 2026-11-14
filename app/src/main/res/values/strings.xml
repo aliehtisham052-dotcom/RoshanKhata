@@ -4176,6 +4176,8 @@
     <string name="auto_notifications_off">Notifications are off for Roshan Khata, so none of these can reach you. Turn them on in the phone\'s settings.</string>
     <string name="auto_collect_name">Morning collection list</string>
     <string name="auto_collect_title">Collect today</string>
+    <string name="auto_cheques_name">Cheque reminders</string>
+    <string name="auto_cheques_title">Cheques due</string>
     <string name="auto_dayend_name">Closing summary</string>
     <string name="auto_dayend_title">Today\'s closing</string>
     <string name="auto_dayend_body">Sales %1$s · Received %2$s · Drawer should hold %3$s</string>
@@ -4203,6 +4205,18 @@
     <plurals name="auto_expiry_more">
         <item quantity="one">and %1$d more batch</item>
         <item quantity="other">and %1$d more batches</item>
+    </plurals>
+    <plurals name="auto_cheques_in_body">
+        <item quantity="one">%1$d cheque to bank · %2$s</item>
+        <item quantity="other">%1$d cheques to bank · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_out_body">
+        <item quantity="one">%1$d cheque to pay · %2$s</item>
+        <item quantity="other">%1$d cheques to pay · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_late">
+        <item quantity="one">Of these, %1$d is past its day</item>
+        <item quantity="other">Of these, %1$d are past their day</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4331,6 +4345,7 @@
     <string name="duplicate_caution_one_digit">Two numbers differ by one digit — perhaps a typing mistake.</string>
     <string name="duplicate_caution_numbers">Same name, but every number is different — they may be different people.</string>
     <string name="auto_collect_desc">Who to remind today, and how much</string>
+    <string name="auto_cheques_desc">Cheques to bank or to pay on their day, and any past it</string>
     <string name="auto_reorder_desc">A ready order for what is running low</string>
     <string name="auto_expiry_desc">Batches close to expiry, soonest first</string>
     <string name="auto_month_desc">Last month\'s gave and got, on the 1st of each month</string>

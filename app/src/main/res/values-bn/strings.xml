@@ -4012,6 +4012,8 @@
     <string name="auto_notifications_off">রোশন খাতার নোটিফিকেশন বন্ধ, তাই এগুলোর কোনোটিই আপনার কাছে পৌঁছাবে না। ফোনের সেটিংসে চালু করুন।</string>
     <string name="auto_collect_name">সকালের আদায় তালিকা</string>
     <string name="auto_collect_title">আজকের আদায়</string>
+    <string name="auto_cheques_name">চেকের রিমাইন্ডার</string>
+    <string name="auto_cheques_title">চেকের তারিখ এসে গেছে</string>
     <string name="auto_dayend_name">দোকান বন্ধের সারাংশ</string>
     <string name="auto_dayend_title">আজকের হিসাব</string>
     <string name="auto_dayend_body">বিক্রি %1$s · আদায় %2$s · ক্যাশে থাকা উচিত %3$s</string>
@@ -4039,6 +4041,18 @@
     <plurals name="auto_expiry_more">
         <item quantity="one">আরও %1$dটি ব্যাচ</item>
         <item quantity="other">আরও %1$dটি ব্যাচ</item>
+    </plurals>
+    <plurals name="auto_cheques_in_body">
+        <item quantity="one">%1$dটি চেক ব্যাংকে জমা দিতে হবে · %2$s</item>
+        <item quantity="other">%1$dটি চেক ব্যাংকে জমা দিতে হবে · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_out_body">
+        <item quantity="one">%1$dটি চেক পরিশোধ করতে হবে · %2$s</item>
+        <item quantity="other">%1$dটি চেক পরিশোধ করতে হবে · %2$s</item>
+    </plurals>
+    <plurals name="auto_cheques_late">
+        <item quantity="one">এর মধ্যে %1$dটির তারিখ পার হয়ে গেছে</item>
+        <item quantity="other">এর মধ্যে %1$dটির তারিখ পার হয়ে গেছে</item>
     </plurals>
 
     <!-- First-open feature sheets and the saved card (1 Nov 2026) -->
@@ -4166,6 +4180,7 @@
     <string name="duplicate_caution_one_digit">দুটি নম্বরে শুধু একটি অঙ্কের পার্থক্য — হয়তো লেখার ভুল।</string>
     <string name="duplicate_caution_numbers">নাম একই, কিন্তু প্রতিটি নম্বর আলাদা — হয়তো তাঁরা আলাদা মানুষ।</string>
     <string name="auto_collect_desc">আজ কাকে মনে করাতে হবে, আর কত</string>
+    <string name="auto_cheques_desc">ব্যাংকে জমা দেওয়ার ও পরিশোধের চেক, যাদের তারিখ আজ বা পার হয়ে গেছে</string>
     <string name="auto_reorder_desc">ফুরিয়ে আসা মালের তৈরি অর্ডার</string>
     <string name="auto_expiry_desc">মেয়াদ শেষের কাছাকাছি ব্যাচ, সবচেয়ে আগেরটি প্রথমে</string>
     <string name="auto_month_desc">গত মাসের দেওয়া ও নেওয়া, প্রতি মাসের প্রথম দিনে</string>

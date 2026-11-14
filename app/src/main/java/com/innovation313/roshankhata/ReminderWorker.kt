@@ -118,10 +118,15 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // so each notification lands on the list it is about.
         val here = countDue(dao)
         // A count gone to nothing takes its notice with it (3 Nov 2026 audit, M21): yesterday's "2 cheques" stood.
-        cancelIfNone(ctx, ID_CHEQUES, here.cheques)
+        // Said by the Cheque reminders automation when it is on, with the amounts and who (the same sentence
+        // the Expiry one fixed, M14: the daily sweep and the automation each said it); then the sweep's own
+        // line is taken down too, so a notice posted before the owner turned the automation on does not stay.
+        val chequesByAutomation = AndroidAutomationSettings(ctx).isOn(com.innovation313.roshankhata.data.Automations.Kind.CHEQUES)
+        cancelIfNone(ctx, ID_CHEQUES, if (chequesByAutomation) 0 else here.cheques)
+        val expiryByAutomation = AndroidAutomationSettings(ctx).isOn(com.innovation313.roshankhata.data.Automations.Kind.EXPIRY)
         cancelIfNone(ctx, ID_PLANS, here.plans)
-        cancelIfNone(ctx, ID_EXPIRY, here.expiring)
-        if (here.cheques > 0) notify(
+        cancelIfNone(ctx, ID_EXPIRY, if (expiryByAutomation) 0 else here.expiring)
+        if (here.cheques > 0 && !chequesByAutomation) notify(
             ctx, ID_CHEQUES, AlertsActivity::class.java,
             ctx.getString(R.string.notif_cheques_title),
             Digits.quantity(ctx.resources, R.plurals.notif_cheques_body, here.cheques, here.cheques),
@@ -134,7 +139,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             business = businessId
         )
         // Said by the 10:00 Expiry automation when it is on, with the batch and its day (M14: said twice before).
-        if (here.expiring > 0 && !AndroidAutomationSettings(ctx).isOn(com.innovation313.roshankhata.data.Automations.Kind.EXPIRY)) notify(
+        if (here.expiring > 0 && !expiryByAutomation) notify(
             ctx, ID_EXPIRY, AlertsActivity::class.java,
             ctx.getString(R.string.notif_expiry_title),
             Digits.quantity(ctx.resources, R.plurals.notif_expiry_body, here.expiring, here.expiring),

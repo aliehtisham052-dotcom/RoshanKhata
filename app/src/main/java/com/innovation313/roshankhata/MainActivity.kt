@@ -70,13 +70,13 @@ class MainActivity : BaseActivity() {
 
     /**
      * The automations' words for the screen they open, read key by key and typed (3 Nov 2026 audit, L24): only
-     * these five ever pass, as true or a time — a crafted bundle from another app is dropped whole.
+     * these six ever pass, as true or a time — a crafted bundle from another app is dropped whole.
      */
     private fun openArgs(): Bundle {
         val out = Bundle()
         val args = runCatching { intent.getBundleExtra(EXTRA_OPEN_ARGS) }.getOrNull() ?: return out
         runCatching {
-            for (key in listOf(FollowUpActivity.EXTRA_START_QUEUE, CashbookActivity.EXTRA_CLOSE_DAY, OrdersActivity.EXTRA_START_LOW))
+            for (key in listOf(FollowUpActivity.EXTRA_START_QUEUE, CashbookActivity.EXTRA_CLOSE_DAY, OrdersActivity.EXTRA_START_LOW, ChequesActivity.EXTRA_FROM_NOTICE))
                 if (args.getBoolean(key, false)) out.putBoolean(key, true)
             for (key in listOf(LedgerReportActivity.EXTRA_FROM, LedgerReportActivity.EXTRA_TO))
                 if (args.containsKey(key)) out.putLong(key, args.getLong(key))

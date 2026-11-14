@@ -1359,12 +1359,19 @@ read in the code first. CI only — nothing on a device. Trade words: 25 trades 
 
 ### Automations (31 Oct 2026, kmp-desktop-16 — the owner: "automation rakh ke behtar tareeqe se manage karein")
 
-Five, in :shared (`Automations`), said at the owner's hours on both platforms; they TELL and open the place to act —
+Six (the sixth, cheques, added 14 Nov 2026), in :shared (`Automations`), said at the owner's hours on both platforms; they TELL and open the place to act —
 none sends a message or writes a row on its own (a background write on two synced devices makes every draft twice;
 WhatsApp sending needs the paid Cloud API, decided against). CI only — nothing on a real device.
 
 - **Morning collection** (9:00): Follow-up's own rule (`FollowUpRank.remindToday`, with a phone, less those reminded
   today) as a count and total; the tap opens Follow-up and starts its one-by-one queue (`EXTRA_START_QUEUE`).
+- **Cheque reminders** (9:00, 14 Nov 2026): the pending cheques due today or earlier, counted apart by direction
+  (to take to the bank / to pay, each with its sum) with how many are past their day and up to three names
+  (`ChequesDue`, shared: `endOfToday`, `isDue`, `isLate`, `summarise`). The tap opens Cheques
+  (`ChequesActivity.EXTRA_FROM_NOTICE`, which also keeps the first-open sheet from covering it; Windows opens the
+  Cheques page). It writes no row: clearing or bouncing a cheque stays the owner's tap. **One rule for the bell, the
+  daily count and the notice** — `LedgerAlerts` reads `ChequesDue` too, so the three can never disagree on what is due
+  (the end of today is found through the calendar, not "+24 h": a day when the clocks move is 23 or 25 hours).
 - **Low stock orders** (10:00): `Automations.reorder` — `Valuation.low`, less what an order not yet received carries;
   quantity = max(30 days' sales of that name and unit, twice the low level) less the shelf, at least 1; supplier from
   the newest bill that carried it. "Order the low stock" on both platforms uses it and `firstOrder` (one supplier per
@@ -1381,9 +1388,18 @@ WhatsApp sending needs the paid Cloud API, decided against). CI only — nothing
   goes through the gate (`MainActivity.EXTRA_OPEN_ARGS` carries the screen's extras through Gate and Lock). Windows:
   Book's loop every 5 minutes while the book is open, as tray notifications; a click on the tray brings the window
   forward on the page (`Reminders.show(open)`). Only the open business's book.
+- **No notice twice (14 Nov 2026):** what an automation says in detail the daily sweeps leave out — the phone's
+  `ReminderWorker` and Windows' `Reminders.daily` — through one mapping, `Automations.coveredBy(LedgerAlerts.Kind)`
+  (CHEQUE → cheques, EXPIRING → expiry) and `leftToAutomations(alerts, settings)`; the sweep keeps its own notice
+  when the automation is switched off. A notice an older build already left on the phone is cancelled
+  (`cancelIfNone`). Only the open book is covered by automations; the "every other shop" notices are unchanged.
+  Notification ids are `6001 + ordinal` at run time only (a said-mark and a switch are stored by `Kind.key`, so
+  adding a kind moves no stored data).
 - Strings (nine languages): auto_title, auto_help, auto_*_name/_title, auto_collect_body, auto_reorder_body,
   auto_expiry_more (plurals), auto_dayend_body/_uncounted, auto_month_body, auto_expiry_body, auto_at_time,
-  auto_pick_hour. Tests: AutomationsClockTest (shared), AutomationsBookTest (desktop).
+  auto_pick_hour; auto_cheques_name/_title/_desc and plurals auto_cheques_in_body/_out_body/_late (**Sindhi and
+  Bengali wording is for a native read**). Tests: AutomationsClockTest (shared), AutomationsBookTest (desktop),
+  ChequesDueTest (shared; run here with Gradle's own compiler — lesson 93).
 
 ### First-open sheets and the saved card (1 Nov 2026, kmp-desktop-16 — the owner: "professionally check karo, implement karo")
 
@@ -1405,7 +1421,7 @@ Phone only. CI only — nothing on a real device.
   what it does for the shop, Got it. Eleven: Counter sale, Documents, Cashbook, Cheques, Customer QR (before the card
   opens), Staff, Plans, Follow-up, Backup, Purchase orders, Expiry. Once per feature per phone (prefs
   "feature_intro"); a rotation while open shows it again; not when a notification opened the screen to act
-  (EXTRA_CLOSE_DAY, EXTRA_START_QUEUE, EXTRA_START_LOW). Help → Feature guides lists them (ChoiceSheet). Left out on
+  (EXTRA_CLOSE_DAY, EXTRA_START_QUEUE, EXTRA_START_LOW, and since 14 Nov EXTRA_FROM_NOTICE on Cheques). Help → Feature guides lists them (ChoiceSheet). Left out on
   purpose: screens that explain themselves or have the Home tour (Khata, Products, Calculator, Zakat, Price list,
   cards, posters, reports, bin, Automations whose dialog has its own help). **A test that photographs screens calls
   `FeatureIntro.markAllSeen`** (ScreenProofPhoneTest, StoreScreenshotsTest); EveryScreenOpensTest keeps them on, so
@@ -2768,6 +2784,18 @@ Each of these cost a build or a bug.
 
 118. **A reading made on purpose is protected from the sense.** A help page is MEDIUM ground and the sense at 0.60 turned
     "bill banao" into a count of supplier bills; deliberate routes are listed in `decide` (`featureNamed`, the new asks).
+
+119. **What an automation says in detail, the daily sweep must not say again.** Cheques and expiry were told by the bell,
+    by a daily sweep and (once automations existed) by an automation: three notices of one thing, each with its own idea of
+    "due". One rule decides what is due (`ChequesDue`, read by the bell, the count and the notice) and one mapping says
+    which sweep notice an automation covers (`Automations.coveredBy` / `leftToAutomations`, both platforms); a notice an
+    older build left behind is cancelled, and the sweep speaks again the day the automation is switched off. A new
+    automation that overlaps a sweep adds its line to that mapping in the same commit, with a test that the three agree.
+
+120. **The owner's own check logs are read by class, never copied.** The check log (`HudhudCheck`/`CheckLog`, More →
+    Hudhud's voice) holds his real customers' names and his recogniser's garbles. It stays in the app for him to mark
+    Right/Wrong. What comes out of it is the CLASS of each miss (a question word read as a name, "mujh par", a polite
+    wrapper) with made-up names, never a row (lesson 80); the bank and the anonymised log test hold only invented ones.
 ---
 
 ## Working with the owner

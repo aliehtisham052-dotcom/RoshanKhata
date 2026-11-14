@@ -36,7 +36,9 @@ object LedgerAlerts {
     suspend fun dueCounts(dao: KhataDao): Due {
         val t0 = today()
         val t1 = t0 + DAY
-        val cheques = dao.pendingChequesOnce().count { it.status == ChequeStatus.PENDING && it.dueDate < t1 }
+        // Cheques by the one rule ([ChequesDue]) the bell and the Cheque reminders automation also use.
+        val endToday = ChequesDue.endOfToday(System.currentTimeMillis())
+        val cheques = dao.pendingChequesOnce().count { ChequesDue.isDue(it, endToday) }
         val plans = dao.openPlansOnce().count { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > 0.004 }
         val low = runCatching { Stock.of(dao) }.getOrDefault(emptyList())
         val expiring = runCatching { Fefo.expiring(dao, t0 + ExpiryWindow.WARN_MS, low.associate { it.productId to it.onHand }).size }.getOrDefault(0)
@@ -62,10 +64,13 @@ object LedgerAlerts {
 
         // Due today, or past its day and still pending (3 Nov 2026 audit, M14: a cheque one day late left the bell
         // while it was still to be banked).
-        dao.pendingChequesOnce().filter { it.status == ChequeStatus.PENDING && it.dueDate < t1 }.forEach { c ->
+        // The rule is [ChequesDue]'s, shared with the Cheque reminders automation and the daily count (14 Nov 2026).
+        val now = System.currentTimeMillis()
+        val endToday = ChequesDue.endOfToday(now)
+        dao.pendingChequesOnce().filter { ChequesDue.isDue(it, endToday) }.forEach { c ->
             out += Alert(Kind.CHEQUE,
                 words.text(if (c.isReceived) W.na_cheque_in else W.na_cheque_out),
-                (names[c.partyId] ?: "") + " · " + money(c.amount), words.text(if (c.dueDate < t0) W.na_tag_late else W.na_tag_today))
+                (names[c.partyId] ?: "") + " · " + money(c.amount), words.text(if (ChequesDue.isLate(c, now)) W.na_tag_late else W.na_tag_today))
         }
         dao.openPlansOnce().filter { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > 0.004 }.forEach { p ->
             val late = p.nextDueDate!! < t0
