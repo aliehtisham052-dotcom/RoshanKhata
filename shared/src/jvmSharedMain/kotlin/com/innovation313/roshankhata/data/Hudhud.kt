@@ -857,6 +857,8 @@ object Hudhud {
         said: List<String>, joined: String, m: HudhudMind.Read, window: VoiceQuestion.Window?, topics: List<Topic>
     ): Ask? {
         fun page(key: String): Ask? = if (topics.any { it.key == key }) Ask.Help(key) else null
+        // A concept said by its own word, not met by sound: "karna" sounds like Indonesian "karyawan" (staff).
+        fun firm(c: HudhudMind.C) = m.said.indices.any { it !in m.bySound && c in m.at(it) }
         val counting = m.has(HudhudMind.C.HOW_MANY)
         if (has(joined, QARZ)) return Ask.Qarz
         if (has(joined, ZAKAT)) page("screen_zakat")?.let { return it }
@@ -879,6 +881,39 @@ object Hudhud {
                 !has(joined, SUPPLIER_SIDE_WORDS)))
         ) page("intro_documents")?.let { return it }
         if (has(joined, UTILITY)) page("intro_cashbook")?.let { return it }
+        // Keeping the book safe (14 Nov 2026, the owner's 1,000 sentences: "PIN bhool gaya" was read as somebody's
+        // details, "Naya PIN banana hai" as a hello): the lock's and the hiding's own help pages.
+        if (has(joined, LOCK_WORDS)) page("faq_lock")?.let { return it }
+        if (has(joined, HIDE_WORDS)) page("faq_hide")?.let { return it }
+        if (has(joined, DATA_LEAVES)) return Ask.About(AboutTopic.PRIVACY)
+        if (has(joined, SAFETY_WORDS) && !m.has(HudhudMind.C.DATA) && VoiceQuestion.classify(joined) == null) {
+            page("faq_lock")?.let { return it }
+        }
+        // Something new to put in the book ("naya mulazim add karna hai", "naya bill daalna hai"): the page of that
+        // feature, which says how. Without this the help search took "add" to the page about adding a business.
+        if (has(joined, ADD_NEW) && !counting && VoiceQuestion.classify(joined) == null && !m.has(HudhudMind.C.CAME) &&
+            !has(joined, GOODS_CAME)
+        ) {
+            val key = when {
+                billWord || m.has(HudhudMind.C.BILL) -> "screen_bills"
+                firm(HudhudMind.C.STAFF) -> "intro_staff"
+                m.has(HudhudMind.C.CHEQUE) -> "intro_cheques"
+                m.has(HudhudMind.C.PLAN) -> "intro_plans"
+                m.has(HudhudMind.C.GOODS) -> "screen_products"
+                m.any(HudhudMind.C.CUSTOMER, HudhudMind.C.SUPPLIER, HudhudMind.C.ENTRY) -> "screen_khata"
+                else -> null
+            }
+            key?.let { page(it) }?.let { return it }
+        }
+        // The staff by name of the feature, nobody named: what they are owed, or how to add one and what they see.
+        if (firm(HudhudMind.C.STAFF) && !counting && VoiceQuestion.classify(joined) == null &&
+            !m.any(HudhudMind.C.TICKET, HudhudMind.C.ENTRY, HudhudMind.C.HAPPENED)
+        ) {
+            if (has(joined, ACCESS_WORDS)) page("intro_staff")?.let { return it }
+            if (m.any(HudhudMind.C.ACCOUNT, HudhudMind.C.PENDING) || has(joined, ACCOUNT_OF_DAY)) {
+                return Ask.Status(StatusOf.STAFF)
+            }
+        }
         // Putting an entry right, or bringing back what was deleted: he cannot do it himself, the help page says how.
         if (has(joined, BIN_WORDS)) page("screen_bin")?.let { return it }
         if (has(joined, FIX_WORDS) && (m.any(HudhudMind.C.ENTRY, HudhudMind.C.CUSTOMER) || has(joined, FIX_WHAT))) {
@@ -919,14 +954,39 @@ object Hudhud {
         return null
     }
 
-    /** Whether [heard] names one of the features [byFeature] opens by its page. */
+    /** Whether [heard] names one of the features [byFeature] opens by its page, or asks to add something new to one. */
     private fun featureNamed(heard: String): Boolean {
         val joined = words(heard).joinToString(" ")
-        return listOf(ZAKAT, BUSINESSES, SEASONS, SCHEMES, POSTERS, CARDS, CASH_FLOW, AHEAD, DOCUMENTS, UTILITY, BIN_WORDS, FIX_WORDS)
+        return listOf(ZAKAT, BUSINESSES, SEASONS, SCHEMES, POSTERS, CARDS, CASH_FLOW, AHEAD, DOCUMENTS, UTILITY, BIN_WORDS, FIX_WORDS,
+            LOCK_WORDS, HIDE_WORDS, ADD_NEW)
             .any { has(joined, it) } ||
             (has(joined, BILL_WORDS) && has(joined, MAKE_DOC))
     }
 
+    private val LOCK_WORDS = listOf("lock", "app lock", "applock", "pin", "pin code", "password", "passcode", "fingerprint",
+        "finger print", "screen lock", "taala", "tala lagao", "لاک", "تالا", "پن", "پن کوڈ", "پاس ورڈ", "فنگر پرنٹ", "قفل",
+        "رمز", "رمز المرور", "كلمة المرور", "بصمة", "بصمة الإصبع", "گذرواژه", "رمز عبور", "اثر انگشت", "لاڪ", "پاسورڊ", "ताला",
+        "लॉक", "पिन", "पासवर्ड", "फिंगरप्रिंट", "লক", "পিন", "পাসওয়ার্ড", "আঙুলের ছাপ", "kunci", "kata sandi", "sandi",
+        "sidik jari")
+    private val HIDE_WORDS = listOf("chhupa", "chupa", "chhupana", "chupana", "chhupao", "chupao", "chhup", "hide", "hidden",
+        "screenshot", "screen shot", "چھپا", "چھپانا", "چھپاؤ", "سکرین شاٹ", "اسکرین شاٹ", "إخفاء", "اخفاء", "أخفي", "لقطة الشاشة",
+        "پنهان", "مخفی", "اسکرین‌شات", "لڪاءِ", "لڪايو", "छुपा", "छुपाना", "छिपा", "छिपाना", "स्क्रीनशॉट", "লুকাও", "লুকানো",
+        "লুকিয়ে", "স্ক্রিনশট", "sembunyikan", "sembunyi", "tangkapan layar")
+    private val SAFETY_WORDS = listOf("safe", "safety", "secure", "security", "mehfooz", "mahfooz", "mehfuz", "hifazat",
+        "hifazat karun", "محفوظ", "حفاظت", "آمن", "أمان", "الأمان", "امنیت", "ایمن", "سلامت", "حفاظت", "सुरक्षित", "सुरक्षा",
+        "নিরাপদ", "নিরাপত্তা", "aman", "keamanan")
+    /** Whether the book leaves the phone: the privacy answer, not a help page. */
+    private val DATA_LEAVES = listOf("internet par jata", "internet pe jata", "online jata", "server par", "bahar jata",
+        "kisi ko dikhta", "share hota", "share karta", "kahan jata", "upload hota", "انٹرنیٹ پر جاتا", "باہر جاتا", "کسی کو دکھتا",
+        "يذهب إلى الإنترنت", "يرسل", "به اینترنت می‌رود", "ارسال می‌شود", "इंटरनेट पर जाता", "बाहर जाता", "ইন্টারনেটে যায়",
+        "বাইরে যায়", "dikirim ke internet", "dibagikan")
+    private val ADD_NEW = listOf("naya", "nayi", "naye", "new", "add", "add karna", "add karo", "shamil", "darj karna", "daalna",
+        "dalna", "نیا", "نئی", "نئے", "شامل", "ایڈ", "جديد", "جديدة", "أضف", "إضافة", "جدید", "اضافه", "افزودن", "نئون", "نئين",
+        "شامل ڪريو", "नया", "नई", "नए", "जोड़ना", "जोड़ो", "ऐड", "নতুন", "যোগ", "যোগ করুন", "baru", "tambah", "tambahkan")
+    /** What a member of staff may see or do. */
+    private val ACCESS_WORDS = listOf("access", "ijazat", "ikhtiyar", "permission", "kya kya dikhe", "kya dikhta", "kya dekh",
+        "role", "اجازت", "اختیار", "رسائی", "صلاحية", "صلاحيات", "دسترسی", "اجازه", "اجازت", "अनुमति", "पहुँच", "অনুমতি",
+        "অ্যাক্সেস", "akses", "izin")
     private val QARZ = listOf("qarz e hasna", "qarze hasna", "qarz hasna", "qarzehasna", "qarz e hasana", "qarz e husna",
         "karz e hasna", "qarz-e-hasna", "قرض حسنہ", "قرضِ حسنہ", "قرض حسنه", "قرض الحسن", "قرضا حسنا", "قرض حسن",
         "قرض‌الحسنه", "قرض الحسنه", "قرض حسنو", "क़र्ज़ ए हसना", "कर्ज़ ए हसना", "कर्ज ए हसना", "क़र्ज़-ए-हसना", "করজে হাসানা",

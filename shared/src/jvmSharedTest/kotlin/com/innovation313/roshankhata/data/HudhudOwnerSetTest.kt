@@ -91,6 +91,6 @@ class HudhudOwnerSetTest {
     private companion object {
         /** What this build reads right (14 Nov 2026); raise it with every improvement, never lower it. */
         const val SHORT_FLOOR = 142
-        const val THOUSAND_FLOOR = 711
+        const val THOUSAND_FLOOR = 721
     }
 }
