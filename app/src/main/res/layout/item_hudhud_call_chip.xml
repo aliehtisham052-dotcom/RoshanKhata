@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One of Hudhud's bird calls on his voice sheet (14 Nov 2026): a tap plays that call, whether the switch above is on or
+  not. Not a choice, so it never shows a tick; a small speaker on it says "this is heard". The icon is the night-aware
+  green (a mark, never the fill green: lesson 60).
+-->
+<com.google.android.material.chip.Chip
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.MaterialComponents.Chip.Action"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/ink"
+    android:textSize="14sp"
+    app:chipBackgroundColor="@color/surface"
+    app:chipIcon="@drawable/ic_volume_on"
+    app:chipIconSize="18dp"
+    app:chipIconTint="@color/brand_green_text"
+    app:chipIconVisible="true"
+    app:chipStrokeColor="@color/hairline"
+    app:chipStrokeWidth="1dp" />

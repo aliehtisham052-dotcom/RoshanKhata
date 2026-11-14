@@ -14,6 +14,8 @@ import android.speech.tts.UtteranceProgressListener
 import android.speech.tts.Voice
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.Currency
+import com.innovation313.roshankhata.data.HudhudChirp
+import com.innovation313.roshankhata.data.HudhudPronounce
 import com.innovation313.roshankhata.data.HudhudSay
 import com.innovation313.roshankhata.data.HudhudSpeech
 import com.innovation313.roshankhata.data.PaymentNotice
@@ -261,15 +263,21 @@ class HudhudVoice(context: Context) {
 
     /**
      * Says [text] with [plan]'s voice, made ready for it ([forVoice]); [listener] hears it start, each word, the end or
-     * a failure. [style] overrides the owner's choice (the settings' sample).
+     * a failure. [style] overrides the owner's choice (the settings' sample), [nameWay] and [wayOf] the ways he chose
+     * to have his name and the words he can choose by ear ([HudhudPronounce]) said. [chirp]: the little call that goes
+     * before the answer when the owner has bird calls on — the answer starts when it has ended, not over it; a stop
+     * during it cancels the answer like any other.
      */
-    fun speak(text: String, plan: Plan, listener: Listener, style: HudhudStyle? = null, nameWay: Int? = null) {
+    fun speak(
+        text: String, plan: Plan, listener: Listener, style: HudhudStyle? = null, nameWay: Int? = null,
+        wayOf: ((HudhudPronounce.Word) -> Int)? = null, chirp: HudhudChirp.Kind? = null
+    ) {
         withEngine { t ->
             if (t == null) { listener.onFailed(); return@withEngine }
             val usable = runCatching { t.setVoice(plan.voice) == TextToSpeech.SUCCESS }.getOrDefault(false)
             stopNow()
             if (!usable) { listener.onFailed(); return@withEngine }
-            val said = forVoice(text, plan, nameWay).takeIf { it.isNotBlank() }
+            val said = forVoice(text, plan, nameWay, wayOf).takeIf { it.isNotBlank() }
             if (said == null) { listener.onDone(); return@withEngine }
             val s = style ?: HudhudPrefs.style(app)
             runCatching {
@@ -279,7 +287,19 @@ class HudhudVoice(context: Context) {
             this.listener = listener
             words = said
             tries = 0
-            play(t, said)
+            val lead = chirp?.let { HudhudChirpPlayer.play(app, it) } ?: 0
+            if (lead <= 0) {
+                play(t, said)
+                return@withEngine
+            }
+            // [stopNow] takes this wait away with everything else that was pending, so it runs only if nothing stopped it.
+            val go = Runnable {
+                pending = null
+                val engine = tts
+                if (engine != null) play(engine, said) else finish()
+            }
+            pending = go
+            main.postDelayed(go, lead.toLong())
         }
     }
 
@@ -293,7 +313,9 @@ class HudhudVoice(context: Context) {
         noVoice: () -> Unit,
         style: HudhudStyle? = null,
         voiceName: String? = null,
-        nameWay: Int? = null
+        nameWay: Int? = null,
+        wayOf: ((HudhudPronounce.Word) -> Int)? = null,
+        chirp: HudhudChirp.Kind? = null
     ) {
         plan { p ->
             if (p == null) { noVoice(); return@plan }
@@ -302,18 +324,34 @@ class HudhudVoice(context: Context) {
             }
             val use = if (chosen != null) Plan(chosen, p.words, p.language, p.fallback, p.wanted) else p
             val text = runCatching { textIn(use.words) }.getOrNull().orEmpty()
-            speak(text, use, listener, style, nameWay)
+            speak(text, use, listener, style, nameWay, wayOf, chirp)
         }
     }
 
-    /** [text] as the voice should get it: the marks for the eye gone, his name his way, calm stops, rupees in words. */
-    fun forVoice(text: String, plan: Plan, nameWay: Int? = null): String {
-        val rupees: ((String) -> String)? = if (Currency.symbol == Currency.DEFAULT || Currency.symbol == "₹") {
-            { digits -> plan.words.getString(R.string.paisa_rupees, digits) }
-        } else null
+    /**
+     * [text] as the voice should get it: the marks for the eye gone, his name his way, the words the owner chose a way
+     * for said that way ([wayOf]; his kept choice until given), calm stops, and the shop's money in words in the voice's
+     * language — the rupee from the app's own words ("%s روپے", "%s rupees"), every other currency by its name in the
+     * language from the phone's own tables ([HudhudMoneyWords]: "1250 UAE dirhams"), a figure counted to the currency's
+     * own decimals (a dinar to a thousandth). A sign the owner typed himself, which names no currency, is left as it is.
+     */
+    fun forVoice(text: String, plan: Plan, nameWay: Int? = null, wayOf: ((HudhudPronounce.Word) -> Int)? = null): String {
+        val sign = Currency.symbol
+        val rupee = sign == Currency.DEFAULT || sign == "₹"
+        val iso = if (rupee) null else HudhudMoneyWords.isoOf(sign)
+        val rupees: ((String) -> String)? = when {
+            rupee -> { digits -> plan.words.getString(R.string.paisa_rupees, digits) }
+            iso != null -> { digits -> HudhudMoneyWords.say(digits, iso, plan.language) ?: "$sign $digits" }
+            else -> null
+        }
         val clean = HudhudSpeech.clean(text.replace('−', '-').replace(" · ", ", ").replace("·", ","))
             .replace('\n', ' ')
-        return HudhudSay.forVoice(clean, plan.language, nameWay ?: HudhudPrefs.nameWay(app, plan.language), rupees)
+        return HudhudSay.forVoice(
+            clean, plan.language, nameWay ?: HudhudPrefs.nameWay(app, plan.language), rupees,
+            signs = if (rupee) null else listOf(sign),
+            wayOf = wayOf ?: { word -> HudhudPrefs.wayOf(app, word, plan.language) },
+            decimals = Currency.decimals(sign)
+        )
     }
 
     /**

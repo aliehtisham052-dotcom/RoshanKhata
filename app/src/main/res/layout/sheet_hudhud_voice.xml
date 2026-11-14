@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Hudhud's voice (13 Nov 2026, ui/HudhudVoiceSheet; the owner: "do teen qism ki awaaz… professionally"): what he calls
-  the owner, how he speaks (three styles), which of the phone's own voices, a sample to hear, the phone's voice
-  downloads, and how he listens. Everything is a stack, one control a row (lesson 58: a 360 dp phone at 150% text in
-  the long languages); the choices are radio rows, which grow with their words.
+  Hudhud's voice (13-14 Nov 2026, ui/HudhudVoiceSheet; the owner: "do teen qism ki awaaz… professionally", "cartoonish,
+  interacting awaaz"): what he calls the owner, how he speaks (five styles as chips, the pace on a slider), which of the
+  phone's own voices, how he says his name and Alhamdulillah (each heard when chosen), his little bird calls, a sample,
+  how he listens, and the testing tools folded away. A stack, one control a row (lesson 58: a 360 dp phone at 150% text
+  in the long languages); the choices are chips, which wrap onto as many lines as their words need.
 -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -95,7 +96,7 @@
             android:textColorHint="@color/text_muted"
             android:textSize="16sp" />
 
-        <!-- How he speaks. -->
+        <!-- How he speaks: Professional (the phone's voice as it is), Gentle, Lively, Serious, Cartoon. -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -106,72 +107,75 @@
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <RadioGroup
-            android:id="@+id/rgHudStyle"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgHudStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="vertical">
+            android:layout_marginTop="8dp"
+            app:selectionRequired="true"
+            app:singleSelection="true" />
 
-            <!-- The phone's own voice as it is: his first style (13 Nov 2026, the owner: "professional sound"). -->
-            <RadioButton
-                android:id="@+id/rbHudProfessional"
-                android:layout_width="match_parent"
+        <!-- His pace, a step of a tenth between slow and quick; heard when the finger lifts. The mark is the night-aware
+             green, never the fill green (lesson 60). -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:text="@string/hudhud_style_professional"
+                android:layout_weight="1"
+                android:text="@string/hudhud_pace"
                 android:textAlignment="viewStart"
                 android:textColor="@color/ink"
-                android:textSize="16sp" />
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-            <RadioButton
-                android:id="@+id/rbHudGentle"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvHudPaceValue"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:text="@string/hudhud_style_gentle"
-                android:textAlignment="viewStart"
-                android:textColor="@color/ink"
-                android:textSize="16sp" />
+                android:layout_marginStart="12dp"
+                android:textColor="@color/text_muted"
+                android:textDirection="ltr"
+                android:textSize="15sp" />
+        </LinearLayout>
 
-            <RadioButton
-                android:id="@+id/rbHudLively"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:text="@string/hudhud_style_lively"
-                android:textAlignment="viewStart"
-                android:textColor="@color/ink"
-                android:textSize="16sp" />
-
-            <RadioButton
-                android:id="@+id/rbHudSerious"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:text="@string/hudhud_style_serious"
-                android:textAlignment="viewStart"
-                android:textColor="@color/ink"
-                android:textSize="16sp" />
-        </RadioGroup>
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slHudPace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/hudhud_pace"
+            android:stepSize="0.1"
+            android:valueFrom="0.6"
+            android:valueTo="1.5"
+            app:haloColor="@color/hairline"
+            app:thumbColor="@color/brand_green_text"
+            app:tickVisible="false"
+            app:trackColorActive="@color/brand_green_text"
+            app:trackColorInactive="@color/hairline" />
 
         <!-- Which of the phone's own voices. -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:text="@string/hudhud_voice_choice"
             android:textAlignment="viewStart"
             android:textColor="@color/ink"
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <RadioGroup
-            android:id="@+id/rgHudVoices"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgHudVoices"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="vertical" />
+            android:layout_marginTop="8dp"
+            app:selectionRequired="true"
+            app:singleSelection="true" />
 
         <TextView
             android:id="@+id/tvHudNoVoice"
@@ -184,44 +188,121 @@
             android:textSize="14sp"
             android:visibility="gone" />
 
-        <!-- How he says his own name (13 Nov 2026, the owner: "apna naam bhi sahi tarah nahi bolta"): the ways his
-             name can be written for the voice, each heard when chosen (HudhudSay.nameWays). -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/hudhud_name_say"
-            android:textAlignment="viewStart"
-            android:textColor="@color/ink"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/hudhud_name_say_help"
-            android:textAlignment="viewStart"
-            android:textColor="@color/text_muted"
-            android:textSize="14sp" />
-
-        <RadioGroup
-            android:id="@+id/rgHudNameWay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="vertical" />
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnHudMoreVoices"
             style="@style/BackupOutlineButton"
             android:layout_marginTop="10dp"
             android:text="@string/hudhud_voice_more" />
 
+        <!-- How he says his own name (13 Nov 2026, the owner: "apna naam bhi sahi tarah nahi bolta"): the ways his
+             name can be written for the voice, each heard when chosen (HudhudSay.nameWays). Shown once the phone has a
+             voice to hear them in, and only for a language that has more than one way. -->
+        <LinearLayout
+            android:id="@+id/llHudName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/hudhud_name_say"
+                android:textAlignment="viewStart"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/hudhud_name_say_help"
+                android:textAlignment="viewStart"
+                android:textColor="@color/text_muted"
+                android:textSize="14sp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgHudNameWay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:selectionRequired="true"
+                app:singleSelection="true" />
+        </LinearLayout>
+
+        <!-- How he says Alhamdulillah (14 Nov 2026, the owner: the phone's voice read it wrongly): shown only for a
+             language that has more than one way (HudhudPronounce.ways); each is heard in a sentence when chosen. -->
+        <LinearLayout
+            android:id="@+id/llHudPron"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/hudhud_pron_say"
+                android:textAlignment="viewStart"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/hudhud_pron_help"
+                android:textAlignment="viewStart"
+                android:textColor="@color/text_muted"
+                android:textSize="14sp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgHudPronWay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:selectionRequired="true"
+                app:singleSelection="true" />
+        </LinearLayout>
+
+        <!-- His little bird calls (14 Nov 2026): a trill before he speaks, a call when he starts listening, a bright
+             one before good news. On by themselves with the Cartoon style; the switch is the owner's last word. A tap
+             on a chip plays that call whether the switch is on or not. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/hudhud_chirps_title"
+            android:textAlignment="viewStart"
+            android:textColor="@color/ink"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/swHudChirps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:minHeight="48dp"
+            android:text="@string/hudhud_chirps_switch"
+            android:textAlignment="viewStart"
+            android:textColor="@color/ink"
+            android:textSize="14sp" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgHudCalls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnHudSample"
             style="@style/BackupPrimaryButton"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="18dp"
             android:text="@string/hudhud_voice_try"
             app:icon="@drawable/ic_volume_on" />
 
@@ -252,61 +333,102 @@
             android:layout_marginTop="10dp"
             android:visibility="gone" />
 
-        <!-- The owner's check of a test build (14 Nov 2026, HudhudCheck): right or wrong under every answer, the
-             counts here, the list shared or cleared. Off by default; kept on this phone only. -->
-        <TextView
+        <!-- The testing tools, folded away (14 Nov 2026): the owner's check of a test build (HudhudCheck) — right or
+             wrong under every answer, the counts, the list shared or cleared. Off by default; kept on this phone only. -->
+        <LinearLayout
+            android:id="@+id/rowHudTools"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
-            android:text="@string/hudhud_check_title"
-            android:textAlignment="viewStart"
-            android:textColor="@color/ink"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/swHudCheck"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
             android:minHeight="48dp"
-            android:text="@string/hudhud_check_switch"
-            android:textAlignment="viewStart"
-            android:textColor="@color/ink"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvHudCheckCount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:accessibilityLiveRegion="polite"
-            android:textAlignment="viewStart"
-            android:textColor="@color/text_muted"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnHudCheckShare"
-                style="@style/BackupOutlineButton"
+            <TextView
+                android:id="@+id/tvHudToolsTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/hudhud_check_share" />
+                android:text="@string/hudhud_tools_title"
+                android:textAlignment="viewStart"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnHudCheckClear"
-                style="@style/BackupOutlineButton"
-                android:layout_width="0dp"
+            <ImageView
+                android:id="@+id/ivHudToolsChevron"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="12dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_chevron_down"
+                android:tint="@color/ink" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llHudTools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:text="@string/hudhud_check_clear" />
+                android:layout_marginTop="6dp"
+                android:text="@string/hudhud_check_title"
+                android:textAlignment="viewStart"
+                android:textColor="@color/ink"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swHudCheck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:minHeight="48dp"
+                android:text="@string/hudhud_check_switch"
+                android:textAlignment="viewStart"
+                android:textColor="@color/ink"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvHudCheckCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:accessibilityLiveRegion="polite"
+                android:textAlignment="viewStart"
+                android:textColor="@color/text_muted"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnHudCheckShare"
+                    style="@style/BackupOutlineButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/hudhud_check_share" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnHudCheckClear"
+                    style="@style/BackupOutlineButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:text="@string/hudhud_check_clear" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
