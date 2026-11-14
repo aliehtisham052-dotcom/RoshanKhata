@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
@@ -12,6 +13,8 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.innovation313.roshankhata.data.BusinessProfile
+import com.innovation313.roshankhata.data.Hudhud
+import com.innovation313.roshankhata.data.HudhudBook
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.Party
@@ -268,6 +271,158 @@ class HudhudOnDeviceTest {
             var shown = true
             scenario.onActivity { a -> shown = a.findViewById<View>(R.id.hudhudGreeting).visibility == View.VISIBLE }
             assertFalse("the greeting came twice in one day", shown)
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------ the private note
+
+    /**
+     * Gives these made-up parties exactly these private notes and every other party none, so a test of the note reads the
+     * same on whatever book the run has built (other tests leave parties with notes behind). A party that is not in the
+     * book yet is made. Returns each name's id.
+     */
+    private fun onlyTheseNotes(vararg notes: Pair<String, String>): Map<String, Long> {
+        val dao = KhataDatabase.get(context).khataDao()
+        val ids = LinkedHashMap<String, Long>()
+        runBlocking {
+            for (id in dao.partyIdsWithNote()) dao.getParty(id)?.let { dao.updateParty(it.copy(note = null)) }
+            for ((name, note) in notes) {
+                val have = dao.partiesWithBalanceOnce().firstOrNull { it.name == name }
+                if (have == null) {
+                    ids[name] = dao.insertParty(Party(name = name, note = note))
+                } else {
+                    dao.getParty(have.id)?.let { dao.updateParty(it.copy(note = note)) }
+                    ids[name] = have.id
+                }
+            }
+        }
+        return ids
+    }
+
+    /**
+     * 14 Nov 2026 (the private note, the app's side): a customer's note asked for by name is told whole — his name over the
+     * note's own lines — and a long number in it is shown but never said (the voice says "it's on the screen"). Made-up
+     * names and numbers (lesson 80).
+     */
+    @Test
+    fun aCustomersPrivateNoteIsToldWholeAndItsNumberIsOnlyShown() {
+        val note = "Pays on the tenth of every month\nBrings his own bags\nWallet 0300 1234567"
+        val id = onlyTheseNotes("Mehrab Cloth House" to note).getValue("Mehrab Cloth House")
+
+        // The card as the sheet builds it, and what the voice would say of it.
+        val dao = KhataDatabase.get(context).khataDao()
+        val card = runBlocking {
+            HudhudBook.answer(context, dao, Hudhud.Ask.Person(listOf(id), Hudhud.Facet.NOTE), dao.partiesWithBalanceOnce())
+        }
+        assertEquals("Mehrab Cloth House", card.label)
+        assertEquals("the number is a secret of the note", listOf("0300 1234567"), card.secrets)
+        val said = HudhudBook.speech(context, card, hideMoney = false)?.text.orEmpty()
+        assertTrue("the first line of the note was not said: $said", said.contains("Pays on the tenth of every month"))
+        assertFalse("his number was said aloud: $said", said.contains("1234567"))
+        val onScreen = context.getString(R.string.hudhud_on_screen).trimEnd('.', '۔', '।', '!')
+        assertTrue("the number was not sent to the screen: $said", said.contains(onScreen))
+
+        // The sheet, asked by his name: the note's lines under his name, the number among them.
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            var label: TextView? = null
+            var lines: TextView? = null
+            var heading = ""
+            scenario.onActivity { a ->
+                heading = a.getString(R.string.party_note_label)
+                val sheet = HudhudSheet.open(a, ask = "Mehrab ka niji note dikhao", speak = false)
+                label = sheet?.findViewById(R.id.tvHudLabel)
+                lines = sheet?.findViewById(R.id.tvHudLines)
+            }
+            assertTrue(
+                "his note was not told, got: ${lines?.text}",
+                waitFor(5000) { lines?.text?.toString()?.contains("Brings his own bags") == true }
+            )
+            var title = ""
+            var all = ""
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                title = label?.text?.toString().orEmpty()
+                all = lines?.text?.toString().orEmpty()
+            }
+            assertEquals("Mehrab Cloth House", title)
+            assertTrue("the card does not begin with the note's name: $all", all.startsWith(heading))
+            for (line in note.split('\n')) assertTrue("a line of the note is missing ($line) in: $all", all.contains(line))
+        }
+    }
+
+    /**
+     * 14 Nov 2026: "kis kis ka note hai" with nobody named lists those who have one, each a tap that tells that one's note.
+     */
+    @Test
+    fun whoseNoteListsTheOnesWhoHaveOneAndATapTellsThatNote() {
+        onlyTheseNotes("Mehrab Cloth House" to "Pays on the tenth of every month", "Shamsa Bakers" to "Only cash, no credit")
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            var rows: LinearLayout? = null
+            var label: TextView? = null
+            var lines: TextView? = null
+            var heading = ""
+            var hint = ""
+            scenario.onActivity { a ->
+                heading = a.getString(R.string.hudhud_need_note)
+                hint = a.getString(R.string.hudhud_need_note_hint)
+                val sheet = HudhudSheet.open(a, ask = "kis kis ka note hai", speak = false)
+                rows = sheet?.findViewById(R.id.hudRows)
+                label = sheet?.findViewById(R.id.tvHudLabel)
+                lines = sheet?.findViewById(R.id.tvHudLines)
+            }
+            /** The names on the card's rows; read on the main thread only. */
+            fun names(): List<String> {
+                val list = rows ?: return emptyList()
+                return (0 until list.childCount).map { i -> list.getChildAt(i).findViewById<TextView>(R.id.tvHudRowName).text.toString() }
+            }
+            val listed = waitFor(5000) { names().toSet() == setOf("Mehrab Cloth House", "Shamsa Bakers") }
+            var got = emptyList<String>()
+            var title = ""
+            var all = ""
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                got = names()
+                title = label?.text?.toString().orEmpty()
+                all = lines?.text?.toString().orEmpty()
+            }
+            assertTrue("the two who have a note were not listed, got: $got", listed)
+            assertEquals("each is listed once", 2, got.size)
+            assertEquals(heading, title)
+            assertTrue("the hint to tap a name is missing: $all", all.contains(hint))
+
+            // A tap on a name tells that one's note, under his name.
+            scenario.onActivity {
+                val list = rows ?: return@onActivity
+                for (i in 0 until list.childCount) {
+                    val row = list.getChildAt(i)
+                    if (row.findViewById<TextView>(R.id.tvHudRowName).text.toString() == "Shamsa Bakers") row.performClick()
+                }
+            }
+            assertTrue(
+                "the tap did not tell his note, got: ${lines?.text}",
+                waitFor(5000) { lines?.text?.toString()?.contains("Only cash, no credit") == true }
+            )
+            var after = ""
+            InstrumentationRegistry.getInstrumentation().runOnMainSync { after = label?.text?.toString().orEmpty() }
+            assertEquals("Shamsa Bakers", after)
+        }
+    }
+
+    /** 14 Nov 2026: with no private note anywhere in the book he says where one is written, never "none" alone. */
+    @Test
+    fun whenNobodyHasANoteHeSaysWhereOneIsWritten() {
+        onlyTheseNotes()
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            var lines: TextView? = null
+            var expected = ""
+            scenario.onActivity { a ->
+                expected = a.getString(
+                    R.string.hudhud_note_nobody, a.getString(R.string.edit_details), a.getString(R.string.party_note_label)
+                )
+                lines = HudhudSheet.open(a, ask = "who has a note", speak = false)?.findViewById(R.id.tvHudLines)
+            }
+            assertTrue(
+                "no word of where a note is written, got: ${lines?.text}",
+                waitFor(5000) { lines?.text?.toString() == expected }
+            )
         }
     }
 }
