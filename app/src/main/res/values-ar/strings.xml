@@ -4722,6 +4722,12 @@
     <string name="hudhud_can_goods">سعر صنف ومخزونه وسعر شرائه، وأي مورّد أرخص</string>
     <string name="hudhud_can_book">فواتير اليوم، والبضائع الواردة، والمبالغ المحصّلة، ومن غيّر ماذا</string>
     <string name="hudhud_can_shop">بيانات متجرك، وتاريخ اليوم، وكم مرة استُخدم التطبيق والحاسبة</string>
+    <string name="hudhud_can_look">حجم النص والمظهر («كبّر الخط»، «الوضع الداكن»): أغيّره، والتراجع بنقرة واحدة</string>
+    <string name="hudhud_look_was">كان: %1$s</string>
+    <string name="hudhud_look_taken_back">تم التراجع.</string>
+    <string name="hudhud_look_already">هو مضبوط هكذا بالفعل.</string>
+    <string name="hudhud_look_largest">النص هو الأكبر بالفعل.</string>
+    <string name="hudhud_look_smallest">النص هو الأصغر بالفعل.</string>
     <string name="hudhud_chip_when_pays">متى سيدفع؟</string>
     <string name="hudhud_chip_who">ما اسمك؟</string>
     <string name="hudhud_chip_my_name">اسمي</string>

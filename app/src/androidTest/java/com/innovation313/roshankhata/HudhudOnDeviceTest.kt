@@ -19,6 +19,7 @@ import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.ShopCountry
+import com.innovation313.roshankhata.data.TextSize
 import com.innovation313.roshankhata.data.Trade
 import com.innovation313.roshankhata.data.get
 import com.innovation313.roshankhata.ui.CoachMarkController
@@ -28,6 +29,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,6 +53,12 @@ class HudhudOnDeviceTest {
         BusinessProfile.setCountry(context, ShopCountry.PAKISTAN)
         if (BusinessProfile.trade(context) == null) BusinessProfile.setTrade(context, Trade.KIRYANA)
         com.innovation313.roshankhata.ui.HudhudGreet.greeted(context)
+    }
+
+    /** This class changes the text size; the other tests of the process start from the normal one. */
+    @After
+    fun putTheTextSizeBack() {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync { TextSize.setLevel(context, TextSize.NORMAL) }
     }
 
     private fun home() = Intent(context, MainActivity::class.java).putExtra(MainActivity.EXTRA_UNLOCKED, true)
@@ -423,6 +431,48 @@ class HudhudOnDeviceTest {
                 "no word of where a note is written, got: ${lines?.text}",
                 waitFor(5000) { lines?.text?.toString() == expected }
             )
+        }
+    }
+
+    /** What the open sheet's card says, read on the main thread: its name, its figure, its lines and its button, as shown. */
+    private fun cardOfSheet(): String {
+        val sheet = HudhudSheet.current() ?: return ""
+        fun shown(id: Int) = sheet.findViewById<TextView>(id)?.takeIf { it.visibility == View.VISIBLE }?.text?.toString().orEmpty()
+        return card(shown(R.id.tvHudLabel), shown(R.id.tvHudFigure), shown(R.id.tvHudLines), shown(R.id.btnHudOpen))
+    }
+
+    private fun card(label: String, figure: String, lines: String, button: String) = "$label | $figure | $lines | $button"
+
+    /**
+     * 14 Nov 2026 (HudhudLookDoor): an order for the look is made, the screen is rebuilt (a text size is read when a screen
+     * is built) and the sheet comes back on the new screen with the card of the change and its Undo; the Undo puts the
+     * size back and the card says so, with no Undo of its own. Silent. The size is put back after the test.
+     */
+    @Test
+    fun aLookOrderRebuildsTheScreenAndTheSheetComesBackWithItsUndo() {
+        val instr = InstrumentationRegistry.getInstrumentation()
+        instr.runOnMainSync { TextSize.setLevel(context, TextSize.NORMAL) }
+        val name = context.getString(R.string.text_size)
+        val afterOrder = card(
+            name, context.getString(R.string.text_size_large),
+            context.getString(R.string.hudhud_look_was, context.getString(R.string.text_size_normal)),
+            context.getString(R.string.undo)
+        )
+        val afterUndo = card(name, context.getString(R.string.text_size_normal), context.getString(R.string.hudhud_look_taken_back), "")
+        ActivityScenario.launch<Activity>(home()).use { scenario ->
+            scenario.onActivity { a -> HudhudSheet.open(a, ask = "make the text bigger", speak = false) }
+
+            // The sheet that took the order goes with its screen; the new screen's sheet shows what was done.
+            var seen = ""
+            val done = waitFor(20_000) { seen = cardOfSheet(); seen == afterOrder }
+            assertTrue("the sheet did not come back with the card of the change.\nwanted: $afterOrder\nseen:   $seen", done)
+            assertEquals(TextSize.LARGE, TextSize.level(context))
+
+            // Undo: the size goes back, the screen is rebuilt again, and the card says it was taken back.
+            instr.runOnMainSync { HudhudSheet.current()?.findViewById<View>(R.id.btnHudOpen)?.performClick() }
+            val undone = waitFor(20_000) { seen = cardOfSheet(); seen == afterUndo }
+            assertTrue("the sheet did not come back with the card of the Undo.\nwanted: $afterUndo\nseen:   $seen", undone)
+            assertEquals(TextSize.NORMAL, TextSize.level(context))
         }
     }
 }

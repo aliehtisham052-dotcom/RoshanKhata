@@ -95,6 +95,12 @@ object HudhudSheet {
     /** Whether his sheet is open now (HudhudOnDeviceTest asks). */
     fun isOpen(): Boolean = shown?.get()?.isShowing == true
 
+    /**
+     * The sheet that is open now, or null. For HudhudOnDeviceTest: a sheet opened again after a rebuild of the screen
+     * ([HudhudLookDoor]) is opened by the app, not by the test, so the test cannot hold it from `open`'s answer.
+     */
+    internal fun current(): BottomSheetDialog? = shown?.get()?.takeIf { it.isShowing }
+
     /** Hudhud's poses: one drawing each, the same size and the same feet, so one can fade into the next. */
     private enum class Pose(val drawing: Int) {
         IDLE(R.drawable.hudhud_idle),
@@ -110,6 +116,8 @@ object HudhudSheet {
      * elsewhere), [listen] starts the microphone, [typing] puts the cursor in the box, [today] answers with today's
      * summary (the morning greeting on Home); [speak] false keeps him silent for this sheet (the screen proofs).
      * [intro]: opened from his face — he introduces himself aloud each time (13 Nov 2026, the owner).
+     * [reopen]: a change to the text size or the theme rebuilt the screen and took his sheet with it; this one opens on
+     * the new screen with the card of that change and its Undo ([HudhudLookDoor], 14 Nov 2026).
      */
     fun open(
         activity: Activity,
@@ -118,7 +126,8 @@ object HudhudSheet {
         typing: Boolean = false,
         speak: Boolean = true,
         today: Boolean = false,
-        intro: Boolean = false
+        intro: Boolean = false,
+        reopen: HudhudLookDoor.Reopen? = null
     ): BottomSheetDialog? {
         if (activity.isFinishing || activity.isDestroyed) return null
         val host = activity as? ComponentActivity ?: return null
@@ -136,7 +145,7 @@ object HudhudSheet {
         sheet.show()
         KeyboardFollow.dialog(sheet)
         shown = WeakReference(sheet)
-        ui.start(ask, listen, typing, today, intro)
+        ui.start(ask, listen, typing, today, intro, reopen)
         return sheet
     }
 
@@ -302,7 +311,7 @@ object HudhudSheet {
             get() = prefs.getBoolean(KEY_VOICE, true)
             set(value) { prefs.edit().putBoolean(KEY_VOICE, value).apply() }
 
-        fun start(ask: String?, listenNow: Boolean, typing: Boolean, today: Boolean, intro: Boolean) {
+        fun start(ask: String?, listenNow: Boolean, typing: Boolean, today: Boolean, intro: Boolean, reopen: HudhudLookDoor.Reopen?) {
             // He faces into the sheet: the drawings look right, so they are turned in right-to-left.
             if (view.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
                 poseA.scaleX = -1f
@@ -378,9 +387,9 @@ object HudhudSheet {
             // His voice wakes with the sheet when it is on, so the first answer is not kept waiting for it.
             if (speakAllowed && voiceOn) voice.warmUp()
             // He greets aloud once a day, the first time he is opened just to talk (not for a question already asked).
-            val greet = speakAllowed && voiceOn && ask == null && !listenNow && !today && HudhudPrefs.helloDue(ctx)
+            val greet = speakAllowed && voiceOn && ask == null && !listenNow && !today && reopen == null && HudhudPrefs.helloDue(ctx)
             if (greet) HudhudPrefs.helloSaid(ctx)
-            if (intro && ask == null && !listenNow && !today) {
+            if (intro && ask == null && !listenNow && !today && reopen == null) {
                 // Tapped on his face: who he is and to ask, aloud every time his voice is on; the greeting the day's first.
                 val card = HudhudBook.intro(ctx, greet)
                 helloCard = card
@@ -394,6 +403,8 @@ object HudhudSheet {
             }
             breathe()
             when {
+                // The screen was rebuilt by a change to the look: the card of that change, with its Undo.
+                reopen != null -> chip(reopen.heard, Hudhud.Ask.LookDone(reopen.made))
                 ask != null -> question(listOf(ask), spoken = false)
                 today -> chip(ctx.getString(R.string.hudhud_chip_today), Hudhud.Ask.Today)
                 listenNow -> listen()
@@ -701,6 +712,12 @@ object HudhudSheet {
                 view.removeCallbacks(later)
                 if (closed) return@launch
                 tvHeard.text = asked(result.heard, spoken)
+                // A change to the look (text size, theme) rebuilds this screen and takes this sheet with it: it is made
+                // through the door, and the new screen's sheet shows the card and its Undo (14 Nov 2026).
+                result.answer.look?.let { made ->
+                    applyLook(made, result.heard)
+                    return@launch
+                }
                 // "Bas", "chup", "khuda hafiz": the talk is over — he answers and does not listen again.
                 val stops = (result.ask as? Hudhud.Ask.Voice)?.change.let {
                     it == Hudhud.VoiceChange.QUIET || it == Hudhud.VoiceChange.OFF
@@ -714,7 +731,7 @@ object HudhudSheet {
                 val taken = (result.ask as? Hudhud.Ask.Guessed)?.ask ?: result.ask
                 if (!result.answer.reverent && taken != null && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown &&
                     taken !is Hudhud.Ask.NeedName && taken !is Hudhud.Ask.Voice && taken !is Hudhud.Ask.NeedGoods &&
-                    taken !is Hudhud.Ask.CallMe
+                    taken !is Hudhud.Ask.CallMe && taken !is Hudhud.Ask.Look && taken !is Hudhud.Ask.LookDone
                 ) {
                     before = taken
                 }
@@ -798,6 +815,19 @@ object HudhudSheet {
                 Hudhud.VoiceChange.ON -> { voiceOn = true; showVoiceSwitch(); if (speakAllowed) voice.warmUp() }
                 Hudhud.VoiceChange.AGAIN, Hudhud.VoiceChange.VOLUME -> {}
             }
+        }
+
+        /**
+         * A change to the text size or the theme, made through [HudhudLookDoor] (the one place that writes a setting).
+         * The sheet stops speaking and listening first: the screen under it is about to be rebuilt, and the sheet that
+         * opens on the new one says the card. [inPlace] is the card on this very sheet, for a change that rebuilds nothing.
+         */
+        private fun applyLook(made: HudhudLook.Made, heard: String) {
+            endConversation()
+            speakJob?.cancel()
+            voiceJob?.cancel()
+            voice.stop()
+            HudhudLookDoor.apply(host, made, heard, speakAllowed) { if (!closed) chip(heard, Hudhud.Ask.LookDone(made)) }
         }
 
         private fun show(a: HudhudBook.Answer, speak: Boolean) {
@@ -896,11 +926,14 @@ object HudhudSheet {
         }
 
         private fun showButtons(a: HudhudBook.Answer) {
-            val canOpen = a.open != null || a.openParty != null || a.doIt != null || a.voiceSettings || a.automations
+            val undo = a.lookUndo
+            val canOpen = a.open != null || a.openParty != null || a.doIt != null || a.voiceSettings || a.automations || undo != null
             btnOpen.visibility = if (canOpen) View.VISIBLE else View.GONE
-            (btnOpen as? TextView)?.setText(a.openLabel ?: R.string.vq_open)
+            (btnOpen as? TextView)?.setText(if (undo != null) R.string.undo else (a.openLabel ?: R.string.vq_open))
             btnOpen.setOnClickListener {
                 when {
+                    // The change just made, taken back: made through the same door, told as taken back on the new screen.
+                    undo != null -> applyLook(undo, ctx.getString(R.string.undo))
                     a.voiceSettings -> HudhudVoiceSheet.show(host)
                     a.automations -> AutomationsDialog.show(host)
                     a.doIt != null -> a.doIt.invoke()

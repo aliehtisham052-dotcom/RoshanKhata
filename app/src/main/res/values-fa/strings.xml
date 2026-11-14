@@ -4453,6 +4453,12 @@
     <string name="hudhud_can_goods">قیمت یک کالا، موجودی، نرخ خرید و اینکه کدام تأمین‌کننده ارزان‌تر است</string>
     <string name="hudhud_can_book">فاکتورهای امروز، کالای رسیده، پول دریافتی و اینکه چه کسی چه چیزی را تغییر داد</string>
     <string name="hudhud_can_shop">مشخصات مغازه‌تان، تاریخ امروز و اینکه برنامه و ماشین‌حساب چند بار به کار رفت</string>
+    <string name="hudhud_can_look">اندازهٔ متن و پوسته («متن را بزرگ‌تر کن»، «حالت تاریک»): من تغییر می‌دهم و با یک ضربه برمی‌گردانم</string>
+    <string name="hudhud_look_was">قبلاً: %1$s</string>
+    <string name="hudhud_look_taken_back">برگردانده شد.</string>
+    <string name="hudhud_look_already">همین حالا هم همین‌طور است.</string>
+    <string name="hudhud_look_largest">متن همین حالا بزرگ‌ترین اندازه را دارد.</string>
+    <string name="hudhud_look_smallest">متن همین حالا کوچک‌ترین اندازه را دارد.</string>
     <string name="hudhud_chip_when_pays">کی می‌پردازد؟</string>
     <string name="hudhud_chip_who">اسم شما چیست؟</string>
     <string name="hudhud_chip_my_name">اسم من</string>

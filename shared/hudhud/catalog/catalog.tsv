@@ -461,8 +461,8 @@ more	radar_title	group=data;target=RadarUi.settings	GAP	tier=OPEN;why=no answer 
 more	screen_privacy	group=security;target=ScreenPrivacyDialog.show	GAP	tier=NEVER;why=hides the screen in Recents: a safety switch, no help page yet
 more	share_app	group=help;target=shareApp	NOT-ASKED	tier=NEVER;why=sharing sends a message, and his files may never send (check_hudhud_readonly.py)
 more	shop_settings_row	group=shop;target=ShopSheet.show	GAP	tier=NEVER;why=opens the shop sheet (name, other shops, profile): SETTINGS, the owner only
-more	text_size	group=display;target=textSize	GAP	tier=LOOK;why=no answer yet: the text size is a look he may change with an Undo (wave 2)
-more	theme	group=display;target=theme	GAP	tier=LOOK;why=no answer yet: the theme is a look he may change with an Undo (wave 2)
+more	text_size	group=display;target=textSize	ANSWERED	tier=LOOK;ask=Look;why=at the owner's word he changes the text size one step or to a level, the card says what it was and has an Undo (HudhudLookDoor is the only writer)
+more	theme	group=display;target=theme	ANSWERED	tier=LOOK;ask=Look;why=at the owner's word he changes the theme (light, dark, as the phone), the card says what it was and has an Undo (HudhudLookDoor is the only writer)
 more	viewer_menu	group=data;target=ViewerActivity	GAP	tier=NEVER;why=a helper phone is made from a backup: owner only
 more	waris_title	group=data;target=WarisActivity	GAP	tier=NEVER;why=the heir's key is the owner's alone
 screen	AboutActivity	parent=MainActivity;gate=NONE	OPENED	by=HudhudFacts.about

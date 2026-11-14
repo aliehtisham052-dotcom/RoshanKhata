@@ -19,7 +19,7 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted; counted 8 Nov 2026): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 3,518 string lines (3,512 translatable keys checked by `scripts/check_strings.py`) and 75 plurals in
+- About 3,531 string lines (3,525 translatable keys checked by `scripts/check_strings.py`) and 75 plurals in
   values/strings.xml (counted 14 Nov 2026; earlier counts are in git) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
 - Room database, version 44 (44: book_seals, 5 Nov 2026; 43: a party's private note, a cashbook row's and a cheque's picture path, 4 Nov 2026; 42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
@@ -2833,18 +2833,106 @@ Each of these cost a build or a bug.
     name anywhere in Hudhud's code, with false hits. Every `READ` line is read by hand against the reader before it is
     written, and a column nobody has read is a `GAP`, never a guess.
 
-126. **A new test is broken on purpose once, one change at a time, even for a small feature (lesson 100 again).** The note's
+126. **A new test is broken on purpose once, one change at a time — as deep as the feature's importance number says
+    (lessons 100 and 127).** The note's
     code was changed 17 ways, one each on a private copy (a constant, a word list, a condition, a carried name); 15 failed a
     test at once, two survived the 41 — a name said by one of its words with a marker ("house ka niji note"), and the edge
     where nine digits all told make a number (eight are a day) — and each has its own test now. Run the variants in the background while something else is checked; one compile and run is about a minute with
-    Gradle's own compiler (lesson 93), so the whole pass costs a few minutes, not an afternoon.
+    Gradle's own compiler (lesson 93), so the whole pass costs a few minutes, not an afternoon. That depth is for a feature
+    graded 8-10 (lesson 127): the note was a small ask, about a 6, and the whole feature took three to four hours. A 4-7
+    feature breaks only the guards that decide what it refuses or who may see it, re-runs the survivors alone (lesson 129)
+    and stops; a 1-3 breaks nothing.
+127. **The importance number sets the depth; the work is always finished (the owner, 14 Nov 2026, said it twice).** The
+    private note was a small ask and took three to four hours, because it was given the depth of a money feature: misreading
+    guards in nine languages, a catalog check of 392 columns, screens and menus, 43 tests with 17 deliberate breakages, CI
+    waits of forty to fifty minutes. He asked why, when a supplier bill (products, batches, ingredients) is far bigger, and then
+    said I had not understood (lesson 132): the rule is not "be faster" and not "do less" — judge each function's importance,
+    work to it, finish it all, and do nothing twice. Before a phase say its number from 1 to 10 and the estimate. Ask: does it
+    touch money, stock or private data? does it change or delete something? is it used every day? is it the owner's own
+    priority? 8-10: deep research, class by class, every check, the guards broken one at a time (lesson 126). 4-7: a good
+    reader or screen, its gate and one or two tests. 1-3: the build and one test. The number sets how deep, never whether it
+    is done and never whether it is professional, and it comes from what the function does, not from its kind (a "setting"
+    can be a 3 or an 8). An estimate that is passed is said before going deeper. The calibration is under "Working with the
+    owner".
+128. **Look for what already exists before writing anything: a test, a check, a helper, a string, a list, a lesson.** The same
+    mistake has cost builds and bugs in different clothes — a DAO read with an existing read's name (73), a string key that was
+    already there (7), a second list of countries for a regional default (96), three notices for one cheque (119). On 14 Nov
+    2026 the owner made it a rule: no work done twice. Before starting, search the code and the tests, `git log --grep`, the
+    steps of `.github/workflows/strings.yml`, the Hudhud catalog and this file for what already answers the need, and extend
+    it or point to it. The plumbing is common — one local harness, one catalog, one gate — so a new feature gets no module of
+    its own for its tests. A lesson that turns out too broad or wrong is amended where it stands (126 said "even for a small
+    feature" until 127), not contradicted by a new one beside it.
+129. **A guard that another layer also enforces survives its own removal.** The look reader's guards (no figure, not too many
+    words, "?" asks, a size word in a theme sentence, "off" flips only what it names, an adjective with "set" is a level) were
+    each broken on a private copy: seven stayed alive through 47 tests, because HudhudMind, the sense or the caller's
+    `calling` check refused the same sentence anyway. Every test went in at `Hudhud.understand`, where the layers vote, so a
+    guard taken out changed no result. For each guard write one test where only that guard can refuse — the reader called
+    directly with `calling = { true }`, a sentence in no other layer's words (a figure, a sentence over the word limit, Arabic's
+    "؟") — then re-run only the survivors: six new tests killed all seven. A survivor is a missing class of sentence, not a
+    flaw in the mutation. A clause no caller can reach (`ruled is Ask.LookDone` in `decide`: the app makes that card and it
+    never passes through `understand`) is dead code: delete it, do not test it.
+130. **A command that changes a setting is decided by a pure function of the setting's current value, and every change can be
+    taken back.** "Bara karo" twice, "large" when it is already the largest, "dark mode" when it is already dark: the words
+    cannot say what an order means; the value and its edges do. `HudhudLook.read` turns words into a `Request` (Show, SizeTo,
+    SizeStep, ThemeTo) and does nothing; `HudhudLook.plan(request, current)` answers Change, Same, Limit or Show; a change
+    carries `Made(from, to)`, so Undo is `reversed()` (its card says it was taken back and offers no second Undo). What the
+    tests hold: a step word is one step and an absolute word a level, the two never mixed ("bara karo" in Roman Urdu, Hindi
+    and Urdu is a step, English "large" a level, an adjective beside "set" or "rakho" a level even with a doing word); the
+    setting's bare name with "mode" is an order and a "?" or a question word is a question; "off" flips only the theme it
+    names; two settings or two values in one sentence, a figure and a "how do I" are not read at all. One setting at a time,
+    never guessed. (The shared logic only; the phone's side is lesson 134's.)
+131. **A test run's verdict is the summary line, read from the whole output in a file.** The local harness (lessons 93, 112)
+    cut its output at sixty lines unless told otherwise; a full run of 23 classes is 456 lines and says "OK (324 tests)" only
+    on line 455, so a cut screen shows dots and no verdict — or hides a failure below the cut. It also compiles only the test
+    classes it is given: one not named is not run and not reported (HudhudWordsTest needs the Words stand-ins and has its own
+    runner). Send the output to a file with the limit raised, read `^OK`, `^Tests run` and `^FAILURES`, and check that the
+    classes that ran are the classes that exist. For a run of variants (mutations, deliberate breakages) read each variant's own
+    line in its results file before saying killed or survived, and say "pending" for one still running.
+132. **When the owner says "you did not understand", say his rule back in his own measure, with one number and one example
+    from his own work, and write it where the next session starts.** On 14 Nov 2026 (19:08) he asked why the private note took
+    three to four hours; I gave the reasons and then offered tiers by the kind of feature. At 19:15 he said again that I had
+    not understood: the rule is the function's importance, its grade, never its kind. I had turned his rule into my own measure
+    (types of feature, my list of checks). What he needed was one sentence in his words — "supplier bill = 10, text size = 4;
+    the work is finished either way, nothing is done twice" — and in the same hour it went into "Working with the owner" and
+    lesson 127. Answer a "why was it slow" in a few lines, say the rule back, then change how the work is done; do not defend
+    the old work and do not ask what he has already answered.
+133. **Run every step of the Strings workflow locally before the first push.** The Hudhud round of 14 Nov 2026 was pushed with
+    none of its steps run: the workflow failed at its second step (three thin lines read as light-at-night fills) and, because
+    a workflow stops at its first failing step, skipped the rest. Running the others by hand found two more — the send plane
+    missing from the icon-direction check's list of pointing shapes, and the computer's poster copies stale since an earlier
+    commit (9496dbc). One push shows one problem; running everything shows all three. The list is the steps of
+    `.github/workflows/strings.yml` (13 that day: strings, dark colours, dark pairs, PDF right-to-left, icon direction, icon
+    fit, the four generated-copy checks, the bank, read-only, the catalog): read the file, do not recall it, run all of them
+    in one go, and fix what fails in one commit. A generated copy is re-run whenever its source file is touched.
+134. **A change that rebuilds the screen takes the screen's open sheet with it: the new screen shows the answer, from a note kept
+    outside the old one.** Hudhud's look orders (the text size and the theme, 14 Nov 2026) end in the phone rebuilding the screen
+    his sheet is over — a text size is read when a screen is built, a theme that turns the screen from day to night is rebuilt by
+    AppCompat, and the manifest has no `configChanges` — and `DialogLife` dismisses a sheet with its screen, so a card shown by the
+    old sheet would be shown to nobody. `HudhudLookDoor` is the one place a look is written (`check_hudhud_readonly.py` refuses it
+    in every other file of his): it writes the setting, leaves a short note in memory (what changed, the words that asked for it,
+    whether that sheet may speak; ten seconds, never in the book, a backup or a sync) and asks for the rebuild; the new screen's
+    `BaseActivity.onResume` calls `HudhudLookDoor.resume`, which — when the screen is the same kind and the old one is gone —
+    opens his sheet again with the card and its Undo. A change that does not rebuild (a theme from "same as phone" to the one the
+    phone is in) is shown at once by the sheet that made it, and a rebuild that never came is shown after 1.5 s. The card says where
+    the phone stands now, never what the order said (`lookDone` reads the setting again); an Undo is the same door with the change
+    reversed, so a taken-back card offers no second Undo. A state a rebuilt screen must keep does not live in a field of the screen
+    (lessons 39, 89) — here it lives in the note.
+135. **A scripted edit of several files keeps each file's text under its own path, and is read back after it ran.** A helper that
+    decided which file an edit belonged to by comparing strings with `is` applied one of the four door edits, wrote the other
+    three into nothing and printed "ok" (14 Nov 2026); only a `grep` of the result showed it. Validate every anchor first
+    (lesson 9), key the texts by file name, and after the script look at the lines that must have changed.
 ---
 
 ## Working with the owner
 
 - **Reply in Roman Urdu** unless English is asked for.
 - **Confirmation first.** Present the plan, wait for approval, then build.
-  Push only after an explicit yes.
+  Push only after an explicit yes — the standing yes below is one.
+- **Standing yes (the owner, 14 Nov 2026: given at 09:57, kept at 19:08).**
+  Commit and push to `kmp-desktop-16` — never to `main` — and watch CI through
+  the check-run annotations, without asking each time. Still waiting for his
+  word: a push to `main`, a paid step, a stronger model, helper agents, a
+  deploy or an upload.
 - **Never hide facts**, good or bad. No false guarantees. Say plainly what was
   verified and what was not — in particular, code checked by reasoning is not
   code tested on a real device.
@@ -2853,6 +2941,16 @@ Each of these cost a build or a bug.
 - **Flag privacy concerns unprompted**, and Shariah concerns too — while
   noting you are not a mufti and pointing to a qualified scholar.
 - **Professional standard.** No rough or quick fixes.
+- **The importance number sets the depth** (14 Nov 2026, lessons 127, 128, 132).
+  Before a phase say its number, 1 to 10, and the estimate. A starting point,
+  the owner's to change: 10 = money, stock, backup and restore, security, the
+  supplier bill; 7-9 = documents, returns, sync, reports with figures; 4-6 =
+  readers, settings, reminders, new chips; 1-3 = words, colours, icons. 8-10
+  gets deep research, class by class, every check; 4-7 a good reader or
+  screen, its gate and one or two tests; 1-3 the build and one test. Every
+  grade keeps the professional standard: the number changes how much is
+  checked, never whether it works. The work is always finished, nothing is
+  done twice, and an estimate that is passed is said first.
 - Content and store copy are planned bilingually: Urdu for local trust,
   English for reach.
 
@@ -3727,13 +3825,14 @@ bank or `sense.bin` changed (lessons 106, 111, 116, 121).
   OPEN 31, CHILD 14, OPENED 6, INFRA 6, GAP 6 (DuplicateCustomers, Help, MeraKhata, PaymentVoice, Viewer, Waris: no how-to page
   yet). **Drift protection, not proof** (lesson 125). The private note is `READ` with `reader=HudhudFacts.person`,
   `also=HudhudFacts.notesList`.
-- **Settings, by tier** (the owner's yes, 14 Nov 15:02 and 15:26; **not built yet**): 🟢 LOOK — Hudhud may change at the owner's
+- **Settings, by tier** (the owner's yes, 14 Nov 15:02 and 15:26; the text size and the theme are built, see "Hudhud changes the look" at the end of this file): 🟢 LOOK — Hudhud may change at the owner's
   word, with Undo on the card: text size (four levels), theme (Light, Dark, System), his own voice and greeting switches;
   🟡 OPEN — he opens the screen and the owner taps: Automations, Payment Radar, Payment voice, Language, Mera Khata, Help,
   About; 🔴 NEVER — he only says where it is: App Lock, PINs, backup and restore, Waris, the helper phone, the shop's name, bank
   and currency, merging duplicates, erase all, share the app, screen privacy. Text size and theme rebuild the screen
-  (`MoreSheet.textSize` → `TextSize.setLevel` + `recreate()`; theme `ThemeMode`), so the Hudhud sheet must be opened again with
-  the card and its Undo after the rebuild, and a guard must show that no other Hudhud file writes a setting.
+  (`MoreSheet.textSize` → `TextSize.setLevel` + `recreate()`; theme `ThemeMode`), so the Hudhud sheet is opened again on the new
+  screen with the card and its Undo (`HudhudLookDoor`, lesson 134), and `check_hudhud_readonly.py` shows that no other Hudhud file
+  writes a setting. The other LOOK items (his own voice and greeting switches) were not part of that step.
 - **Measured here (shared plain Kotlin, Gradle's own compiler, lesson 93):** HudhudNoteTest 32, HudhudNoteWayTest 11 (the way
   test goes through `Hudhud.understand` with the shipped sense, in a book with customers whose names hold the word), and all
   271 Hudhud and voice tests of the shared module pass together — the figures did not move: held-out 1,066 of 1,170 (91%),
@@ -3745,3 +3844,57 @@ bank or `sense.bin` changed (lessons 106, 111, 116, 121).
   other choice lists (a phone number, a limit) still open the customer's page on a tap instead of asking again; the 167 `GAP`
   columns (deep record questions) and the six screens with no how-to page are the next waves; the owner's offer of a review
   pass by a stronger model before the final APK waits for his yes.
+
+
+### 14 Nov 2026: Hudhud changes the look — text size and theme, with Undo (phone; CI only — nothing tried on a real phone)
+
+Importance 4 of 10 (the owner's rule, lesson 127): a good reader, the one door, the card and its Undo, the gate and the tests that
+decide what is refused. The owner's tiers (15:02, 15:26): the LOOK items he may change at the owner's word, every change taken back
+with one tap; everything else he shows, opens or says where it is. Nothing in `HudhudMind`, the bank or `sense.bin` changed.
+
+- **The reader** (`HudhudLook`, shared, over `StrictWords`; lesson 121): an order is a `Request` — `Show`, `SizeTo(level)`,
+  `SizeStep(by)`, `ThemeTo(mode)` — and says nothing else; `HudhudLook.plan(request, current)` is a pure function of where the
+  setting stands now: `Change(made)`, `Same`, `Limit` (the largest or the smallest already) or `Show`. A `Made(setting, from, to)`
+  gives its own `reversed()`, which is the Undo (lesson 130). Read only when every word is the look's own or a little word that asks
+  nothing, at most 12 words, no figure: "make the text bigger" / "font bara karo" / "فونٹ بڑا کرو" are a **step** (Roman Urdu, Hindi and
+  Urdu "bara karo" always), English "large" a **level**, an adjective beside "set"/"rakho" a level; a bare "dark mode" changes the
+  theme, "off" flips only the theme it names; "size" alone shows the text size; a "?" or a question word shows instead of changing; two
+  settings or two values in one sentence, a "how do I", a refusal ("don't make it bigger") and an unknown word are not read. Accepted
+  edge: a customer named entirely of look words would be read as an order.
+- **The one door** (`ui/HudhudLookDoor`, lesson 134): writes `TextSize.setLevel` or `ThemeMode.set`, leaves the note, asks for the
+  rebuild; `BaseActivity.onResume` (when the book is not locked) calls `resume`, which reopens his sheet with `Reopen(made, heard,
+  speak)`; a sheet opened silent stays silent. `HudhudSheet.current()` (internal) lets the on-device test hold the reopened sheet.
+  Conversation mode ends at an order (the sheet is a new one after the rebuild); `before` never carries a look.
+- **The card** (`HudhudBook.lookDone`): the setting's own name, where it stands now, "Was: <old>" (or "Taken back."), and Undo in
+  the card's button; a `Same`/`Limit`/`Show` answer is told without any change. Strings (nine languages): hudhud_can_look,
+  hudhud_look_was, hudhud_look_taken_back, hudhud_look_already, hudhud_look_largest, hudhud_look_smallest. **Sindhi, Bengali and
+  Farsi wording is for a native read.**
+- **The guard** (`scripts/check_hudhud_readonly.py` rule 4): `TextSize.setLevel`, `ThemeMode.set` and `.recreate(` only in
+  `HudhudLookDoor.kt`; `ThemeMode.apply`, `AppCompatDelegate.set*` and `BusinessProfile.set*` in none of his files. Broken on purpose
+  once (6 hits), then clean. The catalog (`decisions.tsv`): `more text_size` and `more theme` are `ANSWERED ask=Look tier=LOOK`.
+- **Floors:** `HudhudOwnerSetTest.THOUSAND_FLOOR` is 722 (K0731 and K0735 now accept `|Look`; measured 724); the short lists stay 142.
+- **Tests:** HudhudLookTest (37) and HudhudLookWayTest (16) in :shared; HudhudWordsTest holds the look chips and the two examples of
+  the abilities card in all nine languages; `HudhudLookConstantsTest` (app) holds the reader's numbers equal to TextSize's and
+  ThemeMode's; `HudhudOnDeviceTest.aLookOrderRebuildsTheScreenAndTheSheetComesBackWithItsUndo` (order, rebuild, card, Undo, card) — **it
+  measures how ActivityScenario behaves after an app-made `recreate()`, which was not known beforehand.**
+- **Measured here (plain shared Kotlin, Gradle's own compiler, lesson 93):** 324 tests in 23 Hudhud and voice classes pass,
+  HudhudWordsTest 9 of 9, all 13 steps of the Strings workflow pass locally, the sense and the owner's lists keep their floors (the sense was not touched). **Not compiled or run here:**
+  every file in `app/` (the door, `HudhudBook`'s look code, the sheet's edits, the `BaseActivity` hook, the on-device test) — CI is its
+  first build.
+
+### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
+
+- **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the
+  two checkers of the audit list (every DAO write against its gate and its audit row; every column against backup, sync and the helper
+  copy — a count-only dry run first, and first find which checks already exist); one shared asker for the nine runtime-permission
+  flows; a distinct icon for the Sales report tile; whether cashier-visible sums should be loosened; whether every choice list should
+  ask again.
+- **Next waves after the step-0 report:** how-to pages for the six screens with none (DuplicateCustomers, Help, MeraKhata,
+  PaymentVoice, Viewer, Waris); the 167 `GAP` columns class by class, by the importance number; then the older list (card animation
+  fixes and a GIF on send, news when money arrives, two Hudhuds meeting on pairing, Hudhud in Live Khata and Mera Khata, free premium
+  voices, the 3D poster on his "Haan", eye contact — needs a front-facing pose that is not drawn).
+- **His to give:** the first public day on Google Play (17 or 19 Sep, the records disagree); the error screenshot of the kmp-test APK
+  that "did not install"; the two missing question lists (2101–3100, 6101–7100) and the last one.
+- **To say plainly at the end of the round:** the Sindhi, Bengali and Farsi wording, and the faith and story texts (a qualified Hanafi
+  scholar — not a mufti's work here), are not native or scholar reads yet; nothing was tried on a real phone; the final APK is one,
+  after every fix.

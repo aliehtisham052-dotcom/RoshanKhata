@@ -111,6 +111,59 @@ class HudhudWordsTest {
     }
 
     /**
+     * 14 Nov 2026 (the look settings): the chips Hudhud offers after a look answer are "<text size> <the size>" and
+     * "<theme> <the mode>", put together from the app's own words — the very words More shows. Each is understood as
+     * that very change, in all nine languages, so a translation changed later into words the reader does not take fails
+     * here and not on a shop's phone. (A chip carries its setting's name, so it stands alone: a look answer is never
+     * carried on as "before".)
+     */
+    @Test fun `the look chips are understood as the change they name, in all nine languages`() {
+        val sizes = listOf(
+            "text_size_small" to HudhudLook.SIZE_SMALL, "text_size_normal" to HudhudLook.SIZE_NORMAL,
+            "text_size_large" to HudhudLook.SIZE_LARGE, "text_size_largest" to HudhudLook.SIZE_LARGEST
+        )
+        val modes = listOf(
+            "theme_light" to HudhudLook.THEME_LIGHT, "theme_dark" to HudhudLook.THEME_DARK, "theme_system" to HudhudLook.THEME_SYSTEM
+        )
+        val wrong = ArrayList<String>()
+        for (tag in languages) {
+            val words = desktopWords(Locale.forLanguageTag(tag))
+            for ((name, level) in sizes) {
+                val label = words.text("text_size") + " " + words.text(name)
+                val got = Hudhud.understand(label, book, emptyList(), tag, goods, null)
+                if (got != Hudhud.Ask.Look(HudhudLook.Request.SizeTo(level))) wrong += "$tag $name \"$label\" -> $got"
+            }
+            for ((name, mode) in modes) {
+                val label = words.text("theme") + " " + words.text(name)
+                val got = Hudhud.understand(label, book, emptyList(), tag, goods, null)
+                if (got != Hudhud.Ask.Look(HudhudLook.Request.ThemeTo(mode))) wrong += "$tag $name \"$label\" -> $got"
+            }
+        }
+        assertEquals(wrong.joinToString("\n"), 0, wrong.size)
+    }
+
+    /**
+     * 14 Nov 2026: what the abilities card says he can do about the look is something he does. The card (hudhud_can_look)
+     * gives two orders as examples in each of the nine languages, in quotation marks; each, said as written, must be read
+     * as the change it promises: the first makes the text bigger by a step, the second turns the theme dark. A translation
+     * changed later into words the reader does not take fails here, not in a shop's hands.
+     */
+    @Test fun `the examples the abilities card gives for the look are orders he reads, in all nine languages`() {
+        val quoted = Regex("[\u201C\u00AB]([^\u201D\u00BB]+)[\u201D\u00BB]")
+        val wrong = ArrayList<String>()
+        for (tag in languages) {
+            val line = desktopWords(Locale.forLanguageTag(tag)).text("hudhud_can_look")
+            val examples = quoted.findAll(line).map { it.groupValues[1] }.toList()
+            if (examples.size != 2) { wrong += "$tag: ${examples.size} quoted examples in \"$line\""; continue }
+            val bigger = Hudhud.understand(examples[0], book, emptyList(), tag, goods, null)
+            val dark = Hudhud.understand(examples[1], book, emptyList(), tag, goods, null)
+            if (bigger != Hudhud.Ask.Look(HudhudLook.Request.SizeStep(1))) wrong += "$tag \"${examples[0]}\" -> $bigger"
+            if (dark != Hudhud.Ask.Look(HudhudLook.Request.ThemeTo(HudhudLook.THEME_DARK))) wrong += "$tag \"${examples[1]}\" -> $dark"
+        }
+        assertEquals(wrong.joinToString("\n"), 0, wrong.size)
+    }
+
+    /**
      * 14 Nov 2026: the faith chips and the history chips, in all nine languages. They are read by Hudhud's two strict
      * readers (HudhudFaith, HudhudStory), so a chip changed later into words a reader does not take fails here.
      * The faith chips live in the Personal tab only, but a person may type them in the Ask tab too.

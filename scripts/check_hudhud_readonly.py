@@ -7,6 +7,13 @@ own tap, on the screen that already has its checks (PIN gates, "are you sure",
 the form's own validation). Hudhud never writes a row, never sends a message
 and never changes a setting of the book on his own.
 
+The one exception the owner approved (14 Nov 2026, tier LOOK): at the owner's
+own word he may change how the app LOOKS - the text size and the theme - and
+every change carries its Undo. That is one door, ui/HudhudLookDoor.kt, and
+rule 4 below keeps every other setting out of his hands: language, the shop's
+profile, Automations, Payment Radar and the rest are opened for the owner,
+never changed by him.
+
 What is enforced, in every Kotlin file whose name starts with "Hudhud" (the
 phone's and the shared module's), comments and strings left out:
 
@@ -20,6 +27,10 @@ phone's and the shared module's), comments and strings left out:
      app's own, startActivity of ACTION_SEND / ACTION_SENDTO / wa.me /
      whatsapp: links, and no direct HTTP (HttpURLConnection, OkHttp): the
      voice and the book never leave the phone through him.
+  4. No change to a setting of the app: TextSize.setLevel, ThemeMode.set and
+     a screen's recreate() only inside HudhudLookDoor.kt; ThemeMode.apply,
+     AppCompatDelegate's setters (theme, language) and BusinessProfile's
+     setters nowhere.
 
 A real exception is written down below, by file, with its reason, and is read
 in review: it is never a way to let him save. Run from the repository root:
@@ -39,6 +50,19 @@ ALLOWED = {
     ("HudhudCheck.kt", "sending something to another app"):
         "More -> Hudhud's voice -> Share: the owner's own tap, through the share sheet",
 }
+
+# The one file that may change the look (text size, theme) and rebuild the screen it changed.
+SETTINGS_DOOR = "HudhudLookDoor.kt"
+
+# Settings of the app Hudhud may not write: (pattern, what it is, the file that may, if any).
+SETTING_WRITERS = [
+    (r"\bTextSize\.setLevel\s*\(", "changing the text size", SETTINGS_DOOR),
+    (r"\bThemeMode\.set\s*\(", "changing the theme", SETTINGS_DOOR),
+    (r"\.recreate\s*\(", "rebuilding a screen", SETTINGS_DOOR),
+    (r"\bThemeMode\.apply\s*\(", "changing the theme", None),
+    (r"\bAppCompatDelegate\.set\w+\s*\(", "changing the theme or the language", None),
+    (r"\bBusinessProfile\.set\w+\s*\(", "changing the shop's profile", None),
+]
 
 # Names that are the DAO's and also a maths function's: a call on one of these receivers is the maths.
 MATH_RECEIVERS = ("StrictMath.", "Math.", "kotlin.math.")
@@ -148,6 +172,12 @@ def main():
             for no, line in enumerate(lines, 1):
                 if re.search(pat, line) and (path.name, why) not in ALLOWED:
                     problems.append(f"{rel}:{no}: {why}")
+        for pat, why, door in SETTING_WRITERS:
+            if path.name == door:
+                continue
+            for no, line in enumerate(lines, 1):
+                if re.search(pat, line):
+                    problems.append(f"{rel}:{no}: {why} (only {door or 'the owner'} may)" if door else f"{rel}:{no}: {why}")
     if problems:
         print("Hudhud may only read. These lines write, send or reach out:")
         for p in problems:
@@ -155,7 +185,10 @@ def main():
         print("\nHe brings the answer and opens the screen; the owner's own tap saves. "
               "See scripts/check_hudhud_readonly.py.")
         sys.exit(1)
-    print(f"{len(files)} Hudhud files checked against {len(writes)} DAO writes: none writes, sends or reaches out")
+    if not any(f.name == SETTINGS_DOOR for f in files):
+        sys.exit(f"{SETTINGS_DOOR} not found: the one door for the look moved, update this check")
+    print(f"{len(files)} Hudhud files checked against {len(writes)} DAO writes: none writes, sends or reaches out; "
+          f"only {SETTINGS_DOOR} changes the look")
 
 
 if __name__ == "__main__":

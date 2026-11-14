@@ -48,6 +48,11 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
 - **Two counts of the same thing must be one rule.** Home said 4 while the bell said 3, because one counted the
   late payers' row and the other did not.
 - **Names sort by their first letter,** past any bracket, mark or emoji written before it.
+- **A command that changes a setting is decided from the setting's current value, and can be taken back.** Words
+  alone cannot say what "bigger" means at the largest size, or "dark" when it is already dark. Read the words
+  into a request that does nothing, decide in a pure function of (request, current value) — change, already so,
+  at the edge, or only show — and keep (from, to) so Undo is the same change reversed. A step word and a level
+  word are different orders; a sentence with two settings or two values is not read at all.
 
 ## Notifications and background work
 
@@ -107,6 +112,31 @@ running list is in CLAUDE.md ("Conventions, learned the hard way"); this file is
 - Look at the proof pictures after any change to a screen. Passing tests have shown blank screens.
 - Verify every audit finding in the code before fixing it, and research platform behaviour in the official
   documentation before deciding. Write down what was not tested on a real device.
+- **Read the verdict, not the screen.** A local test run that cuts its output prints dots and no verdict: send the
+  whole output to a file, read its summary line, and check that the test classes that ran are the ones that
+  exist (a class not named in the command is silently not run). For a run of variants, read each variant's own
+  line before saying "killed" or "survived".
+- **A guard that another layer also enforces survives being broken.** Break each guard of a new piece of logic on
+  a copy to see a test fail: the guards some other layer would catch anyway stay alive. Write one test where only
+  that guard can refuse (call the piece directly), then re-run only the survivors. A survivor is a missing class
+  of input; a clause nothing can reach is dead code — delete it.
+- **Run every step of the first CI workflow on your own machine before the first push.** A workflow stops at its
+  first failing step and skips the rest, so one push shows one problem; running the steps by hand showed three
+  at once. Read the workflow file for the list instead of recalling it.
+
+## How to work
+
+- **Grade the work from 1 to 10 before you do it, and let the number set the depth.** Money, stock, security,
+  backups and anything that deletes get everything: research, class by class, every check, tests broken on
+  purpose. A reader or a settings screen gets a good implementation, its gate and a test or two; words and
+  colours get a build and one test. The work is always finished and always professional; the number says how
+  much is checked. A small feature given a big one's depth took four hours.
+- **Look for what already exists before writing anything** — a test, a check, a helper, a string, a list, a
+  lesson. Extend it; amend the lesson that was too broad where it stands instead of adding one beside it that
+  says the opposite.
+- **When the person you build for says you did not understand, say their rule back in their measure** — one
+  number, one example from their own work — and write it where the next session starts, the same hour. Do not
+  defend the old work.
 
 ## Animations
 

@@ -4638,6 +4638,12 @@
     <string name="hudhud_can_goods">An item\'s price, stock, purchase rate and which supplier is cheaper</string>
     <string name="hudhud_can_book">Today\'s invoices, goods that came in, money that came in, and who changed what</string>
     <string name="hudhud_can_shop">Your shop\'s details, today\'s date, and how often the app and calculator were used</string>
+    <string name="hudhud_can_look">Text size and theme (“make the text bigger”, “dark mode”): I change it, and Undo is one tap away</string>
+    <string name="hudhud_look_was">Was: %1$s</string>
+    <string name="hudhud_look_taken_back">Taken back.</string>
+    <string name="hudhud_look_already">It is already set this way.</string>
+    <string name="hudhud_look_largest">The text is already the largest.</string>
+    <string name="hudhud_look_smallest">The text is already the smallest.</string>
     <string name="hudhud_chip_when_pays">When will he pay?</string>
     <string name="hudhud_chip_who">Your name?</string>
     <string name="hudhud_chip_my_name">My name</string>

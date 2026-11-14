@@ -4453,6 +4453,12 @@
     <string name="hudhud_can_goods">ڪنهن شيءِ جي قيمت، اسٽاڪ، خريد ريٽ ۽ ڪهڙي سپلائر جو سستو آهي</string>
     <string name="hudhud_can_book">اڄ جون انوائسون، آيل مال، آيل رقم، ۽ ڪنهن ڇا بدلايو</string>
     <string name="hudhud_can_shop">توهان جي دڪان جي تفصيل، اڄ جي تاريخ، ۽ ايپ ۽ ڪئلڪوليٽر ڪيترا ڀيرا استعمال ٿيا</string>
+    <string name="hudhud_can_look">لکت جي ماپ ۽ ٿيم (“فونٽ وڏو ڪر”، “ڊارڪ موڊ”): مان بدلائي ڏيان ٿو، ۽ هڪ ٽيپ سان واپس به آڻي ڏيان ٿو</string>
+    <string name="hudhud_look_was">اڳ: %1$s</string>
+    <string name="hudhud_look_taken_back">واپس ڪيو ويو.</string>
+    <string name="hudhud_look_already">اهو اڳ ۾ ئي اهڙي طرح آهي.</string>
+    <string name="hudhud_look_largest">لکت اڳ ۾ ئي سڀ کان وڏي آهي.</string>
+    <string name="hudhud_look_smallest">لکت اڳ ۾ ئي سڀ کان ننڍي آهي.</string>
     <string name="hudhud_chip_when_pays">ڪڏهن ڏيندو؟</string>
     <string name="hudhud_chip_who">توهان جو نالو؟</string>
     <string name="hudhud_chip_my_name">منهنجو نالو</string>

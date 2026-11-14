@@ -159,6 +159,21 @@ object Hudhud {
         data class CallMe(val name: String) : Ask()
 
         /**
+         * How the app looks, said to him (14 Nov 2026, the owner's yes to the settings tiers): the text size or the theme
+         * ("text size large karo", "dark mode", "font bara karo", "theme badlo"). [request] is what the sentence asks; the
+         * app's side reads where the setting stands, changes it at the owner's word with an Undo on the card, or only says
+         * where it stands and offers the choices. Said by the rules alone, never the sense's. A data class, so a choice
+         * offered under a card (which carries one) is read back as itself.
+         */
+        data class Look(val request: HudhudLook.Request) : Ask()
+
+        /**
+         * A look change that was made — or taken back — shown on its card after the screen was rebuilt for it: [made] says the
+         * two values. Carried by the app (the card's Undo, the sheet opened again), never read from a sentence.
+         */
+        data class LookDone(val made: HudhudLook.Made) : Ask()
+
+        /**
          * What he took a sentence to mean when nothing fitted it exactly (13 Nov 2026, the owner: "aap ka kaam batana
          * hai, poochhna nahi"): [ask] is answered, and the card says what he took it as, so a wrong guess is seen.
          */
@@ -478,7 +493,7 @@ object Hudhud {
         // A feature named by its own word (14 Nov 2026), and the asks only the rules make: never turned by the sense.
         if (ruled is Ask.Help && featureNamed(heard)) return ruled
         if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods ||
-            ruled is Ask.CallMe
+            ruled is Ask.CallMe || ruled is Ask.Look
         ) {
             return ruled
         }
@@ -677,7 +692,7 @@ object Hudhud {
             Move.JUMP -> "act_jump"
         }
         Ask.Unknown, is Ask.DidYouMean, is Ask.NeedName, is Ask.Guessed, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
-        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe -> null
+        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone -> null
     }
 
     /**
@@ -809,6 +824,9 @@ object Hudhud {
         // "My name is …", "call me …", "mera naam … hai", "mujhe … bulao" (14 Nov 2026): the owner tells him the name to be
         // called by. Taken before any name or concept — "mera naam Ali hai" opens no customer called Ali.
         callMeName(heard)?.let { return Ask.CallMe(it) }
+        // The text size or the theme (14 Nov 2026, the tiers the owner approved): "font bara karo", "dark mode", "theme badlo".
+        // A strict reader like the note's — a sentence with any word it does not know is read as before.
+        HudhudLook.read(heard) { it in VOCATIVE_SET }?.let { return Ask.Look(it) }
         talk(said, whole = true)?.let { return it }
         // Only a calling and nothing asked (13 Nov 2026, the owner: "bhai jaan" opened a customer called "...Bhai"):
         // he answers to being called — "ji, haazir hoon" — and looks for nobody.

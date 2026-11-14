@@ -126,7 +126,15 @@ object HudhudBook {
          * sheet shows it in its Personal tab, without the bird's call before it or the glad hop after it, and without any
          * chip of its own to lead to more.
          */
-        val reverent: Boolean = false
+        val reverent: Boolean = false,
+        /**
+         * A change to the look he is asked to make (14 Nov 2026, text size or theme): the card is not shown. The sheet
+         * hands the change to [com.innovation313.roshankhata.ui.HudhudLookDoor], which makes it and rebuilds the screen,
+         * and the new screen's sheet shows the card of [Ask.LookDone] with its Undo.
+         */
+        val look: HudhudLook.Made? = null,
+        /** The change that takes back the one just made: the card's button says Undo and makes it. */
+        val lookUndo: HudhudLook.Made? = null
     )
 
     /** A help page Hudhud can point to: a question from Help, or a feature's first-open sheet. */
@@ -290,6 +298,8 @@ object HudhudBook {
             Hudhud.Ask.Automations -> HudhudFacts.automations(context)
             is Hudhud.Ask.NeedGoods -> HudhudFacts.needGoods(context, dao, ask.facet)
             is Hudhud.Ask.CallMe -> callMe(context, ask.name)
+            is Hudhud.Ask.Look -> look(context, ask.request)
+            is Hudhud.Ask.LookDone -> lookDone(context, ask.made)
             // Tell, never ask (13 Nov 2026): a guess is answered, with what it was taken as over the card; "did you
             // mean" answers its first meaning the same way and offers the others as chips.
             is Hudhud.Ask.Guessed -> guessed(context, dao, ask.ask, parties, emptyList())
@@ -323,6 +333,71 @@ object HudhudBook {
             quiet = true,
             options = others,
             ask = ask
+        )
+    }
+
+    // ------------------------------------------------------------------------------------------ the look
+
+    /** Where a look setting stands now: the text size's level or the theme's mode (reading only). */
+    private fun lookValue(context: Context, setting: HudhudLook.Setting): Int = when (setting) {
+        HudhudLook.Setting.SIZE -> TextSize.level(context)
+        HudhudLook.Setting.THEME -> ThemeMode.get(context)
+    }
+
+    /** The setting's own name, as the More list writes it. */
+    private fun lookName(setting: HudhudLook.Setting): Int =
+        if (setting == HudhudLook.Setting.SIZE) R.string.text_size else R.string.theme
+
+    /** One value's own word, as the More list writes it (the numbers are held equal to TextSize's and ThemeMode's). */
+    private fun lookWord(setting: HudhudLook.Setting, value: Int): Int = when (setting) {
+        HudhudLook.Setting.SIZE -> when (value) {
+            HudhudLook.SIZE_SMALL -> R.string.text_size_small
+            HudhudLook.SIZE_NORMAL -> R.string.text_size_normal
+            HudhudLook.SIZE_LARGE -> R.string.text_size_large
+            else -> R.string.text_size_largest
+        }
+        HudhudLook.Setting.THEME -> when (value) {
+            HudhudLook.THEME_LIGHT -> R.string.theme_light
+            HudhudLook.THEME_DARK -> R.string.theme_dark
+            else -> R.string.theme_system
+        }
+    }
+
+    /** What an order for the look comes to, by where the setting stands: a change is handed to the sheet, the rest are told. */
+    private fun look(context: Context, request: HudhudLook.Request): Answer {
+        val setting = request.setting
+        val name = context.getString(lookName(setting))
+        return when (val plan = HudhudLook.plan(request, lookValue(context, setting))) {
+            // Not shown here: the screen is rebuilt by it, and the new screen's sheet shows the card (lookDone).
+            is HudhudLook.Plan.Change -> Answer(Mood.CALM, label = name, look = plan.made, quiet = true)
+            is HudhudLook.Plan.Same -> Answer(
+                Mood.CALM, label = name, figure = context.getString(lookWord(setting, plan.value)),
+                lines = listOf(context.getString(R.string.hudhud_look_already))
+            )
+            is HudhudLook.Plan.Limit -> Answer(
+                Mood.CALM, label = name, figure = context.getString(lookWord(setting, plan.value)),
+                lines = listOf(context.getString(if (plan.bigger) R.string.hudhud_look_largest else R.string.hudhud_look_smallest))
+            )
+            is HudhudLook.Plan.Show -> Answer(Mood.CALM, label = name, figure = context.getString(lookWord(setting, plan.value)))
+        }
+    }
+
+    /**
+     * The card of a change that was made, shown by the sheet the rebuilt screen opens (or by the one that made it, when the
+     * screen did not rebuild): what it is now, what it was, and an Undo — unless this is the Undo, which is told as taken back.
+     */
+    private fun lookDone(context: Context, made: HudhudLook.Made): Answer {
+        val setting = made.setting
+        return Answer(
+            Mood.CALM,
+            label = context.getString(lookName(setting)),
+            // What the phone says now, not what the order said: the card never claims a value the phone is not at.
+            figure = context.getString(lookWord(setting, lookValue(context, setting))),
+            lines = listOf(
+                if (made.undone) context.getString(R.string.hudhud_look_taken_back)
+                else context.getString(R.string.hudhud_look_was, context.getString(lookWord(setting, made.from)))
+            ),
+            lookUndo = if (made.undone) null else made.reversed()
         )
     }
 
@@ -380,6 +455,7 @@ object HudhudBook {
         lines += "\u2022 " + context.getString(R.string.hudhud_can_goods)
         if (reports) lines += "\u2022 " + context.getString(R.string.hudhud_can_book)
         lines += "\u2022 " + context.getString(R.string.hudhud_can_shop)
+        lines += "\u2022 " + context.getString(R.string.hudhud_can_look)
         lines += "\u2022 " + context.getString(R.string.hudhud_can_more)
         lines += "\u2022 " + context.getString(R.string.hudhud_can_chat)
         return Answer(Mood.GOOD, lines = lines)
@@ -1018,8 +1094,23 @@ object HudhudBook {
         is Hudhud.Ask.TopGoods -> c.getString(R.string.hudhud_t_top_goods)
         Hudhud.Ask.Qarz -> c.getString(R.string.hudhud_t_qarz)
         Hudhud.Ask.Automations -> c.getString(R.string.auto_title)
+        // A value of the look as a chip: "Text size Large", "Theme Dark" (the others, a step and "show", have none).
+        is Hudhud.Ask.Look -> when (val r = ask.request) {
+            is HudhudLook.Request.SizeTo -> lookChip(c, r.setting, r.level)
+            is HudhudLook.Request.ThemeTo -> lookChip(c, r.setting, r.mode)
+            else -> null
+        }
         else -> null
     }
+
+    private fun lookChip(c: Context, setting: HudhudLook.Setting, value: Int): String =
+        c.getString(lookName(setting)) + " " + c.getString(lookWord(setting, value))
+
+    /** The look's other values as questions, one tap each: asked after a card about the setting. */
+    private fun lookChips(c: Context, setting: HudhudLook.Setting): List<Hudhud.Ask> =
+        HudhudLook.others(setting, lookValue(c, setting)).map {
+            Hudhud.Ask.Look(if (setting == HudhudLook.Setting.SIZE) HudhudLook.Request.SizeTo(it) else HudhudLook.Request.ThemeTo(it))
+        }
 
     /**
      * The Personal tab's questions (14 Nov 2026, the owner: "personal tab ho, highlight na ho; personal cheezein personal hi
@@ -1135,6 +1226,8 @@ object HudhudBook {
             is Hudhud.Ask.NeedName -> listOf(Hudhud.Ask.Count(Hudhud.Thing.CUSTOMERS), Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST))
             is Hudhud.Ask.Act -> listOf(Hudhud.Ask.Abilities, Hudhud.Ask.Today)
             is Hudhud.Ask.Guessed -> return next(c, ask.ask)
+            is Hudhud.Ask.Look -> lookChips(c, ask.request.setting)
+            is Hudhud.Ask.LookDone -> lookChips(c, ask.made.setting)
             else -> emptyList()
         }
         val owner = HudhudGate.staff()

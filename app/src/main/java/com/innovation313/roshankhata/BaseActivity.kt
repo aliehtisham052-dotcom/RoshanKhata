@@ -140,7 +140,12 @@ abstract class BaseActivity : AppCompatActivity() {
         // sheet (21 Oct 2026). The doors before the book are left alone.
         // A manager's or the owner's session idle too long has ended first (22 Oct 2026, the review).
         com.innovation313.roshankhata.data.Access.expireIfIdle()
-        if (javaClass.simpleName !in BEFORE_THE_BOOK) com.innovation313.roshankhata.ui.AccessUi.lockGate(this)
+        if (javaClass.simpleName !in BEFORE_THE_BOOK) {
+            com.innovation313.roshankhata.ui.AccessUi.lockGate(this)
+            // A look Hudhud changed rebuilt this screen and took his sheet with it: the sheet comes back on this one with
+            // the card and its Undo — unless a sign-in is waiting first (14 Nov 2026, HudhudLookDoor).
+            if (!com.innovation313.roshankhata.data.Access.locked) com.innovation313.roshankhata.ui.HudhudLookDoor.resume(this)
+        }
     }
 
     /**

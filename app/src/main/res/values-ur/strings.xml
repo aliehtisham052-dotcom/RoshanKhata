@@ -4425,6 +4425,12 @@
     <string name="hudhud_can_goods">کسی آئٹم کی قیمت، اسٹاک، خرید ریٹ اور کس سپلائر کا سستا ہے</string>
     <string name="hudhud_can_book">آج کی انوائسیں، آیا ہوا مال، آئی ہوئی رقم، اور کس نے کیا بدلا</string>
     <string name="hudhud_can_shop">آپ کی دکان کی تفصیل، آج کی تاریخ، اور ایپ اور کیلکولیٹر کتنی بار استعمال ہوئے</string>
+    <string name="hudhud_can_look">تحریر کا سائز اور تھیم (“فونٹ بڑا کرو”، “ڈارک موڈ”): میں بدل دیتا ہوں، اور ایک ٹیپ سے واپس بھی کر دیتا ہوں</string>
+    <string name="hudhud_look_was">پہلے: %1$s</string>
+    <string name="hudhud_look_taken_back">واپس کر دیا۔</string>
+    <string name="hudhud_look_already">یہ پہلے سے اسی طرح ہے۔</string>
+    <string name="hudhud_look_largest">تحریر پہلے سے سب سے بڑی ہے۔</string>
+    <string name="hudhud_look_smallest">تحریر پہلے سے سب سے چھوٹی ہے۔</string>
     <string name="hudhud_chip_when_pays">کب دے گا؟</string>
     <string name="hudhud_chip_who">آپ کا نام؟</string>
     <string name="hudhud_chip_my_name">میرا نام</string>

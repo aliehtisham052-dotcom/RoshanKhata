@@ -4399,6 +4399,12 @@
     <string name="hudhud_can_goods">Harga barang, stok, harga beli, dan pemasok mana yang lebih murah</string>
     <string name="hudhud_can_book">Faktur hari ini, barang masuk, uang masuk, dan siapa mengubah apa</string>
     <string name="hudhud_can_shop">Detail toko Anda, tanggal hari ini, dan seberapa sering aplikasi dan kalkulator dipakai</string>
+    <string name="hudhud_can_look">Ukuran teks dan tema (“besarkan teks”, “mode gelap”): saya ubah, dan Urungkan cukup satu ketukan</string>
+    <string name="hudhud_look_was">Sebelumnya: %1$s</string>
+    <string name="hudhud_look_taken_back">Sudah dikembalikan.</string>
+    <string name="hudhud_look_already">Sudah diatur seperti ini.</string>
+    <string name="hudhud_look_largest">Teksnya sudah yang terbesar.</string>
+    <string name="hudhud_look_smallest">Teksnya sudah yang terkecil.</string>
     <string name="hudhud_chip_when_pays">Kapan dia bayar?</string>
     <string name="hudhud_chip_who">Siapa nama Anda?</string>
     <string name="hudhud_chip_my_name">Nama saya</string>

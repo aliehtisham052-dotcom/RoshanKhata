@@ -158,8 +158,8 @@ more	viewer_menu	GAP	tier=NEVER	why=a helper phone is made from a backup: owner 
 more	waris_title	GAP	tier=NEVER	why=the heir's key is the owner's alone
 more	mera_khata_title	GAP	tier=OPEN	why=the customer's own balance viewer, no help page yet
 more	language	OPEN	tier=OPEN
-more	text_size	GAP	tier=LOOK	why=no answer yet: the text size is a look he may change with an Undo (wave 2)
-more	theme	GAP	tier=LOOK	why=no answer yet: the theme is a look he may change with an Undo (wave 2)
+more	text_size	ANSWERED	ask=Look	tier=LOOK	why=at the owner's word he changes the text size one step or to a level, the card says what it was and has an Undo (HudhudLookDoor is the only writer)
+more	theme	ANSWERED	ask=Look	tier=LOOK	why=at the owner's word he changes the theme (light, dark, as the phone), the card says what it was and has an Undo (HudhudLookDoor is the only writer)
 more	hudhud_greet_title	GAP	tier=LOOK	why=his own morning greeting switch, no answer yet
 more	hudhud_voice_title	ANSWERED	ask=Voice	tier=LOOK	why=the voice questions change his own voice, pace and switch
 more	help_support	GAP	tier=OPEN	why=the FAQ list and Report a problem, no answer opens them yet

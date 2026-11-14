@@ -4425,6 +4425,12 @@
     <string name="hudhud_can_goods">Kisi item ki qeemat, stock, khareed rate aur kis supplier ka sasta hai</string>
     <string name="hudhud_can_book">Aaj ki invoices, aaya hua maal, aayi hui raqam, aur kis ne kya badla</string>
     <string name="hudhud_can_shop">Aap ki dukaan ki tafseel, aaj ki tareekh, aur app aur calculator kitni baar istemal hue</string>
+    <string name="hudhud_can_look">Likhai ka size aur theme (“font bara karo”, “dark mode”): main badal deta hoon, aur ek tap se wapas bhi kar deta hoon</string>
+    <string name="hudhud_look_was">Pehle: %1$s</string>
+    <string name="hudhud_look_taken_back">Wapas kar diya.</string>
+    <string name="hudhud_look_already">Yeh pehle se isi tarah hai.</string>
+    <string name="hudhud_look_largest">Likhai pehle se sab se bari hai.</string>
+    <string name="hudhud_look_smallest">Likhai pehle se sab se chhoti hai.</string>
     <string name="hudhud_chip_when_pays">Kab dega?</string>
     <string name="hudhud_chip_who">Aap ka naam?</string>
     <string name="hudhud_chip_my_name">Mera naam</string>
