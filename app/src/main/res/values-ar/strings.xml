@@ -1134,6 +1134,7 @@
     <string name="hudhud_replay">استمع مرة أخرى</string>
     <string name="hudhud_unknown">لم أجد هذا في دفترك. أقرب الأسئلة التي أستطيع الإجابة عنها في الأسفل.</string>
     <string name="hudhud_owner_only">هذا الرقم يراه المالك أو المدير فقط.</string>
+    <string name="hudhud_owner_only_exact">هذا يراه المالك فقط.</string>
     <string name="hudhud_quiet">الرصيد مخفي في الشاشة الرئيسية، لذا أكتب المبالغ هنا ولا أنطقها.</string>
     <string name="hudhud_no_voice">لا يوجد في هذا الهاتف صوت لهذه اللغة. الإجابة مكتوبة هنا؛ ويمكن تنزيل صوت من إعدادات الصوت.</string>
     <string name="hudhud_voice_on">صوت هُدهُد يعمل</string>
@@ -4717,7 +4718,7 @@
     <string name="hudhud_t_collected">المبالغ المحصّلة</string>
     <string name="hudhud_l_from_customers">من العملاء</string>
     <string name="hudhud_l_cashbook_in">دخل دفتر النقد</string>
-    <string name="hudhud_can_people">رقم عميل، وآخر دفعة منه، وحدّه أو وعده — اسأل مع الاسم</string>
+    <string name="hudhud_can_people">رقم عميل، وآخر دفعة منه، وحدّه أو وعده أو ملاحظته الخاصة — اسأل مع الاسم</string>
     <string name="hudhud_can_goods">سعر صنف ومخزونه وسعر شرائه، وأي مورّد أرخص</string>
     <string name="hudhud_can_book">فواتير اليوم، والبضائع الواردة، والمبالغ المحصّلة، ومن غيّر ماذا</string>
     <string name="hudhud_can_shop">بيانات متجرك، وتاريخ اليوم، وكم مرة استُخدم التطبيق والحاسبة</string>
@@ -4752,6 +4753,12 @@
     <string name="hudhud_need_promise">مواعيد الدفع لآخر العملاء</string>
     <string name="hudhud_need_recent">آخر العملاء</string>
     <string name="hudhud_need_hint">لعميل واحد، اذكر اسمه: “رقم علي”.</string>
+    <string name="hudhud_need_note">ملاحظات خاصة</string>
+    <string name="hudhud_l_note_count">لديهم ملاحظة خاصة</string>
+    <string name="hudhud_need_note_hint">لعميل واحد، اذكر اسمه: “ملاحظة علي”.</string>
+    <string name="hudhud_note_none">لا توجد ملاحظة خاصة محفوظة باسم %1$s.</string>
+    <string name="hudhud_note_nobody">لا توجد ملاحظة خاصة محفوظة بعد. لإضافة واحدة، افتح عميلًا، واضغط ⋮، ثم “%1$s”، واكتب في “%2$s”.</string>
+    <string name="hudhud_note_helper">لا يحتفظ هاتف المساعد بالملاحظات الخاصة.</string>
     <string name="hudhud_no_phone_short">لا رقم</string>
     <string name="hudhud_t_cashbook">النقد</string>
     <string name="hudhud_cashbook_none">لم يُسجَّل شيء في النقد خلال هذه المدة.</string>

@@ -1,0 +1,167 @@
+# Hudhud's decisions about the app's own map: one line for what he does with each column, profile field, screen and More entry.
+# kind <TAB> subject <TAB> decision <TAB> key=value ... Read by scripts/gen_hudhud_catalog.py, which checks every claim against the code
+# and writes catalog.tsv. A new column, screen or More entry has no line until someone decides, and the script refuses it.
+
+# ---- column
+column	audit_log	READ	cols=timestamp,user,action	reader=HudhudFacts.activity	gate=REPORTS	screen=AuditActivity
+column	audit_log	GAP	cols=refTable,detail	why=the activity answer counts rows by action and who, the detail words are the Who did what screen's
+column	audit_log	WITHHELD	cols=hash	why=the seal chain of the log: proof material for the Who did what screen, never a thing to say
+column	bill_items	READ	cols=productName	reader=HudhudFacts.deliveries	gate=NONE	screen=BillsActivity	also=HudhudFacts.count+HudhudFacts.goods
+column	bill_items	READ	cols=rate	reader=HudhudFacts.goods	gate=REPORTS	screen=SupplierRatesActivity	via=KhataDao.supplierRateLinesOnce
+column	bill_items	GAP	cols=quantity,unit,batchNumber,expiryDate,note	why=the expiring question only points at the Expiry screen with a fixed line, batches and quantities are not told
+column	book_seals	WITHHELD	cols=tokens	why=the time services' signed answers: raw proof bytes
+column	book_seals	GAP	cols=sealedAt,leafCount	why=no question reaches it yet (the Seals screen holds them)
+column	book_seals	STRUCT	cols=leaves,auditHead,prevDigest,digest	why=the seal chain's own material, shown only in the proof file
+column	book_settings	WITHHELD	cols=key,value	why=the book's own settings: PIN hashes, access keys and relay passes live here
+column	cashbook	READ	cols=amount,isIncome,category,note,timestamp	reader=HudhudFacts.cashbook	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook	READ	cols=paymentMethod	reader=HudhudFacts.collected	gate=REPORTS	screen=DayBookActivity	via=DayBook.rows	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook	GAP	cols=paymentRef	why=no question reaches it yet
+column	cashbook	WITHHELD	cols=photoPath	why=a picture's file path on this phone
+column	cheques	READ	cols=isReceived,dueDate	reader=HudhudFacts.cheques	gate=NONE	screen=ChequesActivity
+column	cheques	READ	cols=amount	reader=HudhudFacts.cheques	gate=REPORTS	screen=ChequesActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cheques	GAP	cols=chequeNumber,bankName,status,settledAt,note,createdAt	why=he counts the pending cheques by direction and due day, a cheque's own details are the Cheques screen's
+column	cheques	WITHHELD	cols=photoPath	why=a picture's file path on this phone
+column	day_close	READ	cols=closedAt	reader=HudhudBook.drawer	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close	GAP	cols=day,opening,cashIn,cashOut,counted,note	why=the drawer is worked out by the books' rule (DayCloseMath) and the close's columns are folded into it, not told one by one
+column	dismissed_duplicates	STRUCT	cols=partyIdsKey,dismissedAt	why=remembers the owner's 'not a duplicate' answers so the Duplicates screen does not ask again
+column	entry_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.topGoods	gate=REPORTS	screen=InsightsActivity	via=KhataDao.topProductsBetween
+column	entry_items	GAP	cols=rate,isBonus,crop,pest,dose	why=no question reaches it yet (the entry's receipt holds them)
+column	installments	GAP	cols=amount,paidAt,note	why=plans are told by their next due day, instalments are the Plans screen's
+column	invoice_items	GAP	cols=itemName,quantity,unit,rate	why=the screen holds the lines, Hudhud tells only counts and totals so far
+column	invoices	READ	cols=invoiceNumber,customerName,invoiceDate	reader=HudhudFacts.count	gate=NONE	screen=InvoicesActivity
+column	invoices	GAP	cols=customerPhone,dueDate,taxPercent,discountPercent,additionalChargeLabel,additionalChargeAmount,receivedAmount,note,createdAt,discountAmount,kind,status	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
+column	loyalty	GAP	cols=points,timestamp,note	why=no question reaches it yet
+column	parties	READ	cols=name,phone,fatherName,village,isCustomer,creditLimit,harvestPromise	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity
+column	parties	READ	cols=note	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity	also=HudhudFacts.notesList
+column	parties	WITHHELD	cols=qrToken,photoPath	why=the card's secret token and a picture's file path
+column	parties	GAP	cols=createdAt,noEntryShare	why=no question reaches it yet
+column	payment_plans	READ	cols=nextDueDate	reader=HudhudFacts.plans	gate=NONE	screen=PlansActivity
+column	payment_plans	GAP	cols=totalAmount,installmentAmount,note,createdAt,isClosed,closedAt	why=he tells how many plans are open and the next due day, the amounts are the Plans screen's
+column	products	READ	cols=name,defaultUnit,company,salePrice,creditPrice	reader=HudhudFacts.goods	gate=NONE	screen=ProductsActivity
+column	products	READ	cols=costPrice	reader=HudhudFacts.goods	gate=REPORTS	screen=ProductsActivity	stricter=the product form greys the cost box for a cashier but still shows it, Hudhud keeps the cost (and so the margin) with REPORTS
+column	products	READ	cols=lowStockLevel	reader=HudhudFacts.lowStock	gate=NONE	screen=ProductsActivity	via=Valuation.compute
+column	products	GAP	cols=category,productType,formulation,registrationNumber,technicalName,note,createdAt,barcode,packUnit,packSize,packPrice,taxRate,variant	why=no question reaches it yet
+column	purchase_order_items	GAP	cols=itemName,quantity,unit,rate	why=the screen holds the lines, Hudhud tells only counts and totals so far
+column	purchase_orders	GAP	cols=orderNumber,timestamp,status,note,createdBy	why=he opens the order draft for low stock, orders themselves are the Orders screen's
+column	sale_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.topGoods	gate=REPORTS	screen=InsightsActivity	via=KhataDao.topProductsBetween
+column	sale_items	GAP	cols=rate,discount,costRate,taxRate,taxAmount,taxIncluded	why=no question reaches it yet
+column	sale_payments	GAP	cols=method,amount,reference	why=money received is told by the way of paying through the day book, not per ticket
+column	sale_return_items	GAP	cols=itemName,quantity,unit,rate	why=the screen holds the lines, Hudhud tells only counts and totals so far
+column	sale_returns	READ	cols=returnNumber,customerName,timestamp	reader=HudhudFacts.returns	gate=NONE	screen=CounterSaleActivity
+column	sale_returns	READ	cols=total,refundAmount	reader=HudhudFacts.returns	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns	GAP	cols=refundMethod,reason,note,status,createdBy,voidReason,voidedAt	why=no question reaches it yet (status is only a filter)
+column	sales	READ	cols=saleNumber,customerName,timestamp	reader=HudhudFacts.count	gate=NONE	screen=CounterSaleActivity
+column	sales	READ	cols=grandTotal	reader=HudhudFacts.count	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales	GAP	cols=subtotal,discountAmount,taxPercent,taxAmount,roundOff,paidTotal,status,note,createdBy,voidReason,voidedAt	why=no question reaches it yet (status is only a filter)
+column	schemes	GAP	cols=name,company,startDate,endDate,measure,unit,rewardKind,target1,reward1,target2,reward2,target3,reward3,claimedAmount,claimedAt,note,createdAt	why=company schemes are the Schemes screen's, no question reaches them yet
+column	shifts	GAP	cols=user,device,openedAt,openingFloat,closedAt,counted,expected,note	why=shifts are the counter's, no question reaches them yet
+column	stock_adjustments	GAP	cols=timestamp,quantity,unit,reason,note,bookQty,countedQty,createdBy	why=counts and write-offs are told by who did them in the activity answer only
+column	staff	READ	cols=name	reader=HudhudFacts.salaries	gate=STAFF	screen=StaffActivity
+column	staff	GAP	cols=phone,monthlySalary,isActive,createdAt,role	why=the salaries answer folds pay into what is due per person, the rest is the Staff screen's
+column	staff	WITHHELD	cols=pinHash,pinSalt	why=a PIN's hash and salt: a secret
+column	staff_attendance	GAP	cols=day,status	why=folded into what is due in the salaries answer
+column	staff_payments	GAP	cols=amount,kind,timestamp,note	why=folded into what is due in the salaries answer
+column	supplier_bills	READ	cols=isPaidInFull,dueDate	reader=HudhudFacts.bills	gate=NONE	screen=BillsActivity
+column	supplier_bills	READ	cols=billDate	reader=HudhudFacts.deliveries	gate=NONE	screen=BillsActivity
+column	supplier_bills	READ	cols=totalAmount	reader=HudhudFacts.bills	gate=REPORTS	screen=BillsActivity	also=HudhudFacts.deliveries+HudhudFacts.count	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	supplier_bills	GAP	cols=billNumber,note,createdAt	why=no question reaches it yet
+column	supplier_bills	WITHHELD	cols=photoPath	why=a picture's file path on this phone
+column	transactions	READ	cols=amount,isGiven,timestamp	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity
+column	transactions	READ	cols=isQarzeHasna	reader=HudhudFacts.qarz	gate=REPORTS	screen=ZakatActivity	via=KhataDao.observeZakatBalancesByParty
+column	transactions	READ	cols=paymentMethod	reader=HudhudFacts.collected	gate=REPORTS	screen=DayBookActivity	via=DayBook.rows	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	transactions	GAP	cols=note,entryNumber,recovery,itemName,quantity,unit,createdBy,paymentRef,rateType,season	why=no question reaches it yet
+column	transactions	WITHHELD	cols=billPhotoPath	why=a picture's file path on this phone
+
+# ---- profile
+profile	BusinessProfile	READ	cols=businessName	reader=HudhudFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=PartyDetailActivity,InvoicesActivity,MainActivity	why=the shop's name is on every receipt, statement and the Home bar
+profile	BusinessProfile	READ	cols=businessAddress,businessPhone	reader=HudhudFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=BusinessCardActivity,RateListActivity,PosterActivity	why=the address and phone are on the cards, rate lists and posters anyone prints
+profile	BusinessProfile	READ	cols=trade	reader=HudhudFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=PosterActivity,InspectorReportActivity	why=the trade picks the words and the register every screen shows
+profile	BusinessProfile	READ	cols=currency	reader=HudhudFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=MainActivity	why=the sign is on every amount every screen shows (through Format), Home reads it to ask the country once
+profile	BusinessProfile	READ	cols=calendar	reader=HudhudFacts.clock	gate=NONE	screen=BusinessSettingsActivity	alsoseen=MainActivity	why=every date every screen shows is written in the shop's calendar
+profile	BusinessProfile	READ	cols=country,businessEmail,strn,taxLabel,bankName,bankAccountTitle,bankIban,bankJazzCash	reader=HudhudFacts.shop	gate=SETTINGS	screen=BusinessSettingsActivity	why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	BusinessProfile	GAP	cols=businessNameUrdu,termsAndConditions,receiptHeader,otherTradeName,otherTradeItems,logoDesign,photoOnStatement,sealChoice,askShareAfterEntry,paymentOnReminder	why=settings of the printed sheets, no question reaches them yet
+
+# ---- screen
+screen	AgingActivity	OPEN
+screen	AuditActivity	OPEN
+screen	BackupActivity	OPEN
+screen	BillsActivity	OPEN
+screen	BusinessCardActivity	OPEN
+screen	BusinessSwitchActivity	OPEN
+screen	CalculatorActivity	OPEN
+screen	CashFlowActivity	OPEN
+screen	CashbookActivity	OPEN
+screen	ChequesActivity	OPEN
+screen	CounterSaleActivity	OPEN
+screen	ExpiringActivity	OPEN
+screen	FollowUpActivity	OPEN
+screen	InsightsActivity	OPEN
+screen	InvoicesActivity	OPEN
+screen	KhataActivity	OPEN
+screen	LanguageActivity	OPEN
+screen	LapsedActivity	OPEN
+screen	OrdersActivity	OPEN
+screen	PlansActivity	OPEN
+screen	PosterActivity	OPEN
+screen	ProductsActivity	OPEN
+screen	RateListActivity	OPEN
+screen	RecycleBinActivity	OPEN
+screen	SalesReportActivity	OPEN
+screen	SchemesActivity	OPEN
+screen	SeasonsActivity	OPEN
+screen	SnapshotsActivity	OPEN
+screen	StaffActivity	OPEN
+screen	SupplierRatesActivity	OPEN
+screen	ZakatActivity	OPEN
+screen	AboutActivity	OPENED	by=HudhudFacts.about
+screen	AlertsActivity	OPENED	by=HudhudBook.today
+screen	BusinessSettingsActivity	OPENED	by=HudhudFacts.shop
+screen	DayBookActivity	OPENED	by=HudhudFacts.activity
+screen	PartyDetailActivity	OPENED	by=HudhudSheet.openParty	q=the customer page has no how-to page of its own yet (adding an entry, the menu)
+screen	ProductCustomersActivity	OPENED	by=HudhudFacts.goods
+screen	DuplicateCustomersActivity	GAP	why=More has it (EDIT_BOOK), no help page says how to find and merge duplicates
+screen	HelpActivity	GAP	why=the FAQ list his own help pages are built from, no answer opens it yet
+screen	MeraKhataActivity	GAP	why=the customer's own balance viewer, no help page yet
+screen	PaymentVoiceActivity	GAP	why=More has it (SETTINGS), no help page says how to set it up
+screen	ViewerActivity	GAP	why=the helper phone and the heir's read-only book (owner only), no help page yet
+screen	WarisActivity	GAP	why=the heir's key (owner only), no help page yet
+screen	LedgerReportActivity	CHILD	of=KhataActivity
+screen	ImportContactsActivity	CHILD	of=KhataActivity
+screen	EntryDetailActivity	CHILD	of=PartyDetailActivity
+screen	ReportActivity	CHILD	of=PartyDetailActivity
+screen	ShiftActivity	CHILD	of=CounterSaleActivity
+screen	InvoiceEditorActivity	CHILD	of=InvoicesActivity
+screen	InvoiceSettingsActivity	CHILD	of=InvoicesActivity
+screen	InspectorReportActivity	CHILD	of=ProductsActivity
+screen	RegisterReportActivity	CHILD	of=ProductsActivity
+screen	LiveDevicesActivity	CHILD	of=BackupActivity
+screen	SealsActivity	CHILD	of=BackupActivity
+screen	ImageCropActivity	CHILD	of=BusinessSettingsActivity
+screen	LogoMakerActivity	CHILD	of=BusinessSettingsActivity
+screen	ReportProblemActivity	CHILD	of=HelpActivity
+screen	GateActivity	INFRA	why=the front door: sends each start to the setup, the lock or Home
+screen	LockActivity	INFRA	why=the App Lock screen
+screen	MainActivity	INFRA	why=Home itself: its tiles are the map the catalog checks
+screen	PdfPreviewActivity	INFRA	why=shows a PDF that was just made
+screen	ShopNameActivity	INFRA	why=the first-run setup's details step
+screen	ShopTypeActivity	INFRA	why=the first-run setup's shop type step
+
+# ---- more
+more	shop_settings_row	GAP	tier=NEVER	why=opens the shop sheet (name, other shops, profile): SETTINGS, the owner only
+more	app_lock	ANSWERED	ask=Help	tier=NEVER	why=the faq_lock page says what it is, he never switches it
+more	screen_privacy	GAP	tier=NEVER	why=hides the screen in Recents: a safety switch, no help page yet
+more	duplicate_customers	GAP	tier=NEVER	why=merging changes the book (EDIT_BOOK), no help page yet
+more	auto_title	ANSWERED	ask=Automations	tier=OPEN	why=he tells each automation's state and hour, Open shows the dialog
+more	radar_title	GAP	tier=OPEN	why=no answer of its own yet for turning the Radar on or off (the feature_radar page explains the feature)
+more	paisa_title	GAP	tier=OPEN	why=payment voice settings (SETTINGS), no help page yet
+more	viewer_menu	GAP	tier=NEVER	why=a helper phone is made from a backup: owner only
+more	waris_title	GAP	tier=NEVER	why=the heir's key is the owner's alone
+more	mera_khata_title	GAP	tier=OPEN	why=the customer's own balance viewer, no help page yet
+more	language	OPEN	tier=OPEN
+more	text_size	GAP	tier=LOOK	why=no answer yet: the text size is a look he may change with an Undo (wave 2)
+more	theme	GAP	tier=LOOK	why=no answer yet: the theme is a look he may change with an Undo (wave 2)
+more	hudhud_greet_title	GAP	tier=LOOK	why=his own morning greeting switch, no answer yet
+more	hudhud_voice_title	ANSWERED	ask=Voice	tier=LOOK	why=the voice questions change his own voice, pace and switch
+more	help_support	GAP	tier=OPEN	why=the FAQ list and Report a problem, no answer opens them yet
+more	share_app	NOT-ASKED	tier=NEVER	why=sharing sends a message, and his files may never send (check_hudhud_readonly.py)
+more	about_us	ANSWERED	ask=About	tier=OPEN	why=he tells what the app is, who made it, privacy and the version

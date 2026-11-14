@@ -40,11 +40,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.innovation313.roshankhata.PartyDetailActivity
 import com.innovation313.roshankhata.R
-import com.innovation313.roshankhata.data.Access
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.data.Hudhud
 import com.innovation313.roshankhata.data.HudhudBook
 import com.innovation313.roshankhata.data.HudhudChirp
+import com.innovation313.roshankhata.data.HudhudGate
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.VoiceLanguage
@@ -1066,7 +1066,7 @@ object HudhudSheet {
 
         /** The questions he always knows, as chips: the figures only for those who may see them (REPORTS). */
         private fun usualChips(): List<Hudhud.Ask> {
-            val reports = Access.can(Access.Permission.REPORTS)
+            val reports = HudhudGate.reports()
             return buildList {
                 // What he can tell first (13 Nov 2026): nobody has to guess what to ask him.
                 add(Hudhud.Ask.Abilities)

@@ -1074,6 +1074,7 @@
     <string name="hudhud_replay">ٻيهر ٻڌو</string>
     <string name="hudhud_unknown">هي توهان جي کاتي ۾ نه مليو. ان جي ويجهو سوال، جن جو جواب ڏئي سگهان ٿو، هيٺ آهن.</string>
     <string name="hudhud_owner_only">هي رقم رڳو مالڪ يا مئنيجر ڏسي سگهن ٿا.</string>
+    <string name="hudhud_owner_only_exact">هي رڳو مالڪ ڏسي سگهي ٿو.</string>
     <string name="hudhud_quiet">هوم تي بيلنس لڪيل آهي، تنهن ڪري مان رقم هتي لکان ٿو، ٻڌايان نٿو.</string>
     <string name="hudhud_no_voice">هن فون ۾ هن ٻوليءَ جو آواز ناهي. جواب هتي لکيل آهي؛ آواز جي سيٽنگن مان آواز وٺي سگهجي ٿو.</string>
     <string name="hudhud_voice_on">هُدهُد جو آواز چالو آهي</string>
@@ -4448,7 +4449,7 @@
     <string name="hudhud_t_collected">وصول ٿيل رقم</string>
     <string name="hudhud_l_from_customers">گراهڪن کان</string>
     <string name="hudhud_l_cashbook_in">روڪڙ ڪتاب جي آمدني</string>
-    <string name="hudhud_can_people">ڪنهن گراهڪ جو نمبر، آخري ادائيگي، حد يا واعدو — نالو وٺي پڇو</string>
+    <string name="hudhud_can_people">ڪنهن گراهڪ جو نمبر، آخري ادائيگي، حد، واعدو يا ذاتي نوٽ — نالو وٺي پڇو</string>
     <string name="hudhud_can_goods">ڪنهن شيءِ جي قيمت، اسٽاڪ، خريد ريٽ ۽ ڪهڙي سپلائر جو سستو آهي</string>
     <string name="hudhud_can_book">اڄ جون انوائسون، آيل مال، آيل رقم، ۽ ڪنهن ڇا بدلايو</string>
     <string name="hudhud_can_shop">توهان جي دڪان جي تفصيل، اڄ جي تاريخ، ۽ ايپ ۽ ڪئلڪوليٽر ڪيترا ڀيرا استعمال ٿيا</string>
@@ -4483,6 +4484,12 @@
     <string name="hudhud_need_promise">تازن گراهڪن جا واعدي جا ڏينهن</string>
     <string name="hudhud_need_recent">تازا گراهڪ</string>
     <string name="hudhud_need_hint">ڪنهن هڪ گراهڪ لاءِ نالو به چئو: “علي جو نمبر”.</string>
+    <string name="hudhud_need_note">ذاتي نوٽ</string>
+    <string name="hudhud_l_note_count">ذاتي نوٽ وارا</string>
+    <string name="hudhud_need_note_hint">ڪنهن هڪ گراهڪ لاءِ نالو به چئو: “علي جو نوٽ”.</string>
+    <string name="hudhud_note_none">%1$s جو ڪو ذاتي نوٽ محفوظ ناهي.</string>
+    <string name="hudhud_note_nobody">اڃا ڪنهن جو ذاتي نوٽ محفوظ ناهي. نوٽ لکڻ لاءِ ڪو گراهڪ کوليو، ⋮ دٻايو، پوءِ “%1$s” ۾ “%2$s” لکو.</string>
+    <string name="hudhud_note_helper">مددگار جي فون تي ذاتي نوٽ محفوظ نه ٿيندا آهن.</string>
     <string name="hudhud_no_phone_short">نمبر ناهي</string>
     <string name="hudhud_t_cashbook">روڪڙ</string>
     <string name="hudhud_cashbook_none">هن عرصي ۾ روڪڙ ۾ ڪجهه به نه لکيو ويو.</string>

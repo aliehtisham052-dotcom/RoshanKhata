@@ -2807,6 +2807,37 @@ Each of these cost a build or a bug.
     came on Google Play is not in the records, so only the two days that are (Google's production access, and "public by")
     are said and nothing between; and the word is "published", never "launched", in any language (`check_strings.py`'s
     `history_failures` fails a launch word, or a name for the queen, in those keys).
+
+122. **A word of the ask is not a part of a name.** The private note's word is also in a customer's name ("Note House"):
+    bare "note", "uska note" and "my notes" found him, and "Note House" alone became a note ask (found by the way test's
+    first book with such a name, 14 Nov 2026). The ask's own words are taken out of the sentence before a name is looked
+    for (`HudhudNote.isNoteWord`, `Hudhud.noteAsk`); a name that holds the word is the customer unless the sentence has more
+    of the word than the name has or says whose (niji, uska, mera, kis kis). Any new concept word — a figure, a feature, a
+    facet — that a shop may also have in a name gets the same care and a book with such a name in its test.
+
+123. **`internal` belongs to a module, and :app is another module.** `internal object HudhudNote` in :shared could not be
+    seen by :app, which calls it; a public member that exposes an internal type must itself be internal (`HudhudNote.Read`,
+    `read` and `isNoteWord` are internal, `linesOf` and `secretsIn` public). The local harness (lesson 93) compiles the
+    shared files as one module, so it cannot show this: read each call made from :app against the visibility of what it calls.
+
+124. **A comment that says what something carries is checked against the code that carries it.** `PartyNote`'s note and
+    `showPartyNote` said a helper's copy of the book carries the private note — `BackupCodec` writes it only with `secrets`,
+    and a helper copy is `secrets = false` — and `HudhudGate`'s note said the shop's country was not behind the gate while the
+    code gates it. Hudhud answers from what the book holds: believing the first comment he would have said "no note is
+    saved" on a phone whose copy cannot hold one. Read the line that makes the copy, the export or the gate, not the comment
+    above it, and correct the comment in the same commit.
+
+125. **A checker that holds a list to the code protects against drift; it proves nothing.** The catalog
+    (`scripts/gen_hudhud_catalog.py`) fails for a column nobody decided, a screen, tile or More entry with no decision, a
+    secret told, a gate looser than its own screen's; it cannot say that a `READ` is true. Its `--explain` finds a column's
+    name anywhere in Hudhud's code, with false hits. Every `READ` line is read by hand against the reader before it is
+    written, and a column nobody has read is a `GAP`, never a guess.
+
+126. **A new test is broken on purpose once, one change at a time, even for a small feature (lesson 100 again).** The note's
+    code was changed 17 ways, one each on a private copy (a constant, a word list, a condition, a carried name); 15 failed a
+    test at once, two survived the 41 — a name said by one of its words with a marker ("house ka niji note"), and the edge
+    where nine digits all told make a number (eight are a day) — and each has its own test now. Run the variants in the background while something else is checked; one compile and run is about a minute with
+    Gradle's own compiler (lesson 93), so the whole pass costs a few minutes, not an afternoon.
 ---
 
 ## Working with the owner
@@ -3648,3 +3679,69 @@ on a phone.** Nothing in `HudhudMind`, the bank or `sense.bin` changed (lesson 1
   the faith and story texts; a native read of Sindhi and Bengali; a test of `personalChips()` and of the reverent flow on a
   device; and the app side — `HudhudVoiceSheet`, `HudhudChirpPlayer`, `HudhudMoneyWords`, the sheet and the answers — has never
   been compiled.
+
+
+### 14 Nov 2026: Hudhud reads the private note, asks one gate, and is held to the app's own map (phone; CI only — nothing tried on a real phone)
+
+The owner's rules of 14 Nov (14:16, 14:47): a customer's private note is told in full, written and spoken (the speaker switch
+stays his); whoever holds the phone sees everything the app shows him — **a cashier signed in under counter mode sees only what
+his own screens show (choice A); the owner, and a phone with counter mode off, see everything**; Hudhud's reach is the app's own
+map, not a list somebody remembered; no paid model, nothing downloaded, the app does not grow. Nothing in `HudhudMind`, the
+bank or `sense.bin` changed (lessons 106, 111, 116, 121).
+
+- **The private note** (`HudhudNote`, shared, a public object over `StrictWords`; `Ask.Person(ids, Facet.NOTE)` and
+  `Ask.NeedName(Facet.NOTE)`, asked in `byRules` after the figure and product readings, before `byFeature`, and never turned
+  by the sense — `isNoteAsk` in `decide`, `labelOf(NOTE)` is null). It reads "Bashir ka note", "uska niji note", "kis kis ka
+  note hai", "my notes", "who has a note" and their forms in the nine languages (note, memo, yaaddasht, نوٹ, نوٽ, ملاحظة,
+  یادداشت, नोट, নোট; Indonesian "catatan" only with "pribadi") **only when every word is the note's own or a little word that
+  asks nothing**. Deliberately conservative: an unknown word, a figure, or a note given, written or removed is not read;
+  "nota" (a bill), "نوٹس"/"نوٽس" (a notice, banknotes) and "banknote" are never the word; "Bashir ko note do", "note likho",
+  "credit note banao" and "100 ke note" are not asks (Hudhud cannot write a note: the owner's tap writes).
+- **What the answers are:** a person named — his card, the label "Private note" and the note whole, a line of the note to a line
+  of the card (`HudhudNote.linesOf`); long numbers in it (`secretsIn`: 7 or more digits in a row, or 9 in all, in any script's
+  digits, with a leading "(" and its closing ")" going with the number; a date, a time and a small sum are not secrets) are shown
+  and never said ("on the screen"), and a line with the currency sign and a digit is not said while Home's balance is hidden;
+  nobody named — "whose?": `HudhudFacts.notesList`, the customers and suppliers who hold a note (`KhataDao.partyIdsWithNote`,
+  read-only), the ones dealt with last first, five rows each asking for that one's note (`Row.ask`), how many in all, and where a
+  note is written when nobody has one (⋮ → "Edit details" → "Private note"); a person before in the talk — his note, unless the
+  sentence says everybody's or the owner's own; a name that is several people — a choice whose rows ask the note
+  (`HudhudBook.pick(facet)`). **A helper's phone holds no private note** (see lesson 124): it says so instead of "none saved".
+  The customer's DETAILS card does not include the note. Strings (nine languages): hudhud_need_note, hudhud_l_note_count,
+  hudhud_need_note_hint, hudhud_note_none, hudhud_note_nobody, hudhud_note_helper; `hudhud_can_people` lists it. **Sindhi and
+  Bengali wording is for a native read.**
+- **One gate** (`HudhudGate`, app: `reports()`, `staff()`, `settings()` — each named after the permission it reads): every
+  Hudhud file asks "who may see this?" through it, and the catalog's `check_gates` fails a file that asks `Access` itself. What
+  the catalog found and was fixed: the staff count and the salaries are the owner's alone (STAFF — Staff is the owner's screen;
+  `hudhud_owner_only_exact`, a manager is told so too, the old "owner only" meant owner or manager); the shop's **country**,
+  email, tax number and bank details are the owner's (SETTINGS) and the whole-profile card leaves them out for others, so a
+  number a cashier may not see is in no line and in no `Answer.secrets` (the country is a small deliberate change: no screen of
+  a cashier names it); the shop's name, address, phone, currency and trade are everyone's (they are printed on what a cashier
+  hands out). `HudhudBook.next()` offers no staff question to who may not ask it, and HudhudSheet's usual chips ask the gate.
+- **The catalog** (`scripts/gen_hudhud_catalog.py`; `shared/hudhud/catalog/decisions.tsv` is the decisions, `catalog.tsv` the
+  record the script writes; modes none, `--check`, `--report`, `--explain`; strings.yml runs `--check` and fires on the script
+  and the folder): every Room column (31 tables, 392 columns), every profile field (24), screen (63), Home tile (22) and More
+  entry has a decision — `READ` (a named reader, gate and screen, checked to exist and to apply the gate), `GAP` (Hudhud could
+  tell it and does not yet: the honest backlog), `WITHHELD` (a secret, or a gate he keeps) or `STRUCT` (a key, a flag,
+  plumbing). A new column or screen with no decision fails the build, as does a secret told or left undecided and a gate looser
+  than its own screen's. Today: columns READ 59, GAP 167, WITHHELD 12, STRUCT 154; profile fields READ 14, GAP 10; screens
+  OPEN 31, CHILD 14, OPENED 6, INFRA 6, GAP 6 (DuplicateCustomers, Help, MeraKhata, PaymentVoice, Viewer, Waris: no how-to page
+  yet). **Drift protection, not proof** (lesson 125). The private note is `READ` with `reader=HudhudFacts.person`,
+  `also=HudhudFacts.notesList`.
+- **Settings, by tier** (the owner's yes, 14 Nov 15:02 and 15:26; **not built yet**): 🟢 LOOK — Hudhud may change at the owner's
+  word, with Undo on the card: text size (four levels), theme (Light, Dark, System), his own voice and greeting switches;
+  🟡 OPEN — he opens the screen and the owner taps: Automations, Payment Radar, Payment voice, Language, Mera Khata, Help,
+  About; 🔴 NEVER — he only says where it is: App Lock, PINs, backup and restore, Waris, the helper phone, the shop's name, bank
+  and currency, merging duplicates, erase all, share the app, screen privacy. Text size and theme rebuild the screen
+  (`MoreSheet.textSize` → `TextSize.setLevel` + `recreate()`; theme `ThemeMode`), so the Hudhud sheet must be opened again with
+  the card and its Undo after the rebuild, and a guard must show that no other Hudhud file writes a setting.
+- **Measured here (shared plain Kotlin, Gradle's own compiler, lesson 93):** HudhudNoteTest 32, HudhudNoteWayTest 11 (the way
+  test goes through `Hudhud.understand` with the shipped sense, in a book with customers whose names hold the word), and all
+  271 Hudhud and voice tests of the shared module pass together — the figures did not move: held-out 1,066 of 1,170 (91%),
+  Roman Urdu 115 of 130, the owner's short lists 142 of 200, his 1,000 sentences 723. **Not compiled or run here:** everything in `app/`
+  (HudhudFacts, HudhudBook, HudhudSheet, HudhudGate, the nine strings files' use) — CI is its first build — and nothing was
+  tried on a real phone.
+- **Not done, with the reason:** the DETAILS card has no note on purpose (asked for by its own words); in a book with a
+  customer whose name holds "note", "Noor ka note" and "Store ka note" give his balance, as before the feature (accepted);
+  other choice lists (a phone number, a limit) still open the customer's page on a tap instead of asking again; the 167 `GAP`
+  columns (deep record questions) and the six screens with no how-to page are the next waves; the owner's offer of a review
+  pass by a stronger model before the final APK waits for his yes.

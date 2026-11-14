@@ -42,18 +42,30 @@ import kotlin.math.abs
  * (Products and the bell), money in by the day book's rows ([DayBook]), salaries by [Payroll] (Staff), suppliers' rates
  * by the bill lines Purchase rates reads — so Hudhud and the screen never disagree. Nothing is estimated: what the
  * book does not hold he says it does not hold ("No price is set for this item"), and the app's own counts that began
- * with this build say since when they count. Every answer only READS. Money and other businesses' secrets (purchase
- * rates, salaries, the day's takings) are behind the REPORTS right like every figure; numbers (phones, IBAN, tax) are
- * shown and never said aloud — a customer may be standing at the counter.
+ * with this build say since when they count. Every answer only READS. Money (purchase rates, the day's takings) is
+ * behind the REPORTS right like every figure; salaries and the shop's private details are the owner's alone (STAFF and
+ * SETTINGS, the owner exactly — a manager is told so); numbers (phones, IBAN, tax, and any long number inside a customer's
+ * private note) are shown and never said aloud — a customer may be standing at the counter. A customer's private note is
+ * told in full, written and spoken, to whoever holds the phone, as his page shows it (14 Nov 2026, the owner).
  */
 internal object HudhudFacts {
 
     private fun now() = System.currentTimeMillis()
 
-    private fun reports() = Access.can(Access.Permission.REPORTS)
+    // Every gate is asked through HudhudGate (the catalog holds each fact to the gate of the screen that shows it).
+    private fun reports() = HudhudGate.reports()
 
+    private fun staff() = HudhudGate.staff()
+
+    private fun settings() = HudhudGate.settings()
+
+    /** A figure behind the REPORTS right: the owner or a manager. */
     private fun ownerOnly(c: Context, label: String) =
         Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_owner_only)))
+
+    /** A fact that only the owner may see (Staff, Business Profile's private part): a manager is told so too. */
+    private fun ownerExact(c: Context, label: String) =
+        Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_owner_only_exact)))
 
     /** "Label: value", the value isolated so a name or a figure reads right in a right-to-left line. */
     private fun line(label: String, value: String) = label + ": " + Format.isolate(value)
@@ -77,14 +89,15 @@ internal object HudhudFacts {
 
     /**
      * A named customer's or supplier's fact. A payment is what he paid (a customer's "I got") or what the shop paid
-     * him (a supplier's "I gave"), as his page shows it; his private note is never read out or shown here.
+     * him (a supplier's "I gave"), as his page shows it; his private note is asked for by its own words ([Hudhud.Facet.NOTE])
+     * and is not in his details, which stay what they were.
      */
     suspend fun person(
         c: Context, dao: KhataDao, ids: List<Long>, facet: Hudhud.Facet, parties: List<PartyWithBalance>
     ): Answer {
         val found = ids.mapNotNull { id -> parties.firstOrNull { it.id == id } }
         if (found.isEmpty()) return HudhudBook.unknown(c)
-        if (found.size > 1) return HudhudBook.pick(c, found)
+        if (found.size > 1) return HudhudBook.pick(c, found, facet)
         val p = found.first()
         val party = dao.getParty(p.id)
         val name = p.name
@@ -180,6 +193,21 @@ internal object HudhudFacts {
                     Answer(if (passed) Mood.CARE else Mood.CALM, label = name, figure = Format.dateOnly(day),
                         lines = listOfNotNull(c.getString(R.string.hudhud_l_promise), if (passed) c.getString(R.string.hudhud_promise_passed) else null, balance),
                         openParty = p.id)
+                }
+            }
+            Hudhud.Facet.NOTE -> {
+                // The owner's private note (14 Nov 2026, the owner: whoever holds the phone sees everything): told whole, a line of
+                // the note to a line of the card, as the customer's page shows it. A long number in it is shown and never said.
+                val note = party?.note?.trim().orEmpty()
+                when {
+                    note.isNotEmpty() -> Answer(Mood.CALM, label = name,
+                        lines = listOf(c.getString(R.string.party_note_label)) + HudhudNote.linesOf(note).map { Format.isolate(it) },
+                        openParty = p.id, secrets = HudhudNote.secretsIn(note))
+                    // A helper's copy of the book carries no private note at all: "none saved" would not be true there.
+                    ViewerMode.isOn(c) -> Answer(Mood.CALM, label = name,
+                        lines = listOf(c.getString(R.string.hudhud_note_helper)), openParty = p.id)
+                    else -> Answer(Mood.CALM, label = name,
+                        lines = listOf(c.getString(R.string.hudhud_note_none, Format.isolate(name))), openParty = p.id)
                 }
             }
         }
@@ -324,13 +352,24 @@ internal object HudhudFacts {
 
     // ------------------------------------------------------------------------------------------------ the shop
 
-    /** The shop's profile as Business Profile holds it; a field never filled in is said to be empty, not invented. */
+    /**
+     * The shop's profile as Business Profile holds it; a field never filled in is said to be empty, not invented.
+     *
+     * Who is told what (14 Nov 2026, the owner's choice A: a cashier sees only what his own screens show). Business
+     * Profile is the owner's screen (SETTINGS), but the shop's name, address, phone, currency and trade are on what a
+     * cashier hands out and reads every day (receipts, cards, rate lists, posters, every amount), so they are told to
+     * everyone. The shop's country (no screen of a cashier names it), email, tax number and bank details (account
+     * title, IBAN, wallet) are the private part: the owner only, here as there — and they are left out of the
+     * whole-profile card too, so a number a cashier may not see is never in a line or in [Answer.secrets].
+     * `scripts/gen_hudhud_catalog.py` holds each of these to the screen that shows it.
+     */
     fun shop(c: Context, facet: Hudhud.ShopFacet): Answer {
         val name = BusinessProfile.businessName(c)
         val address = BusinessProfile.businessAddress(c)
         val phone = BusinessProfile.businessPhone(c)
-        val email = BusinessProfile.businessEmail(c)
-        val tax = BusinessProfile.strn(c)
+        val owner = settings()
+        val email = if (owner) BusinessProfile.businessEmail(c) else null
+        val tax = if (owner) BusinessProfile.strn(c) else null
         val country = BusinessProfile.country(c)
         val countryName = Locale("", country.code).getDisplayCountry(c.resources.configuration.locales[0]).ifBlank { country.code }
         val trade = BusinessProfile.trade(c)?.let { Trade.of(it).label(c) }
@@ -348,12 +387,15 @@ internal object HudhudFacts {
             Hudhud.ShopFacet.NAME -> one(res(R.string.business_name), name, true)
             Hudhud.ShopFacet.ADDRESS -> one(res(R.string.business_address), address, true)
             Hudhud.ShopFacet.PHONE -> one(res(R.string.hudhud_l_phone), phone, false)
-            Hudhud.ShopFacet.EMAIL -> one(res(R.string.hudhud_l_email), email, false)
-            Hudhud.ShopFacet.TAX -> one({ BusinessProfile.taxLabel(it) }, tax, false)
+            Hudhud.ShopFacet.EMAIL ->
+                if (!owner) ownerExact(c, c.getString(R.string.hudhud_l_email)) else one(res(R.string.hudhud_l_email), email, false)
+            Hudhud.ShopFacet.TAX ->
+                if (!owner) ownerExact(c, BusinessProfile.taxLabel(c)) else one({ BusinessProfile.taxLabel(it) }, tax, false)
             Hudhud.ShopFacet.CURRENCY -> one(res(R.string.hudhud_l_currency), BusinessProfile.currency(c), true)
-            Hudhud.ShopFacet.COUNTRY -> one(res(R.string.hudhud_l_country), countryName, true)
+            Hudhud.ShopFacet.COUNTRY ->
+                if (!owner) ownerExact(c, c.getString(R.string.hudhud_l_country)) else one(res(R.string.hudhud_l_country), countryName, true)
             Hudhud.ShopFacet.TRADE -> one(res(R.string.hudhud_l_trade), trade, true)
-            Hudhud.ShopFacet.BANK -> {
+            Hudhud.ShopFacet.BANK -> if (!owner) ownerExact(c, c.getString(R.string.hudhud_l_bank)) else {
                 val bank = listOfNotNull(
                     BusinessProfile.bankName(c)?.takeIf { it.isNotBlank() },
                     BusinessProfile.bankAccountTitle(c)?.takeIf { it.isNotBlank() },
@@ -371,7 +413,7 @@ internal object HudhudFacts {
                     email?.takeIf { it.isNotBlank() }?.let { line(c.getString(R.string.hudhud_l_email), Format.ltr(it)) },
                     tax?.takeIf { it.isNotBlank() }?.let { line(BusinessProfile.taxLabel(c), Format.ltr(it)) },
                     trade?.let { line(c, R.string.hudhud_l_trade, it) },
-                    line(c, R.string.hudhud_l_country, countryName),
+                    if (owner) line(c, R.string.hudhud_l_country, countryName) else null,
                     line(c, R.string.hudhud_l_currency, BusinessProfile.currency(c))
                 )
                 Answer(Mood.CALM, label = name?.takeIf { it.isNotBlank() } ?: c.getString(R.string.hudhud_chip_shop),
@@ -568,7 +610,9 @@ internal object HudhudFacts {
                 counted(c, R.string.tile_products, null, count, listOfNotNull(v?.low?.size?.takeIf { it > 0 }?.let { line(c, R.string.hudhud_t_low, n(it)) }),
                     ProductsActivity::class.java)
             }
-            Hudhud.Thing.STAFF -> counted(c, R.string.hudhud_t_staff, null, dao.observeStaff().first().size, emptyList(), StaffActivity::class.java)
+            // Staff is the owner's screen (STAFF): who works here is his to know, not a cashier's or a manager's.
+            Hudhud.Thing.STAFF -> if (!staff()) ownerExact(c, c.getString(R.string.hudhud_t_staff))
+            else counted(c, R.string.hudhud_t_staff, null, dao.observeStaff().first().size, emptyList(), StaffActivity::class.java)
             Hudhud.Thing.ENTRIES -> {
                 val shown = dao.entryCountBetween(from, to)
                 val total = if (window == null) dao.entryCountBetween(0L, Long.MAX_VALUE) else null
@@ -758,10 +802,13 @@ internal object HudhudFacts {
         return Answer(Mood.CALM, label = c.getString(R.string.hudhud_t_book), lines = lines, open = KhataActivity::class.java)
     }
 
-    /** This month's salaries still to pay, by Staff's own month rule ([Payroll.month]). */
+    /**
+     * This month's salaries still to pay, by Staff's own month rule ([Payroll.month]). Staff is the owner's screen
+     * (STAFF, not REPORTS), so a manager is not told them either.
+     */
     private suspend fun salaries(c: Context, dao: KhataDao): Answer {
         val label = c.getString(R.string.hudhud_t_salary)
-        if (!reports()) return ownerOnly(c, label)
+        if (!staff()) return ownerExact(c, label)
         val (from, to, days) = Payroll.monthRange(now())
         val staff = dao.observeStaff().first()
         val marks = dao.observeAttendanceBetween(from, to).first()
@@ -881,6 +928,7 @@ internal object HudhudFacts {
      * gives the one man.
      */
     suspend fun needName(c: Context, dao: KhataDao, facet: Hudhud.Facet?, parties: List<PartyWithBalance>): Answer {
+        if (facet == Hudhud.Facet.NOTE) return notesList(c, dao, parties)
         val title = when (facet) {
             Hudhud.Facet.PHONE -> R.string.hudhud_need_phone
             Hudhud.Facet.LAST_PAYMENT -> R.string.hudhud_need_payment
@@ -921,6 +969,30 @@ internal object HudhudFacts {
         }
         return Answer(Mood.CALM, label = c.getString(title), lines = listOf(c.getString(R.string.hudhud_need_hint)), rows = rows,
             open = KhataActivity::class.java, secrets = secrets)
+    }
+
+    /**
+     * "Whose private note?" told (14 Nov 2026): the customers and suppliers who have one — the ones dealt with last first,
+     * [TOP] of them — how many in all, each a tap that asks for his note; and where a note is written when nobody has one.
+     * A helper's phone holds no private notes (its copy of the book carries none) and says so instead of "none saved".
+     */
+    private suspend fun notesList(c: Context, dao: KhataDao, parties: List<PartyWithBalance>): Answer {
+        val label = c.getString(R.string.hudhud_need_note)
+        val open = KhataActivity::class.java
+        if (ViewerMode.isOn(c)) {
+            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_note_helper)), open = open)
+        }
+        val have = dao.partyIdsWithNote().toSet()
+        val holders = parties.filter { it.id in have }.sortedByDescending { it.lastActivity }
+        if (holders.isEmpty()) {
+            return Answer(Mood.CALM, label = label,
+                lines = listOf(c.getString(R.string.hudhud_note_nobody, c.getString(R.string.edit_details), c.getString(R.string.party_note_label))),
+                open = open)
+        }
+        return Answer(Mood.CALM, label = label,
+            lines = listOf(line(c, R.string.hudhud_l_note_count, n(holders.size)), c.getString(R.string.hudhud_need_note_hint)),
+            rows = holders.take(TOP).map { p -> Row(p.id, p.name, "", null, ask = Hudhud.Ask.Person(listOf(p.id), Hudhud.Facet.NOTE)) },
+            open = open)
     }
 
     /**

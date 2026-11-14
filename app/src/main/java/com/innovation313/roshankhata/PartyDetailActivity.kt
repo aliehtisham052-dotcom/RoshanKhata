@@ -3780,7 +3780,8 @@ class PartyDetailActivity : BaseActivity() {
 
     /**
      * The owner's private note, opened from its chip (schema 43): the words, and Edit details to change them. Never
-     * on a statement, a reminder or the customer's card; a helper's read-only phone reads it and changes nothing.
+     * on a statement, a reminder or the customer's card. A helper's read-only copy carries no note at all (BackupCodec,
+     * `secrets` false), so this chip never shows there.
      */
     private fun showPartyNote() {
         val note = partyNote ?: return

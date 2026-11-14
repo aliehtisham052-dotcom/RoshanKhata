@@ -174,8 +174,11 @@ object Hudhud {
     /** What a [Ask.Period] adds up. */
     enum class Measure { SALES, PROFIT }
 
-    /** What is asked about a named customer or supplier, beside his balance. */
-    enum class Facet { PHONE, DETAILS, LAST_PAYMENT, LAST_ENTRY, SINCE, LIMIT, PROMISE, ENTRIES }
+    /**
+     * What is asked about a named customer or supplier, beside his balance. [NOTE] is the owner's private note on him
+     * (14 Nov 2026): read by [HudhudNote] only, never by the sense (see [decide]).
+     */
+    enum class Facet { PHONE, DETAILS, LAST_PAYMENT, LAST_ENTRY, SINCE, LIMIT, PROMISE, ENTRIES, NOTE }
 
     /** What is asked about a product: everything at once ([OVERVIEW]) when only its name is said. */
     enum class GoodsFacet { OVERVIEW, PRICE, STOCK, COST, SUPPLIERS, LAST_IN, BUYERS, SOLD }
@@ -335,6 +338,10 @@ object Hudhud {
     /** The meanings that are about one person: the sense may only sharpen a reading of somebody into one of these. */
     private fun personal(label: String) = label.startsWith("party_") || label.startsWith("entry_")
 
+    /** The owner's private note on somebody, or on whoever has one ("whose?"): the rules' reading, never the sense's. */
+    private fun isNoteAsk(a: Ask): Boolean =
+        (a is Ask.Person && a.facet == Facet.NOTE) || (a is Ask.NeedName && a.facet == Facet.NOTE)
+
     private fun groundOf(a: Ask): Ground = when (a) {
         Ask.Unknown, is Ask.DidYouMean, is Ask.NeedName, is Ask.Guessed -> Ground.NONE
         Ask.Hello -> Ground.WEAK
@@ -416,6 +423,10 @@ object Hudhud {
         heard: String, ruled: Ask, guesses: List<HudhudSense.Guess>, names: List<Name>, topics: List<Topic>,
         language: String?, goods: List<Name>, before: Ask? = null
     ): Ask {
+        // The owner's private note on somebody (14 Nov 2026): read by [HudhudNote] alone. The bank has no meaning for it,
+        // and the sense, which learnt "details" and "number" from sentences with a name in them, would turn "Ali ka note"
+        // into his details. Before anything else, so no branch below can reach it.
+        if (isNoteAsk(ruled)) return ruled
         val top = guesses.firstOrNull() ?: return ruled
         if (labelOf(ruled) == top.label) return ruled
         val p = top.score
@@ -622,6 +633,8 @@ object Hudhud {
             Facet.LAST_PAYMENT -> "party_last_payment"
             Facet.LIMIT -> "party_limit"
             Facet.PROMISE -> "party_promise"
+            // The private note has no meaning in the bank: only [HudhudNote] reads it, and the sense never turns it.
+            Facet.NOTE -> null
             else -> "party_details"
         }
         is Ask.Entry -> if (a.isGiven) "entry_gave" else "entry_got"
@@ -830,6 +843,12 @@ object Hudhud {
         // "When did he last pay" is the past: only a payment still to come is the Radar's.
         val willPay = (has(joined, WILL_PAY) || ((has(joined, WHEN) || has(joined, WHO)) && has(joined, PAY))) &&
             !mind.has(HudhudMind.C.LAST) && "did" !in said
+        // The owner's private note on somebody (14 Nov 2026): "Ali ka note", "Ali's private note", "uska niji note", "kis ka note
+        // hai". Only a sentence of nothing but the note's words, a name and little words ([HudhudNote]); any other is read as
+        // before. Taken before the features and the follow-ups: a carried "uska note" is the note, not the balance.
+        HudhudNote.read(heard, calling = { it in VOCATIVE_SET }) { w ->
+            knownName(w, names) || knownName(bengaliStem(w), names) || acrossScripts(names, listOf(w)).isNotEmpty()
+        }?.let { n -> noteAsk(n, said, names, topics, mind, window, before)?.let { return it } }
         if (named.isEmpty() && product.isEmpty()) byFeature(said, joined, mind, window, topics)?.let { return it }
         followUp(mind, named, product, figure, window, willPay, before)?.let { return it }
         // "Aap ko kisi cheez ka pata hai?" asks what he knows (13 Nov 2026, the owner's screenshot: it was read as the
@@ -1838,6 +1857,35 @@ object Hudhud {
         val loose = namedIn(said, names, topics, soft = true)
         if (loose.isNotEmpty() && soft < 2 && book(m, window) != null) return emptyList()
         return loose
+    }
+
+    /**
+     * What the note reader's sentence asks (14 Nov 2026): the note of the person the words name; of the person the talk
+     * was about when it names nobody ("uska note", "private note?", a bare "note?") unless it asks for everybody's or for
+     * "my" notes; else "whose?" with the customers who have one ("kis kis ka note hai", "mere notes", "note dikhao" with
+     * nobody before it). Never a guess, never a question back: the list is the answer. A bare "note" is his too: it fell
+     * to the sense, which read it as "jump".
+     *
+     * The note's own word asks and never names: a book with a "Note House" in it found that customer in every "uska note" and
+     * "kis kis ka note hai" (the word matched his name), so who is named is read from the sentence's other words. And a
+     * customer whose own name holds the word, said as often as his name holds it and with nothing that says it is the note
+     * ("niji", "uska", "mera"), is the customer and not the ask: "Note House" is his balance, "Note House ka note" his note.
+     * Null then: the sentence goes on to the rest of the reading as if the note reader had not looked at it.
+     */
+    private fun noteAsk(
+        n: HudhudNote.Read, said: List<String>, names: List<Name>, topics: List<Topic>, m: HudhudMind.Read,
+        window: VoiceQuestion.Window?, before: Ask?
+    ): Ask? {
+        val named = whoIsNamed(said.filterNot { HudhudNote.isNoteWord(it) }, names, topics, m, window)
+        if (named.isNotEmpty()) {
+            val noteWords = said.count { HudhudNote.isNoteWord(it) }
+            val inTheirNames = names.filter { it.id in named }.maxOfOrNull { nm -> words(nm.name).count { HudhudNote.isNoteWord(it) } } ?: 0
+            if (inTheirNames > 0 && noteWords <= inTheirNames && !n.specific) return null
+            return Ask.Person(named, Facet.NOTE)
+        }
+        val carried = before?.let { partyOf(it) }
+        if (carried != null && !n.anyone && !n.mine) return Ask.Person(carried, Facet.NOTE)
+        return Ask.NeedName(Facet.NOTE)
     }
 
     /**

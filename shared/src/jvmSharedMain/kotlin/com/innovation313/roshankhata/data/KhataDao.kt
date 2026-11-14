@@ -114,6 +114,13 @@ interface KhataDao {
     suspend fun liveCustomerIds(): List<Long>
 
     /**
+     * The live customers and suppliers the owner has written a private note on ([PartyNote]): their ids only, so a list
+     * ("kis kis ka note hai", Hudhud, 14 Nov 2026) never reads a long note it does not show. Reads only.
+     */
+    @Query("SELECT id FROM parties WHERE isDeleted = 0 AND note IS NOT NULL AND TRIM(note) <> '' ORDER BY id")
+    suspend fun partyIdsWithNote(): List<Long>
+
+    /**
      * Fasal ka Hisaab: the live lines of live CUSTOMERS (suppliers are not
      * crop credit) from [since] on - the Seasons screen reads its window
      * only (9 Oct), with [observeSeasonCarriedIn] for what came before.

@@ -1064,6 +1064,7 @@
     <string name="hudhud_replay">Dengar lagi</string>
     <string name="hudhud_unknown">Ini tidak saya temukan di buku Anda. Pertanyaan terdekat yang bisa saya jawab ada di bawah.</string>
     <string name="hudhud_owner_only">Angka ini hanya bisa dilihat pemilik atau manajer.</string>
+    <string name="hudhud_owner_only_exact">Ini hanya bisa dilihat pemilik.</string>
     <string name="hudhud_quiet">Saldo disembunyikan di Beranda, jadi jumlahnya saya tulis di sini tanpa diucapkan.</string>
     <string name="hudhud_no_voice">Ponsel ini tidak punya suara untuk bahasa ini. Jawabannya tertulis di sini; suara bisa diunduh di Pengaturan suara.</string>
     <string name="hudhud_voice_on">Suara Hudhud aktif</string>
@@ -4394,7 +4395,7 @@
     <string name="hudhud_t_collected">Uang yang masuk</string>
     <string name="hudhud_l_from_customers">Dari pelanggan</string>
     <string name="hudhud_l_cashbook_in">Pemasukan buku kas</string>
-    <string name="hudhud_can_people">Nomor pelanggan, pembayaran terakhir, batas, atau janjinya — tanyakan dengan namanya</string>
+    <string name="hudhud_can_people">Nomor pelanggan, pembayaran terakhir, batas, janji, atau catatan pribadinya — tanyakan dengan namanya</string>
     <string name="hudhud_can_goods">Harga barang, stok, harga beli, dan pemasok mana yang lebih murah</string>
     <string name="hudhud_can_book">Faktur hari ini, barang masuk, uang masuk, dan siapa mengubah apa</string>
     <string name="hudhud_can_shop">Detail toko Anda, tanggal hari ini, dan seberapa sering aplikasi dan kalkulator dipakai</string>
@@ -4429,6 +4430,12 @@
     <string name="hudhud_need_promise">Tanggal janji pelanggan terbaru</string>
     <string name="hudhud_need_recent">Pelanggan terbaru</string>
     <string name="hudhud_need_hint">Untuk satu pelanggan, sebutkan namanya: “nomor Ali”.</string>
+    <string name="hudhud_need_note">Catatan pribadi</string>
+    <string name="hudhud_l_note_count">Dengan catatan pribadi</string>
+    <string name="hudhud_need_note_hint">Untuk satu pelanggan, sebutkan namanya: “catatan Ali”.</string>
+    <string name="hudhud_note_none">Belum ada catatan pribadi tersimpan untuk %1$s.</string>
+    <string name="hudhud_note_nobody">Belum ada catatan pribadi yang tersimpan. Untuk menambahkan, buka seorang pelanggan, ketuk ⋮, lalu “%1$s”, dan isi “%2$s”.</string>
+    <string name="hudhud_note_helper">Ponsel pembantu tidak menyimpan catatan pribadi.</string>
     <string name="hudhud_no_phone_short">Tanpa nomor</string>
     <string name="hudhud_t_cashbook">Buku Kas</string>
     <string name="hudhud_cashbook_none">Tidak ada yang dicatat di Buku Kas dalam waktu ini.</string>

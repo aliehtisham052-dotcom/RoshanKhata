@@ -1088,6 +1088,7 @@
     <string name="hudhud_replay">Hear again</string>
     <string name="hudhud_unknown">I could not find this in your khata. The nearest questions I can answer are below.</string>
     <string name="hudhud_owner_only">Only the owner or a manager can see this figure.</string>
+    <string name="hudhud_owner_only_exact">Only the owner can see this.</string>
     <string name="hudhud_quiet">Balances are hidden on Home, so I write amounts here and do not say them aloud.</string>
     <string name="hudhud_no_voice">This phone has no voice for this language. The answer is written here; Voice settings can get one.</string>
     <string name="hudhud_voice_on">Hudhud\'s voice is on</string>
@@ -4633,7 +4634,7 @@
     <string name="hudhud_t_collected">Money that came in</string>
     <string name="hudhud_l_from_customers">From customers</string>
     <string name="hudhud_l_cashbook_in">Cashbook income</string>
-    <string name="hudhud_can_people">A customer\'s number, last payment, limit or promise — ask with the name</string>
+    <string name="hudhud_can_people">A customer\'s number, last payment, limit, promise or private note — ask with the name</string>
     <string name="hudhud_can_goods">An item\'s price, stock, purchase rate and which supplier is cheaper</string>
     <string name="hudhud_can_book">Today\'s invoices, goods that came in, money that came in, and who changed what</string>
     <string name="hudhud_can_shop">Your shop\'s details, today\'s date, and how often the app and calculator were used</string>
@@ -4668,6 +4669,12 @@
     <string name="hudhud_need_promise">Promised days of recent customers</string>
     <string name="hudhud_need_recent">Recent customers</string>
     <string name="hudhud_need_hint">For one customer, add the name: “Ali\'s number”.</string>
+    <string name="hudhud_need_note">Private notes</string>
+    <string name="hudhud_l_note_count">With a private note</string>
+    <string name="hudhud_need_note_hint">For one customer, add the name: “Ali\'s note”.</string>
+    <string name="hudhud_note_none">No private note is saved for %1$s.</string>
+    <string name="hudhud_note_nobody">No private note is saved yet. To add one, open a customer, tap ⋮, then “%1$s”, and fill in “%2$s”.</string>
+    <string name="hudhud_note_helper">A helper\'s phone does not keep private notes.</string>
     <string name="hudhud_no_phone_short">No number</string>
     <string name="hudhud_t_cashbook">Cashbook</string>
     <string name="hudhud_cashbook_none">Nothing was written in the cashbook in this time.</string>

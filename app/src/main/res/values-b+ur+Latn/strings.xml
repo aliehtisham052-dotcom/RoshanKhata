@@ -1046,6 +1046,7 @@
     <string name="hudhud_replay">Dobara sunein</string>
     <string name="hudhud_unknown">Yeh aap ke khate mein nahi mila. Is ke qareeb tareen sawal, jin ka jawab de sakta hoon, neeche hain.</string>
     <string name="hudhud_owner_only">Ye raqam sirf maalik ya manager dekh sakte hain.</string>
+    <string name="hudhud_owner_only_exact">Ye sirf maalik dekh sakte hain.</string>
     <string name="hudhud_quiet">Home par balance chhupa hai, is liye main raqam yahan likhta hoon, bolta nahi.</string>
     <string name="hudhud_no_voice">Is phone mein is zaban ki awaaz nahi. Jawab yahan likha hai; awaaz ki settings se awaaz li ja sakti hai.</string>
     <string name="hudhud_voice_on">Hudhud ki awaaz chalu hai</string>
@@ -4420,7 +4421,7 @@
     <string name="hudhud_t_collected">Wusool hui raqam</string>
     <string name="hudhud_l_from_customers">Gahakon se</string>
     <string name="hudhud_l_cashbook_in">Cashbook ki aamdani</string>
-    <string name="hudhud_can_people">Kisi gahak ka number, aakhri adaigi, hadd ya wada — naam le kar poochein</string>
+    <string name="hudhud_can_people">Kisi gahak ka number, aakhri adaigi, hadd, wada ya niji note — naam le kar poochein</string>
     <string name="hudhud_can_goods">Kisi item ki qeemat, stock, khareed rate aur kis supplier ka sasta hai</string>
     <string name="hudhud_can_book">Aaj ki invoices, aaya hua maal, aayi hui raqam, aur kis ne kya badla</string>
     <string name="hudhud_can_shop">Aap ki dukaan ki tafseel, aaj ki tareekh, aur app aur calculator kitni baar istemal hue</string>
@@ -4455,6 +4456,12 @@
     <string name="hudhud_need_promise">Haaliya gahakon ke waade ke din</string>
     <string name="hudhud_need_recent">Haaliya gahak</string>
     <string name="hudhud_need_hint">Kisi ek gahak ke liye naam bhi kahein: “Ali ka number”.</string>
+    <string name="hudhud_need_note">Niji notes</string>
+    <string name="hudhud_l_note_count">Niji note wale</string>
+    <string name="hudhud_need_note_hint">Kisi ek gahak ke liye naam bhi kahein: “Ali ka note”.</string>
+    <string name="hudhud_note_none">%1$s ka koi niji note mehfooz nahi hai.</string>
+    <string name="hudhud_note_nobody">Abhi kisi ka niji note mehfooz nahi. Note likhne ke liye kisi gahak ko kholein, ⋮ dabayein, phir “%1$s” mein “%2$s” likhein.</string>
+    <string name="hudhud_note_helper">Madadgar ke phone par niji note mehfooz nahi hote.</string>
     <string name="hudhud_no_phone_short">Number nahi</string>
     <string name="hudhud_t_cashbook">Cashbook</string>
     <string name="hudhud_cashbook_none">Is arse mein cashbook mein kuch nahi likha gaya.</string>

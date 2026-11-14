@@ -1074,6 +1074,7 @@
     <string name="hudhud_replay">دوباره بشنوید</string>
     <string name="hudhud_unknown">این را در دفترتان پیدا نکردم. نزدیک‌ترین پرسش‌هایی که می‌توانم پاسخ دهم در پایین است.</string>
     <string name="hudhud_owner_only">این رقم را فقط مالک یا مدیر می‌بیند.</string>
+    <string name="hudhud_owner_only_exact">این را فقط مالک می‌بیند.</string>
     <string name="hudhud_quiet">مانده در صفحه اصلی پنهان است، پس مبلغ را اینجا می‌نویسم و بلند نمی‌گویم.</string>
     <string name="hudhud_no_voice">این گوشی برای این زبان صدایی ندارد. پاسخ اینجا نوشته شده؛ از تنظیمات صدا می‌توان صدایی گرفت.</string>
     <string name="hudhud_voice_on">صدای هدهد روشن است</string>
@@ -4448,7 +4449,7 @@
     <string name="hudhud_t_collected">پول دریافتی</string>
     <string name="hudhud_l_from_customers">از مشتریان</string>
     <string name="hudhud_l_cashbook_in">درآمد دفتر صندوق</string>
-    <string name="hudhud_can_people">شماره یک مشتری، آخرین پرداخت، سقف یا وعده‌اش — با نام بپرسید</string>
+    <string name="hudhud_can_people">شماره یک مشتری، آخرین پرداخت، سقف، وعده یا یادداشت خصوصی‌اش — با نام بپرسید</string>
     <string name="hudhud_can_goods">قیمت یک کالا، موجودی، نرخ خرید و اینکه کدام تأمین‌کننده ارزان‌تر است</string>
     <string name="hudhud_can_book">فاکتورهای امروز، کالای رسیده، پول دریافتی و اینکه چه کسی چه چیزی را تغییر داد</string>
     <string name="hudhud_can_shop">مشخصات مغازه‌تان، تاریخ امروز و اینکه برنامه و ماشین‌حساب چند بار به کار رفت</string>
@@ -4483,6 +4484,12 @@
     <string name="hudhud_need_promise">روزهای قول‌داده مشتریان اخیر</string>
     <string name="hudhud_need_recent">مشتریان اخیر</string>
     <string name="hudhud_need_hint">برای یک مشتری، نامش را هم بگویید: “شماره علی”.</string>
+    <string name="hudhud_need_note">یادداشت‌های خصوصی</string>
+    <string name="hudhud_l_note_count">دارای یادداشت خصوصی</string>
+    <string name="hudhud_need_note_hint">برای یک مشتری، نامش را هم بگویید: “یادداشت علی”.</string>
+    <string name="hudhud_note_none">برای %1$s یادداشت خصوصی‌ای ذخیره نشده است.</string>
+    <string name="hudhud_note_nobody">هنوز یادداشت خصوصی‌ای ذخیره نشده است. برای افزودن، یک مشتری را باز کنید، ⋮ را بزنید، سپس “%1$s” را انتخاب کنید و “%2$s” را بنویسید.</string>
+    <string name="hudhud_note_helper">گوشی دستیار یادداشت‌های خصوصی را نگه نمی‌دارد.</string>
     <string name="hudhud_no_phone_short">بدون شماره</string>
     <string name="hudhud_t_cashbook">صندوق</string>
     <string name="hudhud_cashbook_none">در این مدت چیزی در صندوق نوشته نشد.</string>

@@ -7,8 +7,9 @@ package com.innovation313.roshankhata.data
  *  - It is the owner's, not the customer's: it is never printed on a statement, a reminder, a receipt or the
  *    customer's card, and the customer's page shows only that there is one (a chip); its words open on a tap, as
  *    the Payment Radar's do — the customer may be looking at the screen across the counter.
- *  - It is part of the book: kept by every backup, carried to the owner's other devices by a live sync, and on a
- *    helper's read-only copy, as the rest of the account is.
+ *  - It is part of the book: kept by every backup, carried to the owner's other devices by a live sync. A helper's
+ *    read-only copy carries NONE (`BackupCodec` writes it only with `secrets`, 8 Nov 2026 review m42), nor does a Waris
+ *    snapshot: what the shop knows of a person is the owner's, not the helper's.
  *  - It is kept short ([MAX]): a note, not a diary.
  */
 object PartyNote {

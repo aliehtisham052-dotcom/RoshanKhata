@@ -37,6 +37,8 @@ on:
       # Hudhud only reads (check_hudhud_readonly.py).
       - 'scripts/check_hudhud_readonly.py'
       - 'scripts/gen_viewer_dao.py'
+      # Hudhud's catalog: every stored column, screen, tile and More entry has a decision (gen_hudhud_catalog.py --check).
+      - 'scripts/gen_hudhud_catalog.py'
   pull_request:
     paths:
       - 'app/src/main/res/values*/strings.xml'
@@ -65,6 +67,8 @@ on:
       # Hudhud only reads (check_hudhud_readonly.py).
       - 'scripts/check_hudhud_readonly.py'
       - 'scripts/gen_viewer_dao.py'
+      # Hudhud's catalog: every stored column, screen, tile and More entry has a decision (gen_hudhud_catalog.py --check).
+      - 'scripts/gen_hudhud_catalog.py'
 
 jobs:
   parity:
@@ -100,3 +104,8 @@ jobs:
       # run raw SQL, send a message or open a network call (scripts/check_hudhud_readonly.py).
       - name: Hudhud only reads (no write, no send, no network call in any of his files)
         run: python3 scripts/check_hudhud_readonly.py
+      # The owner's rule: Hudhud's reach is the app's own map, not a list somebody remembered. A new table, column, screen, Home tile
+      # or More entry fails here until shared/hudhud/catalog/decisions.tsv says what Hudhud does with it, and every claim that he
+      # tells something is held to the code that tells it and to the gate its own screen asks (scripts/gen_hudhud_catalog.py).
+      - name: Hudhud's catalog is complete and current (every column, screen, tile and More entry decided)
+        run: python3 scripts/gen_hudhud_catalog.py --check

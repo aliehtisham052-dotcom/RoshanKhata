@@ -1086,6 +1086,7 @@
     <string name="hudhud_replay">फिर से सुनें</string>
     <string name="hudhud_unknown">यह आपके खाते में नहीं मिला। इसके सबसे करीब के सवाल, जिनका जवाब दे सकता हूँ, नीचे हैं।</string>
     <string name="hudhud_owner_only">यह रकम सिर्फ मालिक या मैनेजर देख सकते हैं।</string>
+    <string name="hudhud_owner_only_exact">यह सिर्फ मालिक देख सकते हैं।</string>
     <string name="hudhud_quiet">होम पर बैलेंस छुपा है, इसलिए मैं रकम यहाँ लिखता हूँ, बोलता नहीं।</string>
     <string name="hudhud_no_voice">इस मोबाइल में इस भाषा की आवाज नहीं है। जवाब यहाँ लिखा है; आवाज की सेटिंग से आवाज ली जा सकती है।</string>
     <string name="hudhud_voice_on">हुदहुद की आवाज चालू है</string>
@@ -4468,7 +4469,7 @@
     <string name="hudhud_t_collected">वसूल हुई रकम</string>
     <string name="hudhud_l_from_customers">ग्राहकों से</string>
     <string name="hudhud_l_cashbook_in">कैशबुक की आमदनी</string>
-    <string name="hudhud_can_people">किसी ग्राहक का नंबर, आखिरी भुगतान, सीमा या वादा — नाम लेकर पूछें</string>
+    <string name="hudhud_can_people">किसी ग्राहक का नंबर, आखिरी भुगतान, सीमा, वादा या निजी नोट — नाम लेकर पूछें</string>
     <string name="hudhud_can_goods">किसी आइटम का भाव, स्टॉक, खरीद रेट और किस सप्लायर का सस्ता है</string>
     <string name="hudhud_can_book">आज की इनवॉइस, आया हुआ माल, आई हुई रकम, और किसने क्या बदला</string>
     <string name="hudhud_can_shop">आपकी दुकान की जानकारी, आज की तारीख, और ऐप और कैलकुलेटर कितनी बार इस्तेमाल हुए</string>
@@ -4503,6 +4504,12 @@
     <string name="hudhud_need_promise">हाल के ग्राहकों के वादे के दिन</string>
     <string name="hudhud_need_recent">हाल के ग्राहक</string>
     <string name="hudhud_need_hint">किसी एक ग्राहक के लिए नाम भी कहें: “अली का नंबर”।</string>
+    <string name="hudhud_need_note">निजी नोट</string>
+    <string name="hudhud_l_note_count">निजी नोट वाले</string>
+    <string name="hudhud_need_note_hint">किसी एक ग्राहक के लिए नाम भी कहें: “अली का नोट”।</string>
+    <string name="hudhud_note_none">%1$s का कोई निजी नोट सेव नहीं है।</string>
+    <string name="hudhud_note_nobody">अभी किसी का निजी नोट सेव नहीं है। नोट जोड़ने के लिए किसी ग्राहक को खोलें, ⋮ दबाएँ, फिर “%1$s” में “%2$s” भरें।</string>
+    <string name="hudhud_note_helper">सहायक के फ़ोन पर निजी नोट सेव नहीं रहते।</string>
     <string name="hudhud_no_phone_short">नंबर नहीं</string>
     <string name="hudhud_t_cashbook">कैशबुक</string>
     <string name="hudhud_cashbook_none">इस अवधि में कैशबुक में कुछ नहीं लिखा गया।</string>

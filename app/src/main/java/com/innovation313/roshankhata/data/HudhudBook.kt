@@ -365,7 +365,7 @@ object HudhudBook {
      * as lines; the chips under the card ask each of them in a tap. Said aloud, one sentence pointing at the list.
      */
     private fun abilities(context: Context): Answer {
-        val reports = Access.can(Access.Permission.REPORTS)
+        val reports = HudhudGate.reports()
         val lines = ArrayList<String>()
         lines += context.getString(R.string.hudhud_can_intro)
         if (reports) {
@@ -451,7 +451,7 @@ object HudhudBook {
     ): Answer {
         val labelRes = labelOf(kind)
         val label = context.getString(labelRes)
-        if (!Access.can(Access.Permission.REPORTS)) {
+        if (!HudhudGate.reports()) {
             return Answer(Mood.CALM, label = label, lines = listOf(context.getString(R.string.hudhud_owner_only)))
         }
         // The day and the month exactly as Insights' own voice answers took them.
@@ -529,7 +529,7 @@ object HudhudBook {
     private suspend fun period(context: Context, dao: KhataDao, measure: Hudhud.Measure, window: VoiceQuestion.Window): Answer {
         val labelRes = periodLabel(measure, window)
         val label = context.getString(labelRes)
-        if (!Access.can(Access.Permission.REPORTS)) {
+        if (!HudhudGate.reports()) {
             return Answer(Mood.CALM, label = label, lines = listOf(context.getString(R.string.hudhud_owner_only)))
         }
         val (from, to) = Hudhud.span(window)
@@ -678,7 +678,7 @@ object HudhudBook {
      */
     private suspend fun whenPays(context: Context, dao: KhataDao, ids: List<Long>, parties: List<PartyWithBalance>): Answer {
         val label = context.getString(R.string.radar_title)
-        if (!Access.can(Access.Permission.REPORTS)) {
+        if (!HudhudGate.reports()) {
             return Answer(Mood.CALM, label = label, lines = listOf(context.getString(R.string.hudhud_owner_only)))
         }
         if (!RadarUi.on(context)) return Answer(Mood.CALM, label = label, lines = listOf(context.getString(R.string.radar_state_off)))
@@ -732,11 +732,18 @@ object HudhudBook {
 
     private fun shortDay(t: Long) = DateWords.format("d MMM", t)
 
-    /** Several customers the words could be: each offered, his page a tap away. */
-    internal fun pick(context: Context, found: List<PartyWithBalance>) = Answer(
+    /**
+     * Several customers the words could be: each offered, his page a tap away. For the private note (14 Nov 2026) a tap
+     * asks for that one's note instead — the note is what was asked, and Hudhud tells it, he does not open a page.
+     */
+    internal fun pick(context: Context, found: List<PartyWithBalance>, facet: Hudhud.Facet? = null) = Answer(
         Mood.CALM,
         label = context.getString(R.string.hudhud_pick_party),
-        rows = found.map { Row(it.id, it.name, money(abs(it.balance)), side(context, it.balance)) }, quiet = true
+        rows = found.map {
+            Row(it.id, it.name, money(abs(it.balance)), side(context, it.balance),
+                ask = if (facet == Hudhud.Facet.NOTE) Hudhud.Ask.Person(listOf(it.id), Hudhud.Facet.NOTE) else null)
+        },
+        quiet = true
     )
 
     // ------------------------------------------------------------------------------------------------ today
@@ -749,7 +756,7 @@ object HudhudBook {
      */
     private suspend fun today(context: Context, dao: KhataDao): Answer {
         val now = System.currentTimeMillis()
-        val radar = Access.can(Access.Permission.REPORTS) && RadarUi.on(context)
+        val radar = HudhudGate.reports() && RadarUi.on(context)
         val collect = if (ViewerMode.isOn(context)) null
         else runCatching { Automations.collect(dao, ReminderLog.openedToday(context, now), now, radar = radar) }.getOrNull()
         val alerts = runCatching { HomeAlerts.compute(context, dao) { Format.money(it) } }.getOrDefault(emptyList())
@@ -882,7 +889,7 @@ object HudhudBook {
      * every figure: told to a cashier before he counts, the expected cash says how much could go missing unseen.
      */
     private suspend fun drawer(context: Context, dao: KhataDao): Answer {
-        if (!Access.can(Access.Permission.REPORTS)) {
+        if (!HudhudGate.reports()) {
             return Answer(Mood.CALM, label = context.getString(R.string.z_expected),
                 lines = listOf(context.getString(R.string.hudhud_owner_only)))
         }
@@ -964,6 +971,7 @@ object HudhudBook {
                 Hudhud.Facet.LIMIT -> R.string.credit_limit
                 Hudhud.Facet.PROMISE -> R.string.hudhud_l_promise
                 Hudhud.Facet.ENTRIES -> R.string.hudhud_l_entries
+                Hudhud.Facet.NOTE -> R.string.party_note_label
             }
         )
         is Hudhud.Ask.Goods -> c.getString(
@@ -1029,7 +1037,7 @@ object HudhudBook {
      * or the page beside it. Figures behind REPORTS are offered only to those who may see them.
      */
     fun next(c: Context, ask: Hudhud.Ask): List<Hudhud.Ask> {
-        val reports = Access.can(Access.Permission.REPORTS)
+        val reports = HudhudGate.reports()
         val radar = reports && RadarUi.on(c)
         val today = VoiceQuestion.Window.TODAY
         fun person(id: Long, f: Hudhud.Facet) = Hudhud.Ask.Person(listOf(id), f)
@@ -1129,7 +1137,15 @@ object HudhudBook {
             is Hudhud.Ask.Guessed -> return next(c, ask.ask)
             else -> emptyList()
         }
-        return out.filter { a -> a != ask && (reports || !needsReports(a)) }.distinct().take(MAX_NEXT)
+        val owner = HudhudGate.staff()
+        return out.filter { a -> a != ask && (reports || !needsReports(a)) && (owner || !needsOwner(a)) }.distinct().take(MAX_NEXT)
+    }
+
+    /** A question whose answer only the owner may see: who works here and what each is owed (Staff is the owner's screen). */
+    private fun needsOwner(a: Hudhud.Ask): Boolean = when (a) {
+        is Hudhud.Ask.Status -> a.of == Hudhud.StatusOf.STAFF
+        is Hudhud.Ask.Count -> a.thing == Hudhud.Thing.STAFF
+        else -> false
     }
 
     /** A question whose answer is a figure only the owner or a manager may see. */
@@ -1146,7 +1162,7 @@ object HudhudBook {
      * cheque or a plan due, a bill, low stock, the drawer, the backup, a late payer — asked in one tap.
      */
     suspend fun suggested(c: Context, dao: KhataDao): List<Hudhud.Ask> {
-        val reports = Access.can(Access.Permission.REPORTS)
+        val reports = HudhudGate.reports()
         val alerts = runCatching { HomeAlerts.compute(c, dao) { Format.money(it) } }.getOrDefault(emptyList())
         return alerts.mapNotNull { a ->
             when (a.kind) {

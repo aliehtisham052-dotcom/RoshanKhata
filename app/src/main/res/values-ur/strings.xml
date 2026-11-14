@@ -1046,6 +1046,7 @@
     <string name="hudhud_replay">دوبارہ سنیں</string>
     <string name="hudhud_unknown">یہ آپ کے کھاتے میں نہیں ملا۔ اس کے قریب ترین سوال، جن کا جواب دے سکتا ہوں، نیچے ہیں۔</string>
     <string name="hudhud_owner_only">یہ رقم صرف مالک یا منیجر دیکھ سکتے ہیں۔</string>
+    <string name="hudhud_owner_only_exact">یہ صرف مالک دیکھ سکتے ہیں۔</string>
     <string name="hudhud_quiet">ہوم پر بیلنس چھپا ہے، اس لیے میں رقم یہاں لکھتا ہوں، بولتا نہیں۔</string>
     <string name="hudhud_no_voice">اس فون میں اس زبان کی آواز نہیں۔ جواب یہاں لکھا ہے؛ آواز کی ترتیبات سے آواز لی جا سکتی ہے۔</string>
     <string name="hudhud_voice_on">ہُدہُد کی آواز چالو ہے</string>
@@ -4420,7 +4421,7 @@
     <string name="hudhud_t_collected">وصول ہوئی رقم</string>
     <string name="hudhud_l_from_customers">گاہکوں سے</string>
     <string name="hudhud_l_cashbook_in">کیش بک کی آمدنی</string>
-    <string name="hudhud_can_people">کسی گاہک کا نمبر، آخری ادائیگی، حد یا وعدہ — نام لے کر پوچھیں</string>
+    <string name="hudhud_can_people">کسی گاہک کا نمبر، آخری ادائیگی، حد، وعدہ یا نجی نوٹ — نام لے کر پوچھیں</string>
     <string name="hudhud_can_goods">کسی آئٹم کی قیمت، اسٹاک، خرید ریٹ اور کس سپلائر کا سستا ہے</string>
     <string name="hudhud_can_book">آج کی انوائسیں، آیا ہوا مال، آئی ہوئی رقم، اور کس نے کیا بدلا</string>
     <string name="hudhud_can_shop">آپ کی دکان کی تفصیل، آج کی تاریخ، اور ایپ اور کیلکولیٹر کتنی بار استعمال ہوئے</string>
@@ -4455,6 +4456,12 @@
     <string name="hudhud_need_promise">حالیہ گاہکوں کے وعدے کے دن</string>
     <string name="hudhud_need_recent">حالیہ گاہک</string>
     <string name="hudhud_need_hint">کسی ایک گاہک کے لیے نام بھی کہیں: “علی کا نمبر”۔</string>
+    <string name="hudhud_need_note">نجی نوٹ</string>
+    <string name="hudhud_l_note_count">نجی نوٹ والے</string>
+    <string name="hudhud_need_note_hint">کسی ایک گاہک کے لیے نام بھی کہیں: “علی کا نوٹ”۔</string>
+    <string name="hudhud_note_none">%1$s کا کوئی نجی نوٹ محفوظ نہیں۔</string>
+    <string name="hudhud_note_nobody">ابھی کسی کا نجی نوٹ محفوظ نہیں۔ نوٹ لکھنے کے لیے کسی گاہک کو کھولیں، ⋮ دبائیں، پھر “%1$s” میں “%2$s” لکھیں۔</string>
+    <string name="hudhud_note_helper">مددگار کے فون پر نجی نوٹ محفوظ نہیں ہوتے۔</string>
     <string name="hudhud_no_phone_short">نمبر نہیں</string>
     <string name="hudhud_t_cashbook">کیش بک</string>
     <string name="hudhud_cashbook_none">اس عرصے میں کیش بک میں کچھ نہیں لکھا گیا۔</string>
