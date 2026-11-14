@@ -178,4 +178,9 @@
     <!-- Hudhud's stage on his sheet (12 Nov 2026): no light by day, a faint warm one by night. -->
     <color name="hudhud_glow">#33FFDA6B</color>
     <color name="hudhud_sheet">#191D1B</color>
+    <color name="hudhud_sky_top">#1F2E27</color>
+    <color name="hudhud_sky_bottom">#2A271D</color>
+    <color name="hudhud_branch">#B9A074</color>
+    <color name="hudhud_shadow">#59000000</color>
+    <color name="hudhud_verse_bg">#262A22</color>
 </resources>

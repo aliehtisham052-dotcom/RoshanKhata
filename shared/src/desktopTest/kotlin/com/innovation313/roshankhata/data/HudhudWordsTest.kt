@@ -25,6 +25,7 @@ class HudhudWordsTest {
         "vq_expiring" to Kind.EXPIRING,
         "vq_not_paid" to Kind.NOT_PAID,
         "vq_who_owes_most" to Kind.WHO_OWES_MOST,
+        "vq_who_owes_least" to Kind.WHO_OWES_LEAST,
         "vq_sales_today" to Kind.SALES_TODAY,
         "vq_sales_month" to Kind.SALES_MONTH,
         "vq_to_give" to Kind.TO_GIVE,
@@ -78,7 +79,7 @@ class HudhudWordsTest {
             val words = desktopWords(Locale.forLanguageTag(tag))
             for ((name, ask) in cases) {
                 val label = words.text(name)
-                val got = Hudhud.understand(label, names, emptyList(), null, goods, before)
+                val got = Hudhud.understand(label, names, emptyList(), tag, goods, before)
                 if (got != ask) wrong += "$tag $name \"$label\" -> $got"
             }
         }
@@ -106,6 +107,24 @@ class HudhudWordsTest {
             "hudhud_chip_cashbook" to Hudhud.Ask.Cashbook(today),
             "hudhud_chip_returns" to Hudhud.Ask.Returns(today)
         ))
+        assertEquals(wrong.joinToString("\n"), 0, wrong.size)
+    }
+
+    /**
+     * 14 Nov 2026: the faith chips and the history chips, in all nine languages. They are read by Hudhud's two strict
+     * readers (HudhudFaith, HudhudStory), so a chip changed later into words a reader does not take fails here.
+     * The faith chips live in the Personal tab only, but a person may type them in the Ask tab too.
+     */
+    @Test fun `the faith and history chips are understood as themselves, in all nine languages`() {
+        val wrong = wrongOf(mapOf(
+            "hudhud_chip_tawheed" to Hudhud.Ask.About(Hudhud.AboutTopic.TAWHEED),
+            "hudhud_chip_hamd" to Hudhud.Ask.About(Hudhud.AboutTopic.HAMD),
+            "hudhud_chip_risalat" to Hudhud.Ask.About(Hudhud.AboutTopic.RISALAT),
+            "hudhud_chip_story" to Hudhud.Ask.About(Hudhud.AboutTopic.HOOPOE_STORY),
+            "hudhud_chip_published" to Hudhud.Ask.About(Hudhud.AboutTopic.APP_PUBLISHED),
+            "hudhud_chip_hudhud_added" to Hudhud.Ask.About(Hudhud.AboutTopic.HUDHUD_ADDED),
+            "hudhud_chip_history" to Hudhud.Ask.About(Hudhud.AboutTopic.APP_JOURNEY)
+        ), names = book)
         assertEquals(wrong.joinToString("\n"), 0, wrong.size)
     }
 
@@ -137,6 +156,31 @@ class HudhudWordsTest {
             "hudhud_l_last_in" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.LAST_IN),
             "hudhud_chip_details" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.OVERVIEW)
         ), before = Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.PRICE), names = book)
+        assertEquals(wrong.joinToString("\n"), 0, wrong.size)
+    }
+
+    /**
+     * 14 Nov 2026, the voice settings' "How he says Alhamdulillah": each way the owner can choose is HEARD, in the
+     * settings' own sample sentence, as a different sound — so the choice is never a button that changes nothing. The word
+     * is found in the sample in every script (the respelling's own patterns), only the word changes, and every language
+     * that offers more than one way gives as many different sentences as it has ways. The keys are the ones the voice
+     * speaks: Roman Urdu is said from the Urdu words ("ur"), Indonesian is "in" (HudhudVoice.appKey).
+     */
+    @Test fun `each way of saying Alhamdulillah changes the settings' own sample sentence`() {
+        val keyOf = linkedMapOf("en" to "en", "ur" to "ur", "ar" to "ar", "fa" to "fa", "hi" to "hi", "bn" to "bn", "id" to "in")
+        val wrong = ArrayList<String>()
+        for ((tag, key) in keyOf) {
+            val sample = desktopWords(Locale.forLanguageTag(tag)).text("hudhud_pron_sample")
+            val ways = HudhudPronounce.ways(HudhudPronounce.Word.ALHAMDULILLAH, key)
+            if (ways.size < 2) { wrong += "$tag: only ${ways.size} way offered"; continue }
+            val said = ways.indices.map { way -> HudhudPronounce.apply(sample, key) { way } }
+            if (said.toSet().size != ways.size) {
+                wrong += "$tag: ${ways.size} ways give ${said.toSet().size} different sentences: $said"
+            }
+            // Only the word changes: what follows the sample's first comma is the same whichever way is chosen.
+            val tails = said.map { s -> s.substring(s.indexOfFirst { it == ',' || it == '،' }.coerceAtLeast(0)) }
+            if (tails.toSet().size != 1) wrong += "$tag: the rest of the sentence changed with the way: $tails"
+        }
         assertEquals(wrong.joinToString("\n"), 0, wrong.size)
     }
 }

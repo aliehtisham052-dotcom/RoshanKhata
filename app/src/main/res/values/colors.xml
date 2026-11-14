@@ -441,4 +441,12 @@
     <!-- Hudhud's sheet: the page's colour by day; by night a step lighter than the page, so the sheet stands off
          the dimmed screen behind it and its white-by-day cards still stand off it. -->
     <color name="hudhud_sheet">#F7F6F2</color>
+    <!-- The sky at the top of his sheet (14 Nov 2026): a soft green fading into warm cream by day, a deep green fading into
+         a warm dark by night; his branch and the shadow under him. Every pair keeps his gold and brown readable on it. -->
+    <color name="hudhud_sky_top">#E3F0E8</color>
+    <color name="hudhud_sky_bottom">#FBF6E8</color>
+    <color name="hudhud_branch">#8B6B3E</color>
+    <color name="hudhud_shadow">#26000000</color>
+    <!-- A verse he shows (Tawheed, hamd, risalat): a quiet panel beside the words, never a button. -->
+    <color name="hudhud_verse_bg">#F5F1E3</color>
 </resources>
