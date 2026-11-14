@@ -19,8 +19,8 @@ No account, no server, no ads. Everything stays on the phone.
     more; tests not counted; counted 8 Nov 2026): sums, voice parsing, search, dates, the Room database, the
     backup format, the shared Compose screens. Android and Windows both run it.
   - `:desktop` — Roshan Khata for Windows (Compose Desktop, MSI)
-- About 3,044 string lines (3,038 translatable keys checked by `scripts/check_strings.py`) and 65 plurals in
-  values/strings.xml (counted 8 Nov 2026; earlier counts are in git) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
+- About 3,518 string lines (3,512 translatable keys checked by `scripts/check_strings.py`) and 75 plurals in
+  values/strings.xml (counted 14 Nov 2026; earlier counts are in git) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
 - Room database, version 44 (44: book_seals, 5 Nov 2026; 43: a party's private note, a cashbook row's and a cheque's picture path, 4 Nov 2026; 42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
   backup format 19 (the seals, 5 Nov 2026; 18 the note and the two picture paths, 4 Nov 2026; 17 documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
@@ -2796,6 +2796,17 @@ Each of these cost a build or a bug.
     Hudhud's voice) holds his real customers' names and his recogniser's garbles. It stays in the app for him to mark
     Right/Wrong. What comes out of it is the CLASS of each miss (a question word read as a name, "mujh par", a polite
     wrapper) with made-up names, never a row (lesson 80); the bank and the anonymised log test hold only invented ones.
+
+121. **A narrow ask gets a strict reader, not a retrain; a date nobody can prove is asked, never said.** Hudhud's history,
+    his own story and the matters of faith (14 Nov 2026) are read by `HudhudStory` and `HudhudFaith` over `StrictWords`: a
+    sentence is theirs only when every word is the topic's own or a little word that asks nothing, by whole words and never
+    by sound, and never when it holds a word of the book (`StrictWords.BOOK`); a name (Muhammad, Nabi, Ali) is read as a
+    matter of faith or of history only when the book has nobody by it. `HudhudMind`, the bank and `sense.bin` were not
+    touched, so nothing the sense learnt moved (lessons 106, 111, 112, 116). A date goes into an answer only when a record
+    proves it (`AppHistory`): the repository's first day is "the first work saved", never "made on"; the day the app first
+    came on Google Play is not in the records, so only the two days that are (Google's production access, and "public by")
+    are said and nothing between; and the word is "published", never "launched", in any language (`check_strings.py`'s
+    `history_failures` fails a launch word, or a name for the queen, in those keys).
 ---
 
 ## Working with the owner
@@ -3547,3 +3558,93 @@ for a doubtful one; a professional voice with even pauses; every language spoken
     drawing comes in on top and the old one goes in the second half (both fading at once left him half see-through).
   - Not changed, the owner's to decide: proper flight drawings (wings mid and down) would make the beat a real flap;
     a soft ground shadow while he hops; whether a tap while he listens should play an act. Not seen on a phone yet.
+
+### 14 Nov 2026: Hudhud's history, his own story, the Personal tab, matters of faith, his voice settings, bird calls and flights (phone; CI only — nothing tried on a real phone)
+
+The owner's round of 14 Nov: Hudhud knows when the app was started and published and when he himself was added; tells his
+own story as the hoopoe of Sulaiman (peace be upon him), in the first person, with its outcome as the Quran gives it;
+answers Tawheed, Hamd and Risalat when — and only when — asked; keeps all of that in a quiet Personal tab; and has a
+voice of his own (a Cartoon style, a pace slider, bird calls). **Only plain shared Kotlin was compiled and run here
+(lesson 93); every Android file is CI's first build, and no sound, animation, voice, haptic or slider was heard or seen
+on a phone.** Nothing in `HudhudMind`, the bank or `sense.bin` changed (lesson 121).
+
+- **Three strict readers** (`HudhudStory`, `HudhudFaith`, over `StrictWords`; lesson 121): `AboutTopic` gained APP_STARTED,
+  APP_PUBLISHED, HUDHUD_ADDED, APP_JOURNEY, HOOPOE_STORY, TAWHEED, HAMD and RISALAT (15 in all). The story reader is
+  asked first in `byRules`, the faith reader after talk and the address case, both before `HudhudMind`; `decide` never lets
+  the sense turn their readings (`STORY_TOPICS`, `FAITH_TOPICS`) and the sense's meaning map has nothing for them.
+- **History** (`AppHistory`, `HudhudFacts`): four dates a record proves — the first work saved 13 Jul 2026 (the
+  repository's first day, 17:55 UTC), Google's production access 16 Sep, "public by" 28 Oct (the owner's confirmation)
+  and Hudhud's first commit 12 Nov. It says "the first work saved", never "made"; the word is **published**, never
+  "launched", in every language (`check_strings.py`'s `history_failures`, keys named by `HISTORY_KEY`, also refuses a name
+  for the queen). **The day it first became public is not in the records**: this file says the first release was sent for
+  review on 19 Sep and an older note of the owner's says 17 Sep, so the answer gives production access and "confirmed
+  public by" and nothing between — ask the owner, then add the day to `AppHistory`. The test build says it is not the
+  Play one (`hudhud_hist_test_build`); the Windows app's date is not said (nothing proves it). Days since the first work
+  and since Hudhud are counted from midday, so a clock change cannot move a day. Chips: `hudhud_chip_published`,
+  `_hudhud_added`, `_history`.
+- **His own story** (`hudhud_story_1..11`, `hudhud_t_story`, `hudhud_story_note`): the hoopoe of Sulaiman, An-Naml
+  27:16–44, first person, in eleven parts, ending with the outcome the surah gives (27:44). The queen is never named. The
+  Arabic of 27:26 and 27:44 is shown as text (`HudhudStory.VERSES`); the note says it is a brief telling, not a
+  translation, and sends to a qualified scholar. It is spoken in full, a sentence at a time, in the phone's own voice
+  ("(27:26)"-style addresses are cut for the ear, `HudhudSpeech.withoutVerseRefs`). It stops with what already stops him —
+  the speaker switch, a tap on the round button, "chup"/"bas", or typing; **there is no Stop button of its own.**
+- **Matters of faith** (`HudhudFaith`): answered only when asked — never on Home, in a notification, on the lock screen, in a
+  document or beside a figure. Verses shown as Arabic text and never spoken: Tawheed 112:1–4, 21:22, 27:26; Hamd 1:2, 17:44,
+  24:41, 11:88; Risalat the shahada (shown by name) with 33:40 and 33:56. Taken on 14 Nov 2026 from quran.com,
+  quranworld.net, alim.org and tohed.com, each checked against a second site (the shahada: imam-us.org and
+  falkirkislamiccentre.org). The meaning is in his own words (`hudhud_faith_*`) under `hudhud_faith_note`. A name that is
+  also a matter of faith (Muhammad, Nabi, Ali) is read so only when the book has nobody by it. **Not a scholar's work: the
+  chosen verses and the texts want a qualified Hanafi scholar's read, the Sindhi and Bengali wording a native's.**
+- **Reverent answers** (`Answer.reverent`, `Mood.CALM`): no bird call, no glad hop, never written to the check log, never put
+  in `before` (the talk goes on from the answer before it); the sheet moves to the Personal tab and any other answer moves
+  it back.
+- **The Personal tab** (`tabHudAsk`/`tabHudPersonal`, `hudhud_tab_ask/_personal`; `HudhudSheet.selectTab` changes only the
+  chips): "Ask" is first and open; "Personal" holds `HudhudBook.personalChips()` — his story, Tawheed, Hamd, Risalat. The Ask
+  tab's chips never mention faith. **The owner's rule: personal things stay personal, the app's purpose stays the shop.**
+- **Voice settings** (`HudhudVoiceSheet`, `sheet_hudhud_voice.xml`, rewritten): style chips — Professional (rate 1.0, pitch
+  1.0, the default), Gentle (0.95, 1.0), Lively (1.08, 1.15), Serious (0.9, 0.86), Cartoon (1.1, 1.5) — each heard when
+  chosen; a pace slider 0.6 to 1.5 in steps of 0.1 (`HudhudPace`: `snap` goes through BigDecimal because Material's Slider
+  throws at draw time for a value off its steps); the bird-calls switch with three chips to hear them; "Voice N" chips for
+  the phone's offline voices (six at most); what he calls the owner (`etHudCallMe`, 30 letters, `HudhudPrefs.CALL_ME_MAX`);
+  how his name is said; how "Alhamdulillah" is said; and the answer log's switch and share behind a collapsed "Tools" row
+  (`llHudTools`). Each language speaks only its own voice (no fallback to another): a Sindhi phone has none from Google, so
+  it gets the written answer and `hudhud_no_voice`.
+- **Bird calls** (`HudhudChirp`, `HudhudChirpPlayer`): HOOP before an answer, READY before the microphone opens
+  (`HudhudEars.start(leadMillis)` waits for it, 60 ms gap), GLAD before good news — made from numbers at run time (22,050 Hz,
+  peak 16,000; **no sound file, +0 MB**), played as assistant sound. On by default only in the Cartoon style until the owner
+  sets the switch himself; none before a reverent answer. Not heard on a phone.
+- **Pronunciation** (`HudhudPronounce`): "Alhamdulillah" has three ways in each of en, ur, ar, fa, hi, bn and in, applied to
+  every sentence it is in (`apply(text, language, wayOf)`); ﷺ is said in full in the app's language; بکری is read as selling
+  only in the two sale frames (the word also means a goat); the developer's first name is spelled for an English voice the
+  way it is said. `HudhudWordsTest` fails when a way does not change the settings' sample sentence (broken on purpose once,
+  to see it fail).
+- **Money in words** (`HudhudMoneyWords`, `HudhudSay.forVoice(signs…)`): the shop's own currency said in words from the
+  phone's ICU/CLDR tables (digits `-u-nu-latn`, no grouping; nothing when the tables have no name; `isoOf(sign)` through
+  `Currency.CHOICES`), so a dinar is not read as a rupee; the rupee keeps its old path; dinars keep three decimals.
+- **The sheet** (`HudhudSheet`, `HudhudActs`, `HudhudMotion`): a sky band with three perches (`bg_hudhud_sky/_perch/_shadow`);
+  he flies between them — FLY stays on the new perch, VISIT returns, FLAP, HOP, DANCE, SPIN — on arcs clamped inside the sky,
+  mirrored in right-to-left, compact while the keyboard is up. The round button is one (`Action {MIC, SEND, STOP}`).
+  **Conversation mode:** after an answer he listens again (450 ms) for at most 12 turns, the talk carried in `before`;
+  silence after an answer ends it quietly (`hudhud_conversation_wait`), as do "bas"/"chup"/"khuda hafiz", typing, a tap while
+  he listens, or leaving.
+- **The developer** (`hudhud_about_maker`): says who made the app and him — the name and company the owner gave — and ends
+  with the credit to Allah (`hudhud_faith_credit`); "munshi" is gone from every language, he is the shop's assistant.
+- **From the owner's check logs, by class (lesson 120, no row copied):** `Ask.CallMe` — a statement of what to call him
+  ("my name is …", "call me …", "mera naam … hai", "mujhe … bulao" in nine languages; never "I am …", never a question or a
+  how-to) sets the name he uses, one to three words, 30 letters, kept on this phone only, never carried in `before`, never
+  turned by the sense; "do you know my name" and "mera naam bata do" ask it instead (`OWNER_NAME`; `onlyOrBare` lets two
+  unknown words stand in "mera naam kya hai"). `WHO_OWES_LEAST` ("who owes least", `owedToUs`). "<somebody> ne … dene hain"
+  is that somebody owing, not the shop (`NE_WORDS`, `SHOP_DOERS`, `otherDoer`), and `decide` keeps the figure the rules read
+  against the sense (the likely-payers and not-paid answers are the exception). "Whose app is this" asks the maker (`WHOSE_APP`).
+- **Hudhud only reads** (`scripts/check_hudhud_readonly.py`, run by `strings.yml`, which now also fires when it or
+  `gen_viewer_dao.py` changes): no file of his may call a DAO write, run raw SQL, send, open an intent that sends or make a
+  network call — 25 files checked against the 252 DAO writes. He brings the answer; the owner's own tap saves.
+- **Measured here on the shared code (14 Nov 2026):** 165 shared tests pass; the held-out set 1,066 of 1,170 (91%); the
+  owner's 1,000 sentences 723 (72%), exactly at its floor, so the floors stay as they were (SHORT 142, THOUSAND 723); Roman
+  Urdu 115 of 130 (88%); `HudhudWordsTest` 7. New tests: HudhudStoryTest (16), HudhudStoryWayTest (6), HudhudFaithTest (8),
+  HudhudChirpTest (6), HudhudMotionTest (7), HudhudPaceTest (7), HudhudPronounceTest (9); HudhudOnDeviceTest's settings test
+  reads the style chips and the slider (CI only).
+- **Not done, with the reason:** a Stop button for the story; the first public day (the owner's to give); a scholar's read of
+  the faith and story texts; a native read of Sindhi and Bengali; a test of `personalChips()` and of the reverent flow on a
+  device; and the app side — `HudhudVoiceSheet`, `HudhudChirpPlayer`, `HudhudMoneyWords`, the sheet and the answers — has never
+  been compiled.

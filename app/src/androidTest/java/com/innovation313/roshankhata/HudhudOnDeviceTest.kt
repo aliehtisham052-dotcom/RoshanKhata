@@ -20,6 +20,7 @@ import com.innovation313.roshankhata.data.Trade
 import com.innovation313.roshankhata.data.get
 import com.innovation313.roshankhata.ui.CoachMarkController
 import com.innovation313.roshankhata.ui.HudhudSheet
+import com.innovation313.roshankhata.ui.HudhudStyle
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -162,19 +163,31 @@ class HudhudOnDeviceTest {
         }
     }
 
-    /** His voice settings open with a style chosen and say how he listens on this phone (no microphone asked here). */
+    /**
+     * His voice settings open with one style chosen out of all of them, the pace on a slider inside its range, and say
+     * how he listens on this phone (no microphone asked here). 14 Nov 2026: the choices are chips (they were radio
+     * buttons) and the pace is a slider; a style is a chip the owner can tap and hear at once.
+     */
     @Test
     fun hisVoiceSettingsOpen() {
         ActivityScenario.launch<Activity>(home()).use { scenario ->
-            var style: android.widget.RadioGroup? = null
+            var style: com.google.android.material.chip.ChipGroup? = null
+            var pace: com.google.android.material.slider.Slider? = null
             var listen: TextView? = null
             var sheet: com.google.android.material.bottomsheet.BottomSheetDialog? = null
             scenario.onActivity { a ->
                 sheet = com.innovation313.roshankhata.ui.HudhudVoiceSheet.show(a)
-                style = sheet?.findViewById(R.id.rgHudStyle)
+                style = sheet?.findViewById(R.id.cgHudStyle)
+                pace = sheet?.findViewById(R.id.slHudPace)
                 listen = sheet?.findViewById(R.id.tvHudListen)
             }
-            assertTrue("no style chosen", waitFor(3000) { (style?.checkedRadioButtonId ?: -1) != -1 })
+            assertTrue("no style chosen", waitFor(3000) { (style?.checkedChipId ?: View.NO_ID) != View.NO_ID })
+            assertEquals(
+                "every style is offered, one chip each",
+                HudhudStyle.values().size, style?.childCount
+            )
+            val speed = pace?.value ?: 0f
+            assertTrue("the pace slider is outside its range: $speed", speed in 0.6f..1.5f)
             assertTrue("how he listens was not said", waitFor(5000) { !listen?.text.isNullOrBlank() })
             scenario.onActivity { sheet?.dismiss() }
         }
