@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A choice on Hudhud's voice sheet (14 Nov 2026): his style, his voice, how he says his name and Alhamdulillah.
+  Filled brand green with a white tick when chosen, the card colour with an ink word when not — the colours of the
+  poster screen's chips, which hold their contrast by day and by night (brand_green is a fill, its words are white).
+  Inflated per choice with the ChipGroup as its parent, so its layout parameters are the group's own (lesson 3).
+-->
+<com.google.android.material.chip.Chip
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.MaterialComponents.Chip.Choice"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/poster_chip_text"
+    android:textSize="14sp"
+    app:checkedIcon="@drawable/ic_check_plain"
+    app:checkedIconTint="@color/white"
+    app:checkedIconVisible="true"
+    app:chipBackgroundColor="@color/poster_chip_bg"
+    app:chipStrokeColor="@color/hairline"
+    app:chipStrokeWidth="1dp" />

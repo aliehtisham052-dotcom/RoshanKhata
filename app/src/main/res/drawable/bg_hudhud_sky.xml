@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The open sky at the top of Hudhud's sheet (14 Nov 2026): the room he flies in. Nothing else stands in it but his
+  three perches and his shadow, so his movement is the only thing to see.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:endColor="@color/hudhud_sky_bottom"
+        android:startColor="@color/hudhud_sky_top" />
+    <corners android:radius="22dp" />
+</shape>

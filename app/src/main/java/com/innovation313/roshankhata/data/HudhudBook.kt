@@ -65,6 +65,12 @@ object HudhudBook {
         val ask: Hudhud.Ask? = null
     )
 
+    /**
+     * A verse the card shows (14 Nov 2026, [HudhudFaith]): its surah's Arabic name, where it is, and its Arabic text — drawn
+     * as a quiet quotation under the words, never said aloud (a synthetic voice is not the Quran's recitation).
+     */
+    data class Verse(val surah: String, val ref: String, val arabic: String)
+
     data class Answer(
         val mood: Mood,
         /** The small heading over the figure. */
@@ -110,7 +116,17 @@ object HudhudBook {
         /** Values the card shows and the voice never says (a phone number, an account number, an email, a tax number). */
         val secrets: List<String> = emptyList(),
         /** A change to how he speaks, asked of him (14 Nov 2026): the sheet makes it as the card arrives. */
-        val voice: Hudhud.VoiceChange? = null
+        val voice: Hudhud.VoiceChange? = null,
+        /** Verses shown under the words, with the note that this is a brief meaning (14 Nov 2026, Tawheed, hamd, risalat). */
+        val verses: List<Verse> = emptyList(),
+        /** A line under the verses (that the words above are a brief meaning, not a translation). */
+        val verseNote: String? = null,
+        /**
+         * A matter of faith or of the Quran's own story (14 Nov 2026, the owner: "personal cheezein personal hi rahein"): the
+         * sheet shows it in its Personal tab, without the bird's call before it or the glad hop after it, and without any
+         * chip of its own to lead to more.
+         */
+        val reverent: Boolean = false
     )
 
     /** A help page Hudhud can point to: a question from Help, or a feature's first-open sheet. */
@@ -273,12 +289,28 @@ object HudhudBook {
             Hudhud.Ask.Qarz -> HudhudFacts.qarz(context, dao, parties)
             Hudhud.Ask.Automations -> HudhudFacts.automations(context)
             is Hudhud.Ask.NeedGoods -> HudhudFacts.needGoods(context, dao, ask.facet)
+            is Hudhud.Ask.CallMe -> callMe(context, ask.name)
             // Tell, never ask (13 Nov 2026): a guess is answered, with what it was taken as over the card; "did you
             // mean" answers its first meaning the same way and offers the others as chips.
             is Hudhud.Ask.Guessed -> guessed(context, dao, ask.ask, parties, emptyList())
             is Hudhud.Ask.DidYouMean -> ask.options.firstOrNull()?.let { guessed(context, dao, it, parties, ask.options.drop(1)) }
                 ?: unknown(context)
         }
+
+    /**
+     * "Call me Ali bhai" / "mera naam Ali hai" (14 Nov 2026, the owner's check log): what he is told to call the owner is
+     * kept on this phone only (HudhudPrefs, as his voice settings keep it — never in the book, a backup or a sync), and
+     * the card says it back, so a wrong hearing is seen at once and mended by saying it again.
+     */
+    private fun callMe(context: Context, name: String): Answer {
+        HudhudPrefs.setCallMe(context, name)
+        val kept = HudhudPrefs.callMe(context) ?: return unknown(context)
+        return Answer(
+            Mood.GOOD, label = kept,
+            lines = listOf(context.getString(R.string.hudhud_owner_named, Format.isolate(kept))),
+            openLabel = R.string.hudhud_settings, voiceSettings = true
+        )
+    }
 
     /** [ask] answered as a guess: the card says what it was taken as, the [others] are chips, and nothing is said aloud. */
     private suspend fun guessed(
@@ -405,6 +437,7 @@ object HudhudBook {
         VoiceQuestion.Kind.EXPIRING -> R.string.vq_expiring
         VoiceQuestion.Kind.NOT_PAID -> R.string.vq_not_paid
         VoiceQuestion.Kind.WHO_OWES_MOST -> R.string.vq_who_owes_most
+        VoiceQuestion.Kind.WHO_OWES_LEAST -> R.string.vq_who_owes_least
         VoiceQuestion.Kind.SALES_TODAY -> R.string.vq_sales_today
         VoiceQuestion.Kind.SALES_MONTH -> R.string.vq_sales_month
         VoiceQuestion.Kind.TO_GIVE -> R.string.vq_to_give
@@ -445,6 +478,20 @@ object HudhudBook {
                     Answer(
                         Mood.CALM, label = label,
                         rows = top.map { Row(it.id, it.name, money(it.balance), null) },
+                        open = KhataActivity::class.java, money = true
+                    )
+                }
+            }
+            // The other end of the same list (14 Nov 2026, the owner's check logs: "kisi ne ... sab se kam dene hain"): the
+            // smallest balance still owed to the shop, the same accounts and the same rule as who owes the most.
+            VoiceQuestion.Kind.WHO_OWES_LEAST -> {
+                val low = parties.filter { Money.isPositive(it.balance) }.sortedBy { it.balance }.take(TOP)
+                if (low.isEmpty()) {
+                    Answer(Mood.GOOD, label = label, lines = listOf(context.getString(R.string.vq_nobody)))
+                } else {
+                    Answer(
+                        Mood.CALM, label = label,
+                        rows = low.map { Row(it.id, it.name, money(it.balance), null) },
                         open = KhataActivity::class.java, money = true
                     )
                 }
@@ -884,6 +931,15 @@ object HudhudBook {
             Hudhud.AboutTopic.OWNER_NAME -> c.getString(R.string.hudhud_chip_my_name)
             Hudhud.AboutTopic.MAKER -> c.getString(R.string.hudhud_chip_maker)
             Hudhud.AboutTopic.PRIVACY -> c.getString(R.string.hudhud_chip_privacy)
+            Hudhud.AboutTopic.TAWHEED -> c.getString(R.string.hudhud_chip_tawheed)
+            Hudhud.AboutTopic.HAMD -> c.getString(R.string.hudhud_chip_hamd)
+            Hudhud.AboutTopic.RISALAT -> c.getString(R.string.hudhud_chip_risalat)
+            // The app's own history and his story (14 Nov 2026). The first day of the work has no chip of its own: the
+            // journey's card says it.
+            Hudhud.AboutTopic.HOOPOE_STORY -> c.getString(R.string.hudhud_chip_story)
+            Hudhud.AboutTopic.APP_PUBLISHED -> c.getString(R.string.hudhud_chip_published)
+            Hudhud.AboutTopic.HUDHUD_ADDED -> c.getString(R.string.hudhud_chip_hudhud_added)
+            Hudhud.AboutTopic.APP_JOURNEY -> c.getString(R.string.hudhud_chip_history)
             else -> null
         }
         is Hudhud.Ask.Shop -> when (ask.facet) {
@@ -958,6 +1014,16 @@ object HudhudBook {
     }
 
     /**
+     * The Personal tab's questions (14 Nov 2026, the owner: "personal tab ho, highlight na ho; personal cheezein personal hi
+     * rahein"): Hudhud's own story and the three of faith. They are on that quiet tab only: no main chip, no card, no
+     * notification and no screen leads to them, and the shop's figures are never beside them.
+     */
+    fun personalChips(): List<Hudhud.Ask> = listOf(
+        Hudhud.Ask.About(Hudhud.AboutTopic.HOOPOE_STORY), Hudhud.Ask.About(Hudhud.AboutTopic.TAWHEED),
+        Hudhud.Ask.About(Hudhud.AboutTopic.HAMD), Hudhud.Ask.About(Hudhud.AboutTopic.RISALAT)
+    )
+
+    /**
      * What to ask next after [ask] (13 Nov 2026, the owner: "recommendation automatically pick kare"): the questions
      * that follow from this answer, each one tap — about the same customer or product, the same figure on another day,
      * or the page beside it. Figures behind REPORTS are offered only to those who may see them.
@@ -999,6 +1065,7 @@ object HudhudBook {
                 VoiceQuestion.Kind.WHO_OWES_MOST -> listOf(Hudhud.Ask.WhenPays(emptyList()), Hudhud.Ask.Figure(VoiceQuestion.Kind.NOT_PAID),
                     Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
                 VoiceQuestion.Kind.NOT_PAID -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST), Hudhud.Ask.WhenPays(emptyList()))
+                VoiceQuestion.Kind.WHO_OWES_LEAST -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST), Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
                 VoiceQuestion.Kind.EXPIRING -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.LOW_STOCK), Hudhud.Ask.Deliveries())
             }
             is Hudhud.Ask.Period -> if (ask.measure == Hudhud.Measure.SALES) {
@@ -1034,11 +1101,22 @@ object HudhudBook {
             is Hudhud.Ask.Collected -> listOf(Hudhud.Ask.Activity(today), Hudhud.Ask.Drawer, Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
             Hudhud.Ask.Clock -> listOf(Hudhud.Ask.Today, Hudhud.Ask.Activity(today))
             is Hudhud.Ask.Chat -> if (ask.talk == Hudhud.Talk.WHO_ARE_YOU) {
-                listOf(Hudhud.Ask.Abilities, Hudhud.Ask.About(Hudhud.AboutTopic.MAKER), Hudhud.Ask.About(Hudhud.AboutTopic.PRIVACY))
+                listOf(Hudhud.Ask.Abilities, Hudhud.Ask.About(Hudhud.AboutTopic.MAKER), Hudhud.Ask.About(Hudhud.AboutTopic.HUDHUD_ADDED),
+                    Hudhud.Ask.About(Hudhud.AboutTopic.PRIVACY))
             } else {
                 listOf(Hudhud.Ask.Abilities, Hudhud.Ask.Today)
             }
-            is Hudhud.Ask.About -> listOf(Hudhud.Ask.Abilities, Hudhud.Ask.Chat(Hudhud.Talk.WHO_ARE_YOU), Hudhud.Ask.About(Hudhud.AboutTopic.PRIVACY))
+            is Hudhud.Ask.About -> when (ask.topic) {
+                // Faith and the hoopoe's story lead nowhere (14 Nov 2026, the owner: "personal cheezein personal hi rahein"):
+                // they are the Personal tab's, and the tab's own chips are what the sheet shows while one of them is up. They
+                // never bring the shop's figures into it, and no main chip leads to them.
+                Hudhud.AboutTopic.TAWHEED, Hudhud.AboutTopic.HAMD, Hudhud.AboutTopic.RISALAT, Hudhud.AboutTopic.HOOPOE_STORY -> emptyList()
+                // The app's own dates lead to each other (the card asked for is taken out by the filter below).
+                Hudhud.AboutTopic.APP_STARTED, Hudhud.AboutTopic.APP_PUBLISHED, Hudhud.AboutTopic.HUDHUD_ADDED, Hudhud.AboutTopic.APP_JOURNEY ->
+                    listOf(Hudhud.Ask.About(Hudhud.AboutTopic.APP_JOURNEY), Hudhud.Ask.About(Hudhud.AboutTopic.APP_PUBLISHED),
+                        Hudhud.Ask.About(Hudhud.AboutTopic.HUDHUD_ADDED), Hudhud.Ask.Abilities)
+                else -> listOf(Hudhud.Ask.Abilities, Hudhud.Ask.Chat(Hudhud.Talk.WHO_ARE_YOU), Hudhud.Ask.About(Hudhud.AboutTopic.PRIVACY))
+            }
             is Hudhud.Ask.Shop -> listOf(Hudhud.Ask.Shop(Hudhud.ShopFacet.ALL), Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))
             Hudhud.Ask.Today -> listOf(Hudhud.Ask.Activity(today), Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY), Hudhud.Ask.Collected(today))
             Hudhud.Ask.BackupStatus -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))

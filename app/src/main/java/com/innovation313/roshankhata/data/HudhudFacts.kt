@@ -385,7 +385,19 @@ internal object HudhudFacts {
 
     fun about(c: Context, topic: Hudhud.AboutTopic): Answer = when (topic) {
         Hudhud.AboutTopic.APP -> said(c, R.string.hudhud_about_app, AboutActivity::class.java)
-        Hudhud.AboutTopic.MAKER -> said(c, R.string.hudhud_about_maker, AboutActivity::class.java)
+        // The developer, said by Hudhud himself (14 Nov 2026, the owner), and always with the one line that the work is by
+        // Allah's grace and tawfiq — the only place that line is part of an answer nobody asked it of.
+        Hudhud.AboutTopic.MAKER -> Answer(
+            Mood.CALM, lines = listOf(c.getString(R.string.hudhud_about_maker), c.getString(R.string.hudhud_faith_credit)),
+            open = AboutActivity::class.java
+        )
+        Hudhud.AboutTopic.TAWHEED -> faith(c, HudhudFaith.Topic.TAWHEED, R.string.hudhud_faith_tawheed_1, R.string.hudhud_faith_tawheed_2)
+        Hudhud.AboutTopic.HAMD -> faith(c, HudhudFaith.Topic.HAMD, R.string.hudhud_faith_hamd_1, R.string.hudhud_faith_hamd_2)
+        Hudhud.AboutTopic.RISALAT -> faith(c, HudhudFaith.Topic.RISALAT, R.string.hudhud_faith_risalat_1, R.string.hudhud_faith_risalat_2)
+        // The app's own history and his own story (14 Nov 2026, [HudhudStory]): asked for by their own words, nothing else.
+        Hudhud.AboutTopic.APP_STARTED, Hudhud.AboutTopic.APP_PUBLISHED, Hudhud.AboutTopic.HUDHUD_ADDED,
+        Hudhud.AboutTopic.APP_JOURNEY -> history(c, topic)
+        Hudhud.AboutTopic.HOOPOE_STORY -> story(c)
         Hudhud.AboutTopic.PRIVACY -> said(c, R.string.hudhud_about_privacy, AboutActivity::class.java)
         Hudhud.AboutTopic.LANGUAGES -> said(c, R.string.hudhud_about_languages, LanguageActivity::class.java)
         Hudhud.AboutTopic.NAME_STORY -> Answer(Mood.GOOD, lines = listOf(c.getString(R.string.hudhud_about_name_story)))
@@ -402,6 +414,91 @@ internal object HudhudFacts {
                 Answer(Mood.GOOD, label = me, lines = listOf(c.getString(R.string.hudhud_owner_named, Format.isolate(me))),
                     openLabel = R.string.hudhud_settings, voiceSettings = true)
             }
+        }
+    }
+
+    /**
+     * Tawheed, hamd and sana, the Prophet's ﷺ risalat — asked for by name and nothing else ([HudhudFaith]): his two spoken
+     * paragraphs, then the verses as quotations, which are shown and never said, and the note that the words are a brief
+     * meaning and not a translation.
+     */
+    private fun faith(c: Context, topic: HudhudFaith.Topic, first: Int, second: Int): Answer {
+        val words = listOf(first, second)
+        return Answer(
+            Mood.CALM, lines = words.map { c.getString(it) },
+            verses = HudhudFaith.versesOf(topic).map { HudhudBook.Verse(it.surah, it.ref, it.arabic) },
+            verseNote = c.getString(R.string.hudhud_faith_note),
+            // A matter of faith is told quietly: no call before it, no glad hop after it, and its Personal tab (HudhudSheet).
+            reverent = true,
+            spoken = { w -> words.joinToString(" ") { HudhudSpeech.withoutVerseRefs(w.getString(it)) } }
+        )
+    }
+
+    // ------------------------------------------------------------------------------------------------ his story, the app's history
+
+    /** The ten parts of Hudhud's own story, then the Quran's outcome ([HudhudStory]): one string each, in the app's nine languages. */
+    private val STORY = listOf(
+        R.string.hudhud_story_1, R.string.hudhud_story_2, R.string.hudhud_story_3, R.string.hudhud_story_4,
+        R.string.hudhud_story_5, R.string.hudhud_story_6, R.string.hudhud_story_7, R.string.hudhud_story_8,
+        R.string.hudhud_story_9, R.string.hudhud_story_10, R.string.hudhud_story_11
+    )
+
+    /**
+     * The hoopoe of Prophet Sulaiman (peace be upon him), in his own first person as far as the Quran speaks of him
+     * (Surah An-Naml, 27:16-44), then the Quran's own telling from where it goes on without him, and the outcome as the
+     * Quran says it: the queen's submission to Allah (27:44). The two verses that matter most are shown in Arabic under
+     * the words and never said aloud; the words themselves are a brief telling, not a translation, and say so, and send
+     * the owner to a qualified scholar. Everything is read out in the voice's own language, a sentence at a time, with
+     * the verse addresses left out for the ear.
+     */
+    private fun story(c: Context): Answer = Answer(
+        Mood.CALM, label = c.getString(R.string.hudhud_t_story),
+        lines = STORY.map { c.getString(it) },
+        verses = HudhudStory.VERSES.map { HudhudBook.Verse(it.surah, it.ref, it.arabic) },
+        verseNote = c.getString(R.string.hudhud_story_note),
+        reverent = true,
+        spoken = { w -> STORY.joinToString(" ") { HudhudSpeech.withoutVerseRefs(w.getString(it)) } }
+    )
+
+    /** A day of the app's history as a moment: midday, so that no time zone moves it to another day. */
+    private fun millisOf(d: HistoryDay): Long =
+        Calendar.getInstance().apply { clear(); set(d.year, d.month - 1, d.day, 12, 0, 0) }.timeInMillis
+
+    /** [d] written in [c]'s language (the voice's own words when he is asked again for another voice). */
+    private fun dayText(c: Context, d: HistoryDay): String =
+        DateWords.format("d MMMM yyyy", millisOf(d), c.resources.configuration.locales[0])
+
+    /** Whole calendar days from [d] to today, never below nought. */
+    private fun daysSince(d: HistoryDay): Long =
+        (DayMath.dayNumber(now()) - DayMath.dayNumber(millisOf(d))).coerceAtLeast(0)
+
+    /**
+     * When the app began, when it was published and when Hudhud was added — only the days the project's own records hold
+     * ([AppHistory]): the first work saved, Google's production access, the day it was confirmed public, the first work on
+     * Hudhud. The exact first day everyone could see it on Google Play is not in them, and he says so. The word is always
+     * "published", never "launched" (the owner's rule). A test build says that it is one. Read from nothing in the book.
+     */
+    private fun history(c: Context, topic: Hudhud.AboutTopic): Answer {
+        val started = Format.isolate(dayText(c, AppHistory.STARTED))
+        val hudhud = Format.isolate(dayText(c, AppHistory.HUDHUD))
+        val startedLine = c.getString(R.string.hudhud_hist_started, started)
+        val publishedLine = c.getString(
+            R.string.hudhud_hist_published, Format.isolate(dayText(c, AppHistory.PLAY_ACCESS)), Format.isolate(dayText(c, AppHistory.PUBLIC_BY))
+        )
+        val hudhudLine = c.getString(R.string.hudhud_hist_hudhud, hudhud)
+        val testBuild = c.packageName.endsWith(".dev")
+        val testLine = c.getString(R.string.hudhud_hist_test_build)
+        val sinceFirst = line(c, R.string.hudhud_l_days_since, n(daysSince(AppHistory.STARTED).toInt()))
+        val sinceHudhud = line(c, R.string.hudhud_l_days_hudhud, n(daysSince(AppHistory.HUDHUD).toInt()))
+        return when (topic) {
+            Hudhud.AboutTopic.APP_STARTED -> Answer(Mood.CALM, lines = listOf(startedLine, sinceFirst))
+            Hudhud.AboutTopic.APP_PUBLISHED ->
+                Answer(Mood.CALM, lines = listOfNotNull(publishedLine, testLine.takeIf { testBuild }))
+            Hudhud.AboutTopic.HUDHUD_ADDED -> Answer(Mood.CALM, lines = listOf(hudhudLine, sinceHudhud))
+            else -> Answer(
+                Mood.CALM, label = c.getString(R.string.hudhud_t_history),
+                lines = listOfNotNull(startedLine, publishedLine, hudhudLine, sinceFirst, sinceHudhud, testLine.takeIf { testBuild })
+            )
         }
     }
 

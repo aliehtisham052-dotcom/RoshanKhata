@@ -8,6 +8,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Typeface
 import android.os.SystemClock
 import android.speech.RecognizerIntent
 import android.view.Gravity
@@ -20,6 +21,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -28,6 +30,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.NestedScrollView
 import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.lifecycleScope
@@ -40,6 +44,7 @@ import com.innovation313.roshankhata.data.Access
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.data.Hudhud
 import com.innovation313.roshankhata.data.HudhudBook
+import com.innovation313.roshankhata.data.HudhudChirp
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.PartyWithBalance
 import com.innovation313.roshankhata.data.VoiceLanguage
@@ -167,7 +172,16 @@ object HudhudSheet {
         val chips: LinearLayout = view.findViewById(R.id.hudChips)
         val etAsk: EditText = view.findViewById(R.id.etHudAsk)
         val btnMic: ImageButton = view.findViewById(R.id.btnHudMic)
-        val btnSettings: TextView = view.findViewById(R.id.btnHudSettings)
+        val btnSettings: ImageButton = view.findViewById(R.id.btnHudSettings)
+        val sky: FrameLayout = view.findViewById(R.id.hudSky)
+        val chipsScroll: View = view.findViewById(R.id.hudChipsScroll)
+        /** The two tabs under the card: the shop's questions, and the quiet Personal one (his own story, matters of faith). */
+        val hudTabs: View = view.findViewById(R.id.hudTabs)
+        val tabAsk: TextView = view.findViewById(R.id.tabHudAsk)
+        val tabPersonal: TextView = view.findViewById(R.id.tabHudPersonal)
+        /** Verses under his words (Tawheed, hamd, risalat): shown, never said. */
+        val verses: LinearLayout = view.findViewById(R.id.hudVerses)
+        val tvVerseNote: TextView = view.findViewById(R.id.tvHudVerseNote)
         val prefs = host.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
         var pose = Pose.IDLE
@@ -181,8 +195,29 @@ object HudhudSheet {
         var micAsk: ActivityResultLauncher<String>? = null
         var speakJob: Job? = null
         var voiceJob: Job? = null
-        /** His acts, over the sheet's whole window: off in the pose the stage shows, back in the one it shows then. */
-        val acts = HudhudActs(stage, listOf(poseA, poseB), { pose.drawing }) { sheet.window?.decorView as? ViewGroup }
+        /**
+         * His acts, in the open sky at the top of the sheet and nowhere else (14 Nov 2026, the owner: he never leaves the
+         * sheet): off in the pose the stage shows, back in the one it shows then, on a perch.
+         */
+        val acts = HudhudActs(
+            stage, listOf(poseA, poseB), { pose.drawing }, sky,
+            listOf(view.findViewById(R.id.hudPerchA), view.findViewById(R.id.hudPerchB), view.findViewById(R.id.hudPerchC)),
+            view.findViewById(R.id.hudShadow)
+        )
+
+        /**
+         * A conversation (14 Nov 2026, the owner: "baar baar tap nahi, guftagu ho"): the microphone, tapped once with his
+         * voice on, goes on listening by itself after each spoken answer, until the owner says enough, is silent, types,
+         * stops it, or leaves; the talk before is carried ([before]), so "uska number?" keeps its sense.
+         */
+        var conversing = false
+        var turns = 0
+        var listenAgain: Runnable? = null
+
+        /** What the round button does now: the microphone, a stop while he listens, send once something is typed. */
+        var action = Action.MIC
+        var compact = false
+        var keyboardWatch: ViewTreeObserver.OnGlobalLayoutListener? = null
         /** The sheet grows and shrinks to each answer smoothly (13 Nov 2026, the owner's video: it dropped in one frame). */
         var ease: SheetEase? = null
         var breath: ValueAnimator? = null
@@ -199,8 +234,6 @@ object HudhudSheet {
                 if (closed) return
                 tvHeard.visibility = View.VISIBLE
                 tvHeard.text = asked(words, spoken = true)
-                // A word reached him: a small nod that he caught it, as a listener does.
-                if (words.isNotBlank()) bob()
             }
 
             override fun onLevel(level: Float) {
@@ -220,6 +253,16 @@ object HudhudSheet {
             override fun onTrouble(trouble: HudhudEars.Trouble) {
                 if (closed) return
                 micAtRest()
+                // Silence after an answer ends the conversation without a word: he waits, he does not nag (the owner).
+                if (conversing && turns > 0 && trouble == HudhudEars.Trouble.NOTHING_HEARD) {
+                    endConversation()
+                    setState(null)
+                    tvHeard.visibility = View.GONE
+                    showPose(Pose.IDLE)
+                    note(R.string.hudhud_conversation_wait)
+                    return
+                }
+                endConversation()
                 heardNothing(trouble)
             }
         })
@@ -241,6 +284,19 @@ object HudhudSheet {
 
         /** The day's own questions (what the bell has), first among the chips until something is asked. */
         var starters: List<Hudhud.Ask> = emptyList()
+
+        /**
+         * The Personal tab (14 Nov 2026, the owner: "personal tab ho, highlight na ho"): his own story and the questions
+         * of faith keep a quiet tab of their own, so the shop's sheet stays the shop's. It follows the answer on show — a
+         * matter of faith opens it, any other question brings the shop's tab back — and either can be chosen by hand.
+         */
+        var personal = false
+
+        /** What followed the card on show (the Ask tab's chips), kept for the tab to return to. */
+        var nextChips: List<Hudhud.Ask> = emptyList()
+
+        /** What the card on show was asked as: the Personal tab does not offer it again under itself. */
+        var shownAsk: Hudhud.Ask? = null
 
         var voiceOn: Boolean
             get() = prefs.getBoolean(KEY_VOICE, true)
@@ -268,18 +324,36 @@ object HudhudSheet {
             view.findViewById<View>(R.id.btnHudClose).setOnClickListener { sheet.dismiss() }
             stage.setOnClickListener { tapped() }
             ease = SheetEase.attach(view, scroll.getChildAt(0) ?: scroll)
-            // Its icon is drawn white: tinted here too, so it shows even where the layout's tint is not read.
-            TextViewCompat.setCompoundDrawableTintList(
-                btnSettings, ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.brand_green_text))
-            )
             btnSettings.setOnClickListener { HudhudVoiceSheet.show(host) }
             btnReplay.setOnClickListener { last?.let { say(it) } }
-            btnMic.setOnClickListener { listen() }
+            // One round button, three jobs: the microphone, a stop while he listens, send once something is typed.
+            btnMic.setOnClickListener { if (action == Action.SEND) sendTyped() else listen() }
+            // The sky shrinks to a low band while the keyboard is up, so what is typed and answered stays in sight.
+            val watch = ViewTreeObserver.OnGlobalLayoutListener {
+                if (!closed) {
+                    val up = keyboardUp()
+                    if (up != compact) applyCompact(up)
+                }
+            }
+            keyboardWatch = watch
+            view.viewTreeObserver.addOnGlobalLayoutListener(watch)
             etAsk.addTextChangedListener(object : android.text.TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: android.text.Editable?) {
-                    if (closed || s.isNullOrEmpty() || ears.listening || job?.isActive == true) return
+                    if (closed) return
+                    // Typing takes the turn: a conversation ends and a microphone that is open is closed.
+                    if (!s.isNullOrEmpty()) {
+                        endConversation()
+                        if (ears.listening) {
+                            ears.cancel()
+                            micAtRest()
+                            setState(null)
+                            tvHeard.visibility = View.GONE
+                        }
+                    }
+                    syncAction()
+                    if (s.isNullOrEmpty() || ears.listening || job?.isActive == true) return
                     if (pose != Pose.LISTENING && pose != Pose.TALKING) showPose(Pose.LISTENING)
                     etAsk.removeCallbacks(easeAfterTyping)
                     etAsk.postDelayed(easeAfterTyping, EASE_AFTER_TYPING_MS)
@@ -289,6 +363,9 @@ object HudhudSheet {
                 val enter = event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN
                 if (action == EditorInfo.IME_ACTION_SEND || enter) { sendTyped(); true } else false
             }
+            tabAsk.setOnClickListener { selectTab(toPersonal = false) }
+            tabPersonal.setOnClickListener { selectTab(toPersonal = true) }
+            styleTabs()
             showChips(emptyList())
             // The day's own questions first (what the bell has now), once they are read.
             host.lifecycleScope.launch {
@@ -332,6 +409,9 @@ object HudhudSheet {
 
         fun close() {
             closed = true
+            endConversation()
+            keyboardWatch?.let { w -> view.viewTreeObserver.takeIf { it.isAlive }?.removeOnGlobalLayoutListener(w) }
+            keyboardWatch = null
             acts.stop()
             ease?.stop()
             ease = null
@@ -356,6 +436,7 @@ object HudhudSheet {
             val text = etAsk.text?.toString()?.trim().orEmpty()
             if (text.isEmpty()) return
             etAsk.setText("")
+            endConversation()
             (ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
                 ?.hideSoftInputFromWindow(etAsk.windowToken, 0)
             question(listOf(text), spoken = false)
@@ -368,6 +449,8 @@ object HudhudSheet {
          */
         private fun listen() {
             if (ears.listening) {
+                // A tap while he listens is "that is all": the conversation ends with it.
+                endConversation()
                 if (ears.open) {
                     // What was said so far is made out and answered.
                     ears.stop()
@@ -384,6 +467,10 @@ object HudhudSheet {
             voice.stop()
             speakJob?.cancel()
             if (speakAllowed && voiceOn) voice.warmUp()
+            // The microphone tapped with his voice on starts a conversation: he answers aloud and listens again by himself.
+            // Only through his own ears: the phone's voice-search box (no permission, or no internet) is a single question.
+            conversing = speakAllowed && voiceOn && HudhudEars.canHear(ctx) && HudhudEars.micGranted(ctx)
+            turns = 0
             when {
                 !HudhudEars.canHear(ctx) -> googleBox()
                 HudhudEars.micGranted(ctx) -> hearMyself()
@@ -402,6 +489,8 @@ object HudhudSheet {
                 if (closed) return@register
                 if (granted) {
                     HudhudPrefs.setMicDenied(ctx, false)
+                    conversing = speakAllowed && voiceOn
+                    turns = 0
                     hearMyself()
                 } else {
                     HudhudPrefs.setMicDenied(ctx, true)
@@ -422,18 +511,19 @@ object HudhudSheet {
             setState(R.string.hudhud_listening)
             tvHeard.visibility = View.VISIBLE
             tvHeard.text = asked("\u2026", spoken = true)
-            btnMic.setImageResource(R.drawable.ic_stop_listening)
-            btnMic.contentDescription = ctx.getString(R.string.hudhud_stop_listening)
-            ears.start(Locale.getDefault().toLanguageTag())
+            // His little "I am listening" call first when bird calls are on (the speaker switch is the master of every
+            // sound he makes): the microphone opens when it has ended, so it does not hear him.
+            val lead = if (voiceOn) HudhudChirpPlayer.play(ctx, HudhudChirp.Kind.READY) else 0
+            ears.start(Locale.getDefault().toLanguageTag(), if (lead > 0) lead + READY_GAP_MS else 0L)
+            syncAction(stopping = true)
         }
 
         /** The microphone looks like itself again. */
         private fun micAtRest() {
-            btnMic.setImageResource(R.drawable.ic_mic)
-            btnMic.contentDescription = ctx.getString(R.string.vq_ask)
             btnMic.animate().cancel()
             btnMic.scaleX = 1f
             btnMic.scaleY = 1f
+            syncAction(stopping = false)
             heardLevel = 0f
             if (!acts.busy) stage.animate().rotation(0f).setDuration(SIT_BACK_MS).start()
         }
@@ -554,6 +644,7 @@ object HudhudSheet {
 
         /** A chip: its question is known already, and its own words are what was asked. */
         private fun chip(words: String, ask: Hudhud.Ask) {
+            endConversation()
             answer(words, spoken = false) { _, _ -> words to ask }
         }
 
@@ -610,16 +701,28 @@ object HudhudSheet {
                 view.removeCallbacks(later)
                 if (closed) return@launch
                 tvHeard.text = asked(result.heard, spoken)
+                // "Bas", "chup", "khuda hafiz": the talk is over — he answers and does not listen again.
+                val stops = (result.ask as? Hudhud.Ask.Voice)?.change.let {
+                    it == Hudhud.VoiceChange.QUIET || it == Hudhud.VoiceChange.OFF
+                } || (result.ask as? Hudhud.Ask.Chat)?.talk == Hudhud.Talk.BYE
+                if (stops) endConversation()
                 show(result.answer, speak = true)
                 offerCheck(result.heard, result.ask, result.answer)
                 // What the talk is about now, so "uska number?" or "aur kal?" carry on: a guess counts as what it was
-                // taken for; a list of names offered ("whose?") keeps the one before.
+                // taken for; a list of names offered ("whose?") keeps the one before. A matter of faith or his own story
+                // is a detour: the shop's talk goes on from where it was, not from it.
                 val taken = (result.ask as? Hudhud.Ask.Guessed)?.ask ?: result.ask
-                if (taken != null && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown && taken !is Hudhud.Ask.NeedName &&
-                    taken !is Hudhud.Ask.Voice && taken !is Hudhud.Ask.NeedGoods
+                if (!result.answer.reverent && taken != null && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown &&
+                    taken !is Hudhud.Ask.NeedName && taken !is Hudhud.Ask.Voice && taken !is Hudhud.Ask.NeedGoods &&
+                    taken !is Hudhud.Ask.CallMe
                 ) {
                     before = taken
                 }
+                // The tab follows the answer: Personal for a matter of faith or his story, the shop's for the rest.
+                shownAsk = taken
+                nextChips = result.next
+                personal = result.answer.reverent
+                styleTabs()
                 showChips(result.next)
             }
         }
@@ -630,6 +733,8 @@ object HudhudSheet {
          */
         private fun offerCheck(heard: String, ask: Hudhud.Ask?, answer: HudhudBook.Answer) {
             checkRow.visibility = View.GONE
+            // Matters of faith and his own story are not written into the check log: personal things stay personal.
+            if (answer.reverent) return
             if (!HudhudCheck.isOn(ctx)) return
             val language = ctx.resources.configuration.locales[0].toLanguageTag()
             host.lifecycleScope.launch {
@@ -729,6 +834,16 @@ object HudhudSheet {
                 rows.addView(row)
                 TextFit.stackWhenLarge(row.findViewById(R.id.hudRowNameColumn), row.findViewById(R.id.tvHudRowFigure))
             }
+            // Verses (Tawheed, hamd, the Prophet's risalat): the Arabic as quotations under his words, never said.
+            verses.removeAllViews()
+            verses.visibility = if (a.verses.isEmpty()) View.GONE else View.VISIBLE
+            for (v in a.verses) {
+                val item = inflater.inflate(R.layout.item_hudhud_verse, verses, false)
+                item.findViewById<TextView>(R.id.tvVerseArabic).text = v.arabic
+                item.findViewById<TextView>(R.id.tvVerseRef).text = if (v.ref.isBlank()) v.surah else v.surah + " \u00B7 " + v.ref
+                verses.addView(item)
+            }
+            tvVerseNote.textOrGone(a.verseNote)
             showButtons(a)
             note(null)
             a.voice?.let { change(it) }
@@ -860,16 +975,23 @@ object HudhudSheet {
         }
 
         private fun speakNow(a: HudhudBook.Answer, text: String, plan: HudhudVoice.Plan) {
-            voice.speak(text, plan, object : HudhudVoice.Listener {
+            // A bright trill before good news, the hoopoe's own call before the rest (only when bird calls are on) — and
+            // none before a matter of faith or his own story, which he tells in his plain voice (14 Nov 2026).
+            val call = when {
+                a.reverent -> null
+                a.mood == HudhudBook.Mood.GOOD -> HudhudChirp.Kind.GLAD
+                else -> HudhudChirp.Kind.HOOP
+            }
+            voice.speak(text, plan, chirp = call, listener = object : HudhudVoice.Listener {
                 override fun onStart() {
                     if (closed) return
                     showPose(Pose.TALKING)
                     setState(R.string.hudhud_speaking)
                 }
 
-                override fun onWord() {
-                    if (!closed) bob()
-                }
+                // No nod with each word (14 Nov 2026, the owner: "bolte waqt hilta rehta hai"): while he speaks he sits steady
+                // in his speaking drawing; only his breath moves.
+                override fun onWord() {}
 
                 override fun onDone() {
                     if (!closed) settle(a.mood)
@@ -913,6 +1035,7 @@ object HudhudSheet {
                 HudhudBook.Mood.CARE -> showPose(Pose.ALERT)
                 HudhudBook.Mood.CALM -> showPose(Pose.IDLE)
             }
+            if (conversing) listenSoon()
         }
 
         private fun go(a: HudhudBook.Answer) {
@@ -976,10 +1099,20 @@ object HudhudSheet {
         private fun showChips(first: List<Hudhud.Ask>) {
             chips.removeAllViews()
             val list = LinkedHashMap<Hudhud.Ask, String>()
-            val opening = last === helloCard
-            for (a in first + (if (opening) starters else emptyList()) + usualChips()) {
-                if (a in list) continue
-                HudhudBook.chipLabel(ctx, a)?.let { list[a] = it }
+            if (personal) {
+                // The Personal tab: his story and the matters of faith, none of them offered under its own card.
+                val onShow = if (last?.reverent == true) shownAsk else null
+                for (a in HudhudBook.personalChips()) {
+                    if (a == onShow) continue
+                    HudhudBook.chipLabel(ctx, a)?.let { list[a] = it }
+                }
+            } else {
+                nextChips = first
+                val opening = last === helloCard
+                for (a in first + (if (opening) starters else emptyList()) + usualChips()) {
+                    if (a in list) continue
+                    HudhudBook.chipLabel(ctx, a)?.let { list[a] = it }
+                }
             }
             val density = ctx.resources.displayMetrics.density
             for ((ask, words) in list) {
@@ -1002,6 +1135,24 @@ object HudhudSheet {
             }
             // A new set is read from its start.
             (chips.parent as? android.widget.HorizontalScrollView)?.scrollTo(0, 0)
+        }
+
+        /** A tab chosen by hand: the chips under the card are that tab's; the card itself is left as it is. */
+        private fun selectTab(toPersonal: Boolean) {
+            if (personal == toPersonal) return
+            personal = toPersonal
+            styleTabs()
+            showChips(nextChips)
+        }
+
+        /** The open tab in the app's green with a line under it, the other in the muted ink (lesson 60: marks are night-aware). */
+        private fun styleTabs() {
+            for ((tab, open) in listOf(tabAsk to !personal, tabPersonal to personal)) {
+                tab.isSelected = open
+                tab.setTextColor(ContextCompat.getColor(ctx, if (open) R.color.brand_green_text else R.color.text_muted))
+                tab.setTypeface(null, if (open) Typeface.BOLD else Typeface.NORMAL)
+                tab.background = if (open) ContextCompat.getDrawable(ctx, R.drawable.bg_hudhud_tab_on) else null
+            }
         }
 
         // ------------------------------------------------------------------------------------- Hudhud himself
@@ -1070,14 +1221,114 @@ object HudhudSheet {
             }.start()
         }
 
-        /** A nod with each word he says. */
-        private fun bob() {
-            if (!Motion.enabled(ctx)) return
-            val up = -BOB_DP * ctx.resources.displayMetrics.density
-            stage.animate().cancel()
-            stage.animate().translationY(up).setDuration(90).withEndAction {
-                stage.animate().translationY(0f).setDuration(110).start()
+        // --------------------------------------------------------------------------------------- the conversation
+
+        /** The talk is over (or was never begun): no more listening by himself. */
+        fun endConversation() {
+            conversing = false
+            listenAgain?.let { view.removeCallbacks(it) }
+            listenAgain = null
+        }
+
+        /**
+         * After an answer he listens again by himself, a breath after his voice has gone quiet (so the microphone does not
+         * hear the end of his own words), for as long as the conversation lasts: at most [MAX_TURNS] answers, never while
+         * something is being worked out, spoken or typed.
+         */
+        private fun listenSoon() {
+            listenAgain?.let { view.removeCallbacks(it) }
+            listenAgain = null
+            if (!conversing || closed) return
+            if (turns >= MAX_TURNS) {
+                endConversation()
+                return
+            }
+            val again = Runnable {
+                listenAgain = null
+                if (conversing && !closed && !ears.listening && job?.isActive != true && etAsk.text.isNullOrEmpty()) {
+                    turns++
+                    hearMyself()
+                }
+            }
+            listenAgain = again
+            view.postDelayed(again, LISTEN_AGAIN_MS)
+        }
+
+        /** The round button shows what it does now: the microphone, a stop while he listens, send once something is typed. */
+        private fun syncAction(stopping: Boolean? = null) {
+            val listening = stopping ?: ears.listening
+            val next = when {
+                listening -> Action.STOP
+                !etAsk.text.isNullOrBlank() -> Action.SEND
+                else -> Action.MIC
+            }
+            if (next == action) return
+            action = next
+            val icon = when (next) {
+                Action.STOP -> R.drawable.ic_stop_listening
+                Action.SEND -> R.drawable.ic_hudhud_send
+                Action.MIC -> R.drawable.ic_mic
+            }
+            val label = when (next) {
+                Action.STOP -> R.string.hudhud_stop_listening
+                Action.SEND -> R.string.hudhud_send
+                Action.MIC -> R.string.vq_ask
+            }
+            val swap = {
+                btnMic.setImageResource(icon)
+                btnMic.contentDescription = ctx.getString(label)
+            }
+            if (!Motion.enabled(ctx) || !btnMic.isLaidOut) {
+                swap()
+                return
+            }
+            // A small pop: the old picture shrinks away and the new one grows in.
+            btnMic.animate().cancel()
+            btnMic.animate().scaleX(0.7f).scaleY(0.7f).setDuration(70).withEndAction {
+                swap()
+                btnMic.animate().scaleX(1f).scaleY(1f).setDuration(110).start()
             }.start()
+        }
+
+        // ---------------------------------------------------------------------------------------------- the sky
+
+        /** Whether the keyboard is up: the insets say so on Android 11+, a window much shorter than the screen before. */
+        private fun keyboardUp(): Boolean {
+            val insets = ViewCompat.getRootWindowInsets(view)
+            if (insets != null && insets.isVisible(WindowInsetsCompat.Type.ime())) return true
+            return view.rootView.height < ctx.resources.displayMetrics.heightPixels * SHORT_WINDOW
+        }
+
+        /**
+         * With the keyboard up the sky is a low band and the chips give way (14 Nov 2026), so what is typed and what he
+         * answers stay in sight; his acts shrink with it ([HudhudActs.compact]). The keyboard gone, all returns.
+         */
+        private fun applyCompact(on: Boolean) {
+            acts.stop()
+            compact = on
+            acts.compact = on
+            val d = ctx.resources.displayMetrics.density
+            fun px(dp: Int) = (dp * d).toInt()
+            sky.layoutParams = sky.layoutParams.apply { height = px(if (on) 100 else 148) }
+            (stage.layoutParams as FrameLayout.LayoutParams).apply {
+                width = px(if (on) 60 else 84)
+                height = px(if (on) 66 else 92)
+                bottomMargin = px(if (on) 16 else 20)
+            }.also { stage.layoutParams = it }
+            for (id in listOf(R.id.hudPerchA, R.id.hudPerchB, R.id.hudPerchC)) {
+                val bar = view.findViewById<View>(id)
+                (bar.layoutParams as FrameLayout.LayoutParams).apply { bottomMargin = px(if (on) 12 else 16) }.also { bar.layoutParams = it }
+            }
+            view.findViewById<View>(R.id.hudShadow).let { shade ->
+                (shade.layoutParams as FrameLayout.LayoutParams).apply {
+                    width = px(if (on) 40 else 56)
+                    bottomMargin = px(if (on) 9 else 12)
+                }.also { shade.layoutParams = it }
+            }
+            chipsScroll.visibility = if (on) View.GONE else View.VISIBLE
+            hudTabs.visibility = if (on) View.GONE else View.VISIBLE
+            sky.requestLayout()
+            sky.post { if (!closed) acts.layoutPerches() }
         }
 
         private fun TextView.textOrGone(words: CharSequence?) {
@@ -1102,7 +1353,17 @@ object HudhudSheet {
     private const val BREATH_MS = 1400L
     private const val BREATH_SCALE = 1.015f
     private const val HOP_DP = 8f
-    private const val BOB_DP = 2f
+    /** The round button's three jobs. */
+    private enum class Action { MIC, SEND, STOP }
+    /** A breath after his voice has gone quiet before he listens again, so the microphone does not hear his last words. */
+    private const val LISTEN_AGAIN_MS = 450L
+
+    /** A breath after his "I am listening" call before the microphone opens. */
+    private const val READY_GAP_MS = 60L
+    /** A conversation ends after this many answers (the microphone is never left open for ever). */
+    private const val MAX_TURNS = 12
+    /** A window shorter than this share of the screen has the keyboard in it. */
+    private const val SHORT_WINDOW = 0.62f
     /** The longest wait for the sheet's window to have the focus back before he speaks anyway. */
     private const val FOCUS_WAIT_MS = 1500L
     /** A breath between the microphone closing and his answer. */

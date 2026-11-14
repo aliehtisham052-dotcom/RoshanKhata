@@ -14,7 +14,6 @@ import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
@@ -24,47 +23,55 @@ import android.widget.ImageView
 import androidx.core.view.doOnLayout
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.Hudhud
-import kotlin.random.Random
+import com.innovation313.roshankhata.data.HudhudMotion
+import kotlin.math.abs
 
 /**
- * Hudhud's little acts (13 Nov 2026, the owner: "urr ke dikhao", and "Hudhud ko touch karne par… kabhi urre, kabhi
- * pankh maare, kabhi alag alag activities… khaali screen par khoobsurat animation ke saath"): he flies off the
- * screen and back, beats his wings, dances, hops, or turns round — over the whole window above his sheet, not inside
- * his little stage.
+ * Hudhud's little acts, in the empty sky at the top of his sheet (14 Nov 2026, the owner's video and words: "wo Hudhud
+ * screen se bahar jaata hai aur doosri taraf se andar aata hai — ye nahi hona chahiye… sheet upar se khaali ho, aur
+ * ek jagah se doosri jagah thodi movement ho, phir wo doosri jagah baithe ya pehli jagah").
  *
- * His two drawings make the wings: "happy" has both wings raised, "idle" has them folded, so changing between them
- * about nine times a second is a wing beat; he faces the way he flies (the drawings face right). A light tap of the
- * phone's haptics when he takes off and when he lands, as the phone's own buttons answer a touch (the owner's
- * settings for touch feedback are the phone's: performHapticFeedback keeps to them).
+ * **Where.** He never leaves the sheet. The top of the sheet is a band of open sky with three perches (start, middle,
+ * end) and his shadow; his stage stands on one of them. A tap plays one act, never the same twice running ([random]):
+ *  - [Act.FLY]: he flies on an arc to another perch and STAYS there — that perch is home from then on;
+ *  - [Act.VISIT]: he flies to another perch, looks round, and flies back to where he began;
+ *  - [Act.FLAP], [Act.HOP], [Act.DANCE], [Act.SPIN]: in place, as before.
+ * When the keyboard takes the room the band shrinks ([compact]) and he only hops and flutters, small.
  *
- * What the owner's video of 13 Nov 2026 showed, and how each is kept from happening again:
- *  - The sheet grew shorter while he was in the air ("I didn't catch that" after the greeting), and he landed where
- *    his stage had been — over the sheet's top edge — then jumped 50 dp down into it. He now flies in a layer over
- *    the window that follows his stage every frame ([follow]): the sheet may move, he lands on his stage.
- *  - In the air his head shook: the two drawings are two poses, not two frames of one beat — "happy" holds his head
- *    27 of 512 lower and 12 to the left of "idle" — so changing them shook his head instead of his wings. In the air
- *    "happy" is drawn with his head where "idle" has it ([frame]); on the ground both stand on the same feet.
- *  - He took off folded whatever pose the stage showed, and landed in a pose the stage did not show: he now takes
- *    off in the stage's own drawing and lands in the one it shows when he comes back ([current]).
- *  - The landing started from a hover at full speed; it now starts gently and slows onto the stage, and he turns to
- *    face the room in a quick turn rather than a flip.
+ * **How it moves** ([HudhudMotion] holds the arithmetic, tested): a crouch before take-off (anticipation), an arc with
+ * a slow start and a slow end, a lean into the climb and into the descent, a squash and a small settle on touching
+ * down, his shadow shrinking as he rises and growing as he lands; his wings beat only while he is in the air, and the
+ * head is held still against the beat ([frame]). A light tap of the phone's haptics at take-off and landing.
+ *
+ * **What the owner's video of 13 Nov showed, and how each is kept from happening again:**
+ *  - He flew off the screen and came in from the other side: he flies only inside the band, and every path is
+ *    clamped to it ([HudhudMotion.arc]).
+ *  - His head shook in the air: the two drawings are two poses; "happy" is drawn with its head where "idle" has it
+ *    ([frame]).
+ *  - He took off folded whatever the stage showed and landed in a pose the stage did not show: he takes off in the
+ *    stage's own drawing and lands in the one it shows when he is back ([current]).
+ *  - The sheet changed height while he was in the air: he is a child of the band, so he moves with the sheet.
  *
  * Rules kept: an act only plays when asked for (a tap on him, "urr ke dikhao"); one at a time; with the phone's
- * animations off nothing moves (the sheet shows him glad instead); everything is taken away when the sheet closes.
+ * animations off nothing moves; everything is taken away when the sheet closes.
  */
 class HudhudActs(
-    /** His stage on the sheet: where he takes off from and lands. */
+    /** His stage on the sheet: where he takes off from and lands. A child of [sky]. */
     private val stage: View,
-    /** The stage's own drawings, hidden while he is away. */
+    /** The stage's own drawings, hidden while he is in the air. */
     private val poses: List<View>,
     /** The drawing the stage shows now: he takes off in it and lands back in it, so neither end jumps. */
     private val current: () -> Int,
-    /** The window's whole area he may fly over (the sheet's decor). */
-    private val sky: () -> ViewGroup?
+    /** The open band he moves in. */
+    private val sky: FrameLayout,
+    /** The three perches, start / middle / end (small bars); placed here. */
+    private val perches: List<View>,
+    /** His shadow, a soft oval under him; null for none. */
+    private val shadow: View?
 ) {
     /** What he can do. */
     enum class Act {
-        FLY, FLAP, DANCE, HOP, SPIN;
+        FLY, VISIT, FLAP, DANCE, HOP, SPIN;
 
         companion object {
             /** The act a question asked for ("urr ke dikhao", "naach ke dikhao", "uchhal ke dikhao"). */
@@ -76,29 +83,69 @@ class HudhudActs(
         }
     }
 
-    /** The layer he flies in: the whole window, moved with his stage while he is away. */
-    private var layer: FrameLayout? = null
+    /** The bird in flight, a child of [sky] placed exactly over the stage while an act plays. */
     private var flier: ImageView? = null
     private var running: Animator? = null
     private var last: Act? = null
+    /** The perch he flew to last: the next flight prefers another ([HudhudMotion.otherPerch]). */
+    private var lastTarget: Int? = null
     private var onEnd: (() -> Unit)? = null
-    /** He has been put in the sky and waits for its layout before he is placed and takes off. */
-    private var placing = false
-    /** Where the stage rested when he took off, in the sky's own place: the layer is moved by how far it has gone since. */
-    private var baseX = 0f
-    private var baseY = 0f
-    private var follower: ViewTreeObserver.OnPreDrawListener? = null
-    private var followed: ViewTreeObserver? = null
-    private var followSky: ViewGroup? = null
     private val drawing = Matrix()
 
+    /** The perch the stage stands on (0 start, 1 middle, 2 end); a flight that lands elsewhere changes it. */
+    var home = 0
+        private set
+
+    /** The band is small (the keyboard is up): he hops and flutters, and only a little. */
+    var compact = false
+
     /** Whether an act is playing (or about to). */
-    val busy: Boolean get() = running != null || placing
+    val busy: Boolean get() = running != null
+
+    init {
+        // The perches and the stage are laid out again whenever the band's width changes (rotation, split screen).
+        sky.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
+            if (right - left != oldRight - oldLeft) layoutPerches()
+        }
+        sky.doOnLayout { layoutPerches() }
+    }
+
+    // ------------------------------------------------------------------------------------------- his places
+
+    private val dp: Float get() = stage.resources.displayMetrics.density
+
+    /** The left edge of the stage on perch [i] (0 start, 1 middle, 2 end), as the band is drawn (mirrored in right-to-left). */
+    private fun leftOf(i: Int): Float {
+        val rtl = sky.layoutDirection == View.LAYOUT_DIRECTION_RTL
+        return HudhudMotion.perchLeft(i, sky.width.toFloat(), stage.width.toFloat(), EDGE_DP * dp, rtl)
+    }
+
+    /** Puts the perches under their places, and the stage and his shadow on the perch that is home. */
+    @SuppressLint("RtlHardcoded") // the band's left edge on purpose: places are measured from it in both directions
+    fun layoutPerches() {
+        if (sky.width == 0 || stage.width == 0) return
+        val size = stage.width.toFloat()
+        perches.forEachIndexed { i, bar -> bar.x = leftOf(i) + (size - bar.width) / 2f }
+        if (running == null) {
+            stage.x = leftOf(home)
+            placeShadow(stage.x, 1f)
+        }
+    }
+
+    private fun placeShadow(stageX: Float, grounded: Float) {
+        val s = shadow ?: return
+        s.x = stageX + (stage.width - s.width) / 2f
+        // Smaller and fainter the higher he is (grounded 1 = on the perch).
+        s.scaleX = 0.55f + 0.45f * grounded
+        s.scaleY = 0.55f + 0.45f * grounded
+        s.alpha = 0.5f + 0.5f * grounded
+    }
 
     /** An act chosen at random, never the one just played: a tap on him should not do the same thing twice. */
     fun random(): Act {
-        val all = Act.values().filter { it != last }
-        return all[Random.nextInt(all.size)]
+        val pool = if (compact) listOf(Act.HOP, Act.FLAP) else listOf(Act.FLY, Act.FLY, Act.VISIT, Act.HOP, Act.FLAP, Act.DANCE, Act.SPIN)
+        val all = pool.filter { it != last }
+        return all[HudhudMotion.pick(all.size)]
     }
 
     /** A light touch of the phone's haptics, as its own buttons give. */
@@ -108,25 +155,17 @@ class HudhudActs(
         )
     }
 
-    /** Plays [act]; [done] runs when he is back on his stage (or at once when it cannot play). */
-    @SuppressLint("RtlHardcoded") // the sky's left edge on purpose: his place is measured from it in both directions
+    /** Plays [act]; [done] runs when he is back on a perch (or at once when it cannot play). */
+    @SuppressLint("RtlHardcoded") // the band's left edge on purpose: his place is measured from it in both directions
     fun play(act: Act, done: () -> Unit = {}) {
-        if (busy || !Motion.enabled(stage.context)) {
+        if (busy || !Motion.enabled(stage.context) || stage.width == 0 || sky.width == 0) {
             done()
             return
         }
-        val sky = sky() ?: run { done(); return }
-        if (stage.width == 0 || sky.width == 0) {
-            done()
-            return
-        }
-        last = act
+        // Small band: only what fits in it.
+        val chosen = if (compact && act != Act.HOP && act != Act.FLAP) Act.HOP else act
+        last = chosen
         onEnd = done
-        val overlay = FrameLayout(stage.context).apply {
-            // He may lean past the layer's edge as he leaves the screen; the window itself is the frame.
-            clipChildren = false
-            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-        }
         val bird = ImageView(stage.context).apply {
             // Placed by [frame], as FIT_CENTER places the stage's own drawings, or with his head held still in the air.
             scaleType = ImageView.ScaleType.MATRIX
@@ -134,33 +173,18 @@ class HudhudActs(
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             visibility = View.INVISIBLE
         }
-        // Hung from the layer's left and top edges whatever the page's direction (a start gravity put him at the right
-        // edge of a right-to-left page), and placed only once laid out: setX and setY measure from where the layout
-        // put him, and a place set before it was lost in Urdu and Arabic. The layer takes no touch: everything under
-        // it (the sheet, the dimmed page that closes it) answers as before.
-        overlay.addView(bird, FrameLayout.LayoutParams(stage.width, stage.height, Gravity.TOP or Gravity.LEFT))
-        sky.addView(overlay, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-        layer = overlay
+        // Hung from the band's left and top edges whatever the page's direction, and placed once laid out (lesson 110).
+        sky.addView(bird, FrameLayout.LayoutParams(stage.width, stage.height, Gravity.TOP or Gravity.LEFT))
         flier = bird
-        placing = true
-        bird.doOnLayout {
-            if (placing && flier === bird) {
-                placing = false
-                takeOff(act, bird, overlay, sky)
-            }
-        }
+        // A marker, so [busy] is true from this moment until the layout has placed the bird.
+        running = IDLE
+        bird.doOnLayout { if (flier === bird && running === IDLE) takeOff(chosen, bird) }
     }
 
-    /** [bird], laid out in [overlay] over [sky], is put where the stage stands and plays [act]. */
-    private fun takeOff(act: Act, bird: ImageView, overlay: View, sky: ViewGroup) {
-        // Where the stage rests, in the sky's own place: less a hop or a nod it is in the middle of, so he lands where
-        // the stage stands still.
-        val home = restOf(sky)
-        val homeX = home[0]
-        val homeY = home[1]
-        baseX = homeX
-        baseY = homeY
-        follow(overlay, sky)
+    /** [bird], laid out in the band, is put over the stage and plays [act]. */
+    private fun takeOff(act: Act, bird: ImageView) {
+        val homeX = leftOf(home)
+        val homeY = stage.top.toFloat()
         bird.x = homeX
         bird.y = homeY
         bird.pivotX = stage.width / 2f
@@ -171,13 +195,14 @@ class HudhudActs(
         frame(bird, current(), air = false)
         bird.visibility = View.VISIBLE
         poses.forEach { it.visibility = View.INVISIBLE }
-        val dp = stage.resources.displayMetrics.density
+        val k = if (compact) COMPACT_K else 1f
         val anim = when (act) {
-            Act.FLY -> fly(bird, sky, homeX, homeY, facing, dp)
-            Act.FLAP -> flap(bird, homeY, dp)
-            Act.DANCE -> dance(bird, homeX, homeY, facing, dp)
-            Act.HOP -> hop(bird, homeY, dp)
-            Act.SPIN -> spin(bird, homeY, facing, dp)
+            Act.FLY -> flight(bird, homeX, homeY, facing, nextPerch(), stay = true)
+            Act.VISIT -> visit(bird, homeX, homeY, facing)
+            Act.FLAP -> flap(bird, homeX, homeY, k)
+            Act.DANCE -> dance(bird, homeX, homeY, facing)
+            Act.HOP -> hop(bird, homeX, homeY, k)
+            Act.SPIN -> spin(bird, homeX, homeY, facing)
         }
         anim.addListener(object : AnimatorListenerAdapter() {
             private var cancelled = false
@@ -194,75 +219,28 @@ class HudhudActs(
         anim.start()
     }
 
-    /** Ends what is playing at once and puts him back on his stage. */
+    /** A perch other than the one he is on, and not the one he flew to last while another is left. */
+    private fun nextPerch(): Int = HudhudMotion.otherPerch(home, lastTarget).also { lastTarget = it }
+
+    /** Ends what is playing at once and puts him back on the perch he is on. */
     fun stop() {
-        if (placing) {
-            placing = false
-            finish(landed = false)
-            return
-        }
         val a = running ?: return
         running = null
-        a.cancel()
+        if (a !== IDLE) a.cancel()
         finish(landed = false)
     }
 
     private fun finish(landed: Boolean) {
         running = null
-        unfollow()
-        layer?.let { l -> (l.parent as? ViewGroup)?.removeView(l) }
-        layer = null
+        flier?.let { b -> (b.parent as? ViewGroup)?.removeView(b) }
         flier = null
         poses.forEach { it.visibility = View.VISIBLE }
+        stage.x = leftOf(home)
+        placeShadow(stage.x, 1f)
         if (landed) tap()
         val then = onEnd
         onEnd = null
         then?.invoke()
-    }
-
-    // ------------------------------------------------------------------------------------------- his place
-
-    /** Where the stage stands now, still (less a hop or a nod it is in the middle of), in [sky]'s own place. */
-    private fun restOf(sky: ViewGroup): FloatArray {
-        val at = IntArray(2)
-        val skyAt = IntArray(2)
-        stage.getLocationInWindow(at)
-        sky.getLocationInWindow(skyAt)
-        return floatArrayOf(at[0] - skyAt[0] - stage.translationX, at[1] - skyAt[1] - stage.translationY)
-    }
-
-    /**
-     * Before every frame the layer he flies in is moved by how far his stage has gone since he took off (the sheet
-     * grew, shrank, or was pulled), so every act ends on the stage as it stands then.
-     */
-    private fun follow(overlay: View, sky: ViewGroup) {
-        unfollow()
-        val listener = ViewTreeObserver.OnPreDrawListener {
-            if (stage.isAttachedToWindow) {
-                val now = restOf(sky)
-                overlay.translationX = now[0] - baseX
-                overlay.translationY = now[1] - baseY
-            }
-            true
-        }
-        val observer = sky.viewTreeObserver
-        observer.addOnPreDrawListener(listener)
-        follower = listener
-        followed = observer
-        followSky = sky
-    }
-
-    private fun unfollow() {
-        val listener = follower ?: return
-        val observer = followed
-        if (observer != null && observer.isAlive) {
-            observer.removeOnPreDrawListener(listener)
-        } else {
-            followSky?.viewTreeObserver?.let { if (it.isAlive) it.removeOnPreDrawListener(listener) }
-        }
-        follower = null
-        followed = null
-        followSky = null
     }
 
     /**
@@ -330,114 +308,109 @@ class HudhudActs(
             interpolator = MotionKit.STANDARD
         }
 
-    // ------------------------------------------------------------------------------------------- the acts
+    // ------------------------------------------------------------------------------------------- the flights
 
     /**
-     * Off he goes: up from the stage with a few beats, a curve out past the screen's edge (the far edge first, the way
-     * he faces), back in from the other side higher up, across the open page, and down onto his stage again.
+     * A flight from where he stands to [target] (a perch other than home): a crouch and a turn to face the way he goes,
+     * an arc inside the band with a slow start and a slow end, the lean of a climb and of a descent, his shadow under him,
+     * and a squash and a settle on touching down. [stay]: the perch he lands on becomes home.
      */
-    private fun fly(bird: ImageView, sky: ViewGroup, homeX: Float, homeY: Float, facing: Float, dp: Float): Animator {
-        val w = sky.width.toFloat()
-        val h = sky.height.toFloat()
-        val size = bird.layoutParams.width.toFloat()
-        val out = facing // 1: off to the right first; -1: off to the left (a right-to-left page)
-        val farEdge = if (out > 0) w + size * 0.2f else -size * 1.2f
-        val nearEdge = if (out > 0) -size * 1.2f else w + size * 0.2f
-        val top = (homeY - h * 0.55f).coerceAtLeast(h * 0.06f)
+    private fun flight(bird: ImageView, fromX: Float, y: Float, facing: Float, target: Int, stay: Boolean): Animator {
+        val toX = leftOf(target)
+        val dir = if (toX >= fromX) 1f else -1f
+        // The drawings face right: bound for the right he looks as drawn, bound for the left he is turned.
+        val face = if (dir > 0f) 1f else -1f
+        val headroom = (y - EDGE_TOP_DP * dp).coerceAtLeast(0f)
+        val arc = HudhudMotion.arc(fromX, y, toX, y, rise = headroom)
+        val path = Path().apply {
+            moveTo(arc.x0, arc.y0)
+            cubicTo(arc.c1x, arc.c1y, arc.c2x, arc.c2y, arc.x1, arc.y1)
+        }
+        val millis = HudhudMotion.flightMillis(abs(toX - fromX), sky.width.toFloat())
 
-        // Takeoff: a little rise, wings beating.
-        val lift = ObjectAnimator.ofFloat(bird, View.Y, homeY, homeY - 34 * dp).apply {
-            duration = 420
-            interpolator = DecelerateInterpolator()
+        // Anticipation: down a little, and round to face the way he goes.
+        val crouch = ObjectAnimator.ofFloat(bird, View.SCALE_Y, 1f, 0.86f).apply { duration = CROUCH_MS }
+        val fly = ObjectAnimator.ofFloat(bird, View.X, View.Y, path).apply {
+            duration = millis
+            interpolator = PathInterpolator(0.35f, 0f, 0.15f, 1f)
+            addUpdateListener {
+                val h = if (headroom <= 0f) 0f else ((y - bird.y) / headroom).coerceIn(0f, 1f)
+                placeShadow(bird.x, 1f - h)
+            }
         }
-        val liftWings = wings(bird, 420)
-        val takeoff = AnimatorSet().apply { playTogether(lift, liftWings) }
+        val lean = ObjectAnimator.ofFloat(bird, View.ROTATION, 0f, -dir * CLIMB_DEG, 0f, dir * DESCENT_DEG, 0f).apply {
+            duration = millis
+            interpolator = LinearInterpolator()
+        }
+        val beat = wings(bird, millis)
+        val up = ObjectAnimator.ofFloat(bird, View.SCALE_Y, 0.86f, 1f).apply { duration = 120 }
+        val air = AnimatorSet().apply { playTogether(fly, lean, beat, up) }
 
-        // Out past the edge on a curve, nose up.
-        val leave = Path().apply {
-            moveTo(homeX, homeY - 34 * dp)
-            quadTo(homeX + out * w * 0.35f, top - h * 0.05f, farEdge, top)
-        }
-        val away = ObjectAnimator.ofFloat(bird, View.X, View.Y, leave).apply {
-            duration = 950
-            interpolator = PathInterpolator(0.3f, 0f, 0.7f, 1f)
-        }
-        val awayTilt = ObjectAnimator.ofFloat(bird, View.ROTATION, 0f, -out * 12f).apply { duration = 950 }
-        val awayWings = wings(bird, 950)
-        val goAway = AnimatorSet().apply { playTogether(away, awayTilt, awayWings) }
-
-        // Back in from the other side, a gentle wave across the open page (turned while out of sight).
-        val across = Path().apply {
-            moveTo(nearEdge, top * 0.7f)
-            cubicTo(
-                w * 0.3f, top * 0.2f + h * 0.04f,
-                w * 0.7f, top * 1.2f,
-                if (out > 0) w * 0.62f else w * 0.38f - size, top * 0.9f
-            )
-        }
-        val unseen = ValueAnimator.ofFloat(0f, 1f).apply {
+        // Touching down: a squash at his feet, a small rise, and still.
+        val squash = ObjectAnimator.ofPropertyValuesHolder(
+            bird, PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 0.88f, 1.03f, 1f)
+        ).apply { duration = LAND_MS }
+        val toFace = turn(bird, face, facing)
+        val land = ValueAnimator.ofFloat(0f, 1f).apply {
             duration = 1
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator) {
-                    bird.scaleX = facing
-                    bird.rotation = 0f
+                    if (stay) home = target
+                    frame(bird, current(), air = false)
+                    tap()
                 }
             })
         }
-        val back = ObjectAnimator.ofFloat(bird, View.X, View.Y, across).apply {
-            duration = 1250
-            interpolator = PathInterpolator(0.25f, 0.1f, 0.25f, 1f)
-        }
-        val backWings = wings(bird, 1250)
-        val comeBack = AnimatorSet().apply { playTogether(back, backWings) }
-
-        // Down onto the stage. He slowed almost to a hover at the end of the wave, so the way down starts gently
-        // (it started at full speed, a dart out of a hover), turns him toward the stage as he sets off, and slows
-        // onto it.
-        val from = if (out > 0) w * 0.62f else w * 0.38f - size
-        val downFacing = if (homeX < from) -1f else 1f
-        val down = Path().apply {
-            moveTo(from, top * 0.9f)
-            quadTo(homeX + out * w * 0.25f, (top + homeY) * 0.45f, homeX, homeY)
-        }
-        val land = ObjectAnimator.ofFloat(bird, View.X, View.Y, down).apply {
-            duration = 900
-            interpolator = MotionKit.STANDARD
-        }
-        val landTilt = ObjectAnimator.ofFloat(bird, View.ROTATION, out * 8f, 0f).apply { duration = 900 }
-        val landWings = wings(bird, 760)
-        val landing = AnimatorSet().apply { playTogether(land, landTilt, landWings, turn(bird, facing, downFacing)) }
-
-        // On the stage he turns to face the room again, then settles.
-        val home = AnimatorSet().apply { playSequentially(turn(bird, downFacing, facing), settle(bird)) }
-
         return AnimatorSet().apply {
-            playSequentially(takeoff, goAway, unseen, comeBack, landing, home)
+            playSequentially(
+                AnimatorSet().apply { playTogether(crouch, turn(bird, facing, face)) },
+                air, land, squash, toFace, settle(bird)
+            )
         }
     }
 
+    /** To another perch, a look round, and back to where he began (home does not change). */
+    private fun visit(bird: ImageView, x: Float, y: Float, facing: Float): Animator {
+        val target = nextPerch()
+        val there = flight(bird, x, y, facing, target, stay = false)
+        val look = AnimatorSet().apply {
+            val away = ObjectAnimator.ofFloat(bird, View.SCALE_X, facing, -facing).apply { duration = TURN_MS; startDelay = LINGER_MS / 2 }
+            val back = ObjectAnimator.ofFloat(bird, View.SCALE_X, -facing, facing).apply { duration = TURN_MS; startDelay = 80 }
+            playSequentially(away, back)
+        }
+        val here = ValueAnimator.ofFloat(0f, 1f).apply { duration = LINGER_MS }
+        val toX = leftOf(target)
+        val backHome = flight(bird, toX, y, facing, home, stay = false)
+        return AnimatorSet().apply { playSequentially(there, AnimatorSet().apply { playTogether(here, look) }, backHome) }
+    }
+
+    // ------------------------------------------------------------------------------------------- in place
+
     /** He rises on beating wings, hangs there a moment, and settles. */
-    private fun flap(bird: ImageView, homeY: Float, dp: Float): Animator {
-        val up = ObjectAnimator.ofFloat(bird, View.Y, homeY, homeY - 26 * dp).apply {
+    private fun flap(bird: ImageView, homeX: Float, homeY: Float, k: Float): Animator {
+        val h = FLAP_RISE_DP * dp * k
+        val up = ObjectAnimator.ofFloat(bird, View.Y, homeY, homeY - h).apply {
             duration = 520
             interpolator = DecelerateInterpolator()
         }
-        val hover = ObjectAnimator.ofFloat(bird, View.Y, homeY - 26 * dp, homeY - 20 * dp, homeY - 26 * dp).apply {
-            duration = 420
-        }
-        val down = ObjectAnimator.ofFloat(bird, View.Y, homeY - 26 * dp, homeY).apply {
+        val hover = ObjectAnimator.ofFloat(bird, View.Y, homeY - h, homeY - h * 0.77f, homeY - h).apply { duration = 420 }
+        val down = ObjectAnimator.ofFloat(bird, View.Y, homeY - h, homeY).apply {
             duration = 380
             interpolator = AccelerateInterpolator()
         }
         val path = AnimatorSet().apply { playSequentially(up, hover, down) }
+        val shade = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 1320
+            addUpdateListener { placeShadow(homeX, 1f - ((homeY - bird.y) / h.coerceAtLeast(1f)).coerceIn(0f, 1f)) }
+        }
         return AnimatorSet().apply {
-            play(path).with(wings(bird, 1320))
+            play(path).with(wings(bird, 1320)).with(shade)
             play(settle(bird)).after(path)
         }
     }
 
     /** A little dance: side to side, tilting, one wing out then both, with a hop on the third and the sixth beat. */
-    private fun dance(bird: ImageView, homeX: Float, homeY: Float, facing: Float, dp: Float): Animator {
+    private fun dance(bird: ImageView, homeX: Float, homeY: Float, facing: Float): Animator {
         val steps = ArrayList<Animator>()
         for (i in 0 until 6) {
             val side = if (i % 2 == 0) 1f else -1f
@@ -463,21 +436,21 @@ class HudhudActs(
             }
             steps += AnimatorSet().apply { playTogether(step, look, face) }
         }
-        val home = ObjectAnimator.ofPropertyValuesHolder(
+        val back = ObjectAnimator.ofPropertyValuesHolder(
             bird,
             PropertyValuesHolder.ofFloat(View.X, homeX),
             PropertyValuesHolder.ofFloat(View.ROTATION, 0f),
             PropertyValuesHolder.ofFloat(View.Y, homeY),
             PropertyValuesHolder.ofFloat(View.SCALE_X, facing)
         ).apply { duration = 220 }
-        return AnimatorSet().apply { playSequentially(steps + home + settle(bird)) }
+        return AnimatorSet().apply { playSequentially(steps + back + settle(bird)) }
     }
 
     /** Three hops: a crouch, up with his wings raised, down with them folded, and a squash as he lands. */
-    private fun hop(bird: ImageView, homeY: Float, dp: Float): Animator {
+    private fun hop(bird: ImageView, homeX: Float, homeY: Float, k: Float): Animator {
         val hops = ArrayList<Animator>()
         for (i in 0 until 3) {
-            val height = (if (i == 2) 52 else 34) * dp
+            val height = (if (i == 2) 52 else 34) * dp * k
             val crouch = ObjectAnimator.ofFloat(bird, View.SCALE_Y, 1f, 0.86f).apply { duration = 110 }
             val up = ObjectAnimator.ofPropertyValuesHolder(
                 bird,
@@ -486,6 +459,7 @@ class HudhudActs(
             ).apply {
                 duration = 230
                 interpolator = DecelerateInterpolator()
+                addUpdateListener { placeShadow(homeX, 1f - ((homeY - bird.y) / height.coerceAtLeast(1f)).coerceIn(0f, 1f)) }
             }
             val wingsUp = pose(bird, R.drawable.hudhud_happy, air = true)
             val down = ObjectAnimator.ofPropertyValuesHolder(
@@ -495,6 +469,7 @@ class HudhudActs(
             ).apply {
                 duration = 210
                 interpolator = AccelerateInterpolator()
+                addUpdateListener { placeShadow(homeX, 1f - ((homeY - bird.y) / height.coerceAtLeast(1f)).coerceIn(0f, 1f)) }
             }
             val wingsDown = pose(bird, R.drawable.hudhud_idle, air = true)
             hops += AnimatorSet().apply {
@@ -505,8 +480,9 @@ class HudhudActs(
     }
 
     /** Up a little and round: he turns about twice in the air (as a card turns), and lands facing as before. */
-    private fun spin(bird: ImageView, homeY: Float, facing: Float, dp: Float): Animator {
-        val up = ObjectAnimator.ofFloat(bird, View.Y, homeY, homeY - 30 * dp).apply {
+    private fun spin(bird: ImageView, homeX: Float, homeY: Float, facing: Float): Animator {
+        val h = 30 * dp
+        val up = ObjectAnimator.ofFloat(bird, View.Y, homeY, homeY - h).apply {
             duration = 260
             interpolator = DecelerateInterpolator()
         }
@@ -515,12 +491,16 @@ class HudhudActs(
             interpolator = LinearInterpolator()
         }
         val wingsUp = pose(bird, R.drawable.hudhud_happy, air = true)
-        val down = ObjectAnimator.ofFloat(bird, View.Y, homeY - 30 * dp, homeY).apply {
+        val down = ObjectAnimator.ofFloat(bird, View.Y, homeY - h, homeY).apply {
             duration = 260
             startDelay = 560
             interpolator = AccelerateInterpolator()
         }
-        val aloft = AnimatorSet().apply { playTogether(up, turning, wingsUp, down) }
+        val shade = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 820
+            addUpdateListener { placeShadow(homeX, 1f - ((homeY - bird.y) / h).coerceIn(0f, 1f)) }
+        }
+        val aloft = AnimatorSet().apply { playTogether(up, turning, wingsUp, down, shade) }
         return AnimatorSet().apply { playSequentially(aloft, settle(bird)) }
     }
 
@@ -545,10 +525,27 @@ class HudhudActs(
     }
 
     private companion object {
+        /** A marker for "an act is about to play": [busy] is true while the bird waits for its layout. */
+        val IDLE: Animator = ValueAnimator.ofFloat(0f, 1f)
+
+        /** The perches stand this far in from the band's sides. */
+        const val EDGE_DP = 16f
+        /** He keeps this far below the band's top edge. */
+        const val EDGE_TOP_DP = 4f
+        /** In a small band the in-place acts are this much of their size. */
+        const val COMPACT_K = 0.35f
+        const val FLAP_RISE_DP = 26f
         /** One wing beat (raised or folded): about nine changes a second. */
         const val BEAT_MS = 110L
         /** A turn to face the other way. */
         const val TURN_MS = 160L
+        /** The crouch before take-off, the settle after touching down, and how long a visit stays. */
+        const val CROUCH_MS = 120L
+        const val LAND_MS = 260L
+        const val LINGER_MS = 900L
+        /** The lean of a climb and of a descent, in degrees. */
+        const val CLIMB_DEG = 12f
+        const val DESCENT_DEG = 9f
 
         /**
          * Where "happy" is drawn in the air, as a share of the drawing, so his head sits where "idle" holds it: its head

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The open tab of Hudhud's sheet (14 Nov 2026): no fill, only a quiet line under its words. The night-aware green is a
+  mark here, never brand_green, which stays dark at night (lesson 60).
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:height="2dp"
+        android:gravity="bottom">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/brand_green_text" />
+        </shape>
+    </item>
+</layer-list>

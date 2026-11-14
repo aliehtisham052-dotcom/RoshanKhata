@@ -94,9 +94,32 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
     var open = false
         private set
 
-    /** Starts listening in the app's language ([appTag]): on the phone when it has it, else online, else says why. */
-    fun start(appTag: String) {
+    // The wait before the microphone opens when a little call plays first (see [start]).
+    private var lead: Runnable? = null
+
+    /**
+     * Starts listening in the app's language ([appTag]): on the phone when it has it, else online, else says why.
+     * [leadMillis]: a little call ([HudhudChirp.Kind.READY]) is playing, so the microphone opens when it has ended and
+     * does not hear it. During that wait he counts as getting ready to listen ([listening], not [open]): a stop in it
+     * cancels, as a stop before the microphone opens always did.
+     */
+    fun start(appTag: String, leadMillis: Long = 0L) {
         cancel()
+        if (leadMillis <= 0L) {
+            begin(appTag)
+            return
+        }
+        listening = true
+        val go = Runnable {
+            lead = null
+            listening = false
+            begin(appTag)
+        }
+        lead = go
+        main.postDelayed(go, leadMillis)
+    }
+
+    private fun begin(appTag: String) {
         val online = online(context)
         val preferred = VoiceLanguage.preferred(appTag)
         if (Build.VERSION.SDK_INT >= 33 && offlineCapable(context)) {
@@ -298,6 +321,8 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
 
     /** Stops listening and forgets it. */
     fun cancel() {
+        lead?.let { main.removeCallbacks(it) }
+        lead = null
         recognizer?.let { drop(it) }
         listening = false
         open = false

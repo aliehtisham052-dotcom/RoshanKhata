@@ -117,6 +117,7 @@ object HudhudCheck {
         is Hudhud.Ask.NeedName -> "whose: " + (a.facet ?: "balance")
         is Hudhud.Ask.Period -> "period: " + a.measure + " / " + a.window
         is Hudhud.Ask.Parties -> "balance: " + a.ids
+        is Hudhud.Ask.CallMe -> "call me"
         else -> a.javaClass.simpleName
     }
 }

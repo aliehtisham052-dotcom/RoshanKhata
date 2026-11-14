@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Hudhud's sheet (12 Nov 2026, ui/HudhudSheet): Hudhud and what he is doing; what he understood; his answer on a
-  card with its one way onward; the questions he knows, as chips; the box and the microphone to ask him. Every word
-  is sp and every row grows with its words (lesson 58): the two buttons under an answer share their row by weight,
-  the second one a ring with no words. The sheet's colour and rounded top are its frame's
-  (ThemeOverlay.RoshanKhata.HudhudSheet), so the page colour also runs under the navigation bar.
+  Hudhud's sheet (12 Nov 2026, redrawn 14 Nov 2026, ui/HudhudSheet): the open sky at the top, where he perches and flies
+  (HudhudActs); his name and what he is doing, with the three small buttons; what he understood; his answer on a card
+  with its one way onward; the questions he knows, as chips; the box and the one round button that is a microphone, a
+  stop while he listens and "send" once something is typed.
 
-  Only the middle scrolls (the same day, the 150% proofs): a long answer (a help page, the Radar's reasons) pushed the
-  chips and the box under the navigation bar, and asking again meant scrolling down first. Hudhud stays at the top and
-  the chips and the box at the foot, as a chat keeps its message bar; what he understood and his answer take what is
-  left (0dp with a weight: a short answer is wrapped, a long one scrolls in the room there is).
+  The owner's words (14 Nov 2026): "sheet upar se khaali ho, aur Hudhud ek jagah se doosri jagah thodi movement kare" — so
+  nothing but his three perches and his shadow stands in the sky, and he never leaves it. With the keyboard up the sky
+  shrinks to a low band (HudhudSheet.applyCompact) and the chips give way, so what is typed and what he answers stay in sight.
+
+  Every word is sp and every row grows with its words (lesson 58). The sheet's colour and rounded top are its frame's
+  (ThemeOverlay.RoshanKhata.HudhudSheet), so the page colour also runs under the navigation bar. Only the middle scrolls:
+  a long answer (a help page, the Radar's reasons, a verse) never pushes the chips and the box under the navigation bar.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -27,21 +29,62 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/bg_sheet_grabber" />
 
-    <LinearLayout
+    <!-- The sky. clipChildren off so his shadow and a squash are never cut; he is placed by HudhudActs (perches at the
+         start, the middle and the end, laid out again whenever the width changes), never by gravity. -->
+    <FrameLayout
+        android:id="@+id/hudSky"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:baselineAligned="false"
-        android:gravity="bottom"
-        android:orientation="horizontal">
+        android:layout_height="148dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_hudhud_sky"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <View
+            android:id="@+id/hudPerchA"
+            android:layout_width="64dp"
+            android:layout_height="6dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_hudhud_perch"
+            android:importantForAccessibility="no" />
+
+        <View
+            android:id="@+id/hudPerchB"
+            android:layout_width="64dp"
+            android:layout_height="6dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_hudhud_perch"
+            android:importantForAccessibility="no" />
+
+        <View
+            android:id="@+id/hudPerchC"
+            android:layout_width="64dp"
+            android:layout_height="6dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_hudhud_perch"
+            android:importantForAccessibility="no" />
+
+        <View
+            android:id="@+id/hudShadow"
+            android:layout_width="56dp"
+            android:layout_height="8dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_hudhud_shadow"
+            android:importantForAccessibility="no" />
 
         <!-- A tap on Hudhud plays one of his acts (13 Nov 2026, the owner: "touch karne par kabhi urre, kabhi pankh
-             maare"): HudhudActs, over the window above the sheet. His act is the answer to the touch: no ripple
-             (fg_hudhud_stage only rings him for keyboard focus; the ripple was cut to a grey box). -->
+             maare"): HudhudActs, in the sky above. His act is the answer to the touch: no ripple (fg_hudhud_stage only
+             rings him for keyboard focus). -->
         <FrameLayout
             android:id="@+id/hudStage"
-            android:layout_width="96dp"
-            android:layout_height="104dp"
+            android:layout_width="84dp"
+            android:layout_height="92dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/bg_hudhud_stage"
             android:clickable="true"
             android:contentDescription="@string/hudhud_name"
@@ -64,14 +107,24 @@
                 android:importantForAccessibility="no"
                 android:scaleType="fitCenter" />
         </FrameLayout>
+    </FrameLayout>
+
+    <!-- His name and what he is doing, and three small buttons: his voice on or off, his voice settings, close. Each button
+         is 44 dp, so the name keeps the rest of a 360 dp phone's width even at 150% text (lesson 58). -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:minHeight="52dp"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingBottom="14dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvHudName"
@@ -87,35 +140,16 @@
                 android:id="@+id/tvHudState"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:accessibilityLiveRegion="polite"
                 android:textAlignment="viewStart"
                 android:textColor="@color/brand_green_text"
                 android:textSize="14sp" />
-
-            <!-- His voice settings (13 Nov 2026): under his name, not a third button in this row, which left his
-                 name a few letters wide on a 360 dp phone at 150% (lesson 58). -->
-            <TextView
-                android:id="@+id/btnHudSettings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:drawablePadding="6dp"
-                android:gravity="center_vertical|start"
-                android:minHeight="40dp"
-                android:text="@string/hudhud_settings"
-                android:textAlignment="viewStart"
-                android:textColor="@color/brand_green_text"
-                android:textSize="13sp"
-                app:drawableStartCompat="@drawable/ic_tune"
-                app:drawableTint="@color/brand_green_text" />
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/btnHudVoice"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="10dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/hudhud_voice_on"
             android:scaleType="center"
@@ -123,10 +157,19 @@
             app:tint="@color/brand_green_text" />
 
         <ImageButton
+            android:id="@+id/btnHudSettings"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/hudhud_settings"
+            android:scaleType="center"
+            android:src="@drawable/ic_tune"
+            app:tint="@color/brand_green_text" />
+
+        <ImageButton
             android:id="@+id/btnHudClose"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="10dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/close"
             android:scaleType="center"
@@ -219,6 +262,26 @@
                     android:orientation="vertical"
                     android:visibility="gone" />
 
+                <!-- Verses (14 Nov 2026, HudhudFaith): only under an answer about Tawheed, hamd or the Prophet's risalat,
+                     each an item_hudhud_verse; the note under them says the words above are a brief meaning. -->
+                <LinearLayout
+                    android:id="@+id/hudVerses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="vertical"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvHudVerseNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/text_muted"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
                 <TextView
                     android:id="@+id/tvHudNote"
                     android:layout_width="match_parent"
@@ -307,11 +370,51 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- The two tabs (14 Nov 2026, the owner: "personal tab ho, highlight na ho"): the shop's questions, and the quiet
+         Personal one with his own story and the questions of faith. Small words with a line under the open one, no
+         fill; they give way with the chips while the keyboard is up (HudhudSheet.applyCompact). -->
+    <LinearLayout
+        android:id="@+id/hudTabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tabHudAsk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_hudhud_tab_on"
+            android:gravity="center"
+            android:maxLines="1"
+            android:minHeight="40dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="@string/hudhud_tab_ask"
+            android:textColor="@color/brand_green_text"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tabHudPersonal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="1"
+            android:minHeight="40dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="@string/hudhud_tab_personal"
+            android:textColor="@color/text_muted"
+            android:textSize="13sp" />
+    </LinearLayout>
+
     <HorizontalScrollView
         android:id="@+id/hudChipsScroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="4dp"
         android:clipToPadding="false"
         android:scrollbars="none">
 
@@ -350,6 +453,8 @@
             android:textColorHint="@color/text_muted"
             android:textSize="16sp" />
 
+        <!-- One round button, three jobs (14 Nov 2026, the owner: "likhte hain to aage send aana chahiye"): the
+             microphone when the box is empty, a stop while he listens, "send" once something is typed. -->
         <ImageButton
             android:id="@+id/btnHudMic"
             android:layout_width="52dp"
