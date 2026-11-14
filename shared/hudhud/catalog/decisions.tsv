@@ -119,12 +119,12 @@ screen	BusinessSettingsActivity	OPENED	by=HudhudFacts.shop
 screen	DayBookActivity	OPENED	by=HudhudFacts.activity
 screen	PartyDetailActivity	OPENED	by=HudhudSheet.openParty	q=the customer page has no how-to page of its own yet (adding an entry, the menu)
 screen	ProductCustomersActivity	OPENED	by=HudhudFacts.goods
-screen	DuplicateCustomersActivity	GAP	why=More has it (EDIT_BOOK), no help page says how to find and merge duplicates
-screen	HelpActivity	GAP	why=the FAQ list his own help pages are built from, no answer opens it yet
-screen	MeraKhataActivity	GAP	why=the customer's own balance viewer, no help page yet
-screen	PaymentVoiceActivity	GAP	why=More has it (SETTINGS), no help page says how to set it up
-screen	ViewerActivity	GAP	why=the helper phone and the heir's read-only book (owner only), no help page yet
-screen	WarisActivity	GAP	why=the heir's key (owner only), no help page yet
+screen	DuplicateCustomersActivity	NOT-ASKED	why=tier NEVER (the owner's rule, he only says where it is): the screen_duplicates page tells where it is and what it does, he never opens it
+screen	HelpActivity	OPEN
+screen	MeraKhataActivity	OPEN
+screen	PaymentVoiceActivity	OPEN
+screen	ViewerActivity	NOT-ASKED	why=tier NEVER (the owner's rule, he only says where it is): the screen_viewer page tells where it is and what it does, he never opens it
+screen	WarisActivity	NOT-ASKED	why=tier NEVER (the owner's rule, he only says where it is): the screen_waris page tells where it is and what it does, he never opens it
 screen	LedgerReportActivity	CHILD	of=KhataActivity
 screen	ImportContactsActivity	CHILD	of=KhataActivity
 screen	EntryDetailActivity	CHILD	of=PartyDetailActivity
@@ -150,18 +150,18 @@ screen	ShopTypeActivity	INFRA	why=the first-run setup's shop type step
 more	shop_settings_row	GAP	tier=NEVER	why=opens the shop sheet (name, other shops, profile): SETTINGS, the owner only
 more	app_lock	ANSWERED	ask=Help	tier=NEVER	why=the faq_lock page says what it is, he never switches it
 more	screen_privacy	GAP	tier=NEVER	why=hides the screen in Recents: a safety switch, no help page yet
-more	duplicate_customers	GAP	tier=NEVER	why=merging changes the book (EDIT_BOOK), no help page yet
+more	duplicate_customers	ANSWERED	ask=Help	tier=NEVER	why=the screen_duplicates page says where it is and what it does, he never opens it and never does it
 more	auto_title	ANSWERED	ask=Automations	tier=OPEN	why=he tells each automation's state and hour, Open shows the dialog
 more	radar_title	GAP	tier=OPEN	why=no answer of its own yet for turning the Radar on or off (the feature_radar page explains the feature)
-more	paisa_title	GAP	tier=OPEN	why=payment voice settings (SETTINGS), no help page yet
-more	viewer_menu	GAP	tier=NEVER	why=a helper phone is made from a backup: owner only
-more	waris_title	GAP	tier=NEVER	why=the heir's key is the owner's alone
-more	mera_khata_title	GAP	tier=OPEN	why=the customer's own balance viewer, no help page yet
+more	paisa_title	OPEN	tier=OPEN
+more	viewer_menu	ANSWERED	ask=Help	tier=NEVER	why=the screen_viewer page says where it is and what it does, he never opens it and never does it
+more	waris_title	ANSWERED	ask=Help	tier=NEVER	why=the screen_waris page says where it is and what it does, he never opens it and never does it
+more	mera_khata_title	OPEN	tier=OPEN
 more	language	OPEN	tier=OPEN
 more	text_size	ANSWERED	ask=Look	tier=LOOK	why=at the owner's word he changes the text size one step or to a level, the card says what it was and has an Undo (HudhudLookDoor is the only writer)
 more	theme	ANSWERED	ask=Look	tier=LOOK	why=at the owner's word he changes the theme (light, dark, as the phone), the card says what it was and has an Undo (HudhudLookDoor is the only writer)
 more	hudhud_greet_title	GAP	tier=LOOK	why=his own morning greeting switch, no answer yet
 more	hudhud_voice_title	ANSWERED	ask=Voice	tier=LOOK	why=the voice questions change his own voice, pace and switch
-more	help_support	GAP	tier=OPEN	why=the FAQ list and Report a problem, no answer opens them yet
+more	help_support	OPEN	tier=OPEN
 more	share_app	NOT-ASKED	tier=NEVER	why=sharing sends a message, and his files may never send (check_hudhud_readonly.py)
 more	about_us	ANSWERED	ask=About	tier=OPEN	why=he tells what the app is, who made it, privacy and the version

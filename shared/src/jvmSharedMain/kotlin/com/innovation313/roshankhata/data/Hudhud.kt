@@ -247,6 +247,21 @@ object Hudhud {
     data class Topic(val key: String, val title: String, val text: String, val feature: Boolean = true)
 
     /**
+     * Whether a help page is a feature's, so that its title's words are never taken for a customer's (see
+     * [Topic.feature]). A question page (`faq_…`) is not. Nor are six screens whose titles are also what a person or a
+     * shop is called (14 Nov 2026, the how-to pages of the screens that had none): "Waris" is the Heir Access page and a
+     * very common name, "Madad" is Help & Support and a name part, "Phone", "Voice" and "Duplicate" are words of shops'
+     * names. Their words stay open to the name search, so "Waris ka balance" is still the customer's and not a help page;
+     * the page is reached by its own words in a question ("Waris ki chaabi kaise banaun"). The app and the tests ask this
+     * one rule, so neither can drift from the other.
+     */
+    fun isFeaturePage(key: String): Boolean = !key.startsWith("faq_") && key !in NAME_LIKE_PAGES
+
+    private val NAME_LIKE_PAGES = setOf(
+        "screen_duplicates", "screen_help", "screen_mera_khata", "screen_payment_voice", "screen_viewer", "screen_waris"
+    )
+
+    /**
      * The first of the recogniser's guesses Hudhud knows, with that guess; else the first guess, not known. [language]
      * is the recogniser's (a Persian or Indonesian figure is read its own way, as voice entry reads it).
      */

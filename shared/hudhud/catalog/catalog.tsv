@@ -450,21 +450,21 @@ profile	trade	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSett
 more	about_us	group=help;target=AboutActivity	ANSWERED	tier=OPEN;ask=About;why=he tells what the app is, who made it, privacy and the version
 more	app_lock	group=security;target=appLock	ANSWERED	tier=NEVER;ask=Help;why=the faq_lock page says what it is, he never switches it
 more	auto_title	group=data;target=AutomationsDialog.show	ANSWERED	tier=OPEN;ask=Automations;why=he tells each automation's state and hour, Open shows the dialog
-more	duplicate_customers	group=data;target=DuplicateCustomersActivity	GAP	tier=NEVER;why=merging changes the book (EDIT_BOOK), no help page yet
-more	help_support	group=help;target=HelpActivity	GAP	tier=OPEN;why=the FAQ list and Report a problem, no answer opens them yet
+more	duplicate_customers	group=data;target=DuplicateCustomersActivity	ANSWERED	tier=NEVER;ask=Help;why=the screen_duplicates page says where it is and what it does, he never opens it and never does it
+more	help_support	group=help;target=HelpActivity	OPEN	tier=OPEN
 more	hudhud_greet_title	group=display;target=HudhudGreet.settings	GAP	tier=LOOK;why=his own morning greeting switch, no answer yet
 more	hudhud_voice_title	group=display;target=HudhudVoiceSheet.show	ANSWERED	tier=LOOK;ask=Voice;why=the voice questions change his own voice, pace and switch
 more	language	group=display;target=LanguageActivity	OPEN	tier=OPEN
-more	mera_khata_title	group=data;target=MeraKhataActivity	GAP	tier=OPEN;why=the customer's own balance viewer, no help page yet
-more	paisa_title	group=data;target=PaymentVoiceActivity	GAP	tier=OPEN;why=payment voice settings (SETTINGS), no help page yet
+more	mera_khata_title	group=data;target=MeraKhataActivity	OPEN	tier=OPEN
+more	paisa_title	group=data;target=PaymentVoiceActivity	OPEN	tier=OPEN
 more	radar_title	group=data;target=RadarUi.settings	GAP	tier=OPEN;why=no answer of its own yet for turning the Radar on or off (the feature_radar page explains the feature)
 more	screen_privacy	group=security;target=ScreenPrivacyDialog.show	GAP	tier=NEVER;why=hides the screen in Recents: a safety switch, no help page yet
 more	share_app	group=help;target=shareApp	NOT-ASKED	tier=NEVER;why=sharing sends a message, and his files may never send (check_hudhud_readonly.py)
 more	shop_settings_row	group=shop;target=ShopSheet.show	GAP	tier=NEVER;why=opens the shop sheet (name, other shops, profile): SETTINGS, the owner only
 more	text_size	group=display;target=textSize	ANSWERED	tier=LOOK;ask=Look;why=at the owner's word he changes the text size one step or to a level, the card says what it was and has an Undo (HudhudLookDoor is the only writer)
 more	theme	group=display;target=theme	ANSWERED	tier=LOOK;ask=Look;why=at the owner's word he changes the theme (light, dark, as the phone), the card says what it was and has an Undo (HudhudLookDoor is the only writer)
-more	viewer_menu	group=data;target=ViewerActivity	GAP	tier=NEVER;why=a helper phone is made from a backup: owner only
-more	waris_title	group=data;target=WarisActivity	GAP	tier=NEVER;why=the heir's key is the owner's alone
+more	viewer_menu	group=data;target=ViewerActivity	ANSWERED	tier=NEVER;ask=Help;why=the screen_viewer page says where it is and what it does, he never opens it and never does it
+more	waris_title	group=data;target=WarisActivity	ANSWERED	tier=NEVER;ask=Help;why=the screen_waris page says where it is and what it does, he never opens it and never does it
 screen	AboutActivity	parent=MainActivity;gate=NONE	OPENED	by=HudhudFacts.about
 screen	AgingActivity	parent=FollowUpActivity;gate=REPORTS	OPEN	pages=screen_aging
 screen	AlertsActivity	parent=MainActivity;gate=NONE	OPENED	by=HudhudBook.today
@@ -480,12 +480,12 @@ screen	CashbookActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_cashboo
 screen	ChequesActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_cheques
 screen	CounterSaleActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_counter
 screen	DayBookActivity	parent=CashbookActivity;gate=NONE	OPENED	by=HudhudFacts.activity
-screen	DuplicateCustomersActivity	parent=MainActivity;gate=EDIT_BOOK	GAP	why=More has it (EDIT_BOOK), no help page says how to find and merge duplicates
+screen	DuplicateCustomersActivity	parent=MainActivity;gate=EDIT_BOOK	NOT-ASKED	why=tier NEVER (the owner's rule, he only says where it is): the screen_duplicates page tells where it is and what it does, he never opens it
 screen	EntryDetailActivity	parent=-;gate=NONE	CHILD	of=PartyDetailActivity
 screen	ExpiringActivity	parent=BillsActivity;gate=NONE	OPEN	pages=feature_expiry
 screen	FollowUpActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_followup,feature_radar
 screen	GateActivity	parent=-;gate=NONE	INFRA	why=the front door: sends each start to the setup, the lock or Home
-screen	HelpActivity	parent=MainActivity;gate=NONE	GAP	why=the FAQ list his own help pages are built from, no answer opens it yet
+screen	HelpActivity	parent=MainActivity;gate=NONE	OPEN	pages=screen_help
 screen	ImageCropActivity	parent=-;gate=NONE	CHILD	of=BusinessSettingsActivity
 screen	ImportContactsActivity	parent=MainActivity;gate=EDIT_BOOK	CHILD	of=KhataActivity
 screen	InsightsActivity	parent=-;gate=REPORTS	OPEN	pages=screen_insights
@@ -493,7 +493,7 @@ screen	InspectorReportActivity	parent=ProductsActivity;gate=NONE	CHILD	of=Produc
 screen	InvoiceEditorActivity	parent=InvoicesActivity;gate=NONE	CHILD	of=InvoicesActivity
 screen	InvoiceSettingsActivity	parent=InvoicesActivity;gate=SETTINGS	CHILD	of=InvoicesActivity
 screen	InvoicesActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_documents
-screen	KhataActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_customer_qr,screen_khata
+screen	KhataActivity	parent=MainActivity;gate=NONE	OPEN	pages=faq_khata_link,feature_customer_qr,screen_khata
 screen	LanguageActivity	parent=-;gate=NONE	OPEN	pages=faq_language
 screen	LapsedActivity	parent=InsightsActivity;gate=NONE	OPEN	pages=screen_lapsed
 screen	LedgerReportActivity	parent=KhataActivity;gate=REPORTS	CHILD	of=KhataActivity
@@ -501,10 +501,10 @@ screen	LiveDevicesActivity	parent=BackupActivity;gate=BACKUP	CHILD	of=BackupActi
 screen	LockActivity	parent=-;gate=NONE	INFRA	why=the App Lock screen
 screen	LogoMakerActivity	parent=-;gate=NONE	CHILD	of=BusinessSettingsActivity
 screen	MainActivity	parent=-;gate=NONE	INFRA	why=Home itself: its tiles are the map the catalog checks
-screen	MeraKhataActivity	parent=-;gate=NONE	GAP	why=the customer's own balance viewer, no help page yet
+screen	MeraKhataActivity	parent=-;gate=NONE	OPEN	pages=screen_mera_khata
 screen	OrdersActivity	parent=ProductsActivity;gate=NONE	OPEN	pages=feature_orders
 screen	PartyDetailActivity	parent=KhataActivity;gate=NONE	OPENED	by=HudhudSheet.openParty;q=the customer page has no how-to page of its own yet (adding an entry, the menu)
-screen	PaymentVoiceActivity	parent=MainActivity;gate=SETTINGS	GAP	why=More has it (SETTINGS), no help page says how to set it up
+screen	PaymentVoiceActivity	parent=MainActivity;gate=SETTINGS	OPEN	pages=screen_payment_voice
 screen	PdfPreviewActivity	parent=-;gate=NONE	INFRA	why=shows a PDF that was just made
 screen	PlansActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_plans
 screen	PosterActivity	parent=BusinessCardActivity;gate=NONE	OPEN	pages=screen_posters
@@ -525,8 +525,8 @@ screen	ShopTypeActivity	parent=-;gate=NONE	INFRA	why=the first-run setup's shop 
 screen	SnapshotsActivity	parent=BackupActivity;gate=BACKUP	OPEN	pages=faq_snapshot
 screen	StaffActivity	parent=CashbookActivity;gate=STAFF	OPEN	pages=feature_staff
 screen	SupplierRatesActivity	parent=BillsActivity;gate=REPORTS	OPEN	pages=screen_purchase_rates
-screen	ViewerActivity	parent=-;gate=BACKUP	GAP	why=the helper phone and the heir's read-only book (owner only), no help page yet
-screen	WarisActivity	parent=MainActivity;gate=BACKUP	GAP	why=the heir's key (owner only), no help page yet
+screen	ViewerActivity	parent=-;gate=BACKUP	NOT-ASKED	why=tier NEVER (the owner's rule, he only says where it is): the screen_viewer page tells where it is and what it does, he never opens it
+screen	WarisActivity	parent=MainActivity;gate=BACKUP	NOT-ASKED	why=tier NEVER (the owner's rule, he only says where it is): the screen_waris page tells where it is and what it does, he never opens it
 screen	ZakatActivity	parent=MainActivity;gate=REPORTS	OPEN	pages=screen_zakat
 tile	calculator	CalculatorActivity	OPEN	pages=faq_percent,screen_calc
 tile	cf_title	CashFlowActivity	OPEN	pages=screen_cashflow
@@ -534,7 +534,7 @@ tile	coach_title_invoice	InvoicesActivity	OPEN	pages=feature_documents
 tile	followup_title	FollowUpActivity	OPEN	pages=feature_followup,feature_radar
 tile	nav_cashbook	CashbookActivity	OPEN	pages=feature_cashbook
 tile	nav_cheques	ChequesActivity	OPEN	pages=feature_cheques
-tile	nav_khata	KhataActivity	OPEN	pages=feature_customer_qr,screen_khata
+tile	nav_khata	KhataActivity	OPEN	pages=faq_khata_link,feature_customer_qr,screen_khata
 tile	nav_plans	PlansActivity	OPEN	pages=feature_plans
 tile	pos_title	CounterSaleActivity	OPEN	pages=feature_counter
 tile	poster_title	PosterActivity	OPEN	pages=screen_posters

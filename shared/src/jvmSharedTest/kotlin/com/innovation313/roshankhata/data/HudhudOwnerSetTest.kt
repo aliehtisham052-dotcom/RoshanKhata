@@ -2,7 +2,6 @@ package com.innovation313.roshankhata.data
 
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.File
 
 /**
  * The owner's own kind of questions (14 Nov 2026): the two short lists he sent (owner_set.tsv, 200 sentences) and his
@@ -20,25 +19,13 @@ class HudhudOwnerSetTest {
     private val goods = listOf("Urea", "DAP", "Sugar", "Paracetamol", "Atta", "Ghee")
         .mapIndexed { i, n -> Hudhud.Name(100L + i, n) }
 
-    /** The app's own help pages, in English, Roman Urdu and Urdu, read from strings.xml as the app reads them. */
+    /**
+     * The app's own help pages, in Roman Urdu, English and Urdu, read from strings.xml as the app reads them
+     * ([HudhudRealPages], shared with the how-to pages' test). The three tongues and their order are what the floors
+     * below were measured with (14 Nov 2026): change them and the floors are measured again.
+     */
     private val topics: List<Hudhud.Topic> by lazy {
-        var dir = File(".").absoluteFile
-        while (dir.parentFile != null && !File(dir, "app/src/main/res").isDirectory) dir = dir.parentFile
-        val re = Regex("<string name=\"([^\"]+)\"[^>]*>(.*?)</string>", RegexOption.DOT_MATCHES_ALL)
-        fun strings(folder: String): Map<String, String> {
-            val f = File(dir, "app/src/main/res/$folder/strings.xml")
-            if (!f.exists()) return emptyMap()
-            return re.findAll(f.readText()).associate { m ->
-                m.groupValues[1] to m.groupValues[2].replace("\\'", "'").replace("\\\"", "\"").replace("&amp;", "&")
-                    .replace(Regex("<[^>]+>"), "").replace("\\n", " ")
-            }
-        }
-        val tongues = listOf(strings("values-b+ur+Latn"), strings("values"), strings("values-ur"))
-        lines("/hudhud/pages.tsv").map { l ->
-            val (key, title, body) = l.split('\t')
-            Hudhud.Topic(key, tongues.joinToString(" ") { it[title] ?: "" }, tongues.joinToString(" ") { it[body] ?: "" },
-                feature = !key.startsWith("faq_"))
-        }
+        HudhudRealPages.topics(listOf("values-b+ur+Latn", "values", "values-ur"))
     }
 
     private fun lines(resource: String): List<String> =
@@ -89,8 +76,12 @@ class HudhudOwnerSetTest {
     }
 
     private companion object {
-        /** What this build reads right (14 Nov 2026); raise it with every improvement, never lower it. */
-        const val SHORT_FLOOR = 142
-        const val THOUSAND_FLOOR = 722
+        /**
+         * What this build reads right (14 Nov 2026); raise it with every improvement, never lower it. Measured with the
+         * pages in the app's own order (pages.tsv is held to HudhudBook.PAGES by the catalog check): 143 and 726 —
+         * the short list's floor is the figure itself, the thousand's keeps the margin of two it always had.
+         */
+        const val SHORT_FLOOR = 143
+        const val THOUSAND_FLOOR = 724
     }
 }

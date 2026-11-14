@@ -172,7 +172,24 @@ object HudhudBook {
             Page("screen_audit", R.string.audit_title, R.string.audit_subtitle, com.innovation313.roshankhata.AuditActivity::class.java),
             Page("screen_lapsed", R.string.lapsed_title, R.string.lapsed_title, com.innovation313.roshankhata.LapsedActivity::class.java),
             Page("screen_aging", R.string.aging_title, R.string.aging_title, com.innovation313.roshankhata.AgingActivity::class.java),
-            Page("screen_bin", R.string.tile_bin, R.string.faq_a_delete, RecycleBinActivity::class.java)
+            Page("screen_bin", R.string.tile_bin, R.string.faq_a_delete, RecycleBinActivity::class.java),
+            // 14 Nov 2026 (#32): the six screens that had no how-to page, by the owner's tiers. The OPEN tier (Help,
+            // Mera Khata, Payment voice) says what the screen is and where it is, and opens it; the screen asks its own
+            // gate (AccessUi), so Hudhud only points. The NEVER tier (Duplicates, Helper's phone, Heir Access) only
+            // says where it is and what it does — `open = null`, he never opens it: a merge, a copy of the whole book
+            // and an heir's key are the owner's own taps. Their words are the screens' own sentences (already in nine
+            // languages) put together in hudhud_page_*, so the page says what the screen says. The titles are also
+            // names and shop words, so Hudhud.isFeaturePage keeps them out of the feature words.
+            Page("screen_duplicates", R.string.duplicate_customers, R.string.hudhud_page_duplicates, null),
+            Page("screen_help", R.string.help_support, R.string.hudhud_page_help, com.innovation313.roshankhata.HelpActivity::class.java),
+            Page("screen_mera_khata", R.string.mera_khata_title, R.string.mera_khata_help, com.innovation313.roshankhata.MeraKhataActivity::class.java),
+            Page("screen_payment_voice", R.string.paisa_title, R.string.hudhud_page_paisa, com.innovation313.roshankhata.PaymentVoiceActivity::class.java),
+            Page("screen_viewer", R.string.viewer_menu, R.string.hudhud_page_viewer, null),
+            Page("screen_waris", R.string.waris_title, R.string.hudhud_page_waris, null),
+            // The shop's side of the khata link (the customer's side is screen_mera_khata): where to send it and what the
+            // customer gets. It opens the Khata list, where the customer is picked, as the customer QR's page does. A
+            // "how do I send a link" question was otherwise taken to Mera Khata, the page for receiving one.
+            Page("faq_khata_link", R.string.clink_menu, R.string.hudhud_page_khata_link, KhataActivity::class.java)
         )
     }
 
@@ -211,8 +228,9 @@ object HudhudBook {
                 p.key,
                 tongues.joinToString(" ") { it.getString(p.title) },
                 tongues.joinToString(" ") { it.getString(p.body) },
-                // A feature's or a screen's title is never a customer's name; a question's may be (محفوظ, "keep").
-                feature = !p.key.startsWith("faq_")
+                // A feature's or a screen's title is never a customer's name; a question's may be (محفوظ, "keep"), and so
+                // may the title of a screen called what a person is (Waris, Madad): one rule, shared with the tests.
+                feature = Hudhud.isFeaturePage(p.key)
             )
         }
     }

@@ -29,6 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP = os.path.join(ROOT, 'app/src/main/java/com/innovation313/roshankhata')
 DECISIONS = os.path.join(ROOT, 'shared/hudhud/catalog/decisions.tsv')
 CATALOG = os.path.join(ROOT, 'shared/hudhud/catalog/catalog.tsv')
+PAGES_TSV = os.path.join(ROOT, 'shared/src/jvmSharedTest/resources/hudhud/pages.tsv')
 
 problems = []
 
@@ -353,6 +354,20 @@ def pages():
     return out
 
 
+def page_rows():
+    """HudhudBook.PAGES in the order the app builds it: the first ten pages, the feature sheets (FeatureIntro.Topic, in its
+    own order, keyed intro_*), then the rest — each as (key, title string name, body string name)."""
+    src = strip(read(os.path.join(APP, 'data/HudhudBook.kt')))
+    book = re.findall(r'Page\("(\w+)",\s*R\.string\.(\w+),\s*R\.string\.(\w+),', src)
+    intro = strip(read(os.path.join(APP, 'ui/FeatureIntro.kt')))
+    intro = intro[intro.find('enum class Topic('):]
+    topics = re.findall(r'^\s+[A-Z][A-Z_]*\("(\w+)",\s*R\.string\.(\w+),\s*R\.string\.(\w+),', intro, re.M)
+    first = [r for r in book if r[0].startswith('faq_') and r[0] != 'faq_khata_link']
+    # the app's list: the first listOf (the ten faq_ pages), then the feature sheets, then the second listOf (the rest)
+    rest = [r for r in book if r not in first]
+    return first + [('intro_' + k, t, b) for k, t, b in topics] + rest
+
+
 def enums():
     """Every enum in Hudhud.kt and VoiceQuestion.kt: 'Facet' -> {PHONE, ...}."""
     out = {}
@@ -481,6 +496,7 @@ def build():
     check_screens(m)
     check_tiles(m)
     check_more(m)
+    check_pages_tsv(m)
     return m
 
 
@@ -729,6 +745,50 @@ def check_screens(m):
         m.lines.append(('screen', s, 'parent=%s;gate=%s' % (parent, gate), d['decision'], note))
         if d['decision'] == 'GAP':
             m.gap_screens.append(s)
+
+
+def check_pages_tsv(m):
+    """The tests ask Hudhud about pages.tsv's pages, so it must be HudhudBook.PAGES: the same keys, the same two strings
+    each, in the same order (helpOf takes the first of two equal scores). Without this a page added to the app is never
+    asked about by a test, and a page taken away is still asked about."""
+    have = []
+    if not os.path.exists(PAGES_TSV):
+        fail('%s is missing: the tests read the help pages from it' % rel(PAGES_TSV))
+        return
+    for n, line in enumerate(read(PAGES_TSV).splitlines(), 1):
+        if not line.strip() or line.startswith('#'):
+            continue
+        parts = line.split('\t')
+        if len(parts) != 3:
+            fail('%s line %d: want key<TAB>title string<TAB>body string' % (rel(PAGES_TSV), n))
+            continue
+        have.append(tuple(parts))
+    want = page_rows()
+    if not want:
+        fail('HudhudBook.PAGES: no page could be read (did its Page(...) shape change?)')
+        return
+    wk, hk = [r[0] for r in want], [r[0] for r in have]
+    for k in wk:
+        if k not in hk:
+            fail('%s has no row for page %s of HudhudBook.PAGES: add it (key, title string, body string)' % (rel(PAGES_TSV), k))
+    for k in hk:
+        if k not in wk:
+            fail('%s has a row for page %s that HudhudBook.PAGES does not have (stale)' % (rel(PAGES_TSV), k))
+    for k in set(wk) & set(hk):
+        if wk.count(k) > 1 or hk.count(k) > 1:
+            fail('page %s is listed twice' % k)
+    if set(wk) == set(hk) and wk != hk:
+        i = next(i for i, (a, b) in enumerate(zip(wk, hk)) if a != b)
+        fail('%s: the order of the pages is not the app\'s (first difference at row %d: %s here, %s in HudhudBook.PAGES)' % (rel(PAGES_TSV), i + 1, hk[i], wk[i]))
+    appr = {r[0]: r for r in want}
+    for r in have:
+        a = appr.get(r[0])
+        if a and tuple(a) != tuple(r):
+            fail('%s: page %s uses strings %s / %s, HudhudBook uses %s / %s' % (rel(PAGES_TSV), r[0], r[1], r[2], a[1], a[2]))
+    # The tests make a page a "feature" with Hudhud.isFeaturePage(key) (HudhudRealPages); the app must use the same rule, or a
+    # customer called Waris is found by his name in the tests and taken for the Heir Access page on the phone.
+    if 'Hudhud.isFeaturePage(' not in strip(read(os.path.join(APP, 'data/HudhudBook.kt'))):
+        fail('HudhudBook.topics must decide a page\'s feature flag with Hudhud.isFeaturePage(key), the rule the tests use')
 
 
 def check_tiles(m):
