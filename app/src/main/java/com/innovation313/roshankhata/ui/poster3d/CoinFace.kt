@@ -70,7 +70,8 @@ object CoinFace {
             val wp = PosterKit.greetingPaint(context, word, if (urdu) 92f else 64f, col, locale, urdu)
             if (!PosterKit.hasArabic(word)) wp.typeface = Typeface.create(InvoiceFonts.sora(context), Typeface.BOLD)
             wp.textAlign = Paint.Align.CENTER
-            if (!PosterKit.hasArabic(word)) wp.letterSpacing = 0.2f
+            // Spacing pulls Arabic-script, Devanagari and Bengali words apart (lesson 95).
+            if (PosterKit.canTrack(word)) wp.letterSpacing = 0.2f
             PosterKit.fitWidth(wp, word, 300f, 24f)
             PosterKit.inkLine(canvas, word, wp, cx, cy + 112f)
         }

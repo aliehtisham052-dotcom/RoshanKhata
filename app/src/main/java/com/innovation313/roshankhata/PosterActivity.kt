@@ -53,6 +53,7 @@ import com.innovation313.roshankhata.ui.PosterWords
 import com.innovation313.roshankhata.ui.ScreenInsets
 import com.innovation313.roshankhata.ui.TextFit
 import com.innovation313.roshankhata.ui.poster3d.CoinFace
+import com.innovation313.roshankhata.ui.poster3d.CrateFace
 import com.innovation313.roshankhata.ui.poster3d.Hero
 import com.innovation313.roshankhata.ui.poster3d.HeroStage
 import com.innovation313.roshankhata.ui.poster3d.SealFace
@@ -1433,6 +1434,7 @@ class PosterActivity : BaseActivity() {
             when (it) {
                 Hero.THANKS -> "${it.name}|${shopName()}|${markLogo != null}"
                 Hero.OFFER -> "${it.name}|${fields.offerPercent}|$lang"
+                Hero.CRATE -> "${it.name}|${tradeKey()}"
                 else -> it.name
             }
         }
@@ -1447,6 +1449,7 @@ class PosterActivity : BaseActivity() {
                 val face = when {
                     hero.face == null -> null
                     hero == Hero.OFFER -> CoinFace.draw(posterContext(), fields.offerPercent)
+                    hero == Hero.CRATE -> CrateFace.draw(tradeKey())
                     else -> SealFace.draw(this, shopName(), markLogo)
                 }
                 HeroStage(this, hero, face = face).also {
