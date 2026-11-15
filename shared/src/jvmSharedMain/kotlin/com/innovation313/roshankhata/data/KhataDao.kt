@@ -2942,13 +2942,13 @@ interface KhataDao {
      * ticket), or null while there is none (15 Nov 2026, Hudhud's "poori kitab ki bikri": the sales report opens on the
      * days the sum was over, and "the whole book" has no first day of its own). Read only, off the date indexes.
      */
-    @Query("SELECT MIN(first) FROM (" +
-           "SELECT MIN(t.timestamp) AS first FROM transactions t " +
+    @Query("SELECT MIN(firstAt) FROM (" +
+           "SELECT MIN(t.timestamp) AS firstAt FROM transactions t " +
            "JOIN parties p ON p.id = t.partyId " +
            "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
            "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
            "UNION ALL " +
-           "SELECT MIN(timestamp) AS first FROM sales WHERE isDeleted = 0 AND status = 'done' AND partyId IS NULL)")
+           "SELECT MIN(timestamp) AS firstAt FROM sales WHERE isDeleted = 0 AND status = 'done' AND partyId IS NULL)")
     suspend fun firstSaleAt(): Long?
 
     /**
