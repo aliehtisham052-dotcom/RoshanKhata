@@ -297,6 +297,22 @@ class SecurityReviewTest {
     }
 
     @Test
+    fun `the helper's copy leaves a sale line's cost out, the owner's own backup keeps it`() = runBlocking {
+        val dao = book("helper-cost")
+        val sale = Sale(timestamp = 1_700_000_000_000L, subtotal = 0.0, grandTotal = 0.0, paidTotal = 0.0)
+        dao.postSale(
+            sale,
+            listOf(SaleItem(saleId = 0, itemName = "Item A", quantity = 2.0, unit = "bag", rate = 1000.0, costRate = 600.0)),
+            listOf(SalePayment(saleId = 0, method = PaymentMethod.CASH, amount = 2000.0))
+        )
+        val own = BackupCodec.parseText(StringWriter().also { BackupCodec.exportTo(dao, "Shop", JSONObject(), it) }.toString()).second!!
+        val helper = BackupCodec.parseText(StringWriter().also { BackupCodec.exportTo(dao, "Shop", JSONObject(), it, secrets = false) }.toString()).second!!
+        assertEquals(600.0, own.saleItems.single().costRate!!, 0.0)
+        assertNull(helper.saleItems.single().costRate)
+        assertEquals("the sale itself is whole", 1000.0, helper.saleItems.single().rate, 0.0)
+    }
+
+    @Test
     fun `an entry's bill photo is still linked after a restore`() = runBlocking {
         val dao = book("photo")
         val ali = dao.insertParty(Party(name = "Ali"))

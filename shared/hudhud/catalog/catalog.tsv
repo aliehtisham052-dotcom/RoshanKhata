@@ -71,7 +71,7 @@ column	cashbook.isDeleted	Boolean	STRUCT	pattern
 column	cashbook.isIncome	Boolean	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	cashbook.note	String?	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	cashbook.paymentMethod	String?	READ	reader=HudhudFacts.collected;via=DayBook.rows;gate=REPORTS;screen=DayBookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cashbook.paymentRef	String?	GAP	why=a reference number is told by its own words (the TID the payment voice finds) and no reader of the owner's questions asks for it yet, the Cashbook screen shows it per row
+column	cashbook.paymentRef	String?	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it;why=a row's reference (the TID) rides in its line and is shown, never said
 column	cashbook.photoPath	String?	WITHHELD	why=a picture's file path on this phone
 column	cashbook.saleId	Long?	STRUCT	pattern
 column	cashbook.timestamp	Long	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
@@ -134,10 +134,10 @@ column	invoice_items.rate	Double	READ	reader=HudhudFacts.lastInvoice;gate=NONE;s
 column	invoice_items.uid	String?	STRUCT	pattern
 column	invoice_items.unit	String?	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
 column	invoices.additionalChargeAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
-column	invoices.additionalChargeLabel	String?	GAP	why=he says which invoices have money due and how much, the invoice's own phone, charge label and note are the document's words, read on its page
-column	invoices.createdAt	Long	GAP	why=he says which invoices have money due and how much, the invoice's own phone, charge label and note are the document's words, read on its page
+column	invoices.additionalChargeLabel	String?	READ	reader=HudhudFacts.lastInvoice;gate=REPORTS;screen=InvoicesActivity;stricter=the invoice screen shows the note and the extra charge to anyone who opens it, but a note often holds a sum and the charge is money, so Hudhud tells them with REPORTS like a cheque's note
+column	invoices.createdAt	Long	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity;why=the last-invoice card says the day it was written and the phone printed for the customer (shown, never said)
 column	invoices.customerName	String	READ	reader=HudhudFacts.count;gate=NONE;screen=InvoicesActivity
-column	invoices.customerPhone	String?	GAP	why=he says which invoices have money due and how much, the invoice's own phone, charge label and note are the document's words, read on its page
+column	invoices.customerPhone	String?	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity;why=the last-invoice card says the day it was written and the phone printed for the customer (shown, never said)
 column	invoices.deletedAt	Long?	STRUCT	pattern
 column	invoices.discountAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices.discountPercent	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
@@ -147,7 +147,7 @@ column	invoices.invoiceDate	Long	READ	reader=HudhudFacts.count;gate=NONE;screen=
 column	invoices.invoiceNumber	String	READ	reader=HudhudFacts.count;gate=NONE;screen=InvoicesActivity
 column	invoices.isDeleted	Boolean	STRUCT	pattern
 column	invoices.kind	String	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
-column	invoices.note	String?	GAP	why=he says which invoices have money due and how much, the invoice's own phone, charge label and note are the document's words, read on its page
+column	invoices.note	String?	READ	reader=HudhudFacts.lastInvoice;gate=REPORTS;screen=InvoicesActivity;stricter=the invoice screen shows the note and the extra charge to anyone who opens it, but a note often holds a sum and the charge is money, so Hudhud tells them with REPORTS like a cheque's note
 column	invoices.receivedAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices.sourceDocId	Long?	STRUCT	pattern
 column	invoices.sourceEntryId	Long?	STRUCT	pattern
@@ -163,7 +163,7 @@ column	loyalty.points	Double	READ	reader=HudhudCounterFacts.loyalty;via=KhataDao
 column	loyalty.saleId	Long?	STRUCT	pattern
 column	loyalty.timestamp	Long	READ	reader=HudhudCounterFacts.loyalty;via=KhataDao.pointRowsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	loyalty.uid	String?	STRUCT	pattern
-column	parties.createdAt	Long	GAP	why=the customer's added-on day and his share switch have no question of their own yet, the customer page shows both
+column	parties.createdAt	Long	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity;why=the since card says the day the customer was added beside the day of his first entry
 column	parties.creditLimit	Double?	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
 column	parties.deletedAt	Long?	STRUCT	pattern
 column	parties.fatherName	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
@@ -172,7 +172,7 @@ column	parties.id	Long	STRUCT	pattern
 column	parties.isCustomer	Boolean	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
 column	parties.isDeleted	Boolean	STRUCT	pattern
 column	parties.name	String	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
-column	parties.noEntryShare	Boolean	GAP	why=the customer's added-on day and his share switch have no question of their own yet, the customer page shows both
+column	parties.noEntryShare	Boolean	STRUCT	why=the customer's own switch for the WhatsApp offer after an entry, a setting of the entry flow and not a fact about the account
 column	parties.note	String?	READ	reader=HudhudFacts.person;also=HudhudFacts.notesList;gate=NONE;screen=PartyDetailActivity
 column	parties.phone	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
 column	parties.photoPath	String?	WITHHELD	why=the card's secret token and a picture's file path
@@ -289,7 +289,7 @@ column	sale_returns.refundEntryId	Long?	STRUCT	pattern
 column	sale_returns.refundMethod	String	READ	reader=HudhudCounterFacts.returnWays;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_returns.returnNumber	String	READ	reader=HudhudFacts.returns;gate=NONE;screen=CounterSaleActivity
 column	sale_returns.saleId	Long?	STRUCT	pattern
-column	sale_returns.status	String	GAP	why=only a filter, every answer reads the done returns and a voided one is told by voided
+column	sale_returns.status	String	READ	reader=HudhudCounterFacts.voided;via=KhataDao.voidedReturnsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_returns.timestamp	Long	READ	reader=HudhudFacts.returns;gate=NONE;screen=CounterSaleActivity
 column	sale_returns.total	Double	READ	reader=HudhudFacts.returns;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_returns.uid	String?	STRUCT	pattern
@@ -309,7 +309,7 @@ column	sales.paidTotal	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudC
 column	sales.partyId	Long?	STRUCT	pattern
 column	sales.roundOff	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sales.saleNumber	String	READ	reader=HudhudFacts.count;gate=NONE;screen=CounterSaleActivity
-column	sales.status	String	GAP	why=only a filter, every answer reads the done tickets and a voided one is told by voided
+column	sales.status	String	READ	reader=HudhudCounterFacts.voided;via=KhataDao.voidedSalesBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sales.subtotal	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sales.taxAmount	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sales.taxPercent	Double?	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
@@ -340,7 +340,7 @@ column	schemes.uid	String?	STRUCT	pattern
 column	schemes.unit	String?	READ	reader=HudhudFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
 column	shifts.closedAt	Long?	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	shifts.counted	Double?	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	shifts.device	String?	GAP	why=which phone or computer opened the shift is not something a shopkeeper asks, the shift screen shows it
+column	shifts.device	String?	STRUCT	why=which phone or computer opened the shift: plumbing the shift's own drawer count uses (ShiftMath.markOf), not something a shopkeeper asks
 column	shifts.expected	Double?	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	shifts.id	Long	STRUCT	pattern
 column	shifts.note	String?	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
@@ -416,14 +416,14 @@ column	transactions.paymentMethod	String?	READ	reader=HudhudFacts.collected;via=
 column	transactions.paymentRef	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
 column	transactions.productId	Long?	STRUCT	pattern
 column	transactions.quantity	Double?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
-column	transactions.rateType	String?	GAP	why=no question reaches it yet
-column	transactions.recovery	Int	GAP	why=no question reaches it yet
+column	transactions.rateType	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity;why=the last-entry card says the rate list the entry was at and the season the owner chose (only where the shop keeps seasons)
+column	transactions.recovery	Int	READ	reader=HudhudFacts.person;gate=REPORTS;screen=EntryDetailActivity;stricter=the entry screen shows the chance of recovery to anyone who opens it, but a doubtful debt is the owner's private judgement and Hudhud says it only to who may see reports
 column	transactions.saleId	Long?	STRUCT	pattern
-column	transactions.season	String?	GAP	why=no question reaches it yet
+column	transactions.season	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity;why=the last-entry card says the rate list the entry was at and the season the owner chose (only where the shop keeps seasons)
 column	transactions.timestamp	Long	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
 column	transactions.uid	String?	STRUCT	pattern
 column	transactions.unit	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
-profile	askShareAfterEntry	Boolean	GAP	why=settings of the printed sheets, no question reaches them yet
+profile	askShareAfterEntry	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
 profile	bankAccountTitle	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	bankIban	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	bankJazzCash	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
@@ -431,21 +431,21 @@ profile	bankName	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=Busin
 profile	businessAddress	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=BusinessCardActivity,RateListActivity,PosterActivity;why=the address and phone are on the cards, rate lists and posters anyone prints
 profile	businessEmail	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	businessName	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=PartyDetailActivity,InvoicesActivity,MainActivity;why=the shop's name is on every receipt, statement and the Home bar
-profile	businessNameUrdu	String?	GAP	why=settings of the printed sheets, no question reaches them yet
+profile	businessNameUrdu	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=PosterActivity,BusinessCardActivity;why=the Urdu name is printed on the Urdu posters and the business card anyone prints
 profile	businessPhone	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=BusinessCardActivity,RateListActivity,PosterActivity;why=the address and phone are on the cards, rate lists and posters anyone prints
 profile	calendar	ShopCalendar.Kind	READ	reader=HudhudFacts.clock;gate=NONE;screen=BusinessSettingsActivity;alsoseen=MainActivity;why=every date every screen shows is written in the shop's calendar
 profile	country	ShopCountry	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	currency	String	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=MainActivity;why=the sign is on every amount every screen shows (through Format), Home reads it to ask the country once
-profile	logoDesign	String?	GAP	why=settings of the printed sheets, no question reaches them yet
-profile	otherTradeItems	String?	GAP	why=settings of the printed sheets, no question reaches them yet
-profile	otherTradeName	String?	GAP	why=settings of the printed sheets, no question reaches them yet
-profile	paymentOnReminder	Boolean	GAP	why=settings of the printed sheets, no question reaches them yet
-profile	photoOnStatement	Boolean	GAP	why=settings of the printed sheets, no question reaches them yet
-profile	receiptHeader	String	GAP	why=settings of the printed sheets, no question reaches them yet
-profile	sealChoice	SealChoice	GAP	why=settings of the printed sheets, no question reaches them yet
+profile	logoDesign	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
+profile	otherTradeItems	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
+profile	otherTradeName	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
+profile	paymentOnReminder	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
+profile	photoOnStatement	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
+profile	receiptHeader	String	GAP	why=made of the name, address, phone and tax number the shop card already tells (the tax number only with SETTINGS), so it has no answer of its own
+profile	sealChoice	SealChoice	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
 profile	strn	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	taxLabel	String	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	termsAndConditions	String?	GAP	why=settings of the printed sheets, no question reaches them yet
+profile	termsAndConditions	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=the terms are written on the settings screen the owner opens, no other screen of a cashier shows them
 profile	trade	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=PosterActivity,InspectorReportActivity;why=the trade picks the words and the register every screen shows
 more	about_us	group=help;target=AboutActivity	ANSWERED	tier=OPEN;ask=About;why=he tells what the app is, who made it, privacy and the version
 more	app_lock	group=security;target=appLock	ANSWERED	tier=NEVER;ask=Help;why=the faq_lock page says what it is, he never switches it

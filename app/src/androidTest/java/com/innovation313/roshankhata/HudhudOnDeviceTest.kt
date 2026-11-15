@@ -475,4 +475,41 @@ class HudhudOnDeviceTest {
             assertEquals(TextSize.NORMAL, TextSize.level(context))
         }
     }
+
+    /**
+     * 15 Nov 2026 (the catalog's last columns): the since card says the day the customer was added, the last-entry card the
+     * rate list and the season the owner chose, and the shop card the Urdu name and the terms (the owner's, so cut for no one
+     * here — an owner's phone). Made-up customer (lesson 80).
+     */
+    @Test
+    fun theRecordLinesOfTheCatalogAreToldFromTheBook() {
+        val dao = KhataDatabase.get(context).khataDao()
+        val season = com.innovation313.roshankhata.data.SeasonBook.seasonOf(System.currentTimeMillis())
+        runBlocking {
+            if (dao.partiesWithBalanceOnce().none { it.name == "Tareekh Brothers" }) {
+                val id = dao.insertParty(Party(name = "Tareekh Brothers", phone = "03000000007"))
+                dao.insertEntry(
+                    LedgerEntry(
+                        partyId = id, amount = 250.0, isGiven = true, entryNumber = "RK-970007",
+                        timestamp = System.currentTimeMillis(), rateType = com.innovation313.roshankhata.data.RateType.CASH,
+                        season = season.key
+                    )
+                )
+            }
+            val parties = dao.partiesWithBalanceOnce()
+            val id = parties.first { it.name == "Tareekh Brothers" }.id
+            val since = com.innovation313.roshankhata.data.HudhudFacts.person(context, dao, listOf(id), Hudhud.Facet.SINCE, parties)
+            assertTrue("no 'Added on' line: ${since.lines}",
+                since.lines.any { it.startsWith(context.getString(R.string.hudhud_l_added)) })
+            val last = com.innovation313.roshankhata.data.HudhudFacts.person(context, dao, listOf(id), Hudhud.Facet.LAST_ENTRY, parties)
+            assertTrue("no rate line: ${last.lines}", last.lines.any { it.contains(context.getString(R.string.rate_type_cash)) })
+        }
+        BusinessProfile.setBusinessNameUrdu(context, "النور ٹریڈرز")
+        BusinessProfile.setTermsAndConditions(context, "Payment due within 14 days.")
+        val shop = com.innovation313.roshankhata.data.HudhudFacts.shop(context, Hudhud.ShopFacet.ALL)
+        assertTrue("no Urdu name line: ${shop.lines}", shop.lines.any { it.contains("النور") })
+        assertTrue("no terms line: ${shop.lines}", shop.lines.any { it.contains("Payment due within 14 days") })
+        BusinessProfile.setBusinessNameUrdu(context, null)
+        BusinessProfile.setTermsAndConditions(context, null)
+    }
 }

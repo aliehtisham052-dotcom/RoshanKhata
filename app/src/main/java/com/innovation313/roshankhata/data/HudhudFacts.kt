@@ -29,6 +29,7 @@ import com.innovation313.roshankhata.data.HudhudBook.Mood
 import com.innovation313.roshankhata.data.HudhudBook.Row
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.HudhudPrefs
+import com.innovation313.roshankhata.ui.SeasonText
 import kotlinx.coroutines.flow.first
 import java.util.Calendar
 import java.util.Locale
@@ -163,6 +164,18 @@ internal object HudhudFacts {
                     val paid = entry?.let { PaymentMethod.said(AndroidWords(c), it.paymentMethod, it.paymentRef) }
                     val entryNote = entry?.note?.takeIf { it.isNotBlank() }
                     val writer = if (HudhudGate.reports()) entry?.createdBy?.takeIf { it.isNotBlank() } else null
+                    // The entry's own rate list, season and chance of recovery (15 Nov 2026, the catalog's last columns): each only when
+                    // the entry holds it. The season is the owner's own pick (never the one worked out from the date) and only where the
+                    // shop keeps seasons; a doubtful debt is the owner's private judgement, so it is told with REPORTS only.
+                    val rateWord = when (entry?.rateType) {
+                        RateType.CASH -> c.getString(R.string.rate_type_cash)
+                        RateType.CREDIT -> c.getString(R.string.rate_type_credit)
+                        else -> null
+                    }
+                    val seasonWord = if (entry != null && last.isGiven && TradeFeatures.seasons(c))
+                        SeasonBook.Season.fromKey(entry.season)?.let { SeasonText.name(c, it) } else null
+                    val doubtWord = if (HudhudGate.reports() && entry?.recovery == Recovery.DOUBTFUL)
+                        c.getString(R.string.recovery_doubtful) else null
                     // Each goods line with what the receipt says of it (15 Nov 2026, records group): its rate, a free item's mark and the
                     // dealer's advice (crop, pest, dose) — ReceiptGoods' own words, so the card and the receipt agree.
                     val goods = if (items.isNotEmpty()) items.joinToString("; ") { ei ->
@@ -183,6 +196,9 @@ internal object HudhudFacts {
                             goods?.takeIf { it.isNotBlank() }?.let { line(c, R.string.hudhud_l_entry_goods, it) },
                             entryNote?.let { line(c, R.string.hudhud_l_entry_note, it) },
                             writer?.let { line(c, R.string.hudhud_l_entry_by, it) },
+                            rateWord?.let { line(c, R.string.rate_type_label, it) },
+                            seasonWord?.let { c.getString(R.string.season_entry, it) },
+                            doubtWord?.let { line(c, R.string.recovery_label, it) },
                             balance
                         ),
                         openParty = p.id, money = true,
@@ -197,7 +213,8 @@ internal object HudhudFacts {
                     Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.party_no_entries)), openParty = p.id)
                 } else {
                     Answer(Mood.CALM, label = name, figure = Format.dateOnly(first),
-                        lines = listOf(c.getString(R.string.hudhud_l_since), line(c, R.string.hudhud_l_entries, n(points.size))),
+                        lines = listOfNotNull(c.getString(R.string.hudhud_l_since), line(c, R.string.hudhud_l_entries, n(points.size)),
+                            party?.let { line(c, R.string.hudhud_l_added, Format.dateOnly(it.createdAt)) }),
                         openParty = p.id)
                 }
             }
@@ -540,6 +557,8 @@ internal object HudhudFacts {
         val country = BusinessProfile.country(c)
         val countryName = Locale("", country.code).getDisplayCountry(c.resources.configuration.locales[0]).ifBlank { country.code }
         val trade = BusinessProfile.trade(c)?.let { Trade.of(it).label(c) }
+        val nameUrdu = BusinessProfile.businessNameUrdu(c)?.takeIf { it.isNotBlank() }
+        val terms = if (owner) BusinessProfile.termsAndConditions(c)?.takeIf { it.isNotBlank() } else null
         val open = BusinessSettingsActivity::class.java
         /** One field: written on the card; said aloud only when it is words, never a number (a phone, a tax number). */
         fun one(label: (Context) -> String, value: String?, sayIt: Boolean): Answer =
@@ -581,11 +600,15 @@ internal object HudhudFacts {
                     tax?.takeIf { it.isNotBlank() }?.let { line(BusinessProfile.taxLabel(c), Format.ltr(it)) },
                     trade?.let { line(c, R.string.hudhud_l_trade, it) },
                     if (owner) line(c, R.string.hudhud_l_country, countryName) else null,
-                    line(c, R.string.hudhud_l_currency, BusinessProfile.currency(c))
+                    line(c, R.string.hudhud_l_currency, BusinessProfile.currency(c)),
+                    // What the shop prints (15 Nov 2026, the catalog's profile fields): the name it uses in Urdu and the terms on every
+                    // invoice. The Urdu name is on posters and cards anyone prints, so it is everyone's; the terms are written on the settings screen, so they are the owner's, cut at 200 letters.
+                    nameUrdu?.let { line(c, R.string.business_name_urdu, it) },
+                    terms?.let { line(c, R.string.invoice_terms, if (it.length > 200) it.take(200).trimEnd() + "\u2026" else it) }
                 )
                 Answer(Mood.CALM, label = name?.takeIf { it.isNotBlank() } ?: c.getString(R.string.hudhud_chip_shop),
                     lines = if (name.isNullOrBlank()) listOf(c.getString(R.string.hudhud_not_set)) + lines else lines, open = open,
-                    secrets = listOfNotNull(phone, email, tax).filter { it.isNotBlank() })
+                    secrets = listOfNotNull(phone, email, tax).filter { it.isNotBlank() } + HudhudNote.secretsIn(terms.orEmpty()))
             }
         }
     }
@@ -1251,9 +1274,11 @@ internal object HudhudFacts {
             rows = rows.sortedByDescending { it.timestamp }.take(TOP).map { r ->
                 Row(0, r.category.ifBlank { c.getString(if (r.isIncome) R.string.hudhud_l_money_in else R.string.hudhud_l_money_out) },
                     if (r.isIncome) "+" + HudhudBook.money(r.amount) else HudhudBook.money(-r.amount),
-                    listOfNotNull(whenOf(c, r.timestamp), r.note?.takeIf { it.isNotBlank() }).joinToString(" \u00B7 "), open = open)
+                    listOfNotNull(whenOf(c, r.timestamp), r.note?.takeIf { it.isNotBlank() },
+                        r.paymentRef?.takeIf { it.isNotBlank() }?.let { Format.ltr(it) }).joinToString(" \u00B7 "), open = open)
             },
-            open = open, money = true)
+            open = open, money = true,
+            secrets = rows.sortedByDescending { it.timestamp }.take(TOP).mapNotNull { it.paymentRef?.takeIf { ref -> ref.isNotBlank() } })
     }
 
     /** Goods that came back at the counter over a span (today when none was said): how many returns, and what for. */
@@ -1477,15 +1502,33 @@ internal object HudhudFacts {
         val itemLines = lines.take(ITEM_LINES).map { i ->
             Format.isolate(Format.goods(i.itemName, i.quantity, i.unit).orEmpty() + " \u00D7 " + HudhudBook.money(i.rate))
         }
+        // The invoice's own record beside its summary (15 Nov 2026, the catalog's invoice columns): the day it was written, the phone
+        // printed for the customer, the extra charge with its own label, and the note. The charge and the note can hold sums, so
+        // they are told with REPORTS like a cheque's note; the phone is a number, shown and never said.
+        val full = dao.getInvoice(inv.id)
+        val phoneText = full?.customerPhone?.takeIf { it.isNotBlank() }
+        // Across modules there are no smart casts on public vals (lesson): copy to locals first.
+        val chargeAmount: Double? = full?.additionalChargeAmount
+        val chargeLabel: String? = full?.additionalChargeLabel
+        val chargeLine = if (reports() && chargeAmount != null && chargeAmount != 0.0)
+            line(chargeLabel?.takeIf { it.isNotBlank() } ?: c.getString(R.string.pdf_label_extra_charges),
+                HudhudBook.money(chargeAmount)) else null
+        val noteText = if (reports()) full?.note?.takeIf { it.isNotBlank() } else null
         return Answer(Mood.CALM, label = label + " \u00B7 " + inv.customerName, figure = Format.ltr(inv.invoiceNumber),
             lines = listOf(
                 line(c, R.string.hudhud_l_invoice_no, inv.invoiceNumber),
                 line(c, R.string.date_label, Format.dateOnly(inv.invoiceDate)),
+            ) + listOfNotNull(
+                full?.let { line(c, R.string.hudhud_l_added, Format.dateOnly(it.createdAt)) },
+                phoneText?.let { line(c.getString(R.string.hudhud_l_phone), Format.ltr(it)) },
+                chargeLine,
+                noteText?.let { line(c, R.string.hudhud_l_entry_note, it) }
             ) + (if (itemLines.isEmpty()) emptyList<String>() else listOf(c.getString(R.string.invoice_items_label)) + itemLines),
             rows = invoices.drop(1).take(TOP - 1).map { i ->
                 Row(0, i.customerName, HudhudBook.money(i.grandTotal), listOf(i.invoiceNumber, Format.dateOnly(i.invoiceDate)).joinToString(" \u00B7 "), open = InvoicesActivity::class.java)
             },
-            open = InvoicesActivity::class.java, secrets = listOf(inv.invoiceNumber))
+            open = InvoicesActivity::class.java,
+            secrets = listOf(inv.invoiceNumber) + listOfNotNull(phoneText) + noteText?.let { HudhudNote.secretsIn(it) }.orEmpty())
     }
 
     /** One scheme's reward as the Schemes screen words it: a percent, free units or a fixed amount. */

@@ -39,6 +39,8 @@ on:
       - 'scripts/gen_viewer_dao.py'
       # Hudhud's catalog: every stored column, screen, tile and More entry has a decision (gen_hudhud_catalog.py --check).
       - 'scripts/gen_hudhud_catalog.py'
+      # Every column is in the backup and a helper's copy holds the owner's private ones back (check_book_columns.py).
+      - 'scripts/check_book_columns.py'
   pull_request:
     paths:
       - 'app/src/main/res/values*/strings.xml'
@@ -109,3 +111,7 @@ jobs:
       # tells something is held to the code that tells it and to the gate its own screen asks (scripts/gen_hudhud_catalog.py).
       - name: Hudhud's catalog is complete and current (every column, screen, tile and More entry decided)
         run: python3 scripts/gen_hudhud_catalog.py --check
+      # A column the backup never names is lost by a restore; a private column written without `secrets` reaches a helper's
+      # phone or an heir (8 Nov m42, 15 Nov: a sale line's cost). Names only, not a run (lesson 125).
+      - name: Every column is backed up and the owner's private columns stay out of a helper's copy
+        run: python3 scripts/check_book_columns.py

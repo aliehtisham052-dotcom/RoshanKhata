@@ -135,7 +135,7 @@ object BackupCodec {
         // The counter's tables and the cashbook grow with every ticket: a page at a time too (22 Oct 2026, the review).
         table("cashbook", dao::cashPageForBackup, { it.id }, ::cashToJson)
         table("sales", dao::salesPageForBackup, { it.id }, ::saleToJson)
-        table("saleItems", dao::saleItemsPageForBackup, { it.id }, ::saleItemToJson)
+        table("saleItems", dao::saleItemsPageForBackup, { it.id }, { saleItemToJson(it, secrets) })
         table("salePayments", dao::salePaymentsPageForBackup, { it.id }, ::salePaymentToJson)
         table("auditLog", dao::auditPageForBackup, { it.id }, ::auditToJson)
         // Format 19 (schema 44): the book's seals, a few a page — each can hold 5,000 fingerprints (7 Nov 2026, M5).
@@ -1472,13 +1472,14 @@ object BackupCodec {
         deletedAt = o.optNullableLong("deletedAt"), uid = o.uid()
     )
 
-    private fun saleItemToJson(i: SaleItem) = JSONObject().apply {
+    // [secrets] false (a helper's copy, a Waris snapshot): the line's cost stays out, as the product's cost price does (m42).
+    private fun saleItemToJson(i: SaleItem, secrets: Boolean = true) = JSONObject().apply {
         put("uid", i.uid ?: JSONObject.NULL)
         put("id", i.id); put("saleId", i.saleId); put("lineNo", i.lineNo)
         put("productId", i.productId ?: JSONObject.NULL); put("itemName", i.itemName)
         put("quantity", i.quantity); put("unit", i.unit ?: JSONObject.NULL); put("rate", i.rate)
         put("discount", i.discount); put("billItemId", i.billItemId ?: JSONObject.NULL)
-        put("costRate", i.costRate ?: JSONObject.NULL); put("isDeleted", i.isDeleted)
+        put("costRate", i.costRate?.takeIf { secrets } ?: JSONObject.NULL); put("isDeleted", i.isDeleted)
         put("taxRate", i.taxRate ?: JSONObject.NULL); put("taxAmount", i.taxAmount ?: JSONObject.NULL)
         put("taxIncluded", i.taxIncluded ?: JSONObject.NULL)
     }
