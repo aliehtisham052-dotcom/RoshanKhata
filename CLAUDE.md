@@ -2931,6 +2931,11 @@ Each of these cost a build or a bug.
 
 143. **Room parses every @Query with its own SQL grammar, stricter than SQLite's.** An alias named `first` ran in SQLite 3.53 and failed `:shared:kspKotlinDesktop` ("extraneous input '('", 15 Nov 2026) because FIRST is a keyword to Room. Name aliases `firstAt`, `lastAt`, `total` — never a bare SQL word — and remember that a local sqlite3 run proves nothing about Room.
 
+144. **A percent of progress is a count of the owner's own list, never a feeling.** On 15 Nov 2026 I said "about 55%" for the
+    finalize plan after an earlier "6%" the same day; the second number had a different, unwritten denominator, and he read it
+    (rightly) as steps skipped. Say progress only as "N of M items of the list, accuracy X% of his own questions against his
+    target", and say what is not counted (real-phone tests, the lists he has not sent). A number that jumps is not believed.
+
 ---
 
 ## Working with the owner
@@ -2941,8 +2946,11 @@ Each of these cost a build or a bug.
 - **Standing yes (the owner, 14 Nov 2026: given at 09:57, kept at 19:08).**
   Commit and push to `kmp-desktop-16` — never to `main` — and watch CI through
   the check-run annotations, without asking each time. Still waiting for his
-  word: a push to `main`, a paid step, a stronger model, helper agents, a
-  deploy or an upload.
+  word: a push to `main`, a paid step, a deploy or an upload. **Given 15 Nov 2026 (10:43):** a stronger model
+  (Opus) for the final review before the final APK, and a free hand in choosing the best way to build Hudhud's
+  understanding, accuracy first — read as development help only (writing and checking sentences, reviewing code); an
+  LLM inside the app, a download or a paid call stays his word (the app stays light, offline and figures come only from
+  the book).
 - **Never hide facts**, good or bad. No false guarantees. Say plainly what was
   verified and what was not — in particular, code checked by reasoning is not
   code tested on a real device.
