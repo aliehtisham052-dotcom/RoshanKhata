@@ -384,13 +384,18 @@ object Hudhud {
     fun understand(
         heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
         goods: List<Name> = emptyList(), before: Ask? = null, staff: List<Name> = emptyList()
-    ): Ask = understandRead(salaamHeadRead(heard), asRead(names), topics, language, asRead(goods), before, asRead(staff))
+    ): Ask = understandRead(salaamHeadRead(withoutSelf(heard)), asRead(names), topics, language, asRead(goods), before, asRead(staff))
 
     private fun understandRead(
         heard: String, names: List<Name>, topics: List<Topic>, language: String?,
         goods: List<Name>, before: Ask?, staff: List<Name> = emptyList()
     ): Ask {
         val carried = carriedOf(before)
+        // "ورقم هاتفه", "و قیمتش" after somebody's or a product's answer: the pronoun joined to the word (review O).
+        if (carried != null && (partyOf(carried) != null || goodsOf(carried) != null)) {
+            val bare = pronounBare(heard)
+            if (bare != heard) return understandRead(bare, names, topics, language, goods, before, staff)
+        }
         val ruled = byRules(heard, names, topics, language, goods, carried, staff)
         if (!HudhudSense.ready || words(heard).isEmpty()) return goodsShape(heard, partOfDay(heard, limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, ruled), carried)))))
         val guesses = HudhudSense.rank(
@@ -482,7 +487,9 @@ object Hudhud {
         // A staff word by sound alone is no staff word ("karna" sounds like a worker's name): only the word itself.
         val staffWord = mind.said.indices.any { it !in mind.bySound && HudhudMind.C.STAFF in mind.at(it) } || has(joined, STAFF_EXTRA)
         val salary = mind.has(HudhudMind.C.SALARY)
-        val customerSide = mind.any(HudhudMind.C.CUSTOMER, HudhudMind.C.SUPPLIER, HudhudMind.C.GOODS, HudhudMind.C.BILL, HudhudMind.C.INVOICE)
+        val customerSide = mind.any(HudhudMind.C.CUSTOMER, HudhudMind.C.SUPPLIER, HudhudMind.C.GOODS, HudhudMind.C.BILL, HudhudMind.C.INVOICE) ||
+            // An invoice word the lexicon lacks ("انوائسز ... نہیں آیا", review O) is a paper's money, never somebody who did not come.
+            has(joined, INVOICE_WORDS)
         // Staff said with no name, no day and no "who" is the staff's dues as before (the owner's own sentences read so): a record needs one of the three.
         fun staffRec(f: RecordFacet, strong: Boolean = false): Ask? =
             if (!strong && who.isEmpty() && window == null && !mind.has(HudhudMind.C.WHO)) null else Ask.Record(f, who, window = window)
@@ -506,7 +513,10 @@ object Hudhud {
             if (person && !salary) return staffRec(RecordFacet.STAFF_PERSON, strong = true)
             val paidSaid = (mind.has(HudhudMind.C.PAYMENT) && !payNoun) || has(joined, ADVANCE_WORDS) || has(joined, PAID_WORDS)
             val dueSaid = mind.has(HudhudMind.C.PENDING) || has(joined, STAFF_DUE_WORDS)
-            if (paidSaid && !dueSaid) return staffRec(RecordFacet.STAFF_PAID)
+            if (paidSaid && !dueSaid) staffRec(RecordFacet.STAFF_PAID)?.let { return it }
+            // An advance said by its word with no name and no day (review O: "staff ko advance kitna diya" was a count of the staff):
+            // the staff's standing, which the held-out set reads it as.
+            if (has(joined, ADVANCE_WORDS) && staffWord) return Ask.Status(StatusOf.STAFF)
             if ((salary || payNoun) && who.isNotEmpty()) return staffRec(RecordFacet.STAFF_PAY)
         }
         // "Imran ka role", "kab join kiya", "who is the manager": a name or a "who" and a word only a person at work has, without the word "staff".
@@ -572,7 +582,9 @@ object Hudhud {
     /** Staff by a plural or a form the lexicon lacks. */
     /** "Who is" in Farsi, a word the lexicon does not give as a question's "who". */
     private val WHO_EXTRA = listOf("کیست", "کیه")
-    private val STAFF_EXTRA = listOf("staf", "کارمندان", "کارکنان", "للموظفين", "الموظفين", "ملازمان")
+    private val STAFF_EXTRA = listOf("staf", "کارمندان", "کارکنان", "للموظفين", "الموظفين", "ملازمان",
+        // Urdu's "staff" as a body (review O: "عملے کو ایڈوانس کتنا دیا" was money collected).
+        "عملے", "عملہ", "عملے کو")
     private val STAFF_PHONE_WORDS = listOf("أرقام", "ارقام", "هاتف", "شماره", "شماره ها", "nomor", "telepon", "نمبرز")
     /** "Pay" and "earns" as the staff's: only beside a name no customer has ([recordOf]). */
     private val PAY_NOUN_WORDS = listOf("pay", "wage", "wages", "earn", "earns", "earning", "earnings", "kamata", "kamaye", "kamai", "کماتا", "کماتی",
@@ -623,8 +635,9 @@ object Hudhud {
     }
 
     private fun namesNothing(ask: Ask): Boolean = ask == Ask.Unknown || ask == Ask.Clock || ask is Ask.About || ask is Ask.Drawer ||
-        // "Expiry wala maal kab khatam hoga" is the expiring batches, not a product's shelf.
-        (ask is Ask.Figure && ask.kind != VoiceQuestion.Kind.EXPIRING) || ask is Ask.Count || ask is Ask.Today || (ask is Ask.WhenPays && ask.ids.isEmpty())
+        // "Expiry wala maal kab khatam hoga" is the expiring batches, not a product's shelf. Money owed is never the shelf either
+        // (review O: "kin logon ne kaafi dino se paisa nahi diya" holds "kaafi" and "dino" and was taken for how long goods last).
+        (ask is Ask.Figure && ask.kind != VoiceQuestion.Kind.EXPIRING && ask.kind !in MONEY_OWED_FIGURES) || ask is Ask.Count || ask is Ask.Today || (ask is Ask.WhenPays && ask.ids.isEmpty())
 
     /**
      * Whether a sentence asks how long the shelf lasts: a word for lasting with a word for time ("kitne din chalega",
@@ -1068,6 +1081,16 @@ object Hudhud {
         // The invoices with a balance still due: only the rules make this ask (the bank has no meaning for it), so the sense,
         // which learnt every "invoices" as a count of the ones made, never turns it.
         if (ruled == Ask.Status(StatusOf.INVOICES)) return ruled
+        // Review O (15 Nov 2026): what the rules read from the words the sense was never taught. Which way money is owed, said in the
+        // accountant's words ("receivables", "على الزبائن", "pay me"): the sense took them for money that came in. The day's own
+        // summary ("aaj din kaisa raha"): the sense took it for the time. Credit given over a span ("is mahine kitna udhaar diya
+        // gaya"): the sense took it for money collected, the opposite figure.
+        if (ruled is Ask.Figure && (ruled.kind == VoiceQuestion.Kind.TO_GET || ruled.kind == VoiceQuestion.Kind.TO_GIVE) &&
+            has(words(heard).joinToString(" "), OWED_SAID)
+        ) return ruled
+        if (ruled == Ask.Today && has(words(heard).joinToString(" "), DAY_WENT)) return ruled
+        if (ruled is Ask.Activity && ruled.window != null && creditGivenOver(words(heard).joinToString(" "))) return ruled
+        if (ruled is Ask.Returns && has(words(heard).joinToString(" "), CAME_BACK)) return ruled
         // A staff member's pay or attendance, a customer's plan or cheques: only the rules make this ask (the bank has no meaning for it).
         if (ruled is Ask.Record) return ruled
         // The counter's books (15 Nov 2026): only the rules make this ask — the bank has no meaning for it, and the sense learnt a
@@ -1359,6 +1382,8 @@ object Hudhud {
                 val amount = entry.amount
                 // The count of a span ("6" of "pichle 6 mahine") is no amount of money: the rules' reading stands.
                 if (amount != null && amount in VoiceQuestion.spanFigures(heard)) return null
+                // "Maaf kar do", "bhej do": the order's "do", no amount (review O, [orderDo]); the rules' reading stands.
+                if (amount != null && orderDo(heard, amount)) return null
                 if (amount == null || amount <= 0.0) {
                     if (named.isEmpty()) Ask.NeedName(null) else Ask.Parties(named)
                 } else {
@@ -1420,7 +1445,10 @@ object Hudhud {
         // what left the drawer, what sells best. Words alone, only when no name of the book is in the sentence; [decide] keeps it.
         HudhudEveryday.read(heard, VoiceQuestion.windowOf(heard)) { w -> knownName(w, names) || knownName(w, goods) }?.let { return it }
         val how = has(joined, HOW)
-        if (how) helpOf(said, topics)?.let { return Ask.Help(it) }
+        if (how) (howToPage(joined, topics) ?: helpOf(said, topics))?.let { return Ask.Help(it) }
+        // A delete said as an order (15 Nov 2026, review O): "Ali Raza ka khata delete kar do" showed his balance, as if done. He
+        // deletes nothing; the help page says where deleting and the bin are. Before any name, so the person is not the answer.
+        if (erasesOrder(joined)) topics.firstOrNull { it.key == "faq_delete" }?.let { return Ask.Help(it.key) }
         // A sentence that is nothing but small talk, or "what can you tell me" (13 Nov 2026): taken before any name,
         // so "Allah Hafiz" is a goodbye and not a customer called Hafiz; one with any other word goes on as before.
         voiceChange(said, joined)?.let { return Ask.Voice(it) }
@@ -1449,7 +1477,7 @@ object Hudhud {
         val asking = heard.any { it == '?' || it == '\u061F' } || has(joined, QUESTION) || said.first() in ASKS_FIRST
         // An entry said as a fact: the form opens filled in, the owner saves it (voice entry's own reading).
         // The count of a span ("3" of "pichle 3 mahine") is no amount of money.
-        val amount = entry.amount?.takeUnless { it in VoiceQuestion.spanFigures(heard) }
+        val amount = entry.amount?.takeUnless { it in VoiceQuestion.spanFigures(heard) || orderDo(heard, it) }
         val given = entry.isGiven
         if (!asking && amount != null && amount > 0.0 && given != null) {
             val nameWords = VoiceEntry.nameWords(heard)
@@ -1879,6 +1907,14 @@ object Hudhud {
         if (has(joined, CARDS)) {
             page(if (m.has(HudhudMind.C.CUSTOMER)) "intro_customer_qr" else "screen_card")?.let { return it }
         }
+        // Customers who stopped coming (15 Nov 2026, review O: "kaun sa gahak aana band ho gaya" was the unpaid list, "which customers
+        // stopped coming" the cash flow's "coming"): their own page, before the words of what is coming.
+        if (has(joined, LAPSED)) page("screen_lapsed")?.let { return it }
+        // Goods that came back ("kal kitna maal wapis aaya", review O: it was the goods that came in from suppliers): the returns.
+        // Not money: money that came back is a repayment ("kitne paise wapas aaye") and a cheque that came back has bounced.
+        if (has(joined, CAME_BACK) && !has(joined, SUPPLIER_SIDE_WORDS) && !m.any(HudhudMind.C.SUPPLIER, HudhudMind.C.CHEQUE, HudhudMind.C.MONEY)) {
+            return Ask.Returns(window)
+        }
         val expiry = VoiceQuestion.classify(joined) == VoiceQuestion.Kind.EXPIRING
         if (has(joined, CASH_FLOW) || (has(joined, AHEAD) && !expiry && !has(joined, CAME_ALREADY) &&
                 !m.any(HudhudMind.C.STOCK, HudhudMind.C.LEFT, HudhudMind.C.CHEQUE, HudhudMind.C.PLAN))
@@ -1893,6 +1929,9 @@ object Hudhud {
         // The papers by what they hold (15 Nov 2026, the catalog's records group): a supplier bill's number, note and lines, a purchase
         // order's state, an invoice's lines, the schemes that run. Only the rules read them ([HudhudRecords], [decide]).
         recordPaper(joined, m, counting)?.let { return Ask.Paper(it) }
+        // A supplier's bills not paid (15 Nov 2026, review O: "unpaid supplier bills" was a count of every bill): the bills that wait.
+        // After the papers: a bill's own number or note is the paper's.
+        if (unpaidSupplierBills(joined, m)) return Ask.Status(StatusOf.BILLS)
         if (has(joined, OTHER_DOCS)) page("intro_documents")?.let { return it }
         val billWord = has(joined, BILL_WORDS)
         if (!counting && (has(joined, DOCUMENTS) || (billWord && has(joined, MAKE_DOC) && !has(joined, UTILITY) &&
@@ -2020,11 +2059,11 @@ object Hudhud {
     private val AGED_WORDS = listOf("sab se purana", "sabse purana", "purana udhaar", "purane udhaar", "bohat dair se", "bahut der se",
         "dair se baqi", "der se baqi", "mahine se pada", "mahino se pada", "tareekh guzar", "guzar gayi", "doob sakta", "doob jayega",
         "doobne", "sust", "mushkil lag rahi", "overdue", "oldest", "long overdue", "slow to pay", "slow payer", "slow payers",
-        "bad debt", "bad debts", "could be lost", "may be lost", "سب سے پرانا", "بہت دیر سے", "ڈوب سکتا", "ڈوب جائے", "تاریخ گزر",
+        "bad debt", "bad debts", "longest", "the longest", "could be lost", "may be lost", "سب سے پرانا", "بہت دیر سے", "ڈوب سکتا", "ڈوب جائے", "تاریخ گزر",
         "سست", "सबसे पुराना", "बहुत देर से", "डूब सकता", "तारीख निकल", "सुस्त", "أقدم", "متأخر", "متأخرات", "قد يضيع", "قديم", "سڀ کان پراڻو",
         "قدیمی‌ترین", "معوق", "دیرکرد", "সবচেয়ে পুরনো", "ডুবে যেতে", "paling lama", "menunggak", "tunggakan", "jatuh tempo", "macet")
     private val OWED_WORDS = listOf("udhaar", "udhar", "baqi", "hisaab", "hisab", "wasooli", "wusooli", "payment", "payments", "paise", "pay", "paying",
-        "debt", "debts", "dues", "owed", "owes", "owe", "due", "balance", "اُدھار", "ادھار", "باقی", "حساب", "وصولی", "पैसे", "उधार",
+        "debt", "debts", "dues", "owed", "owes", "owe", "due", "balance", "paisa", "money", "پیسہ", "पैसा", "اُدھار", "ادھار", "باقی", "حساب", "وصولی", "पैसे", "उधार",
         "बाकी", "हिसाब", "دين", "ديون", "حساب", "بدهی", "ادھار", "বাকি", "হিসাব", "টাকা", "piutang", "utang", "hutang", "pembayaran")
 
     /** An invoice word with a word for not paid, no supplier, purchase or bill word: the invoices with a balance still due. */
@@ -2032,9 +2071,11 @@ object Hudhud {
         has(joined, INVOICE_WORDS) && has(joined, UNPAID_WORDS) && !has(joined, BILL_WORDS) && !has(joined, SUPPLIER_SIDE_WORDS) &&
             !has(joined, PURCHASE_SIDE)
 
-    private val INVOICE_WORDS = listOf("invoice", "invoices", "انوائس", "انوائیس", "انوائيس", "इनवॉइस", "इनवाइस", "فاتورة", "فاتوره",
+    private val INVOICE_WORDS = listOf("invoice", "invoices", "فاکتورهای", "انوائسز", "انوائسوں", "انوائس", "انوائیس", "انوائيس", "इनवॉइस", "इनवाइस", "فاتورة", "فاتوره",
         "فواتير", "فاکتور", "فاکتورها", "ইনভয়েস", "faktur")
-    private val UNPAID_WORDS = listOf("unpaid", "not paid", "pending", "overdue", "outstanding", "balance", "due", "baqi", "baaqi",
+    private val UNPAID_WORDS = listOf("unpaid", "not paid",
+        // 15 Nov 2026, review O: "haven't been paid", and the money "that has not come" said of a paper.
+        "haven t been paid", "hasn t been paid", "not been paid", "paisa nahi aaya", "paise nahi aaye", "پیسہ نہیں آیا", "पैसा नहीं आया", "pending", "overdue", "outstanding", "balance", "due", "baqi", "baaqi",
         "bakaya", "wasool nahi", "ada nahi", "paisa baqi", "ادا نہیں", "باقی", "باقي", "وصول نہیں", "बकाया", "बाकी", "अदा नहीं",
         "वसूल नहीं", "غير مدفوعة", "غير مدفوعه", "غير مسددة", "مستحقة", "متبقي", "متأخرة", "বাকি", "বকেয়া", "পরিশোধ হয়নি",
         "belum dibayar", "belum lunas", "belum", "tunggakan", "jatuh tempo", "پرداخت نشده", "باقی‌مانده", "معوق", "معوقه")
@@ -2078,7 +2119,8 @@ object Hudhud {
             (has(joined, BILL_WORDS) && has(joined, MAKE_DOC)) ||
             (has(joined, BILL_WORDS) && has(joined, BILL_EDIT) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE)) ||
             itemRankPage(joined) != null ||
-            remindPage(joined) || agedDues(joined) ||
+            remindPage(joined) || agedDues(joined) || has(joined, LAPSED) || erasesOrder(joined) ||
+            (asksTheWay(heard) && listOf(NEW_PHONE, LANGUAGE_WORDS, DELETE_WORDS, PLAN_WORDS, listOf("پیش فاکتور")).any { has(joined, it) }) ||
             (has(joined, OTHER_DOCS))
     }
 
@@ -2086,7 +2128,9 @@ object Hudhud {
         "finger print", "screen lock", "taala", "tala lagao", "لاک", "تالا", "پن", "پن کوڈ", "پاس ورڈ", "فنگر پرنٹ", "قفل",
         "رمز", "رمز المرور", "كلمة المرور", "بصمة", "بصمة الإصبع", "گذرواژه", "رمز عبور", "اثر انگشت", "لاڪ", "پاسورڊ", "ताला",
         "लॉक", "पिन", "पासवर्ड", "फिंगरप्रिंट", "লক", "পিন", "পাসওয়ার্ড", "আঙুলের ছাপ", "kunci", "kata sandi", "sandi",
-        "sidik jari")
+        "sidik jari",
+        // 15 Nov 2026, review O: the recovery code and Arabic's "secret number" are the lock's too, never a figure.
+        "recovery code", "recover code", "أقفل", "اقفل", "رقم سري", "الرقم السري", "رقم السر", "رقم سر", "السري")
     private val HIDE_WORDS = listOf("chhupa", "chupa", "chhupana", "chupana", "chhupao", "chupao", "chhup", "hide", "hidden",
         "screenshot", "screen shot", "چھپا", "چھپانا", "چھپاؤ", "سکرین شاٹ", "اسکرین شاٹ", "إخفاء", "اخفاء", "أخفي", "لقطة الشاشة",
         "پنهان", "مخفی", "اسکرین‌شات", "لڪاءِ", "لڪايو", "छुपा", "छुपाना", "छिपा", "छिपाना", "स्क्रीनशॉट", "লুকাও", "লুকানো",
@@ -2100,7 +2144,7 @@ object Hudhud {
         "يذهب إلى الإنترنت", "يرسل", "به اینترنت می‌رود", "ارسال می‌شود", "इंटरनेट पर जाता", "बाहर जाता", "ইন্টারনেটে যায়",
         "বাইরে যায়", "dikirim ke internet", "dibagikan")
     private val ADD_NEW = listOf("naya", "nayi", "naye", "new", "add", "add karna", "add karo", "shamil", "darj karna", "daalna",
-        "dalna", "نیا", "نئی", "نئے", "شامل", "ایڈ", "جديد", "جديدة", "أضف", "إضافة", "جدید", "اضافه", "افزودن", "نئون", "نئين",
+        "dalna", "نیا", "نئی", "نئے", "شامل", "ایڈ", "جديد", "جديدة", "جديدا", "أضف", "أضيف", "اضيف", "إضافة", "جدید", "اضافه", "افزودن", "نئون", "نئين",
         "شامل ڪريو", "नया", "नई", "नए", "जोड़ना", "जोड़ो", "ऐड", "নতুন", "যোগ", "যোগ করুন", "baru", "tambah", "tambahkan")
     /** What a member of staff may see or do. */
     private val ACCESS_WORDS = listOf("access", "ijazat", "ikhtiyar", "permission", "kya kya dikhe", "kya dikhta", "kya dekh",
@@ -2153,7 +2197,9 @@ object Hudhud {
         "sejauh ini")
     private val BIN_WORDS = listOf("recycle bin", "bin kholo", "bin", "delete hui", "delete kiya hua", "mit gaya", "mit gayi",
         "ghalti se mit", "wapas lana", "wapas laao", "restore", "undelete", "ری سائیکل بن", "بن کھولو", "واپس لانا", "سلة المحذوفات",
-        "استرجاع", "سطل بازیافت", "بازگردانی", "रीसायकल बिन", "वापस लाना", "রিসাইকেল বিন", "ফিরিয়ে আনা", "tempat sampah", "pulihkan")
+        "استرجاع", "سطل بازیافت", "بازگردانی", "रीसायकल बिन", "वापस लाना", "রিসাইকেল বিন", "ফিরিয়ে আনা", "tempat sampah", "pulihkan",
+        // 15 Nov 2026, review O: Indonesian "deleted by accident".
+        "terhapus", "tidak sengaja terhapus")
     private val FIX_WORDS = listOf("delete", "hata do", "hatao", "mita do", "mitao", "galat", "ghalat", "theek karni", "theek karna",
         "sahi karni", "badalni", "badalna", "badlo", "undo", "edit", "correct", "wrong", "ڈیلیٹ", "ہٹا دو", "مٹا دو", "غلط",
         "درست کرنی", "ٹھیک کرنی", "بدلنی", "حذف", "احذف", "خطأ", "تعديل", "اصلاح", "ویرایش", "اشتباه", "غلط ٿي", "ڊليٽ", "हटा दो",
@@ -2185,7 +2231,7 @@ object Hudhud {
         "goods came", "stock came", "مال لیا", "مال آیا", "سامان آیا", "مال بھیجا", "माल लिया", "माल आया", "সামগ্রী এসেছে",
         "মাল এসেছে", "barang datang", "barang masuk")
     private val SUPPLIER_SIDE_WORDS = listOf("supplier", "suppliers", "company", "dealer", "mill", "maal wale", "maal wala",
-        "سپلائر", "کمپنی", "ڈیلر", "المورد", "الشركة", "تامین‌کننده", "شرکت", "سپلائر", "सप्लायर", "कंपनी", "সরবরাহকারী",
+        "سپلائر", "کمپنی", "ڈیلر", "المورد", "الموردين", "الشركة", "تامین‌کننده", "تامین کننده", "شرکت", "سپلائر", "सप्लायर", "कंपनी", "সরবরাহকারী",
         "কোম্পানি", "pemasok", "perusahaan")
     private val CAME_ALREADY = listOf("aaye", "aye", "aaya", "aya", "aai", "aayi", "mile", "mila", "came", "آئے", "آیا", "ملے",
         "आए", "आया", "মিলেছে", "এসেছে", "datang")
@@ -2264,6 +2310,10 @@ object Hudhud {
     private fun quiet(w: String) = w in QUIET_SET || w in COURTESY_WORDS || HudhudMind.meaningOf(w) == AND_ONLY
 
     private val AND_ONLY = setOf(HudhudMind.C.AND)
+
+    /** Every figure of money owed, either way (review O). */
+    private val MONEY_OWED_FIGURES = setOf(VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.TO_GIVE, VoiceQuestion.Kind.NOT_PAID,
+        VoiceQuestion.Kind.WHO_OWES_MOST, VoiceQuestion.Kind.WHO_OWES_LEAST)
 
     private val OWED_FIGURES = setOf(VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.TO_GIVE, VoiceQuestion.Kind.NOT_PAID)
 
@@ -2585,6 +2635,8 @@ object Hudhud {
             partyOf(before)?.let { ids ->
                 if (willPay) return Ask.WhenPays(ids)
                 facetOf(m, spanLast)?.let { return Ask.Person(ids, it) }
+                // "Aur uska pata" (review O): "pata" is "know" alone, and of him it is his address.
+                if (m.said.any { it in PATA_WORDS }) return Ask.Person(ids, Facet.DETAILS)
                 if (window != null && m.has(HudhudMind.C.PAYMENT)) {
                     val got = (before as? Ask.Moved)?.got ?: true
                     return Ask.Moved(ids, window, got)
@@ -3150,7 +3202,7 @@ object Hudhud {
     /** A word for lasting, running out or being enough; it asks for the shelf's cover only with a word for time ([FOR_TIME]). */
     private val LASTING = listOf(
         "lasts", "lasting", "last for", "will last", "would last", "to last", "enough", "suffice", "suffices", "sufficient", "cover", "covers",
-        "chalega", "chalegi", "chalay", "chalenge", "chale", "chalta", "chalti", "chalte", "chlega", "chlegi", "tikega", "tikegi", "kafi", "kaafi", "kifayat",
+        "chalega", "chalegi", "chalay", "chalenge", "chal jayegi", "chal jayega", "chal jaye", "chal jayenge", "chale", "chalta", "chalti", "chalte", "chlega", "chlegi", "tikega", "tikegi", "kafi", "kaafi", "kifayat",
         "چلے", "چلتا", "چلتی", "چلیں", "ٹکے", "کافی", "کفایت",
         "هلندو", "هلندي", "هلندا", "ڪافي", "ٽڪندو",
         "يكفي", "تكفي", "سيكفي", "ستكفي", "كافي", "يدوم", "سيدوم", "يستمر", "سيستمر", "تكفينا", "يكفينا",
@@ -3785,6 +3837,192 @@ object Hudhud {
      * nothing; a word in a page's title counts twice. A word of four letters or more meets its plural or stem
      * ("cheque", "cheques"). A page that scores less than one word found on two pages is not chosen.
      */
+    // ------------------------------------------------------------------- everyday asks, review O (15 Nov 2026)
+
+    /**
+     * The page a how-to asks for by the thing it names (15 Nov 2026, review O: 1,167 everyday sentences in nine languages). The
+     * help search weighs every word of a page, and a how-to's own verb pulled it to the wrong one: "naya gahak kaise daalun" was the
+     * delete page, "backup kaise lete hain" the restore page, "zabaan kaise badlun" the second shop's, "taala kaise lagaun" the
+     * percent sums'. The thing named says the page, most particular first; null leaves it to the search. Only a page the app has.
+     */
+    internal fun howToPage(joined: String, topics: List<Topic>): String? {
+        val key = when {
+            has(joined, NEW_PHONE) -> "faq_restore"
+            has(joined, BACKUP) -> "faq_backup"
+            has(joined, LANGUAGE_WORDS) -> "faq_language"
+            // "Kunci ahli waris" is the heir's key, not the app's lock: the search finds the heir's page.
+            has(joined, LOCK_WORDS) && !has(joined, HEIR_WORDS) -> "faq_lock"
+            has(joined, HIDE_WORDS) -> "faq_hide"
+            has(joined, DELETE_WORDS) -> "faq_delete"
+            has(joined, ADD_NEW) && has(joined, CUSTOMER_WORDS) -> "screen_khata"
+            has(joined, PLAN_WORDS) -> "intro_plans"
+            has(joined, OTHER_DOCS) || has(joined, DOCUMENTS) || has(joined, listOf("پیش فاکتور")) -> "intro_documents"
+            else -> null
+        } ?: return null
+        return key.takeIf { k -> topics.any { it.key == k } }
+    }
+
+    /**
+     * Who is asking, said before or after the question (15 Nov 2026, review O): "main cashier hun, aaj ki sale batao", "I'm the
+     * manager, give me this month's profit", "...main cashier hun". The words say who the speaker is, not what he asks: "cashier"
+     * read the counter's books, "manager" a staff member's record, "malik" the owner's name. The clause is taken out and the rest is
+     * read; the app's own sign-in, not these words, decides what he may see. Urdu, Hindi, Sindhi and Farsi need the verb ("hun",
+     * "هستم"), for "mein cashier" is also "in cashier"; English needs "am".
+     */
+    internal fun withoutSelf(heard: String): String {
+        val toks = heard.split(' ').filter { it.isNotEmpty() }
+        val low = toks.map { norm(it) }
+        for (i in low.indices) {
+            val self = low[i]
+            if (self !in SELF_WORDS && self != "i") continue
+            var j = i + 1
+            if (self == "i") { if (low.getOrNull(j) !in setOf("am", "m")) continue; j++ }
+            if (low.getOrNull(j) in ARTICLES) j++
+            if (low.getOrNull(j) !in ROLE_SELF) continue
+            j++
+            val verb = low.getOrNull(j) in AM_WORDS
+            if (verb) j++ else if (self in NEEDS_VERB) continue
+            val rest = (toks.subList(0, i) + toks.subList(j, toks.size)).joinToString(" ").trim(' ', ',', '،', '.', '-')
+            return if (words(rest).isEmpty()) heard else rest
+        }
+        return heard
+    }
+
+    private val SELF_WORDS: Set<String> by lazy { listOf("main", "mai", "mein", "میں", "मैं", "मै", "آئون", "من", "أنا", "انا", "আমি", "saya", "aku").map { norm(it) }.toSet() }
+    private val NEEDS_VERB: Set<String> by lazy { listOf("main", "mai", "mein", "میں", "मैं", "मै", "آئون", "من").map { norm(it) }.toSet() }
+    private val ARTICLES: Set<String> by lazy { listOf("the", "a", "an", "ek", "aik", "ایک", "एक", "seorang").map { norm(it) }.toSet() }
+    private val ROLE_SELF: Set<String> by lazy {
+        listOf("cashier", "kashier", "manager", "munshi", "helper", "salesman", "owner", "malik", "کیشیئر", "کیشئر", "مینیجر", "منیجر",
+            "منشی", "ہیلپر", "مالک", "कैशियर", "मैनेजर", "मुंशी", "हेल्पर", "मालिक", "ক্যাশিয়ার", "ম্যানেজার", "মালিক", "ڪيشيئر",
+            "منيجر", "مالڪ", "صندوقدار", "مدیر", "کاشیر", "الكاشير", "كاشير", "المدير", "مدير", "المالك", "kasir", "manajer", "pemilik")
+            .map { norm(it) }.toSet()
+    }
+    private val AM_WORDS: Set<String> by lazy { listOf("hun", "hoon", "hu", "hoo", "am", "ہوں", "हूं", "हूँ", "हू", "آهيان", "هستم", "ام").map { norm(it) }.toSet() }
+
+    /**
+     * A follow-up in Arabic or Farsi writes "his" joined to the word ("هاتفه" his phone, "سعره" its price, "قیمتش" its price) and
+     * often "and" before it ("ورقم"); the word alone is what the rules know (15 Nov 2026, review O: "ورقم هاتفه" after Ali Raza's
+     * account was "whose?"). Short sentences only, and a word is cut only when it means nothing as it is and its stem means
+     * something, so "فروش" (a sale) keeps its "ش". The sentence comes back unchanged when no word is cut.
+     */
+    internal fun pronounBare(heard: String): String {
+        val ws = words(heard)
+        if (ws.isEmpty() || ws.size > 4 || ws.none { w -> w.any { it in '\u0600'..'\u06FF' } }) return heard
+        var cut = false
+        val out = ws.mapNotNull { w ->
+            if (w in JOINED_HIS) { cut = true; return@mapNotNull null }
+            if (HudhudMind.meaningOf(w).isNotEmpty()) return@mapNotNull w
+            // "وDAP": "and" joined to a product's Latin name.
+            if (w.length > 2 && w.startsWith("و") && w.drop(1).all { it in 'a'..'z' || it.isDigit() }) { cut = true; return@mapNotNull w.drop(1) }
+            val tries = buildList {
+                val noAnd = if (w.length > 3 && w.startsWith("و")) w.substring(1) else null
+                for (base in listOfNotNull(w, noAnd)) {
+                    add(base)
+                    for (e in HIS_ENDINGS) if (base.length > e.length + 2 && base.endsWith(e)) add(base.dropLast(e.length))
+                }
+            }
+            val hit = tries.drop(1).firstOrNull { t -> HudhudMind.meaningOf(t).any { it in FACT_CONCEPTS } }
+            if (hit != null) { cut = true; hit } else w
+        }
+        return if (cut && out.isNotEmpty()) out.joinToString(" ") else heard
+    }
+
+    /** The facts a follow-up asks of him or of it: only a stem that means one of these is cut out of its pronoun. */
+    private val FACT_CONCEPTS = setOf(HudhudMind.C.PHONE, HudhudMind.C.ADDRESS, HudhudMind.C.VILLAGE, HudhudMind.C.FATHER, HudhudMind.C.NAME,
+        HudhudMind.C.LIMIT, HudhudMind.C.PROMISE, HudhudMind.C.PAYMENT, HudhudMind.C.ENTRY, HudhudMind.C.PRICE, HudhudMind.C.STOCK,
+        HudhudMind.C.COST, HudhudMind.C.SUPPLIER, HudhudMind.C.ACCOUNT)
+
+    private val HIS_ENDINGS: List<String> by lazy { listOf("ها", "هم", "ه", "اش", "ش").map { norm(it) }.sortedByDescending { it.length } }
+    private val JOINED_HIS: Set<String> by lazy { listOf("اش", "و").map { norm(it) }.toSet() }
+    private val PATA_WORDS: Set<String> by lazy { listOf("pata", "patta", "پتہ", "پتا", "पता").map { norm(it) }.toSet() }
+
+    /** The words of money owed that review O added (the accountant's, Arabic's "on the customers", "pay me"): see [decide]. */
+    private val OWED_SAID = listOf("receivable", "receivables", "payable", "payables", "على الزبائن", "على العملاء", "wusool karna", "wasool karna",
+        "wusool karne", "wasool karne", "وصول کرنا", "वसूल करना", "পাব", "পাবো", "pay me", "pay us", "بدهکارند", "ada karna", "ادا کرنا",
+        "अदा करना")
+
+    /**
+     * Credit given: a word of credit and a word of giving (review O). Only an [Ask.Activity] the rules read is kept by it, and the
+     * rules read one only with no word of money paid back and no "until now".
+     */
+    private fun creditGivenOver(joined: String): Boolean = has(joined, CREDIT_SAID) && has(joined, TOOK_OR_GAVE)
+
+    private val CREDIT_SAID = listOf("udhaar", "udhar", "credit", "ادھار", "उधार", "utang", "piutang", "اڌار", "دين", "نسیه", "বাকিতে", "ধার")
+
+    /** Goods that came back to the shop (review O). */
+    private val CAME_BACK = listOf("wapis aaya", "wapis aaye", "wapis aayi", "wapas aaya", "wapas aaye", "wapas aayi", "wapis aya", "واپس آیا",
+        "واپس آئے", "واپس آئی", "वापस आया", "वापस आए", "वापस आई", "came back", "brought back")
+
+    private val NEW_PHONE = listOf("naya phone", "naye phone", "nayi phone", "naya mobile", "naye mobile", "new phone", "new mobile",
+        "phone badla", "phone badal", "phone kho", "phone gum", "mobile kho", "phone change", "phone lost", "lost my phone", "restore",
+        "ganti hp", "hp baru", "ponsel baru", "pindahin", "pindah hp", "نیا فون", "نئے فون", "نئی فون", "فون بدل", "فون گم", "فون کھو",
+        "नया फोन", "नए फोन", "फोन बदल", "फोन खो", "নতুন ফোন", "ফোন হারা", "هاتف جديد", "الهاتف الجديد", "جوال جديد", "استعادة",
+        "گوشی جدید", "گوشی نو", "بازیابی", "نئون فون", "pulihkan")
+    private val HEIR_WORDS = listOf("waris", "ahli waris", "heir", "heirs", "وارث", "ورثاء", "ورثه", "वारिस", "উত্তরাধিকারী", "وارث")
+    private val LANGUAGE_WORDS = listOf("zabaan", "zaban", "zuban", "zubaan", "language", "bahasa", "زبان", "زبانیں", "भाषा", "ज़बान",
+        "जबान", "ভাষা", "اللغة", "لغة", "ٻولي")
+    private val DELETE_WORDS = listOf("delete", "ڈیلیٹ", "डिलीट", "ডিলিট", "حذف", "hapus", "মুছ", "মুছে", "mitana", "mitaun", "مٹا",
+        "مٹانا", "ڊليٽ")
+    private val CUSTOMER_WORDS = listOf("gahak", "gaahak", "grahak", "customer", "customers", "pelanggan", "گاہک", "گاہکوں", "ग्राहक",
+        "গ্রাহক", "খদ্দের", "কাস্টমার", "زبون", "زبونا", "عميل", "مشتری", "گراهڪ", "party", "parti")
+    private val PLAN_WORDS = listOf("qist", "qisten", "qiston", "installment", "installments", "instalment", "instalments", "قسط", "قسطیں",
+        "किस्त", "किश्त", "কিস্তি", "cicilan", "angsuran")
+
+    /**
+     * A delete said as an order (15 Nov 2026, review O): Hudhud deletes nothing, so the sentence is never the person or the entries it
+     * names. Only the order's own forms ("delete kar do", "hata do", "احذف", "پاک کن"); a sentence that tells or asks about a
+     * delete ("kisne kya delete kiya", "delete ho gaya") is another question. English and Indonesian say the order first.
+     */
+    internal fun erasesOrder(joined: String): Boolean {
+        if (has(joined, ERASE_ORDER)) return true
+        val first = joined.substringBefore(' ')
+        return first in ERASE_FIRST || (first in PLEASE_FIRST && joined.split(' ').getOrNull(1) in ERASE_FIRST)
+    }
+
+    private val ERASE_ORDER = listOf("delete kar do", "delete kardo", "delete karo", "delete kar den", "delete kar dein", "delete kijiye",
+        "hata do", "hata den", "hata dein", "mita do", "mita den", "mita dein", "ڈیلیٹ کر دو", "ڈیلیٹ کرو", "ڈیلیٹ کر دیں", "ہٹا دو",
+        "ہٹا دیں", "مٹا دو", "مٹا دیں", "डिलीट कर दो", "डिलीट करो", "डिलीट कर दें", "हटा दो", "हटा दें", "मिटा दो", "मिटा दें",
+        "মুছে দাও", "মুছে দিন", "মুছে ফেলো", "মুছে ফেল", "ডিলিট করো", "ডিলিট কর", "ডিলিট করে দাও", "احذف", "امسح", "پاک کن", "پاکش کن",
+        "حذف کن", "حذفش کن", "ڊليٽ ڪريو", "ڊليٽ ڪر", "ڊليٽ ڪري ڇڏيو", "ميٽي ڇڏيو")
+    private val ERASE_FIRST = setOf("delete", "remove", "erase", "wipe", "hapus", "hapuskan")
+    private val PLEASE_FIRST = setOf("please", "pls", "plz", "tolong", "can", "kindly")
+
+    /**
+     * "Kar do", "bhej do", "bata do": the order's "do", never the number two (15 Nov 2026, review O). Voice entry's numbers read the
+     * word "do" as 2, so "Saleem Bhai ka udhaar maaf kar do" opened an entry of 2 rupees. An amount of 2 said with no figure, whose
+     * every "do" follows a verb of the order, is no amount ("do sau" is 200, never 2, so it never reaches here).
+     */
+    internal fun orderDo(heard: String, amount: Double): Boolean {
+        if (amount != 2.0 || heard.any { it.isDigit() }) return false
+        val w = words(heard)
+        val at = w.indices.filter { w[it] in TWO_WORDS }
+        return at.isNotEmpty() && at.all { i -> i > 0 && w[i - 1] in ORDER_STEMS }
+    }
+
+    private val TWO_WORDS = setOf("do", "دو", "दो")
+    private val ORDER_STEMS = setOf("kar", "bhej", "de", "dikha", "bata", "hata", "mita", "maaf", "likh", "daal", "dal", "nikal", "bana",
+        "samjha", "sun", "کر", "بھیج", "دے", "دکھا", "بتا", "ہٹا", "مٹا", "معاف", "لکھ", "ڈال", "نکال", "بنا", "कर", "भेज", "दे", "दिखा",
+        "बता", "हटा", "मिटा", "माफ", "लिख", "डाल", "निकाल", "बना")
+
+    /**
+     * A supplier's bill with a word for not paid (review O): the bills that wait, never a count of every bill. Arabic and Farsi call
+     * a supplier's bill an invoice ("فواتير الموردين", "فاکتورهای تامین کننده"): beside a supplier's word it is his bill.
+     */
+    private fun unpaidSupplierBills(joined: String, m: HudhudMind.Read): Boolean =
+        (has(joined, BILL_WORDS) || has(joined, INVOICE_WORDS)) &&
+            (has(joined, SUPPLIER_SIDE_WORDS) || has(joined, PURCHASE_SIDE) || m.has(HudhudMind.C.SUPPLIER)) &&
+            (has(joined, UNPAID_WORDS) || has(joined, LEFT_OVER))
+
+    private val LEFT_OVER = listOf("reh gaya", "reh gayi", "reh gaye", "rah gaya", "rah gayi", "رہ گیا", "رہ گئی", "रह गया", "रह गई",
+        "remaining", "left to pay", "غير المدفوعة", "پرداخت نشده", "belum dibayar")
+
+    /** Customers who stopped coming (review O): the "stopped coming" page. Only the phrases that say it; "nahi aate" alone may be money. */
+    private val LAPSED = listOf("aana band", "ana band", "aane band", "aana chhod", "aana chor", "ab nahi aate", "ab nahi aata",
+        "ab nahin aate", "stopped coming", "stop coming", "don t come anymore", "not coming anymore", "no longer come",
+        "آنا بند", "اب نہیں آتے", "اب نہیں آتا", "आना बंद", "अब नहीं आते", "अब नहीं आता", "tidak datang lagi", "sudah tidak datang",
+        "tak datang lagi", "আসা বন্ধ", "আর আসে না", "لم يعد يأتي", "لم يعودوا", "توقف عن المجيء", "دیگر نمی آید", "دیگر نمی آیند",
+        "دیگه نمیاد", "اچڻ بند")
+
     private fun helpOf(said: List<String>, topics: List<Topic>): String? {
         if (topics.isEmpty()) return null
         // The words that only ask (how, where) say nothing of the page: "kahan" found the data page's title

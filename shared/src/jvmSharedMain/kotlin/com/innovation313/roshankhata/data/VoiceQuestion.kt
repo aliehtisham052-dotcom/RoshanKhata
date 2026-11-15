@@ -67,15 +67,23 @@ object VoiceQuestion {
     private val DEBT = listOf("baqaya", "bakaya", "udhar", "udhaar", "qarz", "owe", "owes", "due", "utang", "piutang",
         "بقایا", "ادھار", "قرض", "اڌار", "دين", "ديون", "طلب", "बकाया", "उधार", "क़र्ज़", "कर्ज", "বাকি", "ধার", "পাওনা",
         // 12 Nov 2026 (Hudhud): "Ali ka kitna baqi hai"; "dues", once the words count only whole.
-        "baqi", "baaqi", "baki", "baaki", "باقی", "बाकी", "dues")
+        "baqi", "baaqi", "baki", "baaki", "باقی", "बाकी", "dues",
+        // 15 Nov 2026 (review O): Farsi's "they are in debt" (the plural of بدهکار, which alone is the shop's own debt).
+        "بدهکارند")
     private val SALES = listOf("bikri", "bechi", "becha", "bechay", "farokht", "sale", "sales", "sold", "penjualan", "jualan",
         "terjual", "بکری", "فروخت", "بیچا", "بیچی", "وڪرو", "وڪري", "مبيعات", "بيع", "فروش", "बिक्री", "बेचा", "बेची",
         "বিক্রি", "বিক্রয়",
         // 12 Nov 2026 (Hudhud): "aaj kitna bika", "how much did I sell".
         "sell", "selling", "bika", "biki", "bikay", "بکا", "بکی", "बिका", "बिकी",
         // 13 Nov 2026 (Hudhud's chips): Sindhi's "got sold", Arabic's "what was sold".
-        "وڪاميو", "وڪاميا", "مباع")
-    private val TODAY = listOf("aaj", "today", "hari ini", "آج", "اڄ", "اليوم", "امروز", "आज", "আজ")
+        "وڪاميو", "وڪاميا", "مباع",
+        // 15 Nov 2026 (review O): Arabic "I sold", "we sold" — which the name search had folded into a customer called Butt.
+        "بعت", "بعنا",
+        // The English word as Urdu and Hindi write it ("آج کی ٹوٹل سیلز" was what the shop is owed).
+        "سیل", "سیلز", "सेल", "सेल्स")
+    private val TODAY = listOf("aaj", "today", "hari ini", "آج", "اڄ", "اليوم", "امروز", "आज", "আজ",
+        // 15 Nov 2026 (review O): "aaj" as it is typed fast ("aj ki sel", "aj ka munafa").
+        "aj", "ajj")
 
     // The windows' words (12 Nov 2026). Urdu writes "kal" (yesterday) and "kul" (total) alike, so in its own script
     // yesterday is only "کل کی/کا/کے" or "گزشتہ روز"; Hindi, Sindhi and the rest have a word of their own. Indonesian
@@ -235,11 +243,17 @@ object VoiceQuestion {
         "علي دفع", "پرداختنی", "بدهکار", "देना", "देने", "দেনা", "দিতে",
         // 12 Nov 2026 (Hudhud), from the app's own chips: Farsi's debt is what the shop owes ("جمع بدهی"), Arabic's
         // "what is on me", Indonesian's "what must be paid".
-        "بدهی", "ما عليّ", "harus dibayar")
+        "بدهی", "ما عليّ", "harus dibayar",
+        // 15 Nov 2026 (review O, everyday asks): the accountant's word, and "to pay off" said as "ada karna".
+        "payable", "payables", "ada karna", "ادا کرنا", "अदा करना")
     private val TO_GET = listOf("lena", "lene", "to get", "receive", "collect", "piutang", "tagih", "لینا", "لینے", "وٺڻا",
         "وٺڻو", "لي عند", "طلبکار", "دریافت", "लेना", "लेने", "পাওনা", "পেতে",
         // 12 Nov 2026 (Hudhud), from the app's own chips: Arabic "what is mine", Indonesian "what must be received".
-        "ما لي", "harus diterima")
+        "ما لي", "harus diterima",
+        // 15 Nov 2026 (review O, everyday asks): the accountant's word; "to collect" said as "wusool karna"; Bengali's "I will get";
+        // Arabic's "on the customers". Money still to come ("paise kitne aane hain") is HudhudEveryday's: it needs its guards.
+        "receivable", "receivables", "wusool karna", "wasool karna", "wasool karne", "wusool karne", "وصول کرنا", "वसूल करना",
+        "পাব", "পাবো", "على الزبائن", "على العملاء")
 
     // Made once, before anything below first spells a word.
     // Arabic-script vowel marks, madda and hamza above or below (taken off their letter by [normalise]'s NFD), the
@@ -539,6 +553,8 @@ object VoiceQuestion {
     private val OTHERS_GIVE = listOf(
         "kis ne", "kisne", "kis kis ne", "logon ne", "logo ne", "unhon ne", "unhone", "us ne", "usne", "customer ne",
         "customers ne", "gahak ne", "gahakon ne", "who owes me", "owes me", "owe me", "owing me",
+        // "What customers still have to pay me" (15 Nov 2026, review O): the shop is the one paid.
+        "pay me", "pay us",
         // "Somebody", "the one who" (14 Nov 2026): "kisi ne mujhe paise dene hain", "jisne sabse zyada dene hain".
         "kisi ne", "kisine", "jis ne", "jisne", "kisi kisi ne",
         "کس نے", "کس کس نے", "لوگوں نے", "انہوں نے", "اس نے", "گاہک نے", "किस ने", "किसने", "लोगों ने", "उसने", "ग्राहक ने",

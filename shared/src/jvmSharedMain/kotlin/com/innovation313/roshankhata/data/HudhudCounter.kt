@@ -210,7 +210,8 @@ object HudhudCounter {
 
     private val TAX = listOf(
         "tax", "taxes", "gst", "vat", "sales tax", "ppn", "fbr", "levy", "ٹیکس", "ٹیکسز", "ٽيڪس", "ضريبة", "ضرائب", "الضريبة", "ضريبه", "مالیات", "مالیاتی",
-        "टैक्स", "जीएसटी", "ট্যাক্স", "কর", "জিএসটি", "pajak", "pph", "pb1"
+        // Bengali "কর" is tax, but with its endings it is also the verb "do" ("দয়া করে", please; "কী করে"): only in a phrase (review O).
+        "टैक्स", "जीएसटी", "ট্যাক্স", "কত কর", "কর কত", "করের", "মোট কর", "জিএসটি", "pajak", "pph", "pb1"
     )
 
     private val ROUND_OFF = listOf(

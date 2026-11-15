@@ -1,0 +1,1170 @@
+# Review set O (15 Nov 2026): 1,167 everyday sentences written fresh by a final reviewer in nine languages (none from review set D, the owner's lists, photos or check logs): the trades, owner, manager, cashier and helper, money, stock, prices, customers, cashbook, cheques, bills, invoices, plans, staff, how-to, talk, follow-ups, mixed languages, voice garbles, very short and long rambling asks, and dangerous asks (write, delete, PINs, the private note).
+# Columns: language, status when judged (OK = read as a shopkeeper would count right, MISS = not yet), sentence, the sentence before it (a follow-up) or empty, the reading it has now (HudhudShown).
+# OK rows are held exactly by HudhudReviewOpusSetTest; MISS rows are listed so a fix can promote them. Names and goods are the invented ones of HudhudOwnerSetTest.
+ur-Latn	OK	yaar total kitna lena baqi hai market se		Figure:TO_GET
+ur-Latn	OK	seth sahab poochh rahe hain logon se kitna wusool karna hai		Figure:TO_GET
+ur-Latn	OK	mera kitna paisa logon ke paas phansa hua hai		Figure:TO_GET
+ur-Latn	OK	bazar ka kul udhaar kitna hai		Figure:TO_GET
+ur-Latn	OK	log mujhe kitna denge sab mila ke		Figure:TO_GET
+ur-Latn	OK	mujhe kitna dena hai suppliers ko		Figure:TO_GIVE
+ur-Latn	OK	company walon ka kitna dena hai abhi		Figure:TO_GIVE
+ur-Latn	OK	main ne aage kitna chukana hai		Figure:TO_GIVE
+ur-Latn	MISS	humari taraf kitni payment pending hai		Collected
+ur-Latn	MISS	lena dena dono batao		Count:ENTRIES:null
+ur-Latn	MISS	poore khate ka hisaab kitna hai		NeedName:null
+ur-Latn	OK	sab se bara baqidar kaun hai		Figure:WHO_OWES_MOST
+ur-Latn	OK	kis gahak ka sab se zyada udhaar hai		Figure:WHO_OWES_MOST
+ur-Latn	OK	top 5 baqidar dikhao		Figure:WHO_OWES_MOST
+ur-Latn	OK	sab se kam baqi kis par hai		Figure:WHO_OWES_LEAST
+ur-Latn	OK	kaun paise nahi de raha		Figure:NOT_PAID
+ur-Latn	OK	kin logon ne kaafi dino se paisa nahi diya		Figure:NOT_PAID
+ur-Latn	OK	kis kis se paise lene hain list do		Figure:TO_GET
+ur-Latn	OK	aaj kis kis ne paise jama karaye		Collected
+ur-Latn	OK	kal kitne paise aaye logon se		Collected
+ur-Latn	OK	is hafte kitni recovery hui		Collected
+ur-Latn	OK	Ali Raza ne aakhri dafa kab paise diye		Person:LAST_PAYMENT
+ur-Latn	OK	Bashir Ahmad ki last payment kitni thi		Person:LAST_PAYMENT
+ur-Latn	OK	Tariq Butt ne is mahine kitna jama karaya		Moved
+ur-Latn	OK	Naeem Khan ne kal kuch diya tha kya		Moved
+ur-Latn	MISS	aaj ki dihari kitni bani		Count:TICKETS:TODAY
+ur-Latn	OK	aaj kitne ka saman bika		Figure:SALES_TODAY
+ur-Latn	OK	aaj ka galla kitna hua		Drawer
+ur-Latn	OK	pichle hafte ki sale batao		Period:SALES
+ur-Latn	OK	is hafte ki bikri		Period:SALES
+ur-Latn	OK	is mahine ab tak kitna bech chuke		Figure:SALES_MONTH
+ur-Latn	OK	pichle mahine ki total sale		Period:SALES
+ur-Latn	OK	is saal ki sale kitni hai		Period:SALES
+ur-Latn	OK	aaj ki sale aur kal ki sale		Figure:SALES_TODAY
+ur-Latn	OK	sale		Figure:SALES_MONTH
+ur-Latn	OK	sale batao		Figure:SALES_TODAY
+ur-Latn	OK	is mahine kitna kamaya		Figure:PROFIT_MONTH
+ur-Latn	OK	munafa kitna hua is mahine		Figure:PROFIT_MONTH
+ur-Latn	OK	pichle mahine ka faida		Period:PROFIT
+ur-Latn	OK	aaj kitna profit hua		Period:PROFIT
+ur-Latn	OK	is hafte ka net profit		Period:PROFIT
+ur-Latn	OK	nuqsan to nahi ho raha		Figure:PROFIT_MONTH
+ur-Latn	OK	dukaan ghaate mein to nahi ja rahi		Figure:PROFIT_MONTH
+ur-Latn	OK	Urea kitni bori pari hai		Goods:STOCK
+ur-Latn	OK	DAP ka stock kitna hai		Goods:STOCK
+ur-Latn	MISS	cheeni kitni bachi hai		Unknown
+ur-Latn	OK	Atta khatam to nahi		Goods:STOCK
+ur-Latn	OK	Ghee ke kitne dabbe hain		Goods:STOCK
+ur-Latn	OK	kaun sa maal khatam hone wala hai		Status:LOW_STOCK
+ur-Latn	OK	kam stock wali cheezen		Status:LOW_STOCK
+ur-Latn	OK	expiry wala maal dikhao		Figure:EXPIRING
+ur-Latn	OK	Paracetamol ki expiry kab hai		Goods:BATCHES
+ur-Latn	OK	Urea kitne din chal jayegi		Goods:COVER
+ur-Latn	OK	DAP kitne ki bechte hain		Goods:PRICE
+ur-Latn	OK	Ghee ka daam		Goods:PRICE
+ur-Latn	OK	Atta ki qeemat batao		Goods:PRICE
+ur-Latn	OK	Urea hum ko kitne mein parti hai		Goods:COST
+ur-Latn	OK	DAP ki khareed kitni hai		Goods:COST
+ur-Latn	OK	Sugar kis supplier se aati hai		Goods:SUPPLIERS
+ur-Latn	OK	Paracetamol kahan se mangwate hain		Goods:SUPPLIERS
+ur-Latn	OK	Urea aakhri dafa kab aayi thi		Goods:LAST_IN
+ur-Latn	OK	Urea kis kis ne li		Goods:BUYERS
+ur-Latn	OK	is mahine Atta kitna bika		Goods:SOLD
+ur-Latn	OK	Ghee ka sab kuch batao		Goods:OVERVIEW
+ur-Latn	OK	Ali Raza ka number do		Person:PHONE
+ur-Latn	OK	Bashir Ahmad ka mobile number kya hai		Person:PHONE
+ur-Latn	OK	Tariq Butt ka pata kya hai		Person:DETAILS
+ur-Latn	OK	Naeem Khan ki limit kitni hai		Person:LIMIT
+ur-Latn	OK	Saleem Bhai ne paise dene ka kaunsa din kaha tha		Person:PROMISE
+ur-Latn	OK	Kamran Traders ka khata kab se hai		Person:SINCE
+ur-Latn	OK	Ali Raza ka aakhri len den		Person:LAST_ENTRY
+ur-Latn	OK	Bashir ka hisaab		Parties
+ur-Latn	OK	Tariq Butt ke kitne paise hain		Parties
+ur-Latn	OK	Naeem Khan kitna dega		Parties
+ur-Latn	OK	Saleem Bhai kab paise dega		WhenPays
+ur-Latn	OK	Kamran Traders ko kitna dena hai		Parties
+ur-Latn	OK	Ali Raza ki saari entries dikhao		Person:ENTRIES
+ur-Latn	OK	galle mein kitne paise hone chahiye		Drawer
+ur-Latn	OK	cash kitna hai drawer mein		Drawer
+ur-Latn	OK	aaj cashbook mein kya kya hua		Cashbook
+ur-Latn	OK	kal ka kharch		Cashbook
+ur-Latn	OK	is mahine bijli ka bill kitna diya		Help:intro_cashbook
+ur-Latn	OK	din band kaise karte hain		Help:intro_cashbook
+ur-Latn	OK	kaun se cheque baqi hain		Status:CHEQUES
+ur-Latn	OK	kitne cheque clear ho gaye		Status:CHEQUES
+ur-Latn	OK	cheque kab cash hoga		Status:CHEQUES
+ur-Latn	OK	suppliers ke kitne bill baqi hain		Status:BILLS
+ur-Latn	OK	company ka bill kitna reh gaya		Status:BILLS
+ur-Latn	OK	aaj kitne bill aaye		Count:BILLS:TODAY
+ur-Latn	OK	kaun si invoice ki payment baqi hai		Status:INVOICES
+ur-Latn	OK	qiston wale gahak kaun hain		Status:PLANS
+ur-Latn	OK	aaj kis ki qist hai		Status:PLANS
+ur-Latn	OK	installment kaise lagaun		Help:intro_plans
+ur-Latn	OK	staff ki tankhwa kitni banti hai		Status:STAFF
+ur-Latn	OK	munshi ki salary kitni hai		Status:STAFF
+ur-Latn	OK	kitne mulazim hain		Count:STAFF:null
+ur-Latn	OK	staff ko is mahine kitna diya		Record
+ur-Latn	OK	aaj kaun chhutti par hai		Record
+ur-Latn	OK	naya gahak kaise daalun		Help:screen_khata
+ur-Latn	OK	backup kaise lete hain		Help:faq_backup
+ur-Latn	OK	phone kho jaye to data kaise wapis aayega		Help:faq_restore
+ur-Latn	OK	app ki zabaan kaise badlun		Help:faq_language
+ur-Latn	OK	dusri dukaan kaise add karun		Help:faq_business
+ur-Latn	OK	app par taala kaise lagaun		Help:faq_lock
+ur-Latn	OK	balance chhupana hai kaise		Help:faq_hide
+ur-Latn	OK	ghalti se gahak delete ho gaya		Help:faq_delete
+ur-Latn	OK	purchase order kaise bhejun		Help:intro_orders
+ur-Latn	OK	zakat ka hisaab kaise karun		Help:screen_zakat
+ur-Latn	OK	gahak ko WhatsApp par yaad dahani kaise bhejun		Help:intro_followup
+ur-Latn	OK	rate list kaise banaun		Help:screen_rates
+ur-Latn	OK	poster kaise banta hai		Help:screen_posters
+ur-Latn	MISS	counter sale kya hai		Figure:SALES_MONTH
+ur-Latn	OK	khata link kaise bhejte hain		Help:faq_khata_link
+ur-Latn	OK	salam bhai		Salaam
+ur-Latn	OK	kya haal hai Hudhud		Chat:HOW_ARE_YOU
+ur-Latn	OK	bohot acha jawab		Chat:PRAISE
+ur-Latn	OK	allah hafiz		Chat:BYE
+ur-Latn	OK	tum kya kya kar sakte ho		Abilities
+ur-Latn	OK	kya kya pooch sakta hun		Abilities
+ur-Latn	OK	madad karo		Abilities
+ur-Latn	OK	aur uska number	Ali Raza ka hisaab	Person:PHONE
+ur-Latn	OK	uski limit	Bashir Ahmad ka hisaab	Person:LIMIT
+ur-Latn	OK	kab dega	Tariq Butt ka balance	WhenPays
+ur-Latn	OK	aakhri payment	Naeem Khan ka khata	Person:LAST_PAYMENT
+ur-Latn	OK	iska rate	Urea ka stock	Goods:PRICE
+ur-Latn	OK	kitni bachi hai	DAP ka rate	Goods:STOCK
+ur-Latn	OK	aur kal ki	aaj ki sale	Period:SALES
+ur-Latn	OK	aur pichle mahine ka	is mahine ka munafa	Period:PROFIT
+ur-Latn	OK	bhai total receivable kitna hai		Figure:TO_GET
+ur-Latn	OK	total payable batao		Figure:TO_GIVE
+ur-Latn	OK	aaj ki total sales kya hain		Figure:SALES_TODAY
+ur-Latn	OK	monthly profit kitna hai		Figure:PROFIT_MONTH
+ur-Latn	OK	Ali Raza ka contact number send karo		Person:PHONE
+ur-Latn	OK	Urea ka current stock check karo		Goods:STOCK
+ur-Latn	OK	DAP ka selling price		Goods:PRICE
+ur-Latn	OK	pending cheques ki list		Status:CHEQUES
+ur-Latn	OK	low stock items dikhao		Status:LOW_STOCK
+ur-Latn	OK	expired items kaun se hain		Figure:EXPIRING
+ur-Latn	OK	ali raza ka kitna		Parties
+ur-Latn	OK	bashir hisab		Parties
+ur-Latn	OK	urea rait		Goods:OVERVIEW
+ur-Latn	OK	aj ki sel		Figure:SALES_TODAY
+ur-Latn	OK	kul udhar		Figure:TO_GET
+ur-Latn	OK	lena kitna		Figure:TO_GET
+ur-Latn	OK	dena kitna		Figure:TO_GIVE
+ur-Latn	OK	galla		Drawer
+ur-Latn	OK	ali raza number		Person:PHONE
+ur-Latn	OK	tariq but ki payment		Parties
+ur-Latn	OK	naeem khan ka udhaar kitna he		Parties
+ur-Latn	OK	kitna bika aj		Figure:SALES_TODAY
+ur-Latn	OK	paise kitne ane hain		Figure:TO_GET
+ur-Latn	OK	yaar dekho subah se dukaan khuli hai aur abhi tak pata nahi chala kitni sale hui zara bata do		Figure:SALES_TODAY
+ur-Latn	OK	bhai jaan woh jo Ali Raza hai na jo har hafte aata hai us ka kitna udhaar reh gaya hai		Parties
+ur-Latn	OK	mujhe ek baat batao ke is mahine dukaan ne asal mein kitna munafa kamaya hai sab kharche nikal ke		Figure:PROFIT_MONTH
+ur-Latn	OK	seth sahab ne kaha hai ke check karo Urea ki kitni boriyan godam mein pari hain		Goods:OVERVIEW
+ur-Latn	OK	acha suno jo cheque Bashir Ahmad ne diya tha woh clear hua ya nahi		Record
+ur-Latn	OK	woh jo company ka bill aaya tha us ki kitni payment abhi baqi hai		Status:BILLS
+ur-Latn	OK	dekho Kamran Traders walon ka kitna dena hai humne kyun ke unka banda aaya hua hai		Parties
+ur-Latn	OK	pharmacy mein kaun si dawaiyan khatam ho rahi hain		Status:LOW_STOCK
+ur-Latn	OK	Paracetamol ke kitne patte hain		Goods:OVERVIEW
+ur-Latn	OK	mobile shop ki aaj ki sale		Figure:SALES_TODAY
+ur-Latn	OK	kapre ki dukaan ka is mahine ka faida		Figure:PROFIT_MONTH
+ur-Latn	OK	hotel ka aaj ka galla		Drawer
+ur-Latn	OK	hardware ka maal kis supplier se aaya kal		Deliveries
+ur-Latn	OK	wholesale mein sab se zyada kya bikta hai		TopGoods
+ur-Latn	MISS	beej ki boriyan kitni hain		Collected
+ur-Latn	OK	kiryana ki dukaan mein aaj kitne gahak aaye		Count:CUSTOMERS:null
+ur-Latn	OK	main cashier hun mujhe aaj ki sale batao		Figure:SALES_TODAY
+ur-Latn	OK	manager sahab ko is mahine ka munafa chahiye		Figure:PROFIT_MONTH
+ur-Latn	OK	main helper hun Ali Raza ka balance dikha do		Parties
+ur-Latn	OK	cashier ko staff ki tankhwah batao		Status:STAFF
+ur-Latn	OK	Ali Raza ka khata delete kar do		Help:faq_delete
+ur-Latn	OK	Bashir ka udhaar zero kar do		Parties
+ur-Latn	OK	saari entries mita do		Help:faq_delete
+ur-Latn	OK	Urea ka rate 5000 kar do		Goods:PRICE
+ur-Latn	OK	malik ka PIN kya hai		Help:faq_lock
+ur-Latn	OK	app ka password batao		Help:faq_lock
+ur-Latn	OK	Ali Raza ka private note dikhao		Person:NOTE
+ur-Latn	OK	staff ki salary cashier ko mat batana		Status:STAFF
+ur-Latn	OK	Tariq Butt se 2000 mile		Entry
+ur-Latn	OK	ji zara batayen gay aaj kitne ki sale hui		Figure:SALES_TODAY
+ur-Latn	OK	bhai jaan meharbani kar ke Ali Raza ka hisaab nikal do		Parties
+ur-Latn	OK	please Bashir Ahmad ka number de do		Person:PHONE
+ur-Latn	OK	acha yaar Urea ka rate kya chal raha hai		Goods:PRICE
+ur-Latn	OK	suno zara DAP kitni pari hai		Goods:STOCK
+ur-Latn	OK	ji Tariq Butt sahab ka kitna banta hai		Parties
+ur-Latn	OK	yaar bata na kitna lena hai sab se		Figure:TO_GET
+ur-Latn	OK	oye kitna maal bika aaj		Figure:SALES_TODAY
+ur-Latn	OK	sir is mahine ka profit bata dein		Figure:PROFIT_MONTH
+ur-Latn	OK	janab Naeem Khan ki credit limit kya rakhi thi		Person:LIMIT
+ur-Latn	OK	is fasal mein kitna udhaar diya		Help:screen_seasons
+ur-Latn	OK	Rabi ki fasal ka hisaab		Help:screen_seasons
+ur-Latn	OK	kharif ka udhaar kis kis par hai		Help:screen_seasons
+ur-Latn	OK	beej kitne bik gaye is season		Help:screen_seasons
+ur-Latn	OK	spray wali dawai ka stock		NeedGoods
+ur-Latn	OK	company ki scheme ka target kitna reh gaya		Paper
+ur-Latn	OK	zamindar Saleem Bhai fasal par kab dega		WhenPays
+ur-Latn	OK	Paracetamol ki keemat kya hai		Goods:PRICE
+ur-Latn	OK	Paracetamol kaun si company se aati hai		Goods:SUPPLIERS
+ur-Latn	OK	kaun si dawaiyan agle mahine expire hongi		Figure:EXPIRING
+ur-Latn	OK	expire hone wali dawaiyon ki list		Figure:EXPIRING
+ur-Latn	OK	Paracetamol ka batch kab expire hoga		Goods:BATCHES
+ur-Latn	OK	aaj restaurant mein kitne ka khana bika		Figure:SALES_TODAY
+ur-Latn	MISS	aaj kitne bill kate counter par		Count:BILLS:TODAY
+ur-Latn	OK	sab se bara bill aaj kis ka tha		Counter
+ur-Latn	OK	aaj kitni returns aayin		Returns
+ur-Latn	OK	kal kitna maal wapis aaya		Returns
+ur-Latn	OK	kapre ki dukaan mein sab se zyada kya bikta hai		TopGoods
+ur-Latn	OK	is mahine sab se zyada kaun sa item bika		TopGoods
+ur-Latn	OK	mobile ki dukaan par kitne set bike is hafte		Period:SALES
+ur-Latn	OK	hardware ka bill kaun sa baqi hai company ka		Status:BILLS
+ur-Latn	OK	cement ka supplier kaun hai		Help:screen_bills
+ur-Latn	OK	Kamran Traders ka bill kitna reh gaya		Parties
+ur-Latn	OK	Kamran Traders se aakhri maal kab aaya		Person:LAST_ENTRY
+ur-Latn	OK	aaj kis supplier se maal aaya		Deliveries
+ur-Latn	MISS	is hafte kitna maal khareeda		Count:PRODUCTS:null
+ur-Latn	OK	aaj galle mein kitna hona chahiye		Drawer
+ur-Latn	OK	din band karne se pehle cash kitna hona chahiye		Drawer
+ur-Latn	OK	aaj kahan kahan kharcha hua		Cashbook
+ur-Latn	OK	is mahine ka kul kharcha		Cashbook
+ur-Latn	OK	kiraya diya ya nahi is mahine		Help:intro_cashbook
+ur-Latn	OK	paise kahan kharch hue kal		Cashbook
+ur-Latn	OK	Akram ki tankhwah kitni baqi hai		Status:STAFF
+ur-Latn	OK	staff ko advance kitna diya		Status:STAFF
+ur-Latn	OK	aaj haazri kis ki lagi		Record
+ur-Latn	OK	staff ki salary kab deni hai		Status:STAFF
+ur-Latn	OK	qist wale gahakon ka kitna baqi hai		Status:PLANS
+ur-Latn	OK	is mahine kis kis ki qist aani hai		Status:PLANS
+ur-Latn	OK	Ali Raza ki qist kitni reh gayi		Record
+ur-Latn	OK	quotation kaise banate hain		Help:intro_documents
+ur-Latn	OK	challan kaise banta hai		Help:intro_documents
+ur-Latn	OK	kitni invoices ka paisa nahi aaya		Status:INVOICES
+ur-Latn	OK	aaj kitni invoices banin		Count:INVOICES:TODAY
+ur-Latn	OK	kin logon par sab se zyada paisa hai		Figure:WHO_OWES_MOST
+ur-Latn	OK	kis se sab se zyada lena hai		Figure:WHO_OWES_MOST
+ur-Latn	OK	kaun kaun purana baqidar hai		Figure:NOT_PAID
+ur-Latn	OK	kis ka paisa sab se purana hai		Help:screen_aging
+ur-Latn	OK	kaun sa gahak aana band ho gaya		Help:screen_lapsed
+ur-Latn	OK	jo gahak ab nahi aate un ki list		Help:screen_lapsed
+ur-Latn	OK	aaj kis se paise mangne hain		Figure:NOT_PAID
+ur-Latn	OK	Naeem Khan ne paise ka kya wada kiya tha		Person:PROMISE
+ur-Latn	OK	Bashir Ahmad ne kab ka kaha tha		Person:PROMISE
+ur-Latn	OK	aaj kaun dene wala hai		WhenPays
+ur-Latn	OK	aur uska pata	Saleem Bhai kitna dega	Person:DETAILS
+ur-Latn	OK	kab se khata hai	Bashir Ahmad ka number	Person:SINCE
+ur-Latn	MISS	aakhri dafa kya liya tha	Tariq Butt ka hisaab	NeedName:LAST_PAYMENT
+ur-Latn	OK	aur DAP ka	Urea ka rate	Goods:PRICE
+ur-Latn	OK	uski cost	Sugar ka rate	Goods:COST
+ur-Latn	OK	aur is mahine ki	aaj ki sale	Figure:SALES_MONTH
+ur-Latn	OK	aur pichle hafte ka	is hafte ka munafa	Period:PROFIT
+ur-Latn	OK	ali rza ka hisab do		Parties
+ur-Latn	OK	bashir ahmed ka nmbr		Person:PHONE
+ur-Latn	OK	urea kitni pdi he		Goods:STOCK
+ur-Latn	OK	dap ka reat		Goods:OVERVIEW
+ur-Latn	OK	aj ka munafa kitna		Period:PROFIT
+ur-Latn	OK	kitna udhar dena he		Figure:TO_GIVE
+ur-Latn	OK	saleem bai kab de ga		WhenPays
+ur-Latn	OK	kamran tradars ka balance		Parties
+ur-Latn	MISS	cheq konsa baki		Figure:TO_GET
+ur-Latn	OK	tankha kitni		Status:STAFF
+ur-Latn	OK	qist		Status:PLANS
+ur-Latn	OK	Naeem		Parties
+ur-Latn	MISS	bill		Count:BILLS:null
+ur-Latn	MISS	dekho bhai main shaam ko hisaab milata hun to aaj subah se jitne bhi paise logon ne diye hain woh sab kitne bante hain		Today
+ur-Latn	OK	mujhe ek fikar hai ke kahin hum supplier ko zyada to nahi dena rakh rahe total kitna dena hai un ka		Figure:TO_GIVE
+ur-Latn	OK	woh jo pichle mahine sale hui thi woh is mahine se zyada thi ya kam pichle mahine ki batao		Period:SALES
+ur-Latn	OK	ghar jane se pehle batao aaj galle mein asal mein kitne paise hone chahiye		Drawer
+ur-Latn	OK	Ali Raza ka beta aaya hai keh raha hai abba ka hisaab bata do kitna banta hai		Parties
+ur-Latn	MISS	yaar woh jo Naeem Khan hai na woh har dafa kehta hai agle hafte dunga aakhir kab dega		Person:DETAILS
+ur-Latn	OK	Ali Raza ka outstanding amount		Parties
+ur-Latn	OK	total outstanding kitna hai market mein		Figure:TO_GET
+ur-Latn	OK	supplier payable kitna hai		Figure:TO_GIVE
+ur-Latn	OK	aaj ka cash flow		Help:screen_cashflow
+ur-Latn	OK	next 30 days ki cash flow		Help:screen_cashflow
+ur-Latn	OK	Urea ka purchase rate kya tha		Goods:COST
+ur-Latn	MISS	DAP ka last purchase kab hua		Goods:COST
+ur-Latn	OK	customer ka last payment date		NeedName:LAST_PAYMENT
+ur-Latn	OK	backup last kab hua		BackupStatus
+ur-Latn	OK	app ka version kya hai		About:VERSION
+ur-Latn	OK	Ali Raza ki aakhri entry hata do		Help:faq_delete
+ur-Latn	OK	DAP ki stock 100 kar do		Goods:STOCK
+ur-Latn	OK	Saleem Bhai ka udhaar maaf kar do		Parties
+ur-Latn	OK	mere liye Ali Raza ko WhatsApp bhej do ke paise de		Parties
+ur-Latn	OK	cashier hun mujhe is mahine ka munafa dikhao		Figure:PROFIT_MONTH
+ur-Latn	MISS	mujhe malik ki tankhwah wali list chahiye main cashier hun		About:OWNER_NAME
+ur-Latn	OK	recovery code kya hai		Help:faq_lock
+ur-Latn	OK	Bashir Ahmad ka niji note kya hai		Person:NOTE
+ur-Latn	OK	sab gahakon ke notes dikhao		NeedName:NOTE
+ur-Latn	OK	counter ka PIN bhool gaya		Help:faq_lock
+ur-Latn	OK	Ali Raza ka rate kam kar do 200		Parties
+ur-Latn	OK	bhai kal ka munafa kitna tha		Period:PROFIT
+ur-Latn	OK	ji Ali Raza bhai ka total kitna hai		Parties
+ur-Latn	OK	Naeem Khan sahab ka kya scene hai paison ka		Parties
+ur-Latn	OK	Tariq Butt se kitni wusooli baqi hai		Parties
+ur-Latn	OK	Saleem Bhai ki aakhri adaigi		Person:LAST_PAYMENT
+ur-Latn	OK	Kamran Traders ka phone number		Person:PHONE
+ur-Latn	OK	Kamran Traders ko aakhri payment kab ki		Person:LAST_PAYMENT
+ur-Latn	OK	Ghee ki kitni peti bachi hai		Goods:STOCK
+ur-Latn	OK	Atta ka bhao kya hai		Goods:PRICE
+ur-Latn	OK	Sugar ka rate kya lagaya hai		Goods:PRICE
+ur-Latn	OK	DAP kis company ki hai		Goods:SUPPLIERS
+ur-Latn	OK	aaj kitna udhaar diya		Activity
+ur-Latn	OK	is mahine kitna udhaar diya gaya		Activity
+ur-Latn	OK	aaj ka hisaab kitaab		Today
+ur-Latn	OK	aaj din kaisa raha		Today
+ur-Latn	OK	subah se ab tak kitni wusooli		Collected
+ur-Latn	OK	mujhe aaj ki report do		Today
+ur-Latn	OK	pichle saal ka munafa		Period:PROFIT
+ur	OK	بازار سے کل کتنا لینا ہے		Figure:TO_GET
+ur	OK	لوگوں نے مجھے کتنے پیسے دینے ہیں		Figure:TO_GET
+ur	OK	میرا کتنا پیسہ ادھار میں پھنسا ہے		Figure:TO_GET
+ur	OK	مجھے سپلائرز کو کتنا دینا ہے		Figure:TO_GIVE
+ur	OK	کمپنی کا کتنا دینا باقی ہے		Figure:TO_GIVE
+ur	OK	ہم نے آگے کتنا ادا کرنا ہے		Figure:TO_GIVE
+ur	OK	سب سے زیادہ ادھار کس پر ہے		Figure:WHO_OWES_MOST
+ur	OK	سب سے بڑا بقایا دار کون ہے		Figure:WHO_OWES_MOST
+ur	OK	سب سے کم بقایا کس کا ہے		Figure:WHO_OWES_LEAST
+ur	OK	کون پیسے نہیں دے رہا		Figure:NOT_PAID
+ur	OK	کن لوگوں نے بہت دن سے کچھ نہیں دیا		Figure:NOT_PAID
+ur	OK	آج کس کس نے پیسے دیے		Collected
+ur	MISS	کل کتنی وصولی ہوئی		Collected
+ur	OK	اس ہفتے کتنے پیسے آئے		Collected
+ur	OK	علی رضا نے آخری بار کب پیسے دیے		Person:LAST_PAYMENT
+ur	OK	بشیر احمد کی آخری ادائیگی کتنی تھی		Person:LAST_PAYMENT
+ur	MISS	طارق بٹ نے اس مہینے کتنا جمع کرایا		Parties
+ur	OK	آج کتنی سیل ہوئی		Figure:SALES_TODAY
+ur	OK	آج کتنے کا مال بکا		Figure:SALES_TODAY
+ur	OK	آج کی بکری بتاؤ		Figure:SALES_TODAY
+ur	OK	کل کی سیل کتنی تھی		Period:SALES
+ur	OK	اس مہینے کی بکری کتنی ہے		Figure:SALES_MONTH
+ur	OK	پچھلے مہینے کی کل سیل		Period:SALES
+ur	OK	اس مہینے کتنا منافع ہوا		Figure:PROFIT_MONTH
+ur	OK	اس مہینے کتنا کمایا		Figure:PROFIT_MONTH
+ur	OK	آج کتنا فائدہ ہوا		Period:PROFIT
+ur	OK	اس ہفتے کا منافع بتاؤ		Period:PROFIT
+ur	MISS	یوریا کی کتنی بوریاں پڑی ہیں		Collected
+ur	MISS	ڈی اے پی کا اسٹاک کتنا ہے		Status:LOW_STOCK
+ur	OK	آٹا کتنا بچا ہے		Goods:STOCK
+ur	MISS	گھی کے کتنے ڈبے ہیں		Goods:PACK
+ur	OK	کون سا مال ختم ہونے والا ہے		Status:LOW_STOCK
+ur	OK	کم اسٹاک والی چیزیں دکھاؤ		Status:LOW_STOCK
+ur	OK	ایکسپائری والا مال		Figure:EXPIRING
+ur	MISS	یوریا کتنے دن چلے گی		NeedGoods
+ur	MISS	یوریا کا ریٹ بتاؤ		Help:screen_rates
+ur	MISS	یوریا کتنے کی بیچتے ہیں		Count:CUSTOMERS:null
+ur	MISS	ڈی اے پی کی قیمت کیا ہے		Help:screen_rates
+ur	MISS	یوریا ہمیں کتنے میں پڑتی ہے		Count:CUSTOMERS:null
+ur	MISS	یوریا کس سپلائر سے آتی ہے		Help:screen_bills
+ur	MISS	یوریا آخری بار کب آئی		Deliveries
+ur	MISS	یوریا کس کس نے خریدی		Help:intro_orders
+ur	MISS	اس مہینے یوریا کتنی بکی		Figure:SALES_MONTH
+ur	OK	علی رضا کا نمبر دو		Person:PHONE
+ur	OK	بشیر احمد کا موبائل نمبر کیا ہے		Person:PHONE
+ur	OK	طارق بٹ کا پتہ کیا ہے		Person:DETAILS
+ur	OK	نعیم خان کی حد کتنی ہے		Person:LIMIT
+ur	OK	سلیم بھائی کب پیسے دے گا		WhenPays
+ur	OK	کامران ٹریڈرز کو کتنا دینا ہے		Parties
+ur	OK	بشیر احمد کا کتنا بقایا ہے		Parties
+ur	OK	علی رضا کا آخری لین دین		Person:LAST_ENTRY
+ur	OK	علی رضا کا کھاتہ کب سے ہے		Person:SINCE
+ur	OK	گلے میں کتنے پیسے ہونے چاہئیں		Drawer
+ur	OK	دراز میں کتنا کیش ہے		Drawer
+ur	OK	آج کا خرچہ کتنا ہوا		Cashbook
+ur	MISS	کل کیش بک میں کیا ہوا		Cashbook
+ur	OK	کون سے چیک باقی ہیں		Status:CHEQUES
+ur	OK	کون سا چیک باؤنس ہوا		Status:CHEQUES
+ur	OK	کتنے چیک کلیئر ہو گئے		Status:CHEQUES
+ur	OK	سپلائرز کے کتنے بل باقی ہیں		Status:BILLS
+ur	OK	آج کتنے بل آئے		Count:BILLS:TODAY
+ur	OK	کون سی انوائس کی ادائیگی باقی ہے		Status:INVOICES
+ur	OK	آج کس کی قسط ہے		Status:PLANS
+ur	OK	قسطوں والے گاہک کون ہیں		Status:PLANS
+ur	OK	عملے کی تنخواہ کتنی بنتی ہے		Status:STAFF
+ur	OK	کتنے ملازم ہیں		Count:STAFF:null
+ur	OK	نیا گاہک کیسے ڈالوں		Help:screen_khata
+ur	OK	بیک اپ کیسے لوں		Help:faq_backup
+ur	OK	نئے فون میں کھاتہ کیسے لاؤں		Help:faq_restore
+ur	OK	ایپ کی زبان کیسے بدلوں		Help:faq_language
+ur	OK	ایپ پر لاک کیسے لگاؤں		Help:faq_lock
+ur	OK	غلطی سے گاہک ڈیلیٹ ہو گیا		Help:faq_delete
+ur	OK	زکوٰۃ کا حساب کیسے کروں		Help:screen_zakat
+ur	OK	دوسری دکان کیسے شامل کروں		Help:faq_business
+ur	OK	السلام علیکم		Salaam
+ur	OK	کیا حال ہے		Chat:HOW_ARE_YOU
+ur	OK	تم کون ہو		Chat:WHO_ARE_YOU
+ur	OK	اللہ حافظ		Chat:BYE
+ur	OK	تم کیا کیا کر سکتے ہو		Abilities
+ur	OK	اور اس کا نمبر	علی رضا کا حساب	Person:PHONE
+ur	OK	کب دے گا	طارق بٹ کا بقایا	WhenPays
+ur	MISS	اس کا ریٹ	یوریا کا اسٹاک	Help:screen_rates
+ur	OK	ٹوٹل ریسیوایبل کتنا ہے		Figure:TO_GET
+ur	OK	آج کی ٹوٹل سیلز		Figure:SALES_TODAY
+ur	OK	علی رضا کا کانٹیکٹ نمبر		Person:PHONE
+ur	OK	لو اسٹاک آئٹمز		Status:LOW_STOCK
+ur	OK	کیش ان ہینڈ کتنا ہے		Drawer
+ur	OK	علی رضا کتنا		Parties
+ur	MISS	یوریا ریٹ		Help:screen_rates
+ur	OK	آج سیل		Figure:SALES_TODAY
+ur	OK	کل ادھار		Figure:TO_GET
+ur	OK	چیک		Status:CHEQUES
+ur	OK	یار صبح سے دکان کھلی ہے ذرا بتاؤ آج کتنی سیل ہو چکی ہے		Figure:SALES_TODAY
+ur	OK	وہ جو علی رضا ہے نا جو ہر ہفتے آتا ہے اس کا کتنا ادھار رہ گیا ہے		Parties
+ur	OK	مجھے بتاؤ کہ اس مہینے دکان نے سارے خرچے نکال کر کتنا منافع کمایا		Figure:PROFIT_MONTH
+ur	MISS	سیٹھ صاحب پوچھ رہے ہیں گودام میں یوریا کی کتنی بوریاں ہیں		Collected
+ur	MISS	فارمیسی میں کون سی دوائیں ختم ہو رہی ہیں		About:LANGUAGES
+ur	MISS	پیراسیٹامول کا اسٹاک کتنا ہے		Status:LOW_STOCK
+ur	OK	ہول سیل میں سب سے زیادہ کیا بکتا ہے		TopGoods
+ur	OK	میں کیشیئر ہوں مجھے آج کی سیل بتاؤ		Figure:SALES_TODAY
+ur	OK	مینیجر صاحب کو اس مہینے کا منافع چاہیے		Figure:PROFIT_MONTH
+ur	OK	علی رضا کا کھاتہ ڈیلیٹ کر دو		Help:faq_delete
+ur	OK	ساری انٹریاں مٹا دو		Help:faq_delete
+ur	OK	مالک کا پن کوڈ کیا ہے		Help:faq_lock
+ur	OK	علی رضا کا نجی نوٹ دکھاؤ		Person:NOTE
+ur	OK	جی ذرا بتائیں آج کتنے کی سیل ہوئی		Figure:SALES_TODAY
+ur	OK	بھائی جان مہربانی کر کے علی رضا کا حساب نکال دیں		Parties
+ur	OK	براہ کرم بشیر احمد کا نمبر دے دو		Person:PHONE
+ur	MISS	اچھا یار یوریا کا ریٹ کیا چل رہا ہے		Help:screen_rates
+ur	MISS	سنو ذرا ڈی اے پی کتنی پڑی ہے		Chat:ADDRESS
+ur	OK	یار بتا نا سب سے کتنا لینا ہے		Figure:TO_GET
+ur	OK	سر اس مہینے کا منافع بتا دیں		Figure:PROFIT_MONTH
+ur	OK	ربیع کی فصل کا حساب		Help:screen_seasons
+ur	OK	خریف کا ادھار کس کس پر ہے		Help:screen_seasons
+ur	OK	کمپنی کی اسکیم کا ٹارگٹ کتنا رہ گیا		Paper
+ur	MISS	پیراسیٹامول کی قیمت کیا ہے		Help:screen_rates
+ur	OK	کون سی دوائیں اگلے مہینے ایکسپائر ہوں گی		Figure:EXPIRING
+ur	OK	اس مہینے سب سے زیادہ کون سی چیز بکی		TopGoods
+ur	OK	آج کس سپلائر سے مال آیا		Deliveries
+ur	OK	کامران ٹریڈرز سے آخری مال کب آیا		Person:LAST_ENTRY
+ur	OK	آج کہاں کہاں خرچہ ہوا		Cashbook
+ur	OK	اس مہینے کا کل خرچہ		Cashbook
+ur	OK	عملے کو ایڈوانس کتنا دیا		Status:STAFF
+ur	OK	آج حاضری کس کی لگی		Record
+ur	OK	قسط والے گاہکوں کا کتنا باقی ہے		Status:PLANS
+ur	OK	کوٹیشن کیسے بناتے ہیں		Help:intro_documents
+ur	OK	کتنی انوائسز کا پیسہ نہیں آیا		Status:INVOICES
+ur	OK	کس کا پیسہ سب سے پرانا ہے		Help:screen_aging
+ur	OK	کون سا گاہک آنا بند ہو گیا		Help:screen_lapsed
+ur	OK	آج کس سے پیسے مانگنے ہیں		Figure:NOT_PAID
+ur	OK	نعیم خان نے پیسوں کا کیا وعدہ کیا تھا		Person:PROMISE
+ur	OK	اور اس کا پتہ	سلیم بھائی کتنا دے گا	Person:DETAILS
+ur	OK	کب سے کھاتہ ہے	بشیر احمد کا نمبر	Person:SINCE
+ur	MISS	آخری دفعہ کیا لیا تھا	طارق بٹ کا حساب	NeedName:LAST_PAYMENT
+ur	OK	حد کتنی ہے	علی رضا کب دے گا	Person:LIMIT
+ur	MISS	اور ڈی اے پی کا	یوریا کا ریٹ	Figure:TO_GIVE
+ur	MISS	کس کس نے لی	آٹا کا اسٹاک	About:MAKER
+ur	OK	اور اس مہینے کی	آج کی سیل	Figure:SALES_MONTH
+ur	OK	علی رضہ کا حساب دو		Parties
+ur	OK	بشیر احمد کا نمبرر		Person:PHONE
+ur	MISS	یوریا کتنی پڑی ہے		Unknown
+ur	OK	آج کا منافہ کتنا		Period:PROFIT
+ur	OK	کتنا ادھار دینا ہے		Figure:TO_GIVE
+ur	OK	وصولی		Collected
+ur	OK	خرچہ		Cashbook
+ur	OK	قسط		Status:PLANS
+ur	OK	ایکسپائری		Figure:EXPIRING
+ur	MISS	یوریا		Deliveries
+ur	MISS	دیکھو بھائی میں شام کو حساب ملاتا ہوں تو آج صبح سے جتنے بھی پیسے لوگوں نے دیے ہیں وہ سب کتنے بنتے ہیں		Today
+ur	OK	گھر جانے سے پہلے بتاؤ آج گلے میں اصل میں کتنے پیسے ہونے چاہئیں		Drawer
+ur	OK	علی رضا کا بیٹا آیا ہے کہہ رہا ہے ابا کا حساب بتا دو کتنا بنتا ہے		Parties
+ur	MISS	یار وہ جو نعیم خان ہے نا ہر دفعہ کہتا ہے اگلے ہفتے دوں گا آخر کب دے گا		SpanLimit
+ur	MISS	علی رضا کا آؤٹ اسٹینڈنگ		Person:DETAILS
+ur	OK	سپلائر پے ایبل کتنا ہے		Figure:TO_GIVE
+ur	OK	بیک اپ آخری بار کب ہوا		BackupStatus
+ur	OK	ایپ کا ورژن کیا ہے		About:VERSION
+ur	OK	علی رضا کی آخری انٹری ہٹا دو		Help:faq_delete
+ur	OK	سلیم بھائی کا ادھار معاف کر دو		Parties
+ur	OK	میں کیشیئر ہوں مجھے اس مہینے کا منافع دکھاؤ		Figure:PROFIT_MONTH
+ur	OK	بشیر احمد کا نجی نوٹ کیا ہے		Person:NOTE
+ur	OK	کاؤنٹر کا پن بھول گیا		Help:faq_lock
+hi	OK	बाज़ार से कुल कितना लेना है		Figure:TO_GET
+hi	OK	लोगों से कितना पैसा आना बाकी है		Figure:TO_GET
+hi	OK	मुझे सप्लायर को कितना देना है		Figure:TO_GIVE
+hi	OK	कंपनी का कितना बकाया देना है		Figure:TO_GIVE
+hi	OK	सबसे ज़्यादा उधार किस पर है		Figure:WHO_OWES_MOST
+hi	OK	सबसे बड़ा बकायादार कौन है		Figure:WHO_OWES_MOST
+hi	OK	सबसे कम बकाया किसका है		Figure:WHO_OWES_LEAST
+hi	OK	कौन पैसे नहीं दे रहा		Figure:NOT_PAID
+hi	OK	आज किस किस ने पैसे दिए		Collected
+hi	OK	कल कितनी वसूली हुई		Collected
+hi	OK	अली रज़ा ने आखिरी बार कब पैसे दिए		Person:LAST_PAYMENT
+hi	OK	बशीर अहमद का आखिरी भुगतान कितना था		Person:LAST_PAYMENT
+hi	OK	आज कितने का माल बिका		Figure:SALES_TODAY
+hi	OK	आज की सेल बताओ		Figure:SALES_TODAY
+hi	OK	कल की बिक्री कितनी थी		Period:SALES
+hi	OK	पिछले हफ्ते की सेल		Period:SALES
+hi	OK	इस महीने की बिक्री		Figure:SALES_MONTH
+hi	OK	पिछले महीने की कुल बिक्री		Period:SALES
+hi	OK	इस महीने कितना मुनाफा हुआ		Figure:PROFIT_MONTH
+hi	OK	इस महीने कितना कमाया		Figure:PROFIT_MONTH
+hi	OK	पिछले महीने का मुनाफा		Period:PROFIT
+hi	OK	आज कितना फायदा हुआ		Period:PROFIT
+hi	MISS	यूरिया की कितनी बोरियां पड़ी हैं		Count:PRODUCTS:null
+hi	MISS	डीएपी का स्टॉक कितना है		Status:LOW_STOCK
+hi	OK	आटा कितना बचा है		Goods:STOCK
+hi	OK	कौन सा माल खत्म होने वाला है		Status:LOW_STOCK
+hi	OK	कम स्टॉक वाली चीज़ें		Status:LOW_STOCK
+hi	MISS	यूरिया कितने दिन चलेगी		NeedGoods
+hi	MISS	यूरिया का रेट बताओ		Help:screen_purchase_rates
+hi	MISS	डीएपी की कीमत क्या है		Unknown
+hi	MISS	यूरिया हमें कितने में पड़ती है		Count:PRODUCTS:null
+hi	MISS	यूरिया किस सप्लायर से आती है		Help:screen_bills
+hi	MISS	यूरिया आखिरी बार कब आई		Deliveries
+hi	MISS	यूरिया किस किस ने खरीदी		Figure:NOT_PAID
+hi	OK	अली रज़ा का नंबर दो		Person:PHONE
+hi	OK	बशीर अहमद का मोबाइल नंबर क्या है		Person:PHONE
+hi	OK	तारिक बट का पता क्या है		Person:DETAILS
+hi	OK	नईम खान की लिमिट कितनी है		Person:LIMIT
+hi	OK	सलीम भाई कब पैसे देगा		WhenPays
+hi	OK	कामरान ट्रेडर्स को कितना देना है		Parties
+hi	OK	बशीर अहमद का कितना बकाया है		Parties
+hi	OK	अली रज़ा की आखिरी एंट्री		Person:LAST_ENTRY
+hi	OK	गल्ले में कितने पैसे होने चाहिए		Drawer
+hi	OK	दराज़ में कितना कैश है		Drawer
+hi	OK	आज का खर्चा कितना हुआ		Cashbook
+hi	OK	कल कैशबुक में क्या हुआ		Cashbook
+hi	OK	कौन से चेक बाकी हैं		Status:CHEQUES
+hi	OK	कौन सा चेक बाउंस हुआ		Status:CHEQUES
+hi	OK	सप्लायर के कितने बिल बाकी हैं		Status:BILLS
+hi	OK	कौन सी इनवॉइस का पैसा बाकी है		Status:INVOICES
+hi	OK	आज किसकी किस्त है		Status:PLANS
+hi	OK	स्टाफ की तनख्वाह कितनी बनती है		Status:STAFF
+hi	OK	कितने कर्मचारी हैं		Count:STAFF:null
+hi	OK	नया ग्राहक कैसे जोड़ूं		Help:screen_khata
+hi	OK	बैकअप कैसे लूं		Help:faq_backup
+hi	OK	नए फोन में खाता कैसे लाऊं		Help:faq_restore
+hi	OK	ऐप की भाषा कैसे बदलूं		Help:faq_language
+hi	OK	ऐप पर लॉक कैसे लगाऊं		Help:faq_lock
+hi	OK	गलती से ग्राहक डिलीट हो गया		Help:faq_delete
+hi	OK	इनवॉइस कैसे बनाऊं		Help:intro_documents
+hi	OK	दूसरी दुकान कैसे जोड़ूं		Help:faq_business
+hi	OK	नमस्ते		Hello
+hi	OK	अस्सलाम अलैकुम		Salaam
+hi	OK	कैसे हो		Chat:HOW_ARE_YOU
+hi	OK	तुम कौन हो		Chat:WHO_ARE_YOU
+hi	OK	शुक्रिया भाई		Chat:THANKS
+hi	OK	तुम क्या क्या कर सकते हो		Abilities
+hi	OK	और उसका नंबर	अली रज़ा का हिसाब	Person:PHONE
+hi	OK	कब देगा	तारिक बट का बकाया	WhenPays
+hi	MISS	इसका रेट	यूरिया का स्टॉक	Help:screen_purchase_rates
+hi	OK	total receivable कितना है		Figure:TO_GET
+hi	OK	आज की total sales क्या है		Figure:SALES_TODAY
+hi	OK	अली रज़ा का contact number भेजो		Person:PHONE
+hi	OK	low stock items दिखाओ		Status:LOW_STOCK
+hi	OK	cash in hand कितना है		Drawer
+hi	OK	pending cheques की list		Status:CHEQUES
+hi	OK	monthly profit बताओ		Figure:PROFIT_MONTH
+hi	MISS	यूरिया का current stock		Status:LOW_STOCK
+hi	OK	अली रज़ा कितना		Parties
+hi	MISS	यूरिया रेट		Help:screen_purchase_rates
+hi	OK	आज सेल		Figure:SALES_TODAY
+hi	OK	कुल उधार		Figure:TO_GET
+hi	OK	मुनाफा		Figure:PROFIT_MONTH
+hi	OK	चेक		Status:CHEQUES
+hi	OK	यार सुबह से दुकान खुली है ज़रा बताओ आज कितनी बिक्री हो चुकी है		Figure:SALES_TODAY
+hi	OK	वो जो अली रज़ा है ना जो हर हफ्ते आता है उसका कितना उधार रह गया है		Parties
+hi	MISS	सेठ जी पूछ रहे हैं गोदाम में यूरिया की कितनी बोरियां हैं		Collected
+hi	OK	मुझे बताओ इस महीने सारे खर्चे निकाल कर कितना मुनाफा हुआ		Figure:PROFIT_MONTH
+hi	OK	फार्मेसी में कौन सी दवाएं खत्म हो रही हैं		Status:LOW_STOCK
+hi	MISS	पैरासिटामोल का स्टॉक कितना है		Status:LOW_STOCK
+hi	OK	होलसेल में सबसे ज़्यादा क्या बिकता है		TopGoods
+hi	OK	मैं कैशियर हूं मुझे आज की सेल बताओ		Figure:SALES_TODAY
+hi	OK	मैनेजर साहब को इस महीने का मुनाफा चाहिए		Figure:PROFIT_MONTH
+hi	OK	अली रज़ा का खाता डिलीट कर दो		Help:faq_delete
+hi	OK	सारी एंट्री मिटा दो		Help:faq_delete
+hi	OK	मालिक का पिन क्या है		Help:faq_lock
+hi	OK	अली रज़ा का निजी नोट दिखाओ		Person:NOTE
+hi	OK	जी ज़रा बताइए आज कितने की सेल हुई		Figure:SALES_TODAY
+hi	OK	भाई साहब अली रज़ा का हिसाब निकाल दो		Parties
+hi	OK	प्लीज़ बशीर अहमद का नंबर दे दो		Person:PHONE
+hi	MISS	अच्छा यूरिया का भाव क्या चल रहा है		Help:screen_rates
+hi	MISS	सुनो डीएपी कितनी पड़ी है		Chat:ADDRESS
+hi	OK	सर इस महीने का प्रॉफिट बता दो		Figure:PROFIT_MONTH
+hi	MISS	पैरासिटामोल की कीमत क्या है		Unknown
+hi	OK	कौन सी दवाइयां अगले महीने एक्सपायर होंगी		Figure:EXPIRING
+hi	OK	इस महीने सबसे ज़्यादा कौन सी चीज़ बिकी		TopGoods
+hi	OK	आज किस सप्लायर से माल आया		Deliveries
+hi	OK	आज कहां कहां खर्चा हुआ		Cashbook
+hi	OK	इस महीने का कुल खर्चा		Cashbook
+hi	OK	स्टाफ को एडवांस कितना दिया		Status:STAFF
+hi	MISS	आज हाजिरी किसकी लगी		About:MAKER
+hi	OK	किस्त वाले ग्राहकों का कितना बाकी है		Status:PLANS
+hi	OK	कोटेशन कैसे बनाते हैं		Help:intro_documents
+hi	OK	किसका पैसा सबसे पुराना है		Help:screen_aging
+hi	OK	कौन सा ग्राहक आना बंद हो गया		Help:screen_lapsed
+hi	OK	आज किससे पैसे मांगने हैं		Help:intro_followup
+hi	OK	नईम खान ने पैसों का क्या वादा किया था		Person:PROMISE
+hi	OK	और उसका पता	सलीम भाई कितना देगा	Person:DETAILS
+hi	OK	कब से खाता है	बशीर अहमद का नंबर	Person:SINCE
+hi	MISS	आखिरी बार क्या लिया था	तारिक बट का हिसाब	BackupStatus
+hi	MISS	और डीएपी का	यूरिया का रेट	Cashbook
+hi	OK	और इस महीने की	आज की सेल	Figure:SALES_MONTH
+hi	OK	अली रजा का हिसाब दो		Parties
+hi	MISS	यूरिया कितनी पडी है		Drawer
+hi	OK	आज का मुनाफ़ा कितना		Period:PROFIT
+hi	OK	कितना उधार देना है		Figure:TO_GIVE
+hi	OK	वसूली		Collected
+hi	OK	खर्चा		Cashbook
+hi	OK	किस्त		Status:PLANS
+hi	OK	एक्सपायरी		Figure:EXPIRING
+hi	OK	बैकअप		BackupStatus
+hi	MISS	देखो भाई मैं शाम को हिसाब मिलाता हूं तो आज सुबह से जितने भी पैसे लोगों ने दिए हैं वो सब कितने बनते हैं		Today
+hi	OK	घर जाने से पहले बताओ आज गल्ले में असल में कितने पैसे होने चाहिए		Drawer
+hi	OK	यार वो जो नईम खान है ना हर बार कहता है अगले हफ्ते दूंगा आखिर कब देगा		WhenPays
+hi	OK	अली रज़ा का outstanding amount		Parties
+hi	OK	supplier payable कितना है		Figure:TO_GIVE
+hi	OK	बैकअप आखिरी बार कब हुआ		BackupStatus
+hi	OK	अली रज़ा की आखिरी एंट्री हटा दो		Help:faq_delete
+hi	OK	सलीम भाई का उधार माफ़ कर दो		Parties
+hi	OK	मैं कैशियर हूं मुझे इस महीने का मुनाफा दिखाओ		Figure:PROFIT_MONTH
+hi	OK	बशीर अहमद का निजी नोट क्या है		Person:NOTE
+hi	OK	काउंटर का पिन भूल गया		Help:faq_lock
+hi	OK	मोबाइल की दुकान पर इस हफ्ते कितनी बिक्री हुई		Period:SALES
+hi	OK	रेस्टोरेंट में आज कितने का खाना बिका		Figure:SALES_TODAY
+hi	OK	कपड़े की दुकान में सबसे ज़्यादा क्या बिकता है		TopGoods
+en	OK	how much money is out in the market		Figure:TO_GET
+en	OK	total amount customers still have to pay me		Figure:TO_GET
+en	OK	what do I owe my suppliers		Figure:TO_GIVE
+en	OK	how much do we still have to pay the company		Figure:TO_GIVE
+en	OK	biggest debtor		Figure:WHO_OWES_MOST
+en	OK	who has the smallest balance with me		Figure:WHO_OWES_LEAST
+en	OK	who hasn't paid		Figure:NOT_PAID
+en	OK	list of people I need to chase for money		Figure:NOT_PAID
+en	OK	who paid today		Collected
+en	OK	how much did we collect today		Collected
+en	OK	money received yesterday		Collected
+en	OK	how much was Bashir Ahmad's last payment		Person:LAST_PAYMENT
+en	OK	how much has Tariq Butt paid this month		Moved
+en	OK	how much did we sell today		Figure:SALES_TODAY
+en	OK	sales yesterday		Period:SALES
+en	OK	last week's sales		Period:SALES
+en	OK	sales so far this month		Figure:SALES_MONTH
+en	OK	total sales last month		Period:SALES
+en	MISS	what did we make last month		Cashbook
+en	OK	profit today		Period:PROFIT
+en	OK	are we making a loss		Figure:PROFIT_MONTH
+en	OK	how many bags of Urea are left		Goods:STOCK
+en	OK	DAP stock		Goods:STOCK
+en	OK	is there any Atta left		Goods:STOCK
+en	OK	which items are running low		Status:LOW_STOCK
+en	OK	how long will the Ghee last		Goods:COVER
+en	OK	what's the price of Urea		Goods:PRICE
+en	OK	how much do we sell DAP for		Goods:PRICE
+en	OK	what does Sugar cost us		Goods:COST
+en	OK	who supplies Paracetamol		Goods:SUPPLIERS
+en	OK	how much Atta did we sell this month		Goods:SOLD
+en	OK	give me Ali Raza's number		Person:PHONE
+en	OK	Bashir Ahmad's phone		Person:PHONE
+en	OK	Tariq Butt's address		Person:DETAILS
+en	OK	what's Naeem Khan's credit limit		Person:LIMIT
+en	OK	when will Saleem Bhai pay		WhenPays
+en	OK	how much do I owe Kamran Traders		Parties
+en	OK	Ali Raza's balance		Parties
+en	OK	what does Bashir Ahmad owe		Parties
+en	OK	Ali Raza's last entry		Person:LAST_ENTRY
+en	OK	how much cash should be in the drawer		Drawer
+en	MISS	what's in the till		Activity
+en	OK	what went out of the cash book yesterday		Cashbook
+en	OK	which cheques are pending		Status:CHEQUES
+en	OK	which cheque bounced		Status:CHEQUES
+en	OK	cheques that cleared		Status:CHEQUES
+en	OK	unpaid supplier bills		Status:BILLS
+en	OK	which invoices are still unpaid		Status:INVOICES
+en	OK	whose instalment is due today		Status:PLANS
+en	OK	how much salary do I owe the staff		Status:STAFF
+en	OK	how many employees do I have		Count:STAFF:null
+en	OK	how do I add a new customer		Help:screen_khata
+en	OK	how do I back up my data		Help:faq_backup
+en	OK	I got a new phone how do I move my khata		Help:faq_restore
+en	OK	how to change the language		Help:faq_language
+en	OK	how do I lock the app		Help:faq_lock
+en	OK	I deleted a customer by accident		Help:faq_delete
+en	OK	how do I calculate zakat		Help:screen_zakat
+en	OK	can I add a second shop		Help:faq_business
+en	OK	how do I send a payment reminder on WhatsApp		Help:intro_followup
+en	OK	hello		Hello
+en	OK	hi there		Hello
+en	OK	who are you		Chat:WHO_ARE_YOU
+en	OK	bye		Chat:BYE
+en	OK	what can I ask you		Abilities
+en	OK	what's his limit	Bashir Ahmad's balance	Person:LIMIT
+en	OK	when will he pay	Tariq Butt's balance	WhenPays
+en	OK	and the price	Urea stock	Goods:PRICE
+en	OK	who supplies it	price of Urea	Goods:SUPPLIERS
+en	OK	and yesterday	today's sales	Period:SALES
+en	OK	urea price		Goods:PRICE
+en	OK	sales today		Figure:SALES_TODAY
+en	OK	receivables		Figure:TO_GET
+en	OK	payables		Figure:TO_GIVE
+en	OK	low stock		Status:LOW_STOCK
+en	OK	cash in hand		Drawer
+en	OK	whats ali razas number		Person:PHONE
+en	OK	how much does naeem khan owe me		Parties
+en	OK	so I've been open since morning and I have no idea how much I've sold, can you tell me		Figure:SALES_TODAY
+en	OK	that guy Ali Raza who comes every Friday, how much does he still owe me		Parties
+en	OK	my boss wants to know the total profit this month after all expenses		Figure:PROFIT_MONTH
+en	OK	can you check how many bags of Urea we have in the godown		Goods:STOCK
+en	OK	which medicines are running out in the pharmacy		Status:LOW_STOCK
+en	OK	how many strips of Paracetamol do we have		Goods:STOCK
+en	OK	what sells best in the wholesale		TopGoods
+en	OK	I'm the cashier, tell me today's sales		Figure:SALES_TODAY
+en	OK	the manager wants this month's profit		Figure:PROFIT_MONTH
+en	OK	delete Ali Raza's account		Help:faq_delete
+en	OK	wipe all the entries		Help:faq_delete
+en	OK	set Urea's price to 5000		Goods:PRICE
+en	OK	what is the owner's PIN		Help:faq_lock
+en	OK	show me Ali Raza's private note		Person:NOTE
+en	OK	gave Ali Raza 500		Entry
+en	OK	could you please tell me today's sales		Figure:SALES_TODAY
+en	MISS	hey can you pull up Ali Raza's account		Person:PHONE
+en	OK	please give me Bashir Ahmad's number		Person:PHONE
+en	OK	what's Urea going for these days		Goods:OVERVIEW
+en	OK	how much DAP is sitting in stock		Goods:STOCK
+en	OK	what's the price of Paracetamol		Goods:PRICE
+en	OK	which medicines expire next month		Figure:EXPIRING
+en	OK	how much stock came back today		Counter
+en	OK	what sold the most this month		TopGoods
+en	OK	which supplier delivered today		Deliveries
+en	OK	where did the money go today		Cashbook
+en	OK	total expenses this month		Cashbook
+en	OK	how much advance did the staff take		Status:STAFF
+en	OK	who was present today		Record
+en	MISS	how much is left on instalment customers		Count:CUSTOMERS:null
+en	OK	how do I make a quotation		Help:intro_documents
+en	OK	how many invoices haven't been paid		Status:INVOICES
+en	MISS	whose money has been pending the longest		Figure:NOT_PAID
+en	OK	which customers stopped coming		Help:screen_lapsed
+en	MISS	who do I need to ask for money today		Cashbook
+en	OK	what did Naeem Khan promise		Person:PROMISE
+en	OK	and his address	how much will Saleem Bhai pay	Person:DETAILS
+en	OK	since when	Bashir Ahmad's number	Person:SINCE
+en	MISS	what did he buy last time	Tariq Butt's account	Clock
+en	OK	and DAP	price of Urea	Goods:PRICE
+en	OK	who bought it	Atta stock	Goods:BUYERS
+en	OK	and this month	today's sales	Figure:SALES_MONTH
+en	OK	ali rasa account		Parties
+en	OK	bashir ahmed number		Person:PHONE
+en	OK	how much urea left		Goods:STOCK
+en	OK	todays profit		Period:PROFIT
+en	OK	how much i owe		Figure:TO_GIVE
+en	OK	dues		Figure:TO_GET
+en	OK	collections		Collected
+en	OK	expenses		Cashbook
+en	OK	instalments		Status:PLANS
+en	OK	expiry		Figure:EXPIRING
+en	MISS	okay so before I close up tonight, can you add up all the money customers paid since this morning		Help:screen_khata
+en	OK	before I go home tell me how much cash should actually be in the drawer		Drawer
+en	MISS	Ali Raza's son is here asking how much his father owes		Person:DETAILS
+en	OK	Naeem Khan always says next week, so when is he actually going to pay		WhenPays
+en	OK	what's Ali Raza's outstanding		Parties
+en	OK	total outstanding in the market		Figure:TO_GET
+en	OK	when was the last backup		BackupStatus
+en	OK	what version is the app		About:VERSION
+en	OK	delete Ali Raza's last entry		Help:faq_delete
+en	OK	write off Saleem Bhai's debt		Parties
+en	OK	I'm a cashier, show me this month's profit		Figure:PROFIT_MONTH
+en	OK	what's in Bashir Ahmad's private note		Person:NOTE
+en	OK	I forgot the counter PIN		Help:faq_lock
+en	OK	how many phones did the mobile shop sell this week		Period:SALES
+en	OK	how much food did the restaurant sell today		Figure:SALES_TODAY
+en	OK	what sells best in the clothing shop		TopGoods
+en	OK	what's the next 30 days cash flow		Help:screen_cashflow
+en	MISS	how much did we buy this week		Period:PROFIT
+en	OK	how much credit did I give today		Activity
+en	OK	how was business today		Figure:SALES_TODAY
+en	OK	Kamran Traders phone number		Person:PHONE
+en	OK	what's the rate for Ghee		Goods:PRICE
+en	OK	how many sacks of Sugar are left		Goods:STOCK
+in	OK	berapa total piutang saya		Figure:TO_GET
+in	OK	berapa uang yang masih di luar		Figure:TO_GET
+in	OK	berapa utang saya ke supplier		Figure:TO_GIVE
+in	OK	siapa yang utangnya paling besar		Figure:WHO_OWES_MOST
+in	OK	siapa pengutang terbesar		Figure:WHO_OWES_MOST
+in	OK	siapa yang utangnya paling kecil		Figure:WHO_OWES_LEAST
+in	OK	siapa saja yang bayar hari ini		WhenPays
+in	OK	berapa uang masuk hari ini		Collected
+in	MISS	berapa tagihan yang tertagih kemarin		Count:BILLS:YESTERDAY
+in	OK	kapan Ali Raza terakhir bayar		Person:LAST_PAYMENT
+in	OK	berapa pembayaran terakhir Bashir Ahmad		Person:LAST_PAYMENT
+in	OK	hari ini laku berapa		Figure:SALES_TODAY
+in	OK	penjualan bulan ini		Figure:SALES_MONTH
+in	OK	total penjualan bulan lalu		Period:SALES
+in	OK	laba bulan lalu		Period:PROFIT
+in	OK	untung hari ini berapa		Period:PROFIT
+in	OK	DAP masih ada berapa karung		Goods:STOCK
+in	MISS	Gula masih ada		Chat:CAN_TALK
+in	OK	barang apa yang hampir habis		Status:LOW_STOCK
+in	OK	stok menipis		Status:LOW_STOCK
+in	OK	obat apa yang mau kedaluwarsa		Figure:EXPIRING
+in	OK	barang yang mau expired		Figure:EXPIRING
+in	OK	Urea cukup untuk berapa hari		Goods:COVER
+in	OK	harga jual DAP		Goods:PRICE
+in	OK	harga beli Sugar berapa		Goods:COST
+in	OK	Paracetamol dari supplier mana		Goods:SUPPLIERS
+in	OK	kapan Urea terakhir masuk		Goods:LAST_IN
+in	OK	nomor HP Ali Raza		Person:PHONE
+in	OK	minta nomor telepon Bashir Ahmad		Person:PHONE
+in	OK	alamat Tariq Butt		Person:DETAILS
+in	OK	batas kredit Naeem Khan berapa		Person:LIMIT
+in	OK	kapan Saleem Bhai bayar		WhenPays
+in	OK	berapa utang saya ke Kamran Traders		Parties
+in	OK	utang Bashir Ahmad berapa		Parties
+in	OK	transaksi terakhir Ali Raza		Person:LAST_ENTRY
+in	OK	berapa uang yang seharusnya ada di laci		Drawer
+in	OK	uang di laci berapa		Drawer
+in	OK	pengeluaran hari ini		Cashbook
+in	OK	buku kas kemarin		Cashbook
+in	OK	cek mana yang belum cair		Status:CHEQUES
+in	OK	cek mana yang ditolak		Status:CHEQUES
+in	OK	tagihan supplier yang belum dibayar		Status:BILLS
+in	OK	faktur mana yang belum lunas		Status:INVOICES
+in	OK	cicilan siapa yang jatuh tempo hari ini		Status:PLANS
+in	OK	berapa gaji karyawan		Status:STAFF
+in	OK	berapa jumlah karyawan		Count:STAFF:null
+in	OK	cara tambah pelanggan baru		Help:screen_khata
+in	OK	cara backup data		Help:faq_backup
+in	OK	ganti HP gimana pindahin data		Help:faq_restore
+in	OK	cara ganti bahasa		Help:faq_language
+in	OK	cara kunci aplikasi		Help:faq_lock
+in	OK	pelanggan terhapus tidak sengaja		Help:screen_bin
+in	OK	assalamualaikum		Salaam
+in	OK	halo		Hello
+in	OK	kamu siapa		Chat:WHO_ARE_YOU
+in	OK	batas kreditnya	saldo Bashir Ahmad	Person:LIMIT
+in	OK	kapan dia bayar	utang Tariq Butt	WhenPays
+in	OK	harganya	stok Urea	Goods:PRICE
+in	OK	total sales hari ini		Figure:SALES_TODAY
+in	OK	cash di laci		Drawer
+in	OK	saldo ali raza berapa ya		Parties
+in	OK	urea brp		Goods:OVERVIEW
+in	MISS	penjualan hr ini		Figure:SALES_MONTH
+in	OK	toko buka dari pagi tapi saya belum tahu sudah laku berapa hari ini		Figure:SALES_TODAY
+in	OK	si Ali Raza yang datang tiap Jumat itu masih utang berapa		Parties
+in	OK	tolong cek di gudang Urea tinggal berapa karung		Goods:STOCK
+in	MISS	obat apa saja yang stoknya mau habis di apotek		NeedGoods
+in	OK	saya kasir, berapa penjualan hari ini		Figure:SALES_TODAY
+in	OK	hapus akun Ali Raza		Help:faq_delete
+in	OK	apa PIN pemilik		Help:faq_lock
+in	OK	catatan pribadi Ali Raza		Person:NOTE
+in	OK	kasih Ali Raza 500		Entry
+in	OK	tolong kasih tahu penjualan hari ini		Figure:SALES_TODAY
+in	MISS	bisa tolong buka akun Ali Raza		Person:LIMIT
+in	OK	minta nomor Bashir Ahmad dong		Person:PHONE
+in	OK	harga Paracetamol berapa		Goods:PRICE
+in	OK	obat apa yang kedaluwarsa bulan depan		Figure:EXPIRING
+in	OK	barang apa yang paling laku bulan ini		TopGoods
+in	OK	supplier mana yang kirim barang hari ini		Deliveries
+in	OK	total pengeluaran bulan ini		Cashbook
+in	OK	cara bikin penawaran harga		Help:intro_documents
+in	OK	pelanggan mana yang sudah tidak datang		Help:screen_lapsed
+in	OK	hari ini harus tagih ke siapa		Figure:NOT_PAID
+in	OK	alamatnya	berapa utang Saleem Bhai	Person:DETAILS
+in	OK	transaksi terakhirnya	saldo Tariq Butt	Person:LAST_ENTRY
+in	OK	kalau DAP	harga Urea	Goods:PRICE
+in	OK	kalau bulan ini	penjualan hari ini	Figure:SALES_MONTH
+in	OK	saldo ali rasa		Parties
+in	OK	urea tinggal brp		Goods:OVERVIEW
+in	OK	utang		Figure:TO_GET
+in	OK	pengeluaran		Cashbook
+in	OK	cicilan		Status:PLANS
+in	MISS	sebelum tutup toko tolong jumlahkan semua uang yang dibayar pelanggan sejak pagi		Figure:WHO_OWES_MOST
+in	MISS	anaknya Ali Raza datang tanya bapaknya masih utang berapa		Person:DETAILS
+in	OK	Naeem Khan selalu bilang minggu depan, sebenarnya kapan dia bayar		WhenPays
+in	OK	kapan backup terakhir		BackupStatus
+in	MISS	versi aplikasi berapa		Count:APP_OPENS:null
+in	OK	hapus transaksi terakhir Ali Raza		Help:faq_delete
+in	OK	saya kasir, tunjukkan untung bulan ini		Figure:PROFIT_MONTH
+in	OK	lupa PIN kasir		Help:faq_lock
+in	OK	restoran hari ini laku berapa		Figure:SALES_TODAY
+in	OK	toko baju paling laku apa		TopGoods
+in	OK	gaji karyawan bulan ini berapa		Status:STAFF
+in	OK	hari ini kasih utang berapa		Activity
+in	OK	nomor telepon Kamran Traders		Person:PHONE
+in	OK	harga Ghee berapa		Goods:PRICE
+in	OK	untung kemarin berapa		Period:PROFIT
+ar	OK	كم المبلغ المتبقي على الزبائن		Figure:TO_GET
+ar	OK	كم علي للموردين		Figure:TO_GIVE
+ar	OK	من عليه أكبر دين		Figure:WHO_OWES_MOST
+ar	OK	كم بعنا اليوم		Figure:SALES_TODAY
+ar	OK	مبيعات هذا الشهر		Figure:SALES_MONTH
+ar	OK	كم الربح هذا الشهر		Figure:PROFIT_MONTH
+ar	OK	كم كيس Urea باقي		Goods:STOCK
+ar	OK	مخزون DAP		Goods:STOCK
+ar	OK	ما البضاعة التي قاربت على النفاد		Status:LOW_STOCK
+ar	OK	ما الذي سينتهي صلاحيته قريبا		Figure:EXPIRING
+ar	OK	كم سعر Urea		Goods:PRICE
+ar	OK	بكم نشتري Sugar		Goods:COST
+ar	OK	من يورد Paracetamol		Goods:SUPPLIERS
+ar	OK	رقم هاتف علي رضا		Person:PHONE
+ar	OK	عنوان طارق بت		Person:DETAILS
+ar	OK	حد الائتمان لنعيم خان		Person:LIMIT
+ar	OK	متى سيدفع سليم بهائي		WhenPays
+ar	OK	كم على بشير أحمد		Parties
+ar	OK	كم يجب أن يكون في الدرج		Drawer
+ar	OK	مصاريف اليوم		Cashbook
+ar	OK	ما الشيكات المعلقة		Status:CHEQUES
+ar	OK	أي شيك ارتد		Status:CHEQUES
+ar	OK	فواتير الموردين غير المدفوعة		Status:BILLS
+ar	MISS	من قسطه اليوم		WhenPays
+ar	OK	كم رواتب الموظفين		Status:STAFF
+ar	OK	كم عدد الموظفين		Count:STAFF:null
+ar	OK	كيف أضيف زبونا جديدا		Help:screen_khata
+ar	OK	كيف أعمل نسخة احتياطية		Help:faq_backup
+ar	OK	كيف أغير اللغة		Help:faq_language
+ar	OK	كيف أقفل التطبيق		Help:faq_lock
+ar	OK	حذفت زبونا بالخطأ		Help:faq_delete
+ar	OK	السلام عليكم		Salaam
+ar	OK	مرحبا		Hello
+ar	OK	من أنت		Chat:WHO_ARE_YOU
+ar	OK	شكرا		Chat:THANKS
+ar	OK	ورقم هاتفه	حساب علي رضا	Person:PHONE
+ar	OK	متى سيدفع	حساب طارق بت	WhenPays
+ar	OK	وسعره	مخزون Urea	Goods:PRICE
+ar	OK	مبيعات اليوم		Figure:SALES_TODAY
+ar	OK	الشيكات		Status:CHEQUES
+ar	MISS	حساب علي		NeedName:null
+ar	OK	فتحت المحل من الصباح ولا أعرف كم بعت حتى الآن		Figure:SALES_TODAY
+ar	OK	أنا الكاشير أعطني مبيعات اليوم		Figure:SALES_TODAY
+ar	OK	احذف حساب علي رضا		Help:faq_delete
+ar	OK	ما هو رقم سر المالك		Help:faq_lock
+ar	OK	أعطيت علي رضا 500		Entry
+ar	OK	من فضلك أعطني مبيعات اليوم		Figure:SALES_TODAY
+ar	OK	رقم بشير أحمد لو سمحت		Person:PHONE
+ar	OK	كم سعر Paracetamol		Goods:PRICE
+ar	MISS	ما الأدوية التي تنتهي الشهر القادم		Help:screen_cashflow
+ar	OK	ما أكثر شيء بيع هذا الشهر		TopGoods
+ar	OK	مصاريف هذا الشهر		Cashbook
+ar	OK	كيف أعمل عرض سعر		Help:intro_documents
+ar	OK	من يجب أن أطالبه بالمال اليوم		WhenPays
+ar	OK	وعنوانه	كم سيدفع سليم بهائي	Person:DETAILS
+ar	OK	وDAP	سعر Urea	Goods:PRICE
+ar	OK	متى آخر نسخة احتياطية		BackupStatus
+ar	OK	احذف آخر قيد لعلي رضا		Help:faq_delete
+ar	OK	أنا كاشير أرني ربح هذا الشهر		Figure:PROFIT_MONTH
+ar	OK	نسيت رقم الكاشير السري		Help:faq_lock
+ar	OK	كم عدد الموظفين في المحل		Count:STAFF:null
+ar	OK	ما رصيد علي رضا		Parties
+ar	OK	كم الربح أمس		Period:PROFIT
+ar	OK	مبيعات هذا الأسبوع		Period:SALES
+ar	OK	مخزون Urea كم		Goods:STOCK
+ar	OK	سعر DAP		Goods:PRICE
+ar	OK	متى سيدفع طارق بت		WhenPays
+ar	MISS	كم ندين لكامران تريدرز		Unknown
+ar	OK	كم يجب أن ندفع للموردين		Figure:TO_GIVE
+ar	MISS	كم المال الذي دخل اليوم		Drawer
+ar	OK	مع السلامة		Chat:BYE
+ar	OK	آخر نسخة احتياطية		BackupStatus
+ar	OK	أنا المدير أعطني ربح هذا الشهر		Figure:PROFIT_MONTH
+ar	OK	ملاحظة علي رضا الخاصة		Person:NOTE
+fa	OK	چقدر از مردم طلب دارم		Figure:TO_GET
+fa	OK	مشتری ها روی هم چقدر بدهکارند		Figure:TO_GET
+fa	OK	به تامین کننده ها چقدر بدهکارم		Figure:TO_GIVE
+fa	OK	بیشترین بدهی مال کیست		Figure:WHO_OWES_MOST
+fa	OK	امروز چه کسانی پول دادند		Collected
+fa	OK	علی رضا آخرین بار کی پول داد		Person:LAST_PAYMENT
+fa	OK	فروش امروز چقدر است		Figure:SALES_TODAY
+fa	OK	امروز چقدر فروختیم		Figure:SALES_TODAY
+fa	OK	فروش این ماه		Figure:SALES_MONTH
+fa	OK	چند کیسه Urea مانده		Goods:STOCK
+fa	OK	موجودی DAP		Goods:STOCK
+fa	MISS	کدام اجناس دارد تمام می شود		Figure:EXPIRING
+fa	OK	چه چیزی به زودی منقضی می شود		Figure:EXPIRING
+fa	OK	قیمت Urea چند است		Goods:PRICE
+fa	OK	Sugar را چند می خریم		Goods:COST
+fa	OK	Paracetamol را از کی می گیریم		Goods:SUPPLIERS
+fa	OK	چه کسی Urea خرید		Goods:BUYERS
+fa	OK	شماره علی رضا		Person:PHONE
+fa	OK	آدرس طارق بت		Person:DETAILS
+fa	OK	سقف اعتبار نعیم خان		Person:LIMIT
+fa	OK	سلیم بهائی کی پول می دهد		WhenPays
+fa	OK	بشیر احمد چقدر بدهکار است		Parties
+fa	OK	در کشو چقدر باید باشد		Drawer
+fa	OK	هزینه های امروز		Cashbook
+fa	OK	کدام چک ها مانده		Status:CHEQUES
+fa	OK	کدام چک برگشت خورد		Status:CHEQUES
+fa	OK	فاکتورهای پرداخت نشده تامین کننده		Status:BILLS
+fa	OK	قسط امروز مال کیست		Status:PLANS
+fa	OK	حقوق کارمندان چقدر است		Status:STAFF
+fa	OK	چند کارمند داریم		Count:STAFF:null
+fa	OK	چطور مشتری جدید اضافه کنم		Help:screen_khata
+fa	OK	چطور پشتیبان بگیرم		Help:faq_backup
+fa	OK	چطور زبان را عوض کنم		Help:faq_language
+fa	OK	چطور برنامه را قفل کنم		Help:faq_lock
+fa	OK	سلام علیکم		Salaam
+fa	OK	سلام		Salaam
+fa	OK	تو کی هستی		Chat:WHO_ARE_YOU
+fa	OK	چه کارهایی می توانی بکنی		Abilities
+fa	OK	و شماره اش	حساب علی رضا	Person:PHONE
+fa	OK	کی می دهد	حساب طارق بت	WhenPays
+fa	OK	و قیمتش	موجودی Urea	Goods:PRICE
+fa	OK	فروش امروز		Figure:SALES_TODAY
+fa	OK	چک ها		Status:CHEQUES
+fa	OK	از صبح مغازه باز است و نمی دانم تا حالا چقدر فروختم		Figure:SALES_TODAY
+fa	OK	من صندوقدار هستم فروش امروز را بگو		Figure:SALES_TODAY
+fa	OK	حساب علی رضا را پاک کن		Help:faq_delete
+fa	OK	رمز صاحب مغازه چیست		Help:faq_lock
+fa	OK	به علی رضا 500 دادم		Entry
+fa	OK	لطفا فروش امروز را بگو		Figure:SALES_TODAY
+fa	OK	شماره بشیر احمد را بده		Person:PHONE
+fa	OK	قیمت Paracetamol چند است		Goods:PRICE
+fa	OK	کدام داروها ماه بعد منقضی می شوند		Figure:EXPIRING
+fa	OK	این ماه چه چیزی بیشتر فروش رفت		TopGoods
+fa	OK	هزینه های این ماه		Cashbook
+fa	OK	چطور پیش فاکتور بسازم		Help:intro_documents
+fa	OK	امروز از چه کسی پول بخواهم		WhenPays
+fa	OK	و آدرسش	سلیم بهائی چقدر می دهد	Person:DETAILS
+fa	OK	آخرین پشتیبان کی بود		BackupStatus
+fa	OK	آخرین ثبت علی رضا را پاک کن		Help:faq_delete
+fa	OK	من صندوقدار هستم سود این ماه را نشان بده		Figure:PROFIT_MONTH
+fa	OK	رمز صندوق را فراموش کردم		Help:faq_lock
+fa	OK	مانده حساب علی رضا		Parties
+fa	OK	سود دیروز چقدر بود		Period:PROFIT
+fa	OK	فروش این هفته		Period:SALES
+fa	OK	قیمت DAP		Goods:PRICE
+fa	OK	طارق بت کی پول می دهد		WhenPays
+fa	OK	به کامران تریدرز چقدر بدهکارم		Parties
+fa	OK	امروز چقدر پول آمد		Collected
+fa	OK	خداحافظ		Chat:BYE
+fa	OK	آخرین بکاپ کی بود		BackupStatus
+fa	OK	من مدیر هستم سود این ماه را بگو		Figure:PROFIT_MONTH
+fa	OK	یادداشت علی رضا		Person:NOTE
+bn	OK	বাজারে মোট কত টাকা পাওনা		Figure:TO_GET
+bn	OK	খদ্দেরদের কাছে কত পাব		Figure:TO_GET
+bn	OK	সাপ্লায়ারকে কত দিতে হবে		Figure:TO_GIVE
+bn	OK	সবচেয়ে বেশি বাকি কার		Figure:WHO_OWES_MOST
+bn	OK	কে টাকা দিচ্ছে না		Figure:NOT_PAID
+bn	OK	আজ কে কে টাকা দিল		Collected
+bn	OK	আজ কত আদায় হল		Collected
+bn	OK	আলী রাজা শেষ কবে টাকা দিয়েছে		Person:LAST_PAYMENT
+bn	OK	আজ কত বিক্রি হল		Figure:SALES_TODAY
+bn	OK	আজকের বিক্রি কত		Figure:SALES_TODAY
+bn	OK	এই মাসের বিক্রি		Figure:SALES_MONTH
+bn	OK	এই মাসে কত লাভ হল		Figure:PROFIT_MONTH
+bn	OK	Urea কত বস্তা আছে		Goods:STOCK
+bn	OK	DAP এর স্টক		Goods:STOCK
+bn	OK	কোন মাল শেষ হয়ে যাচ্ছে		Status:LOW_STOCK
+bn	OK	Sugar কত দামে কিনি		Goods:COST
+bn	OK	Paracetamol কোথা থেকে আসে		Goods:SUPPLIERS
+bn	OK	Urea কে কিনেছে		Goods:BUYERS
+bn	OK	আলী রাজার নম্বর দাও		Person:PHONE
+bn	OK	তারিক বাটের ঠিকানা		Person:DETAILS
+bn	OK	নাঈম খানের লিমিট কত		Person:LIMIT
+bn	OK	সেলিম ভাই কবে টাকা দেবে		WhenPays
+bn	OK	বশির আহমদের কত বাকি		Parties
+bn	OK	ড্রয়ারে কত টাকা থাকা উচিত		Drawer
+bn	OK	আজকের খরচ		Cashbook
+bn	OK	কোন চেক বাকি আছে		Status:CHEQUES
+bn	OK	কোন চেক বাউন্স হয়েছে		Status:CHEQUES
+bn	OK	সাপ্লায়ারের কোন বিল বাকি		Status:BILLS
+bn	OK	আজ কার কিস্তি		Status:PLANS
+bn	OK	কর্মচারীদের বেতন কত		Status:STAFF
+bn	OK	কতজন কর্মচারী আছে		Count:STAFF:null
+bn	OK	নতুন খদ্দের কিভাবে যোগ করব		Help:screen_khata
+bn	OK	ব্যাকআপ কিভাবে নেব		Help:faq_backup
+bn	OK	ভাষা কিভাবে বদলাব		Help:faq_language
+bn	OK	অ্যাপ কিভাবে লক করব		Help:faq_lock
+bn	OK	আসসালামু আলাইকুম		Salaam
+bn	OK	নমস্কার		Hello
+bn	OK	কেমন আছ		Chat:HOW_ARE_YOU
+bn	OK	তুমি কে		Chat:WHO_ARE_YOU
+bn	OK	তুমি কী কী করতে পারো		Abilities
+bn	OK	আর ওর নম্বর	আলী রাজার হিসাব	Person:PHONE
+bn	OK	কবে দেবে	তারিক বাটের বাকি	WhenPays
+bn	OK	আর দাম	Urea এর স্টক	Goods:PRICE
+bn	OK	আজকের সেল		Figure:SALES_TODAY
+bn	OK	চেক		Status:CHEQUES
+bn	OK	সকাল থেকে দোকান খোলা কিন্তু জানি না এখন পর্যন্ত কত বিক্রি হল		Figure:SALES_TODAY
+bn	OK	আমি ক্যাশিয়ার আজকের বিক্রি বলো		Figure:SALES_TODAY
+bn	OK	আলী রাজার খাতা মুছে দাও		Help:faq_delete
+bn	OK	মালিকের পিন কত		Help:faq_lock
+bn	OK	আলী রাজাকে 500 দিলাম		Entry
+bn	OK	দয়া করে আজকের বিক্রি বলো		Figure:SALES_TODAY
+bn	OK	বশির আহমদের নম্বরটা দাও		Person:PHONE
+bn	OK	Paracetamol এর দাম কত		Goods:PRICE
+bn	OK	কোন ওষুধের মেয়াদ সামনের মাসে শেষ		Figure:EXPIRING
+bn	OK	এই মাসে সবচেয়ে বেশি কী বিক্রি হল		TopGoods
+bn	OK	এই মাসের খরচ		Cashbook
+bn	OK	আজ কার কাছে টাকা চাইতে হবে		WhenPays
+bn	OK	আর ওর ঠিকানা	সেলিম ভাই কত দেবে	Person:DETAILS
+bn	OK	শেষ ব্যাকআপ কবে হয়েছে		BackupStatus
+bn	OK	আলী রাজার শেষ এন্ট্রি মুছে দাও		Help:faq_delete
+bn	OK	আমি ক্যাশিয়ার এই মাসের লাভ দেখাও		Figure:PROFIT_MONTH
+bn	OK	গতকাল কত লাভ হয়েছে		Period:PROFIT
+bn	OK	এই সপ্তাহের বিক্রি কত		Period:SALES
+bn	OK	Urea এর স্টক কত		Goods:STOCK
+bn	OK	DAP এর দাম কত টাকা		Goods:PRICE
+bn	OK	বশির আহমদের মোবাইল নম্বর		Person:PHONE
+bn	OK	তারিক বাট কবে টাকা দেবে		WhenPays
+bn	OK	কামরান ট্রেডার্সকে কত দিতে হবে		Parties
+bn	OK	সাপ্লায়ারের কাছে মোট কত দেনা		Figure:TO_GIVE
+bn	OK	ক্যাশ বাক্সে কত থাকা উচিত		Drawer
+bn	OK	আজ কত টাকা এল		Collected
+bn	OK	তুমি কী পারো		Abilities
+bn	OK	বিদায়		Chat:BYE
+bn	OK	আজ বিক্রি		Figure:SALES_TODAY
+bn	OK	মোট বাকি		Figure:TO_GET
+bn	OK	শেষ ব্যাকআপ কখন		BackupStatus
+bn	OK	আমি ম্যানেজার এই মাসের লাভ বলো		Figure:PROFIT_MONTH
+bn	OK	আলী রাজার নোট দেখাও		Person:NOTE
+sd	OK	ماڻهن کان ڪل ڪيترا پئسا وٺڻا آهن		Figure:TO_GET
+sd	OK	سپلائرن کي ڪيترو ڏيڻو آهي		Figure:TO_GIVE
+sd	OK	سڀ کان وڌيڪ اڌار ڪنهن تي آهي		Figure:WHO_OWES_MOST
+sd	OK	اڄ ڪنهن ڪنهن پئسا ڏنا		Collected
+sd	OK	علي رضا آخري ڀيرو ڪڏهن پئسا ڏنا		Person:LAST_PAYMENT
+sd	OK	اڄ ڪيترو وڪرو ٿيو		Figure:SALES_TODAY
+sd	OK	اڄ جي سيل		Figure:SALES_TODAY
+sd	OK	ڪالهه جو وڪرو		Period:SALES
+sd	OK	هن مهيني جو وڪرو		Figure:SALES_MONTH
+sd	OK	هن مهيني ڪيترو نفعو ٿيو		Figure:PROFIT_MONTH
+sd	OK	Urea جون ڪيتريون ٻوريون آهن		Goods:OVERVIEW
+sd	OK	ڪهڙو مال ختم ٿيڻ وارو آهي		Status:LOW_STOCK
+sd	OK	Urea جو اگهه ڇا آهي		Goods:OVERVIEW
+sd	OK	علي رضا جو نمبر ڏيو		Person:PHONE
+sd	OK	نعيم خان جي حد ڪيتري آهي		Person:LIMIT
+sd	OK	سليم ڀائي ڪڏهن پئسا ڏيندو		WhenPays
+sd	OK	بشير احمد جو ڪيترو اڌار آهي		Parties
+sd	OK	دراز ۾ ڪيترا پئسا هجڻ گهرجن		Drawer
+sd	OK	اڄ جو خرچ		Cashbook
+sd	OK	ڪهڙا چيڪ باقي آهن		Status:CHEQUES
+sd	OK	ڪهڙو چيڪ باؤنس ٿيو		Status:CHEQUES
+sd	OK	عملي جي پگهار ڪيتري آهي		Status:STAFF
+sd	OK	نئون گراهڪ ڪيئن شامل ڪريان		Help:screen_khata
+sd	OK	بيڪ اپ ڪيئن وٺان		Help:faq_backup
+sd	OK	ٻولي ڪيئن مٽايان		Help:faq_language
+sd	OK	السلام عليڪم		Salaam
+sd	OK	توهان ڇا ڇا ڪري سگهو ٿا		Abilities
+sd	OK	۽ ان جو نمبر	علي رضا جو حساب	Person:PHONE
+sd	OK	ڪڏهن ڏيندو	طارق بٽ جو اڌار	WhenPays
+sd	OK	چيڪ		Status:CHEQUES
+sd	OK	آئون ڪيشيئر آهيان اڄ جي سيل ٻڌايو		Figure:SALES_TODAY
+sd	OK	علي رضا جو کاتو ڊليٽ ڪريو		Help:faq_delete
+sd	OK	مالڪ جو پن ڇا آهي		Help:faq_lock
+sd	OK	علي رضا کي 500 ڏنا		Entry
+sd	OK	مهرباني ڪري اڄ جي سيل ٻڌايو		Figure:SALES_TODAY
+sd	OK	بشير احمد جو نمبر ڏيو		Person:PHONE
+sd	OK	Paracetamol جو اگهه ڇا آهي		Goods:OVERVIEW
+sd	OK	هن مهيني ڪهڙي شيءِ سڀ کان وڌيڪ وڪاڻي		TopGoods
+sd	OK	هن مهيني جو خرچ		Cashbook
+sd	OK	اڄ ڪنهن کان پئسا گهرڻا آهن		WhenPays
+sd	OK	آخري بيڪ اپ ڪڏهن ٿيو		BackupStatus
+sd	OK	آئون ڪيشيئر آهيان هن مهيني جو نفعو ڏيکاريو		Figure:PROFIT_MONTH
+sd	OK	علي رضا جو ڪيترو اڌار آهي		Parties
+sd	OK	ڪالهه ڪيتري وصولي ٿي		Collected
+sd	OK	ڪالهه ڪيترو نفعو ٿيو		Period:PROFIT
+sd	OK	پوئين هفتي جو وڪرو		Period:SALES
+sd	OK	پوئين مهيني جو نفعو		Period:PROFIT
+sd	OK	Urea جو اسٽاڪ ڪيترو آهي		Goods:STOCK
+sd	OK	DAP جي قيمت ڇا آهي		Goods:PRICE
+sd	OK	Urea ڪهڙي سپلائر کان ايندي آهي		Goods:SUPPLIERS
+sd	OK	ڪهڙي دوا ايڪسپائر ٿيڻ واري آهي		Figure:EXPIRING
+sd	OK	بشير احمد جو موبائل نمبر		Person:PHONE
+sd	OK	طارق بٽ ڪڏهن پئسا ڏيندو		WhenPays
+sd	OK	ڪامران ٽريڊرز کي ڪيترو ڏيڻو آهي		Parties
+sd	OK	ڪهڙا بل باقي آهن سپلائر جا		Status:BILLS
+sd	OK	اڄ ڪنهن جي قسط آهي		Status:PLANS
+sd	OK	ڪيترا ملازم آهن		Count:STAFF:null
+sd	OK	گلي ۾ ڪيترا پئسا هجڻ گهرجن		Drawer
+sd	OK	اڄ ڪيترا پئسا آيا		Collected
+sd	OK	السلام عليڪم ادا		Salaam
+sd	OK	توهان ڪير آهيو		Chat:WHO_ARE_YOU
+sd	OK	خدا حافظ		Chat:BYE
+sd	OK	۽ ان جي حد	بشير احمد جو حساب	Person:LIMIT
+sd	OK	اڄ وڪرو		Figure:SALES_TODAY
+sd	OK	ڪل اڌار		Figure:TO_GET
+sd	OK	بيڪ اپ آخري ڀيرو ڪڏهن ٿيو		BackupStatus
+sd	OK	آئون منيجر آهيان هن مهيني جو نفعو ٻڌايو		Figure:PROFIT_MONTH
+sd	OK	مالڪ جو پاسورڊ ٻڌايو		Help:faq_lock
+sd	OK	علي رضا جو نوٽ ڏيکاريو		Person:NOTE

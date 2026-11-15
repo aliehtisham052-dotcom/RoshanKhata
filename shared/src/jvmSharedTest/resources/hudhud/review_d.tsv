@@ -122,7 +122,7 @@ ur-Latn	OK	Ali Raza ka note kya hai		Person:NOTE
 ur-Latn	OK	Ali Raza ko 500 diye		Entry
 ur-Latn	OK	Ali Raza se 1000 mile		Entry
 ur-Latn	OK	invoice kaise banaun		Help:intro_documents
-ur-Latn	OK	backup kaise lun		Help:faq_restore
+ur-Latn	OK	backup kaise lun		Help:faq_backup
 ur-Latn	OK	cheque kaise likhun		Help:intro_cheques
 ur-Latn	OK	customer ka khata kaise kholun		Help:faq_delete
 ur-Latn	OK	ye app kis ne banayi		About:MAKER
@@ -240,7 +240,7 @@ en	OK	say that again		Voice
 en	OK	make the text bigger		Look
 en	OK	I gave Ali Raza 500		Entry
 en	OK	how do I make an invoice		Help:intro_documents
-en	OK	how do I take a backup		Help:screen_viewer
+en	OK	how do I take a backup		Help:faq_backup
 hi	OK	आज कितनी बिक्री हुई		Figure:SALES_TODAY
 hi	OK	भाई ज़रा आज की सेल बताओ		Figure:SALES_TODAY
 hi	MISS	आज दुकान ने कितना कमाया		Period:PROFIT
