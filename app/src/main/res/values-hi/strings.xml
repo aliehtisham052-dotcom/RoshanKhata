@@ -4508,6 +4508,11 @@
     <string name="hudhud_chip_suppliers">सप्लायरों के रेट</string>
     <string name="hudhud_chip_buyers">किसने खरीदा</string>
     <string name="hudhud_chip_sold">इस महीने कितना बिका</string>
+    <string name="hudhud_chip_cover">कितने दिन चलेगा?</string>
+    <string name="hudhud_cover_basis">पिछले %1$d दिनों की बिक्री के हिसाब से: रोज़ लगभग %2$s।</string>
+    <string name="hudhud_cover_under_day">इस रफ़्तार से एक दिन का भी स्टॉक नहीं है।</string>
+    <string name="hudhud_cover_no_sales">पिछले 30 दिनों में कुछ नहीं बिका, इसलिए नहीं बता सकता कि कितने दिन चलेगा।</string>
+    <string name="hudhud_cover_out">शेल्फ़ पर कुछ नहीं है।</string>
     <string name="hudhud_chip_book">मेरा खाता</string>
     <string name="hudhud_chip_activity">आज क्या-क्या हुआ</string>
     <string name="hudhud_chip_collected">आज कितनी रकम आई</string>

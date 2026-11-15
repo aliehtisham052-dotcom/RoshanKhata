@@ -3901,6 +3901,27 @@ Importance 7 (reads money and names). Plain shared Kotlin only was compiled and 
 - **Courtesy** (lesson 142): four layers — `talk` refuses thank-you/goodbye when the sentence asks the book, `decide` takes the next non-courtesy guess, the fall-through answers Salaam/Hello only for a courtesy-only sentence, and the sense never sees a one-word courtesy (`senseHeard`).
 - **Tests:** HudhudNamesTest, HudhudNameWordsTest, HudhudNameBridgeTest, HudhudSpansTest, HudhudFacetsTest, HudhudCourtesyTest. Not done: mutation pass on the new guards (a second commit), a per-page limits line ("hudood") in `HudhudBook.pages`, the "milega/milna" vocabulary gap (end-of-#26 retrain).
 
+### 15 Nov 2026: Hudhud, #30 how long the shelf lasts (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 7 (reads stock and sales). "Urea kitne din chalegi?", "how long will the DAP last", "kab khatam hogi" in nine languages.
+
+- **The rule** (`StockCover`, shared, pure): days = floor(on hand / (sold in the last 30 days / 30)); one rule for the answer and for the low-stock order
+  (`Automations.reorder` now reads `StockCover.soldBase` and `WINDOW_MS`, so the two cannot disagree). Sales are counted in the shelf's unit
+  (`Units.toBase`); sales in another unit that cannot be converted are "unknown", never "no sales". Results: `Days`, `NoStock`, `NoSales`, `Unknown`;
+  capped at 99,999 days. A book whose first sale is younger than 30 days is divided by its own age (`HudhudFacts.goods`), never by 30.
+- **The reader** (`Hudhud.withCover`, `asksCover`; `GoodsFacet.COVER`): a cover phrase, or a word for lasting with a word for time, or a run-out
+  word with "when", or "how many days" without since/ago/old/passed. A lasting word alone ("kafi", "enough") is not enough. Only a stock,
+  overview, cost or sold reading of a named product is turned; "kafi mehnga" stays the price, "kab aayi thi" the last delivery. With no product
+  said, the product the talk was about is the product, replacing the readings that name nothing (Unknown, Clock, About, Drawer, Figure, Count,
+  Today, an empty WhenPays; with no product at all, the products to choose from — told, not asked — except the expiring figure: "Expiry wala maal kab khatam hoga" stays the batches); a guess whose cover reading is sure is no guess. A cover ask is no span of the book (`standsNow`).
+- **The answer** (REPORTS; a cashier is told only the owner or a manager sees it): the days as a figure, the shelf and the pace behind it
+  (`hudhud_cover_basis`); under a day, out, no sales in 30 days and no movement are said in words. The chip is `hudhud_chip_cover` (nine languages;
+  Sindhi, Bengali and Farsi wording is for a native read); HudhudWordsTest holds it as its own question in all nine.
+- **Tests:** StockCoverTest (shared desktopTest; CI), HudhudCoverTest (5, nine languages, native-script product names: lesson 139), the chip in
+  HudhudWordsTest. Mutations of the reader's guards run one at a time (`mut_cover.py`, 23 variants).
+- **Not done:** a product's name across scripts is still not read; the pace is the last 30 days' sales, so a seasonal product is told the same
+  as any (the card says "going by the last 30 days"); "how many days since Urea came" reads as OVERVIEW (before this change too).
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the

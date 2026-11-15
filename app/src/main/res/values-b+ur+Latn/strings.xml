@@ -4460,6 +4460,11 @@
     <string name="hudhud_chip_suppliers">Suppliers ke rate</string>
     <string name="hudhud_chip_buyers">Kis ne khareeda</string>
     <string name="hudhud_chip_sold">Is mahine kitna bika</string>
+    <string name="hudhud_chip_cover">Kitne din chalega?</string>
+    <string name="hudhud_cover_basis">Pichhle %1$d din ki bikri ke hisaab se: roz taqreeban %2$s.</string>
+    <string name="hudhud_cover_under_day">Is raftaar se ek din ka bhi stock nahi.</string>
+    <string name="hudhud_cover_no_sales">Pichhle 30 din mein kuch nahi bika, is liye nahi bata sakta ke kitne din chalega.</string>
+    <string name="hudhud_cover_out">Shelf par kuch nahi hai.</string>
     <string name="hudhud_chip_book">Mera khata</string>
     <string name="hudhud_chip_activity">Aaj kya kya hua</string>
     <string name="hudhud_chip_collected">Aaj kitni raqam aayi</string>

@@ -214,7 +214,8 @@ object Hudhud {
     enum class Facet { PHONE, DETAILS, LAST_PAYMENT, LAST_ENTRY, SINCE, LIMIT, PROMISE, ENTRIES, NOTE }
 
     /** What is asked about a product: everything at once ([OVERVIEW]) when only its name is said. */
-    enum class GoodsFacet { OVERVIEW, PRICE, STOCK, COST, SUPPLIERS, LAST_IN, BUYERS, SOLD }
+    /** [COVER]: how many days what is on the shelf lasts at the pace it has been selling ([StockCover]). */
+    enum class GoodsFacet { OVERVIEW, PRICE, STOCK, COST, SUPPLIERS, LAST_IN, BUYERS, SOLD, COVER }
 
     /** The shop's profile, one field or [ALL]. */
     enum class ShopFacet { ALL, NAME, ADDRESS, PHONE, EMAIL, TAX, BANK, CURRENCY, COUNTRY, TRADE }
@@ -337,14 +338,59 @@ object Hudhud {
     ): Ask {
         val carried = carriedOf(before)
         val ruled = byRules(heard, names, topics, language, goods, carried)
-        if (!HudhudSense.ready || words(heard).isEmpty()) return limitSpan(heard, byWay(heard, ruled))
+        if (!HudhudSense.ready || words(heard).isEmpty()) return limitSpan(heard, withCover(heard, byWay(heard, ruled), carried))
         val guesses = HudhudSense.rank(
             senseHeard(heard, names, goods),
             isName = { w -> w !in QUIET_SET && w !in VOCATIVE_SET && !HudhudMind.isHardWord(w) && knownName(w, names) },
             isItem = { w -> w !in QUIET_SET && !HudhudMind.isHardWord(w) && knownName(w, goods) }
         )
-        return limitSpan(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)))
+        return limitSpan(heard, withCover(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)), carried))
     }
+
+    // ------------------------------------------------------------------------------------- how long the shelf lasts
+
+    /**
+     * "Urea kitne din chalegi?" (15 Nov 2026, #30): a question about a named product's shelf — its stock or all of it — that
+     * also asks for how long it lasts is the shelf's cover ([GoodsFacet.COVER], [StockCover]). Only a stock, overview, cost or sold
+     * reading is turned ("in a month" reads as a sale's span): "kafi mehnga" stays the price, "kitne din pehle aaya" the last delivery. A product carried from
+     * the answer before is the product when the sentence names none and asks nothing else (a bare "kitne din chalega?").
+     */
+    private fun withCover(heard: String, ask: Ask, carried: Ask?): Ask {
+        val joined = words(heard).joinToString(" ")
+        val covers = asksCover(joined)
+        return when {
+            !covers -> ask
+            ask is Ask.Goods && (ask.facet == GoodsFacet.OVERVIEW || ask.facet == GoodsFacet.STOCK || ask.facet == GoodsFacet.COST ||
+                ask.facet == GoodsFacet.SOLD) ->
+                Ask.Goods(ask.ids, GoodsFacet.COVER)
+            // A guess whose cover reading is sure is no guess any more.
+            ask is Ask.Guessed -> withCover(heard, ask.ask, carried).let { if (it == ask.ask) ask else it }
+            ask is Ask.NeedGoods && (ask.facet == GoodsFacet.STOCK) -> Ask.NeedGoods(GoodsFacet.COVER)
+            // No product said: the one the talk was about, else the products to choose from (told, not asked). A sentence with a
+            // lasting word and a time word is never a date (Clock), a language (About), a drawer or a figure of the shop; the
+            // readings that name nobody and nothing give way.
+            namesNothing(ask) -> if (carried is Ask.Goods && carried.ids.size == 1) Ask.Goods(carried.ids, GoodsFacet.COVER) else Ask.NeedGoods(GoodsFacet.COVER)
+            else -> ask
+        }
+    }
+
+    private fun namesNothing(ask: Ask): Boolean = ask == Ask.Unknown || ask == Ask.Clock || ask is Ask.About || ask is Ask.Drawer ||
+        // "Expiry wala maal kab khatam hoga" is the expiring batches, not a product's shelf.
+        (ask is Ask.Figure && ask.kind != VoiceQuestion.Kind.EXPIRING) || ask is Ask.Count || ask is Ask.Today || (ask is Ask.WhenPays && ask.ids.isEmpty())
+
+    /**
+     * Whether a sentence asks how long the shelf lasts: a word for lasting with a word for time ("kitne din chalega",
+     * "how long will it last", "will it run out in a week"), a run-out word with a "when" ("kab khatam hogi"), or the
+     * phrase "days of stock" ("kitne din ka stock"). A lasting word alone ("kafi", "enough") is not enough: it is the
+     * stock's "is there enough" or the price's "quite dear".
+     */
+    internal fun asksCoverForTest(joined: String): Boolean = asksCover(words(joined).joinToString(" "))
+
+    internal fun asksCover(joined: String): Boolean =
+        has(joined, COVER_PHRASES) ||
+            (has(joined, LASTING) && has(joined, FOR_TIME)) ||
+            (has(joined, RUNS_OUT) && has(joined, WHEN_WORDS)) ||
+            (has(joined, listOf("how many days")) && !has(joined, listOf("since", "ago", "old", "passed")))
 
     /**
      * What the last question carries on as (15 Nov 2026): an answer that said "this is how it stands now" is the question it
@@ -458,7 +504,9 @@ object Hudhud {
 
     /** The asks that tell how the book stands today: its balances, counts, a person's or a product's facts, the drawer. */
     private fun standsNow(a: Ask): Boolean = when (a) {
-        is Ask.Figure, is Ask.Parties, is Ask.Person, is Ask.Status, is Ask.Count, is Ask.Goods, Ask.Drawer, Ask.Qarz -> true
+        is Ask.Figure, is Ask.Parties, is Ask.Person, is Ask.Status, is Ask.Count, Ask.Drawer, Ask.Qarz -> true
+        // The cover's "in a week" is part of its own question, not a span the book cannot give.
+        is Ask.Goods -> a.facet != GoodsFacet.COVER
         else -> false
     }
 
@@ -928,7 +976,7 @@ object Hudhud {
         is Ask.Entry -> if (a.isGiven) "entry_gave" else "entry_got"
         is Ask.Goods -> when (a.facet) {
             GoodsFacet.OVERVIEW, GoodsFacet.PRICE -> "goods_price"
-            GoodsFacet.STOCK -> "goods_stock"
+            GoodsFacet.STOCK, GoodsFacet.COVER -> "goods_stock"
             GoodsFacet.SUPPLIERS, GoodsFacet.COST, GoodsFacet.LAST_IN -> "goods_suppliers"
             GoodsFacet.BUYERS -> "goods_buyers"
             GoodsFacet.SOLD -> "goods_sold"
@@ -2603,6 +2651,71 @@ object Hudhud {
     internal fun norm(s: String): String = VoiceQuestion.normalise(s)
 
     private fun words(s: String): List<String> = norm(s).split(' ').filter { it.isNotEmpty() }
+
+    /** "How many days of stock": a phrase that is a shelf's cover by itself. */
+    private val COVER_PHRASES = listOf(
+        "days left", "days of stock", "days worth", "days of supply", "how many days will", "how long will", "how long does", "how long would",
+        "kitne din ka", "kitne din ke liye", "kitne din baqi", "kitne din bache", "kitne din bachay", "kitne din tak", "din ka stock",
+        "din ka maal", "din ka saman", "kitne dino",
+        "کتنے دن کا", "کتنے دن کے لیے", "کتنے دن تک", "کتنے دن باقی", "کتنے دن بچے", "دن کا اسٹاک", "دن کا مال", "دن کا سامان",
+        "ڪيترن ڏينهن جو", "ڪيترا ڏينهن هلندو", "ڪيترا ڏينهن ڪافي", "ڏينهن جو اسٽاڪ", "ڏينهن جو مال",
+        "كم يوم يكفي", "كم يوما يكفي", "كم يوم سيكفي", "كم يوم سيدوم", "كم يوم يدوم", "كم يوما سيكفي", "كم يوم سيستمر", "أيام المخزون", "ايام المخزون", "كم يوما تكفي", "كم يوم تكفي",
+        "چند روز کفایت", "برای چند روز", "چند روز دوام", "چند روز می‌ماند", "چند روز میماند", "روز موجودی", "چند روز کافی", "چند روز دیگر",
+        "कितने दिन का", "कितने दिन के लिए", "कितने दिन तक", "कितने दिन बचे", "कितने दिन बाकी", "दिन का स्टॉक", "दिन का माल", "दिन का सामान",
+        "কত দিনের", "কতদিনের", "কত দিন চলবে", "কতদিন চলবে", "কত দিন চলে", "কতদিন চলে", "দিনের স্টক", "দিনের মাল", "কতদিন টিকবে", "কতদিন যথেষ্ট",
+        "cukup untuk berapa hari", "cukup berapa hari", "tahan berapa hari", "bertahan berapa hari", "untuk berapa hari", "berapa hari lagi", "stok untuk berapa hari", "stok berapa hari"
+    )
+
+    /** A word for lasting, running out or being enough; it asks for the shelf's cover only with a word for time ([FOR_TIME]). */
+    private val LASTING = listOf(
+        "lasts", "lasting", "last for", "will last", "would last", "to last", "enough", "suffice", "suffices", "sufficient", "cover", "covers",
+        "chalega", "chalegi", "chalay", "chalenge", "chale", "chalta", "chalti", "chalte", "chlega", "chlegi", "tikega", "tikegi", "kafi", "kaafi", "kifayat",
+        "چلے", "چلتا", "چلتی", "چلیں", "ٹکے", "کافی", "کفایت",
+        "هلندو", "هلندي", "هلندا", "ڪافي", "ٽڪندو",
+        "يكفي", "تكفي", "سيكفي", "ستكفي", "كافي", "يدوم", "سيدوم", "يستمر", "سيستمر", "تكفينا", "يكفينا",
+        "کفایت", "دوام", "کافی", "می‌ماند", "میماند", "کفاف",
+        "चलेगा", "चलेगी", "चलेंगे", "चलता", "चलती", "टिकेगा", "टिकेगी", "काफी", "काफ़ी", "कितना चलेगा",
+        "চলবে", "চলে", "টিকবে", "যথেষ্ট", "কুলাবে",
+        "tahan", "bertahan", "cukup", "mencukupi", "awet"
+    )
+
+    /** Words for running out or finishing; they ask for the cover only with a "when" ([WHEN_WORDS]): "urea khatam ho gayi" is the stock. */
+    private val RUNS_OUT = listOf(
+        "run out", "runs out", "finish", "finishes", "sell out",
+        "khatam", "khalas", "khtm", "khatm",
+        "ختم",
+        "ينفد", "ينفذ", "ينتهي", "تنتهي", "سينفد", "ستنفد", "سينتهي", "ستنتهي",
+        "تمام", "تموم",
+        "खत्म", "ख़त्म", "खतम",
+        "শেষ", "ফুরাবে", "ফুরিয়ে",
+        "habis", "akan habis", "kehabisan"
+    )
+
+    /** The word for time that makes a lasting word a question about days. */
+    private val FOR_TIME = listOf(
+        "days", "day", "week", "weeks", "month", "months", "how long", "how soon", "until when", "till when", "by when",
+        "din", "dino", "dinon", "hafta", "hafte", "haftay", "haftey", "mahina", "mahine", "mahinay", "kab tak", "kitna waqt",
+        "دن", "دنوں", "ہفتہ", "ہفتے", "مہینہ", "مہینے", "کب تک", "کتنا وقت",
+        "ڏينهن", "هفتو", "هفتا", "مهينو", "مهينا", "ڪڏهن تائين",
+        "يوم", "ايام", "أيام", "يوما", "اسبوع", "أسبوع", "اسابيع", "شهر", "الى متى", "إلى متى", "كم من الوقت",
+        "روز", "هفته", "ماه", "تا کی", "چه مدت",
+        "दिन", "दिनों", "हफ्ते", "हफ़्ते", "हफ्ता", "महीने", "महीना", "कब तक", "कितना समय",
+        "দিন", "দিনের", "সপ্তাহ", "মাস", "কতদিন", "কত দিন", "কত সময়",
+        "hari", "minggu", "bulan", "berapa lama", "sampai kapan"
+    )
+
+    /** "When", for a run-out word. */
+    private val WHEN_WORDS = listOf(
+        "when", "how long", "how soon", "until when", "till when", "by when",
+        "kab", "kab tak", "kitne din", "kitne dino", "kitne hafte", "kitne mahine",
+        "کب", "کب تک", "کتنے دن",
+        "ڪڏهن", "ڪڏهن تائين", "ڪيترا ڏينهن",
+        "متى", "إلى متى", "الى متى", "كم يوم", "كم يوما", "كم من الوقت",
+        "چه وقت", "چند روز", "تا کی", "چه مدت",
+        "कब", "कब तक", "कितने दिन",
+        "কবে", "কতদিন", "কত দিন",
+        "kapan", "sampai kapan", "berapa hari", "berapa lama"
+    )
 
     /**
      * True when one of [list] is said, by the figures' own rule ([VoiceQuestion.saysAny]): a single word as a whole

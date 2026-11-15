@@ -1159,6 +1159,7 @@ object HudhudBook {
                 Hudhud.GoodsFacet.LAST_IN -> R.string.hudhud_l_last_in
                 Hudhud.GoodsFacet.BUYERS -> R.string.hudhud_chip_buyers
                 Hudhud.GoodsFacet.SOLD -> R.string.hudhud_chip_sold
+                Hudhud.GoodsFacet.COVER -> R.string.hudhud_chip_cover
             }
         )
         is Hudhud.Ask.Count -> {
@@ -1246,7 +1247,7 @@ object HudhudBook {
             } ?: listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST), Hudhud.Ask.Figure(VoiceQuestion.Kind.NOT_PAID))
             is Hudhud.Ask.Moved -> ask.ids.singleOrNull()?.let { id -> listOf(Hudhud.Ask.Parties(listOf(id)), person(id, Hudhud.Facet.LAST_PAYMENT)) }.orEmpty()
             is Hudhud.Ask.Goods -> ask.ids.singleOrNull()?.let { id ->
-                listOf(Hudhud.GoodsFacet.PRICE, Hudhud.GoodsFacet.STOCK, Hudhud.GoodsFacet.SUPPLIERS, Hudhud.GoodsFacet.BUYERS, Hudhud.GoodsFacet.LAST_IN)
+                listOf(Hudhud.GoodsFacet.PRICE, Hudhud.GoodsFacet.STOCK, Hudhud.GoodsFacet.COVER, Hudhud.GoodsFacet.SUPPLIERS, Hudhud.GoodsFacet.BUYERS, Hudhud.GoodsFacet.LAST_IN)
                     .filter { it != ask.facet }.map { Hudhud.Ask.Goods(listOf(id), it) }
             }.orEmpty()
             is Hudhud.Ask.Figure -> when (ask.kind) {
@@ -1346,7 +1347,7 @@ object HudhudBook {
         is Hudhud.Ask.Figure, is Hudhud.Ask.Period, is Hudhud.Ask.Collected, is Hudhud.Ask.Activity, Hudhud.Ask.Drawer,
         is Hudhud.Ask.WhenPays, is Hudhud.Ask.Cashbook, is Hudhud.Ask.TopGoods, Hudhud.Ask.Qarz -> true
         is Hudhud.Ask.Status -> a.of == Hudhud.StatusOf.STAFF
-        is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD
+        is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD || a.facet == Hudhud.GoodsFacet.COVER
         is Hudhud.Ask.Now -> needsReports(a.ask)
         else -> false
     }

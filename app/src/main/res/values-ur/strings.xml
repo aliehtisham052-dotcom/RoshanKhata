@@ -4460,6 +4460,11 @@
     <string name="hudhud_chip_suppliers">سپلائرز کے ریٹ</string>
     <string name="hudhud_chip_buyers">کس نے خریدا</string>
     <string name="hudhud_chip_sold">اس مہینے کتنا بکا</string>
+    <string name="hudhud_chip_cover">کتنے دن چلے گا؟</string>
+    <string name="hudhud_cover_basis">پچھلے %1$d دن کی بکری کے حساب سے: روزانہ تقریباً %2$s۔</string>
+    <string name="hudhud_cover_under_day">اس رفتار سے ایک دن کا بھی اسٹاک نہیں۔</string>
+    <string name="hudhud_cover_no_sales">پچھلے 30 دن میں کچھ نہیں بکا، اس لیے نہیں بتا سکتا کہ کتنے دن چلے گا۔</string>
+    <string name="hudhud_cover_out">شیلف پر کچھ نہیں ہے۔</string>
     <string name="hudhud_chip_book">میرا کھاتہ</string>
     <string name="hudhud_chip_activity">آج کیا کیا ہوا</string>
     <string name="hudhud_chip_collected">آج کتنی رقم آئی</string>

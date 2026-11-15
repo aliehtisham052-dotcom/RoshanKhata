@@ -4434,6 +4434,11 @@
     <string name="hudhud_chip_suppliers">Harga pemasok</string>
     <string name="hudhud_chip_buyers">Siapa yang membeli</string>
     <string name="hudhud_chip_sold">Terjual bulan ini</string>
+    <string name="hudhud_chip_cover">Cukup untuk berapa hari?</string>
+    <string name="hudhud_cover_basis">Menurut penjualan %1$d hari terakhir: sekitar %2$s per hari.</string>
+    <string name="hudhud_cover_under_day">Dengan laju ini stok tidak cukup untuk sehari.</string>
+    <string name="hudhud_cover_no_sales">Tidak ada yang terjual dalam 30 hari terakhir, jadi saya tidak bisa bilang cukup berapa hari.</string>
+    <string name="hudhud_cover_out">Tidak ada di rak.</string>
     <string name="hudhud_chip_book">Buku saya</string>
     <string name="hudhud_chip_activity">Apa yang terjadi hari ini</string>
     <string name="hudhud_chip_collected">Uang masuk hari ini</string>

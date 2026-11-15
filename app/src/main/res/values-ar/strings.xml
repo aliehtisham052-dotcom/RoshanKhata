@@ -4757,6 +4757,11 @@
     <string name="hudhud_chip_suppliers">أسعار المورّدين</string>
     <string name="hudhud_chip_buyers">من اشتراه</string>
     <string name="hudhud_chip_sold">المُباع هذا الشهر</string>
+    <string name="hudhud_chip_cover">كم يومًا سيكفي؟</string>
+    <string name="hudhud_cover_basis">بحسب مبيعات آخر %1$d يومًا: نحو %2$s في اليوم.</string>
+    <string name="hudhud_cover_under_day">بهذا المعدل لا يكفي المخزون ليومٍ واحد.</string>
+    <string name="hudhud_cover_no_sales">لم يُبع شيء في آخر 30 يومًا، فلا أستطيع القول كم يومًا سيكفي.</string>
+    <string name="hudhud_cover_out">لا شيء على الرف.</string>
     <string name="hudhud_chip_book">دفتري</string>
     <string name="hudhud_chip_activity">ماذا جرى اليوم</string>
     <string name="hudhud_chip_collected">كم تحصّل اليوم</string>

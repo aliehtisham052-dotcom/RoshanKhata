@@ -4673,6 +4673,11 @@
     <string name="hudhud_chip_suppliers">Suppliers\' rates</string>
     <string name="hudhud_chip_buyers">Who bought it</string>
     <string name="hudhud_chip_sold">Sold this month</string>
+    <string name="hudhud_chip_cover">How long will it last?</string>
+    <string name="hudhud_cover_basis">Going by the last %1$d days\' sales: about %2$s a day.</string>
+    <string name="hudhud_cover_under_day">Less than a day\'s stock at this pace.</string>
+    <string name="hudhud_cover_no_sales">Nothing sold in the last 30 days, so I cannot say how long it will last.</string>
+    <string name="hudhud_cover_out">None on the shelf.</string>
     <string name="hudhud_chip_book">My book</string>
     <string name="hudhud_chip_activity">What happened today</string>
     <string name="hudhud_chip_collected">Payments received today</string>

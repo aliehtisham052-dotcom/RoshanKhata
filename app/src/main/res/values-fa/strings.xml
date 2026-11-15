@@ -4488,6 +4488,11 @@
     <string name="hudhud_chip_suppliers">نرخ تأمین‌کنندگان</string>
     <string name="hudhud_chip_buyers">چه کسی خریده است؟</string>
     <string name="hudhud_chip_sold">فروش این ماه</string>
+    <string name="hudhud_chip_cover">برای چند روز کافی است؟</string>
+    <string name="hudhud_cover_basis">بر اساس فروش %1$d روز گذشته: حدود %2$s در روز.</string>
+    <string name="hudhud_cover_under_day">با این سرعت موجودی به یک روز هم نمی‌رسد.</string>
+    <string name="hudhud_cover_no_sales">در 30 روز گذشته چیزی فروخته نشده، پس نمی‌توانم بگویم برای چند روز کافی است.</string>
+    <string name="hudhud_cover_out">چیزی روی قفسه نیست.</string>
     <string name="hudhud_chip_book">دفتر من</string>
     <string name="hudhud_chip_activity">امروز چه گذشت</string>
     <string name="hudhud_chip_collected">امروز چقدر پول آمد</string>

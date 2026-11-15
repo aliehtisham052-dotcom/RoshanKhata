@@ -207,6 +207,8 @@ class HudhudWordsTest {
             "hudhud_chip_suppliers" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.SUPPLIERS),
             "hudhud_chip_buyers" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.BUYERS),
             "hudhud_l_last_in" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.LAST_IN),
+            // 15 Nov 2026 (#30): how long the shelf lasts, said under a product's answer with no product named.
+            "hudhud_chip_cover" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.COVER),
             "hudhud_chip_details" to Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.OVERVIEW)
         ), before = Hudhud.Ask.Goods(urea, Hudhud.GoodsFacet.PRICE), names = book)
         assertEquals(wrong.joinToString("\n"), 0, wrong.size)

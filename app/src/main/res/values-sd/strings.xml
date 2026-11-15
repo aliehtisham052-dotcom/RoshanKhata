@@ -4488,6 +4488,11 @@
     <string name="hudhud_chip_suppliers">سپلائرن جا ريٽ</string>
     <string name="hudhud_chip_buyers">ڪنهن خريد ڪيو</string>
     <string name="hudhud_chip_sold">هن مهيني ڪيترو وڪاميو</string>
+    <string name="hudhud_chip_cover">ڪيترا ڏينهن هلندو؟</string>
+    <string name="hudhud_cover_basis">گذريل %1$d ڏينهن جي وڪري موجب: روز اٽڪل %2$s.</string>
+    <string name="hudhud_cover_under_day">هن رفتار سان هڪ ڏينهن جو به اسٽاڪ ناهي.</string>
+    <string name="hudhud_cover_no_sales">گذريل 30 ڏينهن ۾ ڪجهه نه وڪاميو، تنهن ڪري ٻڌائي نٿو سگهان ته ڪيترا ڏينهن هلندو.</string>
+    <string name="hudhud_cover_out">شيلف تي ڪجهه ناهي.</string>
     <string name="hudhud_chip_book">منهنجو کاتو</string>
     <string name="hudhud_chip_activity">اڄ ڇا ڇا ٿيو</string>
     <string name="hudhud_chip_collected">اڄ ڪيتري رقم آئي</string>

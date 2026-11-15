@@ -339,6 +339,33 @@ internal object HudhudFacts {
                         open = com.innovation313.roshankhata.SalesReportActivity::class.java)
                 }
             }
+            Hudhud.GoodsFacet.COVER -> {
+                // How long the shelf lasts at the last 30 days' pace (StockCover); a book younger than that is divided by its own age.
+                val label = name + " · " + c.getString(R.string.hudhud_chip_cover)
+                if (!reports()) return ownerOnly(c, label)
+                val now = System.currentTimeMillis()
+                val first = dao.firstSaleAt()
+                val windowDays = if (first != null && first > now - StockCover.WINDOW_MS)
+                    kotlin.math.ceil((now - first) / 86_400_000.0).toInt().coerceIn(1, StockCover.DAYS) else StockCover.DAYS
+                val soldRows = dao.topProductsBetween(now - StockCover.WINDOW_MS, now + 86_400_000L, ALL_PRODUCTS)
+                    .filter { it.name.trim().equals(name.trim(), ignoreCase = true) }
+                val sold = StockCover.soldBase(soldRows, p, stockUnit ?: unit)
+                when (val cover = StockCover.of(onHand, sold, windowDays)) {
+                    is StockCover.Cover.Days -> {
+                        val basis = c.getString(R.string.hudhud_cover_basis, windowDays, Format.qty(cover.perDay, stockUnit ?: unit))
+                        if (cover.days == 0) {
+                            Answer(Mood.CARE, label = label, lines = listOf(c.getString(R.string.hudhud_cover_under_day), basis), open = open)
+                        } else {
+                            Answer(if (isLow || cover.days <= 7) Mood.CARE else Mood.CALM, label = label,
+                                figure = c.resources.getQuantityString(R.plurals.radar_days, cover.days, cover.days),
+                                lines = listOf(line(c, R.string.hudhud_l_stock, Format.qty(onHand ?: 0.0, stockUnit)), basis), open = open)
+                        }
+                    }
+                    StockCover.Cover.NoStock -> Answer(Mood.CARE, label = label, lines = listOf(c.getString(R.string.hudhud_cover_out)), open = open)
+                    StockCover.Cover.NoSales -> Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_cover_no_sales)), open = open)
+                    StockCover.Cover.Unknown -> Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.stock_no_movement)), open = open)
+                }
+            }
             Hudhud.GoodsFacet.OVERVIEW -> {
                 val all = priceLines() + listOfNotNull(stockLine()) +
                     if (reports()) listOfNotNull(lines.firstOrNull()?.let {

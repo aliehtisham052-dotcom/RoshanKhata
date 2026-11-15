@@ -170,7 +170,7 @@ object Automations {
         dao.observeOrders().first().filter { it.status == OrderStatus.DRAFT || it.status == OrderStatus.SENT }.forEach { o ->
             dao.orderItems(o.id).filter { !it.isDeleted }.forEach { i -> i.productId?.let(onOrder::add) }
         }
-        val sold = dao.topProductsBetween(now - SALES_WINDOW_MS, now + 24L * 60 * 60 * 1000, 10_000)
+        val sold = dao.topProductsBetween(now - StockCover.WINDOW_MS, now + 24L * 60 * 60 * 1000, 10_000)
             .groupBy { key(it.name) }
         val products = dao.productsOnce().associateBy { it.id }
         val bills = dao.allBillsForBackup().filter { !it.isDeleted }.associateBy { it.id }
@@ -187,10 +187,7 @@ object Automations {
             val unit = r.unit ?: p?.defaultUnit
             // Packs counted in the product's own unit (3 Nov 2026 audit, M31): 8 cartons of 12 and 10 bottles are
             // 106 bottles, not 10.
-            val month = sold[key(r.name)].orEmpty()
-                .map { s -> Units.toBase(p, s.qty, s.unit) }
-                .filter { (_, u) -> u.isNullOrBlank() || unit.isNullOrBlank() || UnitWords.canonical(u) == UnitWords.canonical(unit) }
-                .sumOf { it.first }
+            val month = StockCover.soldBase(sold[key(r.name)].orEmpty(), p, unit) ?: 0.0
             val onHand = r.onHand ?: 0.0
             val want = maxOf(month, (r.lowStockLevel ?: 0.0) * 2) - onHand
             val supplier = (lastSupplier["#${r.productId}"] ?: lastSupplier[key(r.name)])?.second
@@ -346,8 +343,6 @@ object Automations {
             Notice(kind, words.text(if (expired) W.auto_expiry_expired_title else W.auto_expiry_title), head + more, extra = b.itemId)
         }
     }
-
-    private const val SALES_WINDOW_MS = 30L * 24 * 60 * 60 * 1000
 
     private fun key(name: String?): String = name.orEmpty().trim().lowercase().replace(Regex("\\s+"), " ")
 }
