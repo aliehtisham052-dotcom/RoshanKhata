@@ -3936,6 +3936,19 @@ Importance 7 (reads sales and customers). "Aaj Urea kis ne khareedi", "who bough
 - **Not done:** "Urea kal kis kis ko bechi" loses "kal" (ambiguous word); `ProductCustomersActivity` has no date range, so Open still shows every buyer.
 - Tests: HudhudBuyersSpanTest (4); mutations in /tmp (`mut_buyers.py`, 6 variants).
 
+### 15 Nov 2026: Hudhud, the hudood line on each help page (phone; CI only, nothing tried on a real phone)
+
+Importance 5 (a reader's words, no figure moves). A help page now ends with who may open its screen on a counter phone ("only the owner,
+with the PIN" / "the owner or a manager"); a screen anyone may open says nothing.
+
+- **One source** (`HudhudGate.pageLimit`): the screen's own gate `AccessUi.needs(screen)` (the table every screen asks) and `Access.ownerOnly`
+  (settings, backup and staff are the owner's alone). No list of Hudhud's own, so a gate changed there is told here with no second edit.
+  `Page.gate` defaults to the screen the page opens; the three pages that only say where a screen is (Duplicates, Helper's phone, Waris)
+  name that screen's class. Spoken after the page's words. Strings `hudhud_limit_owner`/`_manager` (nine languages; Sindhi, Bengali, Farsi
+  wording for a native read). HudhudPageLimitTest (app).
+- **Not said:** an action's own gate inside a screen (a cashier opens Cashbook but needs a manager's PIN to void) is the screen's to ask;
+  the line says only who opens the screen.
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the
