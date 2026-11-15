@@ -4078,6 +4078,13 @@ cherry-pick, regenerated `catalog.tsv`, ran everything and pushed once).
   note, parties.createdAt). Realistic accuracy on the owner's own kind of questions is about 78%; the 91% held-out figure is optimistic. Sindhi, Bengali and Farsi wording is for a
   native read; the faith and story texts want a qualified Hanafi scholar.
 
+### 15 Nov 2026: Hudhud, the Opus review (set O; phone and shared; CI only, nothing tried on a real phone)
+
+Opus read the build with 1,167 fresh sentences in nine languages (`review_o.tsv`, invented names only): 208 read wrong before, 93 after. `HudhudReviewOpusSetTest` holds the 1,074 right readings exactly and lists the 93 misses; `HudhudReviewOTest` (15 tests) has the guard sentences per class. Classes fixed (rules only; the bank, `sense.bin`, HudhudMind and HudhudSense untouched): the shop's total owed read the wrong way round, a product's cost read as its price, Arabic "how much did I sell" opening a customer, Bengali "please" read as tax, how-to questions opening the wrong help page, delete orders ("khata delete kar do") opening the delete page, "kar do" read as the number 2, PIN and recovery asks opening the lock page, unpaid supplier bills, stopped customers. Change orders only show the current value; nothing is written.
+- Floors now SHORT 153, THOUSAND 796; held-out 1,068 of 1,170; 642 shared tests.
+- **Left:** 41 of the 93 are a product named in Urdu or Hindi script while the shop saved it in Latin letters (a product-name bridge; bigger and riskier); "kal" (yesterday or total); a cashier asking for the owner's pay list reads the owner's name (the gate decides who sees it).
+- On-device CI of 8baa6a8 hit its 80-minute limit and was cancelled (the run before took 52 minutes); the change held only a test file.
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the
