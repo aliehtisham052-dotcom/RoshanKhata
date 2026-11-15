@@ -31,7 +31,9 @@ import com.innovation313.roshankhata.data.AuditChain
 import com.innovation313.roshankhata.data.AuditLog
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.ui.Format
+import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.Words
 import com.innovation313.roshankhata.words.plural
 import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.word
@@ -155,77 +157,80 @@ private fun isKhataLinkRow(a: AuditLog): Boolean =
         (a.action == AuditAction.EXPORT && a.refTable == "parties")
 
 @Composable
-fun auditActionWord(a: AuditLog, names: AuditNames = AuditNames.None): String = when (a.action) {
-    AuditAction.SALE_POSTED -> word(W.audit_sale_posted)
-    AuditAction.SALE_VOIDED -> word(W.audit_sale_voided)
-    AuditAction.SALE_HELD -> word(W.audit_sale_held)
-    AuditAction.RETURN_POSTED -> word(W.audit_return_posted)
-    AuditAction.RETURN_VOIDED -> word(W.audit_return_voided)
-    AuditAction.DISCOUNT_OVERRIDE -> word(W.audit_discount_override)
-    AuditAction.MANAGER_OVERRIDE -> word(W.audit_manager_override)
-    AuditAction.PRICE_CHANGED -> word(W.audit_price_changed)
-    AuditAction.SIGN_IN -> word(W.audit_sign_in)
-    AuditAction.RESTORE -> word(W.audit_restore)
+fun auditActionWord(a: AuditLog, names: AuditNames = AuditNames.None): String = auditActionName(LocalWords.current, a, names)
+
+/** The action in the app's words, for a caller that is not a composable (Hudhud's list of what was done). */
+fun auditActionName(words: Words, a: AuditLog, names: AuditNames = AuditNames.None): String = when (a.action) {
+    AuditAction.SALE_POSTED -> words.text(W.audit_sale_posted)
+    AuditAction.SALE_VOIDED -> words.text(W.audit_sale_voided)
+    AuditAction.SALE_HELD -> words.text(W.audit_sale_held)
+    AuditAction.RETURN_POSTED -> words.text(W.audit_return_posted)
+    AuditAction.RETURN_VOIDED -> words.text(W.audit_return_voided)
+    AuditAction.DISCOUNT_OVERRIDE -> words.text(W.audit_discount_override)
+    AuditAction.MANAGER_OVERRIDE -> words.text(W.audit_manager_override)
+    AuditAction.PRICE_CHANGED -> words.text(W.audit_price_changed)
+    AuditAction.SIGN_IN -> words.text(W.audit_sign_in)
+    AuditAction.RESTORE -> words.text(W.audit_restore)
     AuditAction.EXPORT -> {
         // Older khata-link rows were written as an export of a customer's page; the menu's words in the detail tell which.
         val d = a.detail.orEmpty()
         when {
-            a.refTable != "parties" -> word(W.audit_export)
-            d.startsWith(word(W.clink_menu)) || d.startsWith("Send khata link") -> word(W.audit_khata_link_sent)
-            d.startsWith(word(W.clink_stop)) || d.startsWith("Stop link") -> word(W.audit_khata_link_stopped)
-            else -> word(W.audit_export)
+            a.refTable != "parties" -> words.text(W.audit_export)
+            d.startsWith(words.text(W.clink_menu)) || d.startsWith("Send khata link") -> words.text(W.audit_khata_link_sent)
+            d.startsWith(words.text(W.clink_stop)) || d.startsWith("Stop link") -> words.text(W.audit_khata_link_stopped)
+            else -> words.text(W.audit_export)
         }
     }
-    AuditAction.KHATA_LINK_SENT -> word(W.audit_khata_link_sent)
-    AuditAction.KHATA_LINK_STOPPED -> word(W.audit_khata_link_stopped)
-    AuditAction.STOCK_COUNT -> word(W.audit_stock_count)
-    AuditAction.STOCK_ADJUSTED -> word(W.audit_stock_adjusted)
-    AuditAction.ORDER_RECEIVED -> word(W.audit_order_received)
-    AuditAction.OWNER_PIN_SET -> word(W.audit_owner_pin_set)
-    AuditAction.OWNER_PIN_ADOPTED -> word(W.audit_owner_pin_adopted)
-    AuditAction.COUNTER_ON -> word(W.audit_counter_on)
-    AuditAction.COUNTER_OFF -> word(W.audit_counter_off)
-    AuditAction.PIN_WAIT -> word(W.audit_pin_wait)
-    AuditAction.SIGN_OUT -> word(W.audit_sign_out)
-    AuditAction.SHIFT_OPENED -> word(W.audit_shift_opened)
-    AuditAction.SHIFT_CLOSED -> word(W.audit_shift_closed)
-    AuditAction.TRANSFER_OUT -> word(W.audit_transfer_out)
-    AuditAction.TRANSFER_IN -> word(W.audit_transfer_in)
-    AuditAction.BOOK_MERGED -> word(W.audit_book_merged)
-    AuditAction.ENTRY_EDITED -> word(W.audit_entry_edited)
-    AuditAction.ENTRY_DELETED -> word(W.audit_entry_deleted)
-    AuditAction.ENTRY_ADDED -> word(W.audit_entry_added)
+    AuditAction.KHATA_LINK_SENT -> words.text(W.audit_khata_link_sent)
+    AuditAction.KHATA_LINK_STOPPED -> words.text(W.audit_khata_link_stopped)
+    AuditAction.STOCK_COUNT -> words.text(W.audit_stock_count)
+    AuditAction.STOCK_ADJUSTED -> words.text(W.audit_stock_adjusted)
+    AuditAction.ORDER_RECEIVED -> words.text(W.audit_order_received)
+    AuditAction.OWNER_PIN_SET -> words.text(W.audit_owner_pin_set)
+    AuditAction.OWNER_PIN_ADOPTED -> words.text(W.audit_owner_pin_adopted)
+    AuditAction.COUNTER_ON -> words.text(W.audit_counter_on)
+    AuditAction.COUNTER_OFF -> words.text(W.audit_counter_off)
+    AuditAction.PIN_WAIT -> words.text(W.audit_pin_wait)
+    AuditAction.SIGN_OUT -> words.text(W.audit_sign_out)
+    AuditAction.SHIFT_OPENED -> words.text(W.audit_shift_opened)
+    AuditAction.SHIFT_CLOSED -> words.text(W.audit_shift_closed)
+    AuditAction.TRANSFER_OUT -> words.text(W.audit_transfer_out)
+    AuditAction.TRANSFER_IN -> words.text(W.audit_transfer_in)
+    AuditAction.BOOK_MERGED -> words.text(W.audit_book_merged)
+    AuditAction.ENTRY_EDITED -> words.text(W.audit_entry_edited)
+    AuditAction.ENTRY_DELETED -> words.text(W.audit_entry_deleted)
+    AuditAction.ENTRY_ADDED -> words.text(W.audit_entry_added)
     // Money in / Money out by the row's direction when it can still be read, else the neutral words.
     AuditAction.CASH_ADDED -> when (names.cashIncome[a.refId]) {
-        true -> word(W.audit_cash_in_added)
-        false -> word(W.audit_cash_out_added)
-        null -> word(W.audit_cash_added)
+        true -> words.text(W.audit_cash_in_added)
+        false -> words.text(W.audit_cash_out_added)
+        null -> words.text(W.audit_cash_added)
     }
-    AuditAction.CASH_EDITED -> word(W.audit_cash_edited)
+    AuditAction.CASH_EDITED -> words.text(W.audit_cash_edited)
     AuditAction.CASH_DELETED -> when (names.cashIncome[a.refId]) {
-        true -> word(W.audit_cash_in_deleted)
-        false -> word(W.audit_cash_out_deleted)
-        null -> word(W.audit_cash_deleted)
+        true -> words.text(W.audit_cash_in_deleted)
+        false -> words.text(W.audit_cash_out_deleted)
+        null -> words.text(W.audit_cash_deleted)
     }
-    AuditAction.PARTY_DELETED -> word(W.audit_party_deleted)
-    AuditAction.PARTY_MERGED -> word(W.audit_party_merged)
-    AuditAction.PARTY_TYPE_CHANGED -> word(W.audit_party_type)
-    AuditAction.CHEQUE_DELETED -> word(W.audit_cheque_deleted)
-    AuditAction.BIN_RESTORED -> word(W.audit_bin_restored)
-    AuditAction.BIN_PURGED -> word(W.audit_bin_purged)
-    AuditAction.BIN_EMPTIED -> word(W.audit_bin_emptied)
-    AuditAction.DAY_CLOSED -> word(W.audit_day_closed)
-    AuditAction.IMPORT -> word(W.audit_import)
-    AuditAction.BILL_DELETED -> word(W.audit_bill_deleted)
-    AuditAction.BILL_EDITED -> word(W.audit_bill_edited)
-    AuditAction.DOC_CONVERTED -> word(W.audit_doc_converted)
-    AuditAction.DOC_ACCEPTED -> word(W.audit_doc_accepted)
-    AuditAction.DOC_CANCELLED -> word(W.audit_doc_cancelled)
-    AuditAction.DOC_DELETED -> word(W.audit_doc_deleted)
-    AuditAction.PROMISE_SET -> word(W.audit_promise_set)
+    AuditAction.PARTY_DELETED -> words.text(W.audit_party_deleted)
+    AuditAction.PARTY_MERGED -> words.text(W.audit_party_merged)
+    AuditAction.PARTY_TYPE_CHANGED -> words.text(W.audit_party_type)
+    AuditAction.CHEQUE_DELETED -> words.text(W.audit_cheque_deleted)
+    AuditAction.BIN_RESTORED -> words.text(W.audit_bin_restored)
+    AuditAction.BIN_PURGED -> words.text(W.audit_bin_purged)
+    AuditAction.BIN_EMPTIED -> words.text(W.audit_bin_emptied)
+    AuditAction.DAY_CLOSED -> words.text(W.audit_day_closed)
+    AuditAction.IMPORT -> words.text(W.audit_import)
+    AuditAction.BILL_DELETED -> words.text(W.audit_bill_deleted)
+    AuditAction.BILL_EDITED -> words.text(W.audit_bill_edited)
+    AuditAction.DOC_CONVERTED -> words.text(W.audit_doc_converted)
+    AuditAction.DOC_ACCEPTED -> words.text(W.audit_doc_accepted)
+    AuditAction.DOC_CANCELLED -> words.text(W.audit_doc_cancelled)
+    AuditAction.DOC_DELETED -> words.text(W.audit_doc_deleted)
+    AuditAction.PROMISE_SET -> words.text(W.audit_promise_set)
     // The book seal's switch (7 Nov 2026, the seal's review M9: audited, never synced).
-    com.innovation313.roshankhata.data.BookSeals.AUDIT_ON -> word(W.audit_seal_on)
-    com.innovation313.roshankhata.data.BookSeals.AUDIT_OFF -> word(W.audit_seal_off)
+    com.innovation313.roshankhata.data.BookSeals.AUDIT_ON -> words.text(W.audit_seal_on)
+    com.innovation313.roshankhata.data.BookSeals.AUDIT_OFF -> words.text(W.audit_seal_off)
     else -> a.action
 }
 

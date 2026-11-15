@@ -106,6 +106,17 @@ object Hudhud {
          */
         data class Status(val of: StatusOf, val cheques: ChequeState? = null) : Ask()
 
+        /**
+         * A record the book keeps on a page of its own (15 Nov 2026, the catalog's staff, plans and cheques gap): a staff member's
+         * pay, attendance or details, a customer's plan with its instalments, a customer's cheques with the day each was written
+         * and settled. [ids]: the staff named (pay, attendance, details: the staff list the caller passed to [understand]) or the
+         * customers named (plans, cheques). The staff are not in the customers' list, so the caller gives its staff names apart.
+         */
+        data class Record(
+            val facet: RecordFacet, val ids: List<Long> = emptyList(),
+            val window: VoiceQuestion.Window? = null
+        ) : Ask()
+
         /** Goods that came in from suppliers (their bills) over a span of days, newest first. */
         data class Deliveries(val window: VoiceQuestion.Window? = null) : Ask()
 
@@ -268,6 +279,9 @@ object Hudhud {
     /** Which cheques a cheques question is about: the ones waiting (the default), the ones that came back, the ones that were paid. */
     enum class ChequeState { PENDING, BOUNCED, CLEARED }
 
+    /** Which record an [Ask.Record] is about: the staff's pay, what was paid them, who was away, who they are; a plan; closed plans; a customer's cheques. */
+    enum class RecordFacet { STAFF_PAY, STAFF_PAID, ATTENDANCE, STAFF_PERSON, PLAN, PLAN_CLOSED, CHEQUE }
+
     /** The small talk he answers. */
     enum class Talk {
         HOW_ARE_YOU, WHO_ARE_YOU, THANKS, BYE, PRAISE, FINE,
@@ -327,11 +341,11 @@ object Hudhud {
      */
     fun understand(
         candidates: List<String>, names: List<Name>, topics: List<Topic>, language: String? = null,
-        goods: List<Name> = emptyList(), before: Ask? = null
+        goods: List<Name> = emptyList(), before: Ask? = null, staff: List<Name> = emptyList()
     ): Pair<String, Ask> {
         var choice: Pair<String, Ask>? = null
         for (c in candidates) {
-            val ask = understand(c, names, topics, language, goods, before)
+            val ask = understand(c, names, topics, language, goods, before, staff)
             if (ask is Ask.DidYouMean || ask is Ask.Guessed) {
                 if (choice == null) choice = c to ask
                 continue
@@ -351,15 +365,15 @@ object Hudhud {
      */
     fun understand(
         heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
-        goods: List<Name> = emptyList(), before: Ask? = null
-    ): Ask = understandRead(salaamHeadRead(heard), asRead(names), topics, language, asRead(goods), before)
+        goods: List<Name> = emptyList(), before: Ask? = null, staff: List<Name> = emptyList()
+    ): Ask = understandRead(salaamHeadRead(heard), asRead(names), topics, language, asRead(goods), before, asRead(staff))
 
     private fun understandRead(
         heard: String, names: List<Name>, topics: List<Topic>, language: String?,
-        goods: List<Name>, before: Ask?
+        goods: List<Name>, before: Ask?, staff: List<Name> = emptyList()
     ): Ask {
         val carried = carriedOf(before)
-        val ruled = byRules(heard, names, topics, language, goods, carried)
+        val ruled = byRules(heard, names, topics, language, goods, carried, staff)
         if (!HudhudSense.ready || words(heard).isEmpty()) return limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, ruled), carried)))
         val guesses = HudhudSense.rank(
             senseHeard(heard, names, goods),
@@ -412,6 +426,138 @@ object Hudhud {
         "وصول ہو گیا", "وصول ہو گئے", "وصول ہو گئی", "وصول ہوا", "وصول ہوئے", "क्लियर हो गया", "क्लियर हुआ", "क्लियर हो गए",
         "वसूल हो गया", "تم صرفه", "تم صرفها", "تم تحصيله", "تم تحصيلها", "ক্লিয়ার হয়েছে", "sudah cair", "sudah dicairkan",
         "dicairkan", "پاس شد", "پاس شده", "وصول شد")
+
+    // ------------------------------------------------------------------------------------- staff, plans and cheques: the records
+
+    /**
+     * A staff member's pay, what was paid them, who was away, who they are; a customer's plan or his cheques (15 Nov 2026, the
+     * catalog's GAP group "staff, plans, cheques"). Taken only from words that are the record's own, and only where the
+     * sentence is about people at work or about a plan or a cheque of a named customer; any other sentence is read as before.
+     * The staff are not in the customers' list: the caller gives their names apart ([staffIds], what [understand]'s `staff` list
+     * names), so a word that is nobody's name is never taken for one. A staff question that names nobody, says no day and no
+     * "who" is the staff's dues as before ([Ask.Status] of the staff).
+     */
+    internal fun recordOf(
+        said: List<String>, joined: String, mind: HudhudMind.Read, window: VoiceQuestion.Window?,
+        named: List<Long>, product: List<Long>, before: Ask?, staffIds: List<Long>
+    ): Ask? {
+        if (product.isNotEmpty()) return null
+        val who = staffIds
+        // A staff word by sound alone is no staff word ("karna" sounds like a worker's name): only the word itself.
+        val staffWord = mind.said.indices.any { it !in mind.bySound && HudhudMind.C.STAFF in mind.at(it) } || has(joined, STAFF_EXTRA)
+        val salary = mind.has(HudhudMind.C.SALARY)
+        val customerSide = mind.any(HudhudMind.C.CUSTOMER, HudhudMind.C.SUPPLIER, HudhudMind.C.GOODS, HudhudMind.C.BILL, HudhudMind.C.INVOICE)
+        // Staff said with no name, no day and no "who" is the staff's dues as before (the owner's own sentences read so): a record needs one of the three.
+        fun staffRec(f: RecordFacet, strong: Boolean = false): Ask? =
+            if (!strong && who.isEmpty() && window == null && !mind.has(HudhudMind.C.WHO)) null else Ask.Record(f, who, window = window)
+        // What was changed and by whom: the audit log's own name, or "who" with a verb of doing that the lexicon lacks (Indonesian "mengedit").
+        if (has(joined, AUDIT_WORDS) || (mind.has(HudhudMind.C.WHO) && has(joined, AUDIT_VERBS) && !customerSide)) return Ask.Activity(window)
+        // Who was away, or who is here: "aaj kaun absent hai", "Imran ki chhuttiyan", "who is present today".
+        if (!customerSide) {
+            val askedWho = staffWord || mind.any(HudhudMind.C.WHO, HudhudMind.C.WHICH, HudhudMind.C.HOW_MANY, HudhudMind.C.ALL) || who.isNotEmpty()
+            val away = has(joined, ABSENT_WORDS) || (askedWho && has(joined, LEAVE_WORDS)) ||
+                (has(joined, ATTENDANCE_NOUNS) && (window != null || staffWord || who.isNotEmpty()))
+            val here = has(joined, PRESENT_WORDS) && (staffWord || (mind.has(HudhudMind.C.WHO) && window != null))
+            if (away || here) return staffRec(RecordFacet.ATTENDANCE, strong = has(joined, ABSENT_WORDS) || here)
+        }
+        // "What is Kashif's pay": the word "pay" is also what a customer does, so it counts only beside a name no customer has.
+        val payNoun = who.isNotEmpty() && named.isEmpty() && has(joined, PAY_NOUN_WORDS) && !has(joined, AGED_WORDS)
+        val staffy = staffWord || salary || has(joined, ADVANCE_WORDS) || payNoun
+        if (staffy && !customerSide) {
+            val person = has(joined, ROLE_WORDS) || has(joined, JOIN_WORDS) || has(joined, LEFT_WORDS) ||
+                (mind.has(HudhudMind.C.SINCE_WHEN) && staffWord) ||
+                (staffWord && (mind.has(HudhudMind.C.PHONE) || has(joined, STAFF_PHONE_WORDS)))
+            if (person && !salary) return staffRec(RecordFacet.STAFF_PERSON, strong = true)
+            val paidSaid = (mind.has(HudhudMind.C.PAYMENT) && !payNoun) || has(joined, ADVANCE_WORDS) || has(joined, PAID_WORDS)
+            val dueSaid = mind.has(HudhudMind.C.PENDING) || has(joined, STAFF_DUE_WORDS)
+            if (paidSaid && !dueSaid) return staffRec(RecordFacet.STAFF_PAID)
+            if ((salary || payNoun) && who.isNotEmpty()) return staffRec(RecordFacet.STAFF_PAY)
+        }
+        // "Imran ka role", "kab join kiya", "who is the manager": a name or a "who" and a word only a person at work has, without the word "staff".
+        val personWord = has(joined, ROLE_WORDS) || has(joined, JOIN_WORDS) || has(joined, LEFT_WORDS)
+        if (!customerSide && !staffy && personWord && ((who.isNotEmpty() && named.isEmpty()) || ((mind.has(HudhudMind.C.WHO) || has(joined, WHO_EXTRA)) && has(joined, ROLE_WORDS)))) {
+            return staffRec(RecordFacet.STAFF_PERSON, strong = true)
+        }
+        // "Imran ko kitna diya" with nobody of that name among the customers: the app looks among the staff.
+        if (!customerSide && who.isNotEmpty() && named.isEmpty() && !staffy && mind.has(HudhudMind.C.PAYMENT) && mind.has(HudhudMind.C.HOW_MANY) &&
+            !mind.has(HudhudMind.C.CASHBOOK)
+        ) return staffRec(RecordFacet.STAFF_PAID)
+        // A plan of a customer, and plans that were closed: "Ali ki qist kab aani hai", "plan kab band hua".
+        if ((mind.has(HudhudMind.C.PLAN) || has(joined, PLAN_EXTRA)) && !salary) {
+            val ids = named.ifEmpty { if (mind.has(HudhudMind.C.HIS)) before?.let { partyOf(it) } ?: emptyList() else emptyList() }
+            if (has(joined, PLAN_CLOSED_WORDS) || (has(joined, PLAN_ENDED_STEMS) && has(joined, PLAN_OVER_WORDS) && !has(joined, PAID_WORDS))) {
+                return Ask.Record(RecordFacet.PLAN_CLOSED, ids, window = window)
+            }
+            if (ids.isNotEmpty()) return Ask.Record(RecordFacet.PLAN, ids, window = window)
+        }
+        // A customer's cheques with the day each was written and settled: "Ali ka cheque kab clear hua".
+        if (mind.has(HudhudMind.C.CHEQUE) && !salary && !has(joined, CHECK_AS_VERB)) {
+            val ids = named.ifEmpty { if (mind.has(HudhudMind.C.HIS)) before?.let { partyOf(it) } ?: emptyList() else emptyList() }
+            if (ids.isNotEmpty()) return Ask.Record(RecordFacet.CHEQUE, ids, window = window)
+        }
+        return null
+    }
+
+    // -- The staff: away, here, paid, who they are (words in the nine languages; Sindhi, Bengali and Farsi wanting a native read).
+    private val ABSENT_WORDS = listOf("absent", "absentee", "absentees", "absence", "not present", "did not come", "didn't come", "not come",
+        "ghair hazir", "ghair haazir", "gair hazir", "gair haazir", "ghairhazir", "hazir nahi", "haazir nahi", "nahi aaya", "nahi aya",
+        "nahin aaya", "nahi aaye", "nahi aayi", "aadha din", "adha din", "half day", "half-day", "غیر حاضر", "غیرحاضر", "غائب",
+        "حاضر نہیں", "نہیں آیا", "نہیں آئے", "نہیں آئی", "آدھا دن", "آدھے دن", "غير حاضر", "اڌ ڏينهن", "نه آيو", "نه آيا", "غياب", "غائبين",
+        "لم يحضر", "لم يأت", "نصف يوم", "غایب", "غایبین", "غیبت", "نیامده", "نصف روز", "نیم روز", "अनुपस्थित", "गैरहाज़िर", "गैरहाजिर",
+        "नहीं आया", "नहीं आए", "नहीं आई", "आधा दिन", "অনুপস্থিত", "আসেনি", "অর্ধ দিন", "আধা দিন", "absen", "tidak masuk", "tidak hadir",
+        "setengah hari", "غاب", "غابوا", "تغيب")
+    /** The attendance by its own name: a day or a person must come with it ("حضور" is also how a respected man is addressed). */
+    private val ATTENDANCE_NOUNS = listOf("attendance", "hazri", "haazri", "حاضری", "حاضري", "हाज़री", "हाजरी", "উপস্থিতি", "الحضور", "حضور", "حضور و غیاب",
+        "kehadiran", "absensi")
+    /** The audit log by its name in each language, and the verbs of doing that name who changed what. */
+    private val AUDIT_WORDS = listOf("audit", "audit log", "آڈٹ", "آڊٽ", "ऑडिट", "অডিট", "تدقيق", "سجل التدقيق", "ممیزی", "log audit", "who did what", "kisne kya kiya",
+        "kis ne kya kiya", "کس نے کیا کیا", "किसने क्या किया", "কে কী করেছে", "من فعل ماذا", "چه کسی چه کرد")
+    private val AUDIT_VERBS = listOf("mengedit", "menghapus", "mengubah", "diedit", "diubah", "dihapus", "melakukan", "dilakukan", "ubah", "hapus")
+    /** A holiday or a leave: a word a shop may also say of itself, so only in a sentence that asks who. */
+    private val LEAVE_WORDS = listOf("on leave", "leave", "leaves", "chutti", "chhutti", "chuttiyan", "chhuttiyan",
+        "چھٹی", "چھٹیاں", "موڪل", "موڪلون", "إجازة", "اجازة", "مرخصی", "छुट्टी", "छुट्टियां", "छुट्टियाँ", "ছুটি", "ছুটিতে", "izin", "cuti", "libur")
+    private val PRESENT_WORDS = listOf("present", "hazir", "haazir", "حاضر", "हाज़िर", "हाजिर", "উপস্থিত", "حاضر", "hadir", "حضر")
+    private val ADVANCE_WORDS = listOf("advance", "advances", "peshgi", "peshgee", "پیشگی", "ایڈوانس", "अग्रिम", "एडवांस", "अडवांस", "অগ্রিম",
+        "অ্যাডভান্স", "ايڊوانس", "ايڊوانس", "سلفة", "سلف", "مساعده گرفت", "مساعده گرفته", "مساعده دادیم", "مساعده داده", "پیش‌پرداخت", "پیش پرداخت", "avans", "uang muka", "kasbon")
+    private val PAID_WORDS = listOf("di", "dee", "given", "gave", "give", "دی", "दी", "دادم", "دادیم", "dibayar", "dibayarkan", "دفعت", "أعطيت",
+        "ڏني", "ڏنو", "ڏنا", "দিয়েছি", "দিলাম", "دفعنا", "دفعت", "دفع", "أعطينا", "اعطينا", "سددنا", "صرفنا", "المدفوعة", "مدفوعة", "المدفوعات", "مدفوعات",
+        "دادند", "پرداخت کردیم", "پرداخت شده", "paid", "did we pay", "did i pay", "have we paid", "we paid")
+    private val STAFF_DUE_WORDS = listOf("baqi", "baaqi", "bakaya", "due", "pending", "remaining", "left", "outstanding", "owed", "deni hai",
+        "dena hai", "dene hain", "باقی", "بقایا", "देना है", "देनी है", "बाकी", "बकाया", "বাকি", "বকেয়া", "متبقي", "باقي", "مستحق", "باقی‌مانده",
+        "sisa", "tersisa", "kurang")
+    private val ROLE_WORDS = listOf("role", "designation", "ohda", "ohdah", "manager", "cashier", "عہدہ", "عہدے", "رول", "منیجر", "کیشئر", "भूमिका",
+        "ओहदा", "पद", "रोल", "मैनेजर", "ক্যাশিয়ার", "ম্যানেজার", "ভূমিকা", "পদ", "منصب", "وظيفة", "سمت", "نقش", "جایگاه", "عهدو", "دور", "مدير", "manajernya", "المدير", "مدیر",
+        "مئنيجر", "peran", "jabatan", "kasir", "manajer")
+    private val JOIN_WORDS = listOf("join", "joined", "joining", "bharti", "bhartee", "shamil hua", "جوائن", "شامل ہوا", "ज्वाइन", "जॉइन", "भर्ती",
+        "যোগ দিয়েছে", "شامل ٿيو", "جوائن ڪيو", "انضم", "التحق", "استخدم", "استخدام شد", "bergabung", "masuk kerja", "mulai kerja")
+    private val LEFT_WORDS = listOf("quit", "resigned", "chhod diya", "chhor diya", "chor diya", "kaam chhod", "nikal diya", "active", "inactive",
+        "still working", "working here", "kaam par hai", "ڪم تي آهي", "काम पर है", "چھوڑ دیا", "کام چھوڑ", "نکال دیا", "کام پر ہے", "छोड़ दिया", "काम छोड़", "निकाल दिया", "ছেড়ে দিয়েছে",
+        "استقال", "ما زال يعمل", "ترک کرد", "استعفا", "هنوز کار می کند", "এখনও কাজ করছে", "berhenti", "resign", "masih kerja")
+    /** Staff by a plural or a form the lexicon lacks. */
+    /** "Who is" in Farsi, a word the lexicon does not give as a question's "who". */
+    private val WHO_EXTRA = listOf("کیست", "کیه")
+    private val STAFF_EXTRA = listOf("staf", "کارمندان", "کارکنان", "للموظفين", "الموظفين", "ملازمان")
+    private val STAFF_PHONE_WORDS = listOf("أرقام", "ارقام", "هاتف", "شماره", "شماره ها", "nomor", "telepon", "نمبرز")
+    /** "Pay" and "earns" as the staff's: only beside a name no customer has ([recordOf]). */
+    private val PAY_NOUN_WORDS = listOf("pay", "wage", "wages", "earn", "earns", "earning", "earnings", "kamata", "kamaye", "kamai", "کماتا", "کماتی",
+        "कमाता", "يكسب", "درآمد", "উপার্জন")
+    /** A small word a pay question carries that is no part of a name. */
+    // -- Plans closed: only a word of the past or the adjective ("kab khatam hogi" is a plan still running).
+    private val PLAN_CLOSED_WORDS = listOf("closed", "close", "completed", "finished", "ended", "paid off", "fully paid", "band plan", "band plans",
+        "band hone", "بند ہونے", "بند ٿي", "بند ٿيل", "ختم ٿي ويون", "ختم ٿي", "مڪمل ٿي", "پوريون ٿي ويون", "مغلقة", "المغلقة", "أغلقت", "انتهت",
+        "اكتملت", "مكتملة", "المنتهية", "منتهية", "بسته شد", "بسته شده", "تمام شد", "تمام شده", "کامل شد", "کامل شده", "بسته", "बंद हो चुके",
+        "বন্ধ প্ল্যান", "বন্ধ প্ল্যানগুলো", "ditutup", "selesai", "lunas", "sudah lunas")
+    /** A plan's end said in two parts, in any order: what ended ("band", "khatam", "poora") and that it is over ("hua", "ho gaye"). */
+    private val PLAN_ENDED_STEMS = listOf("band", "khatam", "khatm", "mukammal", "pura", "poora", "puri", "poori", "complete", "ختم", "بند", "مکمل",
+        "پورا", "پوری", "पूरा", "पूरी", "खत्म", "बंद", "समाप्त", "বন্ধ", "শেষ", "সম্পূর্ণ")
+    private val PLAN_OVER_WORDS = listOf("hua", "hui", "hue", "gaya", "gayi", "gaye", "gayin", "chuka", "chuki", "chuke", "ہوا", "ہوئی", "ہوئے", "گیا",
+        "گئی", "گئے", "گئیں", "چکا", "چکی", "چکے", "हुआ", "हुई", "हुए", "गया", "गई", "गए", "गईं", "चुका", "चुके", "হয়েছে", "হলো", "গেছে", "ويون", "ٿيو")
+    /** "Check" as a thing to do, not a cheque ("Ali Raza ki limit check karo", "लिमिट चेक करो", "لمٹ چیک کرو"): a cheque word followed by a verb of doing. */
+    private val CHECK_AS_VERB = listOf("check karo", "check kar do", "check kardo", "check kijiye", "check kijye", "check kariye", "check karen", "check kare", "check krna",
+        "check karna", "چیک کرو", "چیک کر دو", "چیک کریں", "چیک کیجیے", "چیک کیجئے", "چیک کرنا", "चेक करो", "चेक कर दो", "चेक करें", "चेक कीजिए", "चेक करना",
+        "چيڪ ڪريو", "چيڪ ڪر", "চেক করো", "চেক কর", "চেক করুন")
+    /** A plan by a word the lexicon has not (Urdu and Hindi "plan", Hindi "yojana", Farsi "tarh"). */
+    private val PLAN_EXTRA = listOf("پلان", "پلانز", "प्लान", "योजना", "طرح", "طرح ها", "خطط", "الخطط", "প্ল্যানগুলো", "কিস্তিতে")
 
     // ------------------------------------------------------------------------------------- how long the shelf lasts
 
@@ -882,6 +1028,8 @@ object Hudhud {
         // The invoices with a balance still due: only the rules make this ask (the bank has no meaning for it), so the sense,
         // which learnt every "invoices" as a count of the ones made, never turns it.
         if (ruled == Ask.Status(StatusOf.INVOICES)) return ruled
+        // A staff member's pay or attendance, a customer's plan or cheques: only the rules make this ask (the bank has no meaning for it).
+        if (ruled is Ask.Record) return ruled
         if (ruled is Ask.Figure && ruled.kind == VoiceQuestion.Kind.NOT_PAID && remindPage(words(heard).joinToString(" "))) return ruled
         // A bare "bill" with no supplier or purchase word (15 Nov 2026, the owner's list): which bill is said by the rules' own
         // question (utility or supplier), never settled by the sense, which learnt every "bill" as a count of supplier bills.
@@ -1094,7 +1242,7 @@ object Hudhud {
             Move.JUMP -> "act_jump"
         }
         Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
-        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper -> null
+        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record -> null
     }
 
     /**
@@ -1210,7 +1358,7 @@ object Hudhud {
 
     internal fun byRules(
         heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
-        goods: List<Name> = emptyList(), before: Ask? = null
+        goods: List<Name> = emptyList(), before: Ask? = null, staff: List<Name> = emptyList()
     ): Ask {
         val said = words(heard)
         if (said.isEmpty()) return Ask.Unknown
@@ -1275,6 +1423,8 @@ object Hudhud {
         HudhudNote.read(heard, calling = { it in VOCATIVE_SET }) { w ->
             knownName(w, names) || knownName(bengaliStem(w), names)
         }?.let { n -> noteAsk(n, said, names, topics, mind, window, before)?.let { return it } }
+        // Staff pay and attendance, a customer's plan, a customer's cheques (15 Nov 2026): the rules' own reading, ahead of the features.
+        recordOf(said, joined, mind, window, named, product, before, whoIsNamed(said, staff, topics, mind, window))?.let { return it }
         if (named.isEmpty() && product.isEmpty()) byFeature(said, joined, mind, window, topics)?.let { return it }
         // The sentence's one "last" is the span's ("uska last month", "what did Ali pay last year"), not a last entry or payment.
         val spanLast = spanSaid != null && lastIsSpansOwn(heard, mind)

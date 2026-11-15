@@ -57,6 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -287,6 +288,17 @@ object HudhudSheet {
         /** The shop's products by name, read once for the sheet: "Urea ka rate" is the product's (13 Nov 2026). */
         val goods: Deferred<List<Hudhud.Name>> = host.lifecycleScope.async(Dispatchers.IO) {
             try { dao.productsOnce().map { Hudhud.Name(it.id, it.name) } } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
+        }
+
+        /**
+         * The staff's names, for the owner alone (STAFF, through the gate): "Imran ki tankhwah", "Kashif aaj absent hai" name a
+         * staff member, who is not in the customers' list. Another person's sheet reads none, so a staff question is the staff's
+         * dues as before. Names and ids only: nothing of what the book keeps about them (15 Nov 2026).
+         */
+        val staffNames: Deferred<List<Hudhud.Name>> = host.lifecycleScope.async(Dispatchers.IO) {
+            try {
+                if (HudhudGate.staff()) dao.observeStaff().first().map { Hudhud.Name(it.id, it.name) } else emptyList()
+            } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
         }
 
         /** What the last question was taken for, so "uska number?" or "aur kal?" carry on from it. */
@@ -649,15 +661,15 @@ object HudhudSheet {
         private fun question(candidates: List<String>, spoken: Boolean) {
             // The recogniser's language, so a Persian or Indonesian amount is read its own way (voice entry's rule).
             val language = Locale.getDefault().toLanguageTag()
-            answer(candidates.first(), spoken) { names, products ->
-                Hudhud.understand(candidates, names, topics, language, products, before)
+            answer(candidates.first(), spoken) { names, products, staff ->
+                Hudhud.understand(candidates, names, topics, language, products, before, staff)
             }
         }
 
         /** A chip: its question is known already, and its own words are what was asked. */
         private fun chip(words: String, ask: Hudhud.Ask) {
             endConversation()
-            answer(words, spoken = false) { _, _ -> words to ask }
+            answer(words, spoken = false) { _, _, _ -> words to ask }
         }
 
         /**
@@ -669,7 +681,8 @@ object HudhudSheet {
             ctx.getString(if (spoken) R.string.vq_heard else R.string.hudhud_you_asked, Format.isolate(words))
 
         private fun answer(
-            heardFirst: String, spoken: Boolean, understand: (List<Hudhud.Name>, List<Hudhud.Name>) -> Pair<String, Hudhud.Ask>
+            heardFirst: String, spoken: Boolean,
+            understand: (List<Hudhud.Name>, List<Hudhud.Name>, List<Hudhud.Name>) -> Pair<String, Hudhud.Ask>
         ) {
             job?.cancel()
             speakJob?.cancel()
@@ -699,7 +712,8 @@ object HudhudSheet {
                     val known = parties.await()
                     val names = known.map { Hudhud.Name(it.id, it.name) }
                     val products = goods.await()
-                    val (heard, ask) = withContext(Dispatchers.Default) { understand(names, products) }
+                    val staff = staffNames.await()
+                    val (heard, ask) = withContext(Dispatchers.Default) { understand(names, products, staff) }
                     // "Phir se batao", "samajh nahi aya": the last answer again, as it was (14 Nov 2026).
                     val again = (ask as? Hudhud.Ask.Voice)?.change == Hudhud.VoiceChange.AGAIN
                     val answer = lastReal.takeIf { again } ?: withContext(Dispatchers.IO) { HudhudBook.answer(ctx, dao, ask, known) }

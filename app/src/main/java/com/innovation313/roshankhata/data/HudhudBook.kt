@@ -332,6 +332,7 @@ object HudhudBook {
             is Hudhud.Ask.CallMe -> callMe(context, ask.name)
             is Hudhud.Ask.Look -> look(context, ask.request)
             is Hudhud.Ask.LookDone -> lookDone(context, ask.made)
+            is Hudhud.Ask.Record -> HudhudRecordFacts.answer(context, dao, ask, parties)
             // A span he cannot give: the card says so and offers the spans he can. A question about how the book stands
             // now that came with a span is answered as today, the card saying so first (15 Nov 2026).
             is Hudhud.Ask.SpanLimit -> spanLimit(context, ask)
@@ -1367,14 +1368,19 @@ object HudhudBook {
     private fun needsOwner(a: Hudhud.Ask): Boolean = when (a) {
         is Hudhud.Ask.Status -> a.of == Hudhud.StatusOf.STAFF
         is Hudhud.Ask.Count -> a.thing == Hudhud.Thing.STAFF
+        is Hudhud.Ask.Record -> a.facet in STAFF_FACETS
         else -> false
     }
+
+    /** The records that are the staff's own: pay, what was paid, who was away, who they are (Staff is the owner's screen). */
+    private val STAFF_FACETS = setOf(Hudhud.RecordFacet.STAFF_PAY, Hudhud.RecordFacet.STAFF_PAID, Hudhud.RecordFacet.ATTENDANCE, Hudhud.RecordFacet.STAFF_PERSON)
 
     /** A question whose answer is a figure only the owner or a manager may see. */
     private fun needsReports(a: Hudhud.Ask): Boolean = when (a) {
         is Hudhud.Ask.Figure, is Hudhud.Ask.Period, is Hudhud.Ask.Collected, is Hudhud.Ask.Activity, Hudhud.Ask.Drawer,
         is Hudhud.Ask.WhenPays, is Hudhud.Ask.Cashbook, is Hudhud.Ask.TopGoods, Hudhud.Ask.Qarz -> true
         is Hudhud.Ask.Status -> a.of == Hudhud.StatusOf.STAFF
+        is Hudhud.Ask.Record -> a.facet in STAFF_FACETS
         is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD || a.facet == Hudhud.GoodsFacet.COVER
         is Hudhud.Ask.Now -> needsReports(a.ask)
         else -> false

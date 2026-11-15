@@ -52,39 +52,39 @@ import kotlin.math.abs
  */
 internal object HudhudFacts {
 
-    private fun now() = System.currentTimeMillis()
+    internal fun now() = System.currentTimeMillis()
 
     // Every gate is asked through HudhudGate (the catalog holds each fact to the gate of the screen that shows it).
-    private fun reports() = HudhudGate.reports()
+    internal fun reports() = HudhudGate.reports()
 
-    private fun staff() = HudhudGate.staff()
+    internal fun staff() = HudhudGate.staff()
 
     private fun settings() = HudhudGate.settings()
 
     /** A figure behind the REPORTS right: the owner or a manager. */
-    private fun ownerOnly(c: Context, label: String) =
+    internal fun ownerOnly(c: Context, label: String) =
         Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_owner_only)))
 
     /** A fact that only the owner may see (Staff, Business Profile's private part): a manager is told so too. */
-    private fun ownerExact(c: Context, label: String) =
+    internal fun ownerExact(c: Context, label: String) =
         Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_owner_only_exact)))
 
     /** "Label: value", the value isolated so a name or a figure reads right in a right-to-left line. */
-    private fun line(label: String, value: String) = label + ": " + Format.isolate(value)
+    internal fun line(label: String, value: String) = label + ": " + Format.isolate(value)
 
-    private fun line(c: Context, label: Int, value: String) = line(c.getString(label), value)
+    internal fun line(c: Context, label: Int, value: String) = line(c.getString(label), value)
 
-    private fun whenOf(c: Context, t: Long) = WhenWords.whenWords(t, now(), AndroidWords(c))
+    internal fun whenOf(c: Context, t: Long) = WhenWords.whenWords(t, now(), AndroidWords(c))
 
-    private fun dayOf(c: Context, t: Long) = WhenWords.dayWord(t, now(), AndroidWords(c))
+    internal fun dayOf(c: Context, t: Long) = WhenWords.dayWord(t, now(), AndroidWords(c))
 
     /** A count as a figure. */
-    private fun n(count: Int): String = count.toString()
+    internal fun n(count: Int): String = count.toString()
 
     /** The span asked, or today when none was. */
     private fun spanOf(window: VoiceQuestion.Window?): Pair<Long, Long> = Hudhud.span(window ?: VoiceQuestion.Window.TODAY)
 
-    private fun heading(c: Context, title: Int, window: VoiceQuestion.Window?): String =
+    internal fun heading(c: Context, title: Int, window: VoiceQuestion.Window?): String =
         if (window == null) c.getString(title) else c.getString(title) + " · " + c.getString(HudhudBook.windowWord(window))
 
     // ------------------------------------------------------------------------------------------------ people
@@ -896,8 +896,8 @@ internal object HudhudFacts {
 
     /**
      * Cheques that bounced or cleared (16 Nov 2026), newest first, with the number, the bank and the day on each row. A
-     * bounced cheque is still owed; a cleared one already posted its payment. The day is the cheque's due day: the
-     * moment it was settled is not carried by the list's own row.
+     * bounced cheque is still owed; a cleared one already posted its payment. Each row carries the day it was written
+     * and the day it was settled, read from the cheque's own table ([HudhudRecordFacts.chequeRows]).
      */
     private suspend fun chequesIn(c: Context, dao: KhataDao, state: Hudhud.ChequeState): Answer {
         val bounced = state == Hudhud.ChequeState.BOUNCED
@@ -915,10 +915,7 @@ internal object HudhudFacts {
         return Answer(if (bounced) Mood.CARE else Mood.GOOD, label = label, figure = n(list.size),
             lines = listOf(part(R.string.hudhud_l_cheques_in, list.filter { it.isReceived }),
                 part(R.string.hudhud_l_cheques_out, list.filter { !it.isReceived })),
-            rows = list.take(TOP).map { ch ->
-                val sub = listOfNotNull(ch.chequeNumber?.takeIf { it.isNotBlank() }, ch.bankName?.takeIf { it.isNotBlank() }, dayOf(c, ch.dueDate))
-                Row(ch.partyId, ch.partyName, if (money) HudhudBook.money(ch.amount) else "", sub.joinToString(" \u00B7 "))
-            },
+            rows = HudhudRecordFacts.chequeRows(c, dao, list.take(TOP), money),
             open = ChequesActivity::class.java)
     }
 
@@ -1123,6 +1120,7 @@ internal object HudhudFacts {
         val extras = if (open == DayBookActivity::class.java) Bundle().apply { putLong(DayBookActivity.EXTRA_DAY, from) } else null
         return Answer(Mood.CALM, label = label,
             lines = if (nothing) listOf(c.getString(R.string.hudhud_activity_none)) + lines.drop(1).filter { it.isNotEmpty() } else lines,
+            rows = HudhudRecordFacts.auditRows(c, dao, audit),
             open = open, openExtras = extras)
     }
 
@@ -1550,7 +1548,7 @@ internal object HudhudFacts {
             open = SchemesActivity::class.java)
     }
 
-    private const val TOP = 5
+    internal const val TOP = 5
     /** The lines of a paper told on its card: more are on its screen. */
     private const val ITEM_LINES = 8
     /** Every product's sales in the span (the product asked for is found among them by its name). */

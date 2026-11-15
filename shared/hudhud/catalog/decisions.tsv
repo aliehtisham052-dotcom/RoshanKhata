@@ -4,7 +4,7 @@
 
 # ---- column
 column	audit_log	READ	cols=timestamp,user,action	reader=HudhudFacts.activity	gate=REPORTS	screen=AuditActivity
-column	audit_log	GAP	cols=refTable,detail	why=the activity answer counts rows by action and who, the detail words are the Who did what screen's
+column	audit_log	READ	cols=refTable,detail	reader=HudhudFacts.activity	gate=REPORTS	screen=AuditActivity	via=HudhudRecordFacts.auditRows	why=the day's answer lists the newest rows in the Who did what screen's own words (auditActionName), what they touched and, for an amount row, the amount, free text in a detail stays the screen's
 column	audit_log	WITHHELD	cols=hash	why=the seal chain of the log: proof material for the Who did what screen, never a thing to say
 column	bill_items	READ	cols=productName	reader=HudhudFacts.deliveries	gate=NONE	screen=BillsActivity	also=HudhudFacts.count+HudhudFacts.goods
 column	bill_items	READ	cols=rate	reader=HudhudFacts.goods	gate=REPORTS	screen=SupplierRatesActivity	via=KhataDao.supplierRateLinesOnce
@@ -15,12 +15,13 @@ column	book_seals	STRUCT	cols=leaves,auditHead,prevDigest,digest	why=the seal ch
 column	book_settings	WITHHELD	cols=key,value	why=the book's own settings: PIN hashes, access keys and relay passes live here
 column	cashbook	READ	cols=amount,isIncome,category,note,timestamp	reader=HudhudFacts.cashbook	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	cashbook	READ	cols=paymentMethod	reader=HudhudFacts.collected	gate=REPORTS	screen=DayBookActivity	via=DayBook.rows	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cashbook	GAP	cols=paymentRef	why=no question reaches it yet
+column	cashbook	GAP	cols=paymentRef	why=a reference number is told by its own words (the TID the payment voice finds) and no reader of the owner's questions asks for it yet, the Cashbook screen shows it per row
 column	cashbook	WITHHELD	cols=photoPath	why=a picture's file path on this phone
 column	cheques	READ	cols=isReceived,dueDate	reader=HudhudFacts.cheques	gate=NONE	screen=ChequesActivity
 column	cheques	READ	cols=amount	reader=HudhudFacts.cheques	gate=REPORTS	screen=ChequesActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cheques	READ	cols=chequeNumber,bankName,status	reader=HudhudFacts.chequesIn	gate=NONE	screen=ChequesActivity	also=HudhudFacts.cheques	stricter=its amount stays with REPORTS (the sum and each row's figure)
-column	cheques	GAP	cols=settledAt,note,createdAt	why=the Cheques list's own row does not carry them, a cheque's day is its due day, so "when did it clear" is not told
+column	cheques	READ	cols=chequeNumber,bankName,status	reader=HudhudFacts.chequesIn	gate=NONE	screen=ChequesActivity	via=HudhudRecordFacts.chequeRows	also=HudhudFacts.cheques	stricter=its amount stays with REPORTS (the sum and each row's figure)
+column	cheques	READ	cols=settledAt,createdAt	reader=HudhudRecordFacts.cheques	gate=NONE	screen=ChequesActivity	via=HudhudRecordFacts.chequeRows	also=HudhudFacts.chequesIn
+column	cheques	READ	cols=note	reader=HudhudRecordFacts.cheques	gate=REPORTS	screen=ChequesActivity	via=HudhudRecordFacts.chequeRows	also=HudhudFacts.chequesIn	stricter=the screen shows the note to anyone who opens it, but a note often holds a bank's memo or a sum and Hudhud tells it only with REPORTS like the amount
 column	cheques	WITHHELD	cols=photoPath	why=a picture's file path on this phone
 column	day_close	READ	cols=closedAt	reader=HudhudBook.drawer	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	day_close	GAP	cols=day,opening,cashIn,cashOut,counted,note	why=the drawer is worked out by the books' rule (DayCloseMath) and the close's columns are folded into it, not told one by one
@@ -28,18 +29,20 @@ column	dismissed_duplicates	STRUCT	cols=partyIdsKey,dismissedAt	why=remembers th
 column	entry_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.topGoods	gate=REPORTS	screen=InsightsActivity	via=KhataDao.topProductsBetween
 column	entry_items	READ	cols=rate,isBonus	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity
 column	entry_items	READ	cols=crop,pest,dose	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity	via=ReceiptGoods.advice
-column	installments	GAP	cols=amount,paidAt,note	why=plans are told by their next due day, instalments are the Plans screen's
 column	invoice_items	READ	cols=itemName,quantity,unit,rate	reader=HudhudFacts.lastInvoice	gate=NONE	screen=InvoicesActivity
+column	installments	READ	cols=amount	reader=HudhudRecordFacts.plan	gate=REPORTS	screen=PlansActivity	stricter=the screen lists the instalments to anyone who opens it, but Hudhud's card adds them up and that stays with REPORTS
+column	installments	READ	cols=paidAt,note	reader=HudhudRecordFacts.plan	gate=NONE	screen=PlansActivity
 column	invoices	READ	cols=invoiceNumber,customerName,invoiceDate	reader=HudhudFacts.count	gate=NONE	screen=InvoicesActivity
 column	invoices	READ	cols=dueDate,receivedAmount,taxPercent,discountPercent,additionalChargeAmount,discountAmount,kind,status	reader=HudhudFacts.invoicesDue	gate=REPORTS	screen=InvoicesActivity	via=KhataDao.invoicesWithPaymentOnce	stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
-column	invoices	GAP	cols=customerPhone,additionalChargeLabel,note,createdAt	why=he says which invoices have money due and how much, the invoice's own words are its screen's
+column	invoices	GAP	cols=customerPhone,additionalChargeLabel,note,createdAt	why=he says which invoices have money due and how much, the invoice's own phone, charge label and note are the document's words, read on its page
 column	loyalty	GAP	cols=points,timestamp,note	why=no question reaches it yet
 column	parties	READ	cols=name,phone,fatherName,village,isCustomer,creditLimit,harvestPromise	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity
 column	parties	READ	cols=note	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity	also=HudhudFacts.notesList
 column	parties	WITHHELD	cols=qrToken,photoPath	why=the card's secret token and a picture's file path
-column	parties	GAP	cols=createdAt,noEntryShare	why=no question reaches it yet
+column	parties	GAP	cols=createdAt,noEntryShare	why=the customer's added-on day and his share switch have no question of their own yet, the customer page shows both
 column	payment_plans	READ	cols=nextDueDate	reader=HudhudFacts.plans	gate=NONE	screen=PlansActivity
-column	payment_plans	GAP	cols=totalAmount,installmentAmount,note,createdAt,isClosed,closedAt	why=he tells how many plans are open and the next due day, the amounts are the Plans screen's
+column	payment_plans	READ	cols=totalAmount,installmentAmount	reader=HudhudRecordFacts.plan	gate=REPORTS	screen=PlansActivity	also=HudhudRecordFacts.plansClosed	stricter=the screen lists the plans to anyone who opens it, but Hudhud's card adds paid and left into figures and that stays with REPORTS
+column	payment_plans	READ	cols=note,createdAt,isClosed,closedAt	reader=HudhudRecordFacts.plan	gate=NONE	screen=PlansActivity	also=HudhudRecordFacts.plansClosed
 column	products	READ	cols=name,defaultUnit,company,salePrice,creditPrice	reader=HudhudFacts.goods	gate=NONE	screen=ProductsActivity
 column	products	READ	cols=costPrice	reader=HudhudFacts.goods	gate=REPORTS	screen=ProductsActivity	stricter=the product form greys the cost box for a cashier but still shows it, Hudhud keeps the cost (and so the margin) with REPORTS
 column	products	READ	cols=lowStockLevel	reader=HudhudFacts.lowStock	gate=NONE	screen=ProductsActivity	via=Valuation.compute
@@ -66,10 +69,10 @@ column	schemes	GAP	cols=createdAt	why=the Schemes screen shows no day for when a
 column	shifts	GAP	cols=user,device,openedAt,openingFloat,closedAt,counted,expected,note	why=shifts are the counter's, no question reaches them yet
 column	stock_adjustments	GAP	cols=timestamp,quantity,unit,reason,note,bookQty,countedQty,createdBy	why=counts and write-offs are told by who did them in the activity answer only
 column	staff	READ	cols=name	reader=HudhudFacts.salaries	gate=STAFF	screen=StaffActivity
-column	staff	GAP	cols=phone,monthlySalary,isActive,createdAt,role	why=the salaries answer folds pay into what is due per person, the rest is the Staff screen's
+column	staff	READ	cols=phone,monthlySalary,isActive,createdAt,role	reader=HudhudRecordFacts.staffPerson	gate=STAFF	screen=StaffActivity	why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
 column	staff	WITHHELD	cols=pinHash,pinSalt	why=a PIN's hash and salt: a secret
-column	staff_attendance	GAP	cols=day,status	why=folded into what is due in the salaries answer
-column	staff_payments	GAP	cols=amount,kind,timestamp,note	why=folded into what is due in the salaries answer
+column	staff_attendance	READ	cols=day,status	reader=HudhudRecordFacts.attendance	gate=STAFF	screen=StaffActivity	also=HudhudRecordFacts.staffPay
+column	staff_payments	READ	cols=amount,kind,timestamp,note	reader=HudhudRecordFacts.staffPaid	gate=STAFF	screen=StaffActivity	also=HudhudRecordFacts.staffPay
 column	supplier_bills	READ	cols=isPaidInFull,dueDate	reader=HudhudFacts.bills	gate=NONE	screen=BillsActivity
 column	supplier_bills	READ	cols=billDate	reader=HudhudFacts.deliveries	gate=NONE	screen=BillsActivity
 column	supplier_bills	READ	cols=totalAmount	reader=HudhudFacts.bills	gate=REPORTS	screen=BillsActivity	also=HudhudFacts.deliveries+HudhudFacts.count	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
