@@ -811,6 +811,9 @@ object Hudhud {
         if (ruled is Ask.About && (ruled.topic == AboutTopic.NAME_STORY || ruled.topic in FAITH_TOPICS || ruled.topic in STORY_TOPICS)) return ruled
         // A feature named by its own word (14 Nov 2026), and the asks only the rules make: never turned by the sense.
         if (ruled is Ask.Help && featureNamed(heard)) return ruled
+        // A bare "bill" with no supplier or purchase word (15 Nov 2026, the owner's list): which bill is said by the rules' own
+        // question (utility or supplier), never settled by the sense, which learnt every "bill" as a count of supplier bills.
+        if (isBareBillChoice(ruled, heard)) return ruled
         if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods ||
             ruled is Ask.CallMe || ruled is Ask.Look
         ) {
@@ -1587,6 +1590,22 @@ object Hudhud {
                 !has(joined, SUPPLIER_SIDE_WORDS)))
         ) page("intro_documents")?.let { return it }
         if (has(joined, UTILITY)) page("intro_cashbook")?.let { return it }
+        // A bare "bill" (15 Nov 2026, the owner's 1,000 sentences: "Bill WhatsApp par bhejo", "Kaun sa bill baqi hai", "Aaj ke
+        // sab bill dikhao" were all read as the supplier bills). A shop says "bill" for three different papers — the one it
+        // hands a customer, the one a supplier sends it, the one the light company sends it — and the word alone does not say
+        // which. So no supplier or purchase word, no delivery ("aaye") and no name: what is DONE to it says it. Making,
+        // sending, changing it or one customer's: the customer's bill, i.e. the documents page. Owing, late, a date, a
+        // reminder: a bill to pay — the supplier's or the utility's, which the words cannot tell, so he is asked (the first
+        // reading is the cashbook's, where a shop writes down what it paid out; the other is the supplier bills that wait).
+        if (billWord && !m.any(HudhudMind.C.SUPPLIER, HudhudMind.C.CAME) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE)) {
+            when {
+                has(joined, BILL_EDIT) || m.has(HudhudMind.C.CUSTOMER) -> page("intro_documents")?.let { return it }
+                has(joined, BILL_DUE) -> {
+                    val cashbook = page("intro_cashbook")
+                    if (cashbook != null) return Ask.DidYouMean(listOf(cashbook, Ask.Status(StatusOf.BILLS)))
+                }
+            }
+        }
         // Keeping the book safe (14 Nov 2026, the owner's 1,000 sentences: "PIN bhool gaya" was read as somebody's
         // details, "Naya PIN banana hai" as a hello): the lock's and the hiding's own help pages.
         if (has(joined, LOCK_WORDS)) page("faq_lock")?.let { return it }
@@ -1660,13 +1679,23 @@ object Hudhud {
         return null
     }
 
+    /** The rules' own "which bill?" question for a bill word with no supplier or purchase word beside it. */
+    private fun isBareBillChoice(ruled: Ask, heard: String): Boolean {
+        if (ruled !is Ask.DidYouMean) return false
+        val first = ruled.options.firstOrNull() as? Ask.Help ?: return false
+        if (first.key != "intro_cashbook" || ruled.options.getOrNull(1) != Ask.Status(StatusOf.BILLS)) return false
+        val joined = words(heard).joinToString(" ")
+        return has(joined, BILL_WORDS) && has(joined, BILL_DUE) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE)
+    }
+
     /** Whether [heard] names one of the features [byFeature] opens by its page, or asks to add something new to one. */
     private fun featureNamed(heard: String): Boolean {
         val joined = words(heard).joinToString(" ")
         return listOf(ZAKAT, BUSINESSES, SEASONS, SCHEMES, POSTERS, CARDS, CASH_FLOW, AHEAD, DOCUMENTS, UTILITY, BIN_WORDS, FIX_WORDS,
             LOCK_WORDS, HIDE_WORDS, ADD_NEW)
             .any { has(joined, it) } ||
-            (has(joined, BILL_WORDS) && has(joined, MAKE_DOC))
+            (has(joined, BILL_WORDS) && has(joined, MAKE_DOC)) ||
+            (has(joined, BILL_WORDS) && has(joined, BILL_EDIT) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE))
     }
 
     private val LOCK_WORDS = listOf("lock", "app lock", "applock", "pin", "pin code", "password", "passcode", "fingerprint",
@@ -1777,6 +1806,19 @@ object Hudhud {
         "print", "copy", "naqal", "cancel", "design", "template", "letterhead", "muhar", "stamp", "make", "create", "send",
         "بناؤ", "بنانا", "بنائیں", "بھیجو", "بھیجنا", "پرنٹ", "اعمل", "أرسل", "بساز", "بفرست", "بڻايو", "موڪليو", "बनाओ",
         "बनाना", "भेजो", "प्रिंट", "বানাও", "তৈরি", "পাঠাও", "প্রিন্ট", "buat", "kirim", "cetak")
+    /** What a shop does to the bill it hands a customer, said without a word of the document's kind. */
+    private val BILL_EDIT = listOf("discount", "chhoot", "chhut", "qeemat", "rate badlo", "naam likh", "number likh", "likhna",
+        "badlo", "badalna", "edit", "muhar", "whatsapp", "cheez add", "item add", "ڈسکاؤنٹ", "چھوٹ", "قیمت بدلو", "نام لکھ",
+        "بدلو", "واٹس ایپ", "خصم", "سعر", "غيّر", "واتساب", "تخفیف", "قیمت", "تغییر", "ڇوٽ", "डिस्काउंट", "छूट", "कीमत बदलो",
+        "बदलो", "व्हाट्सएप", "ছাড়", "দাম বদলাও", "হোয়াটসঅ্যাপ", "diskon", "ubah harga", "ganti")
+    /** A bill that is owed: still to pay, late, its day, a reminder for it. */
+    private val BILL_DUE = listOf("baqi", "baqaya", "bacha", "late", "dene", "deni", "dena", "ada", "tareekh", "yaad dahani",
+        "yaad", "due", "pending", "unpaid", "bakaya", "باقی", "بقایا", "بچا", "دینے", "دینی", "دینا", "ادا", "تاریخ", "یاد دہانی",
+        "مستحق", "متأخر", "المتبقي", "تذكير", "سررسید", "باقی‌مانده", "پرداخت", "باقي", "ڏيڻ", "बाकी", "देने", "देना", "तारीख",
+        "याद", "বাকি", "দিতে", "তারিখ", "jatuh tempo", "belum dibayar", "tenggat", "tunggakan")
+    /** The purchase side of a bill said without "supplier": goods bought. */
+    private val PURCHASE_SIDE = listOf("maal ka", "maal ke", "purchase", "khareed", "kharid", "stock ka", "مال کا", "مال کے",
+        "خرید", "شراء", "مشتريات", "خرید", "खरीद", "माल का", "ক্রয়", "pembelian")
     private val UTILITY = listOf("bijli", "bijlee", "gas ka", "gas bill", "pani ka bill", "internet ka bill", "internet bill", "kiraya", "kiraaya",
         "kiraye", "rent", "electricity", "بجلی", "گیس", "کرایہ", "کرایا", "الكهرباء", "الإيجار", "برق", "گاز", "اجاره",
         "بجلي", "ڪرايو", "बिजली", "गैस", "किराया", "বিদ্যুৎ", "গ্যাস", "ভাড়া", "listrik", "sewa")

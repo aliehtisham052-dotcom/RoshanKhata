@@ -2936,6 +2936,10 @@ Each of these cost a build or a bug.
     (rightly) as steps skipped. Say progress only as "N of M items of the list, accuracy X% of his own questions against his
     target", and say what is not counted (real-phone tests, the lists he has not sent). A number that jumps is not believed.
 
+145. **A new rule is judged through the whole pipeline, never by the rules alone.** `byRules` read "Kaun sa bill baqi hai" right in its own
+    test while `decide` handed it back to the sense (15 Nov 2026): the owner's list moved by 2, not 22. A rule the sense may overturn goes into
+    `featureNamed` or its own guard in `decide`, and its test calls `Hudhud.understand` with the sense attached and the page list.
+
 ---
 
 ## Working with the owner
@@ -3956,6 +3960,21 @@ with the PIN" / "the owner or a manager"); a screen anyone may open says nothing
   wording for a native read). HudhudPageLimitTest (app).
 - **Not said:** an action's own gate inside a screen (a cashier opens Cashbook but needs a manager's PIN to void) is the screen's to ask;
   the line says only who opens the screen.
+
+### 15 Nov 2026: Hudhud, a bare "bill" (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 6 (words only, no figure moves). The owner's list had 22 misses on the word "bill" alone (meanings 30, 33): a shop says it for the
+paper it hands a customer, the one a supplier sends and the one the light company sends.
+
+- **The rule** (`Hudhud.byFeature`, `BILL_EDIT`, `BILL_DUE`, `PURCHASE_SIDE`): with no supplier or purchase word, making, sending, changing a bill
+  or one customer's is the documents page; owing, late, a day, a reminder is `DidYouMean([Help(intro_cashbook), Status(BILLS)])` (utility or
+  supplier). A supplier or purchase word keeps the supplier's bills as before.
+- **The class it taught (lesson 145):** a rule the rules read is not yet the answer: `decide` lets the sense overrule a reading unless it is
+  listed (`featureNamed`, `isBareBillChoice`). The sense learnt every "bill" as a count of supplier bills and turned the rules' reading at once;
+  the first tests called `byRules` alone and passed while the pipeline did not. The probe harness passes NO topics, so a page rule shows as
+  missing there: judge a page rule by a test through `Hudhud.understand` with the page list (HudhudBillWordTest does).
+- **Measured here:** owner's 1,000 sentences 727 -> 735 (floor raised to 735), short lists 143, held-out 1068, 479+ shared tests, 13 Strings steps pass;
+  the three guards were broken one at a time, each killed by a test.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 

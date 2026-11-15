@@ -353,7 +353,7 @@ class HudhudMindTest {
             )
         )
         all(Ask.Status(StatusOf.PLANS), listOf("kitni qistein baqi hain", "aaj kis ki qist hai", "installments due", "کتنی قسطیں باقی ہیں", "कितनी किस्तें बाकी हैं", "berapa cicilan"))
-        all(Ask.Status(StatusOf.BILLS), listOf("kaunse bill baqi hain", "supplier ke kitne bill pending hain"))
+        all(Ask.Status(StatusOf.BILLS), listOf("supplier ke kitne bill pending hain", "maal ke kaunse bill baqi hain"))
         all(
             Ask.Status(StatusOf.LOW_STOCK), listOf(
                 "kya maal kam hai", "kaunsa maal khatam ho raha hai", "low stock", "stock kam hai", "stock kitna hai",
