@@ -84,6 +84,6 @@ class HudhudOwnerSetTest {
          * the short list's floor is the figure itself, the thousand's keeps the margin of two it always had.
          */
         const val SHORT_FLOOR = 146
-        const val THOUSAND_FLOOR = 779
+        const val THOUSAND_FLOOR = 785
     }
 }

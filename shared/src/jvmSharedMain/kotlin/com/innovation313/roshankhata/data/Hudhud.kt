@@ -1615,6 +1615,9 @@ object Hudhud {
             if (has(joined, WHOM)) return Ask.Figure(VoiceQuestion.Kind.NOT_PAID)
             page("intro_followup")?.let { return it }
         }
+        // Old or doubtful dues (15 Nov 2026, the owner's list: "kis ka udhaar sab se purana hai", "kis ka udhaar doob sakta hai",
+        // "kaun payment dene mein sust hai"): the dues by age page ranks every customer by how long his money has been unpaid.
+        if (agedDues(joined)) page("screen_aging")?.let { return it }
         // Keeping the book safe (14 Nov 2026, the owner's 1,000 sentences: "PIN bhool gaya" was read as somebody's
         // details, "Naya PIN banana hai" as a hello): the lock's and the hiding's own help pages.
         if (has(joined, LOCK_WORDS)) page("faq_lock")?.let { return it }
@@ -1692,6 +1695,21 @@ object Hudhud {
     }
 
     /** Whether a sentence is about reminding customers for money, in no bill's or supplier's sense. */
+    /** Old or doubtful money owed: an ageing word together with a word for money owed, nobody and no product named. */
+    internal fun agedDues(joined: String): Boolean =
+        has(joined, AGED_WORDS) && has(joined, OWED_WORDS) && !has(joined, BILL_WORDS) && !has(joined, SUPPLIER_SIDE_WORDS) &&
+            !has(joined, PURCHASE_SIDE) && !has(joined, listOf("stock", "maal", "saman", "item", "cheez"))
+
+    private val AGED_WORDS = listOf("sab se purana", "sabse purana", "purana udhaar", "purane udhaar", "bohat dair se", "bahut der se",
+        "dair se baqi", "der se baqi", "mahine se pada", "mahino se pada", "tareekh guzar", "guzar gayi", "doob sakta", "doob jayega",
+        "doobne", "sust", "mushkil lag rahi", "overdue", "oldest", "long overdue", "slow to pay", "slow payer", "slow payers",
+        "bad debt", "bad debts", "could be lost", "may be lost", "سب سے پرانا", "بہت دیر سے", "ڈوب سکتا", "ڈوب جائے", "تاریخ گزر",
+        "سست", "सबसे पुराना", "बहुत देर से", "डूब सकता", "तारीख निकल", "सुस्त", "أقدم", "متأخر", "متأخرات", "قد يضيع", "قديم", "سڀ کان پراڻو",
+        "قدیمی‌ترین", "معوق", "دیرکرد", "সবচেয়ে পুরনো", "ডুবে যেতে", "paling lama", "menunggak", "tunggakan", "jatuh tempo", "macet")
+    private val OWED_WORDS = listOf("udhaar", "udhar", "baqi", "hisaab", "hisab", "wasooli", "wusooli", "payment", "payments", "paise", "pay", "paying",
+        "debt", "debts", "dues", "owed", "owes", "owe", "due", "balance", "اُدھار", "ادھار", "باقی", "حساب", "وصولی", "पैसे", "उधार",
+        "बाकी", "हिसाब", "دين", "ديون", "حساب", "بدهی", "ادھار", "বাকি", "হিসাব", "টাকা", "piutang", "utang", "hutang", "pembayaran")
+
     internal fun remindPage(joined: String): Boolean =
         has(joined, REMIND_WORDS) && !has(joined, BILL_WORDS) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE) &&
             !has(joined, listOf("automation", "automations", "notification", "notifications", "alarm", "stock", "maal", "saman", "item", "cheez"))
@@ -1727,7 +1745,7 @@ object Hudhud {
             (has(joined, BILL_WORDS) && has(joined, MAKE_DOC)) ||
             (has(joined, BILL_WORDS) && has(joined, BILL_EDIT) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE)) ||
             itemRankPage(joined) != null ||
-            remindPage(joined)
+            remindPage(joined) || agedDues(joined)
     }
 
     private val LOCK_WORDS = listOf("lock", "app lock", "applock", "pin", "pin code", "password", "passcode", "fingerprint",

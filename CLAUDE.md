@@ -4005,6 +4005,23 @@ Importance 6. Two classes found in the owner's list, one fix each.
 - **Recommendation:** run every word of the bank as a one-word sentence against a book with a name for each letter pair, as lesson 140 did for the other scripts,
   to find the next short word taken for a name.
 
+### 15 Nov 2026: Hudhud, old and doubtful dues (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 6 (words only, no figure moves). "Kis ka udhaar sab se purana hai", "kis ka udhaar doob sakta hai", "kaun payment dene mein sust
+hai" read as the biggest debt, the shop's own payables or a guess.
+
+- **The rule** (`Hudhud.agedDues`, in `byFeature` and `featureNamed`): an ageing word (`AGED_WORDS`: oldest, overdue, slow to pay, bad debt,
+  "bohat dair se", "doob sakta", "sust"... in the nine languages) together with a word for money owed (`OWED_WORDS`), nobody and no product
+  named, no bill, supplier, purchase or goods word: the dues by age page (`screen_aging`), which ranks every customer by how long his money
+  has stood. "Kis ka udhaar sab se zyada hai" stays the biggest debt (no ageing word).
+- **The owner's lists disagree with each other here, said plainly:** P058 (short list) accepted only a figure for "Kis ka udhaar sab se
+  purana hai", while L005 ("khata sab se purana") and meaning 19 of the 1,000 accept the aging page. The aging page is the more exact answer,
+  so P058 now accepts it too; no other expectation was changed.
+- **Measured here:** owner's 1,000 sentences 779 -> 785 (floor 785), short lists 146, held-out 1068, 494 shared tests, HudhudWordsTest 9; seven
+  guards broken one at a time, the purchase-side one survived at first and has its test now (HudhudAgedDuesTest, through `understand` with the sense).
+- **Not done:** "Kis ne udhaar liya" (meaning 10) still reads as who owes; its accepted readings (Activity, Credit span) need a span or a rule that
+  "liya" without a span is the day's credit — undecided, since "kis ne udhaar liya" may also mean who owes now.
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the

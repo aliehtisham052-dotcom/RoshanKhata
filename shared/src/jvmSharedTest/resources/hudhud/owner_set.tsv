@@ -157,7 +157,7 @@ P054	Logon ke zimme kitna hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAI
 P055	Kis kis ne mera paisa dena hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
 P056	Sab se zyada kis ne dena hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
 P057	Baqaya kitna hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
-P058	Kis ka udhaar sab se purana hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
+P058	Kis ka udhaar sab se purana hai?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE|Help:screen_aging
 P059	Aaj kis se paise mangne hain?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
 P060	Kis ne wada kiya tha aaj ka?	Figure:TO_GET|Figure:WHO_OWES_MOST|Figure:NOT_PAID|WhenPays|NeedName:PROMISE
 P061	Mujhe kis ko kitne dene hain?	Figure:TO_GIVE|Status:BILLS
