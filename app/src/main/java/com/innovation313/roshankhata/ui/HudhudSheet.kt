@@ -732,7 +732,8 @@ object HudhudSheet {
                 val taken = (result.ask as? Hudhud.Ask.Guessed)?.ask ?: result.ask
                 if (!result.answer.reverent && taken != null && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown &&
                     taken !is Hudhud.Ask.NeedName && taken !is Hudhud.Ask.Voice && taken !is Hudhud.Ask.NeedGoods &&
-                    taken !is Hudhud.Ask.CallMe && taken !is Hudhud.Ask.Look && taken !is Hudhud.Ask.LookDone
+                    taken !is Hudhud.Ask.CallMe && taken !is Hudhud.Ask.Look && taken !is Hudhud.Ask.LookDone &&
+                    taken !is Hudhud.Ask.SpanLimit
                 ) {
                     before = taken
                 }
@@ -1145,7 +1146,8 @@ object HudhudSheet {
                 val opening = last === helloCard
                 for (a in first + (if (opening) starters else emptyList()) + usualChips()) {
                     if (a in list) continue
-                    HudhudBook.chipLabel(ctx, a)?.let { list[a] = it }
+                    // The same question over another span says its span (the card's own words for its chips).
+                    (last?.optionLabels?.get(a) ?: HudhudBook.chipLabel(ctx, a))?.let { list[a] = it }
                 }
             }
             val density = ctx.resources.displayMetrics.density

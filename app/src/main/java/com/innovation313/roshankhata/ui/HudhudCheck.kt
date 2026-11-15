@@ -118,6 +118,8 @@ object HudhudCheck {
         is Hudhud.Ask.Period -> "period: " + a.measure + " / " + a.window
         is Hudhud.Ask.Parties -> "balance: " + a.ids
         is Hudhud.Ask.CallMe -> "call me"
+        is Hudhud.Ask.Now -> "now > " + describe(a.ask)
+        is Hudhud.Ask.SpanLimit -> "span limit: " + a.options.joinToString(" | ") { describe(it) }
         else -> a.javaClass.simpleName
     }
 }

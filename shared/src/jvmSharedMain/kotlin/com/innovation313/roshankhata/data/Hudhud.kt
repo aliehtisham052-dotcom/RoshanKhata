@@ -112,6 +112,15 @@ object Hudhud {
         /** Two or three things the words could mean: each offered as a tap, never guessed. */
         data class DidYouMean(val options: List<Ask>) : Ask()
 
+        /**
+         * A span of days he cannot give for this question (15 Nov 2026, the owner: "pichle 3 mahine ki bikri", a whole
+         * year and "aaj tak" were answered as this month's figure, a wrong sum said with a straight face). He says so and
+         * offers the same question over the spans he can give, each a tap ([options]). [long]: the longer spans (the last
+         * 6 months, a year, the whole book) are among them — only the asks that read sums can be given those ([longOk]);
+         * the others list rows, which are read a day, a week or a month at a time.
+         */
+        data class SpanLimit(val options: List<Ask>, val long: Boolean) : Ask()
+
         /** Money that came in over a span of days: customers' payments and the cashbook's income (the day book's rule). */
         data class Collected(val window: VoiceQuestion.Window? = null) : Ask()
 
@@ -178,6 +187,15 @@ object Hudhud {
          * hai, poochhna nahi"): [ask] is answered, and the card says what he took it as, so a wrong guess is seen.
          */
         data class Guessed(val ask: Ask) : Ask()
+
+        /**
+         * A question about how the book stands NOW — a count of customers, a customer's balance or number, a product's price
+         * or stock, the drawer — that came with a span of days ("pichle saal kitne customers", "Ali ka hisaab last month")
+         * (15 Nov 2026). The book keeps no earlier standing of these, so [ask] is answered as it stands today and the card says
+         * so first, instead of leaving the span out in silence, as if the figure were that span's. A guess stays a guess
+         * ([Guessed] around it).
+         */
+        data class Now(val ask: Ask) : Ask()
     }
 
     /** His little acts. */
@@ -240,6 +258,20 @@ object Hudhud {
     data class Name(val id: Long, val name: String)
 
     /**
+     * The book's names as a sentence is read (15 Nov 2026): [VoiceQuestion.normalise] takes the Devanagari nukta off every word that
+     * is said ("ज़" and "ज" are one word to a listener), so a name saved with it ("रज़ा") is read the same way, or the very word
+     * asked would never meet the name. [NameSearch.fold] is the whole app's search and keeps the nukta's sound: it is not touched.
+     * Bengali's nukta stays in a sentence, so it stays in a name too.
+     */
+    private fun asRead(list: List<Name>): List<Name> {
+        if (list.none { n -> n.name.any { it == '\u093C' || it in '\u0958'..'\u095F' } }) return list
+        return list.map { n ->
+            val t = java.text.Normalizer.normalize(n.name, java.text.Normalizer.Form.NFC).replace("\u093C", "")
+            if (t == n.name) n else Name(n.id, t)
+        }
+    }
+
+    /**
      * A help page: its [key], its [title] and the rest of its words, in every language the phone gives them.
      * [feature]: the page of one of the app's features ("Cheques", "Staff"), whose name is never taken for a
      * customer's; a question-and-answer page's title is a sentence, and its words (محفوظ, "keep") may well be one.
@@ -297,16 +329,151 @@ object Hudhud {
     fun understand(
         heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
         goods: List<Name> = emptyList(), before: Ask? = null
+    ): Ask = understandRead(salaamHeadRead(heard), asRead(names), topics, language, asRead(goods), before)
+
+    private fun understandRead(
+        heard: String, names: List<Name>, topics: List<Topic>, language: String?,
+        goods: List<Name>, before: Ask?
     ): Ask {
-        val ruled = byRules(heard, names, topics, language, goods, before)
-        if (!HudhudSense.ready || words(heard).isEmpty()) return byWay(heard, ruled)
+        val carried = carriedOf(before)
+        val ruled = byRules(heard, names, topics, language, goods, carried)
+        if (!HudhudSense.ready || words(heard).isEmpty()) return limitSpan(heard, byWay(heard, ruled))
         val guesses = HudhudSense.rank(
-            heard,
+            senseHeard(heard, names, goods),
             isName = { w -> w !in QUIET_SET && w !in VOCATIVE_SET && !HudhudMind.isHardWord(w) && knownName(w, names) },
             isItem = { w -> w !in QUIET_SET && !HudhudMind.isHardWord(w) && knownName(w, goods) }
         )
-        return byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, before))
+        return limitSpan(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)))
     }
+
+    /**
+     * What the last question carries on as (15 Nov 2026): an answer that said "this is how it stands now" is the question it
+     * answered, a choice of spans is the first of them (so "aur pichle saal?" after it asks the same thing over that year),
+     * a guess is what it guessed. Without this the next sentence could not find the customer or the product the card was about.
+     */
+    private fun carriedOf(before: Ask?): Ask? = when (before) {
+        is Ask.Now -> carriedOf(before.ask)
+        is Ask.SpanLimit -> carriedOf(before.options.firstOrNull())
+        is Ask.Guessed -> carriedOf(before.ask)
+        else -> before
+    }
+
+    // ------------------------------------------------------------------------------------- the spans he can give
+
+    /**
+     * Asks whose answer is one sum, or a few rows chosen in the book (a product's quantity, the best sellers, what one
+     * customer paid), and so can be given over any span, however long. The others list the day's rows — entries,
+     * invoices, bills, tickets, deliveries, the cashbook, returns — or count what the phone keeps for forty days only
+     * (the calculator, the app's opens), and are given a day, a week or a month at a time (lesson 70: a phone reads a big
+     * answer 2 MB at a time, running the query again for each).
+     */
+    private fun longOk(a: Ask): Boolean =
+        a is Ask.Period || a is Ask.Moved || a is Ask.TopGoods || (a is Ask.Goods && a.facet == GoodsFacet.SOLD) ||
+            (a is Ask.Figure && spanMatters(a)) // the sales and profit figures: Period, over any span
+
+    /** What a count counts over a span of days; the people, the products and the staff are the same over any span. */
+    private val COUNTED_OVER_A_SPAN = setOf(Thing.ENTRIES, Thing.INVOICES, Thing.BILLS, Thing.TICKETS, Thing.CALCULATIONS, Thing.APP_OPENS)
+
+    /** Whether what the ask answers changes with the span of days said. */
+    private fun spanMatters(a: Ask): Boolean = when (a) {
+        is Ask.Figure -> a.kind == VoiceQuestion.Kind.SALES_TODAY || a.kind == VoiceQuestion.Kind.SALES_MONTH ||
+            a.kind == VoiceQuestion.Kind.PROFIT_MONTH
+        is Ask.Period, is Ask.Moved, is Ask.Deliveries, is Ask.Activity, is Ask.Collected, is Ask.Cashbook, is Ask.Returns,
+        is Ask.TopGoods -> true
+        is Ask.Count -> a.thing in COUNTED_OVER_A_SPAN
+        is Ask.Goods -> a.facet == GoodsFacet.SOLD
+        else -> false
+    }
+
+    /** The span the ask names, when it names one (the app words a choice of spans by them). */
+    fun spanOf(a: Ask): VoiceQuestion.Window? = when (a) {
+        is Ask.Period -> a.window
+        is Ask.Moved -> a.window
+        is Ask.Count -> a.window
+        is Ask.Deliveries -> a.window
+        is Ask.Activity -> a.window
+        is Ask.Collected -> a.window
+        is Ask.Cashbook -> a.window
+        is Ask.Returns -> a.window
+        is Ask.TopGoods -> a.window
+        is Ask.Goods -> a.window
+        else -> null
+    }
+
+    /** The same question over another span of days. */
+    private fun over(a: Ask, w: VoiceQuestion.Window): Ask = when (a) {
+        is Ask.Figure -> figureOver(a.kind, w)
+        // (No Ask.Period here: a sentence that names a span he gives names no span he cannot, so a Period never reaches
+        // [limitSpan]; a chip's ask is kept whole by [keepWithinReach].)
+        is Ask.Moved -> a.copy(window = w)
+        is Ask.Count -> a.copy(window = w)
+        is Ask.Deliveries -> a.copy(window = w)
+        is Ask.Activity -> a.copy(window = w)
+        is Ask.Collected -> a.copy(window = w)
+        is Ask.Cashbook -> a.copy(window = w)
+        is Ask.Returns -> a.copy(window = w)
+        is Ask.TopGoods -> a.copy(window = w)
+        is Ask.Goods -> a.copy(window = w)
+        else -> a
+    }
+
+    /** The spans offered for an ask that reads rows, and for one that reads sums. */
+    private val SHORT_SPANS = listOf(
+        VoiceQuestion.Window.TODAY, VoiceQuestion.Window.THIS_WEEK, VoiceQuestion.Window.THIS_MONTH, VoiceQuestion.Window.LAST_MONTH
+    )
+    private val LONG_SPANS = listOf(
+        VoiceQuestion.Window.THIS_MONTH, VoiceQuestion.Window.LAST_MONTH, VoiceQuestion.Window.LAST_6_MONTHS,
+        VoiceQuestion.Window.THIS_YEAR, VoiceQuestion.Window.LAST_YEAR, VoiceQuestion.Window.ALL_TIME
+    )
+
+    /**
+     * A span he cannot give is never turned into one he can (15 Nov 2026). Two cases: the sentence counts days, weeks,
+     * months or years he has no span for ("last 3 months", "10 days ago", "the first 2 weeks", the fiscal year —
+     * [VoiceQuestion.unsupportedSpan]), or it names a longer span ([VoiceQuestion.Window.isLong]) for a question that
+     * lists rows. Either way the question is kept and he says which spans he can give, each a tap; a figure for another
+     * span is never said in its place. A guess stays a guess ([Ask.Guessed]).
+     */
+    private fun limitSpan(heard: String, ask: Ask): Ask {
+        val inner = if (ask is Ask.Guessed) ask.ask else ask
+        if (!spanMatters(inner)) return nowWithSpan(heard, ask, inner)
+        val sums = longOk(inner)
+        val tooLong = !sums && spanOf(inner)?.isLong == true
+        if (!tooLong && !(heard.isNotEmpty() && VoiceQuestion.unsupportedSpan(heard))) return ask
+        val limit = Ask.SpanLimit((if (sums) LONG_SPANS else SHORT_SPANS).map { over(inner, it) }, long = sums)
+        return if (ask is Ask.Guessed) Ask.Guessed(limit) else limit
+    }
+
+    /**
+     * A question about how the book stands now, asked with a span ("pichle saal kitne customers", "Ali ka hisaab last month",
+     * "last year ka drawer") (15 Nov 2026): the book keeps no earlier standing of these, so the answer is today's and the
+     * card says so first ([Ask.Now]) — the span left out in silence read as that span's own figure. [inner] is an ask whose
+     * answer does not change with a span ([spanMatters] said no). Today's span and the whole book's change nothing, and a
+     * sentence with no span is answered as it was.
+     */
+    private fun nowWithSpan(heard: String, ask: Ask, inner: Ask): Ask {
+        if (heard.isEmpty() || !standsNow(inner) || !spanSaid(heard)) return ask
+        val now = Ask.Now(inner)
+        return if (ask is Ask.Guessed) Ask.Guessed(now) else now
+    }
+
+    /** The asks that tell how the book stands today: its balances, counts, a person's or a product's facts, the drawer. */
+    private fun standsNow(a: Ask): Boolean = when (a) {
+        is Ask.Figure, is Ask.Parties, is Ask.Person, is Ask.Status, is Ask.Count, is Ask.Goods, Ask.Drawer, Ask.Qarz -> true
+        else -> false
+    }
+
+    /** Whether the sentence says a span other than today and the whole book: the two that "stands now" already is. */
+    private fun spanSaid(heard: String): Boolean {
+        if (VoiceQuestion.unsupportedSpan(heard)) return true
+        val w = VoiceQuestion.windowOf(heard) ?: return false
+        return w != VoiceQuestion.Window.TODAY && w != VoiceQuestion.Window.ALL_TIME
+    }
+
+    /**
+     * The one door every ask passes before the book is read: a longer span never reaches a reader that lists rows, however
+     * the ask came (a tap on a chip, an answer repeated, a question carried on from the last one).
+     */
+    fun keepWithinReach(ask: Ask): Ask = limitSpan("", ask)
 
     /**
      * Money that came in is never the answer to money that went out (14 Nov 2026, the owner's sentences: "aaj maine kis
@@ -347,7 +514,7 @@ object Hudhud {
     /** The sense's own reading of [heard] (tests: how far it reaches alone); null when the bank finds nothing. */
     internal fun bySense(heard: String, names: List<Name>, topics: List<Topic>, language: String?, goods: List<Name>): Pair<Ask, Double>? {
         val guesses = HudhudSense.rank(
-            heard,
+            senseHeard(heard, names, goods),
             isName = { w -> w !in QUIET_SET && w !in VOCATIVE_SET && !HudhudMind.isHardWord(w) && knownName(w, names) },
             isItem = { w -> w !in QUIET_SET && !HudhudMind.isHardWord(w) && knownName(w, goods) }
         )
@@ -372,8 +539,58 @@ object Hudhud {
     private fun isNoteAsk(a: Ask): Boolean =
         (a is Ask.Person && a.facet == Facet.NOTE) || (a is Ask.NeedName && a.facet == Facet.NOTE)
 
+    /**
+     * What each word of [said] means, as the rules read a sentence ([byRules] and [rulesOwnFacet] read it alike): a word the
+     * book knows as somebody's or a product's name, a day word or a figure's word is never read by its sound.
+     */
+    private fun mindOf(said: List<String>, joined: String, names: List<Name>, goods: List<Name>, language: String?): HudhudMind.Read {
+        val figureWords = VoiceQuestion.keywordsIn(joined)
+        return HudhudMind.read(said, language) { w ->
+            // A thank-you's own word is never matched by sound to something else ("thanks" read as staff, 15 Nov 2026).
+            w in QUIET_SET || w in COURTESY_WORDS || w in DAY_WORDS || w in figureWords || knownName(w, names) || knownName(w, goods)
+        }
+    }
+
+    /**
+     * The three things about a customer only the rules know (15 Nov 2026): since when he deals with the shop, his last entry
+     * and how many entries he has. The bank has no meaning of their own ([labelOf] gives each "party_details"), so a sense
+     * sure of "last payment" turned "Ali Raza ki aakhri entry" into his last payment, and a sense sure of a count of the book
+     * dropped the man from "अली रज़ा की कितनी एंट्री" (his name, saved in Latin letters, is not named surely by two short
+     * Devanagari words, and a question of the shop the sense is all but certain of then wins). The rules' reading stands when
+     * the sentence says entry (or "since when", or the first entry) and says no payment: with a payment word in it the sense
+     * is the better judge, "Ali Raza ka aakhri paisa kab aaya" being his last payment.
+     */
+    private fun rulesOwnFacet(ruled: Ask, heard: String, names: List<Name>, goods: List<Name>, language: String?): Boolean {
+        val facet = (ruled as? Ask.Person)?.facet ?: return false
+        if (facet != Facet.SINCE && facet != Facet.LAST_ENTRY && facet != Facet.ENTRIES) return false
+        val said = words(heard)
+        val m = mindOf(said, said.joinToString(" "), names, goods, language)
+        if (m.has(HudhudMind.C.PAYMENT)) return false
+        return if (facet == Facet.SINCE) m.has(HudhudMind.C.SINCE_WHEN) || (m.has(HudhudMind.C.FIRST) && m.has(HudhudMind.C.ENTRY))
+        else m.has(HudhudMind.C.ENTRY)
+    }
+
+    /** How many words of [m] mean "last": "Ali Raza ka last payment last month" has two, the facet's and the span's. */
+    private fun lastWordsIn(m: HudhudMind.Read): Int = m.said.indices.count { HudhudMind.C.LAST in m.at(it) }
+
+    /**
+     * Whether the one "last" of a sentence is its span's own (15 Nov 2026): "Ali Raza last month", "uska pichle saal ka hisaab", "what
+     * did he pay last year". The span is one he tells or one he cannot, its words hold "last", and there is no second "last" — that
+     * one is the facet's ("Ali Raza ka last payment last month": his last payment, over a span he cannot filter). One rule for the
+     * rules ([byRules], [followUp]) and for [decide], so that the sense, which learnt "last" as a last payment, does not turn the
+     * span's word into one, and the rules do not read it as his last entry.
+     */
+    private fun lastIsSpansOwn(heard: String, m: HudhudMind.Read): Boolean =
+        (VoiceQuestion.unsupportedSpan(heard) || VoiceQuestion.lastIsSpan(heard)) && lastWordsIn(m) < 2
+
+    private fun spanOwnsLast(heard: String, names: List<Name>, goods: List<Name>, language: String?): Boolean {
+        if (VoiceQuestion.windowOf(heard) == null && !VoiceQuestion.unsupportedSpan(heard)) return false
+        val said = words(heard)
+        return lastIsSpansOwn(heard, mindOf(said, said.joinToString(" "), names, goods, language))
+    }
+
     private fun groundOf(a: Ask): Ground = when (a) {
-        Ask.Unknown, is Ask.DidYouMean, is Ask.NeedName, is Ask.Guessed -> Ground.NONE
+        Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now -> Ground.NONE
         Ask.Hello -> Ground.WEAK
         is Ask.Parties -> if (a.ids.size > 1) Ground.WEAK else Ground.MEDIUM
         is Ask.Shop, is Ask.Help -> Ground.MEDIUM
@@ -420,16 +637,29 @@ object Hudhud {
             val folds = own.map { NameSearch.fold(it) }.filter { it.isNotEmpty() }.toSet()
             // Across scripts a name meets its spelling by its consonants ("بشیر" and "Bashir"): three or more is a name.
             val bones = own.map { HudhudMind.skeleton(it) }.filter { it.length >= 3 }.toSet()
-            val hits = said.filter { w -> NameSearch.fold(w) in folds || HudhudMind.skeleton(w) in bones }
-            if (hits.distinct().size >= 2) return true
-            if (hits.any { w -> NameSearch.fold(w).length >= 4 || HudhudMind.skeleton(w).length >= 3 }) return true
+            val parts = partsOf(n.name)
+            val hits = HashSet<String>()
+            var distinctive = false
+            for (w in said) {
+                val f = NameSearch.fold(w)
+                val sk = HudhudMind.skeleton(w)
+                val bySpelling = f in folds || sk in bones
+                // A name of few consonants ("Ali Raza") is met in Hindi, Bengali or Arabic script only by [bridges].
+                val across = bridgedLatin(saidForms(w), parts)
+                if (!bySpelling && across == null) continue
+                hits += w
+                if (bySpelling && (f.length >= 4 || sk.length >= 3)) distinctive = true
+                if (across != null && (across.length >= 4 || HudhudMind.skeleton(across).length >= 3)) distinctive = true
+            }
+            if (hits.size >= 2 || distinctive) return true
         }
         return false
     }
 
     /**
-     * Whether any word of [heard] is a word of [ids]' names (by its spelling or its consonants). None: the person came
-     * from the question before ("uska number?", a chip under his answer) — carried on, as surely as named.
+     * Whether any word of [heard] is a word of [ids]' names (by its spelling, its consonants, or — in another script — its
+     * [bridges]). None: the person came from the question before ("uska number?", a chip under his answer) — carried on, as
+     * surely as named.
      */
     private fun namedAtAll(heard: String, names: List<Name>, ids: List<Long>): Boolean {
         val said = words(heard).filter { it !in QUIET_SET && it !in VOCATIVE_SET }
@@ -438,7 +668,11 @@ object Hudhud {
             val own = words(n.name)
             val folds = own.map { NameSearch.fold(it) }.filter { it.isNotEmpty() }.toSet()
             val bones = own.map { HudhudMind.skeleton(it) }.filter { it.length >= 2 }.toSet()
-            if (said.any { w -> NameSearch.fold(w) in folds || HudhudMind.skeleton(w) in bones }) return true
+            val parts = partsOf(n.name)
+            if (said.any { w ->
+                    NameSearch.fold(w) in folds || HudhudMind.skeleton(w) in bones ||
+                        (!HudhudMind.isHardWord(w) && bridgedLatin(saidForms(w), parts) != null)
+                }) return true
         }
         return false
     }
@@ -457,8 +691,29 @@ object Hudhud {
         // and the sense, which learnt "details" and "number" from sentences with a name in them, would turn "Ali ka note"
         // into his details. Before anything else, so no branch below can reach it.
         if (isNoteAsk(ruled)) return ruled
-        val top = guesses.firstOrNull() ?: return ruled
+        // His first day, his last entry, how many entries he has (15 Nov 2026): the bank has no meaning for them either.
+        if (rulesOwnFacet(ruled, heard, names, goods, language)) return ruled
+        // A span said on purpose, carried on or said alone (15 Nov 2026): the rules' reading, never the sense's.
+        if (ruled == spanReading(heard, before)) return ruled
+        // What somebody paid or took over a span the sentence states ("Ali Raza ne pichle saal diye", "Ali paid me last
+        // month"): the sense learnt "pichle … diye" as his last payment from sentences with no span in them, and answered
+        // it at 0.95 for every span but this year's and today's (15 Nov 2026). The rules read the span, so the sum stands. A
+        // span he cannot give is read as this month's and told with the spans he has: the sense may not turn that either.
+        if (ruled is Ask.Moved && (VoiceQuestion.windowOf(heard) == ruled.window || VoiceQuestion.unsupportedSpan(heard))) return ruled
+        // A courtesy the sense learnt as a whole sentence ("salam Ali Raza ka number" -> salaam) never overturns what the
+        // rules read when the sentence also asks the book (15 Nov 2026; courtesyOnly).
+        val first = guesses.firstOrNull() ?: return ruled
+        val top = if (first.label in COURTESY && !courtesyOnly(words(heard), names, goods)) {
+            guesses.firstOrNull { it.label !in COURTESY } ?: return ruled
+        } else first
         if (labelOf(ruled) == top.label) return ruled
+        // "Ali Raza last month", "Ali Raza pichle saal" (15 Nov 2026): the "last" is the span's. The rules read a named person with
+        // nothing else asked (his account, or the one fact his words give), and the sense, which learnt "last" as his last
+        // payment from sentences with no span in them, was sure of that at 0.95. Only that reading is turned back: a span's word
+        // is no payment word. A second "last" ("Ali Raza ka last payment last month") is the facet's, and stays with the sense.
+        if (top.label == "party_last_payment" && (ruled is Ask.Parties || ruled is Ask.Person) &&
+            spanOwnsLast(heard, names, goods, language)
+        ) return ruled
         val p = top.score
         fun theirs(): Ask? = askFor(top.label, heard, names, topics, language, goods)
         // Somebody the book holds, named: the sense may tell what is asked of him ("Ali kab dega" is his day, not his
@@ -542,7 +797,10 @@ object Hudhud {
      * owner: "kehne wala jo keyword de raha hai, us hisaab se suggestion de"): the sense's next meanings, each as a
      * question of the book; none that would need a name the words do not give.
      */
-    fun suggest(heard: String, names: List<Name>, topics: List<Topic>, language: String?, goods: List<Name>, skip: Ask? = null): List<Ask> {
+    fun suggest(heard: String, names: List<Name>, topics: List<Topic>, language: String?, goods: List<Name>, skip: Ask? = null): List<Ask> =
+        suggestRead(heard, asRead(names), topics, language, asRead(goods), skip)
+
+    private fun suggestRead(heard: String, names: List<Name>, topics: List<Topic>, language: String?, goods: List<Name>, skip: Ask?): List<Ask> {
         if (!HudhudSense.ready) return closest(heard)
         val skipLabel = skip?.let { labelOf(if (it is Ask.Guessed) it.ask else it) }
         val out = LinkedHashSet<Ask>()
@@ -706,7 +964,7 @@ object Hudhud {
             Move.DANCE -> "act_dance"
             Move.JUMP -> "act_jump"
         }
-        Ask.Unknown, is Ask.DidYouMean, is Ask.NeedName, is Ask.Guessed, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
+        Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
         Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone -> null
     }
 
@@ -774,6 +1032,8 @@ object Hudhud {
             "entry_gave", "entry_got" -> {
                 val entry = VoiceEntry.parse(heard, emptyList(), language)
                 val amount = entry.amount
+                // The count of a span ("6" of "pichle 6 mahine") is no amount of money: the rules' reading stands.
+                if (amount != null && amount in VoiceQuestion.spanFigures(heard)) return null
                 if (amount == null || amount <= 0.0) {
                     if (named.isEmpty()) Ask.NeedName(null) else Ask.Parties(named)
                 } else {
@@ -842,7 +1102,7 @@ object Hudhud {
         // The text size or the theme (14 Nov 2026, the tiers the owner approved): "font bara karo", "dark mode", "theme badlo".
         // A strict reader like the note's — a sentence with any word it does not know is read as before.
         HudhudLook.read(heard) { it in VOCATIVE_SET }?.let { return Ask.Look(it) }
-        talk(said, whole = true)?.let { return it }
+        talk(said, whole = true, names, goods)?.let { return it }
         // Only a calling and nothing asked (13 Nov 2026, the owner: "bhai jaan" opened a customer called "...Bhai"):
         // he answers to being called — "ji, haazir hoon" — and looks for nobody.
         // A greeting with his name ("hello Hudhud", "salaam bhai") stays a greeting, and "Hudhud kya hai" a question.
@@ -855,15 +1115,13 @@ object Hudhud {
         HudhudFaith.read(heard) { w -> knownName(w, names) }?.let { return Ask.About(faithTopic(it)) }
         // What each word means, in any order (13 Nov 2026, Brain v2): "aap ka kya naam hai" and "naam kya hai aap ka"
         // are one question. A word the book knows as somebody's or a product's name is never read by its sound.
-        val figureWords = VoiceQuestion.keywordsIn(joined)
-        val mind = HudhudMind.read(said, language) { w ->
-            w in QUIET_SET || w in DAY_WORDS || w in figureWords || knownName(w, names) || knownName(w, goods)
-        }
+        val mind = mindOf(said, joined, names, goods, language)
         aboutHim(mind, joined) { w -> knownName(w, names) || knownName(w, goods) }?.let { return it }
         val entry = VoiceEntry.parse(heard, emptyList(), language)
         val asking = heard.any { it == '?' || it == '\u061F' } || has(joined, QUESTION) || said.first() in ASKS_FIRST
         // An entry said as a fact: the form opens filled in, the owner saves it (voice entry's own reading).
-        val amount = entry.amount
+        // The count of a span ("3" of "pichle 3 mahine") is no amount of money.
+        val amount = entry.amount?.takeUnless { it in VoiceQuestion.spanFigures(heard) }
         val given = entry.isGiven
         if (!asking && amount != null && amount > 0.0 && given != null) {
             val nameWords = VoiceEntry.nameWords(heard)
@@ -871,6 +1129,12 @@ object Hudhud {
         }
         val figure = VoiceQuestion.classify(heard)
         val window = VoiceQuestion.windowOf(heard)
+        // A span he has no window for ("pichle 3 mahine") stands in as one where the question carries on or says who gave
+        // or took: it then reaches [limitSpan] as the question it is, and is not read as somebody's balance.
+        val spanSaid = window ?: if (VoiceQuestion.unsupportedSpan(heard)) VoiceQuestion.Window.THIS_MONTH else null
+        val spanOwn = if (spanSaid == null) SpanWords.NONE else SpanWords(
+            VoiceQuestion.spanWordsIn(joined), spanSaid in VoiceQuestion.LAST_WINDOWS || VoiceQuestion.unsupportedSpan(heard)
+        )
         val named = whoIsNamed(said, names, topics, mind, window)
         val product = if (named.isEmpty()) whoIsNamed(said, goods, topics, mind, window) else emptyList()
         // "When did he last pay" is the past: only a payment still to come is the Radar's.
@@ -880,10 +1144,22 @@ object Hudhud {
         // hai". Only a sentence of nothing but the note's words, a name and little words ([HudhudNote]); any other is read as
         // before. Taken before the features and the follow-ups: a carried "uska note" is the note, not the balance.
         HudhudNote.read(heard, calling = { it in VOCATIVE_SET }) { w ->
-            knownName(w, names) || knownName(bengaliStem(w), names) || acrossScripts(names, listOf(w)).isNotEmpty()
+            knownName(w, names) || knownName(bengaliStem(w), names)
         }?.let { n -> noteAsk(n, said, names, topics, mind, window, before)?.let { return it } }
         if (named.isEmpty() && product.isEmpty()) byFeature(said, joined, mind, window, topics)?.let { return it }
-        followUp(mind, named, product, figure, window, willPay, before)?.let { return it }
+        // The sentence's one "last" is the span's ("uska last month", "what did Ali pay last year"), not a last entry or payment.
+        val spanLast = spanSaid != null && lastIsSpansOwn(heard, mind)
+        followUp(mind, named, product, figure, spanSaid, spanOwn, willPay, spanLast, before)?.let { return it }
+        // A span said alone with no answer to carry on ("pichle saal?", "last week?", "since the beginning", "pichle 3 mahine"): the
+        // one figure the book gives over a span is its sales, so that is what he takes it for — the card says so ([Ask.Guessed])
+        // and offers the other readings, and a span he cannot give gets the ones he can ([limitSpan]). Before this each language
+        // read such a word by what else it means (the sense took "kal?" for a hop and "last week?" for the backup, "pichle
+        // hafte?" for somebody's last payment). Today alone keeps the day's summary the sense gives it.
+        if (spanSaid != null && spanSaid != VoiceQuestion.Window.TODAY && named.isEmpty() && product.isEmpty() &&
+            figure == null && !willPay && onlySpan(mind, spanOwn)
+        ) {
+            return Ask.Guessed(figureOver(VoiceQuestion.Kind.SALES_MONTH, spanSaid))
+        }
         // "Aap ko kisi cheez ka pata hai?" asks what he knows (13 Nov 2026, the owner's screenshot: it was read as the
         // shop's address, "ka pata"); with a name it is about that person ("aap ko Ali ka pata hai").
         if (knowsFrame(said) && named.isEmpty() && product.isEmpty() && figure == null && !willPay) return Ask.Abilities
@@ -894,9 +1170,31 @@ object Hudhud {
         ) return Ask.NeedName(facetOf(mind))
         if (named.isNotEmpty()) {
             if (willPay) return Ask.WhenPays(named)
-            facetOf(mind)?.let { return Ask.Person(named, it) }
+            // "How much did Bashir pay last month": the "last" is the span's, not his last payment (the same words in English).
+            // A span he cannot give is the span's too ("2 din pehle", "the last fiscal year", "pehle 6 mahine"): its words hold
+            // "first" and "last" as well, and "Ali ne 2 din pehle kitna diya" was his first day (15 Nov 2026). It is read as a
+            // sum over the stand-in span and told with the spans he has ([limitSpan]), never answered as another question.
+            // The same whether or not the sentence says who gave or took: "Ali Raza ka hisaab last month" is his account, not his
+            // last entry (15 Nov 2026).
+            val unsupported = VoiceQuestion.unsupportedSpan(heard)
+            // A second "last" in the sentence is the facet's own ("Ali Raza ka last payment last month": his last payment, over a
+            // span he cannot filter); a single one is the span's.
+            val spanOwnsLast = spanLast
+            // The same for the whole book: "since the beginning", "shuru se ab tak" hold the words of "since when is he a
+            // customer" (15 Nov 2026: "Ali ne shuru se ab tak kitna diya" was his first day).
+            val spanOwnsSince = spanSaid != null && (unsupported || spanSaid == VoiceQuestion.Window.ALL_TIME)
+            facetOf(mind, spanLast)?.let { f ->
+                val spansOwn = (spanOwnsLast && (f == Facet.LAST_PAYMENT || f == Facet.LAST_ENTRY)) || (spanOwnsSince && f == Facet.SINCE)
+                if (!spansOwn) return Ask.Person(named, f)
+            }
             if (figure == null || figure == VoiceQuestion.Kind.TO_GET || figure == VoiceQuestion.Kind.TO_GIVE) {
-                if (window != null && given != null && amount == null) return Ask.Moved(named, window, got = !given)
+                if (spanSaid != null && given != null && amount == null) return Ask.Moved(named, spanSaid, got = !given)
+                // The noun of money that came, over a span, with no verb to say who gave ("Ali Raza ki payment last month", "علی کی
+                // ادائیگی پچھلے مہینے"): what he paid in it, as "uski payment last month" is after his answer ([followUp]). It was his
+                // account, or — by the sense — his last payment, with the span dropped (15 Nov 2026).
+                if (spanSaid != null && amount == null && figure == null && mind.has(HudhudMind.C.PAYMENT)) {
+                    return Ask.Moved(named, spanSaid, got = true)
+                }
                 return Ask.Parties(named)
             }
         }
@@ -916,9 +1214,11 @@ object Hudhud {
         if (has(joined, TODAY_ASK)) return Ask.Today
         helpOf(said, topics)?.let { return Ask.Help(it) }
         // Small talk inside a longer sentence ("thanks a lot", "kaise ho yaar sab theek"): only when nothing else fits.
-        talk(said, whole = false)?.let { return it }
-        if (has(joined, SALAAM)) return Ask.Salaam
-        if (has(joined, HELLO)) return Ask.Hello
+        talk(said, whole = false, names, goods)?.let { return it }
+        // A greeting is the whole answer only when nothing else in the sentence asks the book (15 Nov 2026).
+        val greetingOnly = courtesyOnly(said, names, goods)
+        if (greetingOnly && has(joined, SALAAM)) return Ask.Salaam
+        if (greetingOnly && has(joined, HELLO)) return Ask.Hello
         guess(mind)?.let { return it }
         return Ask.Unknown
     }
@@ -1452,7 +1752,8 @@ object Hudhud {
 
     // ------------------------------------------------------------------------------------------- Brain v2
 
-    private fun quiet(w: String) = w in QUIET_SET || HudhudMind.meaningOf(w) == AND_ONLY
+    // The thank-you and goodbye words ask nothing either (15 Nov 2026): "thanks what is my balance" is read as the balance.
+    private fun quiet(w: String) = w in QUIET_SET || w in COURTESY_WORDS || HudhudMind.meaningOf(w) == AND_ONLY
 
     private val AND_ONLY = setOf(HudhudMind.C.AND)
 
@@ -1539,7 +1840,12 @@ object Hudhud {
         if (m.has(HudhudMind.C.VERSION) &&
             only(HudhudMind.C.VERSION, HudhudMind.C.APP, HudhudMind.C.WHAT, HudhudMind.C.WHICH, HudhudMind.C.YOU, HudhudMind.C.TELL)
         ) return Ask.About(AboutTopic.VERSION)
-        if (m.has(HudhudMind.C.SAFE) &&
+        // The word for "safe" may be a person ("Aman", "Mehfooz", "Aamna"): when the book has someone by it, only a privacy word of
+        // the sentence's own (the data, the app) makes it a question about privacy — "who is Aman" and "Aman ka hisaab" are his.
+        val safeIsAName = m.said.any { w ->
+            HudhudMind.isSoftWord(w) && HudhudMind.C.SAFE in HudhudMind.meaningOf(w) && known(w)
+        }
+        if (m.has(HudhudMind.C.SAFE) && (!safeIsAName || m.any(HudhudMind.C.DATA, HudhudMind.C.APP)) &&
             only(HudhudMind.C.SAFE, HudhudMind.C.DATA, HudhudMind.C.YOU, HudhudMind.C.APP, HudhudMind.C.WHAT, HudhudMind.C.WHERE,
                 HudhudMind.C.ME, HudhudMind.C.TELL, HudhudMind.C.ALL, HudhudMind.C.INFO, HudhudMind.C.HIS, HudhudMind.C.WHO,
                 HudhudMind.C.CAME, HudhudMind.C.ACCOUNT) ||
@@ -1599,17 +1905,25 @@ object Hudhud {
      * What is asked about a named customer or supplier beside his balance; null when only the balance is (his name
      * alone, "ka hisaab", "kitna baqaya"). "Kab dega" (when he will pay) is the Radar's and is taken before this.
      */
-    private fun facetOf(m: HudhudMind.Read): Facet? = when {
+    /**
+     * What is asked of a customer by the concepts of a sentence. [spanLast]: its one "last" is a span's ([lastIsSpansOwn]), no word
+     * for his last payment or last entry — "Ali Raza ke baare mein last year" is his details, "uski kitni entries last year" how many
+     * entries he has, and neither the last entry (15 Nov 2026).
+     */
+    private fun facetOf(m: HudhudMind.Read, spanLast: Boolean = false): Facet? {
+        val last = !spanLast && m.has(HudhudMind.C.LAST)
+        return when {
         m.has(HudhudMind.C.PHONE) -> Facet.PHONE
         m.has(HudhudMind.C.LIMIT) -> Facet.LIMIT
         m.has(HudhudMind.C.PROMISE) -> Facet.PROMISE
         m.has(HudhudMind.C.SINCE_WHEN) || (m.has(HudhudMind.C.FIRST) && m.any(HudhudMind.C.ENTRY, HudhudMind.C.WHEN, HudhudMind.C.DATE, HudhudMind.C.PAYMENT)) -> Facet.SINCE
-        m.has(HudhudMind.C.PAYMENT) && m.any(HudhudMind.C.LAST, HudhudMind.C.WHEN, HudhudMind.C.DATE) -> Facet.LAST_PAYMENT
-        m.has(HudhudMind.C.LAST) || (m.has(HudhudMind.C.ENTRY) && m.any(HudhudMind.C.WHEN, HudhudMind.C.DATE)) -> Facet.LAST_ENTRY
+        m.has(HudhudMind.C.PAYMENT) && (last || m.any(HudhudMind.C.WHEN, HudhudMind.C.DATE)) -> Facet.LAST_PAYMENT
+        last || (m.has(HudhudMind.C.ENTRY) && m.any(HudhudMind.C.WHEN, HudhudMind.C.DATE)) -> Facet.LAST_ENTRY
         m.any(HudhudMind.C.ENTRY, HudhudMind.C.TIMES) && m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.ALL) -> Facet.ENTRIES
         m.any(HudhudMind.C.FATHER, HudhudMind.C.VILLAGE, HudhudMind.C.ADDRESS, HudhudMind.C.INFO, HudhudMind.C.WHERE, HudhudMind.C.NAME) -> Facet.DETAILS
         m.has(HudhudMind.C.WHO) && !m.any(HudhudMind.C.PAYMENT, HudhudMind.C.ENTRY, HudhudMind.C.HOW_MANY) -> Facet.DETAILS
         else -> null
+        }
     }
 
     /**
@@ -1751,14 +2065,16 @@ object Hudhud {
      */
     private fun followUp(
         m: HudhudMind.Read, named: List<Long>, product: List<Long>, figure: VoiceQuestion.Kind?,
-        window: VoiceQuestion.Window?, willPay: Boolean, before: Ask?
+        window: VoiceQuestion.Window?, spanOwn: SpanWords, willPay: Boolean, spanLast: Boolean, before: Ask?
     ): Ask? {
         if (before == null) return null
-        val plain = m.all.all { it in FOLLOW_OK }
+        val plain = plainAround(m, spanOwn)
+        // A span said with "how much" is the same: "aur pichle saal kitna?" (15 Nov 2026: it was the cashbook, or the tickets).
+        val carrying = plainAround(m, spanOwn, SPAN_ASKS)
         if (m.has(HudhudMind.C.HIS) && named.isEmpty() && product.isEmpty()) {
             partyOf(before)?.let { ids ->
                 if (willPay) return Ask.WhenPays(ids)
-                facetOf(m)?.let { return Ask.Person(ids, it) }
+                facetOf(m, spanLast)?.let { return Ask.Person(ids, it) }
                 if (window != null && m.has(HudhudMind.C.PAYMENT)) {
                     val got = (before as? Ask.Moved)?.got ?: true
                     return Ask.Moved(ids, window, got)
@@ -1767,6 +2083,9 @@ object Hudhud {
             }
             goodsOf(before)?.let { ids -> goodsAsk(m, ids, figure, window)?.let { return it } }
         }
+        // A sentence that is nothing but a span carries the last question over it — before the bare facets below: English's
+        // "last week?" holds the word of "last payment" and, after what a customer paid, was his last entry (15 Nov 2026).
+        if (named.isEmpty() && product.isEmpty() && figure == null && window != null && carrying) carryOver(before, window)?.let { return it }
         // A bare question about the one the last answer was about, with no "uska" (13 Nov 2026: the chips' own words,
         // typed or said — "number?", "aakhri adaigi", "waade ka din", "tafseel", "kab dega?", "rate?", "stock?").
         // Nobody else is named and the sentence asks nothing of its own; a figure word stays the shop's figure, except
@@ -1774,7 +2093,7 @@ object Hudhud {
         if (named.isEmpty() && product.isEmpty()) {
             partyOf(before)?.takeIf { it.size == 1 }?.let { ids ->
                 if (willPay && !m.has(HudhudMind.C.WHO)) return Ask.WhenPays(ids)
-                val facet = facetOf(m) ?: bareFacet(m)
+                val facet = facetOf(m, spanLast) ?: bareFacet(m)
                 val ownWords = figure == null || (figure in OWED_FIGURES && facet in OWED_FACETS)
                 if (facet != null && ownWords && m.onlyOf(PERSON_OK, ::quietOrDay)) return Ask.Person(ids, facet)
                 if (figure == null && m.has(HudhudMind.C.ACCOUNT) && m.onlyOf(BALANCE_OK, ::quiet)) return Ask.Parties(ids)
@@ -1796,25 +2115,75 @@ object Hudhud {
         if (product.isNotEmpty() && named.isEmpty() && plain && before is Ask.Goods) {
             return Ask.Goods(product, before.facet, window ?: before.window)
         }
-        if (named.isEmpty() && product.isEmpty() && figure == null && window != null && plain) {
-            return when (before) {
-                is Ask.Figure -> when (before.kind) {
-                    VoiceQuestion.Kind.SALES_TODAY, VoiceQuestion.Kind.SALES_MONTH -> figureOver(VoiceQuestion.Kind.SALES_MONTH, window)
-                    VoiceQuestion.Kind.PROFIT_MONTH -> figureOver(VoiceQuestion.Kind.PROFIT_MONTH, window)
-                    else -> null
-                }
-                is Ask.Period -> figureOver(
-                    if (before.measure == Measure.SALES) VoiceQuestion.Kind.SALES_MONTH else VoiceQuestion.Kind.PROFIT_MONTH, window
-                )
-                is Ask.Moved -> Ask.Moved(before.ids, window, before.got)
-                is Ask.Count -> Ask.Count(before.thing, window)
-                is Ask.Deliveries -> Ask.Deliveries(window)
-                is Ask.Activity -> Ask.Activity(window)
-                is Ask.Goods -> Ask.Goods(before.ids, before.facet, window)
-                else -> null
-            }
-        }
         return null
+    }
+
+    /**
+     * The question of the last answer, over another span of days ("aur pichle saal?", "and last week", "aur shuru se ab
+     * tak"): the sales or the profit, what a customer paid, a count, the deliveries, the day's doings, the money that came in,
+     * the cashbook, the returns, the top goods, a product's sale. Null for an answer that has no span (a balance, a phone).
+     */
+    private fun carryOver(before: Ask, window: VoiceQuestion.Window): Ask? = when (before) {
+        is Ask.Figure -> when (before.kind) {
+            VoiceQuestion.Kind.SALES_TODAY, VoiceQuestion.Kind.SALES_MONTH -> figureOver(VoiceQuestion.Kind.SALES_MONTH, window)
+            VoiceQuestion.Kind.PROFIT_MONTH -> figureOver(VoiceQuestion.Kind.PROFIT_MONTH, window)
+            else -> null
+        }
+        is Ask.Period -> figureOver(
+            if (before.measure == Measure.SALES) VoiceQuestion.Kind.SALES_MONTH else VoiceQuestion.Kind.PROFIT_MONTH, window
+        )
+        is Ask.Moved -> Ask.Moved(before.ids, window, before.got)
+        is Ask.Count -> Ask.Count(before.thing, window)
+        is Ask.Deliveries -> Ask.Deliveries(window)
+        is Ask.Activity -> Ask.Activity(window)
+        is Ask.Collected -> Ask.Collected(window)
+        is Ask.Cashbook -> Ask.Cashbook(window)
+        is Ask.Returns -> Ask.Returns(window)
+        is Ask.TopGoods -> Ask.TopGoods(window)
+        is Ask.Goods -> Ask.Goods(before.ids, before.facet, window)
+        else -> null
+    }
+
+    /**
+     * True when a sentence adds nothing of its own to the question it carries on: every word means nothing Hudhud knows, is
+     * one of the follow-up's little words ([FOLLOW_OK]), is a word of the span itself ("last" in "last year", the "since" and
+     * "beginning" of "since the beginning" — see [VoiceQuestion.spanWordsIn]) or is the "last" of a last span that the app
+     * language writes in another word (Bengali "শেষ ৬ মাস", Arabic "آخر 6 أشهر").
+     */
+    private fun plainAround(m: HudhudMind.Read, own: SpanWords, extra: Set<HudhudMind.C> = emptySet()): Boolean = m.said.indices.all { i ->
+        m.said[i] in own.words || m.at(i).all { it in FOLLOW_OK || it in extra || (own.last && it == HudhudMind.C.LAST) }
+    }
+
+    /**
+     * True when a sentence is nothing but a span: its words, a count, the day's words and the little words between, each
+     * one of them known — a word of its own that Hudhud knows not ("pichle saal bikri wala"), or a name, is not a bare span.
+     */
+    private fun onlySpan(m: HudhudMind.Read, own: SpanWords): Boolean = m.said.indices.all { i ->
+        val w = m.said[i]
+        quietOrDay(w) || w in own.words || w == JOINING_AND || w.all { it.isDigit() } || VoiceEntry.countWord(w) != null ||
+            m.at(i).let { c -> c.isNotEmpty() && c.all { it in FOLLOW_OK || (own.last && it == HudhudMind.C.LAST) } }
+    }
+
+    /** Arabic's and Persian's "and" is one letter (also a letter of many words): it joins and means nothing else in a span. */
+    private const val JOINING_AND = "و"
+
+    /**
+     * The span a sentence says ([VoiceQuestion.spanWordsIn]) and whether its "last" is the span's own (a last span, or a count
+     * he cannot give: "last 3 months"): the words that a carried question or a bare span may count as the span's.
+     */
+    private class SpanWords(val words: Set<String>, val last: Boolean) {
+        companion object { val NONE = SpanWords(emptySet(), false) }
+    }
+
+    /**
+     * The reading a span said on purpose gets (15 Nov 2026): carried on from the answer before when there is one, else the
+     * sales over it taken as a guess. The sense is never allowed to turn it ([decide]): it learnt no sentence of "and last
+     * year", and sure of one word it turned the carried question into another (Farsi "و پارسال" into the cashbook, an English
+     * "and last 6 months" after a profit into the sales).
+     */
+    private fun spanReading(heard: String, before: Ask?): Ask? {
+        val window = VoiceQuestion.windowOf(heard) ?: if (VoiceQuestion.unsupportedSpan(heard)) VoiceQuestion.Window.THIS_MONTH else return null
+        return before?.let { carryOver(it, window) } ?: Ask.Guessed(figureOver(VoiceQuestion.Kind.SALES_MONTH, window))
     }
 
     /** A facet word said alone after a customer: his entries, his last payment. */
@@ -1872,25 +2241,73 @@ object Hudhud {
 
     /** One of the book's own names (a customer, a supplier, a product), recognised outright. */
     private fun knownName(w: String, names: List<Name>): Boolean =
-        names.isNotEmpty() && NameSearch.scoreSpoken(names, listOf(w)) { it.name }.any { it.strongHits > 0 }
+        names.isNotEmpty() &&
+            ((!foldBlocked(w, names) && NameSearch.scoreSpoken(names, listOf(w)) { it.name }.any { it.strongHits > 0 }) ||
+                meetsAcrossScripts(w, names))
+
+    /**
+     * Whether a said word may not name one of [names] by the search's sound alone (15 Nov 2026). The search folds every script
+     * into one alphabet, so a word of Hindi, Bengali or Arabic script that is only a word of the language sounds like a
+     * Latin name: "बहुत" ("very") was every Butt in the book, "चलो" ("let us go") the product Chlorpyrifos, "যাবে" ("will
+     * go") a Javed — in the HEAD of 14 Nov as well, found by trying every word the bank taught against a book of seventy-two
+     * names. A word the bank taught is the language's ([ordinaryWord]: every name in it is a placeholder), so it
+     * names a customer or a product only when the book holds it in that same script (the owner typed it so), or, in Arabic
+     * script, when its letters meet the Latin spelling's ([bridges], read by [meetsAcrossScripts] and [acrossScripts], which
+     * this does not touch). Latin words keep the search as it was.
+     */
+    private fun foldBlocked(w: String, names: List<Name>): Boolean {
+        val script = scriptOf(w)
+        if (script == Script.LATIN || !ordinaryWord(Form(w))) return false
+        val fw = NameSearch.fold(w)
+        return names.none { n -> scriptOf(n.name) == script && words(n.name).any { it == w || NameSearch.fold(it) == fw } }
+    }
+
+    /**
+     * Whether [w] is a word of one of [names] written in another script ([bridges]) — a Hindi, Bengali or Arabic-script word
+     * against a name saved in Latin letters, or the other way. Never a word the language itself uses
+     * ([HudhudMind.isHardWord]). One notion for the sense's name slot, the protection of a named person and the name
+     * search ([acrossScripts]); before it the sense saw "আলী রজা" as two unknown words, not as a customer.
+     */
+    private fun meetsAcrossScripts(w: String, names: List<Name>): Boolean {
+        if (HudhudMind.isHardWord(w)) return false
+        val forms = saidForms(w)
+        if (!mayBridge(forms, names)) return false
+        return names.any { bridgedLatin(forms, partsOf(it.name)) != null }
+    }
 
     /**
      * Whoever (or whichever product) the words name. A concept word that is also a common name part ("Malik", "Store",
-     * "Din") is looked at only when the plain words name nobody; then a single such word gives way to a question about
-     * the shop ("dukaan ka malik kaun hai" is not a customer called Malik), while two of them together still name
-     * someone ("Malik Store ka number").
+     * "Din", "Aman") is looked at only when the plain words name nobody; then a single such word gives way to a question
+     * about the shop ("dukaan ka malik kaun hai" is not a customer called Malik), while two of them together still name
+     * someone ("Malik Store ka number"). It gives way only to a question the word itself makes: a shop question that is
+     * only "whose?" ([asksWhose]: "number" with nobody named) is the very question the name answers, so "Aman ka number"
+     * and "Mehfooz ki limit" are the customers'. When the plain words name several ("Baz Muhammad" among the
+     * Muhammads) the soft word narrows them, never widens.
+     *
+     * A word that calls him or befriends ([VOCATIVE], [FILLER]) is read the same way when it is also somebody's name
+     * ([CALLS_AS_NAMES]): "رفیق" is "friend" in Persian and Rafiq in Urdu letters, "dost", "yar" and "jan" begin Dost
+     * Muhammad, Yar Muhammad and Jan Muhammad. Never a name beside a name that is plain ("Ali bhai"), a name only when the
+     * book has such a person and the rest names nobody. Only the words listed: "okay" or "dear" never look for anybody.
      */
     private fun whoIsNamed(
         said: List<String>, names: List<Name>, topics: List<Topic>, m: HudhudMind.Read, window: VoiceQuestion.Window?
     ): List<Long> {
         if (names.isEmpty()) return emptyList()
-        namedIn(said, names, topics, soft = false).takeIf { it.isNotEmpty() }?.let { return it }
-        val soft = said.count { HudhudMind.isSoftWord(it) }
-        if (soft == 0) return emptyList()
+        val plain = namedIn(said, names, topics, soft = false)
+        val soft = said.count { HudhudMind.isSoftWord(it) } + (if (said.any { it in CALLS_AS_NAMES }) 1 else 0)
+        if (soft == 0 || plain.size == 1) return plain
         val loose = namedIn(said, names, topics, soft = true)
-        if (loose.isNotEmpty() && soft < 2 && book(m, window) != null) return emptyList()
+        if (plain.isNotEmpty()) return loose.filter { it in plain }.ifEmpty { plain }
+        if (loose.isNotEmpty() && soft < 2) {
+            val shop = book(m, window)
+            if (shop != null && !asksWhose(shop)) return emptyList()
+        }
         return loose
     }
+
+    /** A shop reading that only asks "whose?": a person's fact with nobody named, which a name in the sentence answers. */
+    private fun asksWhose(a: Ask): Boolean =
+        a is Ask.NeedName || (a is Ask.DidYouMean && a.options.any { it is Ask.NeedName })
 
     /**
      * What the note reader's sentence asks (14 Nov 2026): the note of the person the words name; of the person the talk
@@ -1970,7 +2387,9 @@ object Hudhud {
     /**
      * The first and last moment of a span of days, as [from, to): today and yesterday whole, this week from the shop's
      * own first day (PartyWhen.THIS_WEEK, the sales report's week) to tonight, last week the seven days before it, this
-     * month and last month by the calendar — the same spans the screens they open read.
+     * month and last month by the calendar — the same spans the screens they open read. The longer spans (15 Nov 2026):
+     * the last 6 months counted whole back from today, this year and last year January to December by the calendar, and
+     * the whole book from the first moment to tonight.
      */
     fun span(window: VoiceQuestion.Window, now: Long = System.currentTimeMillis(), tz: TimeZone = TimeZone.getDefault()): Pair<Long, Long> {
         fun startOf(c: Calendar): Long = c.apply {
@@ -1983,6 +2402,8 @@ object Hudhud {
         val tomorrow = plusDays(today, 1)
         val week = PartyWhen.THIS_WEEK.window(now, tz)?.first ?: today
         val month = plusMonths(today, 0)
+        fun plusYears(t: Long, years: Int) = startOf(at(t).apply { add(Calendar.YEAR, years) })
+        val year = startOf(at(today).apply { set(Calendar.DAY_OF_YEAR, 1) })
         return when (window) {
             VoiceQuestion.Window.TODAY -> today to tomorrow
             VoiceQuestion.Window.YESTERDAY -> plusDays(today, -1) to today
@@ -1990,14 +2411,38 @@ object Hudhud {
             VoiceQuestion.Window.LAST_WEEK -> plusDays(week, -7) to week
             VoiceQuestion.Window.THIS_MONTH -> month to plusMonths(today, 1)
             VoiceQuestion.Window.LAST_MONTH -> plusMonths(today, -1) to month
+            // Six months back from today, counted whole: today and the days since the same date six months ago (on the
+            // 15th of November, from the 16th of May), so no day is counted twice and the first day is shown on the card.
+            VoiceQuestion.Window.LAST_6_MONTHS -> plusDays(startOf(at(today).apply { add(Calendar.MONTH, -6) }), 1) to tomorrow
+            VoiceQuestion.Window.THIS_YEAR -> year to plusYears(year, 1)
+            VoiceQuestion.Window.LAST_YEAR -> plusYears(year, -1) to year
+            VoiceQuestion.Window.ALL_TIME -> 0L to tomorrow
         }
     }
 
     /** The customer an entry names: one when NameSearch is sure, else those it could be (at most five), else none. */
     private fun partiesOf(names: List<Name>, nameWords: List<String>): List<Long> {
         if (names.isEmpty() || nameWords.isEmpty()) return emptyList()
-        NameSearch.confidentMatch(names, nameWords) { it.name }?.let { return listOf(it.id) }
-        return nearBest(names, nameWords).ifEmpty { acrossScripts(names, nameWords) }
+        return resolveNames(names, nameWords, nameWords)
+    }
+
+    /**
+     * The names the said words name: the one [NameSearch] is confident of, else those it recognises near the best, else those
+     * the letters meet across scripts ([acrossScripts]). [stemmed] are the words for the search proper (a Bengali case ending
+     * off), [plain] the words for the bridge, which reads the ending itself.
+     *
+     * The search is confident from a fold, and a fold loses what a word of another script does not write: "امن" folds to "amn",
+     * which BEGINS the folded "Aamna" and only comes near the folded "Aman", so a book with an Aman Khan and an Aamna Bibi
+     * answered Aamna's number to "امن کا نمبر" (15 Nov 2026) — and the letters meet both alike. When the letters meet several
+     * names as well as the confident one, the answer is a choice, never a guess. Same-script and Latin-only words never reach
+     * the bridge ([mayBridge]), so nothing changes for them.
+     */
+    private fun resolveNames(names: List<Name>, stemmed: List<String>, plain: List<String>): List<Long> {
+        NameSearch.confidentMatch(names, stemmed) { it.name }?.let { sure ->
+            val across = acrossScripts(names, plain)
+            return if (across.size > 1 && sure.id in across) across else listOf(sure.id)
+        }
+        return nearBest(names, stemmed).ifEmpty { acrossScripts(names, plain) }
     }
 
     /** Every name the said words recognise (not merely come near) and that scores close to the best, at most five. */
@@ -2009,42 +2454,123 @@ object Hudhud {
     }
 
     /**
-     * A name saved in one script and said in the other (13 Nov 2026): Urdu, Sindhi, Arabic and Persian leave the short
-     * vowels unwritten, so a recogniser's "بشیر" folds to "bsir" while the book's "Bashir" folds to "basir", and the
-     * name search finds only a near miss — a question in Urdu about a customer saved in Roman letters found nobody.
-     * Here a word meets a word of a name when one is in those scripts, the other in Latin letters, and the Latin
-     * spelling is the other with only vowels put in ("b[a]sir"); "Bushra" ("busra") is not "بشیر" ("bsir"). Every name
-     * met so is offered, at most five — a choice, as [nearBest] gives one; none when more would be.
+     * A name saved in one script and said in another (13 Nov 2026; Hindi and Bengali 15 Nov 2026). Urdu, Sindhi, Arabic and
+     * Persian leave the short vowels unwritten, so a recogniser's "بشیر" folds to "bsir" while the book's "Bashir" folds to
+     * "basir", and the name search finds only a near miss. Hindi and Bengali write every vowel but the inherent "a" ("बशीर" is
+     * "bsir" too, "रज़ा" "rza"): a customer saved in Roman letters and asked for in Hindi or Bengali was not found at all —
+     * "बशीर अहमद का नंबर" was answered "whose?", "বশীর আহমদের হিসাব" was the whole book's, and a note's question was a jump.
+     * Here a word meets a word of a name when one is in another script and the other in Latin letters. Arabic script is read on
+     * its letters by [HudhudNameBridge] (the consonants one for one, a written long vowel needing a vowel of its own sort in the Latin
+     * spelling, "و" and "ی" the consonants w, v and y where the Latin has one, a name that starts with a vowel written with "ا"
+     * or "ع": "بشیر" is Bashir, "عمران" Imran, "مصطفی" Mustafa, "نوید" Naveed; "Bushra" is not "بشیر" nor "Asim" "وسیم").
+     * Hindi and Bengali write every vowel but the inherent "a": their word, as the search folds it, meets the Latin spelling with
+     * its missing vowels put in ("b[a]sir"); one vowel may stand for another ("मोहम्मद" for "Muhammad") and z is read as j and w
+     * as b, which they do not tell apart. "Bushra" ("busra") is not "बशीर" ("bsir").
+     * A name is met by as many of its words as the sentence has, and only the names met most are offered, at most five — a choice,
+     * as [nearBest] gives one; none when more would be.
      */
     private fun acrossScripts(names: List<Name>, words: List<String>): List<Long> {
-        val said = words.map { it to arabicScript(it) }.map { (w, a) -> NameSearch.fold(w) to a }.filter { it.first.length >= 3 }
-        if (said.none { it.second } && names.none { n -> n.name.any { c -> c in '\u0600'..'\u06FF' } }) return emptyList()
-        val met = names.filter { n ->
-            val parts = n.name.split(' ', '-', '.').filter { it.isNotBlank() }.map { NameSearch.fold(it) to arabicScript(it) }
-                .filter { it.first.isNotEmpty() }
-            said.any { (w, wArabic) ->
-                parts.any { (p, pArabic) ->
-                    when {
-                        wArabic && !pArabic -> vowelsPutIn(w, p)
-                        !wArabic && pArabic -> vowelsPutIn(p, w)
-                        else -> false
-                    }
-                }
-            }
-        }
-        return if (met.size in 1..MAX_NAMES) met.map { it.id } else emptyList()
+        // A Bengali word is read both ways, with its case ending and without ("বশীর" is Bashir; "আলীর" is Ali's): it counts once.
+        val said = words.map { saidForms(it) }
+        if (!mayBridge(said.flatten(), names)) return emptyList()
+        val met = names.map { n ->
+            val parts = partsOf(n.name)
+            n to said.count { forms -> bridgedLatin(forms, parts) != null }
+        }.filter { it.second > 0 }
+        val best = met.maxOfOrNull { it.second } ?: return emptyList()
+        val nearest = met.filter { it.second == best }
+        return if (nearest.size in 1..MAX_NAMES) nearest.map { it.first.id } else emptyList()
     }
 
-    private fun arabicScript(w: String) = w.any { it in '\u0600'..'\u06FF' }
+    /** A said word as the search reads it, with its script; a Bengali word is read both ways, with its case ending and without. */
+    private fun saidForms(w: String): List<Form> =
+        listOf(w, bengaliStem(w)).distinct().map { Form(it) }
 
-    /** [latin] is [bare] with only vowels added to it: "basir" is "bsir" with an "a"; "busra" is not. */
-    private fun vowelsPutIn(bare: String, latin: String): Boolean {
-        if (latin.length < bare.length || bare.length < 3) return false
+    /** The words of a name as the search reads them, each with its script ("Ali Raza" is "ali" and "raza"). */
+    private fun partsOf(name: String): List<Form> =
+        name.split(' ', '-', '.').filter { it.isNotBlank() }.map { Form(it) }.filter { it.folded.isNotEmpty() }
+
+    /** Whether anything can bridge at all: only when a said word or a name is not written in Latin letters. */
+    private fun mayBridge(said: List<Form>, names: List<Name>): Boolean =
+        said.any { it.script != Script.LATIN } || names.any { scriptOf(it.name) != Script.LATIN }
+
+    /**
+     * The Latin spelling (as folded) that a said word meets in one of a name's [parts] written in another script, or null when
+     * it meets none. One notion of "this word is a word of that name across scripts" ([acrossScripts], [knownName],
+     * [namedSurely], [namedAtAll]); the Latin side is what says how distinctive the word is.
+     */
+    private fun bridgedLatin(forms: List<Form>, parts: List<Form>): String? {
+        for (w in forms) for (p in parts) {
+            if (bridges(w, p)) return if (w.script == Script.LATIN) w.folded else p.folded
+        }
+        return null
+    }
+
+    /**
+     * One word as the search reads it: as written ([raw]), folded to the search's one alphabet ([folded]) and the script it is
+     * written in. Arabic script and Latin letters are met on their own letters ([HudhudNameBridge]; the fold has lost what it needs),
+     * which are made once, and only when a word of another script is put beside it.
+     */
+    private class Form(val raw: String) {
+        val folded: String = NameSearch.fold(raw)
+        val script: Script = scriptOf(raw)
+        /** As [VoiceQuestion.normalise] writes it: the spelling the sense's vocabulary and [CALLS_AS_NAMES] are kept in. */
+        val norm: String by lazy(LazyThreadSafetyMode.NONE) { VoiceQuestion.normalise(raw) }
+        val letters: String by lazy(LazyThreadSafetyMode.NONE) {
+            if (script == Script.ARABIC) HudhudNameBridge.arabicLetters(raw) else HudhudNameBridge.latinLetters(raw)
+        }
+    }
+
+    /** The scripts a name is written in that the search folds to Latin letters without being able to put its vowels back. */
+    private enum class Script { LATIN, ARABIC, INDIC }
+
+    private fun scriptOf(w: String): Script = when {
+        w.any { it in '\u0600'..'\u06FF' } -> Script.ARABIC
+        w.any { it in '\u0900'..'\u09FF' } -> Script.INDIC
+        else -> Script.LATIN
+    }
+
+    /** Whether two words of different scripts, one of them Latin, are one name. */
+    private fun bridges(a: Form, b: Form): Boolean = when {
+        a.script == Script.ARABIC && b.script == Script.LATIN -> HudhudNameBridge.meetsLetters(a.letters, b.letters)
+        a.script == Script.LATIN && b.script == Script.ARABIC -> HudhudNameBridge.meetsLetters(b.letters, a.letters)
+        a.script == Script.INDIC && b.script == Script.LATIN -> !ordinaryWord(a) && indicMeets(a.folded, b.folded)
+        a.script == Script.LATIN && b.script == Script.INDIC -> !ordinaryWord(b) && indicMeets(b.folded, a.folded)
+        else -> false
+    }
+
+    /**
+     * Whether a Hindi or Bengali [word] is a word of the language that the bank taught, not somebody's name (15 Nov 2026). The
+     * consonants of a short word fall by chance on a Latin name's: Bengali "উড়ে" (flying) is "ure" and "Urea" has them, Hindi
+     * "बात" (talk) is "bat" and "Butt" has them, and the loose vowels [indicMeets] allows made the product and the customer
+     * the question was about (the held-out set 1,066 → 1,065, and "बात करना आता है" answered Butt's details). Every name in
+     * the bank is a placeholder, so a word it taught ([HudhudSense.knowsWord]) is never one; of sixty Hindi and Bengali names
+     * tried, only the words that call or befriend ("दोस्त", "यार", "ভাই") were taught, and those [CALLS_AS_NAMES] keeps as
+     * names, as the soft pass reads them. Not used for Arabic script, whose letters [HudhudNameBridge] meets one for one and
+     * whose "علی" is the bank's "on" and the name Ali alike.
+     */
+    private fun ordinaryWord(word: Form): Boolean = word.norm !in CALLS_AS_NAMES && HudhudSense.knowsWord(word.norm)
+
+    /**
+     * [bare] is a Hindi or Bengali word as the search folds it — every vowel written but the inherent "a" — and [latin] a name
+     * as the search folds it. They are one name when the Latin spelling is the other with its missing vowels put in, a vowel
+     * standing for another where the scripts write both ("mohmd" and "muhamad"), z and j one letter (the scripts do not tell
+     * them apart) and w the letter these scripts write it with — Hindi's v ("b" once folded), Bengali's "ওয়" ("oy"). A
+     * consonant must be the same: "Bushra" ("busra") is not "बशीर" ("bsir"), however its vowels fall. The bare word is already
+     * folded from Hindi or Bengali, so it never holds a z or a w: only the Latin name is read so.
+     */
+    private fun indicMeets(bare: String, latin: String): Boolean {
+        if (bare.length < 3) return false
+        val l = latin.replace('z', 'j')
+        return indicRun(bare, l.replace('w', 'b')) || ('w' in l && indicRun(bare, l.replace("w", "oy")))
+    }
+
+    private fun indicRun(bare: String, latin: String): Boolean {
         var i = 0
         for (c in latin) {
             when {
                 i < bare.length && c == bare[i] -> i++
-                c in "aeiou" -> {}
+                c in "aeiou" -> if (i < bare.length && bare[i] in "aeiou") i++
                 else -> return false
             }
         }
@@ -2178,13 +2704,64 @@ object Hudhud {
 
     // ------------------------------------------------------------------------------------------------ small talk
 
+    /** The four courtesy labels: a hello is not a question, whatever follows it (15 Nov 2026). */
+    private val COURTESY = setOf("salaam", "hello", "thanks", "bye")
+
+    /** Every word the courtesy phrases are made of ("shukriya", "good", "morning", "bye", "phir"...). */
+    private val COURTESY_WORDS: Set<String> by lazy { (SALAAM + SALAAM_TAIL + HELLO + THANKS + BYE).flatMap { words(it) }.toSet() }
+
+    /** Concepts of the pronouns and the little verbs: they point at somebody or do something, they ask nothing of the book. */
+    private val LITTLE_C = setOf(
+        HudhudMind.C.YOU, HudhudMind.C.OWN, HudhudMind.C.ME, HudhudMind.C.THIS, HudhudMind.C.HIS, HudhudMind.C.AND, HudhudMind.C.HOW_IS, HudhudMind.C.HEALTH, HudhudMind.C.DAY, HudhudMind.C.TIME, HudhudMind.C.TELL, HudhudMind.C.DO, HudhudMind.C.ABLE, HudhudMind.C.KNOW
+    )
+
+    /** The one-word thank-yous, goodbyes and greetings ("shukriya", "thanks", "bye", "salam", "hello", "شڪريو"): courtesy and nothing else. */
+    private val COURTESY_TOKENS: Set<String> by lazy { (THANKS + BYE + SALAAM + HELLO).filter { ' ' !in it }.map { norm(it) }.toSet() }
+
+    /**
+     * What the sense is shown (15 Nov 2026): a sentence that asks the book without its one-word thank-yous. The sense learnt
+     * "شڪريو" and "thanks" beside courtesy, and in front of a question it read the question as something else (privacy,
+     * staff); the rules never see the difference, so the sense must not either. A courtesy-only sentence is shown whole.
+     */
+    internal fun senseHeardForTest(heard: String, names: List<Name>, goods: List<Name>): String = senseHeard(heard, names, goods)
+
+    private fun senseHeard(heard: String, names: List<Name>, goods: List<Name>): String {
+        val said = words(heard)
+        if (said.none { it in COURTESY_TOKENS } || courtesyOnly(said, names, goods)) return heard
+        val rest = said.filter { it !in COURTESY_TOKENS }
+        return if (rest.isEmpty()) heard else rest.joinToString(" ")
+    }
+
+    /** Words that ask the book and have no concept ("how", "total", "show me"): a short closed list, in the nine languages. */
+    private val ASK_EXTRA = setOf(
+        "how", "total", "kul", "show", "dikhao", "dikhaen", "dikhaiye", "tunjukkan",
+        "رقم", "المبلغ", "تومان", "اعرض", "দেখাও", "মোট", "कुल", "दिखाओ", "rupiah"
+    )
+
+    /**
+     * Whether [w] asks the book (15 Nov 2026): a customer, supplier or product of this book, a word that means something of the
+     * book or a question word, a figure word (profit, owe, sales — never the span's own "today"), or one of [ASK_EXTRA].
+     * Courtesy words, callings, friendly fillers and his own name never ask; a word nobody knows is little ("thanks so much").
+     */
+    private fun asksBook(w: String, names: List<Name>, goods: List<Name>): Boolean {
+        if (w in COURTESY_WORDS || w in VOCATIVE_SET || w in FILLER_SET || w in HIS_OWN_NAME) return false
+        if (knownName(w, names) || knownName(w, goods)) return true
+        if (HudhudMind.meaningOf(w).any { it !in LITTLE_C }) return true
+        if (w in ASK_EXTRA) return true
+        return (VoiceQuestion.keywordsIn(w) - VoiceQuestion.spanWordsIn(w)).isNotEmpty()
+    }
+
+    /** A sentence of courtesy and little words, nothing that asks the book — the only kind a greeting or a thank-you may answer. */
+    private fun courtesyOnly(said: List<String>, names: List<Name>, goods: List<Name>): Boolean =
+        said.none { asksBook(it, names, goods) }
+
     /**
      * Small talk, or "what can you tell me" (13 Nov 2026). [whole]: only when every word of the sentence is the
      * talk's own, a question's little word, a greeting or a friendly filler ("yaar", "bhai") — then it is answered
      * before any name is looked for. Else (the loose reading, last of all) when the talk is said anywhere; "I'm fine"
      * and a lone "help" are taken only whole, they mean too much inside a longer sentence.
      */
-    private fun talk(said: List<String>, whole: Boolean): Ask? {
+    private fun talk(said: List<String>, whole: Boolean, names: List<Name> = emptyList(), goods: List<Name> = emptyList()): Ask? {
         val joined = said.joinToString(" ")
         val salaam = has(joined, SALAAM)
         val found: Pair<Ask, List<String>> = when {
@@ -2198,6 +2775,11 @@ object Hudhud {
             whole && has(joined, HELP_ALONE) -> Ask.Abilities to HELP_ALONE
             else -> return null
         }
+        // Thanks and goodbye are courtesy only when nothing else in the sentence asks the book: "thanks what is my balance"
+        // is a question with a thank-you in front (15 Nov 2026).
+        if (found.first is Ask.Chat && (found.first as Ask.Chat).talk.let { it == Talk.THANKS || it == Talk.BYE } &&
+            !courtesyOnly(said, names, goods)
+        ) return null
         if (!whole) return found.first
         val own = found.second.flatMap { words(it) }.toSet()
         return if (said.all { it in own || it in STOP_SET || it in FILLER_SET || it in GREETING_SET }) found.first else null
@@ -2346,6 +2928,37 @@ object Hudhud {
     /** A salaam or a hello said with the talk ("Assalam o alaikum, kaise hain?"). */
     private val GREETING_SET: Set<String> by lazy { (SALAAM + SALAAM_TAIL + HELLO).flatMap { words(it) }.toSet() }
 
+    /** The core of a salaam's second half, "alaikum" in the ways it is written ("wa" and the blessings after it are [SALAAM_TAIL]'s only). */
+    private val SALAAM_CORE_SET: Set<String> by lazy {
+        listOf(
+            "alaikum", "alaykum", "alaikom", "alekum", "aleikum", "alikum", "alykum", "alaikam",
+            "علیکم", "عليكم", "عليڪم", "अलैकुम", "আলাইকুম"
+        ).flatMap { words(it) }.toSet()
+    }
+
+    /** What may stand between a salaam's first word and "alaikum": "Aslam o alaikum", "اسلام و علیکم". */
+    private val SALAAM_JOINERS: Set<String> by lazy { listOf("o", "u", "wa", "و", "ओ", "ও").flatMap { words(it) }.toSet() }
+
+    private val WORD_RUN = Regex("[\\p{L}\\p{M}\\p{N}]+")
+
+    /**
+     * (15 Nov 2026) A salaam written without its article — "Aslam o alaikum", "اسلام علیکم", "असलाम अलैकुम" — opens with a word
+     * that is also a man's name. With an Aslam or an Islam in the book it opened that man's account instead of greeting back:
+     * the owner's very first words to Hudhud. The word just before "alaikum" (one "o" or "wa" between) belongs to the
+     * greeting; it is said as "assalam", the greeting everything else already knows. Any other sentence comes back as it
+     * was, and so does everything of this one but that word: its spelling, its "?" and the rest.
+     */
+    internal fun salaamHeadRead(heard: String): String {
+        val runs = WORD_RUN.findAll(heard).toList()
+        val ws = runs.map { norm(it.value) }
+        val core = ws.indexOfFirst { it in SALAAM_CORE_SET }
+        if (core < 1) return heard
+        var head = core - 1
+        if (ws[head] in SALAAM_JOINERS && head >= 1) head--
+        if (ws[head].isEmpty() || ws[head] in SALAAM_JOINERS || ws[head] in GREETING_SET) return heard
+        return heard.replaceRange(runs[head].range, "assalam")
+    }
+
     /**
      * Words a question is made of that name nobody: question words, the little words between them and the words
      * for a balance, in the nine languages. A name is looked for only among what is left, so "Kabir" is not found
@@ -2408,14 +3021,18 @@ object Hudhud {
         val features = topics.filter { it.feature }.flatMap { words(it.title) }.toSet()
         val asked = VoiceQuestion.keywordsIn(said.joinToString(" "))
         // Brain v2 (13 Nov 2026): a word Hudhud reads as a concept ("number", "rate", "aakhri") is not a name either;
-        // a common name part that is also a concept ("Malik", "Store") only when [soft].
+        // a common name part that is also a concept ("Malik", "Store"), and a word that calls him but is also a name ("dost",
+        // "رفیق": [CALLS_AS_NAMES]), only when [soft].
         val left = said.filter { w ->
-            w.length >= 3 && w.any { it.isLetter() } && w !in STOP_SET && w !in INTENT_SET && w !in VOCATIVE_SET && w !in QUIET_SET &&
-                w !in asked && w !in features && !HudhudMind.isHardWord(w) && (soft || !HudhudMind.isSoftWord(w))
-        }.map { bengaliStem(it) }
+            w.length >= 3 && w.any { it.isLetter() } && w !in STOP_SET && w !in INTENT_SET &&
+                w !in asked && w !in features && !HudhudMind.isHardWord(w) && (soft || !HudhudMind.isSoftWord(w)) &&
+                ((w !in QUIET_SET && w !in VOCATIVE_SET) || (soft && w in CALLS_AS_NAMES))
+        }
         if (left.isEmpty()) return emptyList()
-        NameSearch.confidentMatch(names, left) { it.name }?.let { return listOf(it.id) }
-        return nearBest(names, left).ifEmpty { acrossScripts(names, left) }
+        // A Bengali case ending comes off for the search proper ("আলীর" meets "আলী"); the bridge across scripts is given the
+        // plain words as well, because the ending's letter can be the name's own ("বশীর" is Bashir, not "বশী" and an ending).
+        val stemmed = left.filter { !foldBlocked(it, names) }.map { bengaliStem(it) }
+        return resolveNames(names, stemmed, left)
     }
 
     /**
@@ -2460,6 +3077,23 @@ object Hudhud {
     )
 
     private val VOCATIVE_SET: Set<String> by lazy { VOCATIVE.flatMap { words(it) }.toSet() }
+
+    /**
+     * Words that call him or befriend ([VOCATIVE], [FILLER]) and are also a part of somebody's name in the countries the
+     * app is made for: Dost Muhammad, Yar Muhammad, Jan Muhammad, Sahib Khan, Hazoor Bakhsh, Pyare Lal, and Rafiq, which
+     * Persian writes "رفیق" and means "friend" (15 Nov 2026: "رفیق کا نمبر" asked "whose?" in a book with a Rafiq). They
+     * name somebody only when the book has such a person and the plain words name nobody ([whoIsNamed]). A word is added
+     * here only for a name it really is a part of, with a test.
+     */
+    private val CALLS_AS_NAMES: Set<String> by lazy {
+        listOf(
+            "dost", "yar", "yaar", "jan", "jaan", "sahib", "sahab", "hazoor", "huzoor", "pyare", "pyaare", "ustad", "ustaad",
+            "دوست", "یار", "جان", "صاحب", "رفیق", "حضور", "پیارے", "استاد",
+            "दोस्त", "यार", "जान", "साहब", "साहिब", "हुज़ूर", "प्यारे", "उस्ताद",
+            "দোস্ত", "ইয়ার", "জান", "সাহেব", "হুজুর",
+            "رفيق", "صديق", "يار", "دوست"
+        ).flatMap { words(it) }.toSet()
+    }
 
     /** A word that only means "you" ("aap", "Hudhud"): with a calling, still only a calling. */
     private val YOU_ONLY = setOf(HudhudMind.C.YOU)
@@ -2517,7 +3151,7 @@ object Hudhud {
             "aaj", "today", "kal", "yesterday", "hafta", "hafte", "week", "mahina", "mahine", "month", "is", "iss", "this",
             "pichle", "pichla", "pichhle", "last", "previous", "guzishta", "آج", "کل", "ہفتہ", "ہفتے", "مہینہ", "مہینے", "ماہ",
             "پچھلے", "گزشتہ", "اس", "आज", "कल", "हफ्ता", "हफ्ते", "सप्ताह", "महीना", "महीने", "माह", "पिछले", "इस", "আজ",
-            "আজকের", "গতকাল", "সপ্তাহ", "মাস", "গত", "এই", "اڄ", "ڪالهه", "هفتو", "هفتي", "مهينو", "مهيني", "اليوم", "أمس",
+            "আজকের", "গতকাল", "সপ্তাহ", "মাস", "গত", "এই", "اڄ", "ڪالهه", "هفتو", "هفتي", "مهينو", "مهيني", "هن", "اليوم", "أمس",
             "امس", "أسبوع", "اسبوع", "شهر", "الماضي", "هذا", "امروز", "دیروز", "هفته", "ماه", "گذشته", "این", "hari", "ini",
             "kemarin", "minggu", "pekan", "bulan", "lalu"
         ).map { norm(it) }.toSet()
@@ -2544,6 +3178,9 @@ object Hudhud {
 
     /** What a follow-up may say beside the name, product or span it changes ("aur", "uska", "kya"). */
     private val FOLLOW_OK = setOf(HudhudMind.C.AND, HudhudMind.C.WHAT, HudhudMind.C.TELL, HudhudMind.C.HIS, HudhudMind.C.THIS)
+
+    /** What a span said with nothing else may also ask, to carry the last question over it: "how much last year?". */
+    private val SPAN_ASKS = setOf(HudhudMind.C.HOW_MANY)
 
     // ------------------------------------------------------------------------------------------------ help pages
 

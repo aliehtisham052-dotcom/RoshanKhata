@@ -144,6 +144,13 @@ object HudhudSense {
     /** Tests: how many pieces it knows. */
     internal fun featureCount(): Int = current()?.features?.size ?: 0
 
+    /**
+     * Whether the bank taught [word] (as [VoiceQuestion.normalise] writes it): at least [MIN_DF] of its sentences hold it.
+     * Every name in the bank is the placeholder [NAME], so a word it taught is a word of the language and not somebody's
+     * name — "बात" and "উড়ে" are words, "बशीर" is a man. False for a word it did not teach, and when there is no sense.
+     */
+    internal fun knowsWord(word: String): Boolean = current()?.vocabulary?.containsKey("w:$word") == true
+
     // ------------------------------------------------------------------------------------------------ learning
 
     private class Example(val label: Int, val ids: IntArray, val weights: FloatArray)

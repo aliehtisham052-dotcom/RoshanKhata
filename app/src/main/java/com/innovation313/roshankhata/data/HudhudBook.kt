@@ -98,6 +98,11 @@ object HudhudBook {
         val doIt: (() -> Unit)? = null,
         /** "Did you mean": the questions offered as chips under the card (13 Nov 2026). */
         val options: List<Hudhud.Ask> = emptyList(),
+        /**
+         * The words of the chips in [options] when the usual chip words would not say them (15 Nov 2026: the same question
+         * over the spans of days he can give, each chip saying its span).
+         */
+        val optionLabels: Map<Hudhud.Ask, String> = emptyMap(),
         /** The button opens Hudhud's voice settings (what he calls the owner). */
         val voiceSettings: Boolean = false,
         /** "Open" shows the automations' own window (14 Nov 2026), where the owner turns them on or off. */
@@ -272,8 +277,12 @@ object HudhudBook {
     /** What he says when the book could not be read. */
     fun failed(context: Context) = Answer(Mood.CARE, lines = listOf(context.getString(R.string.hudhud_unknown)))
 
-    suspend fun answer(context: Context, dao: KhataDao, ask: Hudhud.Ask, parties: List<PartyWithBalance>): Answer =
-        answerOf(context, dao, ask, parties).let { if (it.ask == null) it.copy(ask = ask) else it }
+    suspend fun answer(context: Context, dao: KhataDao, ask: Hudhud.Ask, parties: List<PartyWithBalance>): Answer {
+        // The one door every ask passes before the book is read (15 Nov 2026): a span he cannot give is never read as
+        // another, however the ask came (a chip, an answer repeated, a question carried on).
+        val within = Hudhud.keepWithinReach(ask)
+        return answerOf(context, dao, within, parties).let { if (it.ask == null) it.copy(ask = within) else it }
+    }
 
     private suspend fun answerOf(context: Context, dao: KhataDao, ask: Hudhud.Ask, parties: List<PartyWithBalance>): Answer =
         when (ask) {
@@ -318,6 +327,10 @@ object HudhudBook {
             is Hudhud.Ask.CallMe -> callMe(context, ask.name)
             is Hudhud.Ask.Look -> look(context, ask.request)
             is Hudhud.Ask.LookDone -> lookDone(context, ask.made)
+            // A span he cannot give: the card says so and offers the spans he can. A question about how the book stands
+            // now that came with a span is answered as today, the card saying so first (15 Nov 2026).
+            is Hudhud.Ask.SpanLimit -> spanLimit(context, ask)
+            is Hudhud.Ask.Now -> now(context, dao, ask.ask, parties)
             // Tell, never ask (13 Nov 2026): a guess is answered, with what it was taken as over the card; "did you
             // mean" answers its first meaning the same way and offers the others as chips.
             is Hudhud.Ask.Guessed -> guessed(context, dao, ask.ask, parties, emptyList())
@@ -352,6 +365,59 @@ object HudhudBook {
             options = others,
             ask = ask
         )
+    }
+
+    // ------------------------------------------------------------------------------------------ spans he cannot give
+
+    /**
+     * A question about how the book stands now that came with a span ("pichle saal kitne customers", "Ali ka hisaab last
+     * month") (15 Nov 2026): the book keeps no earlier standing of these, so [ask] is answered as it stands today and the
+     * card says so first — the span left out in silence read as that span's own figure.
+     */
+    private suspend fun now(context: Context, dao: KhataDao, ask: Hudhud.Ask, parties: List<PartyWithBalance>): Answer {
+        val inner = answerOf(context, dao, ask, parties)
+        return inner.copy(lines = listOf(context.getString(R.string.hudhud_span_now)) + inner.lines)
+    }
+
+    /**
+     * A span of days he cannot give for this question ([Hudhud.Ask.SpanLimit]): the card says so and offers the same
+     * question over the spans he can give, each a tap with its span in its words ([Answer.optionLabels]). A question only
+     * the owner or a manager may see is offered to nobody else, and says so as the figure itself would.
+     */
+    private fun spanLimit(context: Context, ask: Hudhud.Ask.SpanLimit): Answer {
+        val title = context.getString(R.string.hudhud_span_title)
+        if (!HudhudGate.reports() && ask.options.any { needsReports(it) }) {
+            return Answer(Mood.CALM, label = title, lines = listOf(context.getString(R.string.hudhud_owner_only)))
+        }
+        val words = if (ask.long) R.string.hudhud_span_sums else R.string.hudhud_span_rows
+        val labels = LinkedHashMap<Hudhud.Ask, String>()
+        for (a in ask.options) spanChipLabel(context, a)?.let { labels[a] = it }
+        return Answer(
+            Mood.CALM, label = title, lines = listOf(context.getString(words)),
+            options = ask.options.filter { it in labels }, optionLabels = labels,
+            spoken = { w -> w.getString(words) }
+        )
+    }
+
+    /** The question's own name without any span, for the chips that offer it over several (15 Nov 2026). */
+    private fun spanQuestion(c: Context, a: Hudhud.Ask): String? = when (a) {
+        is Hudhud.Ask.Deliveries -> c.getString(R.string.hudhud_t_deliveries)
+        is Hudhud.Ask.Activity -> c.getString(R.string.hudhud_t_activity)
+        is Hudhud.Ask.Collected -> c.getString(R.string.hudhud_t_collected)
+        is Hudhud.Ask.Cashbook -> c.getString(R.string.hudhud_t_cashbook)
+        is Hudhud.Ask.Returns -> c.getString(R.string.hudhud_t_returns)
+        is Hudhud.Ask.TopGoods -> c.getString(R.string.hudhud_t_top_goods)
+        is Hudhud.Ask.Moved -> c.getString(if (a.got) R.string.i_got else R.string.i_gave)
+        is Hudhud.Ask.Goods -> if (a.facet == Hudhud.GoodsFacet.SOLD) c.getString(R.string.hudhud_l_sold) else null
+        else -> null
+    }
+
+    /** A chip's words for [a] over its span: the sales, profit and counts already say theirs, the rest get it after their name. */
+    private fun spanChipLabel(c: Context, a: Hudhud.Ask): String? {
+        if (a is Hudhud.Ask.Figure || a is Hudhud.Ask.Period || a is Hudhud.Ask.Count) return chipLabel(c, a)
+        val name = spanQuestion(c, a) ?: return null
+        val w = Hudhud.spanOf(a) ?: return name
+        return name + " \u00B7 " + c.getString(windowWord(w))
     }
 
     // ------------------------------------------------------------------------------------------ the look
@@ -629,7 +695,7 @@ object HudhudBook {
         val (from, to) = Hudhud.span(window)
         return when (measure) {
             Hudhud.Measure.SALES -> sum(labelRes, label, dao.salesTotalBetween(from, to), SalesReportActivity::class.java)
-                .copy(openExtras = salesReportDays(window, from, to))
+                .copy(openExtras = salesReportDays(window, from, to, if (window == VoiceQuestion.Window.ALL_TIME) dao.firstSaleAt() else null))
             Hudhud.Measure.PROFIT -> when (window) {
                 VoiceQuestion.Window.THIS_MONTH -> profit(context, labelRes, label, Profit.thisMonth(dao), InsightsActivity::class.java)
                 VoiceQuestion.Window.LAST_MONTH -> profit(context, labelRes, label, Profit.lastMonth(dao), InsightsActivity::class.java)
@@ -639,13 +705,13 @@ object HudhudBook {
     }
 
     /** The sales report's own period for a span, or its first and last day as the range picker gives them. */
-    private fun salesReportDays(window: VoiceQuestion.Window, from: Long, to: Long): Bundle = Bundle().apply {
+    private fun salesReportDays(window: VoiceQuestion.Window, from: Long, to: Long, firstSale: Long? = null): Bundle = Bundle().apply {
         when (window) {
             VoiceQuestion.Window.TODAY -> putString(SalesReportActivity.EXTRA_PERIOD, ReportPeriod.TODAY.name)
             VoiceQuestion.Window.THIS_WEEK -> putString(SalesReportActivity.EXTRA_PERIOD, ReportPeriod.WEEK.name)
             VoiceQuestion.Window.THIS_MONTH -> putString(SalesReportActivity.EXTRA_PERIOD, ReportPeriod.MONTH.name)
             else -> {
-                putLong(SalesReportActivity.EXTRA_FIRST_DAY, from)
+                putLong(SalesReportActivity.EXTRA_FIRST_DAY, firstSale?.let { DayMath.startOfDay(it) } ?: from)
                 putLong(SalesReportActivity.EXTRA_LAST_DAY, DayMath.startOfDay(to - 1))
             }
         }
@@ -660,6 +726,10 @@ object HudhudBook {
             VoiceQuestion.Window.LAST_WEEK -> R.string.hudhud_sales_last_week
             VoiceQuestion.Window.THIS_MONTH -> R.string.vq_sales_month
             VoiceQuestion.Window.LAST_MONTH -> R.string.hudhud_sales_last_month
+            VoiceQuestion.Window.LAST_6_MONTHS -> R.string.hudhud_sales_6_months
+            VoiceQuestion.Window.THIS_YEAR -> R.string.hudhud_sales_this_year
+            VoiceQuestion.Window.LAST_YEAR -> R.string.hudhud_sales_last_year
+            VoiceQuestion.Window.ALL_TIME -> R.string.hudhud_sales_all_time
         }
         Hudhud.Measure.PROFIT -> when (window) {
             VoiceQuestion.Window.TODAY -> R.string.hudhud_profit_today
@@ -668,6 +738,10 @@ object HudhudBook {
             VoiceQuestion.Window.LAST_WEEK -> R.string.hudhud_profit_last_week
             VoiceQuestion.Window.THIS_MONTH -> R.string.vq_profit_month
             VoiceQuestion.Window.LAST_MONTH -> R.string.hudhud_profit_last_month
+            VoiceQuestion.Window.LAST_6_MONTHS -> R.string.hudhud_profit_6_months
+            VoiceQuestion.Window.THIS_YEAR -> R.string.hudhud_profit_this_year
+            VoiceQuestion.Window.LAST_YEAR -> R.string.hudhud_profit_last_year
+            VoiceQuestion.Window.ALL_TIME -> R.string.hudhud_profit_all_time
         }
     }
 
@@ -679,6 +753,10 @@ object HudhudBook {
         VoiceQuestion.Window.LAST_WEEK -> R.string.range_week
         VoiceQuestion.Window.THIS_MONTH -> R.string.range_this_month
         VoiceQuestion.Window.LAST_MONTH -> R.string.range_month
+        VoiceQuestion.Window.LAST_6_MONTHS -> R.string.hudhud_win_6_months
+        VoiceQuestion.Window.THIS_YEAR -> R.string.hudhud_win_this_year
+        VoiceQuestion.Window.LAST_YEAR -> R.string.hudhud_win_last_year
+        VoiceQuestion.Window.ALL_TIME -> R.string.hudhud_win_all_time
     }
 
     /**
@@ -1053,6 +1131,9 @@ object HudhudBook {
         is Hudhud.Ask.Cashbook -> c.getString(R.string.hudhud_chip_cashbook)
         is Hudhud.Ask.Returns -> c.getString(R.string.hudhud_chip_returns)
         is Hudhud.Ask.Guessed -> chipLabel(c, ask.ask)
+        is Hudhud.Ask.Now -> chipLabel(c, ask.ask)
+        // A span he cannot give, taken as the question it was asked of ("Taken as: Goods that came in").
+        is Hudhud.Ask.SpanLimit -> ask.options.firstOrNull()?.let { spanQuestion(c, it) }
         Hudhud.Ask.Clock -> c.getString(R.string.hudhud_chip_date)
         is Hudhud.Ask.Parties -> if (ask.ids.size == 1) c.getString(R.string.hudhud_l_balance) else null
         is Hudhud.Ask.Person -> c.getString(
@@ -1244,6 +1325,7 @@ object HudhudBook {
             is Hudhud.Ask.NeedName -> listOf(Hudhud.Ask.Count(Hudhud.Thing.CUSTOMERS), Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST))
             is Hudhud.Ask.Act -> listOf(Hudhud.Ask.Abilities, Hudhud.Ask.Today)
             is Hudhud.Ask.Guessed -> return next(c, ask.ask)
+            is Hudhud.Ask.Now -> return next(c, ask.ask)
             is Hudhud.Ask.Look -> lookChips(c, ask.request.setting)
             is Hudhud.Ask.LookDone -> lookChips(c, ask.made.setting)
             else -> emptyList()
@@ -1265,6 +1347,7 @@ object HudhudBook {
         is Hudhud.Ask.WhenPays, is Hudhud.Ask.Cashbook, is Hudhud.Ask.TopGoods, Hudhud.Ask.Qarz -> true
         is Hudhud.Ask.Status -> a.of == Hudhud.StatusOf.STAFF
         is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD
+        is Hudhud.Ask.Now -> needsReports(a.ask)
         else -> false
     }
 

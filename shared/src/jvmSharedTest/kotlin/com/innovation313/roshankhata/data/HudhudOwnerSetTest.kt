@@ -35,6 +35,8 @@ class HudhudOwnerSetTest {
     /** A reading as the owner's lists name them: "Figure:TO_GET", "Help:screen_zakat", "Voice", "Guessed>…" as its own. */
     private fun shown(a: Hudhud.Ask): String = when (a) {
         is Hudhud.Ask.Guessed -> shown(a.ask)
+        // "As it stands now" (15 Nov 2026) only adds a note to the card; what was understood is the ask inside it.
+        is Hudhud.Ask.Now -> shown(a.ask)
         is Hudhud.Ask.DidYouMean -> a.options.firstOrNull()?.let { shown(it) } ?: "DidYouMean"
         is Hudhud.Ask.Help -> "Help:" + a.key
         is Hudhud.Ask.Figure -> "Figure:" + a.kind

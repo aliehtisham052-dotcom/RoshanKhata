@@ -517,4 +517,111 @@ class VoiceEntryTest {
         assertEquals(true, VoiceEntry.parse("मैंने अली को 500 दिए", listOf("Ali")).isGiven)
         assertEquals(true, VoiceEntry.parse("ہم نے علی کو 500 دیے", listOf("Ali")).isGiven)
     }
+
+    /**
+     * "How much did Bashir pay this year" asks about money that came in (15 Nov 2026). English puts the doer after the helper
+     * verb and has no marker like Urdu's ne, so it read as "I gave", and the answer was the wrong side of the book. "do" is no
+     * helper: Hindi and Urdu "do hazar diye" is two thousand given.
+     */
+    @Test
+    fun `an english question's doer comes after did, does, has or have`() {
+        for (q in listOf("how much did Ali pay", "did Ali give 500", "how much has Ali paid", "does Ali pay 500", "have Ali paid 500"))
+            assertEquals(q, false, VoiceEntry.parse(q, listOf("Ali")).isGiven)
+        for (q in listOf("how much did I pay Ali", "did you give Ali 500", "did we pay Ali 500", "did u give Ali 500", "have I paid Ali 500"))
+            assertEquals(q, true, VoiceEntry.parse(q, listOf("Ali")).isGiven)
+        assertEquals(true, VoiceEntry.parse("Ali ko do hazar diye", listOf("Ali")).isGiven)
+        assertEquals(true, VoiceEntry.parse("Ali ko 500 diye", listOf("Ali")).isGiven)
+    }
+
+    @Test
+    fun `an english doer can be several words and can stand before has or have`() {
+        // The customer is the doer (the shop is handed the money): two words of name, a business name, a statement.
+        for (q in listOf(
+            "how much did Ali Raza pay", "how much did Ali Raza pay last month", "how much did Ali Mobile Shop pay",
+            "when did Ali Raza last pay", "has Bashir Ahmad paid", "has Bashir Ahmad paid anything", "did Ali Raza ever give 500",
+            "Ali has paid", "Ali Raza has paid 500", "Ali has not paid", "Ali Raza has already paid 500", "Ali did pay 500",
+            "who has paid today", "has anyone paid",
+        ))
+            assertEquals(q, false, VoiceEntry.parse(q, emptyList()).isGiven)
+        // The shop is the doer, or nobody is: "I", "we", "you" and the verbs that only look like it.
+        for (q in listOf(
+            "I have paid Ali 500", "I have already paid Ali 500", "we have given Ali 500", "I did pay Ali 500", "I did not pay Ali 500",
+            "how much have you paid Ali", "what did you pay Ali last month", "who did I pay", "I have to pay Ali 500",
+            "what do I have to pay Ali", "do you have to pay Ali 500", "did you want to pay Ali 500",
+        ))
+            assertEquals(q, true, VoiceEntry.parse(q, emptyList()).isGiven)
+    }
+
+    /**
+     * Words that stand beside the helping verb and name nobody (15 Nov 2026): "Ali also has paid" and "Ali still has not paid" put the
+     * customer before the helper as "Ali has paid" does, and "I also have paid Ali" keeps the shop. Not "have to": "I need to have paid".
+     */
+    @Test
+    fun `an adverb beside the helping verb leaves the doer where it was`() {
+        for (q in listOf(
+            "Ali also has paid 500", "Ali still has not paid 500", "Ali has not yet paid 500", "Ali never has paid", "Ali has just paid 500",
+            "Ali has finally paid 500", "Ali has only paid 500", "Ali Raza has also paid 500", "Ali Raza still has not paid",
+        ))
+            assertEquals(q, false, VoiceEntry.parse(q, emptyList()).isGiven)
+        for (q in listOf(
+            "I also have paid Ali 500", "I have not yet paid Ali 500", "I still have not paid Ali 500", "we have just paid Ali 500",
+            "I have never paid Ali 500", "I only have paid Ali 500", "I need to have paid Ali 500", "I ought to have paid Ali 500",
+        ))
+            assertEquals(q, true, VoiceEntry.parse(q, emptyList()).isGiven)
+        // A helping verb with no word before it, or at the very end, is no crash.
+        for (q in listOf("has", "have", "did Ali", "has paid", "have given", "also has", "Ali has"))
+            VoiceEntry.parse(q, emptyList())
+    }
+
+    /**
+     * No helping verb: "Ali Raza paid 500" (15 Nov 2026). The doer stands before the verb as the word that could be a name, "he" or
+     * "she"; the shop is "I", "we" or "you", and a verb at the start, after a figure, a "to", a time or a question has no doer
+     * before it: "paid Ali 500", "yesterday paid Ali 500" and "500 paid to Ali" are the shop's own giving.
+     */
+    @Test
+    fun `an english statement names its doer before a past verb`() {
+        // The customer paid (or lent): money in.
+        for (q in listOf(
+            "Ali Raza paid 500", "Ali paid 500 yesterday", "Ali Raza also paid 500", "today Ali paid 500", "he paid 500", "she gave 500",
+            "the customer paid 500", "Ali Mobile Shop paid 500", "how much Ali paid", "Ali lent 500", "Ali Raza already paid 500",
+            "Ali Raza last month paid", "Bashir Ahmad gave 500",
+        ))
+            assertEquals(q, false, VoiceEntry.parse(q, emptyList()).isGiven)
+        // The customer took: money out.
+        for (q in listOf("Ali took 500", "Ali received 500", "Ali got 500", "he took 500", "Ali Raza also received 500"))
+            assertEquals(q, true, VoiceEntry.parse(q, emptyList()).isGiven)
+    }
+
+    @Test
+    fun `an english statement with the shop before the verb or no doer is the shop's`() {
+        // The shop gave: "I", "we", "you", a verb that starts the sentence, a figure, a "to", a time or a question before it.
+        for (q in listOf(
+            "I paid Ali 500", "we paid Ali 500", "you paid Ali 500", "paid Ali 500", "gave Ali 500", "yesterday paid Ali 500",
+            "last month paid Ali 500", "today I paid Ali 500", "500 paid to Ali", "cash paid to Ali 500", "paid by cheque to Ali 500",
+            "500 paid by cheque", "I gave Ali 500", "I also paid Ali 500", "Friday paid Ali 500", "Rs 500 gave Ali",
+        ))
+            assertEquals(q, true, VoiceEntry.parse(q, emptyList()).isGiven)
+        // The shop took: money in, and the customer's own "returned" and "repaid" are still the money coming back.
+        for (q in listOf(
+            "I received 500 from Ali", "received 500 from Ali", "I took 500 from Ali", "money received from Ali", "we got 500 from Ali",
+            "Ali returned 500", "Ali repaid 500", "Ali paid me 500", "Ali gave me 500", "Ali lent me 500",
+        ))
+            assertEquals(q, false, VoiceEntry.parse(q, emptyList()).isGiven)
+        // "Paid back" and "gave back" stay unclear, whoever the doer is.
+        assertEquals(null, VoiceEntry.parse("Ali Raza paid back 500", emptyList()).isGiven)
+        assertEquals(null, VoiceEntry.parse("I gave back 500", emptyList()).isGiven)
+    }
+
+    /** Indonesian puts the doer before the verb too: "Ali bayar 500" is money in, "saya bayar Ali 500" money out (15 Nov 2026). */
+    @Test
+    fun `an indonesian statement names its doer before the verb`() {
+        for (q in listOf("Ali bayar 500", "Ali sudah bayar 500", "Ali belum bayar 500", "Ali membayar 500", "Ali kasih 500", "dia bayar 500", "Ali juga bayar 500"))
+            assertEquals(q, false, VoiceEntry.parse(q, emptyList(), "in").isGiven)
+        for (q in listOf("Ali ambil 500", "Ali menerima 500", "Ali terima 500", "dia ambil 500"))
+            assertEquals(q, true, VoiceEntry.parse(q, emptyList(), "in").isGiven)
+        for (q in listOf("saya bayar Ali 500", "aku kasih Ali 500", "kami bayar Ali 500", "saya sudah bayar Ali 500", "bayar Ali 500", "kemarin bayar Ali 500"))
+            assertEquals(q, true, VoiceEntry.parse(q, emptyList(), "in").isGiven)
+        for (q in listOf("saya terima 500 dari Ali", "terima 500 dari Ali", "Ali kasih saya 500", "Ali bayar saya 500"))
+            assertEquals(q, false, VoiceEntry.parse(q, emptyList(), "in").isGiven)
+    }
 }

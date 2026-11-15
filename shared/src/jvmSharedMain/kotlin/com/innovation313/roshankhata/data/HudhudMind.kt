@@ -338,10 +338,19 @@ internal object HudhudMind {
     /**
      * Concept words that are also common parts of people's and shops' names ("Malik Riaz", "Bismillah Store", ملک
      * — Malik in Urdu letters). They count as a concept only when the sentence names nobody with them.
+     *
+     * A concept word is also a given name in every script it is written in, and the normalised forms meet: the Arabic
+     * "آمنة" (safe) and the Urdu name "آمنہ" (Aamna) are one word after [VoiceQuestion.normalise], and Latin "aman" is both
+     * the SAFE word and Aman Khan. A word hard in one script and soft in another named nobody in the first (15 Nov 2026:
+     * "Aamna ka number" read as a question about privacy). Add a name's every spelling here, never one script's; only a word
+     * a person is really called belongs ("diya", "sara" and "hari" are said as often as a verb, a determiner or a day, and
+     * stay hard: a wrong person's balance is worse than a question back).
      */
     private val SOFT: Set<String> by lazy {
         listOf("malik", "maalik", "seth", "ملک", "مالک", "store", "shop", "bank", "company", "dealer", "goth", "counter",
-            "chand", "din", "khair", "bacha", "walid", "mehfooz", "bata", "kam")
+            "chand", "din", "khair", "bacha", "walid", "mehfooz", "bata", "kam",
+            "aman", "mahfooz", "mehfuz", "آمن", "آمنة", "امن", "محفوظ", "فتح", "باز", "منتظر", "کالا",
+            "मालिक", "মালিক", "مالك", "مالڪ", "ملڪ")
             .map { norm(it) }.toSet()
     }
 

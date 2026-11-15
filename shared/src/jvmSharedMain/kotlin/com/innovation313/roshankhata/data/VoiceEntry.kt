@@ -632,9 +632,107 @@ object VoiceEntry {
         // Persian with "to me" anywhere in the sentence.
         if (words.indices.any { i -> words[i] in MOVED && words.getOrNull(i + 1) in TO_US }) return true
         if (words.any { it in TO_US_ANYWHERE }) return true
+        // English has no mark like ne: the doer stands by the helping verb (15 Nov 2026: it read the verb alone, so a
+        // customer's payment was asked about as the shop's).
+        if (words.indices.any { i -> words[i] in HELPERS && customerIsDoer(words, i) }) return true
+        // And with no helping verb: "Ali Raza paid 500", "Ali took 500", "Ali bayar 500" (15 Nov 2026).
+        if (nameDoes(words)) return true
         val i = words.indexOfFirst { it in NE }
         return i > 0 && words[i - 1] !in WE_DID
     }
+
+    /**
+     * English's helping verbs: "did Ali pay", "has Bashir paid", "does he give". Not "do": in Hindi and Urdu "do hazar
+     * diye" is "two thousand gave".
+     */
+    private val HELPERS = setOf("did", "does", "has", "have")
+
+    /**
+     * Who the shop is: I, we, you (the owner is spoken to as "you" by the shop's own assistant). Not "shop": a customer
+     * is often "Ali Mobile Shop", and the doer of "how much did Ali Mobile Shop pay" is him.
+     */
+    private val SHOP_SELF = setOf("i", "we", "you", "u", "saya", "aku", "kami", "kita", "anda", "kamu")
+
+    /** Words that stand after a helping verb and are no doer: "have to pay", "has been paid". */
+    private val NO_DOER = setOf("to", "been")
+
+    /**
+     * Words beside a helping verb that name nobody: between it and its verb ("has not paid", "have already paid", "has not
+     * yet paid") and, in a statement, between the doer and the helping verb ("Ali also has paid", "Ali still has not paid").
+     */
+    private val ADVERBS = setOf(
+        "not", "never", "also", "already", "just", "still", "ever", "finally", "yet", "always", "again", "only", "even",
+        "recently", "now", "really", "actually",
+        // Indonesian: "Ali sudah bayar", "Ali belum bayar", "Ali juga bayar".
+        "sudah", "telah", "belum", "juga", "baru", "tidak", "tak"
+    )
+
+    /**
+     * Whether the doer of the money's move is somebody else, by the helping verb at [helper] (English). In a question the
+     * doer stands between the helper and the verb, one word to four: "how much did Ali Raza pay", "has Bashir paid"; in
+     * a statement before the helper: "Ali has not paid". The shop is the doer when it is "I", "we" or "you" ("did you
+     * pay Ali", "I have paid Ali", "I did not pay Ali"); "have to pay" and "has been paid" name no doer.
+     */
+    private fun customerIsDoer(words: List<String>, helper: Int): Boolean {
+        val verb = (helper + 2..minOf(helper + 5, words.lastIndex)).firstOrNull { words[it] in MOVED }
+        if (verb != null) {
+            val doer = words.subList(helper + 1, verb).filter { it !in ADVERBS }
+            if (doer.isNotEmpty() && doer.none { it in NO_DOER }) return doer.none { it in SHOP_SELF }
+        }
+        var v = helper + 1
+        while (words.getOrNull(v) in ADVERBS) v++
+        if (words.getOrNull(v) in MOVED) {
+            // A statement: the doer stands before the helping verb, past any adverb that stands between ("Ali also has paid").
+            var d = helper - 1
+            while (d >= 0 && words[d] in ADVERBS) d--
+            if (d >= 0) return words[d] !in SHOP_SELF && words[d] !in NO_DOER
+        }
+        return false
+    }
+
+    /**
+     * The verbs whose doer a statement without a helping verb names by standing before them, in English and Indonesian (the
+     * two with the doer first): "Ali Raza paid 500", "Ali took 500", "Ali bayar 500". [GAVE] and [GOT] are the shop's own
+     * giving and taking, so a doer who is somebody else turns the way round. Not "returned" and "repaid" (already a customer's
+     * giving, and listed as the shop receiving), not "dapat" (it is also "can").
+     */
+    private val DOER_FIRST = setOf(
+        "paid", "gave", "lent", "got", "took", "received",
+        "bayar", "membayar", "kasih", "beri", "memberi", "berikan", "pinjamkan", "meminjamkan", "terima", "menerima", "ambil", "mengambil"
+    )
+
+    /** Who stands for a customer by himself: "he paid 500", "dia bayar". */
+    private val THIRD_PERSON = setOf("he", "she", "they", "dia", "mereka")
+
+    /** A question's word or a joining word: nobody's name, and nobody's verb to be next to. */
+    private val NOT_A_DOER = setOf("who", "whom", "what", "how", "much", "many", "when", "where", "which", "why", "that", "if", "or", "but", "so", "because")
+
+    /** A time: nobody's name, and it may stand before the sentence or between the doer and the verb ("Ali Raza last month paid"). */
+    private val TIME_WORDS = setOf(
+        "today", "yesterday", "tomorrow", "tonight", "morning", "afternoon", "evening", "day", "week", "month", "year",
+        "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+        "then", "later", "earlier", "ago", "last", "this", "next",
+        "kal", "aaj", "parso", "abhi", "phir", "pehle", "ab", "subah", "shaam", "raat",
+        "kemarin", "hari", "minggu", "bulan", "tahun", "besok"
+    )
+
+    /**
+     * A statement with no helping verb whose doer is somebody else: the word right before the verb (past any adverb) is a
+     * name, "he" or "she" ("Ali Raza paid 500", "Ali also took 500", "he paid"). The shop stands there as "I", "we" or "you";
+     * a verb that opens the sentence, or follows a figure, a "to", a question or a time ("paid Ali 500", "500 paid to Ali",
+     * "yesterday paid Ali 500", "who paid") names no doer, and the shop is the one who gave or took, as before. The passive
+     * ("500 paid by Ali") is not read: "paid by cheque" is as common, and a way of paying is no name.
+     */
+    private fun nameDoes(words: List<String>): Boolean {
+        val v = words.indexOfFirst { it in DOER_FIRST }
+        if (v < 0) return false
+        var d = v - 1
+        while (d >= 0 && (words[d] in ADVERBS || words[d] in TIME_WORDS)) d--
+        return d >= 0 && doerWord(words[d])
+    }
+
+    private fun doerWord(w: String): Boolean =
+        w in THIRD_PERSON || (w !in SHOP_SELF && w !in NOT_A_DOER && w !in NO_DOER && !isNoise(w))
 
     /** The one-word verbs of [GAVE] and [GOT]. */
     private val MOVED: Set<String> by lazy { (GAVE + GOT).filter { ' ' !in it }.toSet() }

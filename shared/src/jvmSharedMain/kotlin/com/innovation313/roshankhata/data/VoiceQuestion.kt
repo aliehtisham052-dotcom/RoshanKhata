@@ -21,8 +21,18 @@ object VoiceQuestion {
     /**
      * The span of days a figure is asked for (12 Nov 2026, Hudhud): "kal ki sale", "pichle mahine ka munafa". The eight
      * questions keep their own day and month; a window said with them asks for that span instead ([windowOf]).
+     *
+     * The last four (15 Nov 2026) are the long spans: the six months up to today, the calendar year so far, the year
+     * before it and the whole book. Only a sum can be read over a span that long — the rows of a year would be a
+     * query the phone answers 2 MB at a time (lesson 70) — so a question that lists rows is offered the short spans
+     * instead ([Hudhud.keepWithinReach]).
      */
-    enum class Window { TODAY, YESTERDAY, THIS_WEEK, LAST_WEEK, THIS_MONTH, LAST_MONTH }
+    enum class Window {
+        TODAY, YESTERDAY, THIS_WEEK, LAST_WEEK, THIS_MONTH, LAST_MONTH, LAST_6_MONTHS, THIS_YEAR, LAST_YEAR, ALL_TIME;
+
+        /** A span of months or more. */
+        val isLong: Boolean get() = this == LAST_6_MONTHS || this == THIS_YEAR || this == LAST_YEAR || this == ALL_TIME
+    }
 
     private val PROFIT = listOf("munafa", "munafah", "profit", "laba", "untung", "منافع", "نفعو", "ربح", "أرباح", "ارباح",
         "سود", "मुनाफ़ा", "मुनाफा", "लाभ", "লাভ", "মুনাফা",
@@ -67,10 +77,98 @@ object VoiceQuestion {
     private val WEEK = listOf("hafta", "hafte", "haftay", "week", "ہفتہ", "ہفتے", "हफ्ता", "हफ्ते", "सप्ताह", "هفتو", "هفتي",
         "أسبوع", "اسبوع", "هفته", "সপ্তাহ", "minggu", "pekan")
     private val MONTH = listOf("mahina", "mahine", "mahinay", "maheena", "maheene", "maheenay", "mahiney", "maheeney", "month", "مہینہ", "مہینے", "ماہ",
-        "महीना", "महीने", "माह", "مهينو", "مهيني", "شهر", "ماه", "মাস", "bulan")
+        "महीना", "महीने", "माह", "مهينو", "مهيني", "مهينا", "شهر", "ماه", "মাস", "bulan")
     private val LAST = listOf("pichle", "pichhle", "pichlay", "pichhlay", "pichla", "pichhla", "guzishta", "guzashta",
         "last", "previous", "پچھلے", "پچھلا", "پچھلی", "گزشتہ", "گذشتہ", "पिछले", "पिछला", "पिछली", "गत", "গত", "আগের",
-        "پوئين", "گذريل", "الماضي", "الماضية", "السابق", "الفائت", "گذشته", "قبل", "پیش", "lalu", "kemarin", "sebelumnya")
+        "پوئين", "گذريل", "الماضي", "الماضية", "السابق", "الفائت", "گذشته", "قبل", "پیش", "lalu", "kemarin", "sebelumnya",
+        "terakhir")
+
+    // The long spans' words (15 Nov 2026). "Saal" is a year in Urdu, Hindi, Sindhi and Persian alike. Arabic's "عام" is also
+    // "general" (lesson 92: one spelling, two words in two languages), so it is only ever said inside a phrase. A year is
+    // the calendar year, January to December, as the shop's books are kept.
+    private val YEAR = listOf("saal", "baras", "year", "tahun", "سال", "سنہ", "سنة", "سنوات", "سنين", "साल", "वर्ष", "বছর")
+    private val THIS_YEAR = listOf("امسال", "هذا العام", "العام الحالي")
+    private val LAST_YEAR = listOf("parsaal", "paarsaal", "پارسال", "العام الماضي", "العام الفائت", "العام السابق")
+    // Half a year is the six months up to today, said another way.
+    private val HALF_YEAR = listOf("half year", "aadha saal", "aadhe saal", "adha saal", "nisf saal", "نصف سال", "آدھا سال",
+        "آدھے سال", "आधा साल", "आधे साल", "نصف سنة", "نصف عام", "نیم سال", "نیمسال", "ششماهه", "setengah tahun",
+        "অর্ধ বছর", "অর্ধেক বছর", "اڌ سال")
+    // The whole book. The first group means it wherever it stands: "aaj tak" is "until today", and the TODAY word inside it
+    // does not make the question today's. The second group means it only when no other span is said, because "aaj ab tak"
+    // is today so far and "is saal ab tak" this year so far. "So far" and "to date" are left out on purpose: said alone
+    // they are as often today as the whole book.
+    private val EVER = listOf("aaj tak", "ajj tak", "shuru se", "shuruat se", "pehle din se", "start se", "since the beginning",
+        "since the start", "from the beginning", "from the start", "since day one", "all time", "of all time", "ever since",
+        "آج تک", "شروع سے", "شروعات سے", "پہلے دن سے", "ابتدا سے", "आज तक", "शुरू से", "शुरुआत से", "पहले दिन से",
+        "আজ পর্যন্ত", "শুরু থেকে", "প্রথম দিন থেকে", "حتى اليوم", "منذ البداية", "منذ البدء", "من البداية", "منذ اليوم الأول",
+        "تا امروز", "از ابتدا", "از آغاز", "از شروع", "از روز اول", "از اول تا حالا", "اڄ تائين", "شروع کان", "شروعات کان", "شروعات سے", "پهرين ڏينهن کان",
+        "sampai hari ini", "hingga hari ini", "sejak awal", "dari awal", "sejak hari pertama")
+    private val EVER_SO_FAR = listOf("ab tak", "abtak", "abhi tak", "till now", "until now", "up to now", "so far", "to date",
+        "till date", "up till now", "اب تک", "ابھی تک",
+        "अब तक", "अभी तक", "এখন পর্যন্ত", "حتى الآن", "تا الان", "تا کنون", "تا حالا", "هينئر تائين", "sampai sekarang",
+        "hingga sekarang", "selama ini")
+
+    // A count of days, weeks, months or years ("6 mahine", "pichle 3 din", "last 2 weeks") is a span of its own that no window
+    // is, except six months. These are the words that name a unit when a count stands before them, with the plurals and the
+    // oblique forms the windows' own lists leave out. Said alone ("is mahine") they count nothing, and they are not in [ALL],
+    // so no customer loses a word of his name to them.
+    private val UNIT_DAY = listOf("din", "dino", "dinon", "days", "day", "hari", "دن", "دنوں", "روز", "दिन", "दिनों", "দিন",
+        "يوم", "ايام", "أيام", "يوما", "ڏينهن")
+    private val UNIT_WEEK = WEEK + listOf("hafton", "ہفتوں", "हफ्तों", "أسابيع", "اسابيع", "هفتن")
+    private val UNIT_MONTH = MONTH + listOf("mahinon", "mahino", "مہینوں", "महीनों", "أشهر", "اشهر", "شهور", "مهينن")
+    private val UNIT_YEAR = YEAR + listOf("salon", "saalon", "سالوں", "برسوں", "सालों", "वर्षों", "سالن")
+    /** Arabic's dual says the count in the unit itself: "two months", "two weeks", "two days", "two years". */
+    private val DUALS: Map<String, SpanUnit> by lazy {
+        mapOf(
+            "شهرين" to SpanUnit.MONTH, "شهران" to SpanUnit.MONTH, "أسبوعين" to SpanUnit.WEEK, "أسبوعان" to SpanUnit.WEEK,
+            "يومين" to SpanUnit.DAY, "يومان" to SpanUnit.DAY, "سنتين" to SpanUnit.YEAR, "سنتان" to SpanUnit.YEAR,
+            "عامين" to SpanUnit.YEAR, "عامان" to SpanUnit.YEAR
+        ).mapKeys { normalise(it.key) }
+    }
+    // The count words beyond the ones voice entry already reads ([VoiceEntry.countWord]): a figure written as a word is a count
+    // here whatever it is, and six is six in every language below. Written out for 1 to 12 and 30 only: a count said any other
+    // way as a word is left to its digits, and a shop that says "26 months" in words is not read as six.
+    private val COUNT_WORDS: Map<String, Double> by lazy {
+        val table = listOf(
+            1.0 to listOf("hek", "هڪ", "এক", "एक", "satu"),
+            2.0 to listOf("দুই", "দু", "ٻه", "dua"),
+            3.0 to listOf("ٽي", "ثلاثة", "ثلاث", "तीन", "তিন", "tiga"),
+            4.0 to listOf("أربعة", "أربع", "empat", "चार", "চার"),
+            5.0 to listOf("पांच", "পাঁচ", "خمسة", "خمس", "lima"),
+            6.0 to listOf("chhe", "chhay", "chhai", "chhey", "chhah", "cheh", "six", "شش", "ستة", "ست", "ڇهه", "ڇه", "छह", "छः",
+                "छे", "ছয়", "enam"),
+            7.0 to listOf("सात", "সাত", "سبعة", "سبع", "هفت", "tujuh"),
+            8.0 to listOf("आठ", "আট", "ثمانية", "ثمان", "هشت", "اٺ", "delapan"),
+            9.0 to listOf("नौ", "নয়", "تسعة", "تسع", "sembilan"),
+            10.0 to listOf("दस", "দশ", "عشرة", "عشر", "ڏهه", "sepuluh"),
+            11.0 to listOf("gyarah", "گیارہ", "ग्यारह", "এগারো", "یازده", "sebelas"),
+            12.0 to listOf("barah", "بارہ", "बारह", "বারো", "دوازده"),
+            30.0 to listOf("tees", "تیس", "तीस", "ত্রিশ", "ثلاثون", "ثلاثين")
+        )
+        val out = HashMap<String, Double>()
+        for ((n, words) in table) for (w in words) out[normalise(w)] = n
+        out
+    }
+    // Which way a count is said. "6 mahine pehle" is six months AGO and "pehle 6 mahine" the FIRST six: neither is the six
+    // months up to today.
+    private val AGO_AFTER: Set<String> by lazy {
+        listOf("pehle", "pehlay", "pahle", "ago", "lalu", "پہلے", "पहले", "আগে", "پیش", "اڳ").map { normalise(it) }.toSet()
+    }
+    private val AGO_BEFORE: Set<String> by lazy { listOf("قبل", "منذ").map { normalise(it) }.toSet() }
+    private val FIRST_BEFORE: Set<String> by lazy {
+        listOf("pehle", "pehlay", "pahle", "first", "پہلے", "पहले", "প্রথম", "اول", "الاول").map { normalise(it) }.toSet()
+    }
+    private val FIRST_AFTER: Set<String> by lazy { listOf("pertama", "اول", "الاولی").map { normalise(it) }.toSet() }
+    // A span ahead is no span of the book's. "Agle 30 din" (the cash flow) is read before a figure is asked for.
+    private val NEXT = listOf("agle", "aglay", "agli", "next", "اگلے", "اگلی", "آئندہ", "अगले", "अगली", "আগামী", "القادمة",
+        "القادم", "آینده", "depan", "mendatang")
+    // The financial year starts on 1 July in Pakistan and on 1 April in India: a year of ours is January to December, so a
+    // question about the other kind is said not to be one we have (never answered with the calendar year's figure).
+    private val FISCAL = listOf("fiscal", "financial year", "maali saal", "mali saal", "مالی سال", "مالي سال", "سال مالی",
+        "वित्तीय वर्ष", "वित्त वर्ष", "السنة المالية", "العام المالي", "tahun fiskal", "tahun anggaran", "অর্থবছর", "অর্থ বছর")
+    // The day before yesterday ("parson" is also the day after tomorrow): a day no window is.
+    private val DAY_BEFORE = listOf("parson", "parsoon", "parso", "پرسوں", "परसों", "day before yesterday", "پریروز",
+        "اول امس", "পরশু")
     private val TO_GIVE = listOf("dena", "dene", "to give", "i owe", "to pay", "utang saya", "دینا", "دینے", "ڏيڻا", "ڏيڻو",
         "علي دفع", "پرداختنی", "بدهکار", "देना", "देने", "দেনা", "দিতে",
         // 12 Nov 2026 (Hudhud), from the app's own chips: Farsi's debt is what the shop owes ("جمع بدهی"), Arabic's
@@ -152,10 +250,22 @@ object VoiceQuestion {
      * rest, so "baqaya" or "aaj" never passes for a name — while علی, a word of the Arabic phrase "ما عليّ", is still
      * Ali whenever that phrase is not said.
      */
-    internal fun keywordsIn(text: String): Set<String> {
+    internal fun keywordsIn(text: String): Set<String> = wordsOf(text, ALL)
+
+    /**
+     * The words of [text] (normalised) that are the span's own (15 Nov 2026): today, yesterday, the week, the month, the
+     * year, "last", this year, last year, half a year, "since the beginning", "so far", the units a count stands before
+     * ("din", "mahinon"), "ago", "first", a span ahead, a fiscal year — a word said whole, or a word of a phrase said
+     * whole. Such a word may also mean something else by itself (the "since" of "since the beginning" asks since when,
+     * the "اب" of "اب تک" is Arabic's "father"): in a sentence that only carries a question on over another span these
+     * words are the span's, not a question of their own ([Hudhud]'s follow-ups and its bare spans).
+     */
+    internal fun spanWordsIn(text: String): Set<String> = wordsOf(text, SPAN_WORDS)
+
+    private fun wordsOf(text: String, lists: List<String>): Set<String> {
         val said = text.split(' ').filter { it.isNotEmpty() }
         val out = HashSet<String>()
-        for (w in ALL) {
+        for (w in lists) {
             val k = spelt.getOrPut(w) { normalise(w) }
             if (k.contains(' ')) {
                 if (" $text ".contains(" $k ")) out += k.split(' ')
@@ -167,28 +277,145 @@ object VoiceQuestion {
     }
 
     private val ALL: List<String> by lazy {
-        listOf(PROFIT, EXPIRING, NOT_PAID, MOST, LEAST, DEBT, SALES, TODAY, TO_GIVE, TO_GET, YESTERDAY, WEEK, MONTH, LAST).flatten()
+        listOf(PROFIT, EXPIRING, NOT_PAID, MOST, LEAST, DEBT, SALES, TODAY, TO_GIVE, TO_GET, YESTERDAY, WEEK, MONTH, LAST,
+            YEAR, THIS_YEAR, LAST_YEAR, HALF_YEAR, EVER, EVER_SO_FAR).flatten()
+    }
+
+    private val SPAN_WORDS: List<String> by lazy {
+        listOf(TODAY, YESTERDAY, WEEK, MONTH, LAST, YEAR, THIS_YEAR, LAST_YEAR, HALF_YEAR, EVER, EVER_SO_FAR, UNIT_DAY, UNIT_WEEK,
+            UNIT_MONTH, UNIT_YEAR, NEXT, FISCAL, DAY_BEFORE, AGO_AFTER.toList(), AGO_BEFORE.toList(), FIRST_BEFORE.toList(),
+            FIRST_AFTER.toList()).flatten()
     }
 
     /**
      * The span of days [heard] names, or null when it names none (12 Nov 2026): last month and last week (a "last"
      * word beside the month's or the week's), this week, today, yesterday, this month. A sentence naming none keeps
-     * the figure's own span; one naming a span this list does not know ("parson", "this year") keeps it too, and the
-     * card's heading says which span its figure is for.
+     * the figure's own span, and the card's heading says which span its figure is for.
+     *
+     * 15 Nov 2026, four long spans: the six months up to today, this year, last year and the whole book — and a sentence
+     * that names a span none of these is ("last 3 days", "pichle 2 hafte", "6 months ago", "parson", a fiscal year) is
+     * [unsupportedSpan], never quietly read as another span (it used to be this month's figure, or last month's).
      */
-    fun windowOf(heard: String): Window? {
+    fun windowOf(heard: String): Window? = spans(heard).window
+
+    /**
+     * True when [heard] names a span no [Window] is (15 Nov 2026): a count of days, weeks, months or years other than the
+     * six months up to today, "ago", "the first 6 months", a span ahead, the day before yesterday, a fiscal year. The
+     * figure asked for is then not answered for some other span: Hudhud says which spans he tells ([Hudhud.limitSpan]).
+     * A sentence that says the whole book ("aaj tak", "since the beginning") is never one of these.
+     */
+    fun unsupportedSpan(heard: String): Boolean = spans(heard).unsupported
+
+    /**
+     * The counts that belong to a span in [heard] ("3" of "pichle 3 mahine", "6" of "last 6 months") — figures that are not
+     * an amount of money. A sentence's number that is only one of these is no amount: "Bashir ne pichle 3 mahine kitna diya"
+     * asks what Bashir paid, it does not say that 3 rupees moved.
+     */
+    fun spanFigures(heard: String): Set<Double> =
+        countedSpans(heard).map { it.n }.filter { !it.isNaN() }.toSet()
+
+    /**
+     * True when the "last" of [heard] is the span's own: "last month", "last week", "last year", "last 6 months", "pichle 3
+     * mahine" — and not a last payment or a last entry ("when did he last pay"). The two read alike in English.
+     */
+    fun lastIsSpan(heard: String): Boolean {
         val t = normalise(heard)
-        if (t.isEmpty()) return null
+        if (!saysAny(t, LAST)) return false
+        return windowOf(heard) in LAST_WINDOWS || countedSpans(heard).isNotEmpty()
+    }
+
+    /** The spans whose "last" is the span's own ("last week", "pichle saal", "the last 6 months"). */
+    internal val LAST_WINDOWS = setOf(Window.LAST_MONTH, Window.LAST_WEEK, Window.LAST_YEAR, Window.LAST_6_MONTHS)
+
+    private class Spans(val window: Window?, val unsupported: Boolean)
+
+    private val NO_SPAN = Spans(null, false)
+    private val NOT_OURS = Spans(null, true)
+
+    private fun spans(heard: String): Spans {
+        val t = normalise(heard)
+        if (t.isEmpty()) return NO_SPAN
+        // The whole book first: "aaj tak" holds the word "aaj" and is not today.
+        if (saysAny(t, EVER)) return Spans(Window.ALL_TIME, false)
+        val counted = countedSpans(heard)
+        val half = saysAny(t, HALF_YEAR)
+        if (counted.isNotEmpty() || half) {
+            // Six months, said alone, is the six months up to today. Any other count, "ago", "the first 6 months", a span ahead,
+            // a fiscal year, or six months with another span beside it ("is saal ke pichle 6 mahine") is none we tell.
+            val six = if (counted.isEmpty()) half else counted.size == 1 && counted[0].sixMonths
+            val alone = !saysAny(t, THIS_YEAR) && !saysAny(t, LAST_YEAR) && !saysAny(t, WEEK) && !saysAny(t, TODAY) &&
+                !saysAny(t, YESTERDAY) && !saysAny(t, NEXT) && !saysAny(t, FISCAL) && (half || !saysAny(t, YEAR))
+            return if (six && alone) Spans(Window.LAST_6_MONTHS, false) else NOT_OURS
+        }
+        // A span ahead ("agle mahine ki bikri", "next week") is no span of the book at all.
+        val ahead = saysAny(t, NEXT) && (saysAny(t, MONTH) || saysAny(t, WEEK) || saysAny(t, YEAR))
+        if (saysAny(t, FISCAL) || saysAny(t, DAY_BEFORE) || ahead) return NOT_OURS
         val last = saysAny(t, LAST)
-        return when {
+        val year = saysAny(t, YEAR)
+        val window = when {
+            saysAny(t, LAST_YEAR) || (last && year) -> Window.LAST_YEAR
+            year || saysAny(t, THIS_YEAR) -> Window.THIS_YEAR
             last && saysAny(t, MONTH) -> Window.LAST_MONTH
             last && saysAny(t, WEEK) -> Window.LAST_WEEK
             saysAny(t, WEEK) -> Window.THIS_WEEK
             saysAny(t, TODAY) -> Window.TODAY
             saysAny(t, YESTERDAY) -> Window.YESTERDAY
             saysAny(t, MONTH) -> Window.THIS_MONTH
+            // "Ab tak" is only the whole book when no other span is said: "aaj ab tak" is today so far.
+            saysAny(t, EVER_SO_FAR) -> Window.ALL_TIME
             else -> null
         }
+        return if (window == null) NO_SPAN else Spans(window, false)
+    }
+
+    private enum class SpanUnit { DAY, WEEK, MONTH, YEAR }
+
+    /** [n] of a [unit]: "pichle 6 mahine" is 6 of MONTH. NaN is a figure written in several words ("twenty six"). */
+    private class Counted(val n: Double, val unit: SpanUnit, val ago: Boolean, val first: Boolean) {
+        val sixMonths: Boolean get() = n == 6.0 && unit == SpanUnit.MONTH && !ago && !first
+    }
+
+    private val DIGIT_THEN_LETTER = Regex("(\\d)(\\p{L})")
+
+    private fun unitOf(token: String): SpanUnit? = when {
+        saysAny(token, UNIT_DAY) -> SpanUnit.DAY
+        saysAny(token, UNIT_WEEK) -> SpanUnit.WEEK
+        saysAny(token, UNIT_MONTH) -> SpanUnit.MONTH
+        saysAny(token, UNIT_YEAR) -> SpanUnit.YEAR
+        else -> null
+    }
+
+    /**
+     * Every count of days, weeks, months or years the sentence says: a figure (in any script's digits, or one of the number
+     * words of the nine languages) straight before the unit's word, or Arabic's dual in the unit itself. The figure is
+     * taken as it is written: a count made of several words is NaN, so "twenty six months" is never six.
+     */
+    private fun countedSpans(heard: String): List<Counted> {
+        val spaced = DIGIT_THEN_LETTER.replace(Digits.toLatin(heard), "\$1 \$2")
+        val raw = PUNCT.replace(spaced, " ").split(SPACES).filter { it.isNotEmpty() }
+        if (raw.isEmpty()) return emptyList()
+        val said = raw.map { normalise(it) }
+        fun numberAt(j: Int): Double? {
+            if (j < 0) return null
+            val s = said[j]
+            if (s.isNotEmpty() && s.all { it in '0'..'9' }) return s.toDoubleOrNull()
+            return COUNT_WORDS[s] ?: VoiceEntry.countWord(raw[j])
+        }
+        val out = ArrayList<Counted>(1)
+        for (i in said.indices) {
+            val dual = DUALS[said[i]]
+            val unit = dual ?: unitOf(said[i]) ?: continue
+            val n = if (dual != null) 2.0 else (numberAt(i - 1) ?: continue)
+            // Where the figure stands: the word before the unit, or the unit itself when it is Arabic's dual.
+            val figureAt = if (dual != null) i else i - 1
+            val compound = dual == null && numberAt(i - 2) != null
+            val before = said.getOrNull(figureAt - 1)
+            val after = said.getOrNull(i + 1)
+            val ago = (after != null && after in AGO_AFTER) || (before != null && before in AGO_BEFORE)
+            val first = (before != null && before in FIRST_BEFORE) || (after != null && after in FIRST_AFTER)
+            out.add(Counted(if (compound) Double.NaN else n, unit, ago, first))
+        }
+        return out
     }
 
     fun classify(heard: String): Kind? {

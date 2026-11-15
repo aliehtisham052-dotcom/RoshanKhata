@@ -2921,6 +2921,14 @@ Each of these cost a build or a bug.
     decided which file an edit belonged to by comparing strings with `is` applied one of the four door edits, wrote the other
     three into nothing and printed "ok" (14 Nov 2026); only a `grep` of the result showed it. Validate every anchor first
     (lesson 9), key the texts by file name, and after the script look at the lines that must have changed.
+136. **A name across scripts is met on the letters, not on two lossy folds.** "बशीर" and "Bashir" meet through the Latin letters the Indic or Arabic word reads as (`HudhudNameBridge`); two folds that each lose something agree by chance. A tie between several names is a choice (`resolveNames`), never a guess (15 Nov 2026).
+137. **A concept word that is also a name is soft in every script, and a soft word yields only to a question it makes itself.** Malik, Store, Din and their Urdu, Hindi and Bengali spellings: found as a name only when no concept reads the sentence.
+138. **A word that calls or befriends can also be a name** (`CALLS_AS_NAMES`: bhai, jan, dost…): soft, only the listed words, and "bhai jaan" alone is an address, not a customer.
+139. **A loose cross-script match must not name a man or a product when the word is an ordinary word of the language** (`HudhudSense.knowsWord`, `ordinaryWord`): the sense has seen the word often as a word and never as a name. Held-out 1067 of 1170.
+140. **The search's script-blind sound fold also made ordinary words names** (Hindi "बात" = Butt, Bengali "উড়ে" = Urea): `foldBlocked` keeps that route shut for ordinary words, and one reusable sweep over the nine languages serves every list (customers, products, anything later).
+141. **A greeting's first word written without its article is a name too** ("سلام" / "اسلام" / "Aslam"): `salaamHeadRead` decides by the whole head of the sentence.
+142. **A courtesy the sense learnt as the whole sentence must not overturn a question the rules read.** `STOP_SET` holds question and book words, so it is no list of little words. A courtesy label (salaam, hello, thanks, bye) stands only when the sentence is courtesy-only (`courtesyOnly`/`asksBook`); a greeting or thank-you word is quiet (`COURTESY_WORDS`), never sound-matched, and never shown to the sense in front of a question (`senseHeard`). Bias on purpose: a greeting plus a real question is the question; "thanks Ali Raza" is the customer. `HudhudCourtesyTest` holds 11 rows in nine languages with the courtesy word in front and behind.
+
 ---
 
 ## Working with the owner
@@ -3881,6 +3889,15 @@ with one tap; everything else he shows, opens or says where it is. Nothing in `H
   HudhudWordsTest 9 of 9, all 13 steps of the Strings workflow pass locally, the sense and the owner's lists keep their floors (the sense was not touched). **Not compiled or run here:**
   every file in `app/` (the door, `HudhudBook`'s look code, the sheet's edits, the `BaseActivity` hook, the on-device test) — CI is its
   first build.
+
+### 15 Nov 2026: Hudhud, #26 deep record questions, names across scripts, spans, courtesy (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 7 (reads money and names). Plain shared Kotlin only was compiled and run here (lesson 93): 456 shared tests, HudhudWordsTest 9, all 13 Strings steps pass; floors held (held-out 1067 of 1170, short lists 143, thousand 724). Every `app/` file is CI's first build.
+
+- **Spans** (`Ask.SpanLimit(options, long)`, `Ask.Now(ask)`, `limitSpan`, `keepWithinReach`, `spanOf`): a question over a span the book cannot answer (a sale over a year when the book is a month old) says so and offers the spans it can; `Now` carries the answer of "now" when the span word is only a setting of the same ask. `VoiceQuestion.Window` gained LAST_6_MONTHS, THIS_YEAR, LAST_YEAR, ALL_TIME (`isLong`); `KhataDao.firstSaleAt` tells where the book begins. A span's own "last" is never read as the customer's last entry.
+- **Names across scripts** (`HudhudNameBridge`): an Urdu, Arabic, Hindi or Bengali spelling meets the Latin name by its letters, a tie is a choice. Guards: `knowsWord`/`ordinaryWord`, `foldBlocked`, `salaamHeadRead`, `CALLS_AS_NAMES`, soft words (lessons 136-141). Accepted and recorded: 12 Arabic-script ordinary words still bridge to a name (اسلام, امان, امنہ, ایل, باز, دست, فتح, ماضی, محفوظ, کشف and two more), Bengali ইউসুফ is not bridged, the Khata voice entry (`KhataActivity`) has the same cross-script weakness, Hudhud searches only customers, suppliers and products.
+- **Courtesy** (lesson 142): four layers — `talk` refuses thank-you/goodbye when the sentence asks the book, `decide` takes the next non-courtesy guess, the fall-through answers Salaam/Hello only for a courtesy-only sentence, and the sense never sees a one-word courtesy (`senseHeard`).
+- **Tests:** HudhudNamesTest, HudhudNameWordsTest, HudhudNameBridgeTest, HudhudSpansTest, HudhudFacetsTest, HudhudCourtesyTest. Not done: mutation pass on the new guards (a second commit), a per-page limits line ("hudood") in `HudhudBook.pages`, the "milega/milna" vocabulary gap (end-of-#26 retrain).
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 

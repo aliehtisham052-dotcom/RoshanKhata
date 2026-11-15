@@ -96,6 +96,14 @@ object BigBookProbe {
         time("Profit: this month and last") { Profit.thisMonth(dao) to Profit.lastMonth(dao) }
         time("Sales report: this month") { SalesReport.compute(dao, monthStart, now) }
         time("Sales report: a year") { SalesReport.compute(dao, now - 365 * DAY, now) }
+        // Hudhud's longer spans (15 Nov 2026): the sums he gives over the last 6 months, a year and the whole book —
+        // a sale by its SUM, a profit by the line rows it is worked out from, the best sellers by their grouping.
+        time("Hudhud: sales, the last 6 months") { dao.salesTotalBetween(now - 183 * DAY, now + DAY) }
+        time("Hudhud: sales, the whole book") { dao.salesTotalBetween(0L, now + DAY) }
+        time("Hudhud: the first sale") { dao.firstSaleAt() }
+        time("Hudhud: profit, a year") { Profit.between(dao, now - 365 * DAY, now + DAY) }
+        time("Hudhud: profit, the whole book") { Profit.between(dao, 0L, now + DAY) }
+        time("Hudhud: best sellers, the whole book") { dao.topProductsBetween(0L, now + DAY, 5) }
         time("Khata Report: this month", { "${it.size} entries" }) { dao.entriesInRange(monthStart, now) }
         time("Dues by age") { Aging.compute(dao, now) }
         time("Day report") { ZReport.compute(dao, dayStart, now) }
