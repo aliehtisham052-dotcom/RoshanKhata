@@ -811,6 +811,7 @@ object Hudhud {
         if (ruled is Ask.About && (ruled.topic == AboutTopic.NAME_STORY || ruled.topic in FAITH_TOPICS || ruled.topic in STORY_TOPICS)) return ruled
         // A feature named by its own word (14 Nov 2026), and the asks only the rules make: never turned by the sense.
         if (ruled is Ask.Help && featureNamed(heard)) return ruled
+        if (ruled is Ask.Figure && ruled.kind == VoiceQuestion.Kind.NOT_PAID && remindPage(words(heard).joinToString(" "))) return ruled
         // A bare "bill" with no supplier or purchase word (15 Nov 2026, the owner's list): which bill is said by the rules' own
         // question (utility or supplier), never settled by the sense, which learnt every "bill" as a count of supplier bills.
         if (isBareBillChoice(ruled, heard)) return ruled
@@ -1606,6 +1607,14 @@ object Hudhud {
                 }
             }
         }
+        // Whom to remind, what to chase, a message for the money (15 Nov 2026, the owner's list: "Kis ko yaad dilana hai" was read as
+        // who made the app, "Kis ko phone karna hai" as somebody's phone number): the Follow-up page, which lists them and sends the
+        // reminder one by one. Hudhud writes and sends nothing himself; nobody named here (byFeature runs only with none).
+        if (remindPage(joined)) {
+            // "Whom" is asked: the ones who have not paid, as the book holds them; else the page that does the reminding.
+            if (has(joined, WHOM)) return Ask.Figure(VoiceQuestion.Kind.NOT_PAID)
+            page("intro_followup")?.let { return it }
+        }
         // Keeping the book safe (14 Nov 2026, the owner's 1,000 sentences: "PIN bhool gaya" was read as somebody's
         // details, "Naya PIN banana hai" as a hello): the lock's and the hiding's own help pages.
         if (has(joined, LOCK_WORDS)) page("faq_lock")?.let { return it }
@@ -1682,6 +1691,11 @@ object Hudhud {
         return null
     }
 
+    /** Whether a sentence is about reminding customers for money, in no bill's or supplier's sense. */
+    internal fun remindPage(joined: String): Boolean =
+        has(joined, REMIND_WORDS) && !has(joined, BILL_WORDS) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE) &&
+            !has(joined, listOf("automation", "automations", "notification", "notifications", "alarm", "stock", "maal", "saman", "item", "cheez"))
+
     /** The page for a sentence that ranks the goods by profit or says which do not move; null for any other. */
     internal fun itemRankPage(joined: String): String? {
         if (has(joined, listOf("kitne", "kitni", "how many", "count"))) return null
@@ -1712,7 +1726,8 @@ object Hudhud {
             .any { has(joined, it) } ||
             (has(joined, BILL_WORDS) && has(joined, MAKE_DOC)) ||
             (has(joined, BILL_WORDS) && has(joined, BILL_EDIT) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE)) ||
-            itemRankPage(joined) != null
+            itemRankPage(joined) != null ||
+            remindPage(joined)
     }
 
     private val LOCK_WORDS = listOf("lock", "app lock", "applock", "pin", "pin code", "password", "passcode", "fingerprint",
@@ -1848,6 +1863,17 @@ object Hudhud {
     private val SELLING = listOf("bik", "bikta", "bikti", "bika", "biki", "bik raha", "bikri", "sale", "sales", "becha",
         "bechi", "sold", "selling", "sell", "بکا", "بکی", "بکتا", "بکتی", "فروخت", "بيع", "مبيعا", "مبيعاً", "فروش", "فروخته",
         "وڪرو", "बिका", "बिकी", "बिकता", "बिक्री", "বিক্রি", "terjual", "laku")
+    private val WHOM = listOf("kis ko", "kisko", "kin ko", "kin se", "kis se", "kaun", "kon", "kis", "kin", "who", "whom", "کس کو", "کن کو",
+        "کس سے", "کن سے", "کون", "کس", "من", "مين", "کی را", "چه کسی", "किस को", "किसको", "किन को", "कौन", "किस", "কাকে", "কে", "কারা",
+        "ڪنهن کي", "ڪير", "siapa", "kepada siapa")
+    private val REMIND_WORDS = listOf("yaad nahi dilaya", "yaad nahi dilana", "yaad nahi dilao", "yaad dilana", "yaad dilao", "yaad dila", "yaad dilaya", "yaad dilane", "yaad dahani", "yaad-dahani",
+        "yaad dehani", "reminder", "reminders", "remind", "follow up", "followup", "follow-up", "phone karna", "phone karun", "phone karne",
+        "call karna", "call karun", "payment ka message", "payment ki request", "payment request", "paise mangne", "paise mangna",
+        "paise mangun", "wasooli ki baari", "ek saath message", "sab ko message", "یاد دلانا", "یاد دلاؤ", "یاد دلانے", "یاد دہانی",
+        "ریمائنڈر", "فالو اپ", "فون کرنا", "فون کرنے", "پیمنٹ کا میسج", "پیسے مانگنے", "وصولی کی باری", "تذكير", "ذكّر", "ذكر", "تذكيرات",
+        "اتصل", "مطالبة", "یادآوری", "یادآور", "پیگیری", "تماس بگیرم", "ياد ڏيارڻ", "ياد ڏياريو", "रिमाइंडर", "याद दिला", "याद दिलाना",
+        "फॉलो अप", "फोन करना", "पेमेंट का मैसेज", "पैसे मांगने", "রিমাইন্ডার", "মনে করিয়ে", "ফলো আপ", "ফোন করতে", "ingatkan",
+        "mengingatkan", "pengingat", "tagih", "menagih", "tindak lanjut")
     private val ITEM_WORDS = listOf("cheez", "cheezein", "cheezon", "chiz", "item", "items", "maal", "saman", "samaan", "product",
         "products", "goods", "چیز", "چیزیں", "آئٹم", "مال", "سامان", "پروڈکٹ", "منتج", "سلعة", "بضاعة", "كالا", "کالا", "جنس",
         "شيءِ", "सामान", "माल", "चीज़", "चीज", "आइटम", "জিনিস", "মাল", "পণ্য", "barang", "produk")
@@ -2368,7 +2394,7 @@ object Hudhud {
 
     /** One of the book's own names (a customer, a supplier, a product), recognised outright. */
     private fun knownName(w: String, names: List<Name>): Boolean =
-        names.isNotEmpty() &&
+        names.isNotEmpty() && !shortOrdinaryPrefix(w, names) &&
             ((!foldBlocked(w, names) && NameSearch.scoreSpoken(names, listOf(w)) { it.name }.any { it.strongHits > 0 }) ||
                 meetsAcrossScripts(w, names))
 
@@ -2382,6 +2408,16 @@ object Hudhud {
      * script, when its letters meet the Latin spelling's ([bridges], read by [meetsAcrossScripts] and [acrossScripts], which
      * this does not touch). Latin words keep the search as it was.
      */
+    /**
+     * A short word of the language (at most four letters: "par", "pe", "ko", "kal") is no name by being the start of one (15 Nov 2026,
+     * the owner's list: "WhatsApp par yaad dahani bhejo" was the product Paracetamol, "kis par" its buyers). It names somebody or
+     * something only as a whole word of that name, as the book holds it. Latin letters only: the other scripts have [foldBlocked].
+     */
+    private fun shortOrdinaryPrefix(w: String, names: List<Name>): Boolean {
+        if (w.length > 4 || scriptOf(w) != Script.LATIN || !ordinaryWord(Form(w))) return false
+        return names.none { n -> words(n.name).any { it == w } }
+    }
+
     private fun foldBlocked(w: String, names: List<Name>): Boolean {
         val script = scriptOf(w)
         if (script == Script.LATIN || !ordinaryWord(Form(w))) return false
@@ -3219,7 +3255,7 @@ object Hudhud {
         val left = said.filter { w ->
             w.length >= 3 && w.any { it.isLetter() } && w !in STOP_SET && w !in INTENT_SET &&
                 w !in asked && w !in features && !HudhudMind.isHardWord(w) && (soft || !HudhudMind.isSoftWord(w)) &&
-                ((w !in QUIET_SET && w !in VOCATIVE_SET) || (soft && w in CALLS_AS_NAMES))
+                ((w !in QUIET_SET && w !in VOCATIVE_SET) || (soft && w in CALLS_AS_NAMES)) && !shortOrdinaryPrefix(w, names)
         }
         if (left.isEmpty()) return emptyList()
         // A Bengali case ending comes off for the search proper ("আলীর" meets "আলী"); the bridge across scripts is given the

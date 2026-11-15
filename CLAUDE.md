@@ -3989,6 +3989,22 @@ hai", "kaun sa maal chal nahi raha" read as supplier figures or a count of low s
 - **Not done:** "dobara mangwani chahiye" and "demand zyada" still read as low stock (arguably right; the owner's list wants the sales pages);
   "sab se mehnga item kaun sa bika" and "season ka sab se achha item" are other readings.
 
+### 15 Nov 2026: Hudhud, whom to remind, and a short word that was taken for a product (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 6. Two classes found in the owner's list, one fix each.
+
+- **Whom to remind** (`Hudhud.remindPage`, `REMIND_WORDS`, `WHOM`): "Kis ko yaad dilana hai" was read as who made the app, "Kis ko phone karna hai" as somebody's
+  phone number. Reminding for money is now the Follow-up page; a sentence that also asks WHOM ("kis ko", "kin se", "whom") is the ones who have not paid
+  (`Figure(NOT_PAID)`, as the book holds them); a bill's reminder is the bill rule's, a stock reminder, a supplier's and a setting are other readings.
+- **A short word is not a product** (`shortOrdinaryPrefix`, in `namedIn` and `knownName`): the Urdu "par" (on) is the start of "Paracetamol", and the name search took
+  it for the product: "WhatsApp par ..." and "kis par" were that product's overview or its buyers, in every sentence with "par" for any shop with such a product
+  or a customer called Parvez. A word of at most four letters that the sense knows as a word of the language names something only as a whole word of that name.
+  Latin letters only (the other scripts have `foldBlocked`, lesson 139).
+- **Measured here:** owner's 1,000 sentences 739 -> 779 (floor 779), short lists 143 -> 146 (floor 146), held-out 1068, 489 shared tests, HudhudWordsTest 9;
+  eight guards broken one at a time, two survived at first (the `knownName` use and the whole-word exception) and have their tests now.
+- **Recommendation:** run every word of the bank as a one-word sentence against a book with a name for each letter pair, as lesson 140 did for the other scripts,
+  to find the next short word taken for a name.
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the
