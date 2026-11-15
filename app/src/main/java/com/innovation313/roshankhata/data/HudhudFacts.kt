@@ -134,8 +134,18 @@ internal object HudhudFacts {
                     Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_no_payment), balance), openParty = p.id)
                 } else {
                     val at = whenOf(c, last.timestamp)
+                    // How it came and its reference, when the entry holds them (15 Nov 2026); an unrecorded way is not cash.
+                    val entry = dao.getEntry(last.id)
+                    val paid = entry?.let { PaymentMethod.said(AndroidWords(c), it.paymentMethod, it.paymentRef) }
                     Answer(Mood.CALM, label = name, figure = HudhudBook.money(last.amount),
-                        lines = listOf(line(c, R.string.hudhud_l_last_payment, at), balance), openParty = p.id, money = true)
+                        lines = listOfNotNull(
+                            line(c, R.string.hudhud_l_last_payment, at),
+                            entry?.entryNumber?.takeIf { it.isNotBlank() }?.let { line(c, R.string.hudhud_l_entry_no, it) },
+                            paid?.let { line(c, R.string.hudhud_l_entry_paid, it) },
+                            balance
+                        ),
+                        openParty = p.id, money = true,
+                        secrets = listOfNotNull(entry?.paymentRef?.takeIf { it.isNotBlank() }))
                 }
             }
             Hudhud.Facet.LAST_ENTRY -> {
@@ -144,9 +154,27 @@ internal object HudhudFacts {
                     Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.party_no_entries)), openParty = p.id)
                 } else {
                     val way = c.getString(if (last.isGiven) R.string.i_gave else R.string.i_got)
+                    // What the entry itself says (15 Nov 2026): its number, how it was paid, the goods, its note and, for who may
+                    // see who wrote what, the writer — each only when the entry holds it (an unrecorded way is not cash).
+                    val entry = dao.getEntry(last.id)
+                    val items = if (entry == null) emptyList() else dao.itemsOfEntry(entry.id)
+                    val paid = entry?.let { PaymentMethod.said(AndroidWords(c), it.paymentMethod, it.paymentRef) }
+                    val entryNote = entry?.note?.takeIf { it.isNotBlank() }
+                    val writer = if (HudhudGate.reports()) entry?.createdBy?.takeIf { it.isNotBlank() } else null
+                    val goods = if (items.isNotEmpty()) Format.goods(items) else entry?.let { Format.goods(it.itemName, it.quantity, it.unit) }
                     Answer(Mood.CALM, label = name, figure = HudhudBook.money(last.amount),
-                        lines = listOf(line(c, R.string.hudhud_l_last_entry, whenOf(c, last.timestamp) + " · " + way), balance),
-                        openParty = p.id, money = true)
+                        lines = listOfNotNull(
+                            line(c, R.string.hudhud_l_last_entry, whenOf(c, last.timestamp) + " · " + way),
+                            entry?.entryNumber?.takeIf { it.isNotBlank() }?.let { line(c, R.string.hudhud_l_entry_no, it) },
+                            paid?.let { line(c, R.string.hudhud_l_entry_paid, it) },
+                            goods?.takeIf { it.isNotBlank() }?.let { line(c, R.string.hudhud_l_entry_goods, it) },
+                            entryNote?.let { line(c, R.string.hudhud_l_entry_note, it) },
+                            writer?.let { line(c, R.string.hudhud_l_entry_by, it) },
+                            balance
+                        ),
+                        openParty = p.id, money = true,
+                        secrets = entryNote?.let { HudhudNote.secretsIn(it) }.orEmpty() +
+                            listOfNotNull(entry?.paymentRef?.takeIf { it.isNotBlank() }))
                 }
             }
             Hudhud.Facet.SINCE -> {

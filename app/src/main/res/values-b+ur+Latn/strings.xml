@@ -4369,6 +4369,11 @@
     <string name="hudhud_no_payment">Abhi tak koi adaigi nahi hui.</string>
     <string name="hudhud_l_last_payment">Aakhri adaigi</string>
     <string name="hudhud_l_last_entry">Aakhri entry</string>
+    <string name="hudhud_l_entry_no">Entry number</string>
+    <string name="hudhud_l_entry_paid">Adaigi ka tareeqa</string>
+    <string name="hudhud_l_entry_goods">Saman</string>
+    <string name="hudhud_l_entry_note">Note</string>
+    <string name="hudhud_l_entry_by">Likhne wala</string>
     <string name="hudhud_l_entries">Entries</string>
     <string name="hudhud_limit_none">Udhaar ki koi hadd muqarrar nahi.</string>
     <string name="hudhud_l_limit_used">Hadd ka istemal</string>

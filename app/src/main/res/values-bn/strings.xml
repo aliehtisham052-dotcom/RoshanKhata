@@ -4417,6 +4417,11 @@
     <string name="hudhud_no_payment">এখনো কোনো পরিশোধ হয়নি।</string>
     <string name="hudhud_l_last_payment">শেষ পরিশোধ</string>
     <string name="hudhud_l_last_entry">শেষ এন্ট্রি</string>
+    <string name="hudhud_l_entry_no">এন্ট্রি নম্বর</string>
+    <string name="hudhud_l_entry_paid">পরিশোধের উপায়</string>
+    <string name="hudhud_l_entry_goods">মালপত্র</string>
+    <string name="hudhud_l_entry_note">নোট</string>
+    <string name="hudhud_l_entry_by">যিনি লিখেছেন</string>
     <string name="hudhud_l_entries">এন্ট্রি</string>
     <string name="hudhud_limit_none">বাকির কোনো সীমা ঠিক করা নেই।</string>
     <string name="hudhud_l_limit_used">সীমার ব্যবহার</string>

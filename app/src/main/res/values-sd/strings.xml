@@ -4397,6 +4397,11 @@
     <string name="hudhud_no_payment">اڃا تائين ڪا ادائيگي ناهي ٿي.</string>
     <string name="hudhud_l_last_payment">آخري ادائيگي</string>
     <string name="hudhud_l_last_entry">آخري داخلا</string>
+    <string name="hudhud_l_entry_no">داخلا نمبر</string>
+    <string name="hudhud_l_entry_paid">ادائيگي جو طريقو</string>
+    <string name="hudhud_l_entry_goods">سامان</string>
+    <string name="hudhud_l_entry_note">نوٽ</string>
+    <string name="hudhud_l_entry_by">لکندڙ</string>
     <string name="hudhud_l_entries">داخلائون</string>
     <string name="hudhud_limit_none">اڌار جي ڪا حد مقرر ناهي.</string>
     <string name="hudhud_l_limit_used">حد جو استعمال</string>

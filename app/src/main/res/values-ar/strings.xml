@@ -4666,6 +4666,11 @@
     <string name="hudhud_no_payment">لم تُسجَّل أي دفعة بعد.</string>
     <string name="hudhud_l_last_payment">آخر دفعة</string>
     <string name="hudhud_l_last_entry">آخر قيد</string>
+    <string name="hudhud_l_entry_no">رقم القيد</string>
+    <string name="hudhud_l_entry_paid">طريقة الدفع</string>
+    <string name="hudhud_l_entry_goods">البضاعة</string>
+    <string name="hudhud_l_entry_note">ملاحظة</string>
+    <string name="hudhud_l_entry_by">كتبه</string>
     <string name="hudhud_l_entries">القيود</string>
     <string name="hudhud_limit_none">لم يُحدَّد حد ائتمان.</string>
     <string name="hudhud_l_limit_used">المستخدم من الحد</string>

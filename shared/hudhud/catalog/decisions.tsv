@@ -71,7 +71,9 @@ column	supplier_bills	WITHHELD	cols=photoPath	why=a picture's file path on this 
 column	transactions	READ	cols=amount,isGiven,timestamp	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity
 column	transactions	READ	cols=isQarzeHasna	reader=HudhudFacts.qarz	gate=REPORTS	screen=ZakatActivity	via=KhataDao.observeZakatBalancesByParty
 column	transactions	READ	cols=paymentMethod	reader=HudhudFacts.collected	gate=REPORTS	screen=DayBookActivity	via=DayBook.rows	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	transactions	GAP	cols=note,entryNumber,recovery,itemName,quantity,unit,createdBy,paymentRef,rateType,season	why=no question reaches it yet
+column	transactions	READ	cols=note,entryNumber,itemName,quantity,unit,paymentRef	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity
+column	transactions	READ	cols=createdBy	reader=HudhudFacts.person	gate=REPORTS	screen=EntryDetailActivity	stricter=who wrote an entry is told only to who may see reports
+column	transactions	GAP	cols=recovery,rateType,season	why=no question reaches it yet
 column	transactions	WITHHELD	cols=billPhotoPath	why=a picture's file path on this phone
 
 # ---- profile

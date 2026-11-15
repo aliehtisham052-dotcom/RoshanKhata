@@ -4582,6 +4582,11 @@
     <string name="hudhud_no_payment">No payment yet.</string>
     <string name="hudhud_l_last_payment">Last payment</string>
     <string name="hudhud_l_last_entry">Last entry</string>
+    <string name="hudhud_l_entry_no">Entry number</string>
+    <string name="hudhud_l_entry_paid">Paid by</string>
+    <string name="hudhud_l_entry_goods">Goods</string>
+    <string name="hudhud_l_entry_note">Note</string>
+    <string name="hudhud_l_entry_by">Written by</string>
     <string name="hudhud_l_entries">Entries</string>
     <string name="hudhud_limit_none">No credit limit is set.</string>
     <string name="hudhud_l_limit_used">Limit used</string>

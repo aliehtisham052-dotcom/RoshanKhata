@@ -375,6 +375,15 @@ object Hudhud {
         else -> null
     }
 
+    private val ENTRY_DETAIL_WORDS = listOf("note", "notes", "memo", "number", "no", "reference", "ref", "tid", "who wrote", "written by",
+        "who entered", "who made", "how was it paid", "paid by", "payment method", "method", "what was written", "what did it say",
+        "yaaddasht", "kis ne likha", "kis ne likhi", "kisne likha", "kisne likhi", "kis ne dali", "kaise ada", "kaise di", "tareeqa",
+        "tariqa", "tarika", "kya likha", "kya likhi", "kya likha tha", "kya likhi thi", "نوٹ", "نمبر", "ریفرنس", "حوالہ", "کس نے لکھی",
+        "کس نے لکھا", "کسی نے لکھا", "کیسے ادا", "طریقہ", "کیا لکھا", "नोट", "नंबर", "नम्बर", "रेफरेंस", "किसने लिखा", "किस ने लिखा",
+        "किसने लिखी", "कैसे दिया", "तरीका", "क्या लिखा", "নোট", "নম্বর", "রেফারেন্স", "কে লিখেছে", "কিভাবে দিয়েছে", "পদ্ধতি", "কী লেখা",
+        "ملاحظة", "ملاحظات", "رقم", "مرجع", "من كتب", "من كتبه", "طريقة الدفع", "كيف دفع", "ماذا كتب", "یادداشت", "شماره", "چه کسی نوشت",
+        "چه کسی ثبت", "روش پرداخت", "چه نوشته", "نوٽ", "ڪنهن لکيو", "ڪيئن ادا", "طريقو", "catatan", "nomor", "referensi",
+        "siapa yang menulis", "siapa yang mencatat", "cara bayar", "dibayar lewat", "apa yang ditulis")
     private val BOUNCED_WORDS = listOf("bounce", "bounced", "bounces", "bouncing", "dishonour", "dishonoured", "dishonor", "dishonored",
         "rejected", "wapas aa gaya", "wapas aaya", "wapas aayi", "wapas aa gayi", "wapas aaye", "wapas aa gaye", "wapis aa gaya",
         "wapis aaya", "wapis aa gayi", "return hua", "return ho gaya", "return aaya", "baounce", "باؤنس", "بائونس", "باونس",
@@ -1282,6 +1291,13 @@ object Hudhud {
             // The same for the whole book: "since the beginning", "shuru se ab tak" hold the words of "since when is he a
             // customer" (15 Nov 2026: "Ali ne shuru se ab tak kitna diya" was his first day).
             val spanOwnsSince = spanSaid != null && (unsupported || spanSaid == VoiceQuestion.Window.ALL_TIME)
+            // What an entry or a payment itself holds (15 Nov 2026): its note, number, reference, way of paying, who wrote it —
+            // "Ali Raza ki entry ka note", "Ali ka payment reference", "last entry kis ne likhi". The entry word is needed, so a
+            // bare "Ali ka number" stays his phone; a count or a span is another question.
+            if (spanSaid == null && figure == null && !mind.has(HudhudMind.C.HOW_MANY) && has(joined, ENTRY_DETAIL_WORDS)) {
+                if (mind.has(HudhudMind.C.ENTRY)) return Ask.Person(named, Facet.LAST_ENTRY)
+                if (mind.has(HudhudMind.C.PAYMENT)) return Ask.Person(named, Facet.LAST_PAYMENT)
+            }
             facetOf(mind, spanLast)?.let { f ->
                 val spansOwn = (spanOwnsLast && (f == Facet.LAST_PAYMENT || f == Facet.LAST_ENTRY)) || (spanOwnsSince && f == Facet.SINCE)
                 if (!spansOwn) return Ask.Person(named, f)

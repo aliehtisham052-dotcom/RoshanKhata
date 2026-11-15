@@ -4369,6 +4369,11 @@
     <string name="hudhud_no_payment">ابھی تک کوئی ادائیگی نہیں ہوئی۔</string>
     <string name="hudhud_l_last_payment">آخری ادائیگی</string>
     <string name="hudhud_l_last_entry">آخری اندراج</string>
+    <string name="hudhud_l_entry_no">اندراج نمبر</string>
+    <string name="hudhud_l_entry_paid">ادائیگی کا طریقہ</string>
+    <string name="hudhud_l_entry_goods">سامان</string>
+    <string name="hudhud_l_entry_note">نوٹ</string>
+    <string name="hudhud_l_entry_by">لکھنے والا</string>
     <string name="hudhud_l_entries">اندراجات</string>
     <string name="hudhud_limit_none">ادھار کی کوئی حد مقرر نہیں۔</string>
     <string name="hudhud_l_limit_used">حد کا استعمال</string>

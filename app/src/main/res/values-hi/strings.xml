@@ -4417,6 +4417,11 @@
     <string name="hudhud_no_payment">अभी तक कोई भुगतान नहीं हुआ।</string>
     <string name="hudhud_l_last_payment">आखिरी भुगतान</string>
     <string name="hudhud_l_last_entry">आखिरी एंट्री</string>
+    <string name="hudhud_l_entry_no">एंट्री नंबर</string>
+    <string name="hudhud_l_entry_paid">भुगतान का तरीका</string>
+    <string name="hudhud_l_entry_goods">सामान</string>
+    <string name="hudhud_l_entry_note">नोट</string>
+    <string name="hudhud_l_entry_by">लिखने वाले</string>
     <string name="hudhud_l_entries">एंट्री</string>
     <string name="hudhud_limit_none">उधार की कोई सीमा तय नहीं है।</string>
     <string name="hudhud_l_limit_used">सीमा का इस्तेमाल</string>

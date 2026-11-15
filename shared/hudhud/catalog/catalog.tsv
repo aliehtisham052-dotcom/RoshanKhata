@@ -401,28 +401,28 @@ column	supplier_bills.uid	String?	STRUCT	pattern
 column	transactions.amount	Double	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
 column	transactions.billItemId	Long?	STRUCT	pattern
 column	transactions.billPhotoPath	String?	WITHHELD	why=a picture's file path on this phone
-column	transactions.createdBy	String?	GAP	why=no question reaches it yet
+column	transactions.createdBy	String?	READ	reader=HudhudFacts.person;gate=REPORTS;screen=EntryDetailActivity;stricter=who wrote an entry is told only to who may see reports
 column	transactions.deletedAt	Long?	STRUCT	pattern
-column	transactions.entryNumber	String	GAP	why=no question reaches it yet
+column	transactions.entryNumber	String	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
 column	transactions.id	Long	STRUCT	pattern
 column	transactions.isDeleted	Boolean	STRUCT	pattern
 column	transactions.isGiven	Boolean	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
 column	transactions.isQarzeHasna	Boolean	READ	reader=HudhudFacts.qarz;via=KhataDao.observeZakatBalancesByParty;gate=REPORTS;screen=ZakatActivity
-column	transactions.itemName	String?	GAP	why=no question reaches it yet
-column	transactions.note	String?	GAP	why=no question reaches it yet
+column	transactions.itemName	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
+column	transactions.note	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
 column	transactions.pairedEntryId	Long?	STRUCT	pattern
 column	transactions.partyId	Long	STRUCT	pattern
 column	transactions.paymentMethod	String?	READ	reader=HudhudFacts.collected;via=DayBook.rows;gate=REPORTS;screen=DayBookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	transactions.paymentRef	String?	GAP	why=no question reaches it yet
+column	transactions.paymentRef	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
 column	transactions.productId	Long?	STRUCT	pattern
-column	transactions.quantity	Double?	GAP	why=no question reaches it yet
+column	transactions.quantity	Double?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
 column	transactions.rateType	String?	GAP	why=no question reaches it yet
 column	transactions.recovery	Int	GAP	why=no question reaches it yet
 column	transactions.saleId	Long?	STRUCT	pattern
 column	transactions.season	String?	GAP	why=no question reaches it yet
 column	transactions.timestamp	Long	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
 column	transactions.uid	String?	STRUCT	pattern
-column	transactions.unit	String?	GAP	why=no question reaches it yet
+column	transactions.unit	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
 profile	askShareAfterEntry	Boolean	GAP	why=settings of the printed sheets, no question reaches them yet
 profile	bankAccountTitle	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	bankIban	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner

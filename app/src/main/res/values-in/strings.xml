@@ -4343,6 +4343,11 @@
     <string name="hudhud_no_payment">Belum ada pembayaran.</string>
     <string name="hudhud_l_last_payment">Pembayaran terakhir</string>
     <string name="hudhud_l_last_entry">Catatan terakhir</string>
+    <string name="hudhud_l_entry_no">Nomor catatan</string>
+    <string name="hudhud_l_entry_paid">Dibayar lewat</string>
+    <string name="hudhud_l_entry_goods">Barang</string>
+    <string name="hudhud_l_entry_note">Catatan</string>
+    <string name="hudhud_l_entry_by">Ditulis oleh</string>
     <string name="hudhud_l_entries">Catatan</string>
     <string name="hudhud_limit_none">Belum ada batas utang.</string>
     <string name="hudhud_l_limit_used">Batas terpakai</string>

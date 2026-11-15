@@ -4397,6 +4397,11 @@
     <string name="hudhud_no_payment">هنوز پرداختی ثبت نشده است.</string>
     <string name="hudhud_l_last_payment">آخرین پرداخت</string>
     <string name="hudhud_l_last_entry">آخرین ثبت</string>
+    <string name="hudhud_l_entry_no">شماره ثبت</string>
+    <string name="hudhud_l_entry_paid">روش پرداخت</string>
+    <string name="hudhud_l_entry_goods">کالا</string>
+    <string name="hudhud_l_entry_note">یادداشت</string>
+    <string name="hudhud_l_entry_by">ثبت‌کننده</string>
     <string name="hudhud_l_entries">ثبت‌ها</string>
     <string name="hudhud_limit_none">سقف نسیه‌ای تعیین نشده است.</string>
     <string name="hudhud_l_limit_used">مصرف‌شده از سقف</string>
