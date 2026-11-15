@@ -2724,6 +2724,7 @@ object Hudhud {
      * staff); the rules never see the difference, so the sense must not either. A courtesy-only sentence is shown whole.
      */
     internal fun senseHeardForTest(heard: String, names: List<Name>, goods: List<Name>): String = senseHeard(heard, names, goods)
+    internal fun asksBookForTest(w: String, names: List<Name>, goods: List<Name>): Boolean = asksBook(w, names, goods)
 
     private fun senseHeard(heard: String, names: List<Name>, goods: List<Name>): String {
         val said = words(heard)

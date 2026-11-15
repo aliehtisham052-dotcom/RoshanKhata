@@ -2929,6 +2929,8 @@ Each of these cost a build or a bug.
 141. **A greeting's first word written without its article is a name too** ("سلام" / "اسلام" / "Aslam"): `salaamHeadRead` decides by the whole head of the sentence.
 142. **A courtesy the sense learnt as the whole sentence must not overturn a question the rules read.** `STOP_SET` holds question and book words, so it is no list of little words. A courtesy label (salaam, hello, thanks, bye) stands only when the sentence is courtesy-only (`courtesyOnly`/`asksBook`); a greeting or thank-you word is quiet (`COURTESY_WORDS`), never sound-matched, and never shown to the sense in front of a question (`senseHeard`). Bias on purpose: a greeting plus a real question is the question; "thanks Ali Raza" is the customer. `HudhudCourtesyTest` holds 11 rows in nine languages with the courtesy word in front and behind.
 
+143. **Room parses every @Query with its own SQL grammar, stricter than SQLite's.** An alias named `first` ran in SQLite 3.53 and failed `:shared:kspKotlinDesktop` ("extraneous input '('", 15 Nov 2026) because FIRST is a keyword to Room. Name aliases `firstAt`, `lastAt`, `total` — never a bare SQL word — and remember that a local sqlite3 run proves nothing about Room.
+
 ---
 
 ## Working with the owner

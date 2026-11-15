@@ -102,4 +102,28 @@ class HudhudCourtesyTest {
         assertEquals("the thank-you word is gone, the four question words stay", 4, said.split(" ").size)
         assertEquals("thanks so much", Hudhud.senseHeardForTest("thanks so much", shop, goods))
     }
+
+    /** Lesson 129: each guard where only it can refuse. A courtesy, calling or filler word asks nothing; a name or product of the book does. */
+    @Test
+    fun theLittleWordsAskNothingAndTheBooksNamesAsk() {
+        for (r in rows) for (w in listOf(r.thanks, r.bye, r.salaam).filter { " " !in it })
+            assertFalse("${r.lang}: $w", Hudhud.asksBookForTest(w, shop, goods))
+        assertFalse(Hudhud.asksBookForTest("yaar", shop, goods))
+        assertFalse(Hudhud.asksBookForTest("bhai", emptyList(), emptyList()))
+        assertTrue(Hudhud.asksBookForTest("noman", shop, goods))
+        assertTrue(Hudhud.asksBookForTest("urea", shop, goods))
+        assertFalse(Hudhud.asksBookForTest("banana", shop, goods))
+    }
+
+    /** The rules alone (no sense behind them): a greeting in front of a book word is never answered as a greeting. */
+    @Test
+    fun withoutTheSenseAGreetingBeforeABookWordIsNotAGreeting() {
+        HudhudSense.use(null)
+        try {
+            for (q in listOf("hello customers", "hello total", "salam total kitna hai", "hello Noman Aslam"))
+                assertFalse(q, read(q, "en").let { it is Ask.Hello || it is Ask.Salaam })
+            assertTrue(read("hello", "en") is Ask.Hello)
+            assertTrue(read("salam", "ur-Latn") is Ask.Salaam)
+        } finally { HudhudSense.use(HudhudModelTest.shippedModel()) }
+    }
 }
