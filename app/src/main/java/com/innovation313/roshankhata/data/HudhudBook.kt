@@ -322,6 +322,7 @@ object HudhudBook {
             is Hudhud.Ask.NeedName -> HudhudFacts.needName(context, dao, ask.facet, parties)
             is Hudhud.Ask.Cashbook -> HudhudFacts.cashbook(context, dao, ask.window)
             is Hudhud.Ask.Returns -> HudhudFacts.returns(context, dao, ask.window)
+            is Hudhud.Ask.Counter -> HudhudCounterFacts.answer(context, dao, ask)
             is Hudhud.Ask.Act -> act(context, ask.move)
             is Hudhud.Ask.Voice -> voiceChange(context, ask.change)
             is Hudhud.Ask.TopGoods -> HudhudFacts.topGoods(context, dao, ask.window)
@@ -413,6 +414,7 @@ object HudhudBook {
         is Hudhud.Ask.Cashbook -> c.getString(R.string.hudhud_t_cashbook)
         is Hudhud.Ask.Returns -> c.getString(R.string.hudhud_t_returns)
         is Hudhud.Ask.TopGoods -> c.getString(R.string.hudhud_t_top_goods)
+        is Hudhud.Ask.Counter -> HudhudCounterFacts.titleOf(c, a.facet)
         is Hudhud.Ask.Moved -> c.getString(if (a.got) R.string.i_got else R.string.i_gave)
         is Hudhud.Ask.Goods -> if (a.facet == Hudhud.GoodsFacet.SOLD) c.getString(R.string.hudhud_l_sold) else null
         else -> null
@@ -1378,7 +1380,7 @@ object HudhudBook {
     /** A question whose answer is a figure only the owner or a manager may see. */
     private fun needsReports(a: Hudhud.Ask): Boolean = when (a) {
         is Hudhud.Ask.Figure, is Hudhud.Ask.Period, is Hudhud.Ask.Collected, is Hudhud.Ask.Activity, Hudhud.Ask.Drawer,
-        is Hudhud.Ask.WhenPays, is Hudhud.Ask.Cashbook, is Hudhud.Ask.TopGoods, Hudhud.Ask.Qarz -> true
+        is Hudhud.Ask.WhenPays, is Hudhud.Ask.Cashbook, is Hudhud.Ask.TopGoods, Hudhud.Ask.Qarz, is Hudhud.Ask.Counter -> true
         is Hudhud.Ask.Status -> a.of == Hudhud.StatusOf.STAFF
         is Hudhud.Ask.Record -> a.facet in STAFF_FACETS
         is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD || a.facet == Hudhud.GoodsFacet.COVER

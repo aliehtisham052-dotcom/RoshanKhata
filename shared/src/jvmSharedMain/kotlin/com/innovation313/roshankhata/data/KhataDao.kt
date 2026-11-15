@@ -3795,6 +3795,109 @@ interface KhataDao {
     )
     suspend fun salesBetween(from: Long, to: Long): List<SaleSummary>
 
+    // ---- Hudhud's reads of the counter's books (15 Nov 2026, the catalog's counter group). Read only, a short span at a time
+    // (lesson 70): every list is cut at its own limit and the sums are one aggregate each.
+
+    /** The biggest finished tickets of a span (what the counter rang up), newest first among equals. */
+    @Query(
+        """
+        SELECT s.id, s.saleNumber, s.customerName, s.timestamp, s.grandTotal, s.paidTotal, s.status,
+               (SELECT COUNT(*) FROM sale_items i WHERE i.saleId = s.id AND i.isDeleted = 0) AS itemCount
+        FROM sales s WHERE s.isDeleted = 0 AND s.status = 'done' AND s.timestamp >= :from AND s.timestamp < :to
+        ORDER BY s.grandTotal DESC, s.id DESC LIMIT :limit
+        """
+    )
+    suspend fun biggestSalesBetween(from: Long, to: Long, limit: Int): List<SaleSummary>
+
+    /** The newest finished ticket (null in a book with none). */
+    @Query("SELECT id FROM sales WHERE isDeleted = 0 AND status = 'done' ORDER BY timestamp DESC, id DESC LIMIT 1")
+    suspend fun newestSaleId(): Long?
+
+    /** What each cashier rang up over a span: the tickets and their total (a null name is the owner). */
+    @Query(
+        "SELECT createdBy AS cashier, COUNT(*) AS tickets, COALESCE(SUM(grandTotal), 0) AS total FROM sales " +
+        "WHERE isDeleted = 0 AND status = 'done' AND timestamp >= :from AND timestamp < :to GROUP BY createdBy ORDER BY total DESC"
+    )
+    suspend fun salesByCashierBetween(from: Long, to: Long): List<CashierTotal>
+
+    /** Tickets voided over a span (by the day they were voided), who rang each up and, from the audit row, who voided it. */
+    @Query(
+        """
+        SELECT s.id AS id, s.saleNumber AS docNumber, s.customerName AS customerName, s.grandTotal AS amount,
+               COALESCE(s.voidedAt, s.timestamp) AS whenAt, s.voidReason AS reason, s.createdBy AS rungBy,
+               (SELECT a.user FROM audit_log a WHERE a.action = 'sale_voided' AND a.refTable = 'sales' AND a.refId = s.id
+                ORDER BY a.id DESC LIMIT 1) AS voidedBy,
+               0 AS isReturn
+        FROM sales s WHERE s.isDeleted = 0 AND s.status = 'void'
+          AND COALESCE(s.voidedAt, s.timestamp) >= :from AND COALESCE(s.voidedAt, s.timestamp) < :to
+        ORDER BY whenAt DESC, s.id DESC LIMIT :limit
+        """
+    )
+    suspend fun voidedSalesBetween(from: Long, to: Long, limit: Int): List<VoidedDoc>
+
+    /** Returns voided over a span, in the same shape. */
+    @Query(
+        """
+        SELECT r.id AS id, r.returnNumber AS docNumber, r.customerName AS customerName, r.total AS amount,
+               COALESCE(r.voidedAt, r.timestamp) AS whenAt, r.voidReason AS reason, r.createdBy AS rungBy,
+               (SELECT a.user FROM audit_log a WHERE a.action = 'return_voided' AND a.refTable = 'sale_returns' AND a.refId = r.id
+                ORDER BY a.id DESC LIMIT 1) AS voidedBy,
+               1 AS isReturn
+        FROM sale_returns r WHERE r.isDeleted = 0 AND r.status = 'void'
+          AND COALESCE(r.voidedAt, r.timestamp) >= :from AND COALESCE(r.voidedAt, r.timestamp) < :to
+        ORDER BY whenAt DESC, r.id DESC LIMIT :limit
+        """
+    )
+    suspend fun voidedReturnsBetween(from: Long, to: Long, limit: Int): List<VoidedDoc>
+
+    /** Finished returns over a span with the reason, the way the refund was made and who took it. */
+    @Query(
+        """
+        SELECT r.id AS id, r.returnNumber AS docNumber, r.customerName AS customerName, r.timestamp AS whenAt, r.total AS amount,
+               r.refundMethod AS refundMethod, r.refundAmount AS refundAmount, r.reason AS reason, r.note AS note, r.createdBy AS rungBy
+        FROM sale_returns r WHERE r.isDeleted = 0 AND r.status = 'done' AND r.timestamp >= :from AND r.timestamp < :to
+        ORDER BY r.timestamp DESC, r.id DESC LIMIT :limit
+        """
+    )
+    suspend fun returnsWhyBetween(from: Long, to: Long, limit: Int): List<ReturnWhy>
+
+    /** The lines of the finished returns of a span: what came back. */
+    @Query(
+        """
+        SELECT i.itemName AS itemName, i.quantity AS quantity, i.unit AS unit, i.rate AS rate
+        FROM sale_return_items i JOIN sale_returns r ON r.id = i.returnId
+        WHERE i.isDeleted = 0 AND r.isDeleted = 0 AND r.status = 'done' AND r.timestamp >= :from AND r.timestamp < :to
+        LIMIT :limit
+        """
+    )
+    suspend fun returnedGoodsBetween(from: Long, to: Long, limit: Int): List<ReturnedGoods>
+
+    /** The stock's own corrections over a span, newest first (a count, damage, expiry, theft, other, a transfer). */
+    @Query("SELECT * FROM stock_adjustments WHERE isDeleted = 0 AND timestamp >= :from AND timestamp < :to ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    suspend fun adjustmentsBetween(from: Long, to: Long, limit: Int): List<StockAdjustment>
+
+    /** Loyalty points written over a span, one signed figure a row (earned positive, spent negative). */
+    @Query("SELECT partyId AS partyId, points AS points FROM loyalty WHERE isDeleted = 0 AND timestamp >= :from AND timestamp < :to LIMIT :limit")
+    suspend fun pointRowsBetween(from: Long, to: Long, limit: Int): List<PointRow>
+
+    /** The round-off the finished tickets of a span carried (down is negative), as the day report's tickets add up. */
+    @Query("SELECT COALESCE(SUM(roundOff), 0) FROM sales WHERE isDeleted = 0 AND status = 'done' AND timestamp >= :from AND timestamp < :to")
+    suspend fun roundOffBetween(from: Long, to: Long): Double
+
+    /** The rows of the newest stock count: every difference the count wrote, all with its one moment. */
+    @Query(
+        """
+        SELECT * FROM stock_adjustments WHERE isDeleted = 0 AND reason = 'count'
+          AND timestamp = (SELECT MAX(timestamp) FROM stock_adjustments WHERE isDeleted = 0 AND reason = 'count')
+        ORDER BY id LIMIT 500
+        """
+    )
+    suspend fun lastCountRows(): List<StockAdjustment>
+
+    /** The days closed over a span of day numbers, newest first. */
+    @Query("SELECT * FROM day_close WHERE day >= :fromDay AND day < :toDay ORDER BY day DESC LIMIT :limit")
+    suspend fun dayClosesBetween(fromDay: Long, toDay: Long, limit: Int): List<DayClose>
+
     /** The tickets parked at the counter, oldest first. */
     @Query(
         """

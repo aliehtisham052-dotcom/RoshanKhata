@@ -150,6 +150,14 @@ object Hudhud {
         /** Goods that came back at the counter over a span of days. */
         data class Returns(val window: VoiceQuestion.Window? = null) : Ask()
 
+        /**
+         * The counter's own books (15 Nov 2026, the catalog's counter group): the day's bills, who voided, why goods came back, the
+         * shifts and the drawer's count, loyalty points, goods written off and the stock counts — read by [HudhudCounter] only
+         * (the bank has no meaning for them, so [decide] never turns it). [window] is the span of days, null for "the last one"; [ids] are
+         * the customers named (only the loyalty points of one customer carry them).
+         */
+        data class Counter(val facet: CounterFacet, val window: VoiceQuestion.Window? = null, val ids: List<Long> = emptyList()) : Ask()
+
         /** One of his little acts on the screen (13 Nov 2026, the owner: "urr ke dikhao"): he flies, dances or hops. */
         data class Act(val move: Move) : Ask()
 
@@ -246,6 +254,16 @@ object Hudhud {
     /** The product facets only the rules read: the sense learnt no meaning for them, so it never turns them. */
     internal val RECORD_FACETS = setOf(GoodsFacet.LABEL, GoodsFacet.BARCODE, GoodsFacet.PACK, GoodsFacet.TAX, GoodsFacet.SHELF,
         GoodsFacet.ADDED, GoodsFacet.BATCHES, GoodsFacet.SCHEME)
+
+    /**
+     * What is asked of the counter's books ([Ask.Counter]). The day's bills: [BIGGEST], [LAST_TICKET], [BY_CASHIER], [DISCOUNTS],
+     * [TAX], [ON_ACCOUNT], [PAY_WAYS], [VOIDED]. Goods that came back: [RETURN_REASONS], [RETURN_WAYS], [RETURN_GOODS]. The till:
+     * [SHIFTS], [SHIFT_SHORT], [DAY_COUNT]. Points and the stock's own books: [LOYALTY], [WRITTEN_OFF], [STOCK_CHANGES], [LAST_COUNT].
+     */
+    enum class CounterFacet {
+        BIGGEST, LAST_TICKET, BY_CASHIER, DISCOUNTS, TAX, ON_ACCOUNT, PAY_WAYS, VOIDED,
+        RETURN_REASONS, RETURN_WAYS, RETURN_GOODS, SHIFTS, SHIFT_SHORT, DAY_COUNT, LOYALTY, WRITTEN_OFF, STOCK_CHANGES, LAST_COUNT
+    }
 
     /** The shop's profile, one field or [ALL]. */
     enum class ShopFacet { ALL, NAME, ADDRESS, PHONE, EMAIL, TAX, BANK, CURRENCY, COUNTRY, TRADE }
@@ -656,6 +674,8 @@ object Hudhud {
             a.kind == VoiceQuestion.Kind.PROFIT_MONTH
         is Ask.Period, is Ask.Moved, is Ask.Deliveries, is Ask.Activity, is Ask.Collected, is Ask.Cashbook, is Ask.Returns,
         is Ask.TopGoods -> true
+        // The counter's books by the day (15 Nov 2026): the last bill, the last count and the last close name no span.
+        is Ask.Counter -> a.facet != CounterFacet.LAST_TICKET && a.facet != CounterFacet.LAST_COUNT
         is Ask.Count -> a.thing in COUNTED_OVER_A_SPAN
         // Who bought it is a sum over the days asked as much as how much sold (16 Nov: it was answered "as it stands now").
         is Ask.Goods -> a.facet == GoodsFacet.SOLD || a.facet == GoodsFacet.BUYERS
@@ -673,6 +693,7 @@ object Hudhud {
         is Ask.Cashbook -> a.window
         is Ask.Returns -> a.window
         is Ask.TopGoods -> a.window
+        is Ask.Counter -> a.window
         is Ask.Goods -> a.window
         else -> null
     }
@@ -690,6 +711,7 @@ object Hudhud {
         is Ask.Cashbook -> a.copy(window = w)
         is Ask.Returns -> a.copy(window = w)
         is Ask.TopGoods -> a.copy(window = w)
+        is Ask.Counter -> a.copy(window = w)
         is Ask.Goods -> a.copy(window = w)
         else -> a
     }
@@ -1048,6 +1070,9 @@ object Hudhud {
         if (ruled == Ask.Status(StatusOf.INVOICES)) return ruled
         // A staff member's pay or attendance, a customer's plan or cheques: only the rules make this ask (the bank has no meaning for it).
         if (ruled is Ask.Record) return ruled
+        // The counter's books (15 Nov 2026): only the rules make this ask — the bank has no meaning for it, and the sense learnt a
+        // bill as a supplier's, a return as the day's returns and a drawer as the drawer's figure (lesson 145).
+        if (ruled is Ask.Counter) return ruled
         if (ruled is Ask.Figure && ruled.kind == VoiceQuestion.Kind.NOT_PAID && remindPage(words(heard).joinToString(" "))) return ruled
         // The everyday phrasings the rules read from words alone (who paid, where the money went, what sells best): the bank learnt
         // none of them as such, and the sense turned them at 0.95 into the opposite (who did NOT pay, who owes MOST).
@@ -1257,6 +1282,7 @@ object Hudhud {
         Ask.BackupStatus -> "backup_status"
         is Ask.Cashbook -> "cashbook_today"
         is Ask.Returns -> "returns_today"
+        is Ask.Counter -> null
         is Ask.Help -> "help_howto"
         is Ask.Act -> when (a.move) {
             Move.FLY -> "act_fly"
@@ -1450,6 +1476,14 @@ object Hudhud {
         }?.let { n -> noteAsk(n, said, names, topics, mind, window, before)?.let { return it } }
         // Staff pay and attendance, a customer's plan, a customer's cheques (15 Nov 2026): the rules' own reading, ahead of the features.
         recordOf(said, joined, mind, window, named, product, before, whoIsNamed(said, staff, topics, mind, window))?.let { return it }
+        // A named customer's loyalty points ("Ali Raza ke loyalty points kitne hain"): a sentence that says the points and names him.
+        if (named.isNotEmpty() && product.isEmpty() && !how && HudhudCounter.loyaltyWord(joined)) return Ask.Counter(CounterFacet.LOYALTY, window, named)
+        // The counter's own books (15 Nov 2026): "aaj ka sab se bada bill", "kis cashier ne void kiya", "kis wajah se return hua".
+        if (named.isEmpty() && product.isEmpty()) {
+            HudhudCounter.read(joined, said, how, has(joined, SUPPLIER_SIDE_WORDS) || has(joined, PURCHASE_SIDE) || mind.any(HudhudMind.C.SUPPLIER),
+                spanOwnsLast = spanSaid != null && lastIsSpansOwn(heard, mind))
+                ?.let { return Ask.Counter(it, window ?: HudhudCounter.defaultWindow(it)) }
+        }
         if (named.isEmpty() && product.isEmpty()) byFeature(said, joined, mind, window, topics)?.let { return it }
         // The sentence's one "last" is the span's ("uska last month", "what did Ali pay last year"), not a last entry or payment.
         val spanLast = spanSaid != null && lastIsSpansOwn(heard, mind)
@@ -2618,6 +2652,7 @@ object Hudhud {
         is Ask.Cashbook -> Ask.Cashbook(window)
         is Ask.Returns -> Ask.Returns(window)
         is Ask.TopGoods -> Ask.TopGoods(window)
+        is Ask.Counter -> if (spanMatters(before)) Ask.Counter(before.facet, window, before.ids) else null
         is Ask.Goods -> Ask.Goods(before.ids, before.facet, window)
         else -> null
     }
