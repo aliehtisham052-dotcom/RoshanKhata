@@ -1,0 +1,1118 @@
+# Review set D (15 Nov 2026): 1,115 everyday sentences written by a reviewer in nine languages, none from the owner's photos or check logs.
+# Columns: language, status when written (OK = read as meant, MISS/GUESS/NOW = not yet), sentence, the sentence before it (a follow-up) or empty, the reading it has now (HudhudShown).
+# OK rows are held exactly; the others are listed so a fix can promote them. Names and goods are the invented ones of HudhudOwnerSetTest.
+ur-Latn	OK	aaj kitna bika		Figure:SALES_TODAY
+ur-Latn	OK	bhai zara aaj ki sale bata do		Figure:SALES_TODAY
+ur-Latn	OK	yaar acha aaj kitni bikri hui		Figure:SALES_TODAY
+ur-Latn	MISS	subah se ab tak kitna bika		Figure:SALES_TODAY
+ur-Latn	OK	aaj gala kitna hua		Figure:SALES_TODAY
+ur-Latn	OK	aaj dukaan ne kitna kamaya		Figure:SALES_TODAY
+ur-Latn	OK	aaj ki bikri kia hai		Figure:SALES_TODAY
+ur-Latn	OK	aj kitna bika		Figure:SALES_TODAY
+ur-Latn	OK	sale kitni hui aaj		Figure:SALES_TODAY
+ur-Latn	MISS	bikri		Figure:SALES_MONTH
+ur-Latn	OK	kal raat ki sale kitni thi		Period:SALES
+ur-Latn	OK	kal kitna bika tha		Period:SALES
+ur-Latn	OK	ye hafta kitna bika		Period:SALES
+ur-Latn	OK	is mahine ki bikri		Figure:SALES_MONTH
+ur-Latn	MISS	Eid ke baad ki bikri kitni hui		SpanLimit
+ur-Latn	OK	is mahine kitna faida hua		Figure:PROFIT_MONTH
+ur-Latn	GUESS	nafa kitna hai		Figure:PROFIT_MONTH
+ur-Latn	OK	bhai kamai kitni hui is mahine		Figure:PROFIT_MONTH
+ur-Latn	OK	mujhe kitna lena hai		Figure:TO_GET
+ur-Latn	OK	kitna udhaar baqi hai		Figure:TO_GET
+ur-Latn	OK	logon ke paas mere kitne paise hain		Figure:TO_GET
+ur-Latn	MISS	kaun kaun mujhe dega		Figure:WHO_OWES_MOST
+ur-Latn	OK	mujhe kitna dena hai		Figure:TO_GIVE
+ur-Latn	OK	supplier ka kitna dena hai		Figure:TO_GIVE
+ur-Latn	MISS	main kitna qarzdar hun		Figure:TO_GIVE
+ur-Latn	OK	kis ne abhi tak paisa nahi diya		Figure:NOT_PAID
+ur-Latn	OK	kaun nahi deta		Figure:NOT_PAID
+ur-Latn	MISS	kis ka udhaar nahi aaya		Figure:NOT_PAID
+ur-Latn	OK	kis ne paise nahi lautaye		Figure:NOT_PAID
+ur-Latn	OK	sab se zyada kis ka baqi hai		Figure:WHO_OWES_MOST
+ur-Latn	MISS	sab se kam udhaar kis ka hai		Figure:WHO_OWES_LEAST
+ur-Latn	OK	mera hisaab kya hai		Status:BOOK
+ur-Latn	MISS	paise kahan gaye		Cashbook
+ur-Latn	OK	saman kitna bacha		Count:PRODUCTS:null
+ur-Latn	OK	galle mein kitne paise honge		Drawer
+ur-Latn	OK	gale mein kitna cash hai		Drawer
+ur-Latn	OK	Ali Raza ka numbar do		Person:PHONE
+ur-Latn	OK	Ali Raza ka nmbr		Person:PHONE
+ur-Latn	OK	Ali Raza ne aakhri baar kab diya		Person:LAST_PAYMENT
+ur-Latn	OK	Ali Raza ne kab paise diye the		Person:LAST_PAYMENT
+ur-Latn	OK	Ali Raza ki limit kitni hai		Person:LIMIT
+ur-Latn	OK	Ali Raza ka hisaab		Parties
+ur-Latn	MISS	Alika hisaab batao		Status:BOOK
+ur-Latn	OK	Ali Raza ke kitne baqi hain		Parties
+ur-Latn	OK	Ali Raza ne kitna dena hai		Parties
+ur-Latn	OK	Ali Raza kab se aa raha hai		Person:SINCE
+ur-Latn	OK	Ali Raza ki aakhri entry kya thi		Person:LAST_ENTRY
+ur-Latn	OK	Ali Raza kab dega		WhenPays
+ur-Latn	MISS	Ali Raza ke saare len den dikhao		Parties
+ur-Latn	MISS	Bashir bhai ka kya chal raha hai		Person:DETAILS
+ur-Latn	OK	uska number do		NeedName:PHONE
+ur-Latn	OK	limit kitni hai		NeedName:LIMIT
+ur-Latn	OK	uska number	Ali Raza ka hisaab	Person:PHONE
+ur-Latn	OK	aakhri adaigi kab ki	Ali Raza ka hisaab	Person:LAST_PAYMENT
+ur-Latn	OK	kab se	Ali Raza ka number	Person:SINCE
+ur-Latn	OK	aur limit?	Ali Raza ka number	Person:LIMIT
+ur-Latn	OK	aur kal?	aaj kitna bika	Period:SALES
+ur-Latn	OK	aur pichle hafte?	aaj kitna bika	Period:SALES
+ur-Latn	MISS	poori list dikhao	Ali Raza ka hisaab	Status:BOOK
+ur-Latn	OK	aur stock?	Urea ka rate	Goods:STOCK
+ur-Latn	OK	kis ne li	Urea ka rate	Goods:BUYERS
+ur-Latn	OK	Urea ka rate kya hai		Goods:PRICE
+ur-Latn	OK	Urea ka bhao		Goods:PRICE
+ur-Latn	OK	Urea kitni bachi hai		Goods:STOCK
+ur-Latn	MISS	Urea kitne ki aati hai		Goods:COST
+ur-Latn	OK	Urea kis se aati hai		Goods:SUPPLIERS
+ur-Latn	OK	Urea kab aayi thi		Goods:LAST_IN
+ur-Latn	OK	Urea kis ne li		Goods:BUYERS
+ur-Latn	OK	Urea kitni bik gayi		Goods:SOLD
+ur-Latn	OK	Urea kitne din chalegi		Goods:COVER
+ur-Latn	OK	DAP bacha hai ya khatam		Goods:STOCK
+ur-Latn	MISS	bhai DAP kitne ki hai		Goods:PRICE
+ur-Latn	OK	ye cheez kitni bachi hai		NeedGoods
+ur-Latn	MISS	iska rate kya hai		Help:screen_rates
+ur-Latn	MISS	Urea hai ya nahi		Goods:STOCK
+ur-Latn	OK	dukaan ka naam kya hai		Shop:NAME
+ur-Latn	OK	meri dukaan ka number kya hai		Shop:PHONE
+ur-Latn	OK	tax number kya hai		Shop:TAX
+ur-Latn	OK	aaj kya tareekh hai		Clock
+ur-Latn	OK	abhi kitne baje hain		Clock
+ur-Latn	OK	aaj kaun sa din hai		Clock
+ur-Latn	OK	kitne customer hain		Count:CUSTOMERS:null
+ur-Latn	OK	kitne log udhaar par hain		Figure:TO_GET
+ur-Latn	OK	kitne item hain dukaan mein		Count:PRODUCTS:null
+ur-Latn	OK	kitne cheque baqi hain		Status:CHEQUES
+ur-Latn	OK	kaun se cheque bounce hue		Status:CHEQUES
+ur-Latn	OK	supplier ke kitne bill baqi hain		Status:BILLS
+ur-Latn	OK	kam hone wala maal kaun sa hai		Status:LOW_STOCK
+ur-Latn	OK	qiston wale kitne hain		Status:PLANS
+ur-Latn	OK	cashbook mein aaj kitna aaya gaya		Cashbook
+ur-Latn	OK	aaj kharcha kitna hua		Cashbook
+ur-Latn	OK	aaj kitna maal wapas aaya		Counter
+ur-Latn	OK	aaj kitna maal aaya		Deliveries
+ur-Latn	OK	supplier se kya aaya aaj		Deliveries
+ur-Latn	OK	aaj kya kya hua		Activity
+ur-Latn	OK	aaj kis ne kya likha		Activity
+ur-Latn	OK	aaj kitni wusooli hui		Collected
+ur-Latn	OK	aaj kis kis ne paise diye		Collected
+ur-Latn	OK	aaj ka khulasa		Today
+ur-Latn	MISS	aaj kis ko yaad dilana hai		Figure:NOT_PAID
+ur-Latn	OK	sab se zyada kya bik raha hai		TopGoods
+ur-Latn	MISS	kaun sa maal zyada chalta hai		TopGoods
+ur-Latn	OK	qarz e hasna kitna diya hua hai		Qarz
+ur-Latn	OK	kaun si dawai expire hone wali hai		Figure:EXPIRING
+ur-Latn	OK	backup hua kya		BackupStatus
+ur-Latn	OK	kab backup liya tha		BackupStatus
+ur-Latn	OK	tum kya kya bata sakte ho		Abilities
+ur-Latn	MISS	mujhe samajh nahi aa raha kya poochun		About:OWNER_NAME
+ur-Latn	OK	kaise ho yaar		Chat:HOW_ARE_YOU
+ur-Latn	OK	shukriya bhai		Chat:THANKS
+ur-Latn	OK	chalo allah hafiz		Chat:BYE
+ur-Latn	OK	assalam o alaikum		Salaam
+ur-Latn	OK	phir se batao		Voice
+ur-Latn	OK	ahista bolo		Voice
+ur-Latn	OK	chup ho jao		Voice
+ur-Latn	OK	font bara karo		Look
+ur-Latn	OK	dark mode lagao		Look
+ur-Latn	OK	Ali Raza ka note kya hai		Person:NOTE
+ur-Latn	OK	Ali Raza ko 500 diye		Entry
+ur-Latn	OK	Ali Raza se 1000 mile		Entry
+ur-Latn	OK	invoice kaise banaun		Help:intro_documents
+ur-Latn	OK	backup kaise lun		Help:faq_restore
+ur-Latn	OK	cheque kaise likhun		Help:intro_cheques
+ur-Latn	OK	customer ka khata kaise kholun		Help:faq_delete
+ur-Latn	OK	ye app kis ne banayi		About:MAKER
+ur	OK	آج کتنی بکری ہوئی		Figure:SALES_TODAY
+ur	OK	بھائی ذرا بتاؤ آج کتنا بِکا		Figure:SALES_TODAY
+ur	MISS	آج دکان نے کتنا کمایا		Period:PROFIT
+ur	OK	کل کی بکری کتنی تھی		Period:SALES
+ur	OK	اس مہینے کی بکری		Figure:SALES_MONTH
+ur	OK	اس مہینے کتنا فائدہ ہوا		Figure:PROFIT_MONTH
+ur	OK	مجھے کتنا لینا ہے		Figure:TO_GET
+ur	MISS	کون کون مجھے دے گا		Figure:WHO_OWES_MOST
+ur	OK	مجھے کتنا دینا ہے		Figure:TO_GIVE
+ur	OK	کس نے پیسے نہیں دیے		Figure:NOT_PAID
+ur	MISS	کس کا ادھار نہیں آیا		Figure:NOT_PAID
+ur	MISS	کون نہیں دیتا		Figure:NOT_PAID
+ur	OK	سب سے زیادہ کس کا باقی ہے		Figure:WHO_OWES_MOST
+ur	OK	میرا حساب کیا ہے		Status:BOOK
+ur	MISS	پیسے کہاں گئے		Cashbook
+ur	OK	سامان کتنا بچا		Count:PRODUCTS:null
+ur	OK	گلے میں کتنے پیسے ہیں		Drawer
+ur	OK	علی رضا کا نمبر		Person:PHONE
+ur	OK	Ali Raza کا نمبر دو		Person:PHONE
+ur	OK	علی رضا نے آخری بار کب دیا		Person:LAST_PAYMENT
+ur	OK	علی رضا کی حد کتنی ہے		Person:LIMIT
+ur	OK	علی رضا کا حساب		Parties
+ur	OK	علی رضا کے کتنے باقی ہیں		Parties
+ur	OK	علی رضا کب دے گا		WhenPays
+ur	OK	اس کا نمبر	علی رضا کا حساب	Person:PHONE
+ur	OK	Urea کا ریٹ کیا ہے		Goods:PRICE
+ur	MISS	یوریا کا ریٹ کیا ہے		Help:screen_rates
+ur	MISS	یوریا کتنی بچی ہے		Unknown
+ur	MISS	یوریا کس نے لی		About:MAKER
+ur	OK	Urea کتنی بچی ہے		Goods:STOCK
+ur	OK	کتنے گاہک ہیں		Count:CUSTOMERS:null
+ur	OK	کتنے چیک باقی ہیں		Status:CHEQUES
+ur	OK	آج کیا تاریخ ہے		Clock
+ur	OK	دکان کا نام کیا ہے		Shop:NAME
+ur	OK	آج کیا کیا ہوا		Activity
+ur	OK	آج کتنی وصولی ہوئی		Collected
+ur	OK	آج کا خلاصہ		Today
+ur	MISS	سب سے زیادہ کیا بک رہا ہے		TopGoods
+ur	OK	بیک اپ ہوا		BackupStatus
+ur	OK	کون سی دوائی ایکسپائر ہونے والی ہے		Figure:EXPIRING
+ur	OK	آپ کیسے ہو		Chat:HOW_ARE_YOU
+ur	OK	شکریہ		Chat:THANKS
+ur	OK	پھر سے بتاؤ		Voice
+ur	OK	فونٹ بڑا کرو		Look
+ur	OK	علی رضا کو 500 دیے		Entry
+ur	OK	آج کتنا مال آیا		Deliveries
+ur	OK	آج کتنا مال واپس آیا		Counter
+ur	OK	آپ کیا کیا بتا سکتے ہو		Abilities
+ur	OK	انوائس کیسے بناؤں		Help:intro_documents
+en	OK	hey how much did we sell today		Figure:SALES_TODAY
+en	OK	what are today's sales		Figure:SALES_TODAY
+en	OK	how much did the shop make today		Figure:SALES_TODAY
+en	OK	wat is today sale		Figure:SALES_TODAY
+en	OK	yesterday sales		Period:SALES
+en	OK	how much did we sell this week		Period:SALES
+en	MISS	sales since Eid		SpanLimit
+en	OK	how much profit this month		Figure:PROFIT_MONTH
+en	OK	how much do people owe me		Figure:TO_GET
+en	OK	who all owe me money		Figure:TO_GET
+en	OK	how much do I owe suppliers		Figure:TO_GIVE
+en	OK	who hasn't paid yet		Figure:NOT_PAID
+en	MISS	who never pays		Figure:NOT_PAID
+en	OK	whose money has not come		Record
+en	OK	who owes me the most		Figure:WHO_OWES_MOST
+en	OK	who owes the least		Figure:WHO_OWES_LEAST
+en	OK	what is my balance		Status:BOOK
+en	MISS	where did the money go		Cashbook
+en	OK	how much stock is left		Status:LOW_STOCK
+en	GUESS	how much is in the till		Drawer
+en	OK	Ali Raza's number		Person:PHONE
+en	OK	whats ali raza number		Person:PHONE
+en	OK	when did Ali Raza last pay		Person:LAST_PAYMENT
+en	OK	what is Ali Raza's credit limit		Person:LIMIT
+en	OK	Ali Raza balance		Parties
+en	OK	how much does Ali Raza owe		Parties
+en	OK	when will Ali Raza pay		WhenPays
+en	OK	since when is Ali Raza a customer		Person:SINCE
+en	OK	Ali Raza's note		Person:NOTE
+en	OK	and his number	how much does Ali Raza owe	Person:PHONE
+en	OK	when did he last pay	Ali Raza balance	Person:LAST_PAYMENT
+en	OK	and yesterday?	how much did we sell today	Period:SALES
+en	OK	price of Urea		Goods:PRICE
+en	OK	how much Urea is left		Goods:STOCK
+en	OK	how many days will Urea last		Goods:COVER
+en	OK	who bought Urea		Goods:BUYERS
+en	OK	what does Urea cost me		Goods:COST
+en	OK	who supplies Urea		Goods:SUPPLIERS
+en	MISS	when did Urea last come in		Goods:LAST_IN
+en	OK	what is my shop name		Shop:NAME
+en	OK	shop phone number		Shop:PHONE
+en	OK	what is today's date		Clock
+en	OK	what time is it		Clock
+en	OK	how many customers do I have		Count:CUSTOMERS:null
+en	OK	how many cheques are pending		Status:CHEQUES
+en	OK	which cheques bounced		Status:CHEQUES
+en	OK	which invoices are unpaid		Status:INVOICES
+en	OK	what is running low		Status:LOW_STOCK
+en	OK	cashbook today		Cashbook
+en	OK	goods returned today		Counter
+en	OK	what came in from suppliers today		Deliveries
+en	OK	what happened today		Activity
+en	OK	how much came in today		Collected
+en	OK	give me today's summary		Today
+en	OK	what sells the most		TopGoods
+en	OK	how much qarz e hasna is out		Qarz
+en	OK	what is about to expire		Figure:EXPIRING
+en	OK	did the backup happen		BackupStatus
+en	OK	what can you do		Abilities
+en	OK	how are you doing		Chat:HOW_ARE_YOU
+en	OK	thanks a lot		Chat:THANKS
+en	OK	say that again		Voice
+en	OK	make the text bigger		Look
+en	OK	I gave Ali Raza 500		Entry
+en	OK	how do I make an invoice		Help:intro_documents
+en	OK	how do I take a backup		Help:screen_viewer
+hi	OK	आज कितनी बिक्री हुई		Figure:SALES_TODAY
+hi	OK	भाई ज़रा आज की सेल बताओ		Figure:SALES_TODAY
+hi	MISS	आज दुकान ने कितना कमाया		Period:PROFIT
+hi	OK	कल की बिक्री		Period:SALES
+hi	OK	इस हफ़्ते कितना बिका		Period:SALES
+hi	OK	इस महीने कितना मुनाफ़ा हुआ		Figure:PROFIT_MONTH
+hi	OK	मुझे कितना लेना है		Figure:TO_GET
+hi	MISS	कौन कौन मुझे देगा		Figure:WHO_OWES_MOST
+hi	OK	मुझे कितना देना है		Figure:TO_GIVE
+hi	OK	किसने पैसे नहीं दिए		Figure:NOT_PAID
+hi	MISS	कौन नहीं देता		Figure:NOT_PAID
+hi	MISS	किसका उधार नहीं आया		Figure:NOT_PAID
+hi	OK	सबसे ज़्यादा किसका बाकी है		Figure:WHO_OWES_MOST
+hi	OK	मेरा हिसाब क्या है		Status:BOOK
+hi	MISS	पैसे कहाँ गए		Cashbook
+hi	OK	माल कितना बचा		Count:PRODUCTS:null
+hi	OK	गल्ले में कितने पैसे हैं		Drawer
+hi	OK	अली रज़ा का नंबर		Person:PHONE
+hi	OK	Ali Raza का नंबर दो		Person:PHONE
+hi	OK	अली रज़ा ने आख़िरी बार कब दिया		Person:LAST_PAYMENT
+hi	OK	अली रज़ा की लिमिट कितनी है		Person:LIMIT
+hi	OK	अली रज़ा का हिसाब		Parties
+hi	OK	अली रज़ा कब देगा		WhenPays
+hi	OK	उसका नंबर	अली रज़ा का हिसाब	Person:PHONE
+hi	OK	Urea का रेट क्या है		Goods:PRICE
+hi	OK	Urea कितनी बची है		Goods:STOCK
+hi	OK	Urea किसने ली		Goods:BUYERS
+hi	MISS	यूरिया का रेट क्या है		Help:screen_purchase_rates
+hi	OK	कितने ग्राहक हैं		Count:CUSTOMERS:null
+hi	OK	कितने चेक बाकी हैं		Status:CHEQUES
+hi	OK	आज की तारीख क्या है		Clock
+hi	OK	दुकान का नाम		Shop:NAME
+hi	OK	आज क्या क्या हुआ		Activity
+hi	OK	आज कितनी वसूली हुई		Collected
+hi	OK	आज का सारांश		Today
+hi	MISS	सबसे ज़्यादा क्या बिक रहा है		TopGoods
+hi	OK	बैकअप हुआ क्या		BackupStatus
+hi	OK	कौन सी दवाई एक्सपायर होने वाली है		Figure:EXPIRING
+hi	OK	कैसे हो भाई		Chat:HOW_ARE_YOU
+hi	OK	धन्यवाद		Chat:THANKS
+hi	OK	फिर से बताओ		Voice
+hi	OK	फॉन्ट बड़ा करो		Look
+hi	OK	अली रज़ा को 500 दिए		Entry
+hi	OK	आज कितना माल आया		Deliveries
+hi	OK	आज कितना माल वापस आया		Counter
+hi	OK	तुम क्या क्या बता सकते हो		Abilities
+hi	OK	इनवॉइस कैसे बनाऊँ		Help:intro_documents
+bn	OK	আজ কত বিক্রি হলো		Figure:SALES_TODAY
+bn	MISS	ভাই আজকের সেলটা বলো তো		BackupStatus
+bn	OK	আজ দোকান কত কামাল		Figure:SALES_TODAY
+bn	OK	গতকালের বিক্রি		Period:SALES
+bn	OK	এই সপ্তাহে কত বিক্রি হয়েছে		Period:SALES
+bn	OK	এই মাসে কত লাভ হলো		Figure:PROFIT_MONTH
+bn	OK	আমার কত পাওনা আছে		Figure:TO_GET
+bn	MISS	কে কে আমাকে দেবে		Figure:WHO_OWES_MOST
+bn	OK	আমার কত দেনা আছে		Figure:TO_GIVE
+bn	OK	কে টাকা দেয়নি		Figure:NOT_PAID
+bn	GUESS	কে দেয় না		Figure:NOT_PAID
+bn	MISS	কার বাকি আসেনি		Figure:NOT_PAID
+bn	OK	সবচেয়ে বেশি কার বাকি আছে		Figure:WHO_OWES_MOST
+bn	OK	আমার হিসাব কী		Status:BOOK
+bn	MISS	টাকা কোথায় গেল		Cashbook
+bn	MISS	মাল কতটা বাকি		Figure:TO_GET
+bn	OK	ক্যাশে কত টাকা আছে		Drawer
+bn	OK	আলী রাজার নম্বর		Person:PHONE
+bn	OK	Ali Raza এর নম্বর দাও		Person:PHONE
+bn	OK	আলী রাজা শেষ কবে দিয়েছে		Person:LAST_PAYMENT
+bn	OK	আলী রাজার লিমিট কত		Person:LIMIT
+bn	OK	আলী রাজার হিসাব		Parties
+bn	OK	আলী রাজা কবে দেবে		WhenPays
+bn	OK	তার নম্বর	আলী রাজার হিসাব	Person:PHONE
+bn	OK	Urea এর দাম কত		Goods:PRICE
+bn	OK	Urea কতটা আছে		Goods:STOCK
+bn	OK	Urea কে নিয়েছে		Goods:BUYERS
+bn	OK	কতজন কাস্টমার আছে		Count:CUSTOMERS:null
+bn	OK	কয়টা চেক বাকি		Status:CHEQUES
+bn	OK	আজ কত তারিখ		Clock
+bn	OK	দোকানের নাম কী		Shop:NAME
+bn	OK	আজ কী কী হলো		Activity
+bn	OK	আজ কত আদায় হলো		Collected
+bn	OK	আজকের সারাংশ		Today
+bn	OK	কী সবচেয়ে বেশি বিক্রি হচ্ছে		TopGoods
+bn	OK	ব্যাকআপ হয়েছে কি		BackupStatus
+bn	OK	কোন ওষুধের মেয়াদ শেষ হতে চলেছে		Figure:EXPIRING
+bn	OK	কেমন আছো		Chat:HOW_ARE_YOU
+bn	OK	ধন্যবাদ		Chat:THANKS
+bn	OK	আবার বলো		Voice
+bn	OK	ফন্ট বড় করো		Look
+bn	OK	আলী রাজাকে ৫০০ দিলাম		Entry
+bn	MISS	আজ কত মাল এলো		Count:PRODUCTS:null
+bn	OK	আজ কত মাল ফেরত এলো		Returns
+bn	OK	তুমি কী কী বলতে পারো		Abilities
+bn	OK	ইনভয়েস কীভাবে বানাবো		Help:intro_documents
+ar	OK	كم المبيعات اليوم		Figure:SALES_TODAY
+ar	OK	يا أخي كم بعنا اليوم		Figure:SALES_TODAY
+ar	MISS	كم ربح المحل اليوم		Period:PROFIT
+ar	OK	مبيعات أمس		Period:SALES
+ar	OK	كم بعنا هذا الأسبوع		Period:SALES
+ar	GUESS	كم ربحت هذا الشهر		Figure:PROFIT_MONTH
+ar	OK	كم لي عند الناس		Figure:TO_GET
+ar	MISS	من الذي سيدفع لي		Figure:WHO_OWES_MOST
+ar	OK	كم علي من ديون		Figure:TO_GIVE
+ar	OK	من لم يدفع		Figure:NOT_PAID
+ar	MISS	من لا يدفع أبدا		Figure:NOT_PAID
+ar	MISS	من لم يرد لي المال		Figure:NOT_PAID
+ar	OK	من هو أكثر شخص عليه دين		Figure:WHO_OWES_MOST
+ar	OK	ما هو حسابي		Status:BOOK
+ar	MISS	أين ذهبت الأموال		Cashbook
+ar	OK	كم بقي من البضاعة		Status:LOW_STOCK
+ar	OK	كم في الصندوق		Drawer
+ar	OK	ما رقم علي رضا		Person:PHONE
+ar	OK	رقم Ali Raza		Person:PHONE
+ar	OK	متى دفع علي رضا آخر مرة		Person:LAST_PAYMENT
+ar	OK	كم حد الدين لعلي رضا		Person:LIMIT
+ar	OK	حساب علي رضا		Parties
+ar	OK	كم على علي رضا		Parties
+ar	OK	متى يدفع علي رضا		WhenPays
+ar	MISS	ورقمه	حساب علي رضا	Figure:TO_GET
+ar	OK	ما سعر Urea		Goods:PRICE
+ar	MISS	كم بقي من Urea		Goods:STOCK
+ar	OK	من اشترى Urea		Goods:BUYERS
+ar	MISS	كم سعر اليوريا		Help:screen_audit
+ar	OK	كم عميل عندي		Count:CUSTOMERS:null
+ar	OK	كم شيك متبقي		Status:CHEQUES
+ar	OK	ما تاريخ اليوم		Clock
+ar	OK	ما اسم المحل		Shop:NAME
+ar	OK	ماذا حدث اليوم		Activity
+ar	OK	كم حصلنا اليوم		Collected
+ar	OK	ملخص اليوم		Today
+ar	OK	ما الأكثر مبيعا		TopGoods
+ar	OK	هل تم النسخ الاحتياطي		BackupStatus
+ar	OK	أي دواء قارب على الانتهاء		Figure:EXPIRING
+ar	OK	كيف حالك		Chat:HOW_ARE_YOU
+ar	OK	شكرا لك		Chat:THANKS
+ar	MISS	أعد الجواب		Chat:CAN_TALK
+ar	OK	كبر الخط		Look
+ar	OK	أعطيت Ali Raza 500		Entry
+ar	OK	كم بضاعة وصلت اليوم		Deliveries
+ar	OK	كم مرتجع اليوم		Returns
+ar	OK	ماذا تستطيع أن تفعل		Abilities
+ar	OK	كيف أصدر فاتورة		Help:intro_documents
+fa	OK	امروز فروش چقدر بود		Figure:SALES_TODAY
+fa	OK	داداش امروز چقدر فروختیم		Figure:SALES_TODAY
+fa	OK	مغازه امروز چقدر درآمد داشت		Figure:SALES_TODAY
+fa	OK	فروش دیروز		Period:SALES
+fa	OK	این هفته چقدر فروختیم		Period:SALES
+fa	OK	سود این ماه چقدر است		Figure:PROFIT_MONTH
+fa	OK	چقدر باید بگیرم		Figure:TO_GET
+fa	MISS	چه کسانی به من می‌دهند		Figure:WHO_OWES_MOST
+fa	OK	چقدر باید بدهم		Figure:TO_GIVE
+fa	OK	چه کسی پول نداده		Figure:NOT_PAID
+fa	MISS	کی هیچوقت نمی‌دهد		Figure:NOT_PAID
+fa	MISS	پول چه کسی نیامده		Figure:NOT_PAID
+fa	OK	بیشترین بدهکار کیست		Figure:WHO_OWES_MOST
+fa	OK	حساب من چیست		Status:BOOK
+fa	MISS	پول‌ها کجا رفت		Cashbook
+fa	MISS	اجناس چقدر مانده		NeedName:null
+fa	OK	در کشو چقدر پول است		Drawer
+fa	OK	شماره علی رضا چیست		Person:PHONE
+fa	OK	شماره Ali Raza		Person:PHONE
+fa	OK	آخرین پرداخت علی رضا کی بود		Person:LAST_PAYMENT
+fa	OK	سقف اعتبار علی رضا		Person:LIMIT
+fa	OK	حساب علی رضا		Parties
+fa	OK	علی رضا چقدر بدهکار است		Parties
+fa	OK	علی رضا کی می‌دهد		WhenPays
+fa	MISS	شمارهٔ او	حساب علی رضا	NeedName:PHONE
+fa	OK	قیمت Urea چقدر است		Goods:PRICE
+fa	OK	موجودی Urea چقدر است		Goods:STOCK
+fa	OK	Urea را چه کسی خرید		Goods:BUYERS
+fa	OK	چند مشتری دارم		Count:CUSTOMERS:null
+fa	OK	چند چک مانده		Status:CHEQUES
+fa	OK	امروز چه تاریخی است		Clock
+fa	OK	اسم مغازه چیست		Shop:NAME
+fa	OK	امروز چه شد		Activity
+fa	OK	امروز چقدر وصول شد		Collected
+fa	OK	خلاصه امروز		Today
+fa	OK	پرفروش‌ترین چیست		TopGoods
+fa	OK	پشتیبان گرفته شد		BackupStatus
+fa	OK	کدام دارو تاریخ انقضا دارد		Figure:EXPIRING
+fa	OK	حالت چطور است		Chat:HOW_ARE_YOU
+fa	OK	ممنون		Chat:THANKS
+fa	OK	دوباره بگو		Voice
+fa	OK	فونت را بزرگ کن		Look
+fa	OK	به Ali Raza ۵۰۰ دادم		Entry
+fa	OK	امروز چه کالایی آمد		Deliveries
+fa	OK	چقدر برگشتی داشتیم		Returns
+fa	OK	چه کارهایی بلدی		Abilities
+sd	OK	اڄ ڪيتري وڪري ٿي		Figure:SALES_TODAY
+sd	MISS	ادا ذري اڄ جي سيل ٻڌاءِ		Collected
+sd	OK	اڄ دڪان ڪيترو ڪمايو		Figure:SALES_TODAY
+sd	OK	ڪالهه جي وڪري		Period:SALES
+sd	OK	هن هفتي ڪيترو وڪرو ٿيو		Period:SALES
+sd	OK	هن مهيني جو نفعو ڪيترو آهي		Figure:PROFIT_MONTH
+sd	OK	مون کي ڪيترو وٺڻو آهي		Figure:TO_GET
+sd	MISS	ڪير ڪير مون کي ڏيندو		Figure:WHO_OWES_MOST
+sd	OK	مون کي ڪيترو ڏيڻو آهي		Figure:TO_GIVE
+sd	OK	ڪنهن پئسا نه ڏنا آهن		Figure:NOT_PAID
+sd	MISS	ڪير نه ڏيندو آهي		Figure:NOT_PAID
+sd	MISS	ڪنهن جو اڌار نه آيو		Figure:NOT_PAID
+sd	OK	ڪنهن جو اڌار سڀ کان وڌيڪ آهي		Figure:WHO_OWES_MOST
+sd	OK	منهنجو حساب ڇا آهي		Status:BOOK
+sd	MISS	پئسا ڪيڏانهن ويا		Cashbook
+sd	OK	سامان ڪيترو بچيو آهي		Count:PRODUCTS:null
+sd	OK	گلي ۾ ڪيترا پئسا آهن		Drawer
+sd	OK	علي رضا جو نمبر ڇا آهي		Person:PHONE
+sd	OK	Ali Raza جو نمبر ڏيو		Person:PHONE
+sd	OK	علي رضا آخري دفعي ڪڏهن ڏنو		Person:LAST_PAYMENT
+sd	OK	علي رضا جي حد ڪيتري آهي		Person:LIMIT
+sd	OK	علي رضا جو حساب		Parties
+sd	OK	علي رضا ڪڏهن ڏيندو		WhenPays
+sd	OK	ان جو نمبر	علي رضا جو حساب	Person:PHONE
+sd	OK	Urea جو ريٽ ڇا آهي		Goods:PRICE
+sd	OK	Urea ڪيتري بچي آهي		Goods:STOCK
+sd	MISS	Urea ڪنهن ورتي		Goods:BUYERS
+sd	OK	ڪيترا گراهڪ آهن		Count:CUSTOMERS:null
+sd	OK	ڪيترا چيڪ باقي آهن		Status:CHEQUES
+sd	OK	اڄ ڪهڙي تاريخ آهي		Clock
+sd	OK	دڪان جو نالو ڇا آهي		Shop:NAME
+sd	OK	اڄ ڇا ڇا ٿيو		Activity
+sd	OK	اڄ ڪيتري وصولي ٿي		Collected
+sd	OK	اڄ جو خلاصو		Today
+sd	OK	سڀ کان وڌيڪ ڇا وڪرو ٿي رهيو آهي		TopGoods
+sd	OK	بيڪ اپ ٿيو		BackupStatus
+sd	OK	ڪهڙي دوا جي ميعاد ختم ٿيڻ واري آهي		Figure:EXPIRING
+sd	OK	ڪيئن آهيو		Chat:HOW_ARE_YOU
+sd	OK	مهرباني		Chat:THANKS
+sd	OK	ٻيهر ٻڌايو		Voice
+sd	OK	فونٽ وڏو ڪريو		Look
+sd	OK	Ali Raza کي 500 ڏنا		Entry
+sd	OK	اڄ ڪيترو مال آيو		Deliveries
+sd	MISS	اڄ ڪيترو مال موٽيو		Count:PRODUCTS:null
+sd	OK	تون ڇا ڇا ٻڌائي سگهين ٿو		Abilities
+in	OK	berapa penjualan hari ini		Figure:SALES_TODAY
+in	OK	bang tolong kasih tau jualan hari ini		Figure:SALES_TODAY
+in	MISS	hari ini toko dapat berapa		Period:PROFIT
+in	OK	penjualan kemarin		Period:SALES
+in	OK	minggu ini laku berapa		Period:SALES
+in	OK	berapa untung bulan ini		Figure:PROFIT_MONTH
+in	OK	berapa piutang saya		Figure:TO_GET
+in	OK	siapa saja yang akan bayar saya		Figure:NOT_PAID
+in	OK	berapa utang saya		Figure:TO_GIVE
+in	OK	siapa yang belum bayar		Figure:NOT_PAID
+in	MISS	siapa yang tidak pernah bayar		Figure:NOT_PAID
+in	MISS	uang siapa yang belum masuk		Figure:NOT_PAID
+in	OK	siapa yang utangnya paling banyak		Figure:WHO_OWES_MOST
+in	OK	saldo saya berapa		Status:BOOK
+in	MISS	uang saya ke mana		Cashbook
+in	OK	barang sisa berapa		Count:PRODUCTS:null
+in	OK	berapa uang di laci		Drawer
+in	OK	nomor Ali Raza berapa		Person:PHONE
+in	OK	kapan terakhir Ali Raza bayar		Person:LAST_PAYMENT
+in	OK	batas utang Ali Raza berapa		Person:LIMIT
+in	OK	saldo Ali Raza		Parties
+in	OK	Ali Raza utangnya berapa		Parties
+in	OK	kapan Ali Raza bayar		WhenPays
+in	OK	nomornya	saldo Ali Raza	Person:PHONE
+in	OK	harga Urea berapa		Goods:PRICE
+in	OK	stok Urea tinggal berapa		Goods:STOCK
+in	OK	siapa yang beli Urea		Goods:BUYERS
+in	OK	berapa jumlah pelanggan		Count:CUSTOMERS:null
+in	OK	berapa cek yang belum cair		Status:CHEQUES
+in	OK	hari ini tanggal berapa		Clock
+in	OK	nama toko saya apa		Shop:NAME
+in	MISS	hari ini ada apa saja		Today
+in	OK	berapa tagihan yang masuk hari ini		Collected
+in	OK	ringkasan hari ini		Today
+in	OK	apa yang paling laku		TopGoods
+in	OK	sudah backup belum		BackupStatus
+in	OK	obat apa yang hampir kedaluwarsa		Figure:EXPIRING
+in	OK	apa kabar		Chat:HOW_ARE_YOU
+in	OK	terima kasih		Chat:THANKS
+in	OK	ulangi lagi		Voice
+in	OK	besarkan huruf		Look
+in	OK	saya kasih Ali Raza 500		Entry
+in	OK	barang apa yang masuk hari ini		Deliveries
+in	OK	berapa barang retur hari ini		Returns
+in	OK	kamu bisa apa saja		Abilities
+in	OK	cara bikin faktur		Help:intro_documents
+ur-Latn	OK	kis ne nahi diya		Figure:NOT_PAID
+ur-Latn	OK	kis ka paisa phansa hua hai		Figure:NOT_PAID
+ur-Latn	OK	kaun sa customer paisa nahi deta		Figure:NOT_PAID
+ur-Latn	MISS	kis ki raqam atki hui hai		Figure:NOT_PAID
+ur-Latn	OK	kaun late hai		Figure:NOT_PAID
+ur-Latn	MISS	kisne abhi tak hisaab saaf nahi kiya		Figure:NOT_PAID
+ur-Latn	OK	kaun kaun paise dabaye baitha hai		Figure:NOT_PAID
+ur-Latn	MISS	ye log paise kab denge		WhenPays
+ur-Latn	OK	sab se kam baqi kis ka hai		Figure:WHO_OWES_LEAST
+ur-Latn	MISS	sab se chhota udhaar kis ka hai		Figure:WHO_OWES_LEAST
+ur-Latn	OK	kin logon ne payment nahi ki		Figure:NOT_PAID
+ur-Latn	OK	sab se bara qarzdar kaun hai		Figure:WHO_OWES_MOST
+ur-Latn	OK	kis ne sab se zyada udhaar lia hua hai		Figure:WHO_OWES_MOST
+ur-Latn	OK	hisaab		Status:BOOK
+ur-Latn	OK	udhaar		Figure:TO_GET
+ur-Latn	MISS	baqaya		Figure:TO_GET
+ur-Latn	OK	munafa		Figure:PROFIT_MONTH
+ur-Latn	OK	cash		Drawer
+ur-Latn	OK	cheque		Status:CHEQUES
+ur-Latn	OK	date		Clock
+ur-Latn	OK	time		Clock
+ur-Latn	OK	backup		BackupStatus
+ur-Latn	OK	kharcha		Cashbook
+ur-Latn	OK	wusooli		Collected
+ur-Latn	OK	Ali Raza		Parties
+ur-Latn	OK	Urea		Goods:OVERVIEW
+ur-Latn	OK	number		NeedName:PHONE
+ur-Latn	OK	stock		Status:LOW_STOCK
+ur-Latn	OK	khulasa		Today
+ur-Latn	MISS	shaam tak kitna bika		Figure:SALES_TODAY
+ur-Latn	MISS	kal ka collection kitna tha		Collected
+ur-Latn	OK	pichle hafte ki sale		Period:SALES
+ur-Latn	OK	pichle mahine ka munafa		Period:PROFIT
+ur-Latn	OK	parson kitna bika tha		SpanLimit
+ur-Latn	MISS	Ramzan mein kitna bika		SpanLimit
+ur-Latn	OK	is saal ki sale		Period:SALES
+ur-Latn	MISS	kal kis kis ne paise diye		Collected
+ur-Latn	OK	Ali Raza ne is mahine kitna diya		Moved
+ur-Latn	OK	Ali Raza ne kal kitne diye the		Moved
+ur-Latn	OK	Ali Raza ko paanch sau diye		Entry
+ur-Latn	OK	Ali Raza se ek hazaar mile		Entry
+ur-Latn	OK	500 Ali Raza ko diye		Entry
+ur-Latn	OK	Ali Raza ne dhai hazaar diye		Entry
+ur-Latn	OK	Ali Raza ko do hazaar ka udhaar diya		Entry
+ur-Latn	OK	Ali Raza ka balance kitna hai		Parties
+ur-Latn	OK	Ali Raza ki outstanding kitni hai		Parties
+ur-Latn	OK	Ali Raza ka hisab kitab		Parties
+ur-Latn	OK	Ali Raza ka bakaya		Parties
+ur-Latn	OK	ali raza ka baqi		Parties
+ur-Latn	OK	Ali Raza ke paise		Parties
+ur-Latn	OK	Ali Raza ka phone number kya hai		Person:PHONE
+ur-Latn	OK	Ali Raza ka mobile		Person:PHONE
+ur-Latn	OK	Ali Raza se baat karni hai number do		Person:PHONE
+ur-Latn	OK	Urea ki stock kitni hai		Goods:STOCK
+ur-Latn	OK	Urea ka rate kya chal raha hai		Goods:PRICE
+ur-Latn	MISS	Urea kitne ka hai		Goods:PRICE
+ur-Latn	MISS	Urea kitne mein dete ho		Goods:PRICE
+ur-Latn	MISS	Urea ki bori kitne ki hai		Goods:PRICE
+ur-Latn	MISS	Urea kam hai kya		Goods:STOCK
+ur-Latn	OK	Urea kitni bori pari hain		Goods:STOCK
+ur-Latn	OK	Urea kab khatam hogi		Goods:COVER
+ur-Latn	MISS	Urea mujhe kitne ki parti hai		Goods:COST
+ur-Latn	OK	Urea kitne mein khareedi thi		Goods:COST
+ur-Latn	OK	Urea kis company se aati hai		Goods:SUPPLIERS
+ur-Latn	OK	Urea ka maal aakhri baar kab aaya		Goods:LAST_IN
+ur-Latn	OK	Urea kitni bechi		Goods:SOLD
+ur-Latn	OK	is mahine Urea kitni bik chuki		Goods:SOLD
+ur-Latn	OK	cheque pending kitne hain		Status:CHEQUES
+ur-Latn	NOW	kal ka cheque clear hua		Status:CHEQUES
+ur-Latn	OK	aj ki sale kitni hui		Figure:SALES_TODAY
+ur-Latn	OK	aaj ka total sale		Figure:SALES_TODAY
+ur-Latn	OK	aaj ki bikri kitnee hoi		Figure:SALES_TODAY
+ur-Latn	OK	bekap hoa		BackupStatus
+ur-Latn	OK	Ali Raza ka hisaab batana zara		Parties
+ur-Latn	OK	baqi Ali Raza ka kitna		Parties
+ur-Latn	OK	kitna hai Ali Raza ka hisaab		Parties
+ur-Latn	OK	number Ali Raza ka		Person:PHONE
+ur-Latn	OK	bika aaj kitna		Figure:SALES_TODAY
+ur-Latn	OK	kitna aaj bika		Figure:SALES_TODAY
+ur-Latn	OK	rate Urea ka		Goods:PRICE
+ur-Latn	OK	kitni bachi Urea		Goods:STOCK
+ur-Latn	OK	bhai jaan zara dekh ke bata dena Ali Raza ka kitna baqi hai please		Parties
+ur-Latn	OK	please Ali Raza ka number bata do		Person:PHONE
+ur-Latn	OK	ji aaj ki sale kitni hui batayen		Figure:SALES_TODAY
+ur-Latn	OK	yaar acha ye batao kitna udhaar baqi hai		Figure:TO_GET
+ur-Latn	OK	haan to aaj kitna bika		Figure:SALES_TODAY
+ur-Latn	OK	janab Urea ka rate bata dijiye		Goods:PRICE
+ur-Latn	OK	bhai galla dekh ke batao kitna hai		Drawer
+ur-Latn	OK	aaj kuch bika bhi hai ya nahi		Figure:SALES_TODAY
+ur-Latn	OK	aaj bohat kam bikri hui kya		Figure:SALES_TODAY
+ur-Latn	OK	logon ne mera kitna paisa dabaya hua hai		Figure:TO_GET
+ur-Latn	OK	mera kitna paisa bahar phansa hua hai		Figure:TO_GET
+ur-Latn	MISS	kab milega mera paisa aur kitna milna hai		WhenPays
+ur-Latn	MISS	kuch bacha bhi hai is mahine ya nahi		Help:faq_snapshot
+ur-Latn	MISS	dukaan faide mein hai ya nuqsan mein		Shop:ALL
+ur-Latn	MISS	mere paise kahan hain		Figure:TO_GET
+ur-Latn	MISS	kitna paisa hai mere paas		Drawer
+ur-Latn	OK	aaj ka hisaab		Today
+ur-Latn	MISS	total kitna hai		Figure:TO_GET
+ur-Latn	OK	dukaan ka kitna maal hai		Count:PRODUCTS:null
+ur-Latn	OK	kitna paisa lena hai logon se		Figure:TO_GET
+ur-Latn	OK	kitna paisa dena hai company ko		Figure:TO_GIVE
+ur-Latn	OK	kya kya khatam ho raha hai		Status:LOW_STOCK
+ur-Latn	OK	kaun si cheez mangwani hai		Status:LOW_STOCK
+ur-Latn	OK	aaj kitna kharch hua		Cashbook
+ur-Latn	MISS	aaj paise kitne aaye kitne gaye		Cashbook
+ur-Latn	MISS	aaj kya kya likha gaya		Today
+ur-Latn	OK	kisne kya delete kiya		Activity
+ur-Latn	OK	aaj kis ne entry badli		Activity
+ur-Latn	OK	kitne supplier hain		Count:SUPPLIERS:null
+ur-Latn	OK	kitne staff hain		Count:STAFF:null
+ur-Latn	OK	kitni invoices bani hain		Count:INVOICES:null
+ur-Latn	MISS	aaj kitne log kharidne aaye		Count:TICKETS:TODAY
+ur-Latn	OK	kitne gahak hain mere		Count:CUSTOMERS:null
+ur-Latn	OK	kaun si qist aane wali hai		Status:PLANS
+ur-Latn	OK	bill ki payment kab deni hai		Help:intro_cashbook
+ur-Latn	OK	kin invoices ke paise baqi hain		Status:INVOICES
+ur-Latn	OK	kaun se cheque clear ho gaye		Status:CHEQUES
+ur-Latn	OK	wapsi kitni aayi aaj		Returns
+ur-Latn	OK	return kitne hue		Returns
+ur-Latn	OK	kab dega Ali Raza		WhenPays
+ur-Latn	OK	aaj kaun dega		WhenPays
+ur-Latn	OK	Ali Raza se paise kab milenge		WhenPays
+ur-Latn	OK	text chhota karo		Look
+ur-Latn	OK	light mode lagao		Look
+ur-Latn	MISS	akhar bade kar do		Drawer
+ur-Latn	OK	dobara bolo		Voice
+ur-Latn	OK	repeat karo		Voice
+ur-Latn	OK	bas karo		Voice
+ur-Latn	MISS	awaaz band karo		Voice
+ur-Latn	OK	uska note	Ali Raza ka hisaab	Person:NOTE
+ur-Latn	MISS	Ali Raza ke baare mein kya likha hai		Person:DETAILS
+ur-Latn	OK	aur Bashir Ahmad ka?	Ali Raza ka hisaab	Parties
+ur-Latn	MISS	aur Bashir Ahmad ka?	Ali Raza ka number	Parties
+ur-Latn	OK	aur DAP ka?	Urea ka rate	Goods:PRICE
+ur-Latn	OK	aur DAP?	Urea kitni bachi hai	Goods:STOCK
+ur-Latn	OK	aur kal ki?	aaj ki bikri	Period:SALES
+ur-Latn	OK	aur is mahine ki?	aaj ki bikri	Figure:SALES_MONTH
+ur-Latn	OK	aur aakhri baar kab diya?	Ali Raza ka number	Person:LAST_PAYMENT
+ur-Latn	OK	uski limit?	Ali Raza ka hisaab	Person:LIMIT
+ur-Latn	OK	aur limit kitni hai uski	Ali Raza ka hisaab	Person:LIMIT
+ur-Latn	OK	aur is mahine?	Ali Raza ne kal kitne diye the	Moved
+ur-Latn	OK	kis kis ne li	Urea ka rate	Goods:BUYERS
+ur-Latn	OK	kitne din chalegi	Urea kitni bachi hai	Goods:COVER
+ur-Latn	MISS	kis se aati hai	Urea kitni bachi hai	WhenPays
+ur-Latn	OK	unka number do	Ali Raza ka hisaab	Person:PHONE
+ur-Latn	OK	aur number?	Ali Raza ki limit	Person:PHONE
+ur-Latn	OK	aur dena kitna hai	kitna udhaar baqi hai	Figure:TO_GIVE
+ur	MISS	کس نے ابھی تک حساب صاف نہیں کیا		Figure:NOT_PAID
+ur	OK	کس کا پیسہ پھنسا ہوا ہے		Figure:NOT_PAID
+ur	OK	سب سے کم باقی کس کا ہے		Figure:WHO_OWES_LEAST
+ur	OK	کون سا گاہک پیسے نہیں دیتا		Figure:NOT_PAID
+ur	OK	سب سے بڑا قرضدار کون ہے		Figure:WHO_OWES_MOST
+ur	OK	ادھار		Figure:TO_GET
+ur	OK	باقی		Figure:TO_GET
+ur	OK	منافع		Figure:PROFIT_MONTH
+ur	OK	کیش		Drawer
+ur	OK	علی رضا		Parties
+ur	OK	بیک اپ		BackupStatus
+ur	OK	پچھلے ہفتے کی سیل		Period:SALES
+ur	OK	پچھلے مہینے کا منافع		Period:PROFIT
+ur	MISS	صبح سے اب تک کتنا بکا		Figure:SALES_TODAY
+ur	OK	علی رضا نے اس مہینے کتنا دیا		Moved
+ur	OK	علی رضا کو پانچ سو دیے		Entry
+ur	OK	علی رضا سے ایک ہزار ملے		Entry
+ur	OK	Ali Raza کا balance کتنا ہے		Parties
+ur	OK	آج کی sale کتنی ہوئی		Figure:SALES_TODAY
+ur	OK	Urea کا stock کتنا ہے		Goods:STOCK
+ur	MISS	Urea کتنے کی ہے		Goods:PRICE
+ur	MISS	Urea کم ہے کیا		Goods:STOCK
+ur	OK	چیک پینڈنگ کتنے ہیں		Status:CHEQUES
+ur	OK	کتنا آج بکا		Figure:SALES_TODAY
+ur	OK	باقی علی رضا کا کتنا		Parties
+ur	OK	بھائی جان ذرا دیکھ کے بتانا علی رضا کا کتنا باقی ہے		Parties
+ur	OK	آج کچھ بکا بھی ہے یا نہیں		Figure:SALES_TODAY
+ur	OK	لوگوں نے میرا کتنا پیسہ دبایا ہوا ہے		Figure:TO_GET
+ur	MISS	میرے پیسے کہاں ہیں		Figure:TO_GET
+ur	OK	کیا کیا ختم ہو رہا ہے		Status:LOW_STOCK
+ur	OK	آج کتنا خرچ ہوا		Cashbook
+ur	OK	کتنے سپلائر ہیں		Count:SUPPLIERS:null
+ur	OK	آخری بار کب دیا	علی رضا کا نمبر	Person:LAST_PAYMENT
+ur	OK	اس کی حد	علی رضا کا حساب	Person:LIMIT
+ur	OK	اور کل کی	آج کی بکری	Period:SALES
+ur	OK	اور DAP	Urea کتنی بچی ہے	Goods:STOCK
+ur	OK	کون سی قسط آنے والی ہے		Status:PLANS
+ur	OK	واپسی کتنی آئی		Returns
+ur	OK	فونٹ چھوٹا کرو		Look
+ur	OK	دوبارہ بولو		Voice
+hi	OK	किसने अभी तक हिसाब साफ़ नहीं किया		Figure:NOT_PAID
+hi	MISS	किसका पैसा फँसा हुआ है		Figure:NOT_PAID
+hi	MISS	सबसे कम बाकी किसका है		Figure:WHO_OWES_LEAST
+hi	OK	सबसे बड़ा कर्ज़दार कौन है		Figure:WHO_OWES_MOST
+hi	OK	उधार		Figure:TO_GET
+hi	OK	मुनाफ़ा		Figure:PROFIT_MONTH
+hi	OK	कैश		Drawer
+hi	OK	अली रज़ा		Parties
+hi	OK	पिछले हफ़्ते की सेल		Period:SALES
+hi	OK	पिछले महीने का मुनाफ़ा		Period:PROFIT
+hi	MISS	सुबह से अब तक कितना बिका		Figure:SALES_TODAY
+hi	OK	अली रज़ा ने इस महीने कितना दिया		Moved
+hi	MISS	अली रज़ा को पाँच सौ दिए		Parties
+hi	MISS	अली रज़ा से एक हज़ार मिले		Parties
+hi	OK	अली रज़ा का balance कितना है		Parties
+hi	OK	आज की sale कितनी हुई		Figure:SALES_TODAY
+hi	OK	Urea का stock कितना है		Goods:STOCK
+hi	MISS	Urea कितने की है		Goods:PRICE
+hi	MISS	Urea कम है क्या		Goods:STOCK
+hi	OK	बाकी अली रज़ा का कितना		Parties
+hi	OK	भाई साहब ज़रा देख के बताना अली रज़ा का कितना बाकी है		Parties
+hi	OK	आज कुछ बिका भी है या नहीं		Figure:SALES_TODAY
+hi	OK	लोगों ने मेरा कितना पैसा दबा रखा है		Figure:TO_GET
+hi	MISS	मेरे पैसे कहाँ हैं		Figure:TO_GET
+hi	OK	क्या क्या ख़त्म हो रहा है		Status:LOW_STOCK
+hi	OK	आज कितना ख़र्च हुआ		Cashbook
+hi	OK	कितने सप्लायर हैं		Count:SUPPLIERS:null
+hi	OK	आख़िरी बार कब दिया	अली रज़ा का नंबर	Person:LAST_PAYMENT
+hi	OK	उसकी लिमिट	अली रज़ा का हिसाब	Person:LIMIT
+hi	OK	और कल की	आज की बिक्री	Period:SALES
+hi	OK	कौन सी किस्त आने वाली है		Status:PLANS
+hi	OK	वापसी कितनी आई		Returns
+hi	OK	फॉन्ट छोटा करो		Look
+hi	OK	दोबारा बोलो		Voice
+en	OK	whose money is stuck		Figure:NOT_PAID
+en	MISS	who hasn't cleared their account		Figure:NOT_PAID
+en	MISS	whose balance is the smallest		Figure:WHO_OWES_LEAST
+en	OK	who owes the least		Figure:WHO_OWES_LEAST
+en	OK	who is my biggest debtor		Figure:WHO_OWES_MOST
+en	OK	who is late with payment		Figure:NOT_PAID
+en	OK	udhaar		Figure:TO_GET
+en	OK	profit		Figure:PROFIT_MONTH
+en	OK	cash		Drawer
+en	OK	Ali Raza		Parties
+en	OK	cheques		Status:CHEQUES
+en	MISS	sales		Figure:SALES_MONTH
+en	MISS	how much did we sell since morning		Figure:SALES_TODAY
+en	OK	last week sales		Period:SALES
+en	OK	last month profit		Period:PROFIT
+en	OK	sales this year		Period:SALES
+en	OK	how much did Ali Raza pay this month		Moved
+en	OK	I gave Ali Raza five hundred		Entry
+en	OK	got one thousand from Ali Raza		Entry
+en	OK	how mch sale today		Figure:SALES_TODAY
+en	OK	ali raza balnce		Parties
+en	OK	urea stok		Goods:STOCK
+en	OK	balance Ali Raza		Parties
+en	OK	could you please tell me how much Ali Raza owes		Parties
+en	OK	hey buddy tell me today's sale		Figure:SALES_TODAY
+en	OK	did we sell anything today		Figure:SALES_TODAY
+en	OK	how much money is stuck outside		Figure:TO_GET
+en	MISS	where is my money		Figure:TO_GET
+en	OK	how much cash do I have		Drawer
+en	OK	what needs to be ordered		Status:LOW_STOCK
+en	MISS	how much did I spend today		Cashbook
+en	OK	how many suppliers do I have		Count:SUPPLIERS:null
+en	OK	when did he last pay	Ali Raza's number	Person:LAST_PAYMENT
+en	OK	and Bashir Ahmad's?	Ali Raza's number	Person:PHONE
+en	OK	and DAP?	price of Urea	Goods:PRICE
+en	MISS	how much is Urea		Goods:PRICE
+en	MISS	what do you charge for Urea		Goods:PRICE
+en	OK	do we have Urea		Goods:STOCK
+en	MISS	is Urea running low		Goods:STOCK
+en	MISS	what did I buy Urea for		Goods:COST
+en	OK	which instalments are due		Status:PLANS
+en	OK	what came back today		Returns
+en	OK	make the text smaller		Look
+en	OK	repeat that		Voice
+en	OK	be quiet		Voice
+ar	OK	من لم يسدد حسابه بعد		Figure:NOT_PAID
+ar	MISS	من الذي أمواله عالقة		Figure:NOT_PAID
+ar	MISS	من عليه أقل دين		Figure:WHO_OWES_LEAST
+ar	OK	من أكبر مدين لدي		Figure:WHO_OWES_MOST
+ar	OK	ديون		Figure:TO_GET
+ar	OK	الربح		Figure:PROFIT_MONTH
+ar	OK	الصندوق		Drawer
+ar	OK	علي رضا		Parties
+ar	OK	مبيعات الأسبوع الماضي		Period:SALES
+ar	OK	ربح الشهر الماضي		Period:PROFIT
+ar	MISS	كم بعنا منذ الصباح		Figure:SALES_TODAY
+ar	OK	كم دفع علي رضا هذا الشهر		Moved
+ar	OK	كم المتبقي على علي رضا		Parties
+ar	OK	كم الموجود من Urea		Goods:STOCK
+ar	MISS	بكم Urea		Goods:PRICE
+ar	OK	لو سمحت قل لي كم على علي رضا		Parties
+ar	OK	هل بعنا شيئا اليوم		Figure:SALES_TODAY
+ar	MISS	أين أموالي		Figure:TO_GET
+ar	MISS	كم معي من النقود		Drawer
+ar	MISS	ما الذي ينقص		Today
+ar	MISS	كم صرفت اليوم		Cashbook
+ar	OK	كم مورد عندي		Count:SUPPLIERS:null
+ar	OK	ومتى دفع آخر مرة	رقم علي رضا	Person:LAST_PAYMENT
+ar	OK	وأمس	كم المبيعات اليوم	Period:SALES
+ar	OK	أي الأقساط مستحقة		Status:PLANS
+ar	OK	اسكت		Voice
+ar	OK	صغر الخط		Look
+fa	MISS	چه کسی هنوز حساب را صاف نکرده		Figure:NOT_PAID
+fa	MISS	پول چه کسی گیر کرده		Figure:NOT_PAID
+fa	MISS	کمترین بدهکار کیست		Figure:WHO_OWES_LEAST
+fa	OK	بزرگترین بدهکار کیست		Figure:WHO_OWES_MOST
+fa	OK	طلب		Figure:TO_GET
+fa	OK	سود		Figure:PROFIT_MONTH
+fa	OK	صندوق		Drawer
+fa	OK	علی رضا		Parties
+fa	OK	فروش هفته گذشته		Period:SALES
+fa	OK	سود ماه گذشته		Period:PROFIT
+fa	MISS	از صبح تا حالا چقدر فروختیم		Figure:SALES_TODAY
+fa	MISS	علی رضا این ماه چقدر پرداخت کرد		Person:DETAILS
+fa	OK	علی رضا چقدر مانده		Parties
+fa	MISS	Urea چند است		Goods:PRICE
+fa	OK	Urea چقدر مانده		Goods:STOCK
+fa	OK	لطفا بگویید علی رضا چقدر بدهکار است		Parties
+fa	OK	امروز چیزی فروختیم یا نه		Figure:SALES_TODAY
+fa	MISS	پول من کجاست		Figure:TO_GET
+fa	OK	چقدر نقد دارم		Drawer
+fa	MISS	چه چیزهایی تمام می‌شود		Figure:EXPIRING
+fa	OK	امروز چقدر خرج کردم		Cashbook
+fa	OK	چند تامین‌کننده دارم		Count:SUPPLIERS:null
+fa	MISS	آخرین بار کی پرداخت کرد	شماره علی رضا	NeedName:LAST_PAYMENT
+fa	MISS	شمارش را بگو	حساب علی رضا	NeedName:PHONE
+fa	MISS	شماره‌اش	حساب علی رضا	NeedName:PHONE
+fa	OK	و دیروز	فروش امروز چقدر بود	Period:SALES
+fa	OK	کدام اقساط سررسید دارد		Status:PLANS
+fa	MISS	ساکت شو		Abilities
+fa	OK	فونت را کوچک کن		Look
+sd	MISS	ڪنهن اڃا حساب صاف نه ڪيو آهي		Figure:NOT_PAID
+sd	MISS	ڪنهن جو پيسو ڦاٿل آهي		Figure:NOT_PAID
+sd	MISS	سڀ کان گهٽ باقي ڪنهن جو آهي		Figure:WHO_OWES_LEAST
+sd	OK	سڀ کان وڏو قرضدار ڪير آهي		Figure:WHO_OWES_MOST
+sd	OK	اڌار		Figure:TO_GET
+sd	OK	نفعو		Figure:PROFIT_MONTH
+sd	OK	ڪيش		Drawer
+sd	OK	علي رضا		Parties
+sd	OK	گذريل هفتي جو وڪرو		Period:SALES
+sd	OK	گذريل مهيني جو نفعو		Period:PROFIT
+sd	OK	علي رضا هن مهيني ڪيترو ڏنو		Moved
+sd	OK	علي رضا جو باقي ڪيترو آهي		Parties
+sd	MISS	Urea ڪيترين جي آهي		Goods:PRICE
+sd	MISS	Urea گهٽ آهي ڇا		Goods:STOCK
+sd	OK	ادا مهرباني ڪري ٻڌاءِ علي رضا جو ڪيترو باقي آهي		Parties
+sd	OK	اڄ ڪجهه وڪرو ٿيو يا نه		Figure:SALES_TODAY
+sd	MISS	منهنجا پئسا ڪٿي آهن		Figure:TO_GET
+sd	OK	ڇا ڇا ختم ٿي رهيو آهي		Status:LOW_STOCK
+sd	OK	اڄ ڪيترو خرچ ٿيو		Cashbook
+sd	OK	ڪيترا سپلائر آهن		Count:SUPPLIERS:null
+sd	MISS	آخري دفعي ڪڏهن ڏنو	علي رضا جو نمبر	NeedName:LAST_PAYMENT
+sd	OK	۽ ڪالهه جو	اڄ جي وڪري	Period:SALES
+sd	MISS	ٻيهر چئو		Figure:TO_GET
+sd	OK	فونٽ ننڍو ڪريو		Look
+bn	MISS	কে এখনো হিসাব মেটায়নি		Figure:NOT_PAID
+bn	OK	কার টাকা আটকে আছে		Figure:NOT_PAID
+bn	OK	সবচেয়ে কম বাকি কার		Figure:WHO_OWES_LEAST
+bn	OK	সবচেয়ে বড় দেনাদার কে		Figure:WHO_OWES_MOST
+bn	OK	বাকি		Figure:TO_GET
+bn	OK	লাভ		Figure:PROFIT_MONTH
+bn	OK	ক্যাশ		Drawer
+bn	OK	আলী রাজা		Parties
+bn	OK	গত সপ্তাহের বিক্রি		Period:SALES
+bn	OK	গত মাসের লাভ		Period:PROFIT
+bn	MISS	সকাল থেকে এখন পর্যন্ত কত বিক্রি		Figure:SALES_TODAY
+bn	OK	আলী রাজা এই মাসে কত দিয়েছে		Moved
+bn	OK	আলী রাজার কত বাকি		Parties
+bn	MISS	Urea কত করে		Goods:PRICE
+bn	MISS	Urea কম আছে কি		Goods:STOCK
+bn	OK	ভাই একটু বলবেন আলী রাজার কত বাকি		Parties
+bn	MISS	আজ কিছু বিক্রি হলো কি না		Activity
+bn	GUESS	আমার টাকা কোথায়		Figure:TO_GET
+bn	OK	কী কী শেষ হয়ে যাচ্ছে		Status:LOW_STOCK
+bn	OK	আজ কত খরচ হলো		Cashbook
+bn	OK	কতজন সরবরাহকারী আছে		Count:SUPPLIERS:null
+bn	OK	শেষবার কবে দিয়েছে	আলী রাজার নম্বর	Person:LAST_PAYMENT
+bn	OK	আর গতকালের	আজকের বিক্রি	Period:SALES
+bn	OK	আবার বলুন		Voice
+bn	OK	ফন্ট ছোট করো		Look
+in	MISS	siapa yang belum melunasi		Figure:NOT_PAID
+in	OK	uang siapa yang tertahan		Figure:NOT_PAID
+in	MISS	siapa yang utangnya paling sedikit		Figure:WHO_OWES_LEAST
+in	OK	siapa debitur terbesar saya		Figure:WHO_OWES_MOST
+in	OK	piutang		Figure:TO_GET
+in	OK	untung		Figure:PROFIT_MONTH
+in	OK	kas		Drawer
+in	OK	Ali Raza		Parties
+in	OK	penjualan minggu lalu		Period:SALES
+in	OK	untung bulan lalu		Period:PROFIT
+in	MISS	dari pagi sampai sekarang laku berapa		Figure:SALES_TODAY
+in	OK	Ali Raza bayar berapa bulan ini		Moved
+in	OK	Ali Raza masih utang berapa		Parties
+in	MISS	Urea berapaan		Goods:PRICE
+in	OK	Urea masih ada nggak		Goods:STOCK
+in	OK	tolong kasih tahu Ali Raza utangnya berapa ya		Parties
+in	OK	hari ini ada yang laku nggak		Figure:SALES_TODAY
+in	MISS	uang saya di mana		Figure:TO_GET
+in	OK	apa yang mau habis		Status:LOW_STOCK
+in	MISS	hari ini habis berapa		Cashbook
+in	OK	ada berapa pemasok		Count:SUPPLIERS:null
+in	MISS	terakhir bayar kapan	nomor Ali Raza	NeedName:LAST_PAYMENT
+in	OK	kalau kemarin	penjualan hari ini	Period:SALES
+in	OK	ulangi		Voice
+in	OK	kecilkan huruf		Look
+en	OK	Ali Raza gave me 500		Entry
+en	OK	I received 2000 from Ali Raza		Entry
+en	OK	sold Ali Raza goods worth 3000 on credit		Entry
+en	MISS	how much did we sell this morning		Figure:SALES_TODAY
+en	OK	sales so far today		Figure:SALES_TODAY
+en	MISS	evening ki sale		Figure:SALES_TODAY
+en	OK	how much money went out today		Cashbook
+en	OK	today's expenses		Cashbook
+en	OK	how many products are in the shop		Count:PRODUCTS:null
+en	OK	how many invoices today		Count:INVOICES:TODAY
+en	MISS	how many sales did we make today		Count:TICKETS:TODAY
+en	MISS	how much interest free loan is outstanding		Figure:TO_GET
+en	OK	which automations are on		Automations
+en	MISS	which supplier bills are unpaid		Count:BILLS:null
+en	OK	salary due		Status:STAFF
+en	MISS	which item sells best this month		TopGoods
+en	OK	best selling product		TopGoods
+en	MISS	what stock came this week		Status:LOW_STOCK
+en	OK	which medicines expire soon		Figure:EXPIRING
+ur-Latn	OK	aaj subah kitna bika		Figure:SALES_TODAY
+ur-Latn	MISS	dopahar tak ki sale		Figure:SALES_TODAY
+ur-Latn	OK	raat ko kitna bika tha aaj		Figure:SALES_TODAY
+ur-Latn	OK	abhi tak aaj kitna bika		Figure:SALES_TODAY
+ur-Latn	MISS	ab tak kitni sale hui		Period:SALES
+ur-Latn	OK	kal shaam ki sale		Period:SALES
+ur-Latn	OK	kal raat tak kitna bika		Period:SALES
+ur-Latn	MISS	pichle jumme se ab tak		NeedName:LAST_PAYMENT
+ur-Latn	MISS	Eid se pehle kitna bika		SpanLimit
+ur-Latn	OK	1 tareekh se ab tak ki bikri		Period:SALES
+ur-Latn	OK	Ali Raza ne paanch sau diye		Entry
+ur-Latn	OK	Ali Raza se paanch sau mile		Entry
+ur-Latn	OK	Ali Raza ko 500 ka maal diya udhaar		Entry
+ur-Latn	OK	Ali Raza ne 500 wapas kiye		Entry
+ur-Latn	OK	Ali Raza ka 500 aya		Entry
+ur-Latn	OK	kitna saman hai dukaan mein		Count:PRODUCTS:null
+ur-Latn	MISS	aaj kitni bills bani		Count:BILLS:TODAY
+ur-Latn	OK	kitne invoice bane		Count:INVOICES:null
+ur-Latn	MISS	kitne banday kaam karte hain		Count:STAFF:null
+ur-Latn	MISS	aaj kitne paise nikle		Cashbook
+ur-Latn	MISS	aaj paisa kitna aaya		Collected
+ur-Latn	OK	kitna cash aaya aur gaya aaj		Cashbook
+ur-Latn	OK	kharchay kitne hue is hafte		Cashbook
+ur-Latn	OK	qarz hasna kitna hai		Qarz
+ur-Latn	OK	automation kaun si on hain		Automations
+ur-Latn	OK	tankhwah kitni deni hai		Status:STAFF
+ur-Latn	OK	staff ki salary		Status:STAFF
+ur-Latn	OK	qisten		Status:PLANS
+ur-Latn	MISS	supplier ko kitna dena baqi hai		Figure:TO_GIVE
+ur-Latn	OK	is mahine kaun sa maal sab se zyada bika		TopGoods
+ur-Latn	MISS	sab se zyada bikne wali cheez		TopGoods
+ur-Latn	MISS	kya cheez chal rahi hai aajkal		TopGoods
+ur-Latn	OK	is hafte kitna maal aaya		Deliveries
+ur-Latn	OK	expiry kab hai		Figure:EXPIRING
+ur-Latn	MISS	kaun si cheez purani ho rahi hai		Status:LOW_STOCK
+ur-Latn	OK	kis ki tareekh nikalne wali hai		Figure:EXPIRING
+ur-Latn	OK	sab se kam baqi kis ka		Figure:WHO_OWES_LEAST
+ur-Latn	MISS	kis ka udhaar sab se kam hai		Figure:WHO_OWES_LEAST
+ur-Latn	OK	kaun paise nahi deta		Figure:NOT_PAID
+ur-Latn	OK	kis ne payment nahi di		Figure:NOT_PAID
+ur-Latn	OK	kaun sa banda nahi de raha		Figure:NOT_PAID
+ur-Latn	OK	jinhon ne paise nahi diye		Figure:NOT_PAID
+ur-Latn	OK	kaun paise de nahi raha		Figure:NOT_PAID
+ur-Latn	OK	kis ne abhi tak nahi diye		Figure:NOT_PAID
+ur-Latn	MISS	kis ka cheque nahi aaya		Record
+ur-Latn	MISS	kis ki wusooli baqi hai		Figure:NOT_PAID
+ur-Latn	MISS	kis ne aaj paise diye		Collected
+ur-Latn	MISS	kal kis ne paise diye		Collected
+ur-Latn	OK	kis kis ne payment ki hai aaj		Collected
+ur	OK	آج صبح کتنا بکا		Figure:SALES_TODAY
+ur	OK	ابھی تک آج کتنا بکا		Figure:SALES_TODAY
+ur	MISS	اب تک کتنی سیل ہوئی		NeedName:DETAILS
+ur	OK	علی رضا نے پانچ سو دیے		Entry
+ur	OK	کتنا سامان ہے دکان میں		Count:PRODUCTS:null
+ur	MISS	کتنے بندے کام کرتے ہیں		Count:STAFF:null
+ur	MISS	آج کتنے پیسے نکلے		Cashbook
+ur	OK	آج کتنا کیش آیا اور گیا		Cashbook
+ur	OK	قرض حسنہ کتنا ہے		Qarz
+ur	OK	تنخواہ کتنی دینی ہے		Status:STAFF
+ur	MISS	سپلائر کو کتنا دینا باقی ہے		Figure:TO_GIVE
+ur	OK	اس مہینے کون سا مال سب سے زیادہ بکا		TopGoods
+ur	MISS	کیا چیز چل رہی ہے آج کل		TopGoods
+ur	OK	ایکسپائری کب ہے		Figure:EXPIRING
+ur	MISS	سب سے کم ادھار کس کا ہے		Figure:WHO_OWES_LEAST
+ur	OK	کون پیسے نہیں دیتا		Figure:NOT_PAID
+ur	OK	کس نے ابھی تک نہیں دیے		Figure:NOT_PAID
+ur	OK	کس نے آج پیسے دیے		Collected
+ur	MISS	کل کس نے پیسے دیے		Collected
+hi	OK	आज सुबह कितना बिका		Figure:SALES_TODAY
+hi	OK	अभी तक आज कितना बिका		Figure:SALES_TODAY
+hi	MISS	अब तक कितनी सेल हुई		Period:SALES
+hi	MISS	अली रज़ा ने पाँच सौ दिए		Parties
+hi	OK	अली रज़ा को 500 दिए उधार		Entry
+hi	OK	दुकान में कितना सामान है		Count:PRODUCTS:null
+hi	MISS	कितने लोग काम करते हैं		Count:STAFF:null
+hi	MISS	आज कितने पैसे निकले		Cashbook
+hi	OK	आज कितना कैश आया और गया		Cashbook
+hi	OK	क़र्ज़-ए-हसना कितना है		Qarz
+hi	OK	तनख़्वाह कितनी देनी है		Status:STAFF
+hi	MISS	सप्लायर को कितना देना बाकी है		Figure:TO_GIVE
+hi	OK	इस महीने कौन सा माल सबसे ज़्यादा बिका		TopGoods
+hi	MISS	क्या चीज़ चल रही है आजकल		TopGoods
+hi	OK	एक्सपायरी कब है		Figure:EXPIRING
+hi	MISS	सबसे कम उधार किसका है		Figure:WHO_OWES_LEAST
+hi	OK	कौन पैसे नहीं देता		Figure:NOT_PAID
+hi	OK	किसने अभी तक नहीं दिए		Figure:NOT_PAID
+hi	OK	किसने आज पैसे दिए		Collected
+hi	OK	कल किसने पैसे दिए		Collected
+bn	OK	আজ সকালে কত বিক্রি হলো		Figure:SALES_TODAY
+bn	OK	এখন পর্যন্ত আজ কত বিক্রি		Figure:SALES_TODAY
+bn	MISS	আলী রাজাকে পাঁচশো দিলাম		Parties
+bn	MISS	আলী রাজা পাঁচশো দিয়েছে		Person:LAST_PAYMENT
+bn	OK	দোকানে কত মাল আছে		Count:PRODUCTS:null
+bn	MISS	কতজন কাজ করে		Help:faq_percent
+bn	OK	আজ কত টাকা বের হলো		Cashbook
+bn	MISS	আজ ক্যাশে কত এলো আর গেল		Cashbook
+bn	OK	কর্জে হাসানা কত আছে		Qarz
+bn	OK	বেতন কত দিতে হবে		Status:STAFF
+bn	MISS	সরবরাহকারীকে কত দিতে বাকি		Figure:TO_GIVE
+bn	OK	এই মাসে কোন মাল সবচেয়ে বেশি বিক্রি হলো		TopGoods
+bn	MISS	এখন কোন জিনিস চলছে		TopGoods
+bn	OK	মেয়াদ কবে শেষ		Figure:EXPIRING
+bn	OK	সবচেয়ে কম বাকি কার		Figure:WHO_OWES_LEAST
+bn	OK	কে টাকা দেয় না		Figure:NOT_PAID
+bn	OK	কে এখনো দেয়নি		Figure:NOT_PAID
+bn	MISS	আজ কে টাকা দিয়েছে		Collected
+bn	OK	গতকাল কে টাকা দিয়েছে		Collected
+ar	MISS	كم بعنا هذا الصباح		Figure:SALES_TODAY
+ar	OK	المبيعات حتى الآن اليوم		Figure:SALES_TODAY
+ar	MISS	أعطيت علي رضا خمسمائة		Parties
+ar	OK	علي رضا دفع لي 500		Entry
+ar	OK	كم بضاعة في المحل		Count:PRODUCTS:null
+ar	OK	كم موظف عندي		Count:STAFF:null
+ar	OK	كم خرج من المال اليوم		Cashbook
+ar	OK	ما الداخل والخارج اليوم		Cashbook
+ar	MISS	كم القرض الحسن		Figure:TO_GIVE
+ar	OK	كم الرواتب المستحقة		Status:STAFF
+ar	MISS	كم يجب أن أدفع للمورد		Count:SUPPLIERS:null
+ar	MISS	ما أكثر منتج مبيعا هذا الشهر		TopGoods
+ar	MISS	أي بضاعة تباع الآن		TopGoods
+ar	OK	متى تنتهي الصلاحية		Figure:EXPIRING
+ar	MISS	من عليه أقل دين		Figure:WHO_OWES_LEAST
+ar	MISS	من لا يدفع		Figure:NOT_PAID
+ar	OK	من لم يدفع حتى الآن		Figure:NOT_PAID
+ar	OK	من دفع اليوم		Collected
+ar	MISS	من دفع أمس		Collected
+fa	OK	امروز صبح چقدر فروختیم		Figure:SALES_TODAY
+fa	OK	تا الان امروز چقدر فروش شد		Figure:SALES_TODAY
+fa	OK	به علی رضا پانصد دادم		Entry
+fa	MISS	علی رضا پانصد داد		Parties
+fa	OK	چقدر جنس در مغازه هست		Count:PRODUCTS:null
+fa	OK	چند کارمند دارم		Count:STAFF:null
+fa	MISS	امروز چقدر پول خارج شد		Cashbook
+fa	OK	امروز ورودی و خروجی نقد چقدر بود		Cashbook
+fa	OK	قرض الحسنه چقدر است		Qarz
+fa	OK	حقوق چقدر باید بدهم		Status:STAFF
+fa	MISS	چقدر به تامین‌کننده بدهکارم		Figure:TO_GIVE
+fa	MISS	این ماه کدام کالا بیشتر فروش رفت		TopGoods
+fa	MISS	الان چه چیزی خوب می‌فروشد		TopGoods
+fa	OK	تاریخ انقضا کی است		Figure:EXPIRING
+fa	MISS	کمترین بدهی مال کیست		Figure:WHO_OWES_LEAST
+fa	MISS	کی پول نمی‌دهد		Figure:NOT_PAID
+fa	OK	چه کسی هنوز نداده		Figure:NOT_PAID
+fa	MISS	امروز چه کسی پول داد		Collected
+fa	MISS	دیروز چه کسی پول داد		Collected
+sd	OK	اڄ صبح جو ڪيترو وڪرو ٿيو		Figure:SALES_TODAY
+sd	OK	هينئر تائين اڄ ڪيترو وڪرو ٿيو		Figure:SALES_TODAY
+sd	MISS	علي رضا کي پنج سؤ ڏنم		Parties
+sd	MISS	علي رضا پنج سؤ ڏنا		Person:LAST_PAYMENT
+sd	OK	دڪان ۾ ڪيترو سامان آهي		Count:PRODUCTS:null
+sd	MISS	ڪيترا ماڻهو ڪم ڪن ٿا		Count:STAFF:null
+sd	MISS	اڄ ڪيترا پئسا نڪتا		Cashbook
+sd	OK	اڄ ڪيش ڪيترو آيو ۽ ويو		Cashbook
+sd	OK	قرض حسنہ ڪيترو آهي		Qarz
+sd	OK	پگهار ڪيترو ڏيڻو آهي		Status:STAFF
+sd	MISS	سپلائر کي ڪيترو ڏيڻو باقي آهي		Figure:TO_GIVE
+sd	OK	هن مهيني ڪهڙو مال سڀ کان وڌيڪ وڪرو ٿيو		TopGoods
+sd	MISS	ميعاد ڪڏهن ختم ٿئي ٿو		NeedGoods
+sd	MISS	سڀ کان گهٽ اڌار ڪنهن جو آهي		Figure:WHO_OWES_LEAST
+sd	OK	ڪير پئسا نٿو ڏئي		Figure:NOT_PAID
+sd	MISS	اڄ ڪنهن پئسا ڏنا		Collected
+sd	MISS	ڪالهه ڪنهن پئسا ڏنا		Collected
+in	OK	tadi pagi laku berapa		Figure:SALES_TODAY
+in	OK	sampai sekarang hari ini laku berapa		Figure:SALES_TODAY
+in	MISS	saya kasih Ali Raza lima ratus		Parties
+in	MISS	Ali Raza bayar lima ratus		Parties
+in	OK	ada berapa barang di toko		Count:PRODUCTS:null
+in	OK	ada berapa karyawan		Count:STAFF:null
+in	OK	hari ini uang keluar berapa		Cashbook
+in	OK	kas masuk dan keluar hari ini		Cashbook
+in	MISS	berapa pinjaman tanpa bunga yang beredar		Status:STAFF
+in	OK	gaji yang harus dibayar berapa		Status:STAFF
+in	MISS	berapa yang harus saya bayar ke pemasok		Count:SUPPLIERS:null
+in	OK	bulan ini barang apa yang paling laku		TopGoods
+in	MISS	barang apa yang lagi laris		TopGoods
+in	OK	kedaluwarsa kapan		Figure:EXPIRING
+in	MISS	utang siapa yang paling sedikit		Figure:WHO_OWES_LEAST
+in	MISS	siapa yang tidak bayar		Figure:NOT_PAID
+in	OK	siapa yang belum bayar sampai sekarang		Figure:NOT_PAID
+in	MISS	siapa yang bayar hari ini		WhenPays
+in	MISS	siapa yang bayar kemarin		Collected

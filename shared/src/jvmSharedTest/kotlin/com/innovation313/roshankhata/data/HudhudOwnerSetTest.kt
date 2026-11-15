@@ -32,31 +32,11 @@ class HudhudOwnerSetTest {
         javaClass.getResourceAsStream(resource)?.bufferedReader(Charsets.UTF_8)?.readLines().orEmpty()
             .filter { it.isNotBlank() && !it.startsWith("#") }
 
-    /** A reading as the owner's lists name them: "Figure:TO_GET", "Help:screen_zakat", "Voice", "Guessed>…" as its own. */
-    private fun shown(a: Hudhud.Ask): String = when (a) {
-        is Hudhud.Ask.Guessed -> shown(a.ask)
-        // "As it stands now" (15 Nov 2026) only adds a note to the card; what was understood is the ask inside it.
-        is Hudhud.Ask.Now -> shown(a.ask)
-        is Hudhud.Ask.DidYouMean -> a.options.firstOrNull()?.let { shown(it) } ?: "DidYouMean"
-        is Hudhud.Ask.Help -> "Help:" + a.key
-        is Hudhud.Ask.Figure -> "Figure:" + a.kind
-        is Hudhud.Ask.Count -> "Count:" + a.thing + ":" + a.window
-        is Hudhud.Ask.Status -> "Status:" + a.of
-        is Hudhud.Ask.Person -> "Person:" + a.facet
-        is Hudhud.Ask.Goods -> "Goods:" + a.facet
-        is Hudhud.Ask.Shop -> "Shop:" + a.facet
-        is Hudhud.Ask.About -> "About:" + a.topic
-        is Hudhud.Ask.Chat -> "Chat:" + a.talk
-        is Hudhud.Ask.NeedName -> "NeedName:" + a.facet
-        is Hudhud.Ask.Period -> "Period:" + a.measure
-        else -> a.javaClass.simpleName
-    }
-
     /** How many of [rows] (id, sentence, …, accepted) are read as one of their accepted readings; misses are printed. */
     private fun score(title: String, rows: List<List<String>>): Int {
         var right = 0
         for (r in rows) {
-            val got = shown(Hudhud.understand(r[1], names, topics, null, goods))
+            val got = HudhudShown.of(Hudhud.understand(r[1], names, topics, null, goods))
             if (r.last().split('|').any { got.startsWith(it) }) right++ else println("  miss ${r[0]}  ${r[1]}  => $got")
         }
         println("$title: $right of ${rows.size} right (${right * 100 / rows.size}%)")

@@ -2940,6 +2940,11 @@ Each of these cost a build or a bug.
     test while `decide` handed it back to the sense (15 Nov 2026): the owner's list moved by 2, not 22. A rule the sense may overturn goes into
     `featureNamed` or its own guard in `decide`, and its test calls `Hudhud.understand` with the sense attached and the page list.
 
+146. **A reader that fires first takes the sentences of the readers after it.** The counter's staff question ("kis cashier ne sab se zyada becha") was read as a staff record
+    because that reader came first (15 Nov 2026). Order readers by how narrow they are and run the whole set after every merge, not each reader's own test alone.
+147. **A review's sentences are kept, not thrown away.** The 1,115 of 15 Nov are `review_d.tsv`: the ones read as meant are held to their exact reading (`HudhudReviewSetTest`), the
+    rest are listed to be promoted. It costs a test run, and it finds the next fix that costs another class. Helpers save time, not tokens.
+
 ---
 
 ## Working with the owner
@@ -4046,6 +4051,32 @@ is angles over the catalog's columns, each through the whole pipeline. This grou
   **Not compiled:** `HudhudFacts`, `HudhudBook`, the DAO query and the strings — CI is their first build.
 - **Not done:** a person's own cheques ("Ali Raza ka cheque kab clear hoga" stays his page); "Sales order kitne hain" with no topic list reads a sales figure
   (the page rule needs the book's page list, which the app passes); the invoice's phone, note and charge label stay GAP.
+
+### 15 Nov 2026: Hudhud, the transactions group, four helpers' round and a review set (phone and shared; CI green at 0e8fc37, nothing tried on a real phone)
+
+Importance 8 (money, stock, staff). The owner's basis: the data is definite (the app's own tables), so the work is angles over the catalog, each run through the whole
+pipeline (lesson 145), whole classes fixed, floors re-measured. He approved four helpers at once (git worktrees, own harness each, none pushed; the lead merged by
+cherry-pick, regenerated `catalog.tsv`, ran everything and pushed once).
+
+- **Transactions group** (a46cb53): entry number, way of paying, loan, bin and the entry's goods lines read from `HudhudEntryDetailTest`'s classes.
+- **A, the counter** (`HudhudCounter`, `Ask.Counter`, 18 facets, `HudhudCounterFacts`): sales tickets, returns, shifts, discounts given, loyalty, cashiers. Every card is
+  REPORTS-only, stricter than the counter's own screens. Its block runs first in `byRules` (before C's staff reader: "kis cashier ne sab se zyada becha" was read as staff).
+- **B, papers and records** (`HudhudRecords`, `Ask.Paper`): last bill, order, invoice, schemes; `HudhudFacts` paper/scheme answers; owner_1000 rows K0881, K0889, K0898, K0899
+  now also accept `Help:screen_schemes|Paper`.
+- **C, staff, plans, cheques, audit** (`HudhudRecordFacts`, `Ask.Record`, `understand(..., staff)`, `auditActionName`, `HudhudFacts.TOP` internal): protected in `decide`.
+- **E, everyday phrasing** (`HudhudReviewAnswersTest`, 47 tests): `willPay` negation, `goodsShape`, `partOfDay`, VoiceQuestion's LEAST before MOST, part-of-day and event spans.
+  Of 244 misses in the baseline 152 now read right (+5 told as a guess), 86 still miss.
+- **D, the review**: 1,115 everyday sentences in nine languages (none from the owner's photos), 865 read as meant (ur-Latn 79.5%, ur 80.6%, en 83%, hi 78%, bn 78%, in 77%, sd 72%,
+  ar 71%, fa 71%). They are now **`review_d.tsv` + `HudhudReviewSetTest`**: the 865 are held to the exact reading they have (`HudhudShown.of`, shared with the owner set's test),
+  the other 250 are listed so a fix can promote them (write OK in their status column). Broken on purpose once: it fails and names the sentence.
+- **Measured here (plain shared Kotlin, lesson 93):** 626 tests in 43 classes, HudhudWordsTest 9, all 13 Strings steps, floors SHORT 148 and THOUSAND 791, held-out 1068 of 1170.
+  Catalog: columns READ 207, GAP 19, WITHHELD 12, STRUCT 154. CI at 0e8fc37: Strings, Keyboard, Android, Screen proof, Windows and On-device all green.
+- **Honest gaps (the review's, said once):** follow-ups that carry the person need HudhudMind (off limits here); spelled-out amounts in hi, bn, ar, fa, sd, in (a wrong figure is
+  worse than a miss, and there is no native check); "tagihan terbesar" reads Count(BILLS); "cash aur card se kitna aaya" reads the cashbook; "aaj ke sab bill dikhao" reads a count;
+  "Imran ka phone number" asks for a name; Farsi "...دادیم یا نه" reads an entry; Hindi "आज की हाज़री" reads the clock; multi-word native product names ("ڈی اے پی") are not found;
+  K0572 stays a miss (add `Record:PLAN` to its acceptance if agreed); 19 GAP columns remain (profile fields such as terms and receipt header, cashbook.paymentRef, invoice phone and
+  note, parties.createdAt). Realistic accuracy on the owner's own kind of questions is about 78%; the 91% held-out figure is optimistic. Sindhi, Bengali and Farsi wording is for a
+  native read; the faith and story texts want a qualified Hanafi scholar.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
