@@ -1081,6 +1081,9 @@ object Hudhud {
         // The invoices with a balance still due: only the rules make this ask (the bank has no meaning for it), so the sense,
         // which learnt every "invoices" as a count of the ones made, never turns it.
         if (ruled == Ask.Status(StatusOf.INVOICES)) return ruled
+        // Someone who does not yet know his way (15 Nov 2026, review D): "mujhe samajh nahi aa raha kya poochun" is a request for the
+        // list of what he can tell; the sense, hearing "mujhe" and "samajh", took it for "do you know my name" at 0.9 and more.
+        if (ruled == Ask.Abilities && has(words(heard).joinToString(" "), GUIDE_ME)) return ruled
         // Review O (15 Nov 2026): what the rules read from the words the sense was never taught. Which way money is owed, said in the
         // accountant's words ("receivables", "على الزبائن", "pay me"): the sense took them for money that came in. The day's own
         // summary ("aaj din kaisa raha"): the sense took it for the time. Credit given over a span ("is mahine kitna udhaar diya
@@ -2153,7 +2156,14 @@ object Hudhud {
     private val QARZ = listOf("qarz e hasna", "qarze hasna", "qarz hasna", "qarzehasna", "qarz e hasana", "qarz e husna",
         "karz e hasna", "qarz-e-hasna", "قرض حسنہ", "قرضِ حسنہ", "قرض حسنه", "قرض الحسن", "قرضا حسنا", "قرض حسن",
         "قرض‌الحسنه", "قرض الحسنه", "قرض حسنو", "क़र्ज़ ए हसना", "कर्ज़ ए हसना", "कर्ज ए हसना", "क़र्ज़-ए-हसना", "করজে হাসানা",
-        "কর্জে হাসানা", "কর্জে হাসানাহ", "qardhul hasan", "qardh hasan", "pinjaman kebajikan")
+        "কর্জে হাসানা", "কর্জে হাসানাহ", "qardhul hasan", "qardh hasan", "pinjaman kebajikan",
+        // 15 Nov 2026, review D: the same loan said as "a loan without interest".
+        "interest free loan", "interest free loans", "loan without interest", "loans without interest", "no interest loan",
+        "zero interest loan", "bina sood ka qarz", "bina sood ke qarz", "bina sood qarz", "sood ke baghair qarz", "bila sood qarz",
+        "بلا سود قرض", "بغیر سود کے قرض", "بغیر سود قرض", "سود کے بغیر قرض", "قرض بدون فوائد", "قرض بلا فوائد", "قرض بدون فائدة",
+        "قرض بلا فائدة", "وام بدون بهره", "وام بی بهره", "وام بی‌بهره", "قرض بدون بهره", "بنا سود قرض", "बिना ब्याज का कर्ज",
+        "बिना ब्याज कर्ज", "बिना ब्याज का क़र्ज़", "बिना ब्याज का उधार", "সুদমুক্ত ঋণ", "সুদ ছাড়া ঋণ", "বিনা সুদে ঋণ",
+        "সুদবিহীন ঋণ", "সুদহীন ঋণ", "pinjaman tanpa bunga", "utang tanpa bunga", "pinjaman bebas bunga")
     private val ZAKAT = listOf("zakat", "zakaat", "zakath", "zakāt", "nisab", "nisaab", "زکوٰۃ", "زکوۃ", "زکات", "زكاة",
         "الزكاة", "زکوات", "زڪوات", "نصاب", "النصاب", "ज़कात", "जकात", "निसाब", "যাকাত", "জাকাত", "নিসাব", "zakat mal")
     private val AUTOMATION = listOf("automation", "automations", "automatic", "khud ba khud", "khudkar", "آٹومیشن",
@@ -2558,7 +2568,7 @@ object Hudhud {
         val many = m.any(HudhudMind.C.HOW_MANY, HudhudMind.C.ALL) || window != null
         // Goods that came in: "aaj kis supplier se maal aaya", "aakhri delivery kab aayi".
         if (m.has(HudhudMind.C.CAME) && !m.has(HudhudMind.C.PAYMENT) && !(m.has(HudhudMind.C.BILL) && m.has(HudhudMind.C.HOW_MANY)) &&
-            (m.any(HudhudMind.C.GOODS, HudhudMind.C.SUPPLIER, HudhudMind.C.BILL, HudhudMind.C.LAST) || m.has(HudhudMind.C.WHEN)) ||
+            (m.any(HudhudMind.C.GOODS, HudhudMind.C.STOCK, HudhudMind.C.SUPPLIER, HudhudMind.C.BILL, HudhudMind.C.LAST) || m.has(HudhudMind.C.WHEN)) ||
             m.has(HudhudMind.C.SUPPLIER) && m.any(HudhudMind.C.FROM_WHOM, HudhudMind.C.WHICH, HudhudMind.C.WHO) && m.any(HudhudMind.C.GOODS, HudhudMind.C.CAME)
         ) return Ask.Deliveries(window)
         when {

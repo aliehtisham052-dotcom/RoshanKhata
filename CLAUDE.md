@@ -4097,6 +4097,17 @@ Importance 8 (private data, money). The catalog's GAP columns went 19 -> 6, one 
 - **Product name across scripts, a probe, stopped:** the 41 Opus misses are nearly all loanwords (Urea, DAP, Paracetamol in Urdu or Hindi script). The name bridge matches personal names consonant by consonant; "یوریا" has one consonant against "Urea", "ڈی اے پی" is three words for DAP, so any rule loose enough to meet them meets ordinary words too (lessons 139, 140). Not built. The honest ways: a shop's own "other names" for a product, or a table of the commonest goods per trade in each script, read by a native speaker.
 - **Measured here:** 642 shared tests, HudhudWordsTest 9, all 14 Strings steps; floors SHORT 153 and THOUSAND 796 unchanged.
 
+### 15 Nov 2026: Hudhud, review D's four last classes (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 6 (words only, no figure moves). Rules only; the bank, `sense.bin`, HudhudMind and HudhudSense untouched.
+
+- **"Mujhe samajh nahi aa raha kya poochun"** was the owner's name (the sense, hearing "mujhe" and "samajh", was surer): the rules' `Abilities` reading of a `GUIDE_ME` phrase is now kept in `decide`.
+- **Bengali "আজকের সেলটা"**: "সেল" (sale) is in `VoiceQuestion.SALES` (the "টা" ending was already stripped); it read as the backup before.
+- **A loan "without interest"** (en, ur-Latn, ur, ar, fa, sd, hi, bn, id) is `QARZ`, the Qarz-e-Hasna answer. A plain "loan" is not. **Arabic, Farsi, Sindhi, Bengali and Hindi wording is for a native read.**
+- **"What stock came this week"**: `STOCK` with `CAME` is a delivery over the span, not low stock.
+- `HudhudReviewDClassesTest` (4 tests, through `understand` with the sense); each guard was broken one at a time (6 variants), all killed. Ten rows of review D now read as meant and are OK (960 held); the "which supplier bills are unpaid" row had already been fixed by an earlier round.
+- **Measured here:** 646 shared tests, HudhudWordsTest 9, 14 Strings steps; owner's 1,000 sentences 797 (floor raised to 797), short lists 153, held-out 1068. Remaining review D misses: about 150 (a product written in Urdu/Hindi script for a Latin-saved product is the biggest class; stopped as risky).
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the

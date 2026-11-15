@@ -108,7 +108,7 @@ ur-Latn	OK	kaun si dawai expire hone wali hai		Figure:EXPIRING
 ur-Latn	OK	backup hua kya		BackupStatus
 ur-Latn	OK	kab backup liya tha		BackupStatus
 ur-Latn	OK	tum kya kya bata sakte ho		Abilities
-ur-Latn	MISS	mujhe samajh nahi aa raha kya poochun		About:OWNER_NAME
+ur-Latn	OK	mujhe samajh nahi aa raha kya poochun		Abilities
 ur-Latn	OK	kaise ho yaar		Chat:HOW_ARE_YOU
 ur-Latn	OK	shukriya bhai		Chat:THANKS
 ur-Latn	OK	chalo allah hafiz		Chat:BYE
@@ -289,7 +289,7 @@ hi	OK	आज कितना माल वापस आया		Counter
 hi	OK	तुम क्या क्या बता सकते हो		Abilities
 hi	OK	इनवॉइस कैसे बनाऊँ		Help:intro_documents
 bn	OK	আজ কত বিক্রি হলো		Figure:SALES_TODAY
-bn	MISS	ভাই আজকের সেলটা বলো তো		BackupStatus
+bn	OK	ভাই আজকের সেলটা বলো তো		Figure:SALES_TODAY
 bn	OK	আজ দোকান কত কামাল		Figure:SALES_TODAY
 bn	OK	গতকালের বিক্রি		Period:SALES
 bn	OK	এই সপ্তাহে কত বিক্রি হয়েছে		Period:SALES
@@ -429,7 +429,7 @@ fa	OK	امروز چه کالایی آمد		Deliveries
 fa	OK	چقدر برگشتی داشتیم		Returns
 fa	OK	چه کارهایی بلدی		Abilities
 sd	OK	اڄ ڪيتري وڪري ٿي		Figure:SALES_TODAY
-sd	MISS	ادا ذري اڄ جي سيل ٻڌاءِ		Collected
+sd	OK	ادا ذري اڄ جي سيل ٻڌاءِ		Figure:SALES_TODAY
 sd	OK	اڄ دڪان ڪيترو ڪمايو		Figure:SALES_TODAY
 sd	OK	ڪالهه جي وڪري		Period:SALES
 sd	OK	هن هفتي ڪيترو وڪرو ٿيو		Period:SALES
@@ -613,7 +613,7 @@ ur-Latn	OK	logon ne mera kitna paisa dabaya hua hai		Figure:TO_GET
 ur-Latn	OK	mera kitna paisa bahar phansa hua hai		Figure:TO_GET
 ur-Latn	MISS	kab milega mera paisa aur kitna milna hai		WhenPays
 ur-Latn	MISS	kuch bacha bhi hai is mahine ya nahi		Help:faq_snapshot
-ur-Latn	MISS	dukaan faide mein hai ya nuqsan mein		Shop:ALL
+ur-Latn	OK	dukaan faide mein hai ya nuqsan mein		Figure:PROFIT_MONTH
 ur-Latn	OK	mere paise kahan hain		Figure:TO_GET
 ur-Latn	OK	kitna paisa hai mere paas		Drawer
 ur-Latn	OK	aaj ka hisaab		Today
@@ -837,7 +837,7 @@ fa	OK	امروز چقدر خرج کردم		Cashbook
 fa	OK	چند تامین‌کننده دارم		Count:SUPPLIERS:null
 fa	MISS	آخرین بار کی پرداخت کرد	شماره علی رضا	NeedName:LAST_PAYMENT
 fa	MISS	شمارش را بگو	حساب علی رضا	NeedName:PHONE
-fa	MISS	شماره‌اش	حساب علی رضا	NeedName:PHONE
+fa	OK	شماره‌اش	حساب علی رضا	Person:PHONE
 fa	OK	و دیروز	فروش امروز چقدر بود	Period:SALES
 fa	OK	کدام اقساط سررسید دارد		Status:PLANS
 fa	MISS	ساکت شو		Abilities
@@ -927,13 +927,13 @@ en	OK	today's expenses		Cashbook
 en	OK	how many products are in the shop		Count:PRODUCTS:null
 en	OK	how many invoices today		Count:INVOICES:TODAY
 en	OK	how many sales did we make today		Count:TICKETS:TODAY
-en	MISS	how much interest free loan is outstanding		Figure:TO_GET
+en	OK	how much interest free loan is outstanding		Qarz
 en	OK	which automations are on		Automations
-en	MISS	which supplier bills are unpaid		Count:BILLS:null
+en	OK	which supplier bills are unpaid		Status:BILLS
 en	OK	salary due		Status:STAFF
 en	OK	which item sells best this month		TopGoods
 en	OK	best selling product		TopGoods
-en	MISS	what stock came this week		Status:LOW_STOCK
+en	OK	what stock came this week		Deliveries
 en	OK	which medicines expire soon		Figure:EXPIRING
 ur-Latn	OK	aaj subah kitna bika		Figure:SALES_TODAY
 ur-Latn	MISS	dopahar tak ki sale		Figure:SALES_TODAY
@@ -986,7 +986,7 @@ ur-Latn	MISS	kal kis ne paise diye		Collected
 ur-Latn	OK	kis kis ne payment ki hai aaj		Collected
 ur	OK	آج صبح کتنا بکا		Figure:SALES_TODAY
 ur	OK	ابھی تک آج کتنا بکا		Figure:SALES_TODAY
-ur	MISS	اب تک کتنی سیل ہوئی		NeedName:DETAILS
+ur	OK	اب تک کتنی سیل ہوئی		Period:SALES
 ur	OK	علی رضا نے پانچ سو دیے		Entry
 ur	OK	کتنا سامان ہے دکان میں		Count:PRODUCTS:null
 ur	MISS	کتنے بندے کام کرتے ہیں		Count:STAFF:null
@@ -1105,7 +1105,7 @@ in	OK	ada berapa barang di toko		Count:PRODUCTS:null
 in	OK	ada berapa karyawan		Count:STAFF:null
 in	OK	hari ini uang keluar berapa		Cashbook
 in	OK	kas masuk dan keluar hari ini		Cashbook
-in	MISS	berapa pinjaman tanpa bunga yang beredar		Status:STAFF
+in	OK	berapa pinjaman tanpa bunga yang beredar		Qarz
 in	OK	gaji yang harus dibayar berapa		Status:STAFF
 in	MISS	berapa yang harus saya bayar ke pemasok		Count:SUPPLIERS:null
 in	OK	bulan ini barang apa yang paling laku		TopGoods

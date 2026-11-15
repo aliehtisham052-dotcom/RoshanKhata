@@ -72,7 +72,7 @@ object VoiceQuestion {
         "بدهکارند")
     private val SALES = listOf("bikri", "bechi", "becha", "bechay", "farokht", "sale", "sales", "sold", "penjualan", "jualan",
         "terjual", "بکری", "فروخت", "بیچا", "بیچی", "وڪرو", "وڪري", "مبيعات", "بيع", "فروش", "बिक्री", "बेचा", "बेची",
-        "বিক্রি", "বিক্রয়",
+        "বিক্রি", "বিক্রয়", "সেল",
         // 12 Nov 2026 (Hudhud): "aaj kitna bika", "how much did I sell".
         "sell", "selling", "bika", "biki", "bikay", "بکا", "بکی", "बिका", "बिकी",
         // 13 Nov 2026 (Hudhud's chips): Sindhi's "got sold", Arabic's "what was sold".
