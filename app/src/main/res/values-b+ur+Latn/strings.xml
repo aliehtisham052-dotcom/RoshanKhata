@@ -1047,6 +1047,8 @@
     <string name="hudhud_unknown">Yeh aap ke khate mein nahi mila. Is ke qareeb tareen sawal, jin ka jawab de sakta hoon, neeche hain.</string>
     <string name="hudhud_owner_only">Ye raqam sirf maalik ya manager dekh sakte hain.</string>
     <string name="hudhud_owner_only_exact">Ye sirf maalik dekh sakte hain.</string>
+    <string name="hudhud_limit_manager">Counter wale phone par ye sirf maalik ya manager ke PIN se khulta hai.</string>
+    <string name="hudhud_limit_owner">Counter wale phone par ye sirf maalik ke PIN se khulta hai.</string>
     <string name="hudhud_quiet">Home par balance chhupa hai, is liye main raqam yahan likhta hoon, bolta nahi.</string>
     <string name="hudhud_no_voice">Is phone mein is zaban ki awaaz nahi. Jawab yahan likha hai; awaaz ki settings se awaaz li ja sakti hai.</string>
     <string name="hudhud_voice_on">Hudhud ki awaaz chalu hai</string>

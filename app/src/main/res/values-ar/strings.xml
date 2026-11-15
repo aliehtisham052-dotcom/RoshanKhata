@@ -1135,6 +1135,8 @@
     <string name="hudhud_unknown">لم أجد هذا في دفترك. أقرب الأسئلة التي أستطيع الإجابة عنها في الأسفل.</string>
     <string name="hudhud_owner_only">هذا الرقم يراه المالك أو المدير فقط.</string>
     <string name="hudhud_owner_only_exact">هذا يراه المالك فقط.</string>
+    <string name="hudhud_limit_manager">على هاتف الكاونتر لا يُفتح هذا إلا للمالك أو المدير برمز PIN الخاص به.</string>
+    <string name="hudhud_limit_owner">على هاتف الكاونتر لا يُفتح هذا إلا للمالك برمز PIN الخاص به.</string>
     <string name="hudhud_quiet">الرصيد مخفي في الشاشة الرئيسية، لذا أكتب المبالغ هنا ولا أنطقها.</string>
     <string name="hudhud_no_voice">لا يوجد في هذا الهاتف صوت لهذه اللغة. الإجابة مكتوبة هنا؛ ويمكن تنزيل صوت من إعدادات الصوت.</string>
     <string name="hudhud_voice_on">صوت هُدهُد يعمل</string>

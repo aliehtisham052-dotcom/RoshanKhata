@@ -1047,6 +1047,8 @@
     <string name="hudhud_unknown">یہ آپ کے کھاتے میں نہیں ملا۔ اس کے قریب ترین سوال، جن کا جواب دے سکتا ہوں، نیچے ہیں۔</string>
     <string name="hudhud_owner_only">یہ رقم صرف مالک یا منیجر دیکھ سکتے ہیں۔</string>
     <string name="hudhud_owner_only_exact">یہ صرف مالک دیکھ سکتے ہیں۔</string>
+    <string name="hudhud_limit_manager">کاؤنٹر والے فون پر یہ صرف مالک یا منیجر کے PIN سے کھلتا ہے۔</string>
+    <string name="hudhud_limit_owner">کاؤنٹر والے فون پر یہ صرف مالک کے PIN سے کھلتا ہے۔</string>
     <string name="hudhud_quiet">ہوم پر بیلنس چھپا ہے، اس لیے میں رقم یہاں لکھتا ہوں، بولتا نہیں۔</string>
     <string name="hudhud_no_voice">اس فون میں اس زبان کی آواز نہیں۔ جواب یہاں لکھا ہے؛ آواز کی ترتیبات سے آواز لی جا سکتی ہے۔</string>
     <string name="hudhud_voice_on">ہُدہُد کی آواز چالو ہے</string>

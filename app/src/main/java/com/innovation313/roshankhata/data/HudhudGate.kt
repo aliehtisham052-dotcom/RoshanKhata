@@ -1,5 +1,8 @@
 package com.innovation313.roshankhata.data
 
+import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.ui.AccessUi
+
 /**
  * The one door Hudhud's files ask "who may see this?" through (14 Nov 2026, the owner: "access poori deni chahiye… jo
  * professional tareeqa hai wohi use karo" — a cashier signed in under counter mode sees only what his own screens
@@ -23,4 +26,15 @@ internal object HudhudGate {
     fun staff() = Access.can(Access.Permission.STAFF)
 
     fun settings() = Access.can(Access.Permission.SETTINGS)
+
+    /**
+     * The words that say who may open [screen] on a counter phone (15 Nov 2026, the owner's "hudood"): read from the
+     * screen's own gate ([AccessUi.needs], the one table every screen asks), never from a list of Hudhud's, so a gate
+     * added or changed there is told here with no second place to edit. Null: anyone signed in may open it. The owner's
+     * own things (settings, backup, staff) say the owner; the rest, the owner or a manager.
+     */
+    fun pageLimit(screen: Class<*>?): Int? {
+        val p = AccessUi.needs(screen ?: return null) ?: return null
+        return if (Access.ownerOnly(p)) R.string.hudhud_limit_owner else R.string.hudhud_limit_manager
+    }
 }

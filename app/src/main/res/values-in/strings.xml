@@ -1065,6 +1065,8 @@
     <string name="hudhud_unknown">Ini tidak saya temukan di buku Anda. Pertanyaan terdekat yang bisa saya jawab ada di bawah.</string>
     <string name="hudhud_owner_only">Angka ini hanya bisa dilihat pemilik atau manajer.</string>
     <string name="hudhud_owner_only_exact">Ini hanya bisa dilihat pemilik.</string>
+    <string name="hudhud_limit_manager">Di ponsel kasir, ini hanya terbuka untuk pemilik atau manajer dengan PIN.</string>
+    <string name="hudhud_limit_owner">Di ponsel kasir, ini hanya terbuka untuk pemilik dengan PIN.</string>
     <string name="hudhud_quiet">Saldo disembunyikan di Beranda, jadi jumlahnya saya tulis di sini tanpa diucapkan.</string>
     <string name="hudhud_no_voice">Ponsel ini tidak punya suara untuk bahasa ini. Jawabannya tertulis di sini; suara bisa diunduh di Pengaturan suara.</string>
     <string name="hudhud_voice_on">Suara Hudhud aktif</string>

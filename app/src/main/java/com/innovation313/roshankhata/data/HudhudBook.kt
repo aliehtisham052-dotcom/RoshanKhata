@@ -143,7 +143,11 @@ object HudhudBook {
     )
 
     /** A help page Hudhud can point to: a question from Help, or a feature's first-open sheet. */
-    class Page(val key: String, val title: Int, val body: Int, val open: Class<*>?)
+    /**
+     * [gate] is the screen whose own gate the page tells ([HudhudGate.pageLimit]): the screen it opens, or — for the
+     * pages that only say where a screen is (`open = null`) — that screen's class.
+     */
+    class Page(val key: String, val title: Int, val body: Int, val open: Class<*>?, val gate: Class<*>? = open)
 
     val PAGES: List<Page> by lazy {
         listOf(
@@ -185,12 +189,12 @@ object HudhudBook {
             // and an heir's key are the owner's own taps. Their words are the screens' own sentences (already in nine
             // languages) put together in hudhud_page_*, so the page says what the screen says. The titles are also
             // names and shop words, so Hudhud.isFeaturePage keeps them out of the feature words.
-            Page("screen_duplicates", R.string.duplicate_customers, R.string.hudhud_page_duplicates, null),
+            Page("screen_duplicates", R.string.duplicate_customers, R.string.hudhud_page_duplicates, null, com.innovation313.roshankhata.DuplicateCustomersActivity::class.java),
             Page("screen_help", R.string.help_support, R.string.hudhud_page_help, com.innovation313.roshankhata.HelpActivity::class.java),
             Page("screen_mera_khata", R.string.mera_khata_title, R.string.mera_khata_help, com.innovation313.roshankhata.MeraKhataActivity::class.java),
             Page("screen_payment_voice", R.string.paisa_title, R.string.hudhud_page_paisa, com.innovation313.roshankhata.PaymentVoiceActivity::class.java),
-            Page("screen_viewer", R.string.viewer_menu, R.string.hudhud_page_viewer, null),
-            Page("screen_waris", R.string.waris_title, R.string.hudhud_page_waris, null),
+            Page("screen_viewer", R.string.viewer_menu, R.string.hudhud_page_viewer, null, com.innovation313.roshankhata.ViewerActivity::class.java),
+            Page("screen_waris", R.string.waris_title, R.string.hudhud_page_waris, null, com.innovation313.roshankhata.WarisActivity::class.java),
             // The shop's side of the khata link (the customer's side is screen_mera_khata): where to send it and what the
             // customer gets. It opens the Khata list, where the customer is picked, as the customer QR's page does. A
             // "how do I send a link" question was otherwise taken to Mera Khata, the page for receiving one.
@@ -1084,13 +1088,18 @@ object HudhudBook {
 
     private fun help(context: Context, key: String): Answer {
         val page = PAGES.firstOrNull { it.key == key } ?: return unknown(context)
+        val limit = HudhudGate.pageLimit(page.gate)
         return Answer(
             Mood.CALM,
             label = context.getString(page.title),
-            lines = listOf(context.getString(page.body)),
+            lines = listOf(context.getString(page.body)) + listOfNotNull(limit?.let { context.getString(it) }),
             open = page.open,
-            // Said in full when short, else its first sentences and that the rest is on the screen (13 Nov 2026).
-            spoken = { w -> HudhudSpeech.upTo(w.getString(page.body), SAY_HELP, w.getString(R.string.hudhud_more_on_screen)) }
+            // Said in full when short, else its first sentences and that the rest is on the screen (13 Nov 2026); the
+            // limit is said after it either way (15 Nov 2026).
+            spoken = { w ->
+                HudhudSpeech.upTo(w.getString(page.body), SAY_HELP, w.getString(R.string.hudhud_more_on_screen)) +
+                    (limit?.let { " " + w.getString(it) } ?: "")
+            }
         )
     }
 

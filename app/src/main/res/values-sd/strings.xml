@@ -1075,6 +1075,8 @@
     <string name="hudhud_unknown">هي توهان جي کاتي ۾ نه مليو. ان جي ويجهو سوال، جن جو جواب ڏئي سگهان ٿو، هيٺ آهن.</string>
     <string name="hudhud_owner_only">هي رقم رڳو مالڪ يا مئنيجر ڏسي سگهن ٿا.</string>
     <string name="hudhud_owner_only_exact">هي رڳو مالڪ ڏسي سگهي ٿو.</string>
+    <string name="hudhud_limit_manager">ڪائونٽر واري فون تي هي رڳو مالڪ يا مئنيجر جي PIN سان کلي ٿو.</string>
+    <string name="hudhud_limit_owner">ڪائونٽر واري فون تي هي رڳو مالڪ جي PIN سان کلي ٿو.</string>
     <string name="hudhud_quiet">هوم تي بيلنس لڪيل آهي، تنهن ڪري مان رقم هتي لکان ٿو، ٻڌايان نٿو.</string>
     <string name="hudhud_no_voice">هن فون ۾ هن ٻوليءَ جو آواز ناهي. جواب هتي لکيل آهي؛ آواز جي سيٽنگن مان آواز وٺي سگهجي ٿو.</string>
     <string name="hudhud_voice_on">هُدهُد جو آواز چالو آهي</string>

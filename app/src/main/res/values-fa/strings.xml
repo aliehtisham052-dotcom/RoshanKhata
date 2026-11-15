@@ -1075,6 +1075,8 @@
     <string name="hudhud_unknown">این را در دفترتان پیدا نکردم. نزدیک‌ترین پرسش‌هایی که می‌توانم پاسخ دهم در پایین است.</string>
     <string name="hudhud_owner_only">این رقم را فقط مالک یا مدیر می‌بیند.</string>
     <string name="hudhud_owner_only_exact">این را فقط مالک می‌بیند.</string>
+    <string name="hudhud_limit_manager">روی گوشی کانتر، این فقط با PIN مالک یا مدیر باز می‌شود.</string>
+    <string name="hudhud_limit_owner">روی گوشی کانتر، این فقط با PIN مالک باز می‌شود.</string>
     <string name="hudhud_quiet">مانده در صفحه اصلی پنهان است، پس مبلغ را اینجا می‌نویسم و بلند نمی‌گویم.</string>
     <string name="hudhud_no_voice">این گوشی برای این زبان صدایی ندارد. پاسخ اینجا نوشته شده؛ از تنظیمات صدا می‌توان صدایی گرفت.</string>
     <string name="hudhud_voice_on">صدای هدهد روشن است</string>

@@ -1087,6 +1087,8 @@
     <string name="hudhud_unknown">এটি আপনার খাতায় পাইনি। কাছাকাছি যে প্রশ্নগুলোর উত্তর দিতে পারি, নিচে আছে।</string>
     <string name="hudhud_owner_only">এই অঙ্ক শুধু মালিক বা ম্যানেজার দেখতে পারেন।</string>
     <string name="hudhud_owner_only_exact">এটা শুধু মালিক দেখতে পারেন।</string>
+    <string name="hudhud_limit_manager">কাউন্টারের ফোনে এটা শুধু মালিক বা ম্যানেজারের PIN দিয়ে খোলে।</string>
+    <string name="hudhud_limit_owner">কাউন্টারের ফোনে এটা শুধু মালিকের PIN দিয়ে খোলে।</string>
     <string name="hudhud_quiet">হোমে ব্যালেন্স লুকানো, তাই আমি অঙ্ক এখানে লিখি, জোরে বলি না।</string>
     <string name="hudhud_no_voice">এই ফোনে এই ভাষার কণ্ঠ নেই। উত্তর এখানে লেখা আছে; কণ্ঠের সেটিংস থেকে কণ্ঠ নেওয়া যায়।</string>
     <string name="hudhud_voice_on">হুদহুদের কণ্ঠ চালু</string>

@@ -1087,6 +1087,8 @@
     <string name="hudhud_unknown">यह आपके खाते में नहीं मिला। इसके सबसे करीब के सवाल, जिनका जवाब दे सकता हूँ, नीचे हैं।</string>
     <string name="hudhud_owner_only">यह रकम सिर्फ मालिक या मैनेजर देख सकते हैं।</string>
     <string name="hudhud_owner_only_exact">यह सिर्फ मालिक देख सकते हैं।</string>
+    <string name="hudhud_limit_manager">काउंटर वाले फोन पर यह सिर्फ मालिक या मैनेजर के PIN से खुलता है।</string>
+    <string name="hudhud_limit_owner">काउंटर वाले फोन पर यह सिर्फ मालिक के PIN से खुलता है।</string>
     <string name="hudhud_quiet">होम पर बैलेंस छुपा है, इसलिए मैं रकम यहाँ लिखता हूँ, बोलता नहीं।</string>
     <string name="hudhud_no_voice">इस मोबाइल में इस भाषा की आवाज नहीं है। जवाब यहाँ लिखा है; आवाज की सेटिंग से आवाज ली जा सकती है।</string>
     <string name="hudhud_voice_on">हुदहुद की आवाज चालू है</string>

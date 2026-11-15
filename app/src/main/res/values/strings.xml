@@ -1089,6 +1089,8 @@
     <string name="hudhud_unknown">I could not find this in your khata. The nearest questions I can answer are below.</string>
     <string name="hudhud_owner_only">Only the owner or a manager can see this figure.</string>
     <string name="hudhud_owner_only_exact">Only the owner can see this.</string>
+    <string name="hudhud_limit_manager">On a counter phone, this opens only for the owner or a manager, with the PIN.</string>
+    <string name="hudhud_limit_owner">On a counter phone, this opens only for the owner, with the PIN.</string>
     <string name="hudhud_quiet">Balances are hidden on Home, so I write amounts here and do not say them aloud.</string>
     <string name="hudhud_no_voice">This phone has no voice for this language. The answer is written here; Voice settings can get one.</string>
     <string name="hudhud_voice_on">Hudhud\'s voice is on</string>
