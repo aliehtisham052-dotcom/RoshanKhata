@@ -312,15 +312,18 @@ internal object HudhudFacts {
                 }
             }
             Hudhud.GoodsFacet.BUYERS -> {
-                val who = dao.customersWhoBought(p.id, 0L, Long.MAX_VALUE)
+                // The days asked, when a span was said ("aaj Urea kis ne li"); else every sale of it.
+                val (from, to) = if (window == null) 0L to Long.MAX_VALUE else Hudhud.span(window)
+                val who = dao.customersWhoBought(p.id, from, to)
+                val shown = if (window == null) name else name + " · " + c.getString(HudhudBook.windowWord(window))
                 val extras = Bundle().apply {
                     putLong(ProductCustomersActivity.EXTRA_PRODUCT_ID, p.id)
                     putString(ProductCustomersActivity.EXTRA_PRODUCT_NAME, p.name)
                 }
                 if (who.isEmpty()) {
-                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_buyers_none)))
+                    Answer(Mood.CALM, label = shown, lines = listOf(c.getString(if (window == null) R.string.hudhud_buyers_none else R.string.hudhud_buyers_none_span)))
                 } else {
-                    Answer(Mood.CALM, label = name, figure = n(who.size), lines = listOf(c.getString(R.string.hudhud_t_customers)),
+                    Answer(Mood.CALM, label = shown, figure = n(who.size), lines = listOf(c.getString(R.string.hudhud_t_customers)),
                         rows = who.take(TOP).map { Row(it.id, it.name, HudhudBook.money(abs(it.balance)), HudhudBook.side(c, it.balance)) },
                         open = ProductCustomersActivity::class.java, openExtras = extras)
                 }

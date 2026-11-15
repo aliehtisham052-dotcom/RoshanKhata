@@ -4384,6 +4384,7 @@
     <string name="hudhud_l_cheapest">Sab se sasta</string>
     <string name="hudhud_l_dearest">Sab se mehnga</string>
     <string name="hudhud_buyers_none">Abhi tak kisi gahak ne ye item nahi khareeda.</string>
+    <string name="hudhud_buyers_none_span">Is arse mein kisi gahak ne nahi khareeda.</string>
     <string name="hudhud_t_customers">Gahak</string>
     <string name="hudhud_sold_none">Is arse mein kuch nahi bika.</string>
     <string name="hudhud_l_sold">Farokht</string>

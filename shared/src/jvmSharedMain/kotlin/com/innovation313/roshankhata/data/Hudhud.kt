@@ -414,7 +414,7 @@ object Hudhud {
      * answer 2 MB at a time, running the query again for each).
      */
     private fun longOk(a: Ask): Boolean =
-        a is Ask.Period || a is Ask.Moved || a is Ask.TopGoods || (a is Ask.Goods && a.facet == GoodsFacet.SOLD) ||
+        a is Ask.Period || a is Ask.Moved || a is Ask.TopGoods || (a is Ask.Goods && (a.facet == GoodsFacet.SOLD || a.facet == GoodsFacet.BUYERS)) ||
             (a is Ask.Figure && spanMatters(a)) // the sales and profit figures: Period, over any span
 
     /** What a count counts over a span of days; the people, the products and the staff are the same over any span. */
@@ -427,7 +427,8 @@ object Hudhud {
         is Ask.Period, is Ask.Moved, is Ask.Deliveries, is Ask.Activity, is Ask.Collected, is Ask.Cashbook, is Ask.Returns,
         is Ask.TopGoods -> true
         is Ask.Count -> a.thing in COUNTED_OVER_A_SPAN
-        is Ask.Goods -> a.facet == GoodsFacet.SOLD
+        // Who bought it is a sum over the days asked as much as how much sold (16 Nov: it was answered "as it stands now").
+        is Ask.Goods -> a.facet == GoodsFacet.SOLD || a.facet == GoodsFacet.BUYERS
         else -> false
     }
 
@@ -1246,7 +1247,11 @@ object Hudhud {
                 return Ask.Parties(named)
             }
         }
-        if (product.isNotEmpty()) goodsAsk(mind, product, figure, window)?.let { return it }
+        // "Urea kitni bik gayi": the stem alone is selling, with a count asked and nothing said against it. Not in the figure words
+        // (VoiceQuestion): "kaun sa maal nahi bik raha" is the dead stock and "bik" there turned two of the owner's lists (15 Nov 2026).
+        val soldStem = figure == null && mind.has(HudhudMind.C.HOW_MANY) && has(joined, listOf("bik", "बिक")) &&
+            !has(joined, listOf("nahi", "nahin", "نہیں", "نہیں", "नहीं", "not"))
+        if (product.isNotEmpty()) goodsAsk(mind, product, if (soldStem) VoiceQuestion.Kind.SALES_MONTH else figure, window)?.let { return it }
         // "Kitne cheque baqi hain": the cheques' own "baqi", not what the khata is owed.
         if (figure in OWED_FIGURES && mind.any(HudhudMind.C.CHEQUE, HudhudMind.C.PLAN, HudhudMind.C.BILL, HudhudMind.C.SALARY, HudhudMind.C.STAFF)) {
             book(mind, window)?.let { return it }

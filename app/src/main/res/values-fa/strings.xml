@@ -4412,6 +4412,7 @@
     <string name="hudhud_l_cheapest">ارزان‌ترین</string>
     <string name="hudhud_l_dearest">گران‌ترین</string>
     <string name="hudhud_buyers_none">هنوز هیچ مشتری‌ای این کالا را نخریده است.</string>
+    <string name="hudhud_buyers_none_span">در این مدت هیچ مشتری‌ای آن را نخرید.</string>
     <string name="hudhud_t_customers">مشتریان</string>
     <string name="hudhud_sold_none">در این مدت چیزی فروخته نشد.</string>
     <string name="hudhud_l_sold">فروخته‌شده</string>

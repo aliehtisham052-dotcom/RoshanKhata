@@ -4432,6 +4432,7 @@
     <string name="hudhud_l_cheapest">সবচেয়ে সস্তা</string>
     <string name="hudhud_l_dearest">সবচেয়ে দামি</string>
     <string name="hudhud_buyers_none">এখনো কোনো গ্রাহক এই আইটেম কেনেননি।</string>
+    <string name="hudhud_buyers_none_span">এই সময়ে কোনো গ্রাহক কেনেননি।</string>
     <string name="hudhud_t_customers">গ্রাহক</string>
     <string name="hudhud_sold_none">এই সময়ে কিছু বিক্রি হয়নি।</string>
     <string name="hudhud_l_sold">বিক্রি</string>

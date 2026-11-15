@@ -3922,6 +3922,20 @@ Importance 7 (reads stock and sales). "Urea kitne din chalegi?", "how long will 
 - **Not done:** a product's name across scripts is still not read; the pace is the last 30 days' sales, so a seasonal product is told the same
   as any (the card says "going by the last 30 days"); "how many days since Urea came" reads as OVERVIEW (before this change too).
 
+### 15 Nov 2026: Hudhud, #26 step 4: who bought it, over the days asked (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 7 (reads sales and customers). "Aaj Urea kis ne khareedi", "who bought Urea yesterday", "is mahine Urea kis kis ne li".
+
+- **The bug class:** the reader already attached the days to a buyers question, but `spanMatters`/`longOk` left BUYERS out, so the ask was wrapped in
+  `Ask.Now` ("as it stands now") and a span the book cannot reach was never told; and the app's BUYERS branch (`HudhudFacts.goods`) ignored `window` and
+  listed every sale ever. Now BUYERS is a span ask like SOLD (long spans are limited the same way), the branch reads `Hudhud.span(window)` and says the
+  days on the card; none in the days is `hudhud_buyers_none_span` (nine languages; Sindhi, Bengali, Farsi for a native read). No span: every sale, as before.
+- **"Urea kitni bik gayi":** the stem "bik" alone is selling, but only with a product named, a count asked (`HOW_MANY`) and no "nahi" (`soldStem` in
+  `byRules`). It is NOT in `VoiceQuestion.SALES`: put there it turned "kaun sa maal nahi bik raha" (dead stock) into a sales figure and the owner's short
+  list fell from 143 to 142 (caught by the floor).
+- **Not done:** "Urea kal kis kis ko bechi" loses "kal" (ambiguous word); `ProductCustomersActivity` has no date range, so Open still shows every buyer.
+- Tests: HudhudBuyersSpanTest (4); mutations in /tmp (`mut_buyers.py`, 6 variants).
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the

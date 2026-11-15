@@ -4384,6 +4384,7 @@
     <string name="hudhud_l_cheapest">سب سے سستا</string>
     <string name="hudhud_l_dearest">سب سے مہنگا</string>
     <string name="hudhud_buyers_none">ابھی تک کسی گاہک نے یہ آئٹم نہیں خریدا۔</string>
+    <string name="hudhud_buyers_none_span">اس عرصے میں کسی گاہک نے نہیں خریدا۔</string>
     <string name="hudhud_t_customers">گاہک</string>
     <string name="hudhud_sold_none">اس عرصے میں کچھ نہیں بکا۔</string>
     <string name="hudhud_l_sold">فروخت</string>

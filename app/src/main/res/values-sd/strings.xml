@@ -4412,6 +4412,7 @@
     <string name="hudhud_l_cheapest">سڀ کان سستو</string>
     <string name="hudhud_l_dearest">سڀ کان مهانگو</string>
     <string name="hudhud_buyers_none">اڃا تائين ڪنهن به گراهڪ هي شيءِ نه خريدي آهي.</string>
+    <string name="hudhud_buyers_none_span">هن عرصي ۾ ڪنهن گراهڪ نه خريدي.</string>
     <string name="hudhud_t_customers">گراهڪ</string>
     <string name="hudhud_sold_none">هن عرصي ۾ ڪجهه نه وڪاميو.</string>
     <string name="hudhud_l_sold">وڪرو</string>
