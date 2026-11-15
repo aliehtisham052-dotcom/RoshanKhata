@@ -880,7 +880,7 @@ K0877	Dhaan ke season ka hisaab	44	Help:screen_seasons
 K0878	Is season ka munafa kitna hua	44	Help:screen_seasons
 K0879	Pichle season ka udhaar baqi hai	44	Help:screen_seasons
 K0880	Naye season ka stock kitna chahiye	44	Help:screen_seasons
-K0881	Kaun si scheme chal rahi hai	45	Help:screen_schemes
+K0881	Kaun si scheme chal rahi hai	45	Help:screen_schemes|Paper
 K0882	Scheme ka kitna faida hua	45	Help:screen_schemes
 K0883	Nayi scheme banani hai	45	Help:screen_schemes
 K0884	Scheme band karni hai	45	Help:screen_schemes
@@ -888,7 +888,7 @@ K0885	Is scheme mein kis ne hissa liya	45	Help:screen_schemes
 K0886	Scheme ka kitna maal gaya	45	Help:screen_schemes
 K0887	Company ki scheme kya hai	45	Help:screen_schemes
 K0888	Scheme par kitna discount hai	45	Help:screen_schemes
-K0889	Scheme ki aakhri tareekh kab hai	45	Help:screen_schemes
+K0889	Scheme ki aakhri tareekh kab hai	45	Help:screen_schemes|Paper
 K0890	Kis customer ne scheme poori ki	45	Help:screen_schemes
 K0891	Scheme ka inaam kis ko dena hai	45	Help:screen_schemes
 K0892	Scheme ki list dikhao	45	Help:screen_schemes
@@ -897,8 +897,8 @@ K0894	Scheme mein kitna maal bik gaya	45	Help:screen_schemes
 K0895	Scheme se mujhe kitna milna hai	45	Help:screen_schemes
 K0896	Company se scheme ka paisa kab aayega	45	Help:screen_schemes
 K0897	Scheme mein kaun sa item hai	45	Help:screen_schemes
-K0898	Scheme ka target kitna hai	45	Help:screen_schemes
-K0899	Scheme kitni poori hui	45	Help:screen_schemes
+K0898	Scheme ka target kitna hai	45	Help:screen_schemes|Paper
+K0899	Scheme kitni poori hui	45	Help:screen_schemes|Paper
 K0900	Nayi scheme ka message bhejo	45	Help:screen_schemes
 K0901	Doosri dukan kholo	46	Help:faq_business
 K0902	Dukan badlo	46	Help:faq_business

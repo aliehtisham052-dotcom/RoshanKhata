@@ -39,18 +39,18 @@ column	audit_log.refId	Long?	STRUCT	pattern
 column	audit_log.refTable	String?	GAP	why=the activity answer counts rows by action and who, the detail words are the Who did what screen's
 column	audit_log.timestamp	Long	READ	reader=HudhudFacts.activity;gate=REPORTS;screen=AuditActivity
 column	audit_log.user	String?	READ	reader=HudhudFacts.activity;gate=REPORTS;screen=AuditActivity
-column	bill_items.batchNumber	String?	GAP	why=the expiring question only points at the Expiry screen with a fixed line, batches and quantities are not told
+column	bill_items.batchNumber	String?	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
 column	bill_items.billId	Long	STRUCT	pattern
-column	bill_items.expiryDate	Long?	GAP	why=the expiring question only points at the Expiry screen with a fixed line, batches and quantities are not told
+column	bill_items.expiryDate	Long?	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
 column	bill_items.id	Long	STRUCT	pattern
 column	bill_items.isDeleted	Boolean	STRUCT	pattern
-column	bill_items.note	String?	GAP	why=the expiring question only points at the Expiry screen with a fixed line, batches and quantities are not told
+column	bill_items.note	String?	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
 column	bill_items.productId	Long?	STRUCT	pattern
 column	bill_items.productName	String	READ	reader=HudhudFacts.deliveries;also=HudhudFacts.count+HudhudFacts.goods;gate=NONE;screen=BillsActivity
-column	bill_items.quantity	Double	GAP	why=the expiring question only points at the Expiry screen with a fixed line, batches and quantities are not told
+column	bill_items.quantity	Double	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
 column	bill_items.rate	Double?	READ	reader=HudhudFacts.goods;via=KhataDao.supplierRateLinesOnce;gate=REPORTS;screen=SupplierRatesActivity
 column	bill_items.uid	String?	STRUCT	pattern
-column	bill_items.unit	String?	GAP	why=the expiring question only points at the Expiry screen with a fixed line, batches and quantities are not told
+column	bill_items.unit	String?	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
 column	book_seals.auditHead	String?	STRUCT	why=the seal chain's own material, shown only in the proof file
 column	book_seals.digest	String	STRUCT	why=the seal chain's own material, shown only in the proof file
 column	book_seals.fromId	Long	STRUCT	pattern
@@ -104,17 +104,17 @@ column	day_close.uid	String?	STRUCT	pattern
 column	dismissed_duplicates.dismissedAt	Long	STRUCT	why=remembers the owner's 'not a duplicate' answers so the Duplicates screen does not ask again
 column	dismissed_duplicates.partyIdsKey	String	STRUCT	why=remembers the owner's 'not a duplicate' answers so the Duplicates screen does not ask again
 column	entry_items.billItemId	Long?	STRUCT	pattern
-column	entry_items.crop	String?	GAP	why=no question reaches it yet (the entry's receipt holds them)
-column	entry_items.dose	String?	GAP	why=no question reaches it yet (the entry's receipt holds them)
+column	entry_items.crop	String?	READ	reader=HudhudFacts.person;via=ReceiptGoods.advice;gate=NONE;screen=EntryDetailActivity
+column	entry_items.dose	String?	READ	reader=HudhudFacts.person;via=ReceiptGoods.advice;gate=NONE;screen=EntryDetailActivity
 column	entry_items.entryId	Long	STRUCT	pattern
 column	entry_items.id	Long	STRUCT	pattern
-column	entry_items.isBonus	Boolean	GAP	why=no question reaches it yet (the entry's receipt holds them)
+column	entry_items.isBonus	Boolean	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
 column	entry_items.itemName	String?	READ	reader=HudhudFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
 column	entry_items.lineNo	Int	STRUCT	pattern
-column	entry_items.pest	String?	GAP	why=no question reaches it yet (the entry's receipt holds them)
+column	entry_items.pest	String?	READ	reader=HudhudFacts.person;via=ReceiptGoods.advice;gate=NONE;screen=EntryDetailActivity
 column	entry_items.productId	Long?	STRUCT	pattern
 column	entry_items.quantity	Double?	READ	reader=HudhudFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
-column	entry_items.rate	Double?	GAP	why=no question reaches it yet (the entry's receipt holds them)
+column	entry_items.rate	Double?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
 column	entry_items.uid	String?	STRUCT	pattern
 column	entry_items.unit	String?	READ	reader=HudhudFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
 column	installments.amount	Double	GAP	why=plans are told by their next due day, instalments are the Plans screen's
@@ -128,11 +128,11 @@ column	installments.uid	String?	STRUCT	pattern
 column	invoice_items.id	Long	STRUCT	pattern
 column	invoice_items.invoiceId	Long	STRUCT	pattern
 column	invoice_items.isDeleted	Boolean	STRUCT	pattern
-column	invoice_items.itemName	String	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
-column	invoice_items.quantity	Double	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
-column	invoice_items.rate	Double	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
+column	invoice_items.itemName	String	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
+column	invoice_items.quantity	Double	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
+column	invoice_items.rate	Double	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
 column	invoice_items.uid	String?	STRUCT	pattern
-column	invoice_items.unit	String?	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
+column	invoice_items.unit	String?	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
 column	invoices.additionalChargeAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices.additionalChargeLabel	String?	GAP	why=he says which invoices have money due and how much, the invoice's own words are its screen's
 column	invoices.createdAt	Long	GAP	why=he says which invoices have money due and how much, the invoice's own words are its screen's
@@ -191,52 +191,52 @@ column	payment_plans.note	String?	GAP	why=he tells how many plans are open and t
 column	payment_plans.partyId	Long	STRUCT	pattern
 column	payment_plans.totalAmount	Double	GAP	why=he tells how many plans are open and the next due day, the amounts are the Plans screen's
 column	payment_plans.uid	String?	STRUCT	pattern
-column	products.barcode	String?	GAP	why=no question reaches it yet
-column	products.category	String?	GAP	why=no question reaches it yet
+column	products.barcode	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.category	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.company	String?	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
 column	products.costPrice	Double?	READ	reader=HudhudFacts.goods;gate=REPORTS;screen=ProductsActivity;stricter=the product form greys the cost box for a cashier but still shows it, Hudhud keeps the cost (and so the margin) with REPORTS
-column	products.createdAt	Long	GAP	why=no question reaches it yet
+column	products.createdAt	Long	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.creditPrice	Double?	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
 column	products.defaultUnit	String?	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
 column	products.deletedAt	Long?	STRUCT	pattern
-column	products.formulation	String?	GAP	why=no question reaches it yet
+column	products.formulation	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.id	Long	STRUCT	pattern
 column	products.isDeleted	Boolean	STRUCT	pattern
 column	products.lowStockLevel	Double?	READ	reader=HudhudFacts.lowStock;via=Valuation.compute;gate=NONE;screen=ProductsActivity
 column	products.name	String	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
 column	products.nameKey	String	STRUCT	pattern
 column	products.normalisedName	String	STRUCT	pattern
-column	products.note	String?	GAP	why=no question reaches it yet
-column	products.packPrice	Double?	GAP	why=no question reaches it yet
-column	products.packSize	Double?	GAP	why=no question reaches it yet
-column	products.packUnit	String?	GAP	why=no question reaches it yet
+column	products.note	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.packPrice	Double?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.packSize	Double?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.packUnit	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.parentId	Long?	STRUCT	pattern
-column	products.productType	String?	GAP	why=no question reaches it yet
-column	products.registrationNumber	String?	GAP	why=no question reaches it yet
+column	products.productType	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.registrationNumber	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.salePrice	Double?	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
-column	products.taxRate	Double?	GAP	why=no question reaches it yet
-column	products.technicalName	String?	GAP	why=no question reaches it yet
+column	products.taxRate	Double?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.technicalName	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.uid	String?	STRUCT	pattern
-column	products.variant	String?	GAP	why=no question reaches it yet
+column	products.variant	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	purchase_order_items.id	Long	STRUCT	pattern
 column	purchase_order_items.isDeleted	Boolean	STRUCT	pattern
-column	purchase_order_items.itemName	String	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
+column	purchase_order_items.itemName	String	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
 column	purchase_order_items.lineNo	Int	STRUCT	pattern
 column	purchase_order_items.orderId	Long	STRUCT	pattern
 column	purchase_order_items.productId	Long?	STRUCT	pattern
-column	purchase_order_items.quantity	Double	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
-column	purchase_order_items.rate	Double?	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
+column	purchase_order_items.quantity	Double	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_order_items.rate	Double?	READ	reader=HudhudFacts.lastOrder;gate=REPORTS;screen=OrdersActivity;stricter=an order line's rate is what a supplier charges, which Hudhud keeps with REPORTS as the supplier rates are
 column	purchase_order_items.uid	String?	STRUCT	pattern
-column	purchase_order_items.unit	String?	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
+column	purchase_order_items.unit	String?	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
 column	purchase_orders.billId	Long?	STRUCT	pattern
-column	purchase_orders.createdBy	String?	GAP	why=he opens the order draft for low stock, orders themselves are the Orders screen's
+column	purchase_orders.createdBy	String?	READ	reader=HudhudFacts.lastOrder;gate=REPORTS;screen=OrdersActivity;stricter=who wrote an order is told only to who may see reports, as for an entry
 column	purchase_orders.id	Long	STRUCT	pattern
 column	purchase_orders.isDeleted	Boolean	STRUCT	pattern
-column	purchase_orders.note	String?	GAP	why=he opens the order draft for low stock, orders themselves are the Orders screen's
-column	purchase_orders.orderNumber	String	GAP	why=he opens the order draft for low stock, orders themselves are the Orders screen's
+column	purchase_orders.note	String?	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_orders.orderNumber	String	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
 column	purchase_orders.partyId	Long	STRUCT	pattern
-column	purchase_orders.status	String	GAP	why=he opens the order draft for low stock, orders themselves are the Orders screen's
-column	purchase_orders.timestamp	Long	GAP	why=he opens the order draft for low stock, orders themselves are the Orders screen's
+column	purchase_orders.status	String	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_orders.timestamp	Long	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
 column	purchase_orders.uid	String?	STRUCT	pattern
 column	sale_items.billItemId	Long?	STRUCT	pattern
 column	sale_items.costRate	Double?	GAP	why=no question reaches it yet
@@ -317,27 +317,27 @@ column	sales.timestamp	Long	READ	reader=HudhudFacts.count;gate=NONE;screen=Count
 column	sales.uid	String?	STRUCT	pattern
 column	sales.voidReason	String?	GAP	why=no question reaches it yet (status is only a filter)
 column	sales.voidedAt	Long?	GAP	why=no question reaches it yet (status is only a filter)
-column	schemes.claimedAmount	Double?	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.claimedAt	Long?	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.company	String?	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.createdAt	Long	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.endDate	Long	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
+column	schemes.claimedAmount	Double?	READ	reader=HudhudFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
+column	schemes.claimedAt	Long?	READ	reader=HudhudFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
+column	schemes.company	String?	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
+column	schemes.createdAt	Long	GAP	why=the Schemes screen shows no day for when a scheme was written, and nobody asks it
+column	schemes.endDate	Long	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
 column	schemes.id	Long	STRUCT	pattern
 column	schemes.isDeleted	Boolean	STRUCT	pattern
-column	schemes.measure	String	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.name	String	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.note	String?	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
+column	schemes.measure	String	READ	reader=HudhudFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
+column	schemes.name	String	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
+column	schemes.note	String?	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
 column	schemes.partyId	Long?	STRUCT	pattern
-column	schemes.reward1	Double	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.reward2	Double?	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.reward3	Double?	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.rewardKind	String	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.startDate	Long	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.target1	Double	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.target2	Double?	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
-column	schemes.target3	Double?	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
+column	schemes.reward1	Double	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.reward2	Double?	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.reward3	Double?	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.rewardKind	String	READ	reader=HudhudFacts.schemeAnswer;via=HudhudFacts.rewardText;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward is told only to who may see reports
+column	schemes.startDate	Long	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
+column	schemes.target1	Double	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.target2	Double?	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.target3	Double?	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
 column	schemes.uid	String?	STRUCT	pattern
-column	schemes.unit	String?	GAP	why=company schemes are the Schemes screen's, no question reaches them yet
+column	schemes.unit	String?	READ	reader=HudhudFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
 column	shifts.closedAt	Long?	GAP	why=shifts are the counter's, no question reaches them yet
 column	shifts.counted	Double?	GAP	why=shifts are the counter's, no question reaches them yet
 column	shifts.device	String?	GAP	why=shifts are the counter's, no question reaches them yet
@@ -385,15 +385,15 @@ column	stock_adjustments.timestamp	Long	GAP	why=counts and write-offs are told b
 column	stock_adjustments.uid	String?	STRUCT	pattern
 column	stock_adjustments.unit	String?	GAP	why=counts and write-offs are told by who did them in the activity answer only
 column	supplier_bills.billDate	Long	READ	reader=HudhudFacts.deliveries;gate=NONE;screen=BillsActivity
-column	supplier_bills.billNumber	String?	GAP	why=no question reaches it yet
-column	supplier_bills.createdAt	Long	GAP	why=no question reaches it yet
+column	supplier_bills.billNumber	String?	READ	reader=HudhudFacts.lastBill;gate=NONE;screen=BillsActivity
+column	supplier_bills.createdAt	Long	READ	reader=HudhudFacts.lastBill;gate=NONE;screen=BillsActivity
 column	supplier_bills.deletedAt	Long?	STRUCT	pattern
 column	supplier_bills.dueDate	Long?	READ	reader=HudhudFacts.bills;gate=NONE;screen=BillsActivity
 column	supplier_bills.id	Long	STRUCT	pattern
 column	supplier_bills.isDeleted	Boolean	STRUCT	pattern
 column	supplier_bills.isPaidInFull	Boolean	READ	reader=HudhudFacts.bills;gate=NONE;screen=BillsActivity
 column	supplier_bills.ledgerEntryId	Long?	STRUCT	pattern
-column	supplier_bills.note	String?	GAP	why=no question reaches it yet
+column	supplier_bills.note	String?	READ	reader=HudhudFacts.lastBill;gate=NONE;screen=BillsActivity
 column	supplier_bills.partyId	Long	STRUCT	pattern
 column	supplier_bills.photoPath	String?	WITHHELD	why=a picture's file path on this phone
 column	supplier_bills.totalAmount	Double	READ	reader=HudhudFacts.bills;also=HudhudFacts.deliveries+HudhudFacts.count;gate=REPORTS;screen=BillsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it

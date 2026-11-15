@@ -327,7 +327,8 @@ object HudhudBook {
             is Hudhud.Ask.TopGoods -> HudhudFacts.topGoods(context, dao, ask.window)
             Hudhud.Ask.Qarz -> HudhudFacts.qarz(context, dao, parties)
             Hudhud.Ask.Automations -> HudhudFacts.automations(context)
-            is Hudhud.Ask.NeedGoods -> HudhudFacts.needGoods(context, dao, ask.facet)
+            is Hudhud.Ask.NeedGoods -> HudhudFacts.needGoods(context, dao, ask.facet, ask.code)
+            is Hudhud.Ask.Paper -> HudhudFacts.paper(context, dao, ask.of, ask.ids, parties)
             is Hudhud.Ask.CallMe -> callMe(context, ask.name)
             is Hudhud.Ask.Look -> look(context, ask.request)
             is Hudhud.Ask.LookDone -> lookDone(context, ask.made)
@@ -1169,6 +1170,14 @@ object HudhudBook {
                 Hudhud.GoodsFacet.BUYERS -> R.string.hudhud_chip_buyers
                 Hudhud.GoodsFacet.SOLD -> R.string.hudhud_chip_sold
                 Hudhud.GoodsFacet.COVER -> R.string.hudhud_chip_cover
+                Hudhud.GoodsFacet.LABEL -> R.string.hudhud_l_reg
+                Hudhud.GoodsFacet.BARCODE -> R.string.csv_col_barcode
+                Hudhud.GoodsFacet.PACK -> R.string.hudhud_l_pack
+                Hudhud.GoodsFacet.TAX -> R.string.product_tax_rate
+                Hudhud.GoodsFacet.SHELF -> R.string.hudhud_l_shelf
+                Hudhud.GoodsFacet.ADDED -> R.string.hudhud_l_added
+                Hudhud.GoodsFacet.BATCHES -> R.string.inspector_count_batches
+                Hudhud.GoodsFacet.SCHEME -> R.string.schemes_title
             }
         )
         is Hudhud.Ask.Count -> {
@@ -1196,6 +1205,14 @@ object HudhudBook {
                 Hudhud.StatusOf.BOOK -> R.string.hudhud_chip_book
                 Hudhud.StatusOf.STAFF -> R.string.hudhud_t_salary
                 Hudhud.StatusOf.INVOICES -> R.string.hudhud_t_invoices_due
+            }
+        )
+        is Hudhud.Ask.Paper -> c.getString(
+            when (ask.of) {
+                Hudhud.PaperOf.BILL -> R.string.hudhud_t_last_bill
+                Hudhud.PaperOf.ORDER -> R.string.hudhud_t_last_order
+                Hudhud.PaperOf.INVOICE -> R.string.hudhud_t_last_invoice
+                Hudhud.PaperOf.SCHEMES -> R.string.schemes_title
             }
         )
         is Hudhud.Ask.Deliveries -> c.getString(R.string.hudhud_t_deliveries)

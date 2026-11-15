@@ -161,7 +161,14 @@ object Hudhud {
          * A product's fact with no product named ("is cheez ka stock", "khad kis kis ne li", 14 Nov 2026): he tells which
          * products he can answer for, as chips, instead of guessing one.
          */
-        data class NeedGoods(val facet: GoodsFacet) : Ask()
+        data class NeedGoods(val facet: GoodsFacet, val code: String? = null) : Ask()
+
+        /**
+         * A paper the book holds, asked for by what it says (15 Nov 2026, [HudhudRecords]): the newest supplier bills, purchase orders
+         * or invoices — their number, note, lines — or the company schemes and how they stand. [ids] names the supplier (or the
+         * customer, for an invoice) when the sentence does. Said by the rules alone ([decide] never lets the sense turn it).
+         */
+        data class Paper(val of: PaperOf, val ids: List<Long> = emptyList()) : Ask()
 
         /**
          * The name the owner asks to be called by (14 Nov 2026, the owner's check logs: "my name is …", "mera naam … hai",
@@ -218,7 +225,16 @@ object Hudhud {
 
     /** What is asked about a product: everything at once ([OVERVIEW]) when only its name is said. */
     /** [COVER]: how many days what is on the shelf lasts at the pace it has been selling ([StockCover]). */
-    enum class GoodsFacet { OVERVIEW, PRICE, STOCK, COST, SUPPLIERS, LAST_IN, BUYERS, SOLD, COVER }
+    enum class GoodsFacet { OVERVIEW, PRICE, STOCK, COST, SUPPLIERS, LAST_IN, BUYERS, SOLD, COVER,
+        // The product's own record (15 Nov 2026, [HudhudRecords]): the rules' asks alone, no meaning in the bank.
+        LABEL, BARCODE, PACK, TAX, SHELF, ADDED, BATCHES, SCHEME }
+
+    /** Which paper a [Ask.Paper] is about. */
+    enum class PaperOf { BILL, ORDER, INVOICE, SCHEMES }
+
+    /** The product facets only the rules read: the sense learnt no meaning for them, so it never turns them. */
+    internal val RECORD_FACETS = setOf(GoodsFacet.LABEL, GoodsFacet.BARCODE, GoodsFacet.PACK, GoodsFacet.TAX, GoodsFacet.SHELF,
+        GoodsFacet.ADDED, GoodsFacet.BATCHES, GoodsFacet.SCHEME)
 
     /** The shop's profile, one field or [ALL]. */
     enum class ShopFacet { ALL, NAME, ADDRESS, PHONE, EMAIL, TAX, BANK, CURRENCY, COUNTRY, TRADE }
@@ -790,6 +806,8 @@ object Hudhud {
         // and the sense, which learnt "details" and "number" from sentences with a name in them, would turn "Ali ka note"
         // into his details. Before anything else, so no branch below can reach it.
         if (isNoteAsk(ruled)) return ruled
+        // A product's own record, a paper's fields (15 Nov 2026): only the rules read them, the sense learnt no meaning for them.
+        if (ruled is Ask.Paper || (ruled is Ask.Goods && ruled.facet in RECORD_FACETS)) return ruled
         // His first day, his last entry, how many entries he has (15 Nov 2026): the bank has no meaning for them either.
         if (rulesOwnFacet(ruled, heard, names, goods, language)) return ruled
         // A span said on purpose, carried on or said alone (15 Nov 2026): the rules' reading, never the sense's.
@@ -1038,6 +1056,9 @@ object Hudhud {
             GoodsFacet.SUPPLIERS, GoodsFacet.COST, GoodsFacet.LAST_IN -> "goods_suppliers"
             GoodsFacet.BUYERS -> "goods_buyers"
             GoodsFacet.SOLD -> "goods_sold"
+            // A product's own record has no meaning in the bank: only the rules read it ([HudhudRecords]).
+            GoodsFacet.LABEL, GoodsFacet.BARCODE, GoodsFacet.PACK, GoodsFacet.TAX, GoodsFacet.SHELF, GoodsFacet.ADDED,
+            GoodsFacet.BATCHES, GoodsFacet.SCHEME -> null
         }
         is Ask.Shop -> "shop_info"
         is Ask.Count -> when (a.thing) {
@@ -1073,7 +1094,7 @@ object Hudhud {
             Move.JUMP -> "act_jump"
         }
         Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
-        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone -> null
+        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper -> null
     }
 
     /**
@@ -1291,6 +1312,10 @@ object Hudhud {
             // The same for the whole book: "since the beginning", "shuru se ab tak" hold the words of "since when is he a
             // customer" (15 Nov 2026: "Ali ne shuru se ab tak kitna diya" was his first day).
             val spanOwnsSince = spanSaid != null && (unsupported || spanSaid == VoiceQuestion.Window.ALL_TIME)
+            // A paper of his, by what it holds (15 Nov 2026): "Syngenta ke bill ka number", "Ali ke invoice mein kya kya likha".
+            if (spanSaid == null && figure == null) recordPaper(joined, mind, mind.has(HudhudMind.C.HOW_MANY), named = true)?.let {
+                return Ask.Paper(it, named)
+            }
             // What an entry or a payment itself holds (15 Nov 2026): its note, number, reference, way of paying, who wrote it —
             // "Ali Raza ki entry ka note", "Ali ka payment reference", "last entry kis ne likhi". The entry word is needed, so a
             // bare "Ali ka number" stays his phone; a count or a span is another question.
@@ -1637,7 +1662,10 @@ object Hudhud {
         if (has(joined, AUTOMATION)) return Ask.Automations
         if (has(joined, BUSINESSES)) page("faq_business")?.let { return it }
         if (has(joined, SEASONS)) page("screen_seasons")?.let { return it }
-        if (has(joined, SCHEMES)) page("screen_schemes")?.let { return it }
+        if (has(joined, SCHEMES)) {
+            if (HudhudRecords.schemesStand(joined, m)) return Ask.Paper(PaperOf.SCHEMES)
+            page("screen_schemes")?.let { return it }
+        }
         if (has(joined, POSTERS)) page("screen_posters")?.let { return it }
         if (has(joined, CARDS)) {
             page(if (m.has(HudhudMind.C.CUSTOMER)) "intro_customer_qr" else "screen_card")?.let { return it }
@@ -1653,6 +1681,9 @@ object Hudhud {
         // is not an invoice and has no balance: the documents page lists each kind with its count ("How many quotations are open"
         // was the app's opens).
         if (unpaidInvoices(joined)) return Ask.Status(StatusOf.INVOICES)
+        // The papers by what they hold (15 Nov 2026, the catalog's records group): a supplier bill's number, note and lines, a purchase
+        // order's state, an invoice's lines, the schemes that run. Only the rules read them ([HudhudRecords], [decide]).
+        recordPaper(joined, m, counting)?.let { return Ask.Paper(it) }
         if (has(joined, OTHER_DOCS)) page("intro_documents")?.let { return it }
         val billWord = has(joined, BILL_WORDS)
         if (!counting && (has(joined, DOCUMENTS) || (billWord && has(joined, MAKE_DOC) && !has(joined, UTILITY) &&
@@ -1748,8 +1779,10 @@ object Hudhud {
         ) {
             return Ask.Activity(window)
         }
+        // A barcode said or typed with its word: which product it belongs to ([HudhudRecords.codeIn]).
+        HudhudRecords.codeIn(joined)?.takeIf { HudhudRecords.asksWhoseCode(joined) }?.let { return Ask.NeedGoods(GoodsFacet.BARCODE, it) }
         if (has(joined, SOME_GOODS) && VoiceQuestion.classify(joined) == null) {
-            val facet = when {
+            val facet = HudhudRecords.facet(joined, m, null) ?: when {
                 m.has(HudhudMind.C.PRICE) -> GoodsFacet.PRICE
                 m.has(HudhudMind.C.COST) -> GoodsFacet.COST
                 m.any(HudhudMind.C.STOCK, HudhudMind.C.LEFT) -> GoodsFacet.STOCK
@@ -1761,6 +1794,13 @@ object Hudhud {
         }
         return null
     }
+
+    /** The paper a sentence asks about by what it holds ([HudhudRecords.paper]), with this file's own word lists for what it excludes. */
+    private fun recordPaper(joined: String, m: HudhudMind.Read, counting: Boolean, named: Boolean = false): PaperOf? = HudhudRecords.paper(
+        joined, m, makes = has(joined, MAKE_DOC), supplierSide = named || has(joined, SUPPLIER_SIDE_WORDS), purchaseSide = has(joined, PURCHASE_SIDE),
+        billWord = has(joined, BILL_WORDS), documents = has(joined, DOCUMENTS), otherDocs = has(joined, OTHER_DOCS), utility = has(joined, UTILITY),
+        counting = counting, named = named, standing = has(joined, BILL_DUE) || has(joined, UNPAID_WORDS)
+    )
 
     /** Whether a sentence is about reminding customers for money, in no bill's or supplier's sense. */
     /** Old or doubtful money owed: an ageing word together with a word for money owed, nobody and no product named. */
@@ -1878,7 +1918,10 @@ object Hudhud {
         "harvest", "فصل", "فصلوں", "خریف", "ربیع", "سیزن", "خريف", "ربيع", "موسم الحصاد", "سيزن", "سیزن", "فصل", "खरीफ",
         "रबी", "फसल", "सीज़न", "सीजन", "ফসল", "মৌসুম", "খরিফ", "রবি", "musim", "panen", "musim tanam")
     private val SCHEMES = listOf("scheme", "schemes", "skeem", "iskeem", "اسکیم", "سکیم", "اسکیمیں", "اسڪيم", "عرض الشركة",
-        "طرح فروش", "स्कीम", "স্কিম", "skema", "skema promo")
+        "طرح فروش", "स्कीम", "স্কিম", "skema", "skema promo",
+        // 15 Nov 2026 (records group): how the offers of a company are said where "scheme" is not the word.
+        "عروض الشركة", "عروض الشركات", "عروض الموردين", "العروض الجارية", "عروض جارية", "طرح تشویقی", "طرح های تشویقی",
+        "طرح‌های تشویقی", "طرح های فعال", "طرح‌های فعال", "offers", "ऑफर", "অফার")
     private val POSTERS = listOf("poster", "posters", "ishtehar", "ishtihar", "اشتہار", "پوسٹر", "پوستر", "ملصق", "पोस्टर",
         "পোস্টার", "spanduk", "brosur")
     private val CARDS = listOf("card", "cards", "visiting card", "business card", "dukan card", "کارڈ", "کارت", "کارت ویزیت",
@@ -2188,6 +2231,8 @@ object Hudhud {
      * said. A figure the product does not change (this month's profit, what expires) is left to the figure.
      */
     private fun goodsAsk(m: HudhudMind.Read, ids: List<Long>, figure: VoiceQuestion.Kind?, window: VoiceQuestion.Window?): Ask? {
+        // A product's own record — its label, barcode, pack, tax, shelf, day added, batches, schemes (15 Nov 2026, [HudhudRecords]).
+        HudhudRecords.facet(m.said.joinToString(" "), m, figure)?.let { return Ask.Goods(ids, it) }
         val sold = figure == VoiceQuestion.Kind.SALES_TODAY || figure == VoiceQuestion.Kind.SALES_MONTH
         val buyers = (m.has(HudhudMind.C.WHO) && m.has(HudhudMind.C.BOUGHT) && !m.has(HudhudMind.C.PRICE)) || m.has(HudhudMind.C.CUSTOMER)
         val facet = when {
@@ -2355,6 +2400,8 @@ object Hudhud {
                 if (figure == null && m.has(HudhudMind.C.ACCOUNT) && m.onlyOf(BALANCE_OK, ::quiet)) return Ask.Parties(ids)
             }
             goodsOf(before)?.takeIf { it.size == 1 }?.let { ids ->
+                // "Barcode?", "aur expiry?", "registration number" after a product's answer: its own record (15 Nov 2026).
+                if (onlyRecordWords(m)) HudhudRecords.facet(m.said.joinToString(" "), m, figure)?.let { return Ask.Goods(ids, it) }
                 if (figure == null && GOODS_FACETS.any { m.has(it) } && m.onlyOf(GOODS_OK, ::quietOrDay)) {
                     goodsAsk(m, ids, null, window)?.let { return it }
                 }
@@ -2474,6 +2521,12 @@ object Hudhud {
         HudhudMind.C.SUPPLIER, HudhudMind.C.FROM_WHOM, HudhudMind.C.CAME, HudhudMind.C.BOUGHT, HudhudMind.C.CUSTOMER,
         HudhudMind.C.INFO
     )
+
+    /** A bare question that is nothing but a product's record field and the little words that carry on a talk. */
+    private fun onlyRecordWords(m: HudhudMind.Read): Boolean = m.said.indices.all { i ->
+        quietOrDay(m.said[i]) || VoiceQuestion.saysAny(m.said[i], HudhudRecords.FIELD_WORDS) ||
+            m.at(i).let { c -> c.isNotEmpty() && c.all { it in GOODS_OK } }
+    }
 
     /** What a bare question about a product may say beside them. */
     private val GOODS_OK = GOODS_FACETS.toSet() + setOf(

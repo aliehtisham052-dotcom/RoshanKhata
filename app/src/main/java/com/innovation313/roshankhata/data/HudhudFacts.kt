@@ -21,6 +21,8 @@ import com.innovation313.roshankhata.ProductCustomersActivity
 import com.innovation313.roshankhata.ProductsActivity
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.StaffActivity
+import com.innovation313.roshankhata.SchemesActivity
+import com.innovation313.roshankhata.OrdersActivity
 import com.innovation313.roshankhata.SupplierRatesActivity
 import com.innovation313.roshankhata.data.HudhudBook.Answer
 import com.innovation313.roshankhata.data.HudhudBook.Mood
@@ -161,7 +163,18 @@ internal object HudhudFacts {
                     val paid = entry?.let { PaymentMethod.said(AndroidWords(c), it.paymentMethod, it.paymentRef) }
                     val entryNote = entry?.note?.takeIf { it.isNotBlank() }
                     val writer = if (HudhudGate.reports()) entry?.createdBy?.takeIf { it.isNotBlank() } else null
-                    val goods = if (items.isNotEmpty()) Format.goods(items) else entry?.let { Format.goods(it.itemName, it.quantity, it.unit) }
+                    // Each goods line with what the receipt says of it (15 Nov 2026, records group): its rate, a free item's mark and the
+                    // dealer's advice (crop, pest, dose) — ReceiptGoods' own words, so the card and the receipt agree.
+                    val goods = if (items.isNotEmpty()) items.joinToString("; ") { ei ->
+                        val what = Format.goods(ei.itemName, ei.quantity, ei.unit).orEmpty()
+                        val rate: Double? = ei.rate
+                        val price = when {
+                            ei.isBonus -> " (" + c.getString(R.string.bonus_tag) + ")"
+                            rate != null -> " \u00D7 " + HudhudBook.money(rate)
+                            else -> ""
+                        }
+                        what + price + (ReceiptGoods.advice(ei)?.let { a -> " \u2014 $a" }.orEmpty())
+                    } else entry?.let { Format.goods(it.itemName, it.quantity, it.unit) }
                     Answer(Mood.CALM, label = name, figure = HudhudBook.money(last.amount),
                         lines = listOfNotNull(
                             line(c, R.string.hudhud_l_last_entry, whenOf(c, last.timestamp) + " · " + way),
@@ -395,6 +408,102 @@ internal object HudhudFacts {
                     StockCover.Cover.NoStock -> Answer(Mood.CARE, label = label, lines = listOf(c.getString(R.string.hudhud_cover_out)), open = open)
                     StockCover.Cover.NoSales -> Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_cover_no_sales)), open = open)
                     StockCover.Cover.Unknown -> Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.stock_no_movement)), open = open)
+                }
+            }
+            // ---- The pack and the record (15 Nov 2026, the catalog's records group). What is printed on the pack, where it is kept
+            // and when it came into the book is told to everyone who can open the product's screen; what it cost stays behind REPORTS.
+            Hudhud.GoodsFacet.LABEL -> {
+                val said = listOfNotNull(
+                    p.company, p.category, p.productType, p.technicalName, p.formulation, p.registrationNumber
+                ).any { it.isNotBlank() }
+                if (!said) {
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_product_fields_none)), open = open)
+                } else {
+                    fun text(v: String?, label: Int) = v?.trim()?.takeIf { it.isNotEmpty() }?.let { line(c, label, it) }
+                    Answer(Mood.CALM, label = name,
+                        lines = listOfNotNull(
+                            text(p.company, R.string.csv_col_company), text(p.category, R.string.csv_col_category),
+                            text(p.productType, R.string.csv_col_type), text(p.technicalName, R.string.hudhud_l_technical),
+                            text(p.formulation, R.string.hudhud_l_formulation), text(p.registrationNumber, R.string.hudhud_l_reg)
+                        ),
+                        open = open, secrets = listOfNotNull(p.registrationNumber?.trim()?.takeIf { it.isNotEmpty() }))
+                }
+            }
+            Hudhud.GoodsFacet.BARCODE -> {
+                val code = p.barcode?.trim()?.takeIf { it.isNotEmpty() }
+                if (code == null) {
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_product_fields_none)), open = open)
+                } else {
+                    Answer(Mood.CALM, label = name, figure = Format.ltr(code), lines = listOf(c.getString(R.string.csv_col_barcode)),
+                        open = open, secrets = listOf(code))
+                }
+            }
+            Hudhud.GoodsFacet.PACK -> {
+                val packUnit = p.packUnit?.trim()?.takeIf { it.isNotEmpty() }
+                val size = p.packSize
+                val tax = p.taxRate
+                val variant = p.variant?.trim()?.takeIf { it.isNotEmpty() }
+                if (packUnit == null && size == null && p.packPrice == null && variant == null) {
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_product_fields_none)), open = open)
+                } else {
+                    Answer(Mood.CALM, label = name,
+                        lines = listOfNotNull(
+                            packUnit?.let { line(c, R.string.hudhud_l_pack, it + (size?.let { s -> " \u00B7 " + Format.qty(s, unit) } ?: "")) },
+                            p.packPrice?.let { line(c, R.string.product_pack_price, HudhudBook.money(it)) },
+                            variant?.let { line(c, R.string.hudhud_l_variant, it) }
+                        ),
+                        open = open)
+                }
+            }
+            Hudhud.GoodsFacet.TAX -> {
+                val rate = p.taxRate
+                if (rate == null) {
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_product_fields_none)), open = open)
+                } else {
+                    Answer(Mood.CALM, label = name, figure = c.getString(R.string.scheme_reward_pct_value, Format.percent(rate)),
+                        lines = listOf(c.getString(R.string.product_tax_rate)), open = open)
+                }
+            }
+            Hudhud.GoodsFacet.SHELF -> {
+                val place = p.note?.trim()?.takeIf { it.isNotEmpty() }
+                if (place == null) {
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_product_fields_none)), open = open)
+                } else {
+                    Answer(Mood.CALM, label = name, lines = listOf(line(c, R.string.hudhud_l_shelf, place)), open = open,
+                        secrets = HudhudNote.secretsIn(place))
+                }
+            }
+            Hudhud.GoodsFacet.ADDED -> {
+                Answer(Mood.CALM, label = name, figure = Format.dateOnly(p.createdAt), lines = listOf(c.getString(R.string.hudhud_l_added)), open = open)
+            }
+            Hudhud.GoodsFacet.BATCHES -> {
+                // What is left of each batch, soonest expiry first: Fefo's own figure, the one the counter and Expiry read.
+                val lots = Fefo.lots(dao, p).filter { it.left > 0.0 }
+                    .sortedWith(compareBy({ it.expiryDate ?: Long.MAX_VALUE }, { it.batchNumber.orEmpty() }))
+                if (lots.isEmpty()) {
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_batches_none)), open = open)
+                } else {
+                    val soonest = lots.firstNotNullOfOrNull { it.expiryDate }
+                    val now = System.currentTimeMillis()
+                    Answer(if (soonest != null && soonest < now) Mood.CARE else Mood.CALM, label = name,
+                        figure = soonest?.let { Format.dateOnly(it) } ?: n(lots.size),
+                        lines = listOf(c.getString(if (soonest != null) R.string.expiry_date else R.string.inspector_count_batches)),
+                        rows = lots.take(TOP).map { l ->
+                            Row(0, l.batchNumber?.takeIf { it.isNotBlank() } ?: name, Format.qty(l.left, l.unit ?: stockUnit ?: unit),
+                                l.expiryDate?.let { d -> Format.dateOnly(d) })
+                        },
+                        open = open, secrets = lots.mapNotNull { it.batchNumber?.takeIf { b -> b.isNotBlank() } })
+                }
+            }
+            Hudhud.GoodsFacet.SCHEME -> {
+                // The company schemes of this product's company (the Schemes screen's own match is by the company's name).
+                val company = p.company?.trim()?.takeIf { it.isNotEmpty() }
+                val mine = if (company == null) emptyList() else dao.observeSchemes().first()
+                    .filter { !it.isDeleted && it.company?.trim().equals(company, ignoreCase = true) }
+                if (mine.isEmpty()) {
+                    Answer(Mood.CALM, label = name, lines = listOf(c.getString(R.string.hudhud_scheme_none)), open = SchemesActivity::class.java)
+                } else {
+                    schemeAnswer(c, dao, mine, name)
                 }
             }
             Hudhud.GoodsFacet.OVERVIEW -> {
@@ -1237,8 +1346,19 @@ internal object HudhudFacts {
      * A product's fact asked with no product named (14 Nov 2026: "is cheez ka stock kitna hai", "khad kis kis ne li"):
      * he tells which products he can answer for — the month's best sellers first, then the rest — each a tap away.
      */
-    suspend fun needGoods(c: Context, dao: KhataDao, facet: Hudhud.GoodsFacet): Answer {
+    suspend fun needGoods(c: Context, dao: KhataDao, facet: Hudhud.GoodsFacet, code: String? = null): Answer {
         val products = dao.productsOnce()
+        // A code read the other way round (15 Nov 2026): the one product that carries it, as the counter's scan finds it.
+        if (facet == Hudhud.GoodsFacet.BARCODE && code != null) {
+            val found = ProductFind.byCode(products, code)
+            return if (found == null) {
+                Answer(Mood.CALM, label = c.getString(R.string.csv_col_barcode), lines = listOf(c.getString(R.string.pos_barcode_unknown)),
+                    open = ProductsActivity::class.java, secrets = listOf(code))
+            } else {
+                Answer(Mood.CALM, label = found.name, figure = Format.ltr(code), lines = listOf(c.getString(R.string.csv_col_barcode)),
+                    open = ProductsActivity::class.java, secrets = listOf(code))
+            }
+        }
         val label = c.getString(R.string.hudhud_need_goods)
         if (products.isEmpty()) {
             return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.no_products)), open = ProductsActivity::class.java)
@@ -1250,7 +1370,189 @@ internal object HudhudFacts {
         return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_need_goods_line)), rows = rows)
     }
 
+    // ------------------------------------------------------------------------------------------------ the papers and the schemes
+
+    /**
+     * The papers by what they hold (15 Nov 2026, the catalog's records group): the newest supplier bill, purchase order or
+     * invoice — of the person named when one is — with its number, note, state and lines, and a few earlier ones as rows.
+     * What a paper's lines say is open to whoever opens its screen; a bill's total and rates and an order's rates and writer
+     * are the owner's and a manager's (REPORTS). Numbers are shown and never said aloud.
+     */
+    suspend fun paper(c: Context, dao: KhataDao, of: Hudhud.PaperOf, ids: List<Long>, parties: List<PartyWithBalance>): Answer = when (of) {
+        Hudhud.PaperOf.BILL -> lastBill(c, dao, ids)
+        Hudhud.PaperOf.ORDER -> lastOrder(c, dao, ids)
+        Hudhud.PaperOf.INVOICE -> lastInvoice(c, dao, ids, parties)
+        Hudhud.PaperOf.SCHEMES -> schemeAnswer(c, dao, dao.observeSchemes().first().filter { !it.isDeleted }, c.getString(R.string.schemes_title))
+    }
+
+    private suspend fun lastBill(c: Context, dao: KhataDao, ids: List<Long>): Answer {
+        val label = c.getString(R.string.hudhud_t_last_bill)
+        val bills = dao.observeBills().first().filter { ids.isEmpty() || it.partyId in ids }
+            .sortedWith(compareByDescending<BillSummary> { it.billDate }.thenByDescending { it.id })
+        val bill = bills.firstOrNull()
+            ?: return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_none_yet)), open = BillsActivity::class.java)
+        val full = dao.getBill(bill.id)
+        val items = dao.billItems(bill.id).filter { !it.isDeleted }
+        val number = bill.billNumber?.trim()?.takeIf { it.isNotEmpty() }
+        val note = bill.note?.trim()?.takeIf { it.isNotEmpty() }
+        val batches = items.mapNotNull { it.batchNumber?.trim()?.takeIf { b -> b.isNotEmpty() } }
+        val itemLines = items.take(ITEM_LINES).map { i ->
+            val rate: Double? = i.rate
+            val parts = listOfNotNull(
+                Format.goods(i.productName, i.quantity, i.unit),
+                i.batchNumber?.takeIf { it.isNotBlank() }?.let { c.getString(R.string.batch_label, it) },
+                i.expiryDate?.let { d -> c.getString(R.string.expiry_date) + ": " + Format.dateOnly(d) },
+                if (reports() && rate != null) "\u00D7 " + HudhudBook.money(rate) else null,
+                i.note?.trim()?.takeIf { it.isNotEmpty() }
+            )
+            Format.isolate(parts.joinToString(" \u00B7 "))
+        }
+        return Answer(Mood.CALM, label = label + " \u00B7 " + bill.partyName,
+            figure = number?.let { Format.ltr(it) } ?: Format.dateOnly(bill.billDate),
+            lines = listOfNotNull(
+                number?.let { line(c, R.string.bill_number_hint, it) },
+                line(c, R.string.bill_date, Format.dateOnly(bill.billDate)),
+                full?.createdAt?.let { line(c, R.string.hudhud_l_added, Format.dateOnly(it)) },
+                if (reports()) line(c, R.string.bill_total_hint, HudhudBook.money(bill.totalAmount)) else null,
+                note?.let { line(c, R.string.hudhud_l_entry_note, it) },
+            ) + (if (itemLines.isEmpty()) emptyList<String>() else listOf(c.getString(R.string.hudhud_l_entry_goods)) + itemLines),
+            rows = bills.drop(1).take(TOP - 1).map { b ->
+                Row(b.partyId, b.partyName, if (reports()) HudhudBook.money(b.totalAmount) else "",
+                    listOfNotNull(b.billNumber?.takeIf { it.isNotBlank() }, Format.dateOnly(b.billDate)).joinToString(" \u00B7 "))
+            },
+            open = BillsActivity::class.java,
+            secrets = listOfNotNull(number) + batches + (note?.let { HudhudNote.secretsIn(it) }.orEmpty()))
+    }
+
+    private fun orderStatus(c: Context, status: String): String = c.getString(
+        when (status) {
+            OrderStatus.SENT -> R.string.po_status_sent
+            OrderStatus.RECEIVED -> R.string.po_status_received
+            OrderStatus.CLOSED -> R.string.po_status_closed
+            else -> R.string.po_status_draft
+        }
+    )
+
+    private suspend fun lastOrder(c: Context, dao: KhataDao, ids: List<Long>): Answer {
+        val label = c.getString(R.string.hudhud_t_last_order)
+        val orders = dao.observeOrders().first().filter { ids.isEmpty() || it.partyId in ids }
+            .sortedWith(compareByDescending<OrderSummary> { it.timestamp }.thenByDescending { it.id })
+        val order = orders.firstOrNull()
+            ?: return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.po_none)), open = OrdersActivity::class.java)
+        val full = dao.orderWithLines(order.id)
+        val lines = full?.items?.filter { !it.isDeleted }.orEmpty()
+        val note = full?.order?.note?.trim()?.takeIf { it.isNotEmpty() }
+        val writer = if (reports()) full?.order?.createdBy?.takeIf { it.isNotBlank() } else null
+        val itemLines = lines.take(ITEM_LINES).map { i ->
+            val rate: Double? = i.rate
+            Format.isolate(listOfNotNull(
+                Format.goods(i.itemName, i.quantity, i.unit),
+                if (reports() && rate != null) "\u00D7 " + HudhudBook.money(rate) else null
+            ).joinToString(" "))
+        }
+        return Answer(if (order.status == OrderStatus.DRAFT) Mood.CARE else Mood.CALM, label = label + " \u00B7 " + order.partyName,
+            figure = orderStatus(c, order.status),
+            lines = listOfNotNull(
+                line(c, R.string.hudhud_l_order_no, order.orderNumber),
+                line(c, R.string.po_supplier, order.partyName),
+                line(c, R.string.hudhud_l_status, orderStatus(c, order.status)),
+                line(c, R.string.date_label, Format.dateOnly(order.timestamp)),
+                note?.let { line(c, R.string.hudhud_l_entry_note, it) },
+                writer?.let { line(c, R.string.hudhud_l_entry_by, it) },
+            ) + (if (itemLines.isEmpty()) emptyList<String>() else listOf(c.getString(R.string.hudhud_l_entry_goods)) + itemLines),
+            rows = orders.drop(1).take(TOP - 1).map { o ->
+                Row(o.partyId, o.partyName, orderStatus(c, o.status), listOf(o.orderNumber, Format.dateOnly(o.timestamp)).joinToString(" \u00B7 "))
+            },
+            open = OrdersActivity::class.java,
+            secrets = listOf(order.orderNumber) + (note?.let { HudhudNote.secretsIn(it) }.orEmpty()))
+    }
+
+    private suspend fun lastInvoice(c: Context, dao: KhataDao, ids: List<Long>, parties: List<PartyWithBalance>): Answer {
+        val label = c.getString(R.string.hudhud_t_last_invoice)
+        val named = parties.filter { it.id in ids }.map { it.name.trim().lowercase(Locale.ROOT) }.toSet()
+        val invoices = dao.observeInvoices().first()
+            .filter { it.kind == DocKind.INVOICE && (named.isEmpty() || it.customerName.trim().lowercase(Locale.ROOT) in named) }
+            .sortedWith(compareByDescending<InvoiceSummary> { it.invoiceDate }.thenByDescending { it.id })
+        val inv = invoices.firstOrNull()
+            ?: return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_none_yet)), open = InvoicesActivity::class.java)
+        val lines = dao.invoiceItems(inv.id).filter { !it.isDeleted }
+        val itemLines = lines.take(ITEM_LINES).map { i ->
+            Format.isolate(Format.goods(i.itemName, i.quantity, i.unit).orEmpty() + " \u00D7 " + HudhudBook.money(i.rate))
+        }
+        return Answer(Mood.CALM, label = label + " \u00B7 " + inv.customerName, figure = Format.ltr(inv.invoiceNumber),
+            lines = listOf(
+                line(c, R.string.hudhud_l_invoice_no, inv.invoiceNumber),
+                line(c, R.string.date_label, Format.dateOnly(inv.invoiceDate)),
+            ) + (if (itemLines.isEmpty()) emptyList<String>() else listOf(c.getString(R.string.invoice_items_label)) + itemLines),
+            rows = invoices.drop(1).take(TOP - 1).map { i ->
+                Row(0, i.customerName, HudhudBook.money(i.grandTotal), listOf(i.invoiceNumber, Format.dateOnly(i.invoiceDate)).joinToString(" \u00B7 "), open = InvoicesActivity::class.java)
+            },
+            open = InvoicesActivity::class.java, secrets = listOf(inv.invoiceNumber))
+    }
+
+    /** One scheme's reward as the Schemes screen words it: a percent, free units or a fixed amount. */
+    private fun rewardText(c: Context, s: Scheme, reward: Double): String = when (s.rewardKind) {
+        SchemeMath.PERCENT -> c.getString(R.string.scheme_reward_pct_value, Format.percent(reward))
+        SchemeMath.UNITS -> c.getString(R.string.scheme_reward_units_value, Format.qty(reward, s.unit))
+        else -> HudhudBook.money(reward)
+    }
+
+    /**
+     * The company schemes in [schemes], running first and the soonest to end first: each one's name, its days and whether it
+     * runs. How far it has got, its targets and rewards and what was claimed are money of the owner's and a manager's
+     * (REPORTS), read by the Schemes screen's own rule ([SchemeMath], [KhataDao.schemePurchased]).
+     */
+    private suspend fun schemeAnswer(c: Context, dao: KhataDao, schemes: List<Scheme>, label: String): Answer {
+        if (schemes.isEmpty()) {
+            return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.schemes_empty)), open = SchemesActivity::class.java)
+        }
+        val now = System.currentTimeMillis()
+        val ordered = schemes.sortedWith(compareBy({ it.endDate < now }, { it.endDate }))
+        val money = reports()
+        fun amountText(s: Scheme, v: Double) = if (s.measure == SchemeMath.BY_VALUE) HudhudBook.money(v) else Format.qty(v, s.unit)
+        val shown = ordered.take(TOP)
+        val progress = if (money) shown.associate { s ->
+            s.id to SchemeMath.progress(s, dao.schemePurchased(s.measure == SchemeMath.BY_VALUE, s.startDate, s.endDate, s.partyId, s.company, s.unit))
+        } else emptyMap<Long, SchemeMath.Progress>()
+        fun statusOf(s: Scheme): String {
+            val p = progress[s.id]
+            return when {
+                p != null -> when (SchemeMath.status(s, p, now)) {
+                    SchemeMath.Status.RUNNING -> c.getString(R.string.scheme_status_running)
+                    SchemeMath.Status.CLAIM_DUE -> c.getString(R.string.scheme_status_claim_due)
+                    SchemeMath.Status.CLAIMED -> c.getString(R.string.scheme_status_claimed, s.claimedAmount?.let { a -> HudhudBook.money(a) } ?: "")
+                    SchemeMath.Status.MISSED -> c.getString(R.string.scheme_status_missed)
+                }
+                now <= s.endDate -> c.getString(R.string.scheme_status_running)
+                else -> ""
+            }
+        }
+        fun period(s: Scheme) = c.getString(R.string.scheme_period, Format.dateOnly(s.startDate), Format.dateOnly(s.endDate))
+        val first = shown.first()
+        val running = ordered.count { now <= it.endDate }
+        val detail = if (!money) emptyList<String>() else listOfNotNull(
+            c.getString(R.string.scheme_slabs_title)
+        ) + SchemeMath.slabs(first).map { slab -> Format.isolate(amountText(first, slab.target) + " \u2192 " + rewardText(c, first, slab.reward)) } +
+            listOfNotNull(
+                progress[first.id]?.let { p -> c.getString(R.string.scheme_bought, amountText(first, p.purchased)) },
+                first.claimedAmount?.let { a ->
+                    c.getString(R.string.scheme_status_claimed, HudhudBook.money(a) + (first.claimedAt?.let { d -> " \u00B7 " + Format.dateOnly(d) } ?: ""))
+                },
+            )
+        return Answer(if (running > 0) Mood.CALM else Mood.CARE, label = label, figure = n(running),
+            lines = listOfNotNull(
+                Format.isolate(first.name),
+                first.company?.trim()?.takeIf { it.isNotEmpty() }?.let { line(c, R.string.csv_col_company, it) },
+                period(first),
+                first.note?.trim()?.takeIf { it.isNotEmpty() }?.let { line(c, R.string.hudhud_l_entry_note, it) },
+            ) + detail,
+            rows = shown.map { s -> Row(0, s.name, statusOf(s), period(s), open = SchemesActivity::class.java) },
+            open = SchemesActivity::class.java)
+    }
+
     private const val TOP = 5
+    /** The lines of a paper told on its card: more are on its screen. */
+    private const val ITEM_LINES = 8
     /** Every product's sales in the span (the product asked for is found among them by its name). */
     private const val ALL_PRODUCTS = 100_000
     /** The newest audit rows read for a span's edits and deletes: far more than any shop writes in a day. */

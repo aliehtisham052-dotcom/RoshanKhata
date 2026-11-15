@@ -8,7 +8,7 @@ column	audit_log	GAP	cols=refTable,detail	why=the activity answer counts rows by
 column	audit_log	WITHHELD	cols=hash	why=the seal chain of the log: proof material for the Who did what screen, never a thing to say
 column	bill_items	READ	cols=productName	reader=HudhudFacts.deliveries	gate=NONE	screen=BillsActivity	also=HudhudFacts.count+HudhudFacts.goods
 column	bill_items	READ	cols=rate	reader=HudhudFacts.goods	gate=REPORTS	screen=SupplierRatesActivity	via=KhataDao.supplierRateLinesOnce
-column	bill_items	GAP	cols=quantity,unit,batchNumber,expiryDate,note	why=the expiring question only points at the Expiry screen with a fixed line, batches and quantities are not told
+column	bill_items	READ	cols=quantity,unit,batchNumber,expiryDate,note	reader=HudhudFacts.lastBill	gate=NONE	screen=BillsActivity	also=HudhudFacts.goods
 column	book_seals	WITHHELD	cols=tokens	why=the time services' signed answers: raw proof bytes
 column	book_seals	GAP	cols=sealedAt,leafCount	why=no question reaches it yet (the Seals screen holds them)
 column	book_seals	STRUCT	cols=leaves,auditHead,prevDigest,digest	why=the seal chain's own material, shown only in the proof file
@@ -26,9 +26,10 @@ column	day_close	READ	cols=closedAt	reader=HudhudBook.drawer	gate=REPORTS	screen
 column	day_close	GAP	cols=day,opening,cashIn,cashOut,counted,note	why=the drawer is worked out by the books' rule (DayCloseMath) and the close's columns are folded into it, not told one by one
 column	dismissed_duplicates	STRUCT	cols=partyIdsKey,dismissedAt	why=remembers the owner's 'not a duplicate' answers so the Duplicates screen does not ask again
 column	entry_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.topGoods	gate=REPORTS	screen=InsightsActivity	via=KhataDao.topProductsBetween
-column	entry_items	GAP	cols=rate,isBonus,crop,pest,dose	why=no question reaches it yet (the entry's receipt holds them)
+column	entry_items	READ	cols=rate,isBonus	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity
+column	entry_items	READ	cols=crop,pest,dose	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity	via=ReceiptGoods.advice
 column	installments	GAP	cols=amount,paidAt,note	why=plans are told by their next due day, instalments are the Plans screen's
-column	invoice_items	GAP	cols=itemName,quantity,unit,rate	why=the screen holds the lines, Hudhud tells only counts and totals so far
+column	invoice_items	READ	cols=itemName,quantity,unit,rate	reader=HudhudFacts.lastInvoice	gate=NONE	screen=InvoicesActivity
 column	invoices	READ	cols=invoiceNumber,customerName,invoiceDate	reader=HudhudFacts.count	gate=NONE	screen=InvoicesActivity
 column	invoices	READ	cols=dueDate,receivedAmount,taxPercent,discountPercent,additionalChargeAmount,discountAmount,kind,status	reader=HudhudFacts.invoicesDue	gate=REPORTS	screen=InvoicesActivity	via=KhataDao.invoicesWithPaymentOnce	stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices	GAP	cols=customerPhone,additionalChargeLabel,note,createdAt	why=he says which invoices have money due and how much, the invoice's own words are its screen's
@@ -42,9 +43,11 @@ column	payment_plans	GAP	cols=totalAmount,installmentAmount,note,createdAt,isClo
 column	products	READ	cols=name,defaultUnit,company,salePrice,creditPrice	reader=HudhudFacts.goods	gate=NONE	screen=ProductsActivity
 column	products	READ	cols=costPrice	reader=HudhudFacts.goods	gate=REPORTS	screen=ProductsActivity	stricter=the product form greys the cost box for a cashier but still shows it, Hudhud keeps the cost (and so the margin) with REPORTS
 column	products	READ	cols=lowStockLevel	reader=HudhudFacts.lowStock	gate=NONE	screen=ProductsActivity	via=Valuation.compute
-column	products	GAP	cols=category,productType,formulation,registrationNumber,technicalName,note,createdAt,barcode,packUnit,packSize,packPrice,taxRate,variant	why=no question reaches it yet
-column	purchase_order_items	GAP	cols=itemName,quantity,unit,rate	why=the screen holds the lines, Hudhud tells only counts and totals so far
-column	purchase_orders	GAP	cols=orderNumber,timestamp,status,note,createdBy	why=he opens the order draft for low stock, orders themselves are the Orders screen's
+column	products	READ	cols=category,productType,formulation,registrationNumber,technicalName,note,createdAt,barcode,packUnit,packSize,packPrice,taxRate,variant	reader=HudhudFacts.goods	gate=NONE	screen=ProductsActivity	also=HudhudFacts.needGoods
+column	purchase_order_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.lastOrder	gate=NONE	screen=OrdersActivity
+column	purchase_order_items	READ	cols=rate	reader=HudhudFacts.lastOrder	gate=REPORTS	screen=OrdersActivity	stricter=an order line's rate is what a supplier charges, which Hudhud keeps with REPORTS as the supplier rates are
+column	purchase_orders	READ	cols=orderNumber,timestamp,status,note	reader=HudhudFacts.lastOrder	gate=NONE	screen=OrdersActivity
+column	purchase_orders	READ	cols=createdBy	reader=HudhudFacts.lastOrder	gate=REPORTS	screen=OrdersActivity	stricter=who wrote an order is told only to who may see reports, as for an entry
 column	sale_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.topGoods	gate=REPORTS	screen=InsightsActivity	via=KhataDao.topProductsBetween
 column	sale_items	GAP	cols=rate,discount,costRate,taxRate,taxAmount,taxIncluded	why=no question reaches it yet
 column	sale_payments	GAP	cols=method,amount,reference	why=money received is told by the way of paying through the day book, not per ticket
@@ -55,7 +58,11 @@ column	sale_returns	GAP	cols=refundMethod,reason,note,status,createdBy,voidReaso
 column	sales	READ	cols=saleNumber,customerName,timestamp	reader=HudhudFacts.count	gate=NONE	screen=CounterSaleActivity
 column	sales	READ	cols=grandTotal	reader=HudhudFacts.count	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sales	GAP	cols=subtotal,discountAmount,taxPercent,taxAmount,roundOff,paidTotal,status,note,createdBy,voidReason,voidedAt	why=no question reaches it yet (status is only a filter)
-column	schemes	GAP	cols=name,company,startDate,endDate,measure,unit,rewardKind,target1,reward1,target2,reward2,target3,reward3,claimedAmount,claimedAt,note,createdAt	why=company schemes are the Schemes screen's, no question reaches them yet
+column	schemes	READ	cols=name,company,startDate,endDate,note	reader=HudhudFacts.schemeAnswer	gate=NONE	screen=SchemesActivity
+column	schemes	READ	cols=measure,unit,claimedAmount,claimedAt	reader=HudhudFacts.schemeAnswer	gate=REPORTS	screen=SchemesActivity	stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
+column	schemes	READ	cols=rewardKind	reader=HudhudFacts.schemeAnswer	gate=REPORTS	screen=SchemesActivity	via=HudhudFacts.rewardText	stricter=a scheme's reward is told only to who may see reports
+column	schemes	READ	cols=target1,reward1,target2,reward2,target3,reward3	reader=HudhudFacts.schemeAnswer	gate=REPORTS	screen=SchemesActivity	via=SchemeMath.slabs	stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes	GAP	cols=createdAt	why=the Schemes screen shows no day for when a scheme was written, and nobody asks it
 column	shifts	GAP	cols=user,device,openedAt,openingFloat,closedAt,counted,expected,note	why=shifts are the counter's, no question reaches them yet
 column	stock_adjustments	GAP	cols=timestamp,quantity,unit,reason,note,bookQty,countedQty,createdBy	why=counts and write-offs are told by who did them in the activity answer only
 column	staff	READ	cols=name	reader=HudhudFacts.salaries	gate=STAFF	screen=StaffActivity
@@ -66,7 +73,7 @@ column	staff_payments	GAP	cols=amount,kind,timestamp,note	why=folded into what i
 column	supplier_bills	READ	cols=isPaidInFull,dueDate	reader=HudhudFacts.bills	gate=NONE	screen=BillsActivity
 column	supplier_bills	READ	cols=billDate	reader=HudhudFacts.deliveries	gate=NONE	screen=BillsActivity
 column	supplier_bills	READ	cols=totalAmount	reader=HudhudFacts.bills	gate=REPORTS	screen=BillsActivity	also=HudhudFacts.deliveries+HudhudFacts.count	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	supplier_bills	GAP	cols=billNumber,note,createdAt	why=no question reaches it yet
+column	supplier_bills	READ	cols=billNumber,note,createdAt	reader=HudhudFacts.lastBill	gate=NONE	screen=BillsActivity
 column	supplier_bills	WITHHELD	cols=photoPath	why=a picture's file path on this phone
 column	transactions	READ	cols=amount,isGiven,timestamp	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity
 column	transactions	READ	cols=isQarzeHasna	reader=HudhudFacts.qarz	gate=REPORTS	screen=ZakatActivity	via=KhataDao.observeZakatBalancesByParty
