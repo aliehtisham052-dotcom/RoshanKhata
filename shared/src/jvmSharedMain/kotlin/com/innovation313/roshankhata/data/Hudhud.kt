@@ -1660,6 +1660,9 @@ object Hudhud {
         if (has(joined, BEST_SELLING) || (has(joined, MOST) && has(joined, SELLING)) || (has(joined, WHAT_ALL) && has(joined, SELLING))) {
             return Ask.TopGoods(window)
         }
+        // The best or the worst of the goods by profit, or the ones that do not move (15 Nov 2026, the owner's list): Insights ranks
+        // the products by profit, and the sales report names the dead stock. Only an item word with the ranking or the loss.
+        itemRankPage(joined)?.let { key -> page(key)?.let { return it } }
         if (window != null && m.has(HudhudMind.C.CREDIT) && !has(joined, PAID_BACK) && !has(joined, UNTIL_NOW) &&
             (has(joined, TOOK_OR_GAVE) || window == VoiceQuestion.Window.TODAY)
         ) {
@@ -1679,6 +1682,19 @@ object Hudhud {
         return null
     }
 
+    /** The page for a sentence that ranks the goods by profit or says which do not move; null for any other. */
+    internal fun itemRankPage(joined: String): String? {
+        if (has(joined, listOf("kitne", "kitni", "how many", "count"))) return null
+        val item = has(joined, ITEM_WORDS)
+        return when {
+            item && has(joined, PROFIT_WORDS) -> "screen_insights"
+            item && has(joined, NOT_MOVING) -> "screen_sales_report"
+            // "Sab se kam kya bikta hai": the least sold, with no day, month or customer asked about (the sales of a day are a figure).
+            has(joined, LEAST) && has(joined, SELLING) && !has(joined, NOT_GOODS) -> "screen_sales_report"
+            else -> null
+        }
+    }
+
     /** The rules' own "which bill?" question for a bill word with no supplier or purchase word beside it. */
     private fun isBareBillChoice(ruled: Ask, heard: String): Boolean {
         if (ruled !is Ask.DidYouMean) return false
@@ -1695,7 +1711,8 @@ object Hudhud {
             LOCK_WORDS, HIDE_WORDS, ADD_NEW)
             .any { has(joined, it) } ||
             (has(joined, BILL_WORDS) && has(joined, MAKE_DOC)) ||
-            (has(joined, BILL_WORDS) && has(joined, BILL_EDIT) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE))
+            (has(joined, BILL_WORDS) && has(joined, BILL_EDIT) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE)) ||
+            itemRankPage(joined) != null
     }
 
     private val LOCK_WORDS = listOf("lock", "app lock", "applock", "pin", "pin code", "password", "passcode", "fingerprint",
@@ -1831,6 +1848,21 @@ object Hudhud {
     private val SELLING = listOf("bik", "bikta", "bikti", "bika", "biki", "bik raha", "bikri", "sale", "sales", "becha",
         "bechi", "sold", "selling", "sell", "بکا", "بکی", "بکتا", "بکتی", "فروخت", "بيع", "مبيعا", "مبيعاً", "فروش", "فروخته",
         "وڪرو", "बिका", "बिकी", "बिकता", "बिक्री", "বিক্রি", "terjual", "laku")
+    private val ITEM_WORDS = listOf("cheez", "cheezein", "cheezon", "chiz", "item", "items", "maal", "saman", "samaan", "product",
+        "products", "goods", "چیز", "چیزیں", "آئٹم", "مال", "سامان", "پروڈکٹ", "منتج", "سلعة", "بضاعة", "كالا", "کالا", "جنس",
+        "شيءِ", "सामान", "माल", "चीज़", "चीज", "आइटम", "জিনিস", "মাল", "পণ্য", "barang", "produk")
+    private val PROFIT_WORDS = listOf("munafa", "munafe", "nafa", "faida", "fayda", "faide", "kamai", "profit", "nuqsan", "nuksan",
+        "loss", "margin", "منافع", "منافع", "فائدہ", "فائدے", "کمائی", "نقصان", "ربح", "أرباح", "خسارة", "سود", "زیان", "نفع",
+        "फायदा", "मुनाफा", "नुकसान", "कमाई", "লাভ", "ক্ষতি", "আয়", "untung", "laba", "rugi")
+    private val NOT_MOVING = listOf("chal nahi raha", "nahi chal raha", "nahi bik", "nahi bikta", "nahi bikti", "nahi bika", "bohat dair se",
+        "dead stock", "not selling", "not moving", "slow moving", "paisa phansa", "phansa hua", "نہیں بک", "نہیں چل", "پھنسا",
+        "لا يباع", "راكد", "نمی‌فروشد", "فروش نمی", "नहीं बिक", "नहीं चल", "फंसा", "বিক্রি হচ্ছে না", "আটকে", "tidak laku", "tidak terjual",
+        "macet")
+    private val NOT_GOODS = listOf("din", "day", "days", "mahina", "mahine", "month", "hafta", "hafte", "week", "customer", "customers",
+        "gahak", "گاہک", "دن", "مہینہ", "ہفتہ", "کسٹمر", "یوم", "شهر", "عميل", "روز", "ماه", "ग्राहक", "दिन", "महीना", "গ্রাহক", "দিন",
+        "hari", "bulan", "pelanggan")
+    private val LEAST = listOf("sab se kam", "sabse kam", "sab se kum", "least", "lowest", "worst", "kam se kam", "سب سے کم",
+        "الأقل", "کمترین", "سڀ کان گھٽ", "सबसे कम", "সবচেয়ে কম", "paling sedikit", "paling kurang")
     private val WHAT_ALL = listOf("kya kya", "kaun kaun", "what all", "کیا کیا", "کون کون", "ماذا", "چه چیزهایی", "ڇا ڇا",
         "क्या क्या", "কী কী", "apa saja")
     private val TOOK_OR_GAVE = listOf("liya", "liye", "li", "diya", "diye", "di", "gaya", "gaye", "hua", "hue", "chadha",

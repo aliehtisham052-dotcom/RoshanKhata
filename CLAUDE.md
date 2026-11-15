@@ -3976,6 +3976,19 @@ paper it hands a customer, the one a supplier sends and the one the light compan
 - **Measured here:** owner's 1,000 sentences 727 -> 735 (floor raised to 735), short lists 143, held-out 1068, 479+ shared tests, 13 Strings steps pass;
   the three guards were broken one at a time, each killed by a test.
 
+### 15 Nov 2026: Hudhud, the best and the worst of the goods (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 5 (a reader's words, no figure moves). "Kaun si cheez par nuqsan hai", "sab se zyada munafa kis item par hai", "sab se kam kya bikta
+hai", "kaun sa maal chal nahi raha" read as supplier figures or a count of low stock.
+
+- **The rule** (`Hudhud.itemRankPage`, in `byFeature` and `featureNamed`): an item word (cheez, item, maal, product, nine languages) with a profit or
+  loss word opens Insights (it ranks the products by profit); an item word with "not moving" words, or "least" with a selling word and no day,
+  month or customer word (`NOT_GOODS`), opens the sales report (it names the dead stock). A count ("kitne") is never read. The top sellers stay `TopGoods`.
+- **Measured here:** owner's 1,000 sentences 735 -> 739 (floor 739), held-out 1068, 484 shared tests, 13 Strings steps pass; four guards broken one at a
+  time, the day/customer one survived at first and has its test now. HudhudItemRankTest runs through `understand` with the sense (lesson 145).
+- **Not done:** "dobara mangwani chahiye" and "demand zyada" still read as low stock (arguably right; the owner's list wants the sales pages);
+  "sab se mehnga item kaun sa bika" and "season ka sab se achha item" are other readings.
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the
