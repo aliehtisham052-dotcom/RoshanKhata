@@ -374,13 +374,31 @@ object Hudhud {
     ): Ask {
         val carried = carriedOf(before)
         val ruled = byRules(heard, names, topics, language, goods, carried, staff)
-        if (!HudhudSense.ready || words(heard).isEmpty()) return limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, ruled), carried)))
+        if (!HudhudSense.ready || words(heard).isEmpty()) return goodsShape(heard, partOfDay(heard, limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, ruled), carried)))))
         val guesses = HudhudSense.rank(
             senseHeard(heard, names, goods),
             isName = { w -> w !in QUIET_SET && w !in VOCATIVE_SET && !HudhudMind.isHardWord(w) && knownName(w, names) },
             isItem = { w -> w !in QUIET_SET && !HudhudMind.isHardWord(w) && knownName(w, goods) }
         )
-        return limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)), carried)))
+        return goodsShape(heard, partOfDay(heard, limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)), carried)))))
+    }
+
+    /** A named product asked in a shape the facet words miss ("Urea kitne ki hai"): the price, the cost or the shelf it asks. */
+    private fun goodsShape(heard: String, ask: Ask): Ask {
+        if (ask !is Ask.Goods) return ask
+        val facet = HudhudEveryday.goodsFacet(heard, ask.facet) ?: return ask
+        return ask.copy(facet = facet)
+    }
+
+    /**
+     * A part of the day ("this morning", "shaam tak ki sale") is answered with the day's figure, because the book keeps no hour
+     * (15 Nov 2026): told as a guess ("taken as …") unless it runs up to now ("since morning"), when the day's figure is the exact one.
+     */
+    private fun partOfDay(heard: String, ask: Ask): Ask {
+        val part = VoiceQuestion.partOfDay(heard) ?: return ask
+        if (part.toNow || !spanMatters(ask)) return ask
+        val today = (ask is Ask.Figure && ask.kind == VoiceQuestion.Kind.SALES_TODAY) || spanOf(ask) == VoiceQuestion.Window.TODAY
+        return if (today) Ask.Guessed(ask) else ask
     }
 
     // ------------------------------------------------------------------------------------- which cheques
@@ -1031,6 +1049,10 @@ object Hudhud {
         // A staff member's pay or attendance, a customer's plan or cheques: only the rules make this ask (the bank has no meaning for it).
         if (ruled is Ask.Record) return ruled
         if (ruled is Ask.Figure && ruled.kind == VoiceQuestion.Kind.NOT_PAID && remindPage(words(heard).joinToString(" "))) return ruled
+        // The everyday phrasings the rules read from words alone (who paid, where the money went, what sells best): the bank learnt
+        // none of them as such, and the sense turned them at 0.95 into the opposite (who did NOT pay, who owes MOST).
+        if (ruled == HudhudEveryday.read(heard, VoiceQuestion.windowOf(heard))) return ruled
+        if (ruled is Ask.Figure && ruled.kind == VoiceQuestion.Kind.WHO_OWES_LEAST) return ruled
         // A bare "bill" with no supplier or purchase word (15 Nov 2026, the owner's list): which bill is said by the rules' own
         // question (utility or supplier), never settled by the sense, which learnt every "bill" as a count of supplier bills.
         if (isBareBillChoice(ruled, heard)) return ruled
@@ -1368,6 +1390,9 @@ object Hudhud {
         // old is the app" holds a "how"). "Ali ki kahani" and "Roshan ka khata kab bana" are never read here: a word of the book
         // or of somebody's name is never a history's.
         HudhudStory.read(heard, language) { w -> knownName(w, names) || knownName(w, goods) }?.let { return Ask.About(storyTopic(it)) }
+        // What a shop says every day (15 Nov 2026, the everyday-phrasing review): who paid and who does not, where the money went,
+        // what left the drawer, what sells best. Words alone, only when no name of the book is in the sentence; [decide] keeps it.
+        HudhudEveryday.read(heard, VoiceQuestion.windowOf(heard)) { w -> knownName(w, names) || knownName(w, goods) }?.let { return it }
         val how = has(joined, HOW)
         if (how) helpOf(said, topics)?.let { return Ask.Help(it) }
         // A sentence that is nothing but small talk, or "what can you tell me" (13 Nov 2026): taken before any name,
@@ -1416,7 +1441,7 @@ object Hudhud {
         val product = if (named.isEmpty()) whoIsNamed(said, goods, topics, mind, window) else emptyList()
         // "When did he last pay" is the past: only a payment still to come is the Radar's.
         val willPay = (has(joined, WILL_PAY) || ((has(joined, WHEN) || has(joined, WHO)) && has(joined, PAY))) &&
-            !mind.has(HudhudMind.C.LAST) && "did" !in said
+            !mind.has(HudhudMind.C.LAST) && "did" !in said && !HudhudEveryday.negated(joined)
         // The owner's private note on somebody (14 Nov 2026): "Ali ka note", "Ali's private note", "uska niji note", "kis ka note
         // hai". Only a sentence of nothing but the note's words, a name and little words ([HudhudNote]); any other is read as
         // before. Taken before the features and the follow-ups: a carried "uska note" is the note, not the balance.

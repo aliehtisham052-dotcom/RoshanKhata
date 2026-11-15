@@ -83,7 +83,7 @@ class HudhudOwnerSetTest {
          * pages in the app's own order (pages.tsv is held to HudhudBook.PAGES by the catalog check): 143 and 726 —
          * the short list's floor is the figure itself, the thousand's keeps the margin of two it always had.
          */
-        const val SHORT_FLOOR = 146
-        const val THOUSAND_FLOOR = 785
+        const val SHORT_FLOOR = 148
+        const val THOUSAND_FLOOR = 791
     }
 }

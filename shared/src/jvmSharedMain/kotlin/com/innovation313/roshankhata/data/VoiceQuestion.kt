@@ -54,8 +54,16 @@ object VoiceQuestion {
     // The other end of "most" (14 Nov 2026, the owner's check log: "jisne mere sabse kam paise dene hain" was answered with
     // the shop's total to give). Two spellings of Sindhi's "less" (ھ and ه) and Persian's with and without the half-space.
     private val LEAST = listOf("sab se kam", "sabse kam", "least", "lowest", "smallest", "fewest", "terkecil", "terendah",
-        "paling sedikit",
+        "paling sedikit", "paling kecil", "minimum", "sab se chhota", "sabse chhota", "sab se chota", "sabse chota",
+        "سب سے چھوٹا", "सबसे छोटा", "सबसे छोटी", "সবচেয়ে ছোট", "সবচেয়ে কম", "سڀ کان ننڍو", "الأصغر", "أصغر", "أدنى", "الاقل", "کوچک‌ترین", "کوچکترین",
+        "کمتر",
         "سب سے کم", "سڀ کان گھٽ", "سڀ کان گهٽ", "الأقل", "أقل", "اقل", "کمترین", "کم‌ترین", "सबसे कम", "সবচেয়ে কম")
+    /**
+     * What a debt is called when the question asks for the smallest (15 Nov 2026): the balance, the debtor, Indonesian's "-nya".
+     * Only beside a [LEAST] word, never alone: "balance" by itself is no debt question.
+     */
+    private val LEAST_DEBT = listOf("balance", "balances", "debtor", "debtors", "bakaya", "baqaya", "hisaab", "hisab", "khata", "khate", "utangnya",
+        "hutangnya", "piutangnya", "بدهکار", "بدهی", "حساب", "کھاتہ", "کھاتے", "खाता", "हिसाब", "হিসাব", "رصيد", "رصيده")
     private val DEBT = listOf("baqaya", "bakaya", "udhar", "udhaar", "qarz", "owe", "owes", "due", "utang", "piutang",
         "بقایا", "ادھار", "قرض", "اڌار", "دين", "ديون", "طلب", "बकाया", "उधार", "क़र्ज़", "कर्ज", "বাকি", "ধার", "পাওনা",
         // 12 Nov 2026 (Hudhud): "Ali ka kitna baqi hai"; "dues", once the words count only whole.
@@ -93,6 +101,60 @@ object VoiceQuestion {
     private val HALF_YEAR = listOf("half year", "aadha saal", "aadhe saal", "adha saal", "nisf saal", "نصف سال", "آدھا سال",
         "آدھے سال", "आधा साल", "आधे साल", "نصف سنة", "نصف عام", "نیم سال", "نیمسال", "ششماهه", "setengah tahun",
         "অর্ধ বছর", "অর্ধেক বছর", "اڌ سال")
+    // Parts of the day (15 Nov 2026, the everyday review): "subah se ab tak kitna bika", "shaam tak ki sale", "how much did we sell this
+    // morning". The book keeps the day, not the hour, so each is TODAY's figure — told as exact only when it runs up to now ("since
+    // morning"), otherwise as a guess ([partOfDay]). "Sham" is left out: it is a man's name too. "Raat" beside "kal" stays yesterday's.
+    private val PARTS = listOf("subah", "subha", "savere", "sawere", "shaam", "dopahar", "dupahar", "dophar", "raat", "morning", "afternoon",
+        "evening", "noon", "tonight", "صبح", "شام", "دوپہر", "رات", "सुबह", "सवेरे", "शाम", "दोपहर", "रात", "সকাল", "সকালে", "বিকাল", "বিকেল",
+        "সন্ধ্যা", "দুপুর", "রাত", "الصباح", "صباح", "صباحا", "المساء", "مساء", "الظهر", "العصر", "الليلة", "منجهند", "pagi", "siang", "sore", "malam")
+    /** "Since", "from", "up to now": a part of the day that runs to the present. */
+    private val SINCE = listOf("se", "since", "from", "dari", "sejak", "منذ", "از", "سے", "से", "থেকে", "کان", "ab tak", "so far", "till now",
+        "اب تک", "अब तक", "এখন পর্যন্ত", "حتى الآن", "تا حالا", "تا الان", "sampai sekarang", "تائين", "هينئر")
+
+    /**
+     * A part of the day named in [heard], or null (15 Nov 2026). [Part.toNow] says it runs up to the present ("subah se ab tak",
+     * "since morning"): that is today's figure exactly. Otherwise ("this morning", "shaam tak") today's figure is a superset: the
+     * book has no hour, and Hudhud tells it as a guess.
+     */
+    class Part(val toNow: Boolean)
+
+    private val UP_TO_NOW = listOf("ab tak", "so far", "till now", "until now", "اب تک", "अब तक", "এখন পর্যন্ত", "حتى الآن", "تا حالا", "تا الان",
+        "sampai sekarang", "هينئر تائين")
+    /** "Until" a time of day (not the present): "shaam tak", "till noon". */
+    private val UNTIL = listOf("tak", "تک", "तक", "until", "till", "حتى", "تا", "sampai", "تائين")
+
+    /** A greeting names a part of the day without asking about it ("good morning", "صباح الخير", "selamat pagi"). */
+    private val DAY_GREETINGS = listOf("good morning", "good afternoon", "good evening", "good night", "subah bakhair", "suprabhat",
+        "shubh prabhat", "shubh sandhya", "صباح الخير", "مساء الخير", "صبح بخیر", "عصر بخیر", "شب بخیر", "صبح بخير", "شام بخیر", "सुप्रभात", "शुभ संध्या",
+        "শুভ সকাল", "শুভ সন্ধ্যা", "selamat pagi", "selamat siang", "selamat sore", "selamat malam", "صبح بخير", "ڀلي صبح")
+
+    private fun withoutGreeting(t: String): String = DAY_GREETINGS.fold(" $t ") { acc, g -> acc.replace(" ${normalise(g)} ", " ") }.trim()
+
+    fun partOfDay(heard: String): Part? {
+        val t = withoutGreeting(normalise(heard))
+        if (!saysAny(t, PARTS)) return null
+        if (saysAny(t, YESTERDAY) || saysAny(t, WEEK) || saysAny(t, MONTH) || saysAny(t, YEAR)) return null
+        // "Since the morning" (a since-word) or "until now" runs to the present; "until the evening" does not.
+        val toNow = saysAny(t, UP_TO_NOW) || (saysAny(t, SINCE) && !saysAny(t, UNTIL))
+        return Part(toNow)
+    }
+
+    // An event or a festival as a span (15 Nov 2026): the book keeps days, not the Ramzan, so it is none of the spans he tells. Said
+    // only with the word that frames a span ("Ramzan mein", "Eid se pehle", "since Eid"): "Ramzan" is a man's name too.
+    private val EVENTS = listOf("ramzan", "ramadan", "ramazan", "رمضان", "रमज़ान", "रमजान", "রমজান", "eid", "عید", "عيد", "ईद", "ঈদ", "muharram",
+        "محرم", "diwali", "دیوالی", "दिवाली", "holi", "christmas", "کرسمس", "baisakhi", "شب برات", "shab e barat", "ramadhan", "lebaran", "idul fitri")
+    private val EVENT_FRAME = listOf("mein", "me", "ke dauran", "ke baad", "se pehle", "se pahle", "se baad", "ke din", "during", "before", "after",
+        "since", "میں", "کے دوران", "کے بعد", "سے پہلے", "सेپहले", "में", "के दौरान", "के बाद", "से पहले", "আগে", "পরে", "خلال", "قبل", "بعد", "في",
+        "قبل از", "بعد از", "در", "sebelum", "setelah", "sesudah", "saat", "selama", "ڪري", "کان اڳ", "کان پوءِ")
+    private val WEEKDAYS = listOf("jumma", "jumme", "jume", "jummah", "juma", "friday", "somwar", "itwar", "monday", "sunday", "جمعہ", "جمعے", "इतवार",
+        "جمعه", "الجمعة")
+
+    private fun isEventSpan(t: String): Boolean {
+        if (saysAny(t, EVENTS) && saysAny(t, EVENT_FRAME)) return true
+        // "Pichle jumme se ab tak": since a weekday, which is none of the spans.
+        return saysAny(t, WEEKDAYS) && saysAny(t, LAST) && saysAny(t, SINCE)
+    }
+
     // The whole book. The first group means it wherever it stands: "aaj tak" is "until today", and the TODAY word inside it
     // does not make the question today's. The second group means it only when no other span is said, because "aaj ab tak"
     // is today so far and "is saal ab tak" this year so far. "So far" and "to date" are left out on purpose: said alone
@@ -337,6 +399,7 @@ object VoiceQuestion {
         if (t.isEmpty()) return NO_SPAN
         // The whole book first: "aaj tak" holds the word "aaj" and is not today.
         if (saysAny(t, EVER)) return Spans(Window.ALL_TIME, false)
+        if (isEventSpan(t)) return NOT_OURS
         val counted = countedSpans(heard)
         val half = saysAny(t, HALF_YEAR)
         if (counted.isNotEmpty() || half) {
@@ -361,6 +424,7 @@ object VoiceQuestion {
             saysAny(t, TODAY) -> Window.TODAY
             saysAny(t, YESTERDAY) -> Window.YESTERDAY
             saysAny(t, MONTH) -> Window.THIS_MONTH
+            saysAny(withoutGreeting(t), PARTS) -> Window.TODAY
             // "Ab tak" is only the whole book when no other span is said: "aaj ab tak" is today so far.
             saysAny(t, EVER_SO_FAR) -> Window.ALL_TIME
             else -> null
@@ -425,12 +489,14 @@ object VoiceQuestion {
             saysAny(t, PROFIT) -> Kind.PROFIT_MONTH
             saysAny(t, EXPIRING) -> Kind.EXPIRING
             saysAny(t, NOT_PAID) -> Kind.NOT_PAID
+            // The smallest first (15 Nov 2026): Indonesian's "paling sedikit" holds the word "paling" of "most", and the balance, the debtor
+            // and "-nya" are the debt's own words beside a least.
+            saysAny(t, LEAST) && (owedToUs(t) || saysAny(t, LEAST_DEBT)) && !owedByTheShop(t) -> Kind.WHO_OWES_LEAST
             // "Sab se zyada kis ko dena hai" is whom the shop owes most: the shop's payables, not who owes it most.
             saysAny(t, MOST) && saysAny(t, TO_GIVE) && !owedToTheShop(t) -> Kind.TO_GIVE
             // "Kisi ne sabse zyada paise dene hain" says "dene" and somebody else gives: who owes the shop most (14 Nov 2026).
             saysAny(t, MOST) && owedToUs(t) -> Kind.WHO_OWES_MOST
-            saysAny(t, LEAST) && owedToUs(t) && !owedByTheShop(t) -> Kind.WHO_OWES_LEAST
-            saysAny(t, SALES) -> if (saysAny(t, TODAY)) Kind.SALES_TODAY else Kind.SALES_MONTH
+            saysAny(t, SALES) -> if (saysAny(t, TODAY) || windowOf(heard) == Window.TODAY) Kind.SALES_TODAY else Kind.SALES_MONTH
             // Which way the money is owed, by who gives (14 Nov 2026, the owner's sentences): "kis kis ne mera paisa dena
             // hai" says "dena" but somebody else gives — the shop's to get; "mera qarz", "supplier ka baqaya" are what the
             // shop owes — its to give.
