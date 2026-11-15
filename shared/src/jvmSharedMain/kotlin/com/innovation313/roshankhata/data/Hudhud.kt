@@ -1474,8 +1474,6 @@ object Hudhud {
         HudhudNote.read(heard, calling = { it in VOCATIVE_SET }) { w ->
             knownName(w, names) || knownName(bengaliStem(w), names)
         }?.let { n -> noteAsk(n, said, names, topics, mind, window, before)?.let { return it } }
-        // Staff pay and attendance, a customer's plan, a customer's cheques (15 Nov 2026): the rules' own reading, ahead of the features.
-        recordOf(said, joined, mind, window, named, product, before, whoIsNamed(said, staff, topics, mind, window))?.let { return it }
         // A named customer's loyalty points ("Ali Raza ke loyalty points kitne hain"): a sentence that says the points and names him.
         if (named.isNotEmpty() && product.isEmpty() && !how && HudhudCounter.loyaltyWord(joined)) return Ask.Counter(CounterFacet.LOYALTY, window, named)
         // The counter's own books (15 Nov 2026): "aaj ka sab se bada bill", "kis cashier ne void kiya", "kis wajah se return hua".
@@ -1484,6 +1482,8 @@ object Hudhud {
                 spanOwnsLast = spanSaid != null && lastIsSpansOwn(heard, mind))
                 ?.let { return Ask.Counter(it, window ?: HudhudCounter.defaultWindow(it)) }
         }
+        // Staff pay and attendance, a customer's plan, a customer's cheques (15 Nov 2026): the rules' own reading, ahead of the features.
+        recordOf(said, joined, mind, window, named, product, before, whoIsNamed(said, staff, topics, mind, window))?.let { return it }
         if (named.isEmpty() && product.isEmpty()) byFeature(said, joined, mind, window, topics)?.let { return it }
         // The sentence's one "last" is the span's ("uska last month", "what did Ali pay last year"), not a last entry or payment.
         val spanLast = spanSaid != null && lastIsSpansOwn(heard, mind)
