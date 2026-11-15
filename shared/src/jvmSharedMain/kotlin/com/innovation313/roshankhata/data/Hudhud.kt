@@ -100,8 +100,11 @@ object Hudhud {
         /** How many of something there are, or were made over a span of days ([window]; none: all of them). */
         data class Count(val thing: Thing, val window: VoiceQuestion.Window? = null) : Ask()
 
-        /** Where one of the book's pages stands: cheques, plans, supplier bills, low stock, the whole book. */
-        data class Status(val of: StatusOf) : Ask()
+        /**
+         * Where one of the book's pages stands: cheques, plans, supplier bills, low stock, the whole book, the invoices not paid in
+         * full. [cheques] narrows a cheques question to the ones bounced or cleared (15 Nov 2026); null is the pending ones as before.
+         */
+        data class Status(val of: StatusOf, val cheques: ChequeState? = null) : Ask()
 
         /** Goods that came in from suppliers (their bills) over a span of days, newest first. */
         data class Deliveries(val window: VoiceQuestion.Window? = null) : Ask()
@@ -244,7 +247,10 @@ object Hudhud {
     enum class Thing { CUSTOMERS, SUPPLIERS, PRODUCTS, STAFF, ENTRIES, INVOICES, BILLS, TICKETS, CALCULATIONS, APP_OPENS }
 
     /** A page whose standing can be told. */
-    enum class StatusOf { CHEQUES, PLANS, BILLS, LOW_STOCK, BOOK, STAFF }
+    enum class StatusOf { CHEQUES, PLANS, BILLS, LOW_STOCK, BOOK, STAFF, INVOICES }
+
+    /** Which cheques a cheques question is about: the ones waiting (the default), the ones that came back, the ones that were paid. */
+    enum class ChequeState { PENDING, BOUNCED, CLEARED }
 
     /** The small talk he answers. */
     enum class Talk {
@@ -338,14 +344,49 @@ object Hudhud {
     ): Ask {
         val carried = carriedOf(before)
         val ruled = byRules(heard, names, topics, language, goods, carried)
-        if (!HudhudSense.ready || words(heard).isEmpty()) return limitSpan(heard, withCover(heard, byWay(heard, ruled), carried))
+        if (!HudhudSense.ready || words(heard).isEmpty()) return limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, ruled), carried)))
         val guesses = HudhudSense.rank(
             senseHeard(heard, names, goods),
             isName = { w -> w !in QUIET_SET && w !in VOCATIVE_SET && !HudhudMind.isHardWord(w) && knownName(w, names) },
             isItem = { w -> w !in QUIET_SET && !HudhudMind.isHardWord(w) && knownName(w, goods) }
         )
-        return limitSpan(heard, withCover(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)), carried))
+        return limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)), carried)))
     }
+
+    // ------------------------------------------------------------------------------------- which cheques
+
+    /**
+     * "Kis ka cheque bounce hua" (15 Nov 2026, the catalog's cheques gap): a cheques question that says the cheque came back or was
+     * paid asks for those, not for the ones still waiting. Only a question the rules or the sense already read as the cheques is
+     * narrowed, and only by a word of the past ("cleared", "wasool hua"): "kab clear hoga" asks about one that has not.
+     */
+    private fun withCheque(heard: String, ask: Ask): Ask = when {
+        ask is Ask.Now -> Ask.Now(withCheque(heard, ask.ask))
+        ask is Ask.Guessed -> withCheque(heard, ask.ask).let { if (it == ask.ask) ask else it }
+        ask is Ask.Status && ask.of == StatusOf.CHEQUES && ask.cheques == null ->
+            chequeState(words(heard).joinToString(" "))?.let { Ask.Status(StatusOf.CHEQUES, it) } ?: ask
+        else -> ask
+    }
+
+    /** The cheques a sentence names by what became of them; null for the ones still waiting. */
+    internal fun chequeState(joined: String): ChequeState? = when {
+        has(joined, BOUNCED_WORDS) -> ChequeState.BOUNCED
+        has(joined, CLEARED_WORDS) -> ChequeState.CLEARED
+        else -> null
+    }
+
+    private val BOUNCED_WORDS = listOf("bounce", "bounced", "bounces", "bouncing", "dishonour", "dishonoured", "dishonor", "dishonored",
+        "rejected", "wapas aa gaya", "wapas aaya", "wapas aayi", "wapas aa gayi", "wapas aaye", "wapas aa gaye", "wapis aa gaya",
+        "wapis aaya", "wapis aa gayi", "return hua", "return ho gaya", "return aaya", "baounce", "باؤنس", "بائونس", "باونس",
+        "واپس آ گیا", "واپس آگیا", "واپس آیا", "واپس آئی", "واپس آ گئی", "واپس آئے", "ریجیکٹ", "बाउंस", "बाउन्स", "वापस आ गया",
+        "वापस आया", "वापस आए", "বাউন্স", "ফেরত এসেছে", "ارتد", "ارتدت", "مرتجع", "مرتجعة", "مرتد", "برگشت", "برگشتی",
+        "برگشت خورد", "ditolak", "ditolak bank", "tolak")
+    private val CLEARED_WORDS = listOf("cleared", "clear ho gaya", "clear ho gaye", "clear ho gayi", "clear hua", "clear hue",
+        "clear ho chuka", "wasool hua", "wasool hue", "wasool ho gaya", "wasool ho gaye", "wasool ho gayi", "vasool hua",
+        "cash ho gaya", "cash ho gaye", "cash hua", "settled", "کلیئر ہو گیا", "کلیئر ہوا", "کلیئر ہو گئے", "کلیئر ہو گئی",
+        "وصول ہو گیا", "وصول ہو گئے", "وصول ہو گئی", "وصول ہوا", "وصول ہوئے", "क्लियर हो गया", "क्लियर हुआ", "क्लियर हो गए",
+        "वसूल हो गया", "تم صرفه", "تم صرفها", "تم تحصيله", "تم تحصيلها", "ক্লিয়ার হয়েছে", "sudah cair", "sudah dicairkan",
+        "dicairkan", "پاس شد", "پاس شده", "وصول شد")
 
     // ------------------------------------------------------------------------------------- how long the shelf lasts
 
@@ -811,6 +852,9 @@ object Hudhud {
         if (ruled is Ask.About && (ruled.topic == AboutTopic.NAME_STORY || ruled.topic in FAITH_TOPICS || ruled.topic in STORY_TOPICS)) return ruled
         // A feature named by its own word (14 Nov 2026), and the asks only the rules make: never turned by the sense.
         if (ruled is Ask.Help && featureNamed(heard)) return ruled
+        // The invoices with a balance still due: only the rules make this ask (the bank has no meaning for it), so the sense,
+        // which learnt every "invoices" as a count of the ones made, never turns it.
+        if (ruled == Ask.Status(StatusOf.INVOICES)) return ruled
         if (ruled is Ask.Figure && ruled.kind == VoiceQuestion.Kind.NOT_PAID && remindPage(words(heard).joinToString(" "))) return ruled
         // A bare "bill" with no supplier or purchase word (15 Nov 2026, the owner's list): which bill is said by the rules' own
         // question (utility or supplier), never settled by the sense, which learnt every "bill" as a count of supplier bills.
@@ -1005,6 +1049,8 @@ object Hudhud {
             StatusOf.LOW_STOCK -> "low_stock"
             StatusOf.BOOK -> "book_summary"
             StatusOf.STAFF -> "staff_salary"
+            // The unpaid invoices have no meaning in the bank: only the rules read them ([unpaidInvoices]), the sense never turns it.
+            StatusOf.INVOICES -> null
         }
         is Ask.Deliveries -> "deliveries"
         is Ask.Activity -> "activity"
@@ -1586,6 +1632,12 @@ object Hudhud {
         ) {
             page("screen_cashflow")?.let { return it }
         }
+        // The invoices not paid in full (15 Nov 2026, the catalog's invoices gap: "Kis invoice ka paisa baqi hai" was the shop's
+        // whole to-get, "Which invoices are unpaid" a count of invoices made). A quotation, a proforma, a sales order or a challan
+        // is not an invoice and has no balance: the documents page lists each kind with its count ("How many quotations are open"
+        // was the app's opens).
+        if (unpaidInvoices(joined)) return Ask.Status(StatusOf.INVOICES)
+        if (has(joined, OTHER_DOCS)) page("intro_documents")?.let { return it }
         val billWord = has(joined, BILL_WORDS)
         if (!counting && (has(joined, DOCUMENTS) || (billWord && has(joined, MAKE_DOC) && !has(joined, UTILITY) &&
                 !has(joined, SUPPLIER_SIDE_WORDS)))
@@ -1710,6 +1762,22 @@ object Hudhud {
         "debt", "debts", "dues", "owed", "owes", "owe", "due", "balance", "اُدھار", "ادھار", "باقی", "حساب", "وصولی", "पैसे", "उधार",
         "बाकी", "हिसाब", "دين", "ديون", "حساب", "بدهی", "ادھار", "বাকি", "হিসাব", "টাকা", "piutang", "utang", "hutang", "pembayaran")
 
+    /** An invoice word with a word for not paid, no supplier, purchase or bill word: the invoices with a balance still due. */
+    internal fun unpaidInvoices(joined: String): Boolean =
+        has(joined, INVOICE_WORDS) && has(joined, UNPAID_WORDS) && !has(joined, BILL_WORDS) && !has(joined, SUPPLIER_SIDE_WORDS) &&
+            !has(joined, PURCHASE_SIDE)
+
+    private val INVOICE_WORDS = listOf("invoice", "invoices", "انوائس", "انوائیس", "انوائيس", "इनवॉइस", "इनवाइस", "فاتورة", "فاتوره",
+        "فواتير", "فاکتور", "فاکتورها", "ইনভয়েস", "faktur")
+    private val UNPAID_WORDS = listOf("unpaid", "not paid", "pending", "overdue", "outstanding", "balance", "due", "baqi", "baaqi",
+        "bakaya", "wasool nahi", "ada nahi", "paisa baqi", "ادا نہیں", "باقی", "باقي", "وصول نہیں", "बकाया", "बाकी", "अदा नहीं",
+        "वसूल नहीं", "غير مدفوعة", "غير مدفوعه", "غير مسددة", "مستحقة", "متبقي", "متأخرة", "বাকি", "বকেয়া", "পরিশোধ হয়নি",
+        "belum dibayar", "belum lunas", "belum", "tunggakan", "jatuh tempo", "پرداخت نشده", "باقی‌مانده", "معوق", "معوقه")
+    /** A document that is not an invoice: it has no balance, and the documents page counts each kind. */
+    private val OTHER_DOCS = listOf("quotation", "quotations", "proforma", "sales order", "sales orders", "challan", "challans",
+        "delivery note", "delivery notes", "کوٹیشن", "چالان", "عرض سعر", "عروض الأسعار", "پیش‌فاکتور", "کوٹیشنز", "कोटेशन", "चालान",
+        "কোটেশন", "চালান", "penawaran", "surat jalan")
+
     internal fun remindPage(joined: String): Boolean =
         has(joined, REMIND_WORDS) && !has(joined, BILL_WORDS) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE) &&
             !has(joined, listOf("automation", "automations", "notification", "notifications", "alarm", "stock", "maal", "saman", "item", "cheez"))
@@ -1745,7 +1813,8 @@ object Hudhud {
             (has(joined, BILL_WORDS) && has(joined, MAKE_DOC)) ||
             (has(joined, BILL_WORDS) && has(joined, BILL_EDIT) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE)) ||
             itemRankPage(joined) != null ||
-            remindPage(joined) || agedDues(joined)
+            remindPage(joined) || agedDues(joined) ||
+            (has(joined, OTHER_DOCS))
     }
 
     private val LOCK_WORDS = listOf("lock", "app lock", "applock", "pin", "pin code", "password", "passcode", "fingerprint",

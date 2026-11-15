@@ -77,20 +77,20 @@ column	cashbook.saleId	Long?	STRUCT	pattern
 column	cashbook.timestamp	Long	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	cashbook.uid	String?	STRUCT	pattern
 column	cheques.amount	Double	READ	reader=HudhudFacts.cheques;gate=REPORTS;screen=ChequesActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cheques.bankName	String?	GAP	why=he counts the pending cheques by direction and due day, a cheque's own details are the Cheques screen's
-column	cheques.chequeNumber	String?	GAP	why=he counts the pending cheques by direction and due day, a cheque's own details are the Cheques screen's
-column	cheques.createdAt	Long	GAP	why=he counts the pending cheques by direction and due day, a cheque's own details are the Cheques screen's
+column	cheques.bankName	String?	READ	reader=HudhudFacts.chequesIn;also=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity;stricter=its amount stays with REPORTS (the sum and each row's figure)
+column	cheques.chequeNumber	String?	READ	reader=HudhudFacts.chequesIn;also=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity;stricter=its amount stays with REPORTS (the sum and each row's figure)
+column	cheques.createdAt	Long	GAP	why=the Cheques list's own row does not carry them, a cheque's day is its due day, so "when did it clear" is not told
 column	cheques.deletedAt	Long?	STRUCT	pattern
 column	cheques.dueDate	Long	READ	reader=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity
 column	cheques.id	Long	STRUCT	pattern
 column	cheques.isDeleted	Boolean	STRUCT	pattern
 column	cheques.isReceived	Boolean	READ	reader=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity
 column	cheques.ledgerEntryId	Long?	STRUCT	pattern
-column	cheques.note	String?	GAP	why=he counts the pending cheques by direction and due day, a cheque's own details are the Cheques screen's
+column	cheques.note	String?	GAP	why=the Cheques list's own row does not carry them, a cheque's day is its due day, so "when did it clear" is not told
 column	cheques.partyId	Long	STRUCT	pattern
 column	cheques.photoPath	String?	WITHHELD	why=a picture's file path on this phone
-column	cheques.settledAt	Long?	GAP	why=he counts the pending cheques by direction and due day, a cheque's own details are the Cheques screen's
-column	cheques.status	Int	GAP	why=he counts the pending cheques by direction and due day, a cheque's own details are the Cheques screen's
+column	cheques.settledAt	Long?	GAP	why=the Cheques list's own row does not carry them, a cheque's day is its due day, so "when did it clear" is not told
+column	cheques.status	Int	READ	reader=HudhudFacts.chequesIn;also=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity;stricter=its amount stays with REPORTS (the sum and each row's figure)
 column	cheques.uid	String?	STRUCT	pattern
 column	day_close.cashIn	Double	GAP	why=the drawer is worked out by the books' rule (DayCloseMath) and the close's columns are folded into it, not told one by one
 column	day_close.cashOut	Double	GAP	why=the drawer is worked out by the books' rule (DayCloseMath) and the close's columns are folded into it, not told one by one
@@ -133,26 +133,26 @@ column	invoice_items.quantity	Double	GAP	why=the screen holds the lines, Hudhud 
 column	invoice_items.rate	Double	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
 column	invoice_items.uid	String?	STRUCT	pattern
 column	invoice_items.unit	String?	GAP	why=the screen holds the lines, Hudhud tells only counts and totals so far
-column	invoices.additionalChargeAmount	Double?	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
-column	invoices.additionalChargeLabel	String?	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
-column	invoices.createdAt	Long	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
+column	invoices.additionalChargeAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.additionalChargeLabel	String?	GAP	why=he says which invoices have money due and how much, the invoice's own words are its screen's
+column	invoices.createdAt	Long	GAP	why=he says which invoices have money due and how much, the invoice's own words are its screen's
 column	invoices.customerName	String	READ	reader=HudhudFacts.count;gate=NONE;screen=InvoicesActivity
-column	invoices.customerPhone	String?	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
+column	invoices.customerPhone	String?	GAP	why=he says which invoices have money due and how much, the invoice's own words are its screen's
 column	invoices.deletedAt	Long?	STRUCT	pattern
-column	invoices.discountAmount	Double?	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
-column	invoices.discountPercent	Double?	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
-column	invoices.dueDate	Long?	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
+column	invoices.discountAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.discountPercent	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.dueDate	Long?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices.id	Long	STRUCT	pattern
 column	invoices.invoiceDate	Long	READ	reader=HudhudFacts.count;gate=NONE;screen=InvoicesActivity
 column	invoices.invoiceNumber	String	READ	reader=HudhudFacts.count;gate=NONE;screen=InvoicesActivity
 column	invoices.isDeleted	Boolean	STRUCT	pattern
-column	invoices.kind	String	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
-column	invoices.note	String?	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
-column	invoices.receivedAmount	Double?	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
+column	invoices.kind	String	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.note	String?	GAP	why=he says which invoices have money due and how much, the invoice's own words are its screen's
+column	invoices.receivedAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices.sourceDocId	Long?	STRUCT	pattern
 column	invoices.sourceEntryId	Long?	STRUCT	pattern
-column	invoices.status	String	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
-column	invoices.taxPercent	Double?	GAP	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
+column	invoices.status	String	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.taxPercent	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices.templateId	Int	STRUCT	pattern
 column	invoices.uid	String?	STRUCT	pattern
 column	loyalty.id	Long	STRUCT	pattern

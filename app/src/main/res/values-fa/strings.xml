@@ -4449,6 +4449,11 @@
     <string name="hudhud_plans_none">برنامه بازی وجود ندارد.</string>
     <string name="hudhud_l_remaining">باقی‌مانده</string>
     <string name="hudhud_bills_none">همه فاکتورهای تأمین‌کننده پرداخت شده است.</string>
+    <string name="hudhud_t_invoices_due">فاکتورهای دارای مبلغ باقی‌مانده</string>
+    <string name="hudhud_invoices_none">هیچ فاکتوری مبلغ باقی‌مانده ندارد.</string>
+    <string name="hudhud_l_invoices_unrecorded">سررسید نوشته شده، پرداختی ثبت نشده</string>
+    <string name="hudhud_cheques_bounced_none">هیچ چکی برگشت نخورده است.</string>
+    <string name="hudhud_cheques_cleared_none">هیچ چکی وصول نشده است.</string>
     <string name="hudhud_l_owed_suppliers">بدهی به تأمین‌کنندگان</string>
     <string name="hudhud_low_none">موجودی هیچ کالایی کم نیست.</string>
     <string name="hudhud_t_book">دفتر شما</string>

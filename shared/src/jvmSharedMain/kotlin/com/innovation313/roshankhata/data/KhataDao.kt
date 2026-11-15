@@ -2640,6 +2640,21 @@ interface KhataDao {
     )
     suspend fun pendingChequesOnce(): List<Cheque>
 
+    /**
+     * The live invoices (kind INVOICE, not cancelled) that say something about payment: an amount received written on
+     * them, or a due day. Read only, for Hudhud's "which invoices still have money due" (16 Nov 2026): the screen shows a
+     * balance only where an amount received is written, so a cash sale with neither is never called unpaid.
+     */
+    @Query(
+        """
+        SELECT * FROM invoices
+        WHERE isDeleted = 0 AND kind = 'INVOICE' AND status <> 'CANCELLED'
+          AND (receivedAmount IS NOT NULL OR dueDate IS NOT NULL)
+        ORDER BY CASE WHEN dueDate IS NULL THEN 1 ELSE 0 END, dueDate ASC, id DESC
+        """
+    )
+    suspend fun invoicesWithPaymentOnce(): List<Invoice>
+
     @Query(
         """
         SELECT pl.id, pl.partyId, p.name AS partyName,

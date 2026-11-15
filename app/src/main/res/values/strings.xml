@@ -4634,6 +4634,11 @@
     <string name="hudhud_plans_none">No plan is open.</string>
     <string name="hudhud_l_remaining">Still to come</string>
     <string name="hudhud_bills_none">Every supplier bill is paid.</string>
+    <string name="hudhud_t_invoices_due">Invoices with money still due</string>
+    <string name="hudhud_invoices_none">No invoice has money still due.</string>
+    <string name="hudhud_l_invoices_unrecorded">Due day set, no payment written</string>
+    <string name="hudhud_cheques_bounced_none">No cheque has bounced.</string>
+    <string name="hudhud_cheques_cleared_none">No cheque has cleared.</string>
     <string name="hudhud_l_owed_suppliers">You owe suppliers</string>
     <string name="hudhud_low_none">No item is low on stock.</string>
     <string name="hudhud_t_book">Your book</string>

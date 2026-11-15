@@ -4449,6 +4449,11 @@
     <string name="hudhud_plans_none">ڪا رٿا کليل ناهي.</string>
     <string name="hudhud_l_remaining">اڃا اچڻو آهي</string>
     <string name="hudhud_bills_none">سپلائر جا سڀ بل ادا ٿي چڪا آهن.</string>
+    <string name="hudhud_t_invoices_due">باقي رقم وارا انوائس</string>
+    <string name="hudhud_invoices_none">ڪنهن به انوائس تي رقم باقي ناهي.</string>
+    <string name="hudhud_l_invoices_unrecorded">تاريخ لکيل آهي، وصولي لکيل ناهي</string>
+    <string name="hudhud_cheques_bounced_none">ڪو چيڪ بائونس ٿيل ناهي.</string>
+    <string name="hudhud_cheques_cleared_none">ڪو چيڪ ڪليئر ٿيل ناهي.</string>
     <string name="hudhud_l_owed_suppliers">سپلائرن کي ڏيڻا آهن</string>
     <string name="hudhud_low_none">ڪنهن به شيءِ جو اسٽاڪ گهٽ ناهي.</string>
     <string name="hudhud_t_book">توهان جو کاتو</string>

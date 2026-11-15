@@ -4421,6 +4421,11 @@
     <string name="hudhud_plans_none">Koi mansooba khula nahi.</string>
     <string name="hudhud_l_remaining">Abhi aana baqi</string>
     <string name="hudhud_bills_none">Supplier ke tamam bill ada ho chuke hain.</string>
+    <string name="hudhud_t_invoices_due">Raqam baqi wale invoice</string>
+    <string name="hudhud_invoices_none">Kisi invoice par raqam baqi nahi.</string>
+    <string name="hudhud_l_invoices_unrecorded">Tareekh likhi hai, wusooli nahi likhi</string>
+    <string name="hudhud_cheques_bounced_none">Koi cheque bounce nahi hua.</string>
+    <string name="hudhud_cheques_cleared_none">Koi cheque clear nahi hua.</string>
     <string name="hudhud_l_owed_suppliers">Suppliers ko dene hain</string>
     <string name="hudhud_low_none">Kisi item ka stock kam nahi.</string>
     <string name="hudhud_t_book">Aap ka khata</string>

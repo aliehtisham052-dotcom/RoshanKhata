@@ -4421,6 +4421,11 @@
     <string name="hudhud_plans_none">کوئی قسط پلان کھلا نہیں۔</string>
     <string name="hudhud_l_remaining">ابھی آنا باقی</string>
     <string name="hudhud_bills_none">سپلائر کے تمام بل ادا ہو چکے ہیں۔</string>
+    <string name="hudhud_t_invoices_due">رقم باقی والے انوائس</string>
+    <string name="hudhud_invoices_none">کسی انوائس پر رقم باقی نہیں۔</string>
+    <string name="hudhud_l_invoices_unrecorded">تاریخ لکھی ہے، وصولی نہیں لکھی</string>
+    <string name="hudhud_cheques_bounced_none">کوئی چیک باؤنس نہیں ہوا۔</string>
+    <string name="hudhud_cheques_cleared_none">کوئی چیک کلیئر نہیں ہوا۔</string>
     <string name="hudhud_l_owed_suppliers">سپلائرز کو دینے ہیں</string>
     <string name="hudhud_low_none">کسی آئٹم کا اسٹاک کم نہیں۔</string>
     <string name="hudhud_t_book">آپ کا کھاتہ</string>

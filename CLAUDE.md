@@ -4022,6 +4022,31 @@ hai" read as the biggest debt, the shop's own payables or a guess.
 - **Not done:** "Kis ne udhaar liya" (meaning 10) still reads as who owes; its accepted readings (Activity, Credit span) need a span or a rule that
   "liya" without a span is the day's credit — undecided, since "kis ne udhaar liya" may also mean who owes now.
 
+### 15 Nov 2026: Hudhud, the catalog's cheques-and-invoices group (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 8 (money: what is owed on a cheque or an invoice). The owner's basis (15 Nov, 12:21): the data is definite (the app's own tables), so the work
+is angles over the catalog's columns, each through the whole pipeline. This group moved 3 cheque columns and 8 invoice columns from GAP to READ.
+
+- **Cheques by state** (`Ask.Status(CHEQUES, ChequeState)`, `withCheque`, `chequeState`): "which cheques bounced / cleared" in nine languages (past forms only:
+  "bounce"/"clear" alone stay the waiting ones, "kab clear hoga" is a future question). `HudhudFacts.chequesIn` lists them newest due day first with number,
+  bank and day on each row; the sum is REPORTS. The list does not carry `settledAt`, so "when did it clear" is not told (GAP, said in the catalog).
+- **Invoices with money still due** (`StatusOf.INVOICES`, `unpaidInvoices`, `HudhudFacts.invoicesDue`, `KhataDao.invoicesWithPaymentOnce`, read only): the invoice
+  screen's own rule — a balance exists only where an amount received is written (`totals.balanceDue`, `Money.isPositive`). An invoice with a due day and no payment
+  written is counted on its own line ("Due day set, no payment written"), never called unpaid. Kind INVOICE only, not cancelled. Not read when a bill word, a
+  supplier word or a purchase word is in the sentence (the supplier's papers are another page).
+- **The protection (lesson 145):** only the rules make `Status(INVOICES)` (`keyOf` is null: the bank has no meaning for it), and the sense had learnt every
+  "invoices" as a count, so `decide` returns it unturned. A quotation / proforma / sales order / challan word opens the documents page (`OTHER_DOCS`, in `byFeature`
+  and `featureNamed`; the sense had read "quotations open" as the app's opens). A supplier word does NOT change that: the guard was tried and changed no answer,
+  and the documents page is the only one that names quotations — dead code removed (lesson 129).
+- **Mutations:** 10 variants one at a time against HudhudChequeInvoiceTest (7); three survived at first (the bill and supplier exclusions, a redundant `featureNamed`
+  clause); the clause was removed, two tests added, all killed.
+- **Strings (nine languages):** hudhud_t_invoices_due, hudhud_invoices_none, hudhud_l_invoices_unrecorded, hudhud_cheques_bounced_none, hudhud_cheques_cleared_none.
+  **Sindhi, Bengali and Farsi wording is for a native read.**
+- **Measured here (plain shared Kotlin, lesson 93):** 501 shared tests, HudhudWordsTest 9, all 13 Strings steps and the catalog check pass; floors held (short 146, thousand 785).
+  **Not compiled:** `HudhudFacts`, `HudhudBook`, the DAO query and the strings — CI is their first build.
+- **Not done:** a person's own cheques ("Ali Raza ka cheque kab clear hoga" stays his page); "Sales order kitne hain" with no topic list reads a sales figure
+  (the page rule needs the book's page list, which the app passes); the invoice's phone, note and charge label stay GAP.
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the

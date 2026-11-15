@@ -4718,6 +4718,11 @@
     <string name="hudhud_plans_none">لا توجد خطة مفتوحة.</string>
     <string name="hudhud_l_remaining">المتبقي</string>
     <string name="hudhud_bills_none">كل فواتير المورّدين مدفوعة.</string>
+    <string name="hudhud_t_invoices_due">فواتير ما زال عليها مبلغ</string>
+    <string name="hudhud_invoices_none">لا توجد فاتورة عليها مبلغ متبقٍّ.</string>
+    <string name="hudhud_l_invoices_unrecorded">تاريخ الاستحقاق مكتوب دون دفعة مسجّلة</string>
+    <string name="hudhud_cheques_bounced_none">لم يُرتجَع أي شيك.</string>
+    <string name="hudhud_cheques_cleared_none">لم يُصرَف أي شيك بعد.</string>
     <string name="hudhud_l_owed_suppliers">عليك للمورّدين</string>
     <string name="hudhud_low_none">لا يوجد صنف مخزونه منخفض.</string>
     <string name="hudhud_t_book">دفترك</string>

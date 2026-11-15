@@ -4395,6 +4395,11 @@
     <string name="hudhud_plans_none">Tidak ada cicilan yang berjalan.</string>
     <string name="hudhud_l_remaining">Sisa yang belum masuk</string>
     <string name="hudhud_bills_none">Semua tagihan pemasok sudah lunas.</string>
+    <string name="hudhud_t_invoices_due">Faktur dengan sisa tagihan</string>
+    <string name="hudhud_invoices_none">Tidak ada faktur yang masih punya sisa tagihan.</string>
+    <string name="hudhud_l_invoices_unrecorded">Jatuh tempo ada, pembayaran belum dicatat</string>
+    <string name="hudhud_cheques_bounced_none">Tidak ada cek yang ditolak.</string>
+    <string name="hudhud_cheques_cleared_none">Tidak ada cek yang cair.</string>
     <string name="hudhud_l_owed_suppliers">Utang ke pemasok</string>
     <string name="hudhud_low_none">Tidak ada barang yang stoknya menipis.</string>
     <string name="hudhud_t_book">Buku Anda</string>

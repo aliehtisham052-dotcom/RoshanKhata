@@ -19,7 +19,8 @@ column	cashbook	GAP	cols=paymentRef	why=no question reaches it yet
 column	cashbook	WITHHELD	cols=photoPath	why=a picture's file path on this phone
 column	cheques	READ	cols=isReceived,dueDate	reader=HudhudFacts.cheques	gate=NONE	screen=ChequesActivity
 column	cheques	READ	cols=amount	reader=HudhudFacts.cheques	gate=REPORTS	screen=ChequesActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cheques	GAP	cols=chequeNumber,bankName,status,settledAt,note,createdAt	why=he counts the pending cheques by direction and due day, a cheque's own details are the Cheques screen's
+column	cheques	READ	cols=chequeNumber,bankName,status	reader=HudhudFacts.chequesIn	gate=NONE	screen=ChequesActivity	also=HudhudFacts.cheques	stricter=its amount stays with REPORTS (the sum and each row's figure)
+column	cheques	GAP	cols=settledAt,note,createdAt	why=the Cheques list's own row does not carry them, a cheque's day is its due day, so "when did it clear" is not told
 column	cheques	WITHHELD	cols=photoPath	why=a picture's file path on this phone
 column	day_close	READ	cols=closedAt	reader=HudhudBook.drawer	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	day_close	GAP	cols=day,opening,cashIn,cashOut,counted,note	why=the drawer is worked out by the books' rule (DayCloseMath) and the close's columns are folded into it, not told one by one
@@ -29,7 +30,8 @@ column	entry_items	GAP	cols=rate,isBonus,crop,pest,dose	why=no question reaches 
 column	installments	GAP	cols=amount,paidAt,note	why=plans are told by their next due day, instalments are the Plans screen's
 column	invoice_items	GAP	cols=itemName,quantity,unit,rate	why=the screen holds the lines, Hudhud tells only counts and totals so far
 column	invoices	READ	cols=invoiceNumber,customerName,invoiceDate	reader=HudhudFacts.count	gate=NONE	screen=InvoicesActivity
-column	invoices	GAP	cols=customerPhone,dueDate,taxPercent,discountPercent,additionalChargeLabel,additionalChargeAmount,receivedAmount,note,createdAt,discountAmount,kind,status	why=he counts invoices and lists the newest, the rest is the invoice's own screen (kind and status are only filters)
+column	invoices	READ	cols=dueDate,receivedAmount,taxPercent,discountPercent,additionalChargeAmount,discountAmount,kind,status	reader=HudhudFacts.invoicesDue	gate=REPORTS	screen=InvoicesActivity	via=KhataDao.invoicesWithPaymentOnce	stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices	GAP	cols=customerPhone,additionalChargeLabel,note,createdAt	why=he says which invoices have money due and how much, the invoice's own words are its screen's
 column	loyalty	GAP	cols=points,timestamp,note	why=no question reaches it yet
 column	parties	READ	cols=name,phone,fatherName,village,isCustomer,creditLimit,harvestPromise	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity
 column	parties	READ	cols=note	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity	also=HudhudFacts.notesList

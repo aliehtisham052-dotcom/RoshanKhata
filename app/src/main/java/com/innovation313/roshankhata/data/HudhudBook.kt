@@ -315,7 +315,7 @@ object HudhudBook {
             is Hudhud.Ask.About -> HudhudFacts.about(context, ask.topic)
             Hudhud.Ask.Clock -> HudhudFacts.clock(context)
             is Hudhud.Ask.Count -> HudhudFacts.count(context, dao, ask.thing, ask.window, parties)
-            is Hudhud.Ask.Status -> HudhudFacts.status(context, dao, ask.of, parties)
+            is Hudhud.Ask.Status -> HudhudFacts.status(context, dao, ask.of, parties, ask.cheques)
             is Hudhud.Ask.Deliveries -> HudhudFacts.deliveries(context, dao, ask.window)
             is Hudhud.Ask.Activity -> HudhudFacts.activity(context, dao, ask.window)
             is Hudhud.Ask.Collected -> HudhudFacts.collected(context, dao, ask.window)
@@ -1195,6 +1195,7 @@ object HudhudBook {
                 Hudhud.StatusOf.LOW_STOCK -> R.string.hudhud_t_low
                 Hudhud.StatusOf.BOOK -> R.string.hudhud_chip_book
                 Hudhud.StatusOf.STAFF -> R.string.hudhud_t_salary
+                Hudhud.StatusOf.INVOICES -> R.string.hudhud_t_invoices_due
             }
         )
         is Hudhud.Ask.Deliveries -> c.getString(R.string.hudhud_t_deliveries)
@@ -1303,6 +1304,7 @@ object HudhudBook {
                 Hudhud.StatusOf.LOW_STOCK -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.EXPIRING), Hudhud.Ask.Deliveries())
                 Hudhud.StatusOf.BOOK -> listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET), Hudhud.Ask.Activity(today), Hudhud.Ask.BackupStatus)
                 Hudhud.StatusOf.STAFF -> listOf(Hudhud.Ask.Count(Hudhud.Thing.STAFF), Hudhud.Ask.Activity(today))
+                Hudhud.StatusOf.INVOICES -> listOf(Hudhud.Ask.Count(Hudhud.Thing.INVOICES), Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
             }
             is Hudhud.Ask.Deliveries -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.BILLS), Hudhud.Ask.Status(Hudhud.StatusOf.LOW_STOCK))
             is Hudhud.Ask.Activity -> listOf(Hudhud.Ask.Collected(today), Hudhud.Ask.Deliveries(today), Hudhud.Ask.Count(Hudhud.Thing.INVOICES, today))

@@ -725,13 +725,16 @@ internal object HudhudFacts {
 
     // ------------------------------------------------------------------------------------------------ the pages
 
-    suspend fun status(c: Context, dao: KhataDao, of: Hudhud.StatusOf, parties: List<PartyWithBalance>): Answer = when (of) {
-        Hudhud.StatusOf.CHEQUES -> cheques(c, dao)
+    suspend fun status(
+        c: Context, dao: KhataDao, of: Hudhud.StatusOf, parties: List<PartyWithBalance>, state: Hudhud.ChequeState? = null
+    ): Answer = when (of) {
+        Hudhud.StatusOf.CHEQUES -> if (state == null) cheques(c, dao) else chequesIn(c, dao, state)
         Hudhud.StatusOf.PLANS -> plans(c, dao)
         Hudhud.StatusOf.BILLS -> bills(c, dao, parties)
         Hudhud.StatusOf.LOW_STOCK -> lowStock(c, dao)
         Hudhud.StatusOf.BOOK -> book(c, dao, parties)
         Hudhud.StatusOf.STAFF -> salaries(c, dao)
+        Hudhud.StatusOf.INVOICES -> invoicesDue(c, dao)
     }
 
     /** Cheques not yet cleared, bounced or cancelled: those to bank and those to be cashed, and how many are due. */
@@ -752,6 +755,69 @@ internal object HudhudFacts {
             lines = listOfNotNull(part(R.string.hudhud_l_cheques_in, got), part(R.string.hudhud_l_cheques_out, gave),
                 if (due > 0) line(c, R.string.hudhud_l_due, n(due)) else null),
             open = ChequesActivity::class.java)
+    }
+
+    /**
+     * Cheques that bounced or cleared (16 Nov 2026), newest first, with the number, the bank and the day on each row. A
+     * bounced cheque is still owed; a cleared one already posted its payment. The day is the cheque's due day: the
+     * moment it was settled is not carried by the list's own row.
+     */
+    private suspend fun chequesIn(c: Context, dao: KhataDao, state: Hudhud.ChequeState): Answer {
+        val bounced = state == Hudhud.ChequeState.BOUNCED
+        val label = c.getString(R.string.cheques) + " \u00B7 " + c.getString(if (bounced) R.string.cheque_bounced else R.string.cheque_cleared)
+        val want = if (bounced) ChequeStatus.BOUNCED else ChequeStatus.CLEARED
+        val list = dao.observeCheques().first().filter { it.status == want }.sortedByDescending { it.dueDate }
+        if (list.isEmpty()) {
+            return Answer(Mood.CALM, label = label,
+                lines = listOf(c.getString(if (bounced) R.string.hudhud_cheques_bounced_none else R.string.hudhud_cheques_cleared_none)),
+                open = ChequesActivity::class.java)
+        }
+        val money = reports()
+        fun part(title: Int, of: List<ChequeWithParty>) =
+            line(c, title, n(of.size) + if (money && of.isNotEmpty()) " \u00B7 " + HudhudBook.money(of.sumOf { it.amount }) else "")
+        return Answer(if (bounced) Mood.CARE else Mood.GOOD, label = label, figure = n(list.size),
+            lines = listOf(part(R.string.hudhud_l_cheques_in, list.filter { it.isReceived }),
+                part(R.string.hudhud_l_cheques_out, list.filter { !it.isReceived })),
+            rows = list.take(TOP).map { ch ->
+                val sub = listOfNotNull(ch.chequeNumber?.takeIf { it.isNotBlank() }, ch.bankName?.takeIf { it.isNotBlank() }, dayOf(c, ch.dueDate))
+                Row(ch.partyId, ch.partyName, if (money) HudhudBook.money(ch.amount) else "", sub.joinToString(" \u00B7 "))
+            },
+            open = ChequesActivity::class.java)
+    }
+
+    /**
+     * Invoices with money still due: the screen's own rule — a balance exists where an amount received is written on the
+     * invoice and it is less than the total (`totals.balanceDue`). A document that has a due day and no payment written is
+     * counted apart, never called unpaid: the book does not say whether it was.
+     */
+    private suspend fun invoicesDue(c: Context, dao: KhataDao): Answer {
+        val label = c.getString(R.string.hudhud_t_invoices_due)
+        val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY).second
+        val owing = ArrayList<Pair<Invoice, Double>>()
+        var unrecorded = 0
+        for (inv in dao.invoicesWithPaymentOnce()) {
+            if (inv.receivedAmount == null) { unrecorded++; continue }
+            val owed = inv.totals(dao.invoiceItems(inv.id)).balanceDue
+            if (Money.isPositive(owed)) owing += inv to owed
+        }
+        val unrecordedLine = if (unrecorded > 0) line(c, R.string.hudhud_l_invoices_unrecorded, n(unrecorded)) else null
+        if (owing.isEmpty()) {
+            return Answer(Mood.GOOD, label = label, lines = listOfNotNull(c.getString(R.string.hudhud_invoices_none), unrecordedLine),
+                open = InvoicesActivity::class.java)
+        }
+        val late = owing.count { (inv, _) -> (inv.dueDate ?: Long.MAX_VALUE) < endOfToday }
+        val money = reports()
+        return Answer(if (late > 0) Mood.CARE else Mood.CALM, label = label, figure = n(owing.size),
+            lines = listOfNotNull(
+                if (money) line(c, R.string.hudhud_l_remaining, HudhudBook.money(owing.sumOf { it.second })) else null,
+                if (late > 0) line(c, R.string.hudhud_l_due, n(late)) else null,
+                unrecordedLine
+            ),
+            rows = owing.take(TOP).map { (inv, owed) ->
+                Row(0, inv.customerName, if (money) HudhudBook.money(owed) else "",
+                    inv.invoiceNumber + (inv.dueDate?.let { " \u00B7 " + dayOf(c, it) } ?: ""), open = InvoicesActivity::class.java)
+            },
+            open = InvoicesActivity::class.java)
     }
 
     /** Open payment plans: how many, how many are due today or late, and the soonest few. */

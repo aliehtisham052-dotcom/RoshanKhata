@@ -4469,6 +4469,11 @@
     <string name="hudhud_plans_none">कोई प्लान खुला नहीं है।</string>
     <string name="hudhud_l_remaining">अभी आना बाकी</string>
     <string name="hudhud_bills_none">सप्लायर के सभी बिल चुका दिए गए हैं।</string>
+    <string name="hudhud_t_invoices_due">बाकी रकम वाले इनवॉइस</string>
+    <string name="hudhud_invoices_none">किसी इनवॉइस पर रकम बाकी नहीं।</string>
+    <string name="hudhud_l_invoices_unrecorded">तारीख लिखी है, वसूली नहीं लिखी</string>
+    <string name="hudhud_cheques_bounced_none">कोई चेक बाउंस नहीं हुआ।</string>
+    <string name="hudhud_cheques_cleared_none">कोई चेक क्लियर नहीं हुआ।</string>
     <string name="hudhud_l_owed_suppliers">सप्लायरों को देने हैं</string>
     <string name="hudhud_low_none">किसी आइटम का स्टॉक कम नहीं है।</string>
     <string name="hudhud_t_book">आपका खाता</string>
