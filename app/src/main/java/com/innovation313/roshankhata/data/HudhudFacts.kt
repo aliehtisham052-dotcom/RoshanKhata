@@ -355,12 +355,12 @@ internal object HudhudFacts {
                 val sold = StockCover.soldBase(soldRows, p, stockUnit ?: unit)
                 when (val cover = StockCover.of(onHand, sold, windowDays)) {
                     is StockCover.Cover.Days -> {
-                        val basis = c.getString(R.string.hudhud_cover_basis, windowDays, Format.qty(cover.perDay, stockUnit ?: unit))
+                        val basis = Digits.string(c.resources, R.string.hudhud_cover_basis, windowDays, Format.qty(cover.perDay, stockUnit ?: unit))
                         if (cover.days == 0) {
                             Answer(Mood.CARE, label = label, lines = listOf(c.getString(R.string.hudhud_cover_under_day), basis), open = open)
                         } else {
                             Answer(if (isLow || cover.days <= 7) Mood.CARE else Mood.CALM, label = label,
-                                figure = c.resources.getQuantityString(R.plurals.radar_days, cover.days, cover.days),
+                                figure = Digits.quantity(c.resources, R.plurals.radar_days, cover.days, cover.days),
                                 lines = listOf(line(c, R.string.hudhud_l_stock, Format.qty(onHand ?: 0.0, stockUnit)), basis), open = open)
                         }
                     }
