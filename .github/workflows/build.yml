@@ -12,8 +12,12 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Read only by default (8 Nov 2026 review, M29's second half): the job that holds the release
+# keystore and the Firebase config cannot write to the repository or its releases. The one job
+# that may (publish) holds no secret and runs no code from the repository: it only takes this
+# run's APK and puts it on the release.
 permissions:
-  contents: write
+  contents: read
 
 # One run per branch at a time, the newest queued after it (30 Oct 2026, the review): two quick pushes
 # to main raced, and the older run could finish last and leave an older APK behind the "latest" link —
@@ -24,6 +28,8 @@ concurrency:
 
 jobs:
   build:
+    permissions:
+      contents: read
     # Pinned, not ubuntu-latest: GitHub moves that label to Ubuntu 26.04
     # between 19 Oct and 19 Nov 2026, and the Android SDK this build uses
     # comes from the runner image. Move to 26.04 on purpose, after one trial
@@ -245,47 +251,19 @@ jobs:
         if: success()
         run: python3 scripts/check_16kb.py out/RoshanKhata-latest.apk
 
-      # A rolling "latest" release: one clean, permanent download link that
-      # always points at the newest build. No zip, no login, no digging
-      # through Actions artifacts — just tap and install on the phone.
-      - name: Publish to Releases
-        if: success() && github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
+      # A kmp-* branch's Room schema files, for the publish job to put beside its APK (the Room plugin's
+      # on-device test task expects app/schemas to exist in the repo, so they are checked in from there).
+      - name: Upload Room schemas for the kmp-test release
+        if: success() && startsWith(github.ref, 'refs/heads/kmp-') && hashFiles('app/schemas/**') != ''
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
-          tag_name: latest
-          name: "Roshan Khata — Latest Build"
-          body: |
-            Latest development build of Roshan Khata.
-
-            **Commit:** ${{ github.sha }}
-            **Built:** ${{ github.event.head_commit.timestamp }}
-
-            Tap `RoshanKhata-latest.apk` below to download and install.
-            It installs as a separate app, "Roshan Khata TEST", beside the
-            Play Store app, and does not touch the real app's data.
-            You may need to allow installs from unknown sources.
-          files: out/RoshanKhata-latest.apk
-          make_latest: true
+          name: kmp-schemas
+          path: app/schemas/
+          retention-days: 3
 
       # Android 7.0 (minSdk 24) compatibility, plus accessibility, RTL and
-      # hardcoded-text checks (10 Oct). Runs after the APK is published and is
-      # continue-on-error, so it can never hold back the download link.
-      # A kmp-* branch's APK, for the owner to try on his phone before the
-      # step is merged. Never the "latest" release (that is main's alone).
-      - name: Publish a kmp branch APK to the kmp-test pre-release
-        if: success() && startsWith(github.ref, 'refs/heads/kmp-')
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          cp out/RoshanKhata-latest.apk out/RoshanKhata-kmp-test.apk
-          gh release view kmp-test >/dev/null 2>&1 || gh release create kmp-test --prerelease \
-            --title "Roshan Khata - KMP test build" --notes "Test build from a kmp-* branch. Not the Play app, not the latest build." || true
-          gh release upload kmp-test out/RoshanKhata-kmp-test.apk --clobber
-          # Room's schema files, so they can be checked in (the Room plugin's
-          # on-device test task expects app/schemas to exist in the repo).
-          if [ -d app/schemas ]; then (cd app && zip -qr ../out/kmp-schemas.zip schemas) && gh release upload kmp-test out/kmp-schemas.zip --clobber || true; fi
-          gh release edit kmp-test --notes "Test build from branch ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not the Play app, not the latest build."
-
+      # hardcoded-text checks (10 Oct). continue-on-error, so it can never hold
+      # back the download link (the publish job waits for this job to end).
       - name: Lint (old-Android API, accessibility, RTL, hardcoded text)
         if: success()
         continue-on-error: true
@@ -325,3 +303,76 @@ jobs:
           name: RoshanKhata-dev-r8-mapping
           path: app/build/outputs/mapping/dev/
           retention-days: 90
+
+  # Publishing, apart from the build (8 Nov 2026 review, M29's second half): this job has the
+  # repository's write token and nothing else -- no keystore, no Firebase config, no Gradle, no
+  # checkout of code that could be changed by a pull request. It takes the APK the build job
+  # uploaded and puts it on "latest" (main) or "kmp-test" (a kmp-* branch), as before.
+  publish:
+    needs: build
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/kmp-'))
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Take the APK the build made
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: RoshanKhata-dev-apk
+          path: apk
+
+      - name: Name it as the release names it
+        run: |
+          mkdir -p out
+          n=$(ls apk/*.apk | wc -l)
+          if [ "$n" -ne 1 ]; then echo "::error::expected one APK from the build job, found $n"; exit 1; fi
+          cp apk/*.apk out/RoshanKhata-latest.apk
+          ls -lh out/
+
+      # A rolling "latest" release: one clean, permanent download link that
+      # always points at the newest build. No zip, no login, no digging
+      # through Actions artifacts — just tap and install on the phone.
+      - name: Publish to Releases
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
+        with:
+          tag_name: latest
+          name: "Roshan Khata — Latest Build"
+          body: |
+            Latest development build of Roshan Khata.
+
+            **Commit:** ${{ github.sha }}
+            **Built:** ${{ github.event.head_commit.timestamp }}
+
+            Tap `RoshanKhata-latest.apk` below to download and install.
+            It installs as a separate app, "Roshan Khata TEST", beside the
+            Play Store app, and does not touch the real app's data.
+            You may need to allow installs from unknown sources.
+          files: out/RoshanKhata-latest.apk
+          make_latest: true
+
+      - name: Take the Room schemas (a kmp branch)
+        id: schemas
+        if: startsWith(github.ref, 'refs/heads/kmp-')
+        continue-on-error: true
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: kmp-schemas
+          path: schemas
+
+      # A kmp-* branch's APK, for the owner to try on his phone before the
+      # step is merged. Never the "latest" release (that is main's alone).
+      - name: Publish a kmp branch APK to the kmp-test pre-release
+        if: startsWith(github.ref, 'refs/heads/kmp-')
+        run: |
+          cp out/RoshanKhata-latest.apk out/RoshanKhata-kmp-test.apk
+          gh release view kmp-test >/dev/null 2>&1 || gh release create kmp-test --prerelease \
+            --title "Roshan Khata - KMP test build" --notes "Test build from a kmp-* branch. Not the Play app, not the latest build." || true
+          gh release upload kmp-test out/RoshanKhata-kmp-test.apk --clobber
+          # Room's schema files, so they can be checked in (the Room plugin's
+          # on-device test task expects app/schemas to exist in the repo).
+          if [ -d schemas ]; then zip -qr out/kmp-schemas.zip schemas && gh release upload kmp-test out/kmp-schemas.zip --clobber || true; fi
+          gh release edit kmp-test --notes "Test build from branch ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not the Play app, not the latest build."

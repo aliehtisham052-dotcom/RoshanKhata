@@ -10,8 +10,11 @@
 # when there is something to publish.
 name: Release AAB
 
+# Read only by default (8 Nov 2026 review, M29's second half): the job that decodes the keystore and
+# signs cannot write to the repository or its releases; only the publish job below can, and it holds
+# no secret and runs no code from the repository.
 permissions:
-  contents: write
+  contents: read
 
 on:
   workflow_dispatch:
@@ -24,6 +27,14 @@ on:
 jobs:
   aab:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    # What the publish job needs: the versionCode for the release notes, and which artifacts exist
+    # (an id is empty when its upload never ran, so the publish job publishes only what was made).
+    outputs:
+      version_code: ${{ steps.vc.outputs.code }}
+      aab_artifact: ${{ steps.aab_up.outputs.artifact-id }}
+      apk_artifact: ${{ steps.apk_up.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
@@ -34,6 +45,7 @@ jobs:
       # (no number in the notes yet) only says so. same_version = true is the one way past it,
       # for a bundle that was built but never uploaded.
       - name: versionCode is new for Play
+        id: vc
         env:
           GH_TOKEN: ${{ github.token }}
           SAME_VERSION: ${{ inputs.same_version }}
@@ -41,6 +53,7 @@ jobs:
           code=$(grep -oE '^\s*versionCode = [0-9]+' app/build.gradle.kts | grep -oE '[0-9]+' | head -1)
           if [ -z "$code" ]; then echo "::error::versionCode not found in app/build.gradle.kts"; exit 1; fi
           echo "VERSION_CODE=$code" >> "$GITHUB_ENV"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
           last=$(gh release view release-aab --repo "$GITHUB_REPOSITORY" --json body --jq .body 2>/dev/null \
             | grep -oE 'versionCode: [0-9]+' | grep -oE '[0-9]+' | head -1 || true)
           if [ -z "$last" ]; then
@@ -157,45 +170,12 @@ jobs:
           echo "## Signed AAB ready" >> $GITHUB_STEP_SUMMARY
           echo "Download it from the Artifacts section of this run." >> $GITHUB_STEP_SUMMARY
 
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+      - id: aab_up
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: RoshanKhata-release-aab
           path: app/build/outputs/bundle/release/*.aab
           retention-days: 14
-
-      # THE AAB AS A PLAIN FILE, not a ZIP (14 Oct).
-      #
-      # An Actions artifact always arrives as a .zip served from Azure blob
-      # storage. On the owner's phone that download came out unopenable in
-      # both the browser's handler and Files by Google, and Play refuses a
-      # .zip ("Upload a valid app bundle"). A release asset is the file
-      # itself, from github.com, the same route the test APK already takes.
-      #
-      # Its own tag, never "latest" (the debug APK) and never "release-test"
-      # (the minified APK). The file holds the signature block only: the
-      # keystore stays in the secrets and was never in the workspace.
-      - name: Copy the bundle under a plain name
-        run: |
-          AAB=$(find app/build/outputs/bundle/release -name '*.aab' | head -1)
-          if [ -z "$AAB" ]; then echo "::error::No .aab to publish"; exit 1; fi
-          mkdir -p out-aab
-          cp "$AAB" out-aab/RoshanKhata-release.aab
-
-      - name: Publish the bundle as a downloadable file
-        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
-        with:
-          tag_name: release-aab
-          name: "Roshan Khata — signed AAB for Play upload"
-          body: |
-            The signed Android App Bundle for the Play Console, as a plain
-            file (not a ZIP). Upload it as it is.
-
-            **Commit:** ${{ github.sha }}
-
-            versionCode: ${{ env.VERSION_CODE }}
-          files: out-aab/RoshanKhata-release.aab
-          make_latest: false
-          prerelease: true
 
       # THE MINIFIED APK, and why this step had to exist.
       #
@@ -216,7 +196,8 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: gradle assembleRelease --no-daemon --stacktrace
 
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+      - id: apk_up
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: RoshanKhata-release-apk-minified
           path: app/build/outputs/apk/release/*.apk
@@ -231,6 +212,60 @@ jobs:
           path: app/build/outputs/mapping/release/
           retention-days: 90
 
+  # Publishing, apart from the signing (8 Nov 2026 review, M29's second half): the repository's write
+  # token and nothing else -- no keystore, no passwords, no Firebase config, no Gradle, no checkout.
+  # As before, the bundle is published once it is signed and checked, even when the minified APK
+  # after it fails to build (the job then reads as failed, and only the bundle goes up).
+  publish:
+    needs: aab
+    if: ${{ !cancelled() && needs.aab.outputs.aab_artifact != '' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      # THE AAB AS A PLAIN FILE, not a ZIP (14 Oct).
+      #
+      # An Actions artifact always arrives as a .zip served from Azure blob
+      # storage. On the owner's phone that download came out unopenable in
+      # both the browser's handler and Files by Google, and Play refuses a
+      # .zip ("Upload a valid app bundle"). A release asset is the file
+      # itself, from github.com, the same route the test APK already takes.
+      #
+      # Its own tag, never "latest" (the debug APK) and never "release-test"
+      # (the minified APK). The file holds the signature block only: the
+      # keystore stays in the secrets and was never in the workspace.
+      - name: Take the signed bundle the build made
+        if: needs.aab.outputs.aab_artifact != ''
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: RoshanKhata-release-aab
+          path: bundle
+
+      - name: Copy the bundle under a plain name
+        if: needs.aab.outputs.aab_artifact != ''
+        run: |
+          AAB=$(find bundle -name '*.aab' | head -1)
+          if [ -z "$AAB" ]; then echo "::error::No .aab to publish"; exit 1; fi
+          mkdir -p out-aab
+          cp "$AAB" out-aab/RoshanKhata-release.aab
+
+      - name: Publish the bundle as a downloadable file
+        if: needs.aab.outputs.aab_artifact != ''
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
+        with:
+          tag_name: release-aab
+          name: "Roshan Khata — signed AAB for Play upload"
+          body: |
+            The signed Android App Bundle for the Play Console, as a plain
+            file (not a ZIP). Upload it as it is.
+
+            **Commit:** ${{ github.sha }}
+
+            versionCode: ${{ needs.aab.outputs.version_code }}
+          files: out-aab/RoshanKhata-release.aab
+          make_latest: false
+          prerelease: true
+
       # A DOWNLOAD LINK, not just an Actions artifact.
       #
       # Actions artifacts serve from Azure blob storage, which is unreachable
@@ -242,12 +277,21 @@ jobs:
       # this is the release-minified build meant for one thing: proving R8
       # on a real device BEFORE an AAB goes to Play. Overwriting "latest"
       # here would point that link at the wrong build type.
+      - name: Take the minified APK the build made
+        if: needs.aab.outputs.apk_artifact != ''
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: RoshanKhata-release-apk-minified
+          path: apk
+
       - name: Rename minified APK for the test release
+        if: needs.aab.outputs.apk_artifact != ''
         run: |
           mkdir -p out
-          cp app/build/outputs/apk/release/*.apk out/RoshanKhata-release-test.apk
+          cp apk/*.apk out/RoshanKhata-release-test.apk
 
       - name: Publish minified build for device testing
+        if: needs.aab.outputs.apk_artifact != ''
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
         with:
           tag_name: release-test

@@ -12,8 +12,11 @@ on:
       - 'ci/**'
   workflow_dispatch:
 
+# Read only by default (8 Nov 2026 review, M29's second half): the job that runs Gradle, the tests
+# and WiX cannot write to the repository or its releases; only the publish job below can, and it
+# runs no code from the repository.
 permissions:
-  contents: write
+  contents: read
 
 # One run at a time puts files on the shared desktop-test release: four pushes
 # in a minute (20 Oct) ran side by side and two uploaded poster-ur-closed.png
@@ -30,6 +33,8 @@ jobs:
   msi:
     # Pinned, like the Android build: a runner image change should be chosen, not met.
     runs-on: windows-2022
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -150,15 +155,54 @@ jobs:
           }
           Write-Output "::notice::MSIX: $((Get-Item RoshanKhata-Windows-store.msix).Length) bytes, identity $env:IDENTITY_NAME"
 
-      - name: Put the MSI on the desktop-test pre-release
+      # What the publish job puts on the release, gathered in one folder: the MSI and the MSIX under their
+      # release names, the version for the app's own update check, and the proof pictures (lesson 16).
+      - name: Gather what goes on the desktop-test pre-release
         if: success()
         shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
+          mkdir -p release/proof
           msi=$(find desktop/build/compose/binaries -name '*.msi' | head -1)
           echo "::notice::MSI: $msi ($(stat -c %s "$msi") bytes)"
-          cp "$msi" RoshanKhata-Windows-test.msi
+          cp "$msi" release/RoshanKhata-Windows-test.msi
+          [ -f RoshanKhata-Windows-store.msix ] && cp RoshanKhata-Windows-store.msix release/
+          grep -oE 'packageVersion = "[0-9.]+"' desktop/build.gradle.kts | grep -oE '[0-9.]+' > release/version.txt
+          # The statement pictures (StatementPrintTest), the ten invoice designs (InvoiceDesignsTest), the cards and
+          # posters, the window itself (ScreenProofTest: Home in English and Urdu, light and dark) and the PDFs.
+          for d in statement-proof invoice-proof card-proof poster-proof screen-proof; do
+            for f in desktop/build/$d/*.png; do [ -f "$f" ] && cp "$f" release/proof/; done
+          done
+          for f in desktop/build/pdf-proof/*.pdf; do [ -f "$f" ] && cp "$f" release/proof/; done
+          ls release | head
+
+      - name: Hand them to the publish job
+        if: success()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: desktop-release
+          path: release/
+          retention-days: 3
+
+  # Publishing, apart from the build (8 Nov 2026 review, M29's second half): the repository's write
+  # token and nothing else -- no Gradle, no checkout. The order and the rule are the old step's.
+  publish:
+    needs: msi
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Take what the build gathered
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: desktop-release
+          path: release
+
+      - name: Put the MSI on the desktop-test pre-release
+        working-directory: release
+        run: |
           gh release view desktop-test >/dev/null 2>&1 || gh release create desktop-test --prerelease \
             --title "Roshan Khata for Windows - test build" --notes "Windows test build. Not signed yet." || true
           # A build of an older commit never replaces a newer one (8 Nov 2026 review, L134): the release is shared by
@@ -174,17 +218,10 @@ jobs:
           fi
           gh release upload desktop-test RoshanKhata-Windows-test.msi --clobber
           # What version this is, for the app's own update check (UpdateCheck reads it once a day).
-          ver=$(grep -oE 'packageVersion = "[0-9.]+"' desktop/build.gradle.kts | grep -oE '[0-9.]+')
+          ver=$(cat version.txt)
           printf '{"version": "%s", "commit": "%s"}\n' "$ver" "${GITHUB_SHA}" > version.json
           gh release upload desktop-test version.json --clobber
           [ -f RoshanKhata-Windows-store.msix ] && gh release upload desktop-test RoshanKhata-Windows-store.msix --clobber
-          # The statement pictures from StatementPrintTest, to look at (lesson 16).
-          for f in desktop/build/statement-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
-          # The ten invoice designs from InvoiceDesignsTest, to look at as well.
-          for f in desktop/build/invoice-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
-          for f in desktop/build/card-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
-          for f in desktop/build/poster-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
-          # The window itself (ScreenProofTest): Home in English and Urdu, light and dark.
-          for f in desktop/build/screen-proof/*.png; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
-          for f in desktop/build/pdf-proof/*.pdf; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
+          # The proof pictures and PDFs, to look at (lesson 16).
+          for f in proof/*; do [ -f "$f" ] && gh release upload desktop-test "$f" --clobber; done
           gh release edit desktop-test --notes "Windows test build from ${GITHUB_REF_NAME}, commit ${GITHUB_SHA}. Not signed yet: Windows will warn before installing."
