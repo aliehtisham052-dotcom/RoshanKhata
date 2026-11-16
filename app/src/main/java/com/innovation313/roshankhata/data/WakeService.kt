@@ -20,8 +20,9 @@ class WakeService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         val d = message.data
         when (d["t"]) {
-            "rk-wake" -> PushWake.roundNow(applicationContext)
-            "rk-parcel" -> PushWake.takeCarried(applicationContext, d["f"].orEmpty(), d["b"].orEmpty())
+            // "k": the book the relay keeps the parcel for (a relay that does not say it yet leaves it out).
+            "rk-wake" -> PushWake.roundNow(applicationContext, d["k"])
+            "rk-parcel" -> PushWake.takeCarried(applicationContext, d["f"].orEmpty(), d["b"].orEmpty(), d["k"])
         }
     }
 
