@@ -82,7 +82,7 @@ K0079	Aaj ka dhandha kaisa raha	4	Figure:SALES_TODAY|Period:SALES|Today
 K0080	Aaj ki aamdan kitni hui	4	Figure:SALES_TODAY|Period:SALES|Today
 K0081	Kal ki sale kitni thi	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
 K0082	Kal kitna maal bika	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
-K0083	Parson ki bikri batao	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
+K0083	Parson ki bikri batao	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights|OnDays
 K0084	Is hafte ki total sale	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
 K0085	Is hafte kitna bika	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
 K0086	Pichle hafte ki sale kitni thi	5	Figure:SALES|Period:SALES|Help:screen_sales_report|Help:screen_insights
@@ -123,7 +123,7 @@ K0120	Udhaar ka percent kitna hai	6	Figure:SALES|Period:SALES|Help:screen_sales_
 K0121	Kal se aaj ki sale zyada hai ya kam	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
 K0122	Is hafte pichle hafte se behtar hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
 K0123	Is mahine pichle mahine se zyada bika	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0124	Aaj aur kal ka muqabla karo	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0124	Aaj aur kal ka muqabla karo	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Compare
 K0125	Is saal aur pichle saal ki sale	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
 K0126	Sale gir rahi hai ya barh rahi hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
 K0127	Is mahine sale kam kyun hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report

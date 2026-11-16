@@ -552,7 +552,7 @@ ur-Latn	OK	shaam tak kitna bika		Figure:SALES_TODAY
 ur-Latn	OK	kal ka collection kitna tha		Collected
 ur-Latn	OK	pichle hafte ki sale		Period:SALES
 ur-Latn	OK	pichle mahine ka munafa		Period:PROFIT
-ur-Latn	OK	parson kitna bika tha		SpanLimit
+ur-Latn	OK	parson kitna bika tha		OnDays
 ur-Latn	MISS	Ramzan mein kitna bika		SpanLimit
 ur-Latn	OK	is saal ki sale		Period:SALES
 ur-Latn	OK	kal kis kis ne paise diye		Collected
@@ -719,8 +719,8 @@ hi	OK	पिछले हफ़्ते की सेल		Period:SALES
 hi	OK	पिछले महीने का मुनाफ़ा		Period:PROFIT
 hi	OK	सुबह से अब तक कितना बिका		Figure:SALES_TODAY
 hi	OK	अली रज़ा ने इस महीने कितना दिया		Moved
-hi	MISS	अली रज़ा को पाँच सौ दिए		Parties
-hi	MISS	अली रज़ा से एक हज़ार मिले		Parties
+hi	OK	अली रज़ा को पाँच सौ दिए		Entry
+hi	OK	अली रज़ा से एक हज़ार मिले		Entry
 hi	OK	अली रज़ा का balance कितना है		Parties
 hi	OK	आज की sale कितनी हुई		Figure:SALES_TODAY
 hi	OK	Urea का stock कितना है		Goods:STOCK
@@ -1006,7 +1006,7 @@ ur	OK	کل کس نے پیسے دیے		Collected
 hi	OK	आज सुबह कितना बिका		Figure:SALES_TODAY
 hi	OK	अभी तक आज कितना बिका		Figure:SALES_TODAY
 hi	MISS	अब तक कितनी सेल हुई		Period:SALES
-hi	MISS	अली रज़ा ने पाँच सौ दिए		Parties
+hi	OK	अली रज़ा ने पाँच सौ दिए		Entry
 hi	OK	अली रज़ा को 500 दिए उधार		Entry
 hi	OK	दुकान में कितना सामान है		Count:PRODUCTS:null
 hi	OK	कितने लोग काम करते हैं		Count:STAFF:null
@@ -1099,8 +1099,8 @@ sd	OK	اڄ ڪنهن پئسا ڏنا		Collected
 sd	OK	ڪالهه ڪنهن پئسا ڏنا		Collected
 in	OK	tadi pagi laku berapa		Figure:SALES_TODAY
 in	OK	sampai sekarang hari ini laku berapa		Figure:SALES_TODAY
-in	MISS	saya kasih Ali Raza lima ratus		Parties
-in	MISS	Ali Raza bayar lima ratus		Parties
+in	OK	saya kasih Ali Raza lima ratus		Entry
+in	OK	Ali Raza bayar lima ratus		Entry
 in	OK	ada berapa barang di toko		Count:PRODUCTS:null
 in	OK	ada berapa karyawan		Count:STAFF:null
 in	OK	hari ini uang keluar berapa		Cashbook

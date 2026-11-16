@@ -1087,6 +1087,12 @@
     <string name="hudhud_unknown">এটি আপনার খাতায় পাইনি। কাছাকাছি যে প্রশ্নগুলোর উত্তর দিতে পারি, নিচে আছে।</string>
     <string name="hudhud_off_topic">আমি শুধু আপনার দোকানের খাতা আর এই অ্যাপে সাহায্য করি, তাই এর উত্তর দিতে পারছি না।</string>
     <string name="hudhud_sum_here">হিসাবের জন্য ক্যালকুলেটর এক ট্যাপেই খোলে।</string>
+    <string name="hudhud_sales_on">বিক্রি · %1$s</string>
+    <string name="hudhud_profit_on">লাভ · %1$s</string>
+    <string name="hudhud_date_ahead">সেই দিন এখনও আসেনি, তাই খাতায় তার কিছু নেই।</string>
+    <string name="hudhud_compare_title">তুলনা</string>
+    <string name="hudhud_compare_unknown">দুটির একটি অঙ্ক জানা নেই, তাই পার্থক্য বলছি না।</string>
+    <string name="hudhud_call_me_confirm">আমি কি আপনাকে %1$s বলে ডাকব? সেভ করুন চাপলে ডাকব।</string>
     <string name="hudhud_owner_only">এই অঙ্ক শুধু মালিক বা ম্যানেজার দেখতে পারেন।</string>
     <string name="hudhud_owner_only_exact">এটা শুধু মালিক দেখতে পারেন।</string>
     <string name="hudhud_limit_manager">কাউন্টারের ফোনে এটা শুধু মালিক বা ম্যানেজারের PIN দিয়ে খোলে।</string>

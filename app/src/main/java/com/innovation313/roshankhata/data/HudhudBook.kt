@@ -331,7 +331,11 @@ object HudhudBook {
             Hudhud.Ask.Automations -> HudhudFacts.automations(context)
             is Hudhud.Ask.NeedGoods -> HudhudFacts.needGoods(context, dao, ask.facet, ask.code)
             is Hudhud.Ask.Paper -> HudhudFacts.paper(context, dao, ask.of, ask.ids, parties)
-            is Hudhud.Ask.CallMe -> callMe(context, ask.name)
+            // Said, the name is only offered (16 Nov 2026, audit S-05): it is kept once the card's Save is tapped.
+            is Hudhud.Ask.CallMe -> if (ask.save) callMe(context, ask.name) else callMeOffer(context, ask.name)
+            is Hudhud.Ask.OnDays -> onDays(context, dao, ask, parties)
+            is Hudhud.Ask.Both -> both(context, dao, ask, parties)
+            is Hudhud.Ask.Compare -> compare(context, dao, ask)
             is Hudhud.Ask.Look -> look(context, ask.request)
             is Hudhud.Ask.LookDone -> lookDone(context, ask.made)
             is Hudhud.Ask.Record -> HudhudRecordFacts.answer(context, dao, ask, parties)
@@ -359,6 +363,139 @@ object HudhudBook {
             lines = listOf(context.getString(R.string.hudhud_owner_named, Format.isolate(kept))),
             openLabel = R.string.hudhud_settings, voiceSettings = true
         )
+    }
+
+    /**
+     * "Mera naam Ehtisham hai" (16 Nov 2026, audit T15 / S-05): a name heard is never kept at once — a misheard word would be
+     * what he calls the owner from then on. The card says what it would keep, and its Save chip ([Hudhud.Ask.CallMe] with
+     * save) keeps it; the card that follows is [callMe]'s, so the owner sees it was kept.
+     */
+    private fun callMeOffer(context: Context, name: String): Answer {
+        val keep = Hudhud.Ask.CallMe(name, save = true)
+        return Answer(
+            Mood.CALM, label = name,
+            lines = listOf(context.getString(R.string.hudhud_call_me_confirm, Format.isolate(name))),
+            options = listOf(keep), optionLabels = mapOf(keep to context.getString(R.string.save))
+        )
+    }
+
+    // ---------------------------------------------------------------------------- a day named, two questions, two spans
+
+    /** The words of a day or a month named outright: "16 Nov 2026", or "November 2026" for a whole month. */
+    private fun daysWords(d: VoiceQuestion.Dated, from: Long): String =
+        DateWords.format(if (oneDay(d)) "d MMM yyyy" else "MMMM yyyy", from)
+
+    /** A day, not a whole month: a day of the month, the day before yesterday, the last such weekday. */
+    private fun oneDay(d: VoiceQuestion.Dated): Boolean = d.month == null || d.day != null
+
+    /**
+     * A sale, a profit, money in, the day's dealings or one customer's paid or taken over a day or a month named outright
+     * (16 Nov 2026, audit T31): the same calls as the span asks over [Hudhud.span] of the day — the sale by
+     * [KhataDao.salesTotalBetween] (opened on the sales report over those days), the profit by Insights' rule (this month's and
+     * last month's exactly as Insights says them), money in and the day's dealings by [HudhudFacts]'s own readers, a customer's
+     * lines by [moved]'s rule — each behind its own gate. A day not yet come is said so, never answered with a figure.
+     */
+    private suspend fun onDays(context: Context, dao: KhataDao, ask: Hudhud.Ask.OnDays, parties: List<PartyWithBalance>): Answer {
+        val span = Hudhud.span(ask.days)
+            ?: return Answer(Mood.CALM, lines = listOf(context.getString(R.string.hudhud_date_ahead)))
+        val (from, to) = span
+        val words = daysWords(ask.days, from)
+        return when (ask.of) {
+            Hudhud.DatedOf.SALES -> {
+                val label = context.getString(R.string.hudhud_sales_on, words)
+                if (!HudhudGate.reports()) return Answer(Mood.CALM, label = label, lines = listOf(context.getString(R.string.hudhud_owner_only)))
+                sum(R.string.hudhud_sales_on, label, dao.salesTotalBetween(from, to), SalesReportActivity::class.java)
+                    .copy(openExtras = Bundle().apply {
+                        putLong(SalesReportActivity.EXTRA_FIRST_DAY, from)
+                        putLong(SalesReportActivity.EXTRA_LAST_DAY, DayMath.startOfDay(to - 1))
+                    })
+            }
+            Hudhud.DatedOf.PROFIT -> {
+                val label = context.getString(R.string.hudhud_profit_on, words)
+                if (!HudhudGate.reports()) return Answer(Mood.CALM, label = label, lines = listOf(context.getString(R.string.hudhud_owner_only)))
+                when (span) {
+                    Hudhud.span(VoiceQuestion.Window.THIS_MONTH) -> profit(context, R.string.hudhud_profit_on, label, Profit.thisMonth(dao), InsightsActivity::class.java)
+                    Hudhud.span(VoiceQuestion.Window.LAST_MONTH) -> profit(context, R.string.hudhud_profit_on, label, Profit.lastMonth(dao), InsightsActivity::class.java)
+                    else -> profit(context, R.string.hudhud_profit_on, label, Profit.between(dao, from, to), null)
+                }
+            }
+            Hudhud.DatedOf.COLLECTED -> HudhudFacts.collected(context, dao, null,
+                HudhudFacts.Over(context.getString(R.string.hudhud_t_collected) + " · " + words, span, oneDay(ask.days)))
+            Hudhud.DatedOf.ACTIVITY -> HudhudFacts.activity(context, dao, null,
+                HudhudFacts.Over(context.getString(R.string.hudhud_t_activity) + " · " + words, span, oneDay(ask.days)))
+            Hudhud.DatedOf.PAID, Hudhud.DatedOf.TOOK -> movedOver(context, dao, ask.ids, from, to, words, ask.of == Hudhud.DatedOf.PAID, parties)
+        }
+    }
+
+    /**
+     * Two questions in one sentence (16 Nov 2026, audit T32): each half answered by its own reader behind its own gate, the two
+     * put on one card — each heading with its figure, then its lines; the button is the first half's that has one.
+     */
+    private suspend fun both(context: Context, dao: KhataDao, ask: Hudhud.Ask.Both, parties: List<PartyWithBalance>): Answer {
+        val halves = listOf(answer(context, dao, ask.first, parties), answer(context, dao, ask.second, parties))
+        val lines = ArrayList<String>()
+        for (h in halves) {
+            listOfNotNull(h.label, h.figure).joinToString(": ").takeIf { it.isNotBlank() }?.let { lines += it }
+            lines += h.lines.take(MAX_NEXT)
+        }
+        val opener = halves.firstOrNull { it.open != null || it.openParty != null }
+        return Answer(
+            Mood.CALM, lines = lines, rows = halves.flatMap { it.rows }.take(TOP),
+            open = opener?.open, openParty = opener?.openParty, openExtras = opener?.openExtras, openLabel = opener?.openLabel,
+            secrets = halves.flatMap { it.secrets }, quiet = halves.any { it.quiet }, ask = ask
+        )
+    }
+
+    /**
+     * A sale or a profit over two spans and the difference, first less second, with its sign (16 Nov 2026, audit T32): each
+     * figure by the very rule its own card uses ([spanFigure]); a figure not known (a profit with no cost) gives no difference —
+     * no third figure is ever made up. Only the owner or a manager sees it, as each figure alone.
+     */
+    private suspend fun compare(context: Context, dao: KhataDao, ask: Hudhud.Ask.Compare): Answer {
+        val title = context.getString(R.string.hudhud_compare_title)
+        if (!HudhudGate.reports()) return Answer(Mood.CALM, label = title, lines = listOf(context.getString(R.string.hudhud_owner_only)))
+        val one = spanFigure(context, dao, ask.first) ?: return unknown(context)
+        val two = spanFigure(context, dao, ask.second) ?: return unknown(context)
+        val lines = listOf(one, two).map { (label, v) -> label + ": " + (v?.let { money(it) } ?: "—") }
+        val a = one.second
+        val b = two.second
+        if (a == null || b == null) {
+            return Answer(Mood.CALM, label = title, lines = lines + context.getString(R.string.hudhud_compare_unknown), money = true)
+        }
+        val diff = a - b
+        val signed = (if (Money.isPositive(diff)) "+" else "") + money(diff)
+        return Answer(
+            if (diff < 0 && !Money.isZero(diff)) Mood.CARE else Mood.CALM, label = title, figure = signed,
+            lines = lines + (context.getString(R.string.z_variance) + ": " + signed), money = true
+        )
+    }
+
+    /** One side of a comparison: its card's heading and its figure, or null figure when it is not known (a profit with no cost). */
+    private suspend fun spanFigure(context: Context, dao: KhataDao, a: Hudhud.Ask): Pair<String, Double?>? = when (a) {
+        is Hudhud.Ask.Period -> {
+            val label = context.getString(periodLabel(a.measure, a.window))
+            val (from, to) = Hudhud.span(a.window)
+            label to when (a.measure) {
+                Hudhud.Measure.SALES -> dao.salesTotalBetween(from, to)
+                Hudhud.Measure.PROFIT -> when (a.window) {
+                    VoiceQuestion.Window.THIS_MONTH -> Profit.thisMonth(dao)
+                    VoiceQuestion.Window.LAST_MONTH -> Profit.lastMonth(dao)
+                    else -> Profit.between(dao, from, to)
+                }.let { r -> if (r.isEmpty) null else r.grossProfit }
+            }
+        }
+        is Hudhud.Ask.OnDays -> {
+            val sales = a.of == Hudhud.DatedOf.SALES
+            val span = Hudhud.span(a.days)
+            if (span == null) {
+                context.getString(R.string.hudhud_date_ahead) to null
+            } else {
+                val (from, to) = span
+                val label = context.getString(if (sales) R.string.hudhud_sales_on else R.string.hudhud_profit_on, daysWords(a.days, from))
+                label to if (sales) dao.salesTotalBetween(from, to) else Profit.between(dao, from, to).let { r -> if (r.isEmpty) null else r.grossProfit }
+            }
+        }
+        else -> null
     }
 
     /** [ask] answered as a guess: the card says what it was taken as, the [others] are chips, and nothing is said aloud. */
@@ -795,11 +932,19 @@ object HudhudBook {
         context: Context, dao: KhataDao, ids: List<Long>, window: VoiceQuestion.Window, got: Boolean,
         parties: List<PartyWithBalance>
     ): Answer {
+        val (from, to) = Hudhud.span(window)
+        return movedOver(context, dao, ids, from, to, context.getString(windowWord(window)), got, parties)
+    }
+
+    /** [moved] over [from, to), the span said in [words] (16 Nov 2026: also a day or a month named outright, audit T31). */
+    private suspend fun movedOver(
+        context: Context, dao: KhataDao, ids: List<Long>, from: Long, to: Long, words: String, got: Boolean,
+        parties: List<PartyWithBalance>
+    ): Answer {
         val found = ids.mapNotNull { id -> parties.firstOrNull { it.id == id } }
         if (found.isEmpty()) return unknown(context)
         if (found.size > 1) return pick(context, found)
         val p = found.first()
-        val (from, to) = Hudhud.span(window)
         val total = LedgerLines.of(dao, listOf(p.id))
             .filter { it.timestamp >= from && it.timestamp < to && it.isGiven == !got }
             .sumOf { it.amount }
@@ -808,7 +953,7 @@ object HudhudBook {
             Mood.CALM,
             label = p.name,
             figure = money(total),
-            lines = listOf(context.getString(way) + " · " + context.getString(windowWord(window))),
+            lines = listOf(context.getString(way) + " · " + words),
             openParty = p.id,
             money = true
         )
@@ -1406,6 +1551,9 @@ object HudhudBook {
         is Hudhud.Ask.Record -> a.facet in STAFF_FACETS
         is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD || a.facet == Hudhud.GoodsFacet.COVER
         is Hudhud.Ask.Now -> needsReports(a.ask)
+        is Hudhud.Ask.OnDays -> a.of != Hudhud.DatedOf.PAID && a.of != Hudhud.DatedOf.TOOK
+        is Hudhud.Ask.Compare -> true
+        is Hudhud.Ask.Both -> needsReports(a.first) || needsReports(a.second)
         else -> false
     }
 

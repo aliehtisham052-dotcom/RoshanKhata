@@ -37,7 +37,9 @@ object VoiceQuestion {
     private val PROFIT = listOf("munafa", "munafah", "profit", "laba", "untung", "منافع", "نفعو", "ربح", "أرباح", "ارباح",
         "سود", "मुनाफ़ा", "मुनाफा", "लाभ", "লাভ", "মুনাফা",
         // 12 Nov 2026 (Hudhud): "is mahine kitna faida hua", as most owners say it.
-        "faida", "fayda", "faaida", "فائدہ", "फायदा")
+        "faida", "fayda", "faaida", "فائدہ", "फायदा",
+        // 16 Nov 2026 (audit T32): the oblique of munafa, as "is mahine ke munafe ka farq" says it.
+        "munafe", "munafay", "munafey", "मुनाफे")
     private val EXPIRING = listOf("expire", "expiry", "mudat", "kedaluwarsa", "kadaluarsa", "ایکسپائر", "میعاد", "مدت",
         "انقضا", "انتهاء", "صلاحيت", "एक्सपायर", "मियाद", "মেয়াদ", "এক্সপায়ার",
         // 12 Nov 2026 (Hudhud): the app's own chip words, so a chip typed as it reads is understood.
@@ -407,6 +409,171 @@ object VoiceQuestion {
 
     /** The spans whose "last" is the span's own ("last week", "pichle saal", "the last 6 months"). */
     internal val LAST_WINDOWS = setOf(Window.LAST_MONTH, Window.LAST_WEEK, Window.LAST_YEAR, Window.LAST_6_MONTHS)
+
+    // ------------------------------------------------------------------------------------ a day or a month named outright
+
+    /**
+     * A day or a month named outright (16 Nov 2026, audit T31 / H-02, H-09): "15 tareekh ki sale", "12 November ki sale",
+     * "November ki sale", "parson ki sale", "pichle jumme ki sale". None of them is a [Window]: they were answered as this
+     * month's figure, or offered the spans he tells. Only what was said is set; [Hudhud.span] turns it into days against the
+     * clock, and a day that has not yet come is never answered with a figure.
+     *
+     * [day] 1..31 with or without [month] 1..12; [year] only as said; [daysBack] 2 for the day before yesterday; [monthsBack]
+     * and [yearsBack] when "this/last month" or "this/last year" stands beside a day or a month; [weekday] (Calendar's
+     * SUNDAY..SATURDAY) for the last such day before today.
+     */
+    data class Dated(
+        val day: Int? = null, val month: Int? = null, val year: Int? = null, val daysBack: Int? = null,
+        val monthsBack: Int? = null, val yearsBack: Int? = null, val weekday: Int? = null
+    )
+
+    /**
+     * The months' names: Unicode CLDR, as JDK 21 gives them (java.time.Month.getDisplayName, FULL and FULL_STANDALONE, for en,
+     * ur, hi, ar, fa, bn, id and sd; read 16 Nov 2026), Hindi's second spelling with the half म (सितम्बर, नवम्बर, दिसम्बर) and
+     * अक्टूबर beside CLDR's अक्तूबर. The second list of each month is only a month beside a day, a year, a word for "month" or
+     * a word of "of" ([AMBIG_NEXT]): English "may" (a modal, and Roman Urdu's "mein"), the short forms ("jan" is also "jaan"),
+     * Arabic and Farsi مارس (also "he practised"), Farsi مه (also "fog") and اوت, Sindhi جون (also Sindhi's "of"), Bengali মে.
+     */
+    private val MONTH_WORDS: List<Pair<List<String>, List<String>>> = listOf(
+        listOf("january", "جنوری", "जनवरी", "يناير", "ژانویه", "জানুয়ারী", "januari", "جنوري") to listOf("jan"),
+        listOf("february", "فروری", "फ़रवरी", "فبراير", "فوریه", "ফেব্রুয়ারী", "februari", "فيبروري") to listOf("feb"),
+        listOf("march", "مارچ", "मार्च", "মার্চ", "maret") to listOf("مارس", "mar"),
+        listOf("april", "اپریل", "अप्रैल", "أبريل", "آوریل", "এপ্রিল", "اپريل") to listOf("apr"),
+        listOf("مئی", "मई", "مايو", "mei", "مئي") to listOf("may", "مه", "মে"),
+        listOf("june", "जून", "يونيو", "ژوئن", "জুন", "juni") to listOf("jun", "جون"),
+        listOf("july", "جولائی", "जुलाई", "يوليو", "ژوئیه", "জুলাই", "juli", "جولاءِ") to listOf("jul"),
+        listOf("august", "اگست", "अगस्त", "أغسطس", "আগস্ট", "agustus", "آگسٽ") to listOf("aug", "اوت"),
+        listOf("september", "ستمبر", "सितंबर", "सितम्बर", "سبتمبر", "سپتامبر", "সেপ্টেম্বর", "سيپٽمبر") to listOf("sep", "sept"),
+        listOf("october", "اکتوبر", "अक्तूबर", "अक्टूबर", "أكتوبر", "اکتبر", "অক্টোবর", "oktober", "آڪٽوبر") to listOf("oct"),
+        listOf("november", "نومبر", "नवंबर", "नवम्बर", "نوفمبر", "نوامبر", "নভেম্বর") to listOf("nov"),
+        listOf("december", "دسمبر", "दिसंबर", "दिसम्बर", "ديسمبر", "دسامبر", "ডিসেম্বর", "desember", "ڊسمبر") to listOf("dec")
+    )
+
+    /** A word for "of" after a month ("may ki sale", "May's sales"): it makes a doubtful month name a month. */
+    private val AMBIG_NEXT: Set<String> by lazy {
+        listOf("ki", "ka", "ke", "کی", "کا", "کے", "की", "का", "के", "s").map { normalise(it) }.toSet()
+    }
+
+    /** The word for a date beside its day ("15 tareekh", "tanggal 15", "15 date ko"). */
+    private val DATE_WORDS = listOf("tareekh", "tarikh", "tareek", "tarik", "tarekh", "date", "تاریخ", "तारीख", "তারিখ", "tanggal")
+
+    /** The future of the verb: "parson" is then the day after tomorrow, never a day of the book. */
+    private val FUTURE_WORDS = listOf("will", "tomorrow", "گا", "گی", "گے", "گیں", "akan", "besok", "lusa", "سوف", "خواهد",
+        "হবে", "দেবে", "পাবে", "আসবে")
+    private val FUTURE_ENDS = listOf("ega", "egi", "enge", "oga", "ogi", "onge", "गा", "गी", "गे")
+
+    /** The weekdays a "last" may stand before ([WEEKDAYS]' own words). */
+    private val WEEKDAY_OF: Map<String, Int> by lazy {
+        val out = HashMap<String, Int>()
+        for (w in listOf("jumma", "jumme", "jume", "jummah", "juma", "friday", "جمعہ", "جمعے", "جمعه", "الجمعة")) out[normalise(w)] = java.util.Calendar.FRIDAY
+        for (w in listOf("somwar", "monday")) out[normalise(w)] = java.util.Calendar.MONDAY
+        for (w in listOf("itwar", "sunday", "इतवार")) out[normalise(w)] = java.util.Calendar.SUNDAY
+        out
+    }
+
+    private val ORDINAL = Regex("(\\d{1,2})(st|nd|rd|th)")
+
+    /** What a date found in a sentence is, and which of its words (by their place in the sentence's raw words) are figures of it. */
+    private class DateFound(val dated: Dated, val figures: Set<Int>)
+
+    /**
+     * The day or the month [heard] names outright ([Dated]), or null. A word the book knows as a name ([isName]) is never a
+     * month ("June Traders"). A date said beside a span it cannot stand with ("aaj 15 tareekh") is not read.
+     */
+    fun datedOf(heard: String, isName: (String) -> Boolean = { false }): Dated? = dateFound(heard, isName)?.dated
+
+    /**
+     * [heard] without the figures of the date it names (16 Nov 2026): "Ali Raza ko 12 November ko 500 diye" — the amount is 500,
+     * never 12. The sentence is otherwise kept as it was said.
+     */
+    fun withoutDate(heard: String, isName: (String) -> Boolean = { false }): String {
+        val found = dateFound(heard, isName) ?: return heard
+        if (found.figures.isEmpty()) return heard
+        val raw = heard.trim().split(SPACES)
+        return raw.filterIndexed { i, _ -> i !in found.figures }.joinToString(" ")
+    }
+
+    private fun dateFound(heard: String, isName: (String) -> Boolean): DateFound? {
+        val raw = heard.trim().split(SPACES).filter { it.isNotEmpty() }
+        if (raw.isEmpty()) return null
+        // Each raw word's normalised words, each remembering the raw word it came from.
+        val word = ArrayList<String>()
+        val from = ArrayList<Int>()
+        for ((i, r) in raw.withIndex()) for (p in normalise(Digits.toLatin(r)).split(' ')) if (p.isNotEmpty()) { word += p; from += i }
+        if (word.isEmpty()) return null
+        val t = word.joinToString(" ")
+        val window = windowOf(heard)
+        fun dayAt(j: Int): Int? {
+            val s = word.getOrNull(j) ?: return null
+            val digits = ORDINAL.matchEntire(s)?.groupValues?.get(1) ?: s.takeIf { it.length <= 2 && it.all { c -> c in '0'..'9' } } ?: return null
+            return digits.toInt().takeIf { it in 1..31 }
+        }
+        fun yearAt(j: Int): Int? {
+            val s = word.getOrNull(j) ?: return null
+            return s.takeIf { it.length == 4 && it.all { c -> c in '0'..'9' } }?.toInt()?.takeIf { it in 2000..2099 }
+        }
+        fun monthAt(j: Int): Pair<Int, Boolean>? {
+            val s = word[j]
+            if (isName(s)) return null
+            for ((m, lists) in MONTH_WORDS.withIndex()) {
+                if (lists.first.any { isWord(s, spelt.getOrPut(it) { normalise(it) }) }) return (m + 1) to true
+                if (lists.second.any { isWord(s, spelt.getOrPut(it) { normalise(it) }) }) return (m + 1) to false
+            }
+            return null
+        }
+        fun monthWord(j: Int) = word.getOrNull(j)?.let { saysAny(it, MONTH) } == true
+        // ---- a month, with its day and year beside it
+        for (j in word.indices) {
+            val (m, sure) = monthAt(j) ?: continue
+            val dayBefore = dayAt(j - 1)
+            val dayAfter = if (dayBefore == null) dayAt(j + 1) else null
+            val day = dayBefore ?: dayAfter
+            val yearIdx = when {
+                yearAt(j + 1) != null -> j + 1
+                dayAfter != null && yearAt(j + 2) != null -> j + 2
+                else -> -1
+            }
+            val year = if (yearIdx >= 0) yearAt(yearIdx) else null
+            if (!sure && day == null && year == null && !monthWord(j - 1) && !monthWord(j + 1) && word.getOrNull(j + 1) !in AMBIG_NEXT) continue
+            val yearsBack = when {
+                year != null -> null
+                window == null || window == Window.THIS_MONTH -> null
+                window == Window.THIS_YEAR -> 0
+                window == Window.LAST_YEAR -> 1
+                else -> return null
+            }
+            val figures = HashSet<Int>()
+            if (dayBefore != null) figures += from[j - 1]
+            if (dayAfter != null) figures += from[j + 1]
+            if (yearIdx >= 0) figures += from[yearIdx]
+            return DateFound(Dated(day = day, month = m, year = year, yearsBack = yearsBack), figures)
+        }
+        // ---- a day of the month alone: "15 tareekh", "tanggal 15", "the 15th"
+        for (j in word.indices) {
+            val ordinal = ORDINAL.matches(word[j]) && (word.getOrNull(j - 1) == "the" || word.getOrNull(j - 1) == "on")
+            val dateWord = saysAny(word.getOrNull(j + 1) ?: "", DATE_WORDS) || saysAny(word.getOrNull(j - 1) ?: "", DATE_WORDS)
+            val day = dayAt(j) ?: continue
+            if (!ordinal && !dateWord) continue
+            val monthsBack = when (window) {
+                null -> null
+                Window.THIS_MONTH -> 0
+                Window.LAST_MONTH -> 1
+                else -> return null
+            }
+            return DateFound(Dated(day = day, monthsBack = monthsBack), setOf(from[j]))
+        }
+        if (window != null) return null
+        val future = saysAny(t, FUTURE_WORDS) || word.any { w -> w.length >= 3 && FUTURE_ENDS.any { e -> w.endsWith(e) && w != e } }
+        // ---- the day before yesterday ("parson" is the day after tomorrow too: never with the future of a verb)
+        if (saysAny(t, DAY_BEFORE)) return if (future) null else DateFound(Dated(daysBack = 2), emptySet())
+        // ---- the last Friday, Monday or Sunday: a "last" straight before the day, and no "since" (that is a span to now)
+        for (j in 1 until word.size) {
+            val day = WEEKDAY_OF[word[j]] ?: continue
+            if (isName(word[j]) || !saysAny(word[j - 1], LAST) || saysAny(t, SINCE) || future) continue
+            return DateFound(Dated(weekday = day), emptySet())
+        }
+        return null
+    }
 
     private class Spans(val window: Window?, val unsupported: Boolean)
 

@@ -214,8 +214,9 @@ class HudhudSpansTest {
 
     @Test fun `a span he cannot count is told with the spans he can, and the figure for another is never said`() {
         for (q in listOf("ek mahine ki bikri", "1 month sales", "pichle ek hafte ki bikri", "2 saal ki bikri", "sales 3 months ago",
-            "sales in the fiscal year", "maali saal ki bikri", "parson ki bikri", "is saal ke pichle 6 mahine ki bikri"))
+            "sales in the fiscal year", "maali saal ki bikri", "is saal ke pichle 6 mahine ki bikri"))
             assertEquals(q, salesLimit, read(q))
+        // "Parson ki bikri" is the day before yesterday's sale since 16 Nov 2026 (audit T31, HudhudDatesTest).
     }
 
     @Test fun `a span ahead is no span of the book`() {

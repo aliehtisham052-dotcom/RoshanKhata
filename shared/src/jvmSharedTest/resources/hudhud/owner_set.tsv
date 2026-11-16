@@ -42,7 +42,7 @@ L039	Zati kharcha aur dukan ka kharcha alag kaise karun?	Help:intro_cashbook|Cas
 L040	Aaj ka munafa kitna hua?	Period:PROFIT|Figure:PROFIT_MONTH
 L041	Aaj kya kya bika?	Today|Figure:SALES_TODAY|Count:TICKETS
 L042	Is mahine sab se zyada kya bika?	Figure:SALES_MONTH|Help:screen_sales_report|Help:screen_insights
-L043	Kal ki bikri aur aaj ki bikri ka muqabla karo.	Figure:SALES_TODAY|Period:SALES
+L043	Kal ki bikri aur aaj ki bikri ka muqabla karo.	Figure:SALES_TODAY|Period:SALES|Compare
 L044	Naya bill kaise banaun?	Help:intro_documents|Help:intro_counter|Help:screen_bills
 L045	Bill mein discount kaise dun?	Help:faq_percent|Help:intro_counter|Help:intro_documents
 L046	Bill WhatsApp par kaise bhejun?	Help:intro_documents|Help:screen_bills
@@ -81,7 +81,7 @@ L078	Kisti (installment) ki agli tareekh kab hai?	Status:PLANS
 L079	Is mahine ke tamam wajib kharche batao.	Cashbook|Status:BILLS
 L080	Kaun si payment late ho gayi hai?	Figure:NOT_PAID
 L081	Is mahine ka munafa nuqsan batao.	Figure:PROFIT_MONTH|Period:PROFIT
-L082	Pichle mahine se is mahine ka muqabla karo.	Period:SALES|Period:PROFIT|Help:screen_insights|Figure:SALES_MONTH
+L082	Pichle mahine se is mahine ka muqabla karo.	Period:SALES|Period:PROFIT|Help:screen_insights|Figure:SALES_MONTH|Compare
 L083	Meri dukan ki sehat kaisi hai?	Status:BOOK|Today|Help:screen_insights
 L084	Kaun sa din sab se zyada bikri hoti hai?	Help:screen_sales_report|Help:screen_insights
 L085	Sab se acha customer kaun hai?	Help:screen_insights|Help:screen_sales_report

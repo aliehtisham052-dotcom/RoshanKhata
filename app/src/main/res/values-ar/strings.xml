@@ -1135,6 +1135,12 @@
     <string name="hudhud_unknown">لم أجد هذا في دفترك. أقرب الأسئلة التي أستطيع الإجابة عنها في الأسفل.</string>
     <string name="hudhud_off_topic">أساعد فقط في دفتر متجرك وفي هذا التطبيق، لذلك لا أستطيع الإجابة عن هذا.</string>
     <string name="hudhud_sum_here">للحساب، الآلة الحاسبة على بُعد لمسة واحدة.</string>
+    <string name="hudhud_sales_on">المبيعات · %1$s</string>
+    <string name="hudhud_profit_on">الربح · %1$s</string>
+    <string name="hudhud_date_ahead">لم يأتِ ذلك اليوم بعد، فليس في الدفتر شيء عنه.</string>
+    <string name="hudhud_compare_title">مقارنة</string>
+    <string name="hudhud_compare_unknown">أحد الرقمين غير معروف، لذلك لا أذكر الفرق.</string>
+    <string name="hudhud_call_me_confirm">هل أناديك %1$s؟ اضغط حفظ وسأفعل.</string>
     <string name="hudhud_owner_only">هذا الرقم يراه المالك أو المدير فقط.</string>
     <string name="hudhud_owner_only_exact">هذا يراه المالك فقط.</string>
     <string name="hudhud_limit_manager">على هاتف الكاونتر لا يُفتح هذا إلا للمالك أو المدير برمز PIN الخاص به.</string>

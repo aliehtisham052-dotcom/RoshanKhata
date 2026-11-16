@@ -82,6 +82,12 @@ internal object HudhudFacts {
     /** A count as a figure. */
     internal fun n(count: Int): String = count.toString()
 
+    /**
+     * Days given outright instead of a window (16 Nov 2026, audit T31: a day or a month named, "15 tareekh", "November"):
+     * the card's heading, the days as [from, to), and whether they are one day (the day book then opens on it).
+     */
+    class Over(val label: String, val span: Pair<Long, Long>, val oneDay: Boolean)
+
     /** The span asked, or today when none was. */
     private fun spanOf(window: VoiceQuestion.Window?): Pair<Long, Long> = Hudhud.span(window ?: VoiceQuestion.Window.TODAY)
 
@@ -1106,11 +1112,12 @@ internal object HudhudFacts {
      * entries written, money in (customers' real payments, Insights' rule) and out (the day book's rows), invoices, bills, counter tickets, what was edited or
      * deleted and by whom (the audit log), the calculator's sums and how often the app came to the front.
      */
-    suspend fun activity(c: Context, dao: KhataDao, window: VoiceQuestion.Window?): Answer {
+    suspend fun activity(c: Context, dao: KhataDao, window: VoiceQuestion.Window?, over: Over? = null): Answer {
         val w = window ?: VoiceQuestion.Window.TODAY
-        val label = heading(c, R.string.hudhud_t_activity, w)
+        val label = over?.label ?: heading(c, R.string.hudhud_t_activity, w)
         if (!reports()) return ownerOnly(c, label)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = over?.span ?: Hudhud.span(w)
+        val oneDay = over?.oneDay ?: (w == VoiceQuestion.Window.TODAY || w == VoiceQuestion.Window.YESTERDAY)
         val entries = dao.entryCountBetween(from, to)
         val rows = DayBook.rows(dao, from, to)
         // Money in by the one rule (16 Nov 2026, audit T3 / D-01): what Insights and [collected] say came in.
@@ -1140,7 +1147,7 @@ internal object HudhudFacts {
             if (opens > 0) line(c, R.string.hudhud_t_app_opens, n(opens)) else null
         )
         val nothing = entries == 0 && rows.isEmpty() && invoices == 0 && bills == 0 && tickets == 0 && audit.isEmpty()
-        val open = if (w == VoiceQuestion.Window.TODAY || w == VoiceQuestion.Window.YESTERDAY) DayBookActivity::class.java else AuditActivity::class.java
+        val open = if (oneDay) DayBookActivity::class.java else AuditActivity::class.java
         val extras = if (open == DayBookActivity::class.java) Bundle().apply { putLong(DayBookActivity.EXTRA_DAY, from) } else null
         return Answer(Mood.CALM, label = label,
             lines = if (nothing) listOf(c.getString(R.string.hudhud_activity_none)) + lines.drop(1).filter { it.isNotEmpty() } else lines,
@@ -1159,11 +1166,12 @@ internal object HudhudFacts {
      * payments (cashbook income of category Sale); the owner's own money put in the cashbook is not money received. Before,
      * Hudhud summed the day book's rows itself and counted both. The parts and the ways of paying are those same rows.
      */
-    suspend fun collected(c: Context, dao: KhataDao, window: VoiceQuestion.Window?): Answer {
+    suspend fun collected(c: Context, dao: KhataDao, window: VoiceQuestion.Window?, over: Over? = null): Answer {
         val w = window ?: VoiceQuestion.Window.TODAY
-        val label = heading(c, R.string.hudhud_t_collected, w)
+        val label = over?.label ?: heading(c, R.string.hudhud_t_collected, w)
         if (!reports()) return ownerOnly(c, label)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = over?.span ?: Hudhud.span(w)
+        val oneDay = over?.oneDay ?: (w == VoiceQuestion.Window.TODAY || w == VoiceQuestion.Window.YESTERDAY)
         val total = dao.customerReceivedBetween(from, to)
         val all = DayBook.rows(dao, from, to)
         val khataRows = all.filter { it.kind == DayBook.Kind.GOT && isCustomerRow(it) && dao.itemsOfEntry(it.ref).isEmpty() }
@@ -1174,7 +1182,7 @@ internal object HudhudFacts {
         val words = AndroidWords(c)
         val ways = rows.groupBy { it.method ?: "" }.filterKeys { it.isNotEmpty() }
             .map { (m, list) -> line(PaymentMethod.label(words, m), HudhudBook.money(list.sumOf { it.amount })) }
-        val open = if (w == VoiceQuestion.Window.TODAY || w == VoiceQuestion.Window.YESTERDAY) DayBookActivity::class.java else null
+        val open = if (oneDay) DayBookActivity::class.java else null
         val extras = if (open != null) Bundle().apply { putLong(DayBookActivity.EXTRA_DAY, from) } else null
         return Answer(if (Money.isPositive(total)) Mood.GOOD else Mood.CALM, label = label, figure = HudhudBook.money(total),
             lines = listOf(line(c, R.string.hudhud_l_from_customers, HudhudBook.money(khata)), line(c, R.string.pos_walk_in, HudhudBook.money(counter))) + ways,

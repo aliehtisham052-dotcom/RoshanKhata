@@ -173,6 +173,36 @@ object VoiceEntry {
         "jt" to 1_000_000.0, "miliar" to 1_000_000_000.0                // Indonesian
     ).mapKeys { nfc(it.key) }
 
+    /**
+     * Hindi number words in Devanagari (16 Nov 2026, audit T35): एक to दस, बीस, पचास, सौ, हज़ार, लाख, करोड़ as omniglot.com's
+     * "Numbers in Hindi" gives them, and डेढ़ (1½), ढाई (2½), सवा (+¼), साढ़े (+½), पौने (−¼) as UNC's "A Door Into Hindi",
+     * lesson 14, explains them (both read 16 Nov 2026); छः beside छह (VoiceQuestion's count words). Read only by [fromHindi],
+     * which takes a figure only when a scale (सौ, हज़ार, लाख, करोड़) or a rupee word says it is money: दो is also "give", एक
+     * also "a".
+     */
+    private val HINDI_UNITS = mapOf(
+        "एक" to 1.0, "दो" to 2.0, "तीन" to 3.0, "चार" to 4.0, "पांच" to 5.0, "पाँच" to 5.0, "छह" to 6.0, "छः" to 6.0,
+        "सात" to 7.0, "आठ" to 8.0, "नौ" to 9.0, "दस" to 10.0, "बीस" to 20.0, "पचास" to 50.0, "डेढ़" to 1.5, "ढाई" to 2.5
+    ).mapKeys { nfc(it.key) }
+    private val HINDI_SCALES = mapOf(
+        "सौ" to 100.0, "हज़ार" to 1000.0, "हजार" to 1000.0, "लाख" to 100_000.0, "करोड़" to 10_000_000.0, "करोड" to 10_000_000.0
+    ).mapKeys { nfc(it.key) }
+    private val HINDI_MODIFIERS = mapOf("सवा" to 0.25, "साढ़े" to 0.5, "पौने" to -0.25).mapKeys { nfc(it.key) }
+    private val HINDI_RUPEES = setOf("रुपये", "रुपए", "रुपया", "रुपयों", "रु").map { nfc(it) }.toSet()
+
+    /**
+     * Indonesian number words (16 Nov 2026, audit T35), as Northern Illinois University's SEAsite "Indonesian numbers made easy"
+     * gives them (read 16 Nov 2026): satu to sembilan; se- for one of ten, eleven, a hundred, a thousand (sepuluh, sebelas,
+     * seratus, seribu); belas after a unit for eleven to nineteen, puluh for the tens, ratus for the hundreds, ribu for the
+     * thousands; juta (a million) as the digit scales already read it, sejuta by the same se- rule. Read only for an
+     * Indonesian sentence ("dua" is also Urdu's prayer, "lima" a city), and only with a scale or a rupiah word beside it.
+     */
+    private val ID_UNITS = mapOf("satu" to 1, "dua" to 2, "tiga" to 3, "empat" to 4, "lima" to 5, "enam" to 6, "tujuh" to 7,
+        "delapan" to 8, "sembilan" to 9)
+    private val ID_WORDS = ID_UNITS.keys + setOf("sepuluh", "sebelas", "belas", "puluh", "seratus", "ratus", "seribu", "ribu",
+        "sejuta", "juta")
+    private val ID_RUPIAH = setOf("rupiah", "rp")
+
     /** One spelling of a word: Hindi's ज़ and ड़ arrive both as one letter and as letter + dot. */
     private fun nfc(s: String): String = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFC)
 
@@ -407,6 +437,7 @@ object VoiceEntry {
             MULTIPLIERS.containsKey(word) ||
             DIGIT_MULTIPLIERS.containsKey(word) ||
             MODIFIERS.containsKey(word) ||
+            HINDI_UNITS.containsKey(word) || HINDI_SCALES.containsKey(word) || HINDI_MODIFIERS.containsKey(word) ||
             isJoinedFigure(word) ||
             word in GAVE ||
             word in GOT ||
@@ -591,7 +622,121 @@ object VoiceEntry {
                 return if (mult != null) digits * mult else digits
             }
         }
+        // Number words in Hindi and Indonesian (16 Nov 2026, audit T35): their own readers, which say nothing when unsure.
+        val ws = text.split(' ', ',', '،').map { it.trim('।', '.', '?', '!', '؟', '،') }.filter { it.isNotEmpty() }
+        if (ws.any { it in HINDI_UNITS || it in HINDI_SCALES || it in HINDI_MODIFIERS }) return fromHindi(ws)
+        if (dotGroups && ws.any { it in ID_WORDS }) return fromIndonesian(ws)
         return fromWords(text, persian)
+    }
+
+    /**
+     * Hindi number words (16 Nov 2026, audit T35): "पांच सौ" 500, "डेढ़ हज़ार" 1,500, "सवा सौ" 125, "साढ़े तीन हज़ार" 3,500, "पौने दो
+     * लाख" 1,75,000, "बीस रुपये" 20. The first run of number words is read; it is money only with a scale in it or a rupee word
+     * straight after it, and a scale that starts the run must stand after a word that is grammar or a verb — a number word this
+     * list does not have ("पच्चीस हज़ार") is never read as a bare thousand. Unsure: no amount (the owner types it).
+     */
+    private fun fromHindi(ws: List<String>): Double? {
+        val start = ws.indexOfFirst { it in HINDI_UNITS || it in HINDI_SCALES || it in HINDI_MODIFIERS }
+        if (start < 0) return null
+        var total = 0.0
+        var current = 0.0
+        var pending = 0.0
+        var scaled = false
+        var counted = false
+        var j = start
+        while (j < ws.size) {
+            val w = ws[j]
+            val mod = HINDI_MODIFIERS[w]
+            val unit = HINDI_UNITS[w]
+            val scale = HINDI_SCALES[w]
+            if (mod != null) {
+                pending = mod
+            } else if (unit != null) {
+                if (counted && current != 0.0 && !scaled) return null // two numbers side by side: unsure
+                current += unit + pending
+                pending = 0.0
+                counted = true
+            } else if (scale != null) {
+                if (j == start) {
+                    val before = ws.getOrNull(start - 1)
+                    if (before != null && before !in STOPWORDS && before !in GAVE && before !in GOT) return null
+                }
+                val take = if (current == 0.0) 1.0 + pending else current
+                pending = 0.0
+                scaled = true
+                counted = true
+                if (scale >= 1000.0) {
+                    total += take * scale
+                    current = 0.0
+                } else {
+                    current = take * scale
+                }
+            } else {
+                break
+            }
+            j++
+        }
+        if (!counted) return null
+        if (!scaled && ws.getOrNull(j) !in HINDI_RUPEES) return null
+        return (total + current).takeIf { it > 0.0 }
+    }
+
+    /**
+     * Indonesian number words (16 Nov 2026, audit T35): "lima ribu" 5,000, "dua puluh lima ribu" 25,000, "seratus lima puluh
+     * ribu" 150,000, "satu juta" 1,000,000. The first run of number words is read by its own grammar — a unit before belas,
+     * puluh or ratus, the group before ribu or juta — and is money only with ratus, ribu or juta in it or a rupiah word after.
+     * Two units side by side, or a scale with nothing to count: unsure, no amount.
+     */
+    private fun fromIndonesian(ws: List<String>): Double? {
+        val start = ws.indexOfFirst { it in ID_WORDS }
+        if (start < 0) return null
+        var total = 0.0
+        var group = 0.0
+        var unit: Int? = null
+        var scaled = false
+        var j = start
+        loop@ while (j < ws.size) {
+            val w = ws[j]
+            val u = ID_UNITS[w]
+            when {
+                u != null -> {
+                    if (unit != null) return null
+                    unit = u
+                }
+                w == "sepuluh" || w == "sebelas" -> {
+                    if (unit != null) return null
+                    group += if (w == "sepuluh") 10.0 else 11.0
+                }
+                w == "belas" || w == "puluh" || w == "ratus" -> {
+                    val n = unit ?: return null
+                    group += when (w) { "belas" -> 10.0 + n; "puluh" -> 10.0 * n; else -> 100.0 * n }
+                    unit = null
+                    if (w == "ratus") scaled = true
+                }
+                w == "seratus" -> {
+                    if (unit != null) return null
+                    group += 100.0
+                    scaled = true
+                }
+                w == "ribu" || w == "juta" -> {
+                    val n = group + (unit ?: 0)
+                    if (n <= 0.0) return null
+                    total += n * (if (w == "ribu") 1000.0 else 1_000_000.0)
+                    group = 0.0
+                    unit = null
+                    scaled = true
+                }
+                w == "seribu" || w == "sejuta" -> {
+                    if (unit != null || group != 0.0) return null
+                    total += if (w == "seribu") 1000.0 else 1_000_000.0
+                    scaled = true
+                }
+                else -> break@loop
+            }
+            j++
+        }
+        if (!scaled && ws.getOrNull(j) !in ID_RUPIAH) return null
+        return (total + group + (unit ?: 0)).takeIf { it > 0.0 }
     }
 
     /**
@@ -612,8 +757,11 @@ object VoiceEntry {
         // "sawa", "saade", "paune": waits for the very next word, which must be a number word or a scale.
         var pending = 0.0
 
+        var before: String? = null
         for (w in text.split(" ", "،", ",")) {
             if (w.isEmpty()) continue
+            val prev = before
+            before = w
             val mod = MODIFIERS[w]
             if (mod != null) {
                 pending = mod
@@ -631,6 +779,12 @@ object VoiceEntry {
                 pending = 0.0
                 continue
             }
+            // A scale with no number before it, straight after a word that is no grammar and no verb (16 Nov 2026, audit T35):
+            // "pachees hazar" — a number word this list does not have — was read as a bare thousand, 1,000 for 25,000. Unsure:
+            // no amount, the owner types it.
+            if (current == 0.0 && pending == 0.0 && prev != null && prev !in STOPWORDS && prev !in GAVE && prev !in GOT &&
+                !prev.all { it.isDigit() } && !(persian && PERSIAN_UNITS.containsKey(prev))
+            ) return null
             seen = true
             // A multiplier with nothing before it counts once: "hazaar" is one
             // thousand, not none; "sawa sau" is one and a quarter hundreds.

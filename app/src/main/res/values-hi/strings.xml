@@ -1087,6 +1087,12 @@
     <string name="hudhud_unknown">यह आपके खाते में नहीं मिला। इसके सबसे करीब के सवाल, जिनका जवाब दे सकता हूँ, नीचे हैं।</string>
     <string name="hudhud_off_topic">मैं सिर्फ़ आपकी दुकान के खाते और इस ऐप में मदद करता हूँ, इसलिए इसका जवाब नहीं दे सकता।</string>
     <string name="hudhud_sum_here">हिसाब लगाने के लिए कैलकुलेटर एक टैप पर है।</string>
+    <string name="hudhud_sales_on">बिक्री · %1$s</string>
+    <string name="hudhud_profit_on">मुनाफ़ा · %1$s</string>
+    <string name="hudhud_date_ahead">वह दिन अभी आया नहीं, इसलिए खाते में उसका कुछ नहीं है।</string>
+    <string name="hudhud_compare_title">तुलना</string>
+    <string name="hudhud_compare_unknown">दोनों में से एक रकम पता नहीं, इसलिए अंतर नहीं बता सकता।</string>
+    <string name="hudhud_call_me_confirm">क्या मैं आपको %1$s कहूँ? सेव करें दबाएँ, तो कहूँगा।</string>
     <string name="hudhud_owner_only">यह रकम सिर्फ मालिक या मैनेजर देख सकते हैं।</string>
     <string name="hudhud_owner_only_exact">यह सिर्फ मालिक देख सकते हैं।</string>
     <string name="hudhud_limit_manager">काउंटर वाले फोन पर यह सिर्फ मालिक या मैनेजर के PIN से खुलता है।</string>

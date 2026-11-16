@@ -1047,6 +1047,12 @@
     <string name="hudhud_unknown">یہ آپ کے کھاتے میں نہیں ملا۔ اس کے قریب ترین سوال، جن کا جواب دے سکتا ہوں، نیچے ہیں۔</string>
     <string name="hudhud_off_topic">میں صرف آپ کی دکان کے کھاتے اور اس ایپ میں مدد کرتا ہوں، اس لیے اس کا جواب نہیں دے سکتا۔</string>
     <string name="hudhud_sum_here">حساب لگانے کے لیے کیلکولیٹر ایک ٹیپ پر ہے۔</string>
+    <string name="hudhud_sales_on">بکری · %1$s</string>
+    <string name="hudhud_profit_on">منافع · %1$s</string>
+    <string name="hudhud_date_ahead">وہ دن ابھی آیا نہیں، اس لیے کھاتے میں اس کا کچھ نہیں۔</string>
+    <string name="hudhud_compare_title">موازنہ</string>
+    <string name="hudhud_compare_unknown">دونوں میں سے ایک رقم معلوم نہیں، اس لیے فرق نہیں بتا سکتا۔</string>
+    <string name="hudhud_call_me_confirm">کیا میں آپ کو %1$s کہوں؟ محفوظ کریں دبائیں تو کہوں گا۔</string>
     <string name="hudhud_owner_only">یہ رقم صرف مالک یا منیجر دیکھ سکتے ہیں۔</string>
     <string name="hudhud_owner_only_exact">یہ صرف مالک دیکھ سکتے ہیں۔</string>
     <string name="hudhud_limit_manager">کاؤنٹر والے فون پر یہ صرف مالک یا منیجر کے PIN سے کھلتا ہے۔</string>

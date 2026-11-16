@@ -201,7 +201,7 @@ object Hudhud {
          * "mujhe … bulao" were read as a question about his name, as the shop's name or as a customer): [name] is kept on
          * this phone only (HudhudPrefs) and he calls the owner by it from now on. Said by the rules alone, never the sense's.
          */
-        data class CallMe(val name: String) : Ask()
+        data class CallMe(val name: String, val save: Boolean = false) : Ask()
 
         /**
          * How the app looks, said to him (14 Nov 2026, the owner's yes to the settings tiers): the text size or the theme
@@ -232,7 +232,32 @@ object Hudhud {
          * ([Guessed] around it).
          */
         data class Now(val ask: Ask) : Ask()
+
+        /**
+         * A sale, a profit, the money that came in, the day's dealings, or what a customer paid ([DatedOf.PAID]) or took
+         * ([DatedOf.TOOK]) over a day or a month named outright (16 Nov 2026, audit T31): "15 tareekh ki sale", "12 November
+         * ko kitne paise aaye", "Ali ne parson kitna diya". [ids] is the customer for PAID and TOOK. The app reads it with
+         * the very calls of the span asks ([Period], [Collected], [Activity], [Moved]) over [Hudhud.span] of [days].
+         */
+        data class OnDays(val of: DatedOf, val days: VoiceQuestion.Dated, val ids: List<Long> = emptyList()) : Ask()
+
+        /**
+         * Two questions in one sentence (16 Nov 2026, audit T32 / H-03): "Ali Raza ka balance aur aaj ki sale batao" answered
+         * one half and dropped the other. Read only when each half alone is a firm question of the book and the whole was
+         * read as one of them; the app answers each by its own reader and its own gate, on one card.
+         */
+        data class Both(val first: Ask, val second: Ask) : Ask()
+
+        /**
+         * A sale or a profit over two spans side by side, and the difference, [first] less [second] (16 Nov 2026, audit T32 /
+         * H-04: "is mahine aur pichle mahine ki sale ka farq" answered only last month). [first] and [second] are each a
+         * [Period] or an [OnDays] of the same measure; no third figure is ever worked out when either is unknown.
+         */
+        data class Compare(val first: Ask, val second: Ask) : Ask()
     }
+
+    /** What a day or a month named outright is asked of ([Ask.OnDays]). */
+    enum class DatedOf { SALES, PROFIT, COLLECTED, ACTIVITY, PAID, TOOK }
 
     /** His little acts. */
     enum class Move { FLY, DANCE, JUMP }
@@ -391,7 +416,116 @@ object Hudhud {
     fun understand(
         heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
         goods: List<Name> = emptyList(), before: Ask? = null, staff: List<Name> = emptyList()
-    ): Ask = offTopic(heard, whatIf(heard, understandRead(salaamHeadRead(withoutSelf(heard)), asRead(names), topics, language, asRead(goods), before, asRead(staff))))
+    ): Ask {
+        val clean = salaamHeadRead(withoutSelf(heard))
+        val n = asRead(names)
+        val g = asRead(goods)
+        val st = asRead(staff)
+        val whole = understandRead(clean, n, topics, language, g, before, st)
+        val read = compareOf(clean, n, g) ?: bothOf(clean, whole, n, topics, language, g, before, st) ?: whole
+        return offTopic(heard, whatIf(heard, read))
+    }
+
+    // ------------------------------------------------------------------------------------ two questions, or two spans compared
+
+    /** The words that join two questions or two spans: "and", "with", "versus" and, for a comparison only, "from". */
+    private val AND_WORDS = setOf("aur", "or", "and", "اور", "और", "এবং", "আর", "و", "dan", "serta", "۽").map { norm(it) }.toSet()
+    private val COMPARE_JOIN = AND_WORDS + setOf("with", "vs", "versus", "dengan", "مع", "با", "se", "سے", "से").map { norm(it) }.toSet()
+
+    /**
+     * A comparison's own words (16 Nov 2026, audit T32): the difference and to compare, in the nine languages — Urdu, Farsi and
+     * Arabic فرق, Urdu موازنہ / مقابلہ, Arabic مقارنة, Farsi مقایسه, Hindi फ़र्क / अंतर / तुलना, Bengali পার্থক্য / তুলনা,
+     * Indonesian selisih / perbedaan / bandingkan.
+     */
+    private val COMPARE_WORDS = listOf("farq", "fark", "farak", "difference", "compare", "comparison", "compared", "versus", "vs",
+        "muqabla", "muqabala", "mawazna", "tulna", "فرق", "موازنہ", "مقابلہ", "مقارنة", "قارن", "مقایسه", "मुक़ाबला", "फ़र्क", "अंतर",
+        "तुलना", "পার্থক্য", "তুলনা", "selisih", "perbedaan", "perbandingan", "bandingkan", "beda")
+
+    /**
+     * A sale or a profit over two spans, compared (16 Nov 2026, audit T32 / H-04): "is mahine aur pichle mahine ki sale ka
+     * farq", "compare this month's sales with last month". A comparison word, a sale or a profit word, nobody and no product
+     * named, and two different spans on the two sides of a joining word — each a span he tells ([VoiceQuestion.windowOf]) or a
+     * day or a month named outright. Anything less is left to the usual reading.
+     */
+    private fun compareOf(heard: String, names: List<Name>, goods: List<Name>): Ask? {
+        val said = words(heard)
+        if (!has(said.joinToString(" "), COMPARE_WORDS)) return null
+        // "Aaj aur kal ka muqabla karo" names no figure: a comparison of days is the sale's (Insights compares the sales).
+        val measure = when (VoiceQuestion.classify(heard)) {
+            VoiceQuestion.Kind.SALES_TODAY, VoiceQuestion.Kind.SALES_MONTH, null -> Measure.SALES
+            VoiceQuestion.Kind.PROFIT_MONTH -> Measure.PROFIT
+            else -> return null
+        }
+        if (said.any { knownName(it, names) || knownName(it, goods) }) return null
+        val raw = heard.trim().split(SPACE_RUN)
+        for (i in 1 until raw.size - 1) {
+            if (norm(raw[i]) !in COMPARE_JOIN) continue
+            val a = spanAsk(measure, raw.subList(0, i).joinToString(" ")) ?: continue
+            val b = spanAsk(measure, raw.subList(i + 1, raw.size).joinToString(" ")) ?: continue
+            if (a == b) continue
+            // The later span first, so the difference says how the later stands against the earlier, however it was said
+            // ("pichle mahine se is mahine ka muqabla").
+            return if (startOf(b) > startOf(a)) Ask.Compare(b, a) else Ask.Compare(a, b)
+        }
+        return null
+    }
+
+    /** Where one side of a comparison begins (a day not yet come: never). */
+    private fun startOf(a: Ask): Long = when (a) {
+        is Ask.Period -> span(a.window).first
+        is Ask.OnDays -> span(a.days)?.first ?: Long.MIN_VALUE
+        else -> Long.MIN_VALUE
+    }
+
+    /** One side of a comparison: the measure over the span or the day that side names, or null when it names none or another. */
+    private fun spanAsk(measure: Measure, part: String): Ask? {
+        VoiceQuestion.datedOf(part)?.let { return Ask.OnDays(if (measure == Measure.SALES) DatedOf.SALES else DatedOf.PROFIT, it) }
+        if (VoiceQuestion.unsupportedSpan(part)) return null
+        return VoiceQuestion.windowOf(part)?.let { Ask.Period(measure, it) }
+    }
+
+    private val SPACE_RUN = Regex("\\s+")
+
+    /**
+     * Two questions in one sentence (16 Nov 2026, audit T32 / H-03): each side of an "and" read alone through the whole reading;
+     * both are taken only when each side is a firm question of the book on its own ([firm], two words or more), they differ,
+     * and the whole sentence was read as one of them — the other half was being dropped. "Ali Raza aur Bashir Ahmad ka
+     * balance", read whole as both men, is not split.
+     */
+    private fun bothOf(
+        heard: String, whole: Ask, names: List<Name>, topics: List<Topic>, language: String?, goods: List<Name>, before: Ask?,
+        staff: List<Name>
+    ): Ask? {
+        val raw = heard.trim().split(SPACE_RUN)
+        if (raw.size < 5) return null
+        val wholeAsk = (whole as? Ask.Guessed)?.ask ?: whole
+        // A card that already holds both sides of an "and" ("kas masuk dan keluar hari ini": the cashbook's money in and out,
+        // the day's dealings, the day's summary, the whole book) is never split.
+        if (wholeAsk is Ask.Cashbook || wholeAsk is Ask.Activity || wholeAsk == Ask.Today ||
+            (wholeAsk is Ask.Status && wholeAsk.of == StatusOf.BOOK)
+        ) return null
+        for (i in 2 until raw.size - 2) {
+            if (norm(raw[i]) !in AND_WORDS) continue
+            val a = understandRead(raw.subList(0, i).joinToString(" "), names, topics, language, goods, before, staff)
+            if (!firm(a)) continue
+            val b = understandRead(raw.subList(i + 1, raw.size).joinToString(" "), names, topics, language, goods, before, staff)
+            if (!firm(b) || a == b) continue
+            if (wholeAsk != a && wholeAsk != b) continue
+            return Ask.Both(a, b)
+        }
+        return null
+    }
+
+    /** A question of the book read outright, with nothing guessed: a half that may stand beside another ([bothOf]). */
+    private fun firm(a: Ask): Boolean = when (a) {
+        is Ask.Figure, is Ask.Period, is Ask.OnDays, is Ask.Person, is Ask.Collected, is Ask.Activity, is Ask.Count, is Ask.Status,
+        Ask.Drawer, is Ask.Cashbook, is Ask.Returns, is Ask.Deliveries, is Ask.TopGoods, Ask.Qarz, Ask.BackupStatus -> true
+        is Ask.Parties -> a.ids.isNotEmpty()
+        is Ask.Goods -> a.ids.isNotEmpty()
+        is Ask.Moved -> a.ids.size == 1
+        is Ask.WhenPays -> a.ids.size == 1
+        else -> false
+    }
 
     /** Why a sentence is not a question of the book ([Ask.OffTopic]). */
     enum class OffTopicWhy { GENERAL, SUM }
@@ -409,8 +543,8 @@ object Hudhud {
      */
     private fun offTopic(heard: String, ask: Ask): Ask {
         // Talk ("kaise ho") is kept unless it carries a topic word: "joke sunao" was taken as "how are you" by the sense.
-        if (ask is Ask.Voice || ask is Ask.Look || ask is Ask.CallMe || ask is Ask.Act ||
-            ask is Ask.Abilities || (ask is Ask.About && (ask.topic in STORY_TOPICS || ask.topic in FAITH_TOPICS))
+        if (ask is Ask.Voice || ask is Ask.Look || ask is Ask.CallMe || ask is Ask.Act || ask is Ask.Both || ask is Ask.Compare ||
+            ask is Ask.OnDays || ask is Ask.Abilities || (ask is Ask.About && (ask.topic in STORY_TOPICS || ask.topic in FAITH_TOPICS))
         ) return ask
         if (partyOf(ask) != null || goodsOf(ask) != null) return ask
         if (VoiceEntry.parse(heard, emptyList()).isGiven != null) return ask
@@ -495,13 +629,62 @@ object Hudhud {
             if (bare != heard) return understandRead(bare, names, topics, language, goods, before, staff)
         }
         val ruled = byRules(heard, names, topics, language, goods, carried, staff)
-        if (!HudhudSense.ready || words(heard).isEmpty()) return goodsShape(heard, partOfDay(heard, limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, ruled), carried)))))
+        val dated = VoiceQuestion.datedOf(heard) { w -> knownName(w, names) || knownName(w, goods) }
+        if (!HudhudSense.ready || words(heard).isEmpty()) return goodsShape(heard, partOfDay(heard, limitSpan(heard, withDate(heard, dated, withCheque(heard, withCover(heard, byWay(heard, ruled), carried))), dated != null)))
         val guesses = HudhudSense.rank(
             senseHeard(heard, names, goods),
             isName = { w -> w !in QUIET_SET && w !in VOCATIVE_SET && !HudhudMind.isHardWord(w) && knownName(w, names) },
             isItem = { w -> w !in QUIET_SET && !HudhudMind.isHardWord(w) && knownName(w, goods) }
         )
-        return goodsShape(heard, partOfDay(heard, limitSpan(heard, withCheque(heard, withCover(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)), carried)))))
+        return goodsShape(heard, partOfDay(heard, limitSpan(heard, withDate(heard, dated, withCheque(heard, withCover(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)), carried))), dated != null)))
+    }
+
+    /**
+     * A day or a month named outright (16 Nov 2026, audit T31): the sale, the profit, the money in, the day's dealings or a
+     * customer's paid or taken are asked over that day ([Ask.OnDays]) — they were this month's figure ("15 tareekh ki sale"),
+     * or a choice of spans ("parson ki sale"). A sentence that plainly asks the sale or the profit and names nobody is read so
+     * whatever else it was taken for ("pichle jumme ki sale" was the last counter bill). "15 tareekh ko kya hua" asks what
+     * happened that day, not the date. Any other question with a day said is left to [limitSpan]: it is told he cannot give
+     * that span, never answered over another.
+     */
+    private fun withDate(heard: String, dated: VoiceQuestion.Dated?, ask: Ask): Ask {
+        dated ?: return ask
+        val inner = (ask as? Ask.Guessed)?.ask ?: ask
+        val clock = if (inner == Ask.Clock && dated.month == null) Ask.OnDays(DatedOf.ACTIVITY, dated) else null
+        val plain = if (partyOf(inner) != null || goodsOf(inner) != null) null else when (VoiceQuestion.classify(heard)) {
+            VoiceQuestion.Kind.SALES_TODAY, VoiceQuestion.Kind.SALES_MONTH -> Ask.OnDays(DatedOf.SALES, dated)
+            VoiceQuestion.Kind.PROFIT_MONTH -> Ask.OnDays(DatedOf.PROFIT, dated)
+            else -> null
+        }
+        val read: Ask = datedAsk(inner, dated) ?: clock ?: plain ?: return ask
+        return if (ask is Ask.Guessed) Ask.Guessed(read) else read
+    }
+
+    /** [a] over a day or a month named outright, when it is a question asked over a span of days that can be. */
+    private fun datedAsk(a: Ask, d: VoiceQuestion.Dated): Ask? = when (a) {
+        is Ask.Figure -> when (a.kind) {
+            VoiceQuestion.Kind.SALES_TODAY, VoiceQuestion.Kind.SALES_MONTH -> Ask.OnDays(DatedOf.SALES, d)
+            VoiceQuestion.Kind.PROFIT_MONTH -> Ask.OnDays(DatedOf.PROFIT, d)
+            else -> null
+        }
+        is Ask.Period -> Ask.OnDays(if (a.measure == Measure.SALES) DatedOf.SALES else DatedOf.PROFIT, d)
+        is Ask.Collected -> Ask.OnDays(DatedOf.COLLECTED, d)
+        is Ask.Activity -> Ask.OnDays(DatedOf.ACTIVITY, d)
+        is Ask.Moved -> Ask.OnDays(if (a.got) DatedOf.PAID else DatedOf.TOOK, d, a.ids)
+        is Ask.SpanLimit -> a.options.firstNotNullOfOrNull { datedAsk(it, d) }
+        is Ask.Now -> datedAsk(a.ask, d)
+        else -> null
+    }
+
+    /**
+     * The sentence asks the sale, the profit or money (the eight figures' sale, profit and debt words, or money), and says no word
+     * of goods or stock: "kharab" in it is the weather's or the day's, not goods written off.
+     */
+    private fun asksMoneyNotGoods(heard: String, mind: HudhudMind.Read): Boolean {
+        if (mind.any(HudhudMind.C.GOODS) || mind.any(HudhudMind.C.STOCK)) return false
+        val kind = VoiceQuestion.classify(heard)
+        return kind == VoiceQuestion.Kind.SALES_TODAY || kind == VoiceQuestion.Kind.SALES_MONTH || kind == VoiceQuestion.Kind.PROFIT_MONTH ||
+            mind.any(HudhudMind.C.MONEY)
     }
 
     /** A named product asked in a shape the facet words miss ("Urea kitne ki hai"): the price, the cost or the shelf it asks. */
@@ -760,6 +943,17 @@ object Hudhud {
         is Ask.Now -> carriedOf(before.ask)
         is Ask.SpanLimit -> carriedOf(before.options.firstOrNull())
         is Ask.Guessed -> carriedOf(before.ask)
+        // The talk goes on from the question of the last half, the later span, or the question asked of a named day
+        // ("aur kal ki?" after "15 tareekh ki sale" is yesterday's sale) (16 Nov 2026).
+        is Ask.Both -> carriedOf(before.second)
+        is Ask.Compare -> carriedOf(before.first)
+        is Ask.OnDays -> when (before.of) {
+            DatedOf.SALES -> Ask.Period(Measure.SALES, VoiceQuestion.Window.TODAY)
+            DatedOf.PROFIT -> Ask.Period(Measure.PROFIT, VoiceQuestion.Window.TODAY)
+            DatedOf.COLLECTED -> Ask.Collected(VoiceQuestion.Window.TODAY)
+            DatedOf.ACTIVITY -> Ask.Activity(VoiceQuestion.Window.TODAY)
+            DatedOf.PAID, DatedOf.TOOK -> Ask.Moved(before.ids, VoiceQuestion.Window.TODAY, before.of == DatedOf.PAID)
+        }
         else -> before
     }
 
@@ -843,12 +1037,13 @@ object Hudhud {
      * lists rows. Either way the question is kept and he says which spans he can give, each a tap; a figure for another
      * span is never said in its place. A guess stays a guess ([Ask.Guessed]).
      */
-    private fun limitSpan(heard: String, ask: Ask): Ask {
+    private fun limitSpan(heard: String, ask: Ask, dateSaid: Boolean = false): Ask {
         val inner = if (ask is Ask.Guessed) ask.ask else ask
-        if (!spanMatters(inner)) return nowWithSpan(heard, ask, inner)
+        if (!spanMatters(inner)) return nowWithSpan(heard, ask, inner, dateSaid)
         val sums = longOk(inner)
         val tooLong = !sums && spanOf(inner)?.isLong == true
-        if (!tooLong && !(heard.isNotEmpty() && VoiceQuestion.unsupportedSpan(heard))) return ask
+        // A day or a month named outright for a question that cannot be asked over one (16 Nov 2026): the spans he tells.
+        if (!tooLong && !(heard.isNotEmpty() && (VoiceQuestion.unsupportedSpan(heard) || dateSaid))) return ask
         val limit = Ask.SpanLimit((if (sums) LONG_SPANS else SHORT_SPANS).map { over(inner, it) }, long = sums)
         return if (ask is Ask.Guessed) Ask.Guessed(limit) else limit
     }
@@ -860,8 +1055,8 @@ object Hudhud {
      * answer does not change with a span ([spanMatters] said no). Today's span and the whole book's change nothing, and a
      * sentence with no span is answered as it was.
      */
-    private fun nowWithSpan(heard: String, ask: Ask, inner: Ask): Ask {
-        if (heard.isEmpty() || !standsNow(inner) || !spanSaid(heard)) return ask
+    private fun nowWithSpan(heard: String, ask: Ask, inner: Ask, dateSaid: Boolean = false): Ask {
+        if (heard.isEmpty() || !standsNow(inner) || !(dateSaid || spanSaid(heard))) return ask
         val now = Ask.Now(inner)
         return if (ask is Ask.Guessed) Ask.Guessed(now) else now
     }
@@ -1426,6 +1621,7 @@ object Hudhud {
             Move.DANCE -> "act_dance"
             Move.JUMP -> "act_jump"
         }
+        is Ask.OnDays, is Ask.Both, is Ask.Compare,
         Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
         Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic -> null
     }
@@ -1492,7 +1688,8 @@ object Hudhud {
             "party_details" -> person(Facet.DETAILS)
             "party_when_pays" -> Ask.WhenPays(named)
             "entry_gave", "entry_got" -> {
-                val entry = VoiceEntry.parse(heard, emptyList(), language)
+                // The figures of a date are no amount ("Ali ko 12 November ko 500 diye" is 500, never 12).
+                val entry = VoiceEntry.parse(VoiceQuestion.withoutDate(heard) { w -> knownName(w, names) || knownName(w, goods) }, emptyList(), language)
                 val amount = entry.amount
                 // The count of a span ("6" of "pichle 6 mahine") is no amount of money: the rules' reading stands.
                 if (amount != null && amount in VoiceQuestion.spanFigures(heard)) return null
@@ -1589,7 +1786,8 @@ object Hudhud {
         // are one question. A word the book knows as somebody's or a product's name is never read by its sound.
         val mind = mindOf(said, joined, names, goods, language)
         aboutHim(mind, joined) { w -> knownName(w, names) || knownName(w, goods) }?.let { return it }
-        val entry = VoiceEntry.parse(heard, emptyList(), language)
+        // The figures of a date are no amount ("Ali ko 12 November ko 500 diye" is 500, never 12).
+        val entry = VoiceEntry.parse(VoiceQuestion.withoutDate(heard) { w -> knownName(w, names) || knownName(w, goods) }, emptyList(), language)
         val asking = heard.any { it == '?' || it == '\u061F' } || has(joined, QUESTION) || said.first() in ASKS_FIRST
         // An entry said as a fact: the form opens filled in, the owner saves it (voice entry's own reading).
         // The count of a span ("3" of "pichle 3 mahine") is no amount of money.
@@ -1624,6 +1822,9 @@ object Hudhud {
         if (named.isEmpty() && product.isEmpty()) {
             HudhudCounter.read(joined, said, how, has(joined, SUPPLIER_SIDE_WORDS) || has(joined, PURCHASE_SIDE) || mind.any(HudhudMind.C.SUPPLIER),
                 spanOwnsLast = spanSaid != null && lastIsSpansOwn(heard, mind))
+                // "Weather kharab tha to aaj ki sale kitni hui" (16 Nov 2026): a damaged word is goods written off only when the
+                // sentence is about goods or stock, never when it asks the sale, the profit or the money and names no goods.
+                ?.takeUnless { it == CounterFacet.WRITTEN_OFF && asksMoneyNotGoods(heard, mind) }
                 ?.let { return Ask.Counter(it, window ?: HudhudCounter.defaultWindow(it)) }
         }
         // Staff pay and attendance, a customer's plan, a customer's cheques (15 Nov 2026): the rules' own reading, ahead of the features.
@@ -2937,6 +3138,7 @@ object Hudhud {
         is Ask.WhenPays -> a.ids
         is Ask.Moved -> a.ids
         is Ask.Entry -> a.ids
+        is Ask.OnDays -> a.ids
         else -> null
     }?.takeIf { it.isNotEmpty() }
 
@@ -3132,6 +3334,72 @@ object Hudhud {
             VoiceQuestion.Window.LAST_YEAR -> plusYears(year, -1) to year
             VoiceQuestion.Window.ALL_TIME -> 0L to tomorrow
         }
+    }
+
+    /**
+     * The days of a day or a month named outright ([VoiceQuestion.Dated], 16 Nov 2026, audit T31), as [from, to), or null when
+     * that day has not yet come (a figure is never said for it). A day is the whole calendar day, a month the whole calendar
+     * month (the screens' own spans). What was not said is the most recent such day or month that is not in the future: "15
+     * tareekh" on the 10th is last month's 15th, "November" in March is last November; a month without that day (the 31st) is
+     * passed over for the one before it. "Pichle mahine ki 15 tareekh" is the 15th of last month, "pichle saal November" last
+     * year's November; "parson" is the day before yesterday; "pichle jumme" the last Friday before today.
+     */
+    fun span(d: VoiceQuestion.Dated, now: Long = System.currentTimeMillis(), tz: TimeZone = TimeZone.getDefault()): Pair<Long, Long>? {
+        fun at(t: Long) = Calendar.getInstance(tz).apply { timeInMillis = t }
+        fun startOf(c: Calendar): Long = c.apply {
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        val today = startOf(at(now))
+        fun dayOf(y: Int, m: Int, day: Int): Long? {
+            val c = Calendar.getInstance(tz).apply { clear(); set(Calendar.YEAR, y); set(Calendar.MONTH, m - 1); set(Calendar.DAY_OF_MONTH, 1) }
+            if (day > c.getActualMaximum(Calendar.DAY_OF_MONTH)) return null
+            c.set(Calendar.DAY_OF_MONTH, day)
+            return startOf(c)
+        }
+        fun wholeDay(start: Long) = start to startOf(at(start).apply { add(Calendar.DAY_OF_MONTH, 1) })
+        fun wholeMonth(y: Int, m: Int): Pair<Long, Long> {
+            val first = dayOf(y, m, 1)!!
+            return first to startOf(at(first).apply { add(Calendar.MONTH, 1) })
+        }
+        val c = at(today)
+        val y = c.get(Calendar.YEAR)
+        val m = c.get(Calendar.MONTH) + 1
+        d.daysBack?.let { back -> return wholeDay(startOf(at(today).apply { add(Calendar.DAY_OF_MONTH, -back) })) }
+        d.weekday?.let { wd ->
+            var t = startOf(at(today).apply { add(Calendar.DAY_OF_MONTH, -1) })
+            while (at(t).get(Calendar.DAY_OF_WEEK) != wd) t = startOf(at(t).apply { add(Calendar.DAY_OF_MONTH, -1) })
+            return wholeDay(t)
+        }
+        val day = d.day
+        val month = d.month
+        if (month == null) {
+            day ?: return null
+            // A day of this month or of last month as said, else the most recent month that has that day by today.
+            d.monthsBack?.let { back ->
+                val ref = at(today).apply { set(Calendar.DAY_OF_MONTH, 1); add(Calendar.MONTH, -back) }
+                val t = dayOf(ref.get(Calendar.YEAR), ref.get(Calendar.MONTH) + 1, day) ?: return null
+                return if (t > today) null else wholeDay(t)
+            }
+            for (back in 0..12) {
+                val ref = at(today).apply { set(Calendar.DAY_OF_MONTH, 1); add(Calendar.MONTH, -back) }
+                val t = dayOf(ref.get(Calendar.YEAR), ref.get(Calendar.MONTH) + 1, day) ?: continue
+                if (t <= today) return wholeDay(t)
+            }
+            return null
+        }
+        val year = d.year ?: d.yearsBack?.let { y - it }
+        if (year != null) {
+            if (day == null) return if (year > y || (year == y && month > m)) null else wholeMonth(year, month)
+            val t = dayOf(year, month, day) ?: return null
+            return if (t > today) null else wholeDay(t)
+        }
+        if (day == null) return wholeMonth(if (month <= m) y else y - 1, month)
+        // The most recent such day by today; the 29th of February waits up to eight years for its year.
+        for (back in 0..8) {
+            val t = dayOf(y - back, month, day) ?: continue
+            if (t <= today) return wholeDay(t)
+        }
+        return null
     }
 
     /** The customer an entry names: one when NameSearch is sure, else those it could be (at most five), else none. */

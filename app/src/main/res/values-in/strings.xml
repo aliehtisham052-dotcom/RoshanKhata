@@ -1065,6 +1065,12 @@
     <string name="hudhud_unknown">Ini tidak saya temukan di buku Anda. Pertanyaan terdekat yang bisa saya jawab ada di bawah.</string>
     <string name="hudhud_off_topic">Saya hanya membantu buku toko Anda dan aplikasi ini, jadi saya tidak bisa menjawab ini.</string>
     <string name="hudhud_sum_here">Untuk berhitung, kalkulator tinggal satu ketukan.</string>
+    <string name="hudhud_sales_on">Penjualan · %1$s</string>
+    <string name="hudhud_profit_on">Laba · %1$s</string>
+    <string name="hudhud_date_ahead">Hari itu belum tiba, jadi belum ada apa pun di buku untuknya.</string>
+    <string name="hudhud_compare_title">Perbandingan</string>
+    <string name="hudhud_compare_unknown">Salah satu dari dua angka tidak diketahui, jadi saya tidak memberi selisihnya.</string>
+    <string name="hudhud_call_me_confirm">Boleh saya memanggil Anda %1$s? Ketuk Simpan dan akan saya lakukan.</string>
     <string name="hudhud_owner_only">Angka ini hanya bisa dilihat pemilik atau manajer.</string>
     <string name="hudhud_owner_only_exact">Ini hanya bisa dilihat pemilik.</string>
     <string name="hudhud_limit_manager">Di ponsel kasir, ini hanya terbuka untuk pemilik atau manajer dengan PIN.</string>

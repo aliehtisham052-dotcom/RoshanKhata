@@ -34,7 +34,7 @@ ur-Latn	OK	is hafte ki bikri		Period:SALES
 ur-Latn	OK	is mahine ab tak kitna bech chuke		Figure:SALES_MONTH
 ur-Latn	OK	pichle mahine ki total sale		Period:SALES
 ur-Latn	OK	is saal ki sale kitni hai		Period:SALES
-ur-Latn	OK	aaj ki sale aur kal ki sale		Figure:SALES_TODAY
+ur-Latn	OK	aaj ki sale aur kal ki sale		Both
 ur-Latn	OK	sale		Figure:SALES_MONTH
 ur-Latn	OK	sale batao		Figure:SALES_TODAY
 ur-Latn	OK	is mahine kitna kamaya		Figure:PROFIT_MONTH
