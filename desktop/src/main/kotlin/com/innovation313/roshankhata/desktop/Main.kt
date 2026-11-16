@@ -2682,13 +2682,23 @@ class KeyActions {
     /** True while a question of the window is open (R156): no shortcut then, the counter's included. */
     var busy: () -> Boolean = { false }
 
-    fun handle(e: androidx.compose.ui.input.key.KeyEvent): Boolean {
-        if (e.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return false
+    fun handle(e: androidx.compose.ui.input.key.KeyEvent): Boolean =
+        handle(e.type, e.key, e.isCtrlPressed) { page?.invoke(e) == true }
+
+    /**
+     * The decision by the key's own values (17 Nov 2026, register BC-075): [handle] reads them off the window's event;
+     * KeyActionsDialogTest drives this with Compose's own Key and KeyEventType. [pageTakes] asks the open page's own keys.
+     */
+    fun handle(
+        type: androidx.compose.ui.input.key.KeyEventType,
+        k: androidx.compose.ui.input.key.Key,
+        ctrl: Boolean,
+        pageTakes: () -> Boolean = { false }
+    ): Boolean {
+        if (type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return false
         // The dialogs are drawn in this window since Marhala 2: their keys pass here first.
         if (busy() || OpenDialogs.count > 0) return false
-        if (page?.invoke(e) == true) return true
-        val k = e.key
-        val ctrl = e.isCtrlPressed
+        if (pageTakes()) return true
         val act: (() -> Unit)? = when {
             k == androidx.compose.ui.input.key.Key.F1 -> khata
             k == androidx.compose.ui.input.key.Key.F2 -> gave
