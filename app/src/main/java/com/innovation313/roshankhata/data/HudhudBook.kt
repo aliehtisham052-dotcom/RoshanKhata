@@ -30,7 +30,9 @@ object HudhudBook {
         /** A row that is not a customer (a product, a staff member): tapped, this screen opens instead. */
         val open: Class<*>? = null,
         /** A row that answers a question when tapped (14 Nov 2026: "which product?" lists products, each its own ask). */
-        val ask: Hudhud.Ask? = null
+        val ask: Hudhud.Ask? = null,
+        /** With [amount]: the moment the form opens on, a day the sentence said (16 Nov 2026); null: now. */
+        val time: Long? = null
     )
 
     /** A verse the card shows: its surah's Arabic name, where it is, and its Arabic text — never said aloud. */
@@ -85,7 +87,7 @@ object HudhudBook {
         figure = c.figure,
         lines = c.lines,
         rows = c.rows.map { r ->
-            Row(r.partyId, r.name, r.figure, r.sub, r.amount, r.isGiven, r.open?.let { HudhudPhoneEnv.activity(it) }, r.ask)
+            Row(r.partyId, r.name, r.figure, r.sub, r.amount, r.isGiven, r.open?.let { HudhudPhoneEnv.activity(it) }, r.ask, r.time)
         },
         open = c.open?.let { HudhudPhoneEnv.activity(it) },
         openParty = c.openParty,
@@ -141,7 +143,8 @@ object HudhudBook {
     fun greeting(context: Context, now: Long = System.currentTimeMillis()): String = AnswerBook.greeting(env(context), now)
 
     /** What opens the customer's entry form filled in: voice entry's own extras. */
-    fun entryForm(amount: Double, isGiven: Boolean): Bundle = HudhudPhoneEnv.extras(AnswerBook.entryForm(amount, isGiven))
+    fun entryForm(amount: Double, isGiven: Boolean, time: Long? = null): Bundle =
+        HudhudPhoneEnv.extras(AnswerBook.entryForm(amount, isGiven, time))
 
     /** A chip's words for [ask]; null: no chip. */
     fun chipLabel(c: Context, ask: Hudhud.Ask): String? = AnswerBook.chipLabel(env(c), ask)

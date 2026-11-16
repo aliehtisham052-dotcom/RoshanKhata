@@ -78,7 +78,9 @@ data class AnswerCard(
         val amount: Double? = null,
         val isGiven: Boolean = true,
         val open: ScreenId? = null,
-        val ask: Hudhud.Ask? = null
+        val ask: Hudhud.Ask? = null,
+        /** With [amount]: the moment the entry's form opens on ([OpenWith.EntryForm.time]); null: now. */
+        val time: Long? = null
     )
 
     /** A verse the card shows: its surah's Arabic name, where it is, and its Arabic text — shown, never said aloud. */
@@ -94,8 +96,11 @@ sealed interface OpenWith {
     data class SalesPeriod(val period: String) : OpenWith
     /** The sales report from [firstDay] to [lastDay] (each a day's first moment), as the range picker gives them. */
     data class SalesDays(val firstDay: Long, val lastDay: Long) : OpenWith
-    /** A customer's entry form filled in (voice entry's own two values). */
-    data class EntryForm(val amount: Double, val isGiven: Boolean) : OpenWith
+    /**
+     * A customer's entry form filled in (voice entry's own two values), and [time]: the moment a day said with it names
+     * ([Hudhud.entryTime], 16 Nov 2026: "Ali ko kal 500 diye"); null opens on now, as before.
+     */
+    data class EntryForm(val amount: Double, val isGiven: Boolean, val time: Long? = null) : OpenWith
     /** Who bought a product. */
     data class ProductBuyers(val productId: Long, val productName: String) : OpenWith
     /** The day book on the day that begins at [day]. */

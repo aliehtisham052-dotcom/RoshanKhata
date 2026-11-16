@@ -219,6 +219,9 @@ object AnswerBook {
             is Hudhud.Ask.OnDays -> onDays(context, dao, ask, parties)
             is Hudhud.Ask.Both -> both(context, dao, ask, parties)
             is Hudhud.Ask.Compare -> compare(context, dao, ask)
+            // "Why" about a figure of the book (16 Nov 2026, audit T8): facts only, by the figures' own rules.
+            is Hudhud.Ask.Why -> AnswerWhy.answer(context, dao, ask)
+            is Hudhud.Ask.Entries -> entries(context, ask, parties)
             is Hudhud.Ask.Look -> look(context, ask.request)
             is Hudhud.Ask.LookDone -> lookDone(context, ask.made)
             is Hudhud.Ask.Record -> AnswerRecordFacts.answer(context, dao, ask, parties)
@@ -860,7 +863,8 @@ object AnswerBook {
                 figure = money(ask.amount),
                 lines = listOf(way, context.getString(W.hudhud_entry_check)),
                 openParty = p.id,
-                openWith = entryForm(ask.amount, ask.isGiven),
+                // The day the sentence said ("kal", "12/11"), never in the future (16 Nov 2026).
+                openWith = entryForm(ask.amount, ask.isGiven, ask.day?.let { Hudhud.entryTime(it) }),
                 openLabel = W.hudhud_fill_entry,
                 money = true
             )
@@ -875,14 +879,44 @@ object AnswerBook {
             label = context.getString(W.voice_which_party, Format.moneyLtr(ask.amount)),
             lines = listOf(way),
             rows = choices.map {
-                Row(it.id, it.name, money(abs(it.balance)), side(context, it.balance), amount = ask.amount, isGiven = ask.isGiven)
+                Row(it.id, it.name, money(abs(it.balance)), side(context, it.balance), amount = ask.amount, isGiven = ask.isGiven,
+                    time = ask.day?.let { d -> Hudhud.entryTime(d) })
             },
             money = true, quiet = true
         )
     }
 
     /** What opens the customer's entry form filled in: voice entry's own extras. */
-    fun entryForm(amount: Double, isGiven: Boolean): OpenWith = OpenWith.EntryForm(amount, isGiven)
+    /**
+     * Two entries said in one sentence ([Hudhud.Ask.Entries], 16 Nov 2026): "Ali ko 500 diye aur Bashir se 300 liye" was one wrong
+     * entry. He fills one at a time: the card lists each entry, and each row — the customer the words name, or the ones they could
+     * be — opens that customer's form filled in with that entry's amount, way and day. Nothing is written; a helper's read-only
+     * phone is told it cannot write, as for one entry.
+     */
+    private fun entries(context: AnswerEnv, ask: Hudhud.Ask.Entries, parties: List<PartyWithBalance>): AnswerCard {
+        val label = context.getString(W.hudhud_l_entries)
+        if (context.viewer()) return AnswerCard(Mood.CALM, label = label, lines = listOf(context.getString(W.viewer_refused)))
+        val lines = ArrayList<String>()
+        lines += context.getString(W.hudhud_entry_one_at_a_time)
+        val rows = ArrayList<Row>()
+        for (e in ask.entries) {
+            val way = context.getString(if (e.isGiven) W.i_gave else W.i_got)
+            val found = e.ids.mapNotNull { id -> parties.firstOrNull { it.id == id } }
+            val choices = found.ifEmpty {
+                NameSearch.rankSpoken(parties.sortedByDescending { it.lastActivity }, e.nameWords) { it.name }.take(TWO_PICK)
+            }
+            val time = e.day?.let { Hudhud.entryTime(it) }
+            lines += way + " · " + money(e.amount) + (found.singleOrNull()?.let { " · " + Format.isolate(it.name) } ?: "") +
+                (time?.let { " · " + Format.dateOnly(it) } ?: "")
+            for (p in choices) rows += Row(p.id, p.name, money(e.amount), way, amount = e.amount, isGiven = e.isGiven, time = time)
+        }
+        return AnswerCard(Mood.CALM, label = label, lines = lines, rows = rows, money = true, quiet = true)
+    }
+
+    /** Customers offered for each of two entries whose words name nobody surely. */
+    private const val TWO_PICK = 3
+
+    fun entryForm(amount: Double, isGiven: Boolean, time: Long? = null): OpenWith = OpenWith.EntryForm(amount, isGiven, time)
 
     // ------------------------------------------------------------------------------------- when he will pay
 
@@ -1478,7 +1512,7 @@ object AnswerBook {
         is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD || a.facet == Hudhud.GoodsFacet.COVER
         is Hudhud.Ask.Now -> needsReports(a.ask)
         is Hudhud.Ask.OnDays -> a.of != Hudhud.DatedOf.PAID && a.of != Hudhud.DatedOf.TOOK
-        is Hudhud.Ask.Compare -> true
+        is Hudhud.Ask.Compare, is Hudhud.Ask.Why -> true
         is Hudhud.Ask.Both -> needsReports(a.first) || needsReports(a.second)
         else -> false
     }

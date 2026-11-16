@@ -204,6 +204,8 @@ class HudhudPhoneEnv(val context: Context) : AnswerEnv {
                 is OpenWith.EntryForm -> {
                     putDouble(PartyDetailActivity.EXTRA_VOICE_AMOUNT, w.amount)
                     putBoolean(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, w.isGiven)
+                    // The day the sentence said (16 Nov 2026); the form clamps it to now.
+                    w.time?.let { putLong(PartyDetailActivity.EXTRA_VOICE_TIME, it) }
                 }
                 is OpenWith.ProductBuyers -> {
                     putLong(ProductCustomersActivity.EXTRA_PRODUCT_ID, w.productId)

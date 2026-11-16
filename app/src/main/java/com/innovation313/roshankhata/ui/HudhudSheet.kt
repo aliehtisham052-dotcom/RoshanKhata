@@ -880,7 +880,7 @@ object HudhudSheet {
                             sheet.dismiss()
                             host.startActivity(Intent(host, screen))
                         }
-                        r.partyId > 0 -> openParty(r.partyId, if (amount != null) HudhudBook.entryForm(amount, r.isGiven) else null)
+                        r.partyId > 0 -> openParty(r.partyId, if (amount != null) HudhudBook.entryForm(amount, r.isGiven, r.time) else null)
                     }
                 }
                 TextFit.relax(row)
