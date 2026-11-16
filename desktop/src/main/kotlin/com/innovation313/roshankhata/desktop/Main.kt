@@ -353,7 +353,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
     val outsideDir = outsideFolder?.let { DailyCopies.outside(it, active) }
     LaunchedEffect(db, outsideDir) {
         // Not when the book was just rebuilt from an older copy: the outside one may be the newer.
-        if (outsideDir != null && book.corruptKept == null) runCatching { DailyCopies.makeToday(db.khataDao(), settings, outsideDir, refresh = true) }
+        if (outsideDir != null && book.corruptKept == null) runCatching { DailyCopies.makeOutside(db.khataDao(), settings, outsideDir) }
     }
     // Auto backup (20 Oct): today's copy, here and in the outside folder, rewritten every hour the
     // app stays open, so a day's work is never more than an hour behind in the copies.
@@ -361,7 +361,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
         while (true) {
             kotlinx.coroutines.delay(60L * 60 * 1000)
             runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir, refresh = true) }
-            if (outsideDir != null) runCatching { DailyCopies.makeToday(db.khataDao(), settings, outsideDir, refresh = true) }
+            if (outsideDir != null) runCatching { DailyCopies.makeOutside(db.khataDao(), settings, outsideDir) }
         }
     }
     // A business switch (R76, 23 Oct 2026): the book being left gets its closing copies first, here and in the
@@ -375,7 +375,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
             withContext(kotlinx.coroutines.NonCancellable + Dispatchers.IO) {
                 kotlinx.coroutines.withTimeoutOrNull(90_000) {
                     runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir, refresh = true) }
-                    outsideDir?.let { dir -> runCatching { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } }
+                    outsideDir?.let { dir -> runCatching { DailyCopies.makeOutside(db.khataDao(), settings, dir) } }
                 }
             }
             com.innovation313.roshankhata.data.Access.signOut()
@@ -397,7 +397,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
         withContext(Dispatchers.IO) {
             kotlinx.coroutines.withTimeoutOrNull(90_000) {
                 runCatching { DailyCopies.makeToday(db.khataDao(), settings, dailyDir, refresh = true) }
-                outsideDir?.let { dir -> runCatching { DailyCopies.makeToday(db.khataDao(), settings, dir, refresh = true) } }
+                outsideDir?.let { dir -> runCatching { DailyCopies.makeOutside(db.khataDao(), settings, dir) } }
             }
         }
         runCatching { LiveDesk.detach(db) }
@@ -438,7 +438,7 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
                     if (!unlocked) LockScreen(appPrefs) { unlocked = true }
                     // A counter with nobody signed in: nothing of the book until someone does (21 Oct 2026).
                     else if (com.innovation313.roshankhata.data.Access.locked) key(active) { CounterGate(db.khataDao(), settings.businessName(), onClose = closeApp) }
-                    else key(active) { GateHost(db.khataDao()) { CompositionLocalProvider(LocalTrade provides trade) { Book(
+                    else key(active) { GateHost(db.khataDao()) { BackupPasswordHost(); CompositionLocalProvider(LocalTrade provides trade) { Book(
                         keys = keys,
                         db = db,
                         dao = db.khataDao(),
@@ -531,9 +531,11 @@ private suspend fun backup(
     /** How far the book is written, a whole percent (the header's backup chip, 3 Nov 2026). */
     progress: (Int) -> Unit = {}
 ): Long = withContext(Dispatchers.IO) {
+    // Locked with the owner's backup password when one is set (17 Nov 2026); set and unreadable: no file, never plain.
+    val password = DeskBackupPassword.forSealing()
     val local = File.createTempFile("rk-backup-", ".tmp")
     try {
-        local.bufferedWriter(Charsets.UTF_8).use {
+        com.innovation313.roshankhata.data.BackupSeal.writer(local.outputStream(), password).use {
             BackupCodec.exportTo(db.khataDao(), settings.businessName(), BackupCodec.profileToJson(settings), it, progress = progress)
         }
         java.nio.file.Files.copy(local.toPath(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
@@ -651,7 +653,7 @@ private fun Book(
         if (saleCopyTick == 0) return@LaunchedEffect
         kotlinx.coroutines.delay(60_000)
         runCatching { DailyCopies.makeToday(dao, settings, dailyDir, refresh = true) }
-        outsideDir?.let { runCatching { DailyCopies.makeToday(dao, settings, it, refresh = true) } }
+        outsideDir?.let { runCatching { DailyCopies.makeOutside(dao, settings, it) } }
     }
     var printer by remember { mutableStateOf(appPrefs.receipt()) }
     // Printed sheets in the language's own digits, offered where it has its own (21 Oct 2026).
@@ -1021,7 +1023,8 @@ private fun Book(
             // Documents, not the program's own folder: an update or uninstall must not take the backup with it.
             startIn(dialog, "Documents")
             dialog.file = "RoshanKhata_Backup_" +
-                java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(java.util.Date()) + ".txt"
+                java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(java.util.Date()) +
+                (if (DeskBackupPassword.state() is com.innovation313.roshankhata.data.BackupPassword.State.Set) "_locked" else "") + ".txt"
             dialog.isVisible = true
             val name = dialog.file ?: return@backup
             val file = File(dialog.directory, name)
@@ -1040,7 +1043,7 @@ private fun Book(
                         withContext(Dispatchers.IO) { runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = file.name) } }
                         words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt())
                     }
-                    .getOrElse { words.text(W.backup_failed) }
+                    .getOrElse { e -> words.text(if (e is com.innovation313.roshankhata.data.BackupPassword.Unavailable) W.backup_pw_unavailable else W.backup_failed) }
             }
           }
         }
@@ -1053,7 +1056,8 @@ private fun Book(
             val name = dialog.file ?: return
             val file = File(dialog.directory, name)
             scope.launch {
-                val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(file) }
+                // A locked backup asks its password (17 Nov 2026, readBackup); a plain one reads as before.
+                val (result, data) = readBackup(file)
                 picked = when {
                     result is BackupCodec.ImportResult.Ok && data != null -> Picked.Ready(file, data, result)
                     result is BackupCodec.ImportResult.Failed -> Picked.Refused(reasonOf(result, words))
@@ -2148,7 +2152,8 @@ private fun Book(
             phoneSync = false
             // The same confirmation as a backup file chosen by hand: nothing is replaced before the owner's yes.
             scope.launch {
-                val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(file) }
+                // A locked backup asks its password (17 Nov 2026, readBackup); a plain one reads as before.
+                val (result, data) = readBackup(file)
                 picked = when {
                     result is BackupCodec.ImportResult.Ok && data != null -> Picked.Ready(file, data, result)
                     result is BackupCodec.ImportResult.Failed -> Picked.Refused(reasonOf(result, words))
@@ -2462,7 +2467,7 @@ private fun Book(
             scope.launch {
                 val folder = offer.target()
                 val ok = withContext(Dispatchers.IO) { runCatching { folder.mkdirs(); folder.isDirectory }.getOrDefault(false) } &&
-                    runCatching { DailyCopies.makeToday(dao, settings, DailyCopies.outside(folder, activeBusiness), refresh = true) }.getOrNull() != null
+                    runCatching { DailyCopies.makeOutside(dao, settings, DailyCopies.outside(folder, activeBusiness)) }.getOrNull() != null
                 if (ok) {
                     onBackupFolder(folder)
                     cloudTold = words.text(W.cloud_offer_done, folder.absolutePath)

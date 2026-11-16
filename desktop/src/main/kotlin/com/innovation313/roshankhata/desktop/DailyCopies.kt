@@ -30,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.BackupCodec
+import com.innovation313.roshankhata.data.BackupPassword
+import com.innovation313.roshankhata.data.BackupSeal
 import com.innovation313.roshankhata.data.FileShopSettings
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.screens.LocalRoshanColors
@@ -143,7 +145,9 @@ object DailyCopies {
         dir: File,
         label: String? = null,
         refresh: Boolean = false,
-        now: Long = System.currentTimeMillis()
+        now: Long = System.currentTimeMillis(),
+        /** Locks the copy with the owner's backup password ([BackupSeal]); null writes it plain as always. */
+        password: String? = null
     ): File? = withContext(Dispatchers.IO) {
         writing.withLock {
             dir.mkdirs()
@@ -161,12 +165,14 @@ object DailyCopies {
             val local = runCatching { File.createTempFile("rk-copy-", ".tmp") }.getOrNull() ?: return@withLock null
             val written = try {
                 runCatching {
-                    local.bufferedWriter(Charsets.UTF_8).use {
+                    // Read back with the password it was locked with, if any: a copy that does not open with it is no copy.
+                    val opens = listOfNotNull(password)
+                    BackupSeal.writer(local.outputStream(), password).use {
                         BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), it)
                     }
-                    BackupCodec.parseFile(local).first is BackupCodec.ImportResult.Ok && run {
+                    BackupCodec.parseFile(local, opens).first is BackupCodec.ImportResult.Ok && run {
                         java.nio.file.Files.copy(local.toPath(), tmp.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
-                        tmp.length() == local.length() && BackupCodec.parseFile(tmp).first is BackupCodec.ImportResult.Ok
+                        tmp.length() == local.length() && BackupCodec.parseFile(tmp, opens).first is BackupCodec.ImportResult.Ok
                     } && runCatching {
                         java.nio.file.Files.move(tmp.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
                         true
@@ -188,6 +194,21 @@ object DailyCopies {
             }
             target
         }
+    }
+
+    /**
+     * Today's copy in the owner's outside folder ([outside]: a USB stick, Google Drive for Desktop), rewritten: locked
+     * with the backup password when one is set (17 Nov 2026) — this copy leaves the computer. A password set and
+     * unreadable writes nothing ([BackupPassword.Unavailable] is null here), never the book in plain: the folder's
+     * newest copy then grows old and the week-old reminder says so.
+     */
+    suspend fun makeOutside(dao: KhataDao, settings: FileShopSettings, dir: File): File? {
+        val password = try {
+            withContext(Dispatchers.IO) { DeskBackupPassword.forSealing() }
+        } catch (e: BackupPassword.Unavailable) {
+            return null
+        }
+        return makeToday(dao, settings, dir, refresh = true, password = password)
     }
 }
 
@@ -247,6 +268,7 @@ fun DailyCopiesPane(
     FluentPage(word(W.snapshots_title), word(W.snapshots_subtitle), scroll = false) {
         Text(word(W.auto_backup_note), color = c.textMuted, fontSize = 13.sp)
         OutsideFolderCard(outsideFolder, outsideDir, onFolder)
+        BackupPasswordCard(dao)
         if (copies.isEmpty() && outside.isEmpty()) {
             EmptyState("ic_feature_backup", word(W.snapshots_empty), null, Modifier.weight(1f))
         } else ListCard(Modifier.weight(1f)) {
@@ -267,7 +289,8 @@ fun DailyCopiesPane(
     asking?.let { f ->
         // The copy is read before the question, so what it would take away can be said (21 Oct 2026).
         var parsed by remember(f) { mutableStateOf<BackupCodec.ParsedBackup?>(null) }
-        LaunchedEffect(f) { parsed = withContext(Dispatchers.IO) { BackupCodec.parseFile(f).second } }
+        // A locked copy (one in the outside folder, 17 Nov 2026) asks its password here, once.
+        LaunchedEffect(f) { parsed = readBackup(f).second }
         val data = parsed
         val loss = if (data != null) rememberLoss(dao, data) else null
         var agreed by remember(f) { mutableStateOf(false) }
@@ -278,7 +301,9 @@ fun DailyCopiesPane(
         fun restore() {
             asking = null
             scope.launch {
-                val (result, data) = withContext(Dispatchers.IO) { BackupCodec.parseFile(f) }
+                // What was read for the question, so a locked copy is not asked for again; else read now.
+                val read = parsed
+                val (result, data) = if (read != null) BackupCodec.ImportResult.Ok(0, 0, 0, 0) to read else readBackup(f)
                 notice = if (result !is BackupCodec.ImportResult.Ok || data == null) {
                     damagedTitle to damagedBody
                 } else runCatching {

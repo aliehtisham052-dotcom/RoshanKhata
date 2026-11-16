@@ -126,8 +126,11 @@ object BookHealth {
         }
         val stamp = SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.ENGLISH).format(Date())
         val kept = File(file.path + ".corrupt-$stamp")
+        // A copy in the outside folder may be locked with this computer's backup password (17 Nov 2026): it is
+        // tried, so a book is rebuilt from it too; one locked with another password is passed over, as a damaged one is.
+        val passwords = runCatching { DeskBackupPassword.toTry(null) }.getOrDefault(emptyList())
         val copy = DailyCopies.newestFirst(copyDirs).firstOrNull { good ->
-            val (result, data) = BackupCodec.parseFile(good)
+            val (result, data) = BackupCodec.parseFile(good, passwords)
             result is BackupCodec.ImportResult.Ok && data != null
         }
         if (copy == null) {
@@ -135,7 +138,7 @@ object BookHealth {
             if (!moveBook(file, kept)) throw CannotOpen(file, null)
             return Opened(DesktopDatabase.open(file), corruptKept = kept, nothingToRecover = true)
         }
-        val data = BackupCodec.parseFile(copy).second!!
+        val data = BackupCodec.parseFile(copy, passwords).second!!
         // Rebuilt beside the book, and swapped in only once it is whole.
         val building = File(file.path + ".recovering")
         deleteBook(building)
