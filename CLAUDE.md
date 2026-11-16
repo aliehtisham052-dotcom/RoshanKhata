@@ -4151,6 +4151,32 @@ Importance 5 (words only, no figure moves). Rules only; the bank, `sense.bin`, H
   as .mht files; each is exactly 1,000 questions (6101-7100 holds one repeat), none already in master v17. They are mostly "can the app
   do X" questions, so they measure what the app lacks more than what Hudhud misreads. Kept outside the repository.
 
+### 16 Nov 2026: Hudhud and the owner's two new lists (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 7 (a wrong figure shown for a question that is not about the book). The same angle as the earlier sets: run the lists through the
+whole pipeline (lesson 145), find the CLASS of each misread, fix by class, keep every floor.
+
+- **What the lists did to him (2,000 questions, measured here, invented names):** 867 are "what if…" sentences ("agar … to kya hoga") and about
+  1,000 are "can the app…/is there an option…" questions. He answered them with figures of the book: "if a negative price is typed, will the
+  system stop it?" gave this month's sales, "if I delete a chat…" the day's activity, "can the delivery record go to Excel?" the privacy
+  page, sixty "if" sentences opened the heir's-key page. Unknown was 100 of the 2,000 before; it is 849 now.
+- **Three guards in `understand`/`helpOf`** (`whatIf`, `ASKS_IF`/`APP_CAN`, `HELP_FILLER`): a sentence that BEGINS with the word for "if"
+  (Urdu, Roman Urdu, Hindi, Bengali, Sindhi, Farsi, English "if"/"what if"), six words or more, naming nobody and nothing of the book, is "I
+  cannot answer this yet" — unless a help page was found by its words, it is a polite "if possible" (`IF_POLITE`), or it is a talk, voice,
+  look, name or story ask; a question that begins with "kya" and says what the app can do in the passive or the "is there" form ("ho sakta
+  hai", "ja sakta hai", "mojood hai", "option"; Urdu, Roman Urdu, Hindi) is the same; "kya aap … bata sakte hain" asks HIM and is kept. The
+  little words ("ایک", "میں", "اگر", "بعد", "جائے"…) no longer find a help page by themselves (`HELP_FILLER`). **Arabic "لو" (please) and
+  Indonesian "kalau" (how about…) are everyday asks and are not gated; Arabic, Indonesian, Farsi, Sindhi and Bengali capability questions are not
+  gated either (no sentences of theirs in the lists to prove it).** `HudhudWhatIfTest` (5) holds it through `understand` with the sense; nine
+  guards were broken one at a time and every one is killed (one two-word rule on help pages survived every test, was dead beside the filler
+  list, and was deleted — lesson 129).
+- **Floors held:** owner's short lists 153, 1,000 sentences 797, held-out 1,068 of 1,170, review O 1,074 held, review D 1,041 held; 655 shared
+  tests, HudhudWordsTest 9.
+- **What is still left, said plainly:** "Unknown" is an honest answer, not a good one: the real answer to "can the app do X" is a help page
+  for X, and only the features the app has can have one; many of the 2,000 ask for features the app lacks (accounting journal, payroll
+  commissions, bank reconciliation, photo recognition…), which is the feature-gap list, not Hudhud's. About 140 still read as the abilities list
+  and 60 as the activity of the day for talk about chats and history (Hudhud keeps no chat history).
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the

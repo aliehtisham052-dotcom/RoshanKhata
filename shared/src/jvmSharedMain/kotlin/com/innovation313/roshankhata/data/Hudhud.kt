@@ -384,7 +384,42 @@ object Hudhud {
     fun understand(
         heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
         goods: List<Name> = emptyList(), before: Ask? = null, staff: List<Name> = emptyList()
-    ): Ask = understandRead(salaamHeadRead(withoutSelf(heard)), asRead(names), topics, language, asRead(goods), before, asRead(staff))
+    ): Ask = whatIf(heard, understandRead(salaamHeadRead(withoutSelf(heard)), asRead(names), topics, language, asRead(goods), before, asRead(staff)))
+
+    /**
+     * A "what if" about how the app behaves (16 Nov 2026, the owner's lists 2101-3100 and 6101-7100: "agar sale price minus likhi jaye
+     * to kya system rokega?" showed this month's sales, "agar chat delete kar doon ..." the day's activity). A figure of the book is no
+     * answer to a hypothetical about the app: he says he cannot answer it yet (and offers what he can tell) — unless a help page was
+     * found by its words, or the sentence names somebody or something of the book. Only a sentence that BEGINS with the word for "if"
+     * in Urdu, Roman Urdu, Hindi, Bengali, Sindhi or Farsi (or English "if"/"what if") and runs to six words or more: Arabic's "لو"
+     * (please) and Indonesian's "kalau" (how about…) are everyday asks, and a real ask starts with what it asks.
+     */
+    private fun whatIf(heard: String, ask: Ask): Ask {
+        if (ask is Ask.Help || ask == Ask.Unknown || ask is Ask.Chat || ask is Ask.Voice || (ask is Ask.About && ask.topic != AboutTopic.PRIVACY) || ask is Ask.Look ||
+            ask is Ask.CallMe || ask is Ask.Abilities || ask is Ask.DidYouMean || ask is Ask.Entry
+        ) return ask
+        if (partyOf(ask) != null || goodsOf(ask) != null) return ask
+        val w = words(heard)
+        if (w.size < 6) return ask
+        val first = if (w[0] == "what" && w[1] == "if") "if" else w[0]
+        // "Can the delivery record be exported to Excel?", "is there an option for leave?": a question about what the app has, not
+        // about the book — only the passive and the "is there" forms (Urdu, Roman Urdu, Hindi); "can you tell me" asks him and is kept.
+        if (first in ASKS_IF && has(w.joinToString(" "), APP_CAN)) return Ask.Unknown
+        if (first !in IF_WORDS) return ask
+        // "If it is possible, tell me today's sales": a polite way to ask, not a hypothetical.
+        if (has(w.take(5).joinToString(" "), IF_POLITE)) return ask
+        return Ask.Unknown
+    }
+
+    private val IF_POLITE = listOf("ممکن ہو", "ہو سکے", "ہوسکے", "mumkin ho", "ho sake", "ho sakay", "if possible", "if you can", "if you could", "please",
+        "براہ مہربانی", "مہربانی", "meharbani", "mehrbani", "kindly", "संभव हो", "हो सके", "মুমকিন হলে", "সম্ভব হলে", "ممکن باشد", "اگر میشه", "اگر می‌شه")
+
+    private val ASKS_IF = setOf("کیا", "kya", "kia", "क्या").map { norm(it) }.toSet()
+    private val APP_CAN = listOf("جا سکتا", "جا سکتی", "جا سکتے", "ہو سکتا", "ہو سکتی", "ہو سکتے", "موجود ہے", "موجود ہیں", "آپشن",
+        "ja sakta", "ja sakti", "ja sakte", "ho sakta", "ho sakti", "ho sakte", "mojood hai", "mojood hain", "option", "optional",
+        "जा सकता", "जा सकती", "जा सकते", "हो सकता", "हो सकती", "हो सकते", "मौजूद है", "मौजूद हैं", "विकल्प")
+
+    private val IF_WORDS = setOf("if", "اگر", "agar", "agr", "अगर", "यदि", "যদি", "اگه", "جيڪڏهن", "جيكڏهن").map { norm(it) }.toSet()
 
     private fun understandRead(
         heard: String, names: List<Name>, topics: List<Topic>, language: String?,
@@ -4055,7 +4090,7 @@ object Hudhud {
         if (topics.isEmpty()) return null
         // The words that only ask (how, where) say nothing of the page: "kahan" found the data page's title
         // ("Mera data kahan rehta hai?") for every "… kahan hai" (14 Nov 2026, the owner's question lists).
-        val q = said.filter { it.length >= 3 && it !in STOP_SET && norm(it) !in HOW_SET && norm(it) !in WAY_SET }.distinct()
+        val q = said.filter { it.length >= 3 && it !in STOP_SET && norm(it) !in HOW_SET && norm(it) !in WAY_SET && it !in HELP_FILLER }.distinct()
         if (q.isEmpty()) return null
         val docs = topics.map { t -> words(t.title).toSet() to words(t.text).toSet() }
         fun hit(w: String, set: Set<String>) = set.any { d ->
@@ -4077,7 +4112,19 @@ object Hudhud {
         }
         val best = scores.indices.maxByOrNull { scores[it] } ?: return null
         // The least a page must score: one word found on at most two pages, or a word in its title.
-        return if (scores[best] >= ln(1.0 + n / 2.0)) topics[best].key else null
+        if (scores[best] < ln(1.0 + n / 2.0)) return null
+        return topics[best].key
+    }
+
+    /**
+     * Little words of a sentence that name no page (16 Nov 2026, the owner's lists: "ایک", "میں", "اگر", "بعد", "جائے" found the heir's-key
+     * page in sixty sentences, each for words every page of the app has): left out when a help page is looked for by its words.
+     */
+    private val HELP_FILLER: Set<String> by lazy {
+        listOf("اگر", "ایک", "میں", "بعد", "جائے", "جایے", "ہوں", "ہوگا", "ہوگی", "ہوگے", "کسی", "کوئی", "ایسے", "ایسا", "بھی", "سکتا", "سکتی", "سکتے",
+            "کرنے", "کرتے", "کریں", "کروں", "کرے", "دیں", "دوں", "لیے", "ساتھ", "دوران", "پہلے", "پھر", "تمام", "اپنے", "اپنی", "اپنا",
+            "agar", "baad", "phir", "bhi", "koi", "sakta", "sakti", "sakte", "jaye", "karne", "karna", "tamam", "apne", "apni",
+            "अगर", "बाद", "कोई", "सकता", "सकती", "सकते", "जाए", "करने", "सभी", "अपने", "अपनी").map { norm(it) }.toSet()
     }
 
     private val HOW_SET: Set<String> by lazy { HOW.flatMap { words(it) }.toSet() }
