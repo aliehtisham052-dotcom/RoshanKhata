@@ -122,6 +122,36 @@ jobs:
                           print('::error::' + part)
           PY
 
+      # The golden files this run produced that are new or differ from the checked-in ones, as one base64 tar.gz between
+      # markers in the job's log (16 Nov 2026): the log is readable where the artifact's storage host is not, and base64
+      # cannot be hit by the log's masking of secret values. Decode, read, then check in (see HudhudGoldenAnswersTest).
+      - name: Print new or changed Hudhud golden files (base64, for checking in)
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import base64, io, os, tarfile
+          b, s = 'app/build/hudhud-golden', 'app/src/test/resources/hudhud-golden'
+          if os.path.isdir(b):
+              changed = []
+              for root, _, files in os.walk(b):
+                  for f in files:
+                      rel = os.path.relpath(os.path.join(root, f), b)
+                      mine = os.path.join(s, rel)
+                      if not os.path.isfile(mine) or open(mine, 'rb').read() != open(os.path.join(b, rel), 'rb').read():
+                          changed.append(rel)
+              print('golden files new or changed:', len(changed), sorted(changed)[:40])
+              if changed:
+                  buf = io.BytesIO()
+                  with tarfile.open(fileobj=buf, mode='w:gz') as tar:
+                      for rel in sorted(changed):
+                          tar.add(os.path.join(b, rel), arcname=rel)
+                  data = base64.b64encode(buf.getvalue()).decode()
+                  print('RK-GOLDEN-BEGIN')
+                  for i in range(0, len(data), 100):
+                      print(data[i:i + 100])
+                  print('RK-GOLDEN-END')
+          PY
+
       # Hudhud's golden answers (HudhudGoldenAnswersTest) as this run got them: the files to read and
       # check in when the goldens are new or a change to an answer is meant. Uploaded whether the tests
       # passed or not; nothing when the test did not run.

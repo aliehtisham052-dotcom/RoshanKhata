@@ -283,6 +283,18 @@ internal object HudhudGoldenAsks {
             Hudhud.Ask.OnDays(Hudhud.DatedOf.SALES, VoiceQuestion.Dated(daysBack = 2))
         )
         a += Hudhud.Ask.Compare(Hudhud.Ask.Drawer, Hudhud.Ask.Drawer)
+        // Why (16 Nov 2026, audit T8): every figure a why may ask, today and this month, said as a fall and as a plain why.
+        for (of in Hudhud.WhyOf.values()) {
+            a += Hudhud.Ask.Why(of, VoiceQuestion.Window.TODAY, down = true)
+            a += Hudhud.Ask.Why(of, VoiceQuestion.Window.THIS_MONTH)
+        }
+        // Two entries in one sentence: offered one at a time, nothing written.
+        a += Hudhud.Ask.Entries(
+            listOf(
+                Hudhud.Ask.Entry(500.0, true, ali, listOf("ali")),
+                Hudhud.Ask.Entry(300.0, false, listOf(ids.bashir), listOf("bashir"))
+            )
+        )
         return a
     }
 
