@@ -406,7 +406,10 @@ val generateWordIds by tasks.registering {
     doLast {
         val used = mutableMapOf("string" to sortedSetOf<String>(), "plurals" to sortedSetOf(), "array" to sortedSetOf())
         fileTree(sharedSrc) { include("**/*.kt") }.forEach { f ->
-            val t = f.readText()
+            // Comment lines are left out: a doc comment that says "`W.x`" named a word
+            // "x" and the phone failed to compile (16 Nov 2026, BC-105).
+            val t = f.readLines().filterNot { it.trimStart().let { l -> l.startsWith("*") || l.startsWith("//") || l.startsWith("/*") } }
+                .joinToString("\n")
             Regex("""\bW\.(\w+)""").findAll(t).forEach { used.getValue("string") += it.groupValues[1] }
             Regex("""\bWP\.(\w+)""").findAll(t).forEach { used.getValue("plurals") += it.groupValues[1] }
             Regex("""\bWA\.(\w+)""").findAll(t).forEach { used.getValue("array") += it.groupValues[1] }
