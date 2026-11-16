@@ -4270,8 +4270,9 @@ Three helpers (D, E, F) in separate worktrees, merged by cherry-pick; the lead's
 - **Golden answers and parity (T21, D):** `HudhudGoldenAnswersTest` (Robolectric) asks `HudhudBook.answer` every one of the 52
   `Hudhud.Ask` subtypes and their enum values over a seeded book (`HudhudGoldenBook`, invented data, times relative to now),
   as the owner, a cashier and after CallMe; the cards are written as text and compared with `app/src/test/resources/hudhud-golden/`.
-  **Its first CI run writes the goldens and fails on purpose**: build.yml uploads them as the `hudhud-golden` artifact; read
-  them, check them in, and the next run holds them. `HUDHUD_GOLDEN_UPDATE=1` rewrites them. `HudhudParityTest`: 13 money figures
+  **Until goldens are checked in the test writes them and is skipped** (the first run failed on purpose; changed the same day
+  so the build keeps making its APK): build.yml uploads them as the `hudhud-golden` artifact, whose host (Azure blob storage)
+  this session's proxy refuses — the owner downloads the zip from the run's page and attaches it; read, then check in. `HUDHUD_GOLDEN_UPDATE=1` rewrites them. `HudhudParityTest`: 13 money figures
   equal the screen's own call (Insights, Profit, SalesReport, PartyTotals, the drawer, Valuation, Zakat). It found the Qarz card
   summing the raw loan column: now `Zakat.qarzOf` per customer (BC-097). No clock hook in production yet: both tests skip the 30
   minutes around midnight UTC.
