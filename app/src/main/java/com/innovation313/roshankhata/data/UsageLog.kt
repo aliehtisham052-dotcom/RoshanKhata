@@ -24,6 +24,8 @@ object UsageLog {
     private const val KEY_SINCE = "since"
     private const val KEY_SWEPT = "swept"
     private const val KEEP_DAYS = 40
+    /** Prefix of the total since counting began, per [What] ("total_open_"): never swept. */
+    private const val TOTAL = "total_"
 
     /** The app's screens started and not stopped. */
     private var started = 0
@@ -60,6 +62,12 @@ object UsageLog {
         val e = p.edit()
         if (!p.contains(KEY_SINCE)) e.putLong(KEY_SINCE, DayMath.startOfDay(now))
         e.putInt(what.key + day, p.getInt(what.key + day, 0) + 1)
+        // The total since counting began, kept apart from the 40 kept days so the sweep never takes it (17 Nov 2026):
+        // a phone that counted before this field existed starts it from the days it still holds.
+        val totalKey = TOTAL + what.key
+        val before = if (p.contains(totalKey)) p.getInt(totalKey, 0)
+            else p.all.entries.filter { it.key.startsWith(what.key) }.sumOf { (it.value as? Int) ?: 0 }
+        e.putInt(totalKey, before + 1)
         // Days past the kept window go once a day.
         if (p.getString(KEY_SWEPT, null) != day) {
             val oldest = dayKey(now - KEEP_DAYS * DAY_MS)
@@ -70,10 +78,15 @@ object UsageLog {
     }
 
     /** How many in the days of [from, to) — whole local days, as the windows Hudhud reads are. */
-    fun count(context: Context, what: What, from: Long, to: Long): Int {
+    fun count(context: Context, what: What, from: Long, to: Long, now: Long = System.currentTimeMillis()): Int {
         val p = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val since = if (p.contains(KEY_SINCE)) p.getLong(KEY_SINCE, 0L) else return 0
+        // "Since counting began" (Hudhud asks from 0 up to now): the kept total, never a walk of 400 days from 1970 that
+        // always said 0 and could not see past the 40 kept days (17 Nov 2026, found by the computer's own counts' test).
+        val totalKey = TOTAL + what.key
+        if (from <= since && to > now && p.contains(totalKey)) return p.getInt(totalKey, 0)
         var total = 0
-        val c = Calendar.getInstance().apply { timeInMillis = DayMath.startOfDay(from) }
+        val c = Calendar.getInstance().apply { timeInMillis = DayMath.startOfDay(maxOf(from, since)) }
         var guard = 0
         while (c.timeInMillis < to && guard++ < 400) {
             total += p.getInt(what.key + dayKey(c.timeInMillis), 0)
