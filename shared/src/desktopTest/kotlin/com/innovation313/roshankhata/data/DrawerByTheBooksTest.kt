@@ -148,6 +148,33 @@ class DrawerByTheBooksTest {
     }
 
     @Test
+    fun `cash a supplier handed back counts, his goods and the old default Cash do not`() = runBlocking {
+        // 17 Nov 2026, T43 (KhataMoney): a supplier's "I got" the owner called Money is EntryKind.MONEY; only a cash one
+        // joins the drawer. Goods on credit carry no way of paying; the pre-8-Nov forms' pre-ticked Cash is NORMAL.
+        val dir = Files.createTempDirectory("rk-drawer-supplier-money").toFile()
+        val db = DesktopDatabase.open(dir.resolve("khata.db"))
+        try {
+            val dao = db.khataDao()
+            val now = System.currentTimeMillis()
+            val supplier = dao.insertParty(Party(name = "Test Supplier", isCustomer = false))
+            dao.insertEntry(LedgerEntry(partyId = supplier, amount = 40_000.0, isGiven = false, entryNumber = "RK-1", timestamp = now - 4000))
+            dao.insertEntry(LedgerEntry(partyId = supplier, amount = 25_000.0, isGiven = false, entryNumber = "RK-2", timestamp = now - 3000,
+                paymentMethod = PaymentMethod.CASH))
+            dao.insertEntry(LedgerEntry(partyId = supplier, amount = 650.0, isGiven = false, entryNumber = "RK-3", timestamp = now - 2000,
+                paymentMethod = PaymentMethod.CASH, entryKind = EntryKind.MONEY))
+            dao.insertEntry(LedgerEntry(partyId = supplier, amount = 5_000.0, isGiven = false, entryNumber = "RK-4", timestamp = now - 1000,
+                paymentMethod = PaymentMethod.WALLET, entryKind = EntryKind.MONEY))
+            val d = DayCloseMath.drawerByTheBooks(dao, now)
+            assertAgree(phoneFigures(dao, now), d)
+            assertEquals("only the 650 handed back in cash", 650.0, d.kIn, 0.0)
+            assertEquals(650.0, d.expected, 0.0)
+        } finally {
+            db.close()
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
     fun `a movement after now is not in the figure`() = runBlocking {
         val dir = Files.createTempDirectory("rk-drawer-now").toFile()
         val db = DesktopDatabase.open(dir.resolve("khata.db"))

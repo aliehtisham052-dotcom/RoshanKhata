@@ -79,7 +79,9 @@ object DayCloseMath {
      * never counted — since the start of today's working day ([firstCountFrom]):
      * cashbook money in and out that moved in cash (an unmarked row is cash, a
      * bank, online, wallet or cheque row is not), plus khata receipts and
-     * payments marked Cash — unmarked khata entries are not guessed. The
+     * payments marked Cash — unmarked khata entries are not guessed, and a
+     * supplier's "I got" is cash only when the owner called it Money
+     * ([KhataDao.khataCashBetween], T43). The
      * stretch is `from < t <= now`, the DAO's own bounds.
      */
     suspend fun drawerByTheBooks(dao: KhataDao, now: Long = System.currentTimeMillis()): DrawerFigures {
@@ -122,7 +124,11 @@ data class DrawerFigures(
     val cbIn: Double,
     /** Cashbook expenses in cash since the count. */
     val cbOut: Double,
-    /** Khata "I got" marked Cash since the count. */
+    /**
+     * Khata "I got" marked Cash since the count: a customer's, and money a supplier handed back ([EntryKind.MONEY],
+     * 17 Nov 2026, T43) — never goods taken on credit from him ([KhataMoney.countsInDrawer]). The breakdown's one line
+     * "Khata cash received" says both: it is cash the khata received, from whoever.
+     */
     val kIn: Double,
     /** Khata "I gave" marked Cash since the count. */
     val kOut: Double,

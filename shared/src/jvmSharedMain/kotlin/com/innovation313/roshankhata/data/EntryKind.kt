@@ -24,7 +24,15 @@ object EntryKind {
     const val NORMAL = "NORMAL"
     const val OPENING = "OPENING"
 
-    val ALL: List<String> = listOf(NORMAL, OPENING)
+    /**
+     * A supplier's "I got" that was MONEY, not goods on credit (17 Nov 2026, T43, [KhataMoney]): change or a refund the
+     * supplier handed back. Written only by the entry forms' "What did you get? Money", never by [KhataDao.setEntryKind];
+     * a cash one counts in the drawer ([KhataDao.khataCashBetween]). Never a sale (no sale figure reads a supplier's
+     * "I got"), never an opening balance ([Refusal.MONEY]).
+     */
+    const val MONEY = KhataMoney.MONEY
+
+    val ALL: List<String> = listOf(NORMAL, OPENING, MONEY)
 
     /** The stored value as one this release knows: anything else (null, blank, a newer release's word) is [NORMAL]. */
     fun of(raw: String?): String = raw?.trim()?.uppercase()?.takeIf { it in ALL } ?: NORMAL
@@ -40,10 +48,15 @@ object EntryKind {
      *  - not written by another record (a counter ticket, a bill, a plan, a cheque, a return — [owner]): those are what
      *    they are, and are changed where they were made;
      *  - not one half of a paid-now sale ([LedgerEntry.pairedEntryId]): the two halves must stay alike;
-     *  - not in the bin.
+     *  - not in the bin;
+     *  - not money a supplier handed back ([MONEY]: its own mark, changed only on the entry form).
      */
     fun refusal(e: LedgerEntry, hasGoods: Boolean, owner: String?): Refusal? = when {
         e.isDeleted -> Refusal.BINNED
+        // Money a supplier handed back is changed on the entry form (Goods / Money), never by the kind chooser: the
+        // chooser is hidden for it (it is shown only where this is null), and NORMAL or OPENING would drop the mark
+        // the drawer counts it by.
+        of(e.entryKind) == MONEY -> Refusal.MONEY
         hasGoods || !e.itemName.isNullOrBlank() || e.productId != null -> Refusal.GOODS
         e.isQarzeHasna -> Refusal.LOAN
         e.saleId != null || !owner.isNullOrEmpty() -> Refusal.LINKED
@@ -51,7 +64,7 @@ object EntryKind {
         else -> null
     }
 
-    enum class Refusal { BINNED, GOODS, LOAN, LINKED, PAIRED }
+    enum class Refusal { BINNED, GOODS, LOAN, LINKED, PAIRED, MONEY }
 
     /** The audit row's detail for a change of kind: "NORMAL>OPENING". */
     fun auditDetail(from: String, to: String): String = "${of(from)}>${of(to)}"

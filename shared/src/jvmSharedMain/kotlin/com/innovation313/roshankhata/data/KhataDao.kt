@@ -161,8 +161,10 @@ interface KhataDao {
      * An entry marked an opening balance, or back to an ordinary one (schema 45, 16 Nov 2026, D-02). EDIT_BOOK: a
      * cashier needs a manager's or the owner's PIN ([allowedBy]); written in Who did what with the two kinds
      * ([EntryKind.auditDetail]). Only an entry [EntryKind.refusal] allows becomes OPENING (no goods, no loan, nothing
-     * another record wrote, not half of a paid-now sale, not in the bin); back to NORMAL is always allowed. Returns the
-     * refusal, or null when written (or already of that kind: nothing is written then).
+     * another record wrote, not half of a paid-now sale, not in the bin); back to NORMAL is always allowed. Money a
+     * supplier handed back ([EntryKind.MONEY], 17 Nov 2026, T43) is neither made nor unmade here — the entry form's
+     * Goods / Money decides it — so a change to or from it is refused ([EntryKind.Refusal.MONEY]). Returns the refusal,
+     * or null when written (or already of that kind: nothing is written then).
      */
     @Transaction
     suspend fun setEntryKind(id: Long, kind: String, user: String? = Access.userName, allowedBy: String? = null): EntryKind.Refusal? {
@@ -171,6 +173,7 @@ interface KhataDao {
         val e = getEntry(id) ?: return EntryKind.Refusal.BINNED
         val from = EntryKind.of(e.entryKind)
         if (from == to) return null
+        if (from == EntryKind.MONEY || to == EntryKind.MONEY) return EntryKind.Refusal.MONEY
         if (to == EntryKind.OPENING) {
             EntryKind.refusal(e, itemsOfEntry(id).isNotEmpty(), entryOwner(id))?.let { return it }
         }
@@ -2305,13 +2308,14 @@ interface KhataDao {
     suspend fun cashbookCashBetween(income: Boolean, from: Long, to: Long): Double
 
     /**
-     * Khata money that moved in CASH (only entries marked Cash; unmarked ones are not guessed). A supplier's
-     * "I got" is goods taken on credit, never cash received (8 Nov 2026 review, C2: both forms used to pre-tick
-     * Cash for it): money IN counts only a customer's entries, so old rows marked Cash by that default read right
-     * with no change to the rows themselves.
+     * Khata money that moved in CASH (only entries marked Cash; unmarked ones are not guessed) — [KhataMoney.countsInDrawer]
+     * in SQL. A supplier's "I got" is goods taken on credit, never cash received (8 Nov 2026 review, C2: both forms used to
+     * pre-tick Cash for it): money IN counts a customer's entries, so old rows marked Cash by that default read right with
+     * no change to the rows themselves — plus a supplier's "I got" the owner called Money on the form (17 Nov 2026, T43:
+     * [EntryKind.MONEY], which no row written before carries), so cash a supplier handed back is in the drawer.
      */
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE isDeleted = 0 AND isGiven = :given AND paymentMethod = 'cash' " +
-        "AND (:given = 1 OR partyId IN (SELECT id FROM parties WHERE isCustomer = 1)) AND timestamp > :from AND timestamp <= :to")
+        "AND (:given = 1 OR entryKind = 'MONEY' OR partyId IN (SELECT id FROM parties WHERE isCustomer = 1)) AND timestamp > :from AND timestamp <= :to")
     suspend fun khataCashBetween(given: Boolean, from: Long, to: Long): Double
 
     /**
@@ -3325,9 +3329,19 @@ interface KhataDao {
         val stored = getEntry(entry.id)
         if (stored != null && stored.isDeleted && !entry.isDeleted) return
         // The entry's kind (schema 45) is changed only by setEntryKind, gated and written in Who did what: an edit keeps
-        // the stored one, whatever the screen's copy of the row says (a form that builds a new LedgerEntry would read
+        // the stored OPENING, whatever the screen's copy of the row says (a form that builds a new LedgerEntry would read
         // NORMAL). Goods given are a sale, so an opening balance that gains goods lines is an ordinary entry again.
-        val kind = if (items.isNotEmpty()) EntryKind.NORMAL else EntryKind.of(stored?.entryKind ?: entry.entryKind)
+        // Money a supplier handed back (MONEY, 17 Nov 2026, T43) is the one kind the entry form itself says: its
+        // Goods / Money choice — so the edited row's own kind decides between MONEY and NORMAL (every editor passes a
+        // copy of the stored row or the form's choice), and only on a supplier's "I got" with no goods.
+        val kind = EntryKind.of(stored?.entryKind ?: entry.entryKind).let { was ->
+            when {
+                items.isNotEmpty() -> EntryKind.NORMAL
+                was == EntryKind.OPENING -> EntryKind.OPENING
+                !entry.isGiven && EntryKind.of(entry.entryKind) == EntryKind.MONEY -> EntryKind.MONEY
+                else -> EntryKind.NORMAL
+            }
+        }
         updateEntry(entry.copy(entryKind = kind))
         deleteItemsOfEntry(entry.id)
         if (items.isNotEmpty()) {
