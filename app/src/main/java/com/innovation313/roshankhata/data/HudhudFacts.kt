@@ -808,7 +808,7 @@ internal object HudhudFacts {
             }
             // Staff is the owner's screen (STAFF): who works here is his to know, not a cashier's or a manager's.
             Hudhud.Thing.STAFF -> if (!staff()) ownerExact(c, c.getString(R.string.hudhud_t_staff))
-            else counted(c, R.string.hudhud_t_staff, null, dao.observeStaff().first().size, emptyList(), StaffActivity::class.java)
+            else counted(c, R.string.hudhud_t_staff, null, dao.staffCardsOnce().count { it.isActive }, emptyList(), StaffActivity::class.java)
             Hudhud.Thing.ENTRIES -> {
                 val shown = dao.entryCountBetween(from, to)
                 val total = if (window == null) dao.entryCountBetween(0L, Long.MAX_VALUE) else null
@@ -1069,7 +1069,7 @@ internal object HudhudFacts {
         val label = c.getString(R.string.hudhud_t_salary)
         if (!staff()) return ownerExact(c, label)
         val (from, to, days) = Payroll.monthRange(now())
-        val staff = dao.observeStaff().first()
+        val staff = dao.staffCardsOnce().filter { it.isActive }.sortedBy { it.name }
         val marks = dao.observeAttendanceBetween(from, to).first()
         val pays = dao.observeStaffPaymentsBetween(from, to).first()
         val due = staff.map { person ->
@@ -1174,7 +1174,7 @@ internal object HudhudFacts {
         val oneDay = over?.oneDay ?: (w == VoiceQuestion.Window.TODAY || w == VoiceQuestion.Window.YESTERDAY)
         val total = dao.customerReceivedBetween(from, to)
         val all = DayBook.rows(dao, from, to)
-        val khataRows = all.filter { it.kind == DayBook.Kind.GOT && isCustomerRow(it) && dao.itemsOfEntry(it.ref).isEmpty() }
+        val khataRows = all.filter { it.kind == DayBook.Kind.GOT && isCustomerRow(it) && !it.opening && dao.itemsOfEntry(it.ref).isEmpty() }
         val counterRows = all.filter { it.kind == DayBook.Kind.CASH_IN && it.who == COUNTER_SALE }
         val rows = khataRows + counterRows
         val khata = khataRows.sumOf { it.amount }

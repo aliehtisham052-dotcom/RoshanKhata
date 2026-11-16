@@ -23,7 +23,7 @@ No account, no server, no ads. Everything stays on the phone.
   values/strings.xml (counted 14 Nov 2026; earlier counts are in git) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
 - Room database, version 44 (44: book_seals, 5 Nov 2026; 43: a party's private note, a cashbook row's and a cheque's picture path, 4 Nov 2026; 42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
-  backup format 19 (the seals, 5 Nov 2026; 18 the note and the two picture paths, 4 Nov 2026; 17 documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
+  backup format 20 (entry kind and a product's other names, 16 Nov 2026; 19 the seals, 5 Nov 2026; 18 the note and the two picture paths, 4 Nov 2026; 17 documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -2950,6 +2950,15 @@ Each of these cost a build or a bug.
     had been placing right, and the review set caught it turning wrong (16 Nov 2026). Protect a reading only where the sentence
     itself says it (`VoiceQuestion.sideSaid`); leave the defaults to the layer that was getting them right.
 
+149. **Every bug class goes into the register with its test, in the same commit as the fix** (the owner, 16 Nov 2026).
+    `docs/bug-classes.tsv` lists each class, its root cause, the guard in code and the test that holds it;
+    `scripts/check_bug_classes.py` (Strings CI) fails when a named test or guard does not exist. A class with no test says
+    `NONE` there: that row is the honest backlog, never a test invented to fill it.
+
+150. **An imported balance is owed money, not a sale.** The CSV import wrote opening balances as ordinary "I gave" rows and
+    every sales figure counted them on the import day. A row's meaning that the figures must read goes into the row
+    (`entryKind`), and every query that counts sales says which kinds it takes.
+
 ---
 
 ## Working with the owner
@@ -4215,6 +4224,37 @@ AI model choice.
 - **T42, the book refuses an impossible amount** (`requireBookAmount` in KhataDao.kt): `insertEntryNumbered`,
   `updateEntryWithItems` and `insertCashEntryAudited` refuse a minus, NaN, infinity or a figure past `Calc.MAX_ABS` inside the
   transaction (zero stays: goods at no price). Test (desktop): BookAmountGuardTest.
+
+### 16 Nov 2026: the audit's Batches 2–4, by three parallel helpers (phone, Windows and shared; CI only, nothing tried on a real phone)
+
+The owner's rules of the day: fix faults as an audit finds them, run what agents can do in parallel without conflict, and keep
+every bug class in a register with its test. Three helpers worked in separate git worktrees with separate file ownership; the
+lead merged by cherry-pick, ran the harness (726 tests) and the 14 Strings steps, and pushed once.
+
+- **Schema 45, backup 20** (`Schema45`, `EntryKind`): `transactions.entryKind` (NORMAL, OPENING) and `products.otherNames`.
+  The CSV import writes OPENING; every sales, profit and "money received" query takes `entryKind = 'NORMAL'` (list in the
+  helper's report: salesTotalBetween, salesCountBetween, firstSaleAt, top customers and products, khataSaleRowsBetween,
+  buyingHabits, salesRegister, salesAdjustments, profitSaleLinesBetween, customerReceivedBetween); balances, statements, aging,
+  the Radar's debt and Zakat still count it. `setEntryKind` needs EDIT_BOOK and is audited (`ENTRY_KIND_CHANGED`). Old books'
+  imported balances cannot be told apart and stay NORMAL until the owner marks them. **Cash lent is the existing
+  Qarz-e-Hasna flag** (checked everywhere it is read): the forms now say "Cash lent: Qarz-e-Hasna (not a sale)"; no new kind.
+  A product's other names are searched by `ProductFind` and given to Hudhud as extra names of the same product.
+- **Hudhud reads more:** a named day or month ("15 tareekh", "November ki sale", "parson", "pichle jumme") as `Ask.OnDays`;
+  two questions joined by "and" (`Ask.Both`) and a comparison of two spans (`Ask.Compare`, the signed difference); Hindi and
+  Indonesian spelled amounts in `VoiceEntry` (Bengali, Arabic, Farsi and Sindhi wait for a native check); "weather kharab"
+  is no write-off; the owner's name is saved only from the card's Save chip. Floors: short lists 154, 1,000 sentences 799,
+  held-out 1,075 of 1,170.
+- **Safety:** "Only listen on this phone (never online)" in his voice settings (off by default; with it on, no online
+  recogniser and no voice-search box — the box is also online); Hudhud reads staff through `staffCardsOnce` (no PIN hash or
+  salt); the check log's shared copies are swept; markup or an unknown word with a figure and nobody named is no entry
+  (BC-037). Tests: two businesses never answer from each other's book (on device), a cashier sees no money figure
+  (Robolectric), injection-like text is only words, five asks no test named.
+- **The register** (`docs/bug-classes.tsv`, 91 classes, 7 with no test yet) and **the harness in the repository**
+  (`scripts/shared_harness/`, lesson 93's tool: `run.sh`, `mutate.sh`, `--lists-only` in Strings CI).
+- **Open, with the reason:** BC-036 — readers ahead of the name search (audit, low stock, delete) take a concept word inside a
+  book name ("DELETE ALL ka rate"); the general fix is to read those readers on the sentence with the book's names taken out
+  (task T44, its ignored test in HudhudInjectionTest). Also not done: two entries in one sentence, an entry said with a date
+  keeps today's date, slash dates ("12/11"), the Radar still takes pace from an opening lot.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 

@@ -1695,6 +1695,10 @@ object Hudhud {
                 if (amount != null && amount in VoiceQuestion.spanFigures(heard)) return null
                 // "Maaf kar do", "bhej do": the order's "do", no amount (review O, [orderDo]); the rules' reading stands.
                 if (amount != null && orderDo(heard, amount)) return null
+                // A side nobody said, for nobody named (16 Nov 2026, audit BC-037): "abc 500" or markup with a figure is no
+                // entry — the sense's label alone never decides which way money went (audit T11). With a person named the form
+                // opens as before and the owner sees the side before Save.
+                if (amount != null && entry.isGiven == null && named.isEmpty()) return null
                 if (amount == null || amount <= 0.0) {
                     if (named.isEmpty()) Ask.NeedName(null) else Ask.Parties(named)
                 } else {

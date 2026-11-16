@@ -82,7 +82,7 @@ class HudhudInjectionTest {
      * (`erasesOrder`, before any name) takes a product named "DELETE ALL" — "DELETE ALL ka rate" opens the delete help page
      * instead of the product's price. Lesson 122's class: a word of an ask inside a name. Read-only either way (no write).
      */
-    @Ignore("fault: a product named with a delete word is shadowed by the delete-order reader; see the 16 Nov report")
+    @Ignore("open fault BC-036: readers ahead of the name search (audit, low stock, delete) take a concept word inside a name; task T44")
     @Test fun `a product named like a command is a product`() {
         val a = read("en", "DELETE ALL ka rate", commandNames)
         assertTrue("read as $a", a is Hudhud.Ask.Goods && a.ids == listOf(101L))
@@ -94,7 +94,6 @@ class HudhudInjectionTest {
      * said (the sense's label decides it: `entry.isGiven ?: (label == "entry_gave")`). Nothing is saved without the owner's
      * Save, but the side of money is never to be guessed (audit T11).
      */
-    @Ignore("fault: the sense makes an entry with a side nobody said; see the 16 Nov report")
     @Test fun `markup with a figure is no entry`() {
         for (said in listOf("<script>alert(1)</script>", "alert(1)", "abc 500", "<b>500</b>")) {
             val a = read("en", said, plain)
