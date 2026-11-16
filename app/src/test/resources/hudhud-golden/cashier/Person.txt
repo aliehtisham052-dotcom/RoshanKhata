@@ -126,9 +126,10 @@ label: Bashir Ahmad
 line: Customer
 line: Phone number: 0300 7654321
 line: First entry: <date>
+line: Opening balance: Rs 3,000 · You will get
 line: Balance: Rs 3,000 · You will get
 openParty: 2
-speech: Bashir Ahmad. Customer. Phone number: It's on the screen. First entry: <date>. Balance: Rs 3,000 You will get.
+speech: Bashir Ahmad. Customer. Phone number: It's on the screen. First entry: <date>. Opening balance: Rs 3,000 You will get. Balance: Rs 3,000 You will get.
 speechHidden: Bashir Ahmad. Customer. Phone number: It's on the screen. First entry: <date>. [an amount left out]
 ask: Person(ids=[2], facet=DETAILS)
 secret: 0300 7654321

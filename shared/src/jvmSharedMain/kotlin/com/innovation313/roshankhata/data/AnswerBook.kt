@@ -833,8 +833,9 @@ object AnswerBook {
         if (found.isEmpty()) return unknown(context)
         if (found.size > 1) return pick(context, found)
         val p = found.first()
+        // An opening balance (schema 45) is owed from before the book: nothing he paid or took in these days (17 Nov 2026).
         val total = LedgerLines.of(dao, listOf(p.id))
-            .filter { it.timestamp >= from && it.timestamp < to && it.isGiven == !got }
+            .filter { it.timestamp >= from && it.timestamp < to && it.isGiven == !got && !it.isOpening }
             .sumOf { it.amount }
         val way = if (got) W.i_got else W.i_gave
         return AnswerCard(

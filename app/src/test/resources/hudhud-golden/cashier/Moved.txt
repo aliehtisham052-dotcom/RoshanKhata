@@ -64,6 +64,17 @@ speech: Ali Raza: Rs 22,000. I Gave All time.
 speechHidden: Ali Raza. I Gave All time. [an amount left out]
 ask: Moved(ids=[1], window=ALL_TIME, got=false)
 
+=== Moved(ids=[2], window=ALL_TIME, got=false)
+mood: CALM
+label: Bashir Ahmad
+figure: Rs 4,000
+line: I Gave · All time
+openParty: 2
+money: true
+speech: Bashir Ahmad: Rs 4,000. I Gave All time.
+speechHidden: Bashir Ahmad. I Gave All time. [an amount left out]
+ask: Moved(ids=[2], window=ALL_TIME, got=false)
+
 === Moved(ids=[1, 2], window=TODAY, got=true)
 mood: CALM
 label: Which one do you mean?

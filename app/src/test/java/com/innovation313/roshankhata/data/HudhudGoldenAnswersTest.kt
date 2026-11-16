@@ -151,6 +151,8 @@ internal object HudhudGoldenAsks {
         for (got in listOf(true, false)) for (w in listOf(VoiceQuestion.Window.TODAY, VoiceQuestion.Window.THIS_MONTH, VoiceQuestion.Window.ALL_TIME)) {
             a += Hudhud.Ask.Moved(ali, w, got)
         }
+        // Bashir's opening balance is owed from before the book: what he took over the whole book leaves it out (17 Nov 2026).
+        a += Hudhud.Ask.Moved(listOf(ids.bashir), VoiceQuestion.Window.ALL_TIME, false)
         a += Hudhud.Ask.Moved(customers, VoiceQuestion.Window.TODAY, true)
         a += Hudhud.Ask.Moved(emptyList(), VoiceQuestion.Window.TODAY, true)
 

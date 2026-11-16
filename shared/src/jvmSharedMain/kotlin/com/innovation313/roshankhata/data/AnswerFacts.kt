@@ -56,6 +56,18 @@ object AnswerFacts {
     internal fun n(count: Int): String = count.toString()
 
     /**
+     * A party's opening balance ([EntryKind.OPENING], schema 45: owed from before this book, brought in when the book began),
+     * netted, with its side, as the statement's "Opening balance" says it; null when none of his lines is one (17 Nov 2026,
+     * audit L015). His first entry's day is then the day the book took him in, not the day he began dealing.
+     */
+    private fun openingLine(c: AnswerEnv, points: List<LedgerPoint>): String? {
+        val opening = points.filter { it.isOpening }
+        if (opening.isEmpty()) return null
+        val net = opening.sumOf { if (it.isGiven) it.amount else -it.amount }
+        return line(c.getString(W.pdf_stmt_opening), AnswerBook.money(abs(net)) + " · " + AnswerBook.side(c, net))
+    }
+
+    /**
      * Days given outright instead of a window (16 Nov 2026, audit T31: a day or a month named, "15 tareekh", "November"):
      * the card's heading, the days as [from, to), and whether they are one day (the day book then opens on it).
      */
@@ -103,6 +115,7 @@ object AnswerFacts {
                     party?.village?.takeIf { it.isNotBlank() }?.let { line(c, W.hudhud_l_village, it) },
                     party?.phone?.takeIf { it.isNotBlank() }?.let { line(c.getString(W.hudhud_l_phone), Format.ltr(it)) },
                     first?.let { line(c, W.hudhud_l_since, Format.dateOnly(it)) },
+                    openingLine(c, points),
                     if (points.isEmpty()) c.getString(W.party_no_entries) else balance
                 )
                 AnswerCard(Mood.CALM, label = name, lines = lines, openParty = p.id,
@@ -135,7 +148,9 @@ object AnswerFacts {
                 if (last == null) {
                     AnswerCard(Mood.CALM, label = name, lines = listOf(c.getString(W.party_no_entries)), openParty = p.id)
                 } else {
-                    val way = c.getString(if (last.isGiven) W.i_gave else W.i_got)
+                    // An opening balance (schema 45) says so: it is money owed from before the book, not a sale or a payment.
+                    val way = c.getString(if (last.isGiven) W.i_gave else W.i_got) +
+                        (if (last.isOpening) " · " + c.getString(W.pdf_stmt_opening) else "")
                     // What the entry itself says (15 Nov 2026): its number, how it was paid, the goods, its note and, for who may
                     // see who wrote what, the writer — each only when the entry holds it (an unrecorded way is not cash).
                     val entry = dao.getEntry(last.id)
@@ -193,7 +208,7 @@ object AnswerFacts {
                 } else {
                     AnswerCard(Mood.CALM, label = name, figure = Format.dateOnly(first),
                         lines = listOfNotNull(c.getString(W.hudhud_l_since), line(c, W.hudhud_l_entries, n(points.size)),
-                            party?.let { line(c, W.hudhud_l_added, Format.dateOnly(it.createdAt)) }),
+                            party?.let { line(c, W.hudhud_l_added, Format.dateOnly(it.createdAt)) }, openingLine(c, points)),
                         openParty = p.id)
                 }
             }
