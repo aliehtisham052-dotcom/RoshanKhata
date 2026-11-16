@@ -260,8 +260,8 @@ class RecycleBinActivity : BaseActivity() {
     /**
      * Permanently remove one binned row.
      *
-     * Named in the question rather than asked generically — "Delete Abbas
-     * Kichia Arti forever?" is a different sentence from "delete this?",
+     * Named in the question rather than asked generically — "Delete Ali
+     * Raza forever?" is a different sentence from "delete this?",
      * and the name is what lets someone catch a wrong tap before it is
      * irreversible. A party warns about its entries too, because they go
      * with it: the transactions table cascades on partyId, so this really

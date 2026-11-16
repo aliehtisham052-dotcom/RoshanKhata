@@ -333,7 +333,7 @@ class NameSearchTest {
     fun `a second wrong letter is not forgiven`() {
         assertFalse(NameSearch.matches("Aslam Traders", null, "akram"))
         assertFalse(NameSearch.matches("Nazeer Ahmad", null, "bashir"))
-        assertFalse(NameSearch.matches("Abbas Kichia", null, "abdul"))
+        assertFalse(NameSearch.matches("Abbas Raza", null, "abdul"))
     }
 
     /**
