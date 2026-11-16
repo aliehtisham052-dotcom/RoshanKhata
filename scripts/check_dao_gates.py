@@ -70,6 +70,7 @@ EXEMPT = {
     "insertSeal": "the daily seal (Kitab ki Muhar) written by the app itself from the daily copy, never by a "
                   "person; its switch is audited (seal_on/seal_off)",
     "purgeOldEntries": "the bin's own 30-day sweep, run on opening by the app (both platforms), not a person",
+    "purgeBinKinds": "the bin's own 30-day sweep of cashbook, cheques and bills (since 17 Nov 2026 the only caller), not a person",
     "purgeOldParties": "the bin's own 30-day sweep, run on opening by the app, not a person",
     "linkSaleInvoice": "SaleInvoice.of: a posted ticket shown as an A4 invoice; the ticket itself was gated and "
                        "audited by postSale",
