@@ -220,7 +220,9 @@ fun AppHeader(
     alerts: Int,
     onAlerts: () -> Unit,
     menu: List<MenuLine>,
-    onAddParty: () -> Unit
+    onAddParty: () -> Unit,
+    /** Hudhud, typed (16 Nov 2026, audit T23): his panel; null leaves the button out (the screen proofs). */
+    onHudhud: (() -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     BoxWithConstraints(Modifier.fillMaxWidth()) {
@@ -247,6 +249,7 @@ fun AppHeader(
                 Spacer(Modifier.width(4.dp))
             }
             BackupChip(backupAt, backupOld, compact = !roomy, onClick = onBackup, progress = backupProgress, done = backupDone)
+            onHudhud?.let { IconAction("ic_search", word(W.hudhud_ask), it, size = 36) }
             IconAction("ic_phone", word(W.wifi_pc_button), onPhone, size = 36)
             // The bell: what needs the owner today, the phone's own list (LedgerAlerts).
             Box {

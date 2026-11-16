@@ -1291,6 +1291,60 @@ object AnswerBook {
     )
 
     /**
+     * The chips under an answer, on every platform (13 Nov 2026, the owner: "kehne wala jo keyword de raha hai, us hisaab se
+     * suggestion de"; shared 16 Nov 2026): for a guess ([guessed]), the other meanings its words could have, then what
+     * follows the guess; for words he could not place, the nearest meanings he knows; else what follows the answer. [options]
+     * are the card's own "did you mean" chips.
+     */
+    fun chipsFor(
+        c: AnswerEnv, heard: String, ask: Hudhud.Ask?, options: List<Hudhud.Ask>, guessed: Boolean,
+        names: List<Hudhud.Name>, products: List<Hudhud.Name>, topics: List<Hudhud.Topic>, language: String
+    ): List<Hudhud.Ask> = when {
+        ask == null -> emptyList()
+        ask == Hudhud.Ask.Unknown -> Hudhud.suggest(heard, names, topics, language, products)
+        guessed -> options + Hudhud.suggest(heard, names, topics, language, products, skip = ask) + next(c, ask)
+        else -> options + next(c, ask)
+    }
+
+    /**
+     * The questions he always knows, as chips (shared 16 Nov 2026, the phone's sheet and the computer's panel): what he can
+     * tell first, today's, then the figures only for those who may see them (REPORTS), the Radar's where it is on.
+     */
+    fun usualChips(c: AnswerEnv): List<Hudhud.Ask> {
+        val reports = AnswerGate.reports()
+        return buildList {
+            add(Hudhud.Ask.Abilities)
+            add(Hudhud.Ask.Today)
+            if (reports) add(Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
+            if (reports && c.radarOn()) add(Hudhud.Ask.WhenPays(emptyList()))
+            if (reports) add(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST))
+            if (reports) add(Hudhud.Ask.Activity(VoiceQuestion.Window.TODAY))
+            add(Hudhud.Ask.BackupStatus)
+            if (reports) {
+                add(Hudhud.Ask.Drawer)
+                add(Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH))
+                add(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
+                add(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GIVE))
+                add(Hudhud.Ask.Figure(VoiceQuestion.Kind.NOT_PAID))
+                add(Hudhud.Ask.Figure(VoiceQuestion.Kind.EXPIRING))
+            }
+            add(Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))
+            add(Hudhud.Ask.Clock)
+        }
+    }
+
+    /**
+     * Whether the talk carries on from [taken] (what was asked, a guess counted as what it was taken for), so "uska number?"
+     * or "aur kal?" read against it: not a list offered ("whose?"), a change to his voice or the look, a name to keep, a span
+     * he cannot give, nor a matter of faith or his own story ([reverent]: a detour, the shop's talk goes on from before it).
+     */
+    fun carriesOn(taken: Hudhud.Ask, reverent: Boolean): Boolean =
+        !reverent && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown &&
+            taken !is Hudhud.Ask.NeedName && taken !is Hudhud.Ask.Voice && taken !is Hudhud.Ask.NeedGoods &&
+            taken !is Hudhud.Ask.CallMe && taken !is Hudhud.Ask.Look && taken !is Hudhud.Ask.LookDone &&
+            taken !is Hudhud.Ask.SpanLimit
+
+    /**
      * What to ask next after [ask] (13 Nov 2026, the owner: "recommendation automatically pick kare"): the questions
      * that follow from this answer, each one tap — about the same customer or product, the same figure on another day,
      * or the page beside it. Figures behind REPORTS are offered only to those who may see them.

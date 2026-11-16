@@ -4513,6 +4513,7 @@
     <string name="hudhud_owner_unnamed">আপনি এখনো আমাকে আপনার নাম বলেননি। বলুন “আমার নাম …” অথবা আমার কণ্ঠের সেটিংসে লিখে দিন, আমি আপনাকে সেই নামে ডাকব।</string>
     <string name="hudhud_owner_named">আমি আপনাকে %1$s বলে ডাকি। আমার কণ্ঠের সেটিংসে এটি বদলাতে পারেন।</string>
     <string name="hudhud_intro">আমি হুদহুদ, আপনার দোকানের সহকারী। আপনার খাতা নিয়ে বলে বা লিখে জিজ্ঞাসা করুন।</string>
+    <string name="hudhud_intro_pc">আমি হুদহুদ, আপনার দোকানের সহকারী। আপনার খাতা নিয়ে লিখে জিজ্ঞাসা করুন; উত্তর এখানে লেখা থাকবে।</string>
     <string name="hudhud_l_islamic">হিজরি তারিখ</string>
     <string name="hudhud_l_time">সময়</string>
     <string name="hudhud_hijri_note">এটি ক্যালেন্ডার থেকে হিসাব করা; চাঁদ দেখার হিসাবে এক দিনের পার্থক্য হতে পারে।</string>

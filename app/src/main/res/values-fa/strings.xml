@@ -4493,6 +4493,7 @@
     <string name="hudhud_owner_unnamed">هنوز نامتان را به من نگفته‌اید. بگویید “نام من … است” یا آن را در تنظیمات صدای من بنویسید تا شما را با آن صدا بزنم.</string>
     <string name="hudhud_owner_named">شما را %1$s صدا می‌زنم. می‌توانید آن را در تنظیمات صدای من عوض کنید.</string>
     <string name="hudhud_intro">من هدهد هستم، دستیار مغازه شما. درباره دفترتان با صدا یا نوشتن بپرسید.</string>
+    <string name="hudhud_intro_pc">من هدهد هستم، دستیار مغازه شما. درباره دفترتان با نوشتن بپرسید؛ پاسخ اینجا نوشته می‌شود.</string>
     <string name="hudhud_l_islamic">تاریخ قمری</string>
     <string name="hudhud_l_time">ساعت</string>
     <string name="hudhud_hijri_note">با تقویم محاسبه شده؛ بر پایه رؤیت ماه ممکن است یک روز فرق کند.</string>

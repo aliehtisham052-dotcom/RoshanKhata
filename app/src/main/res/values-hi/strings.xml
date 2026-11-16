@@ -4513,6 +4513,7 @@
     <string name="hudhud_owner_unnamed">आपने अभी मुझे अपना नाम नहीं बताया। कहें “मेरा नाम … है” या मेरी आवाज की सेटिंग में लिख दें, मैं आपको उसी नाम से पुकारूँगा।</string>
     <string name="hudhud_owner_named">मैं आपको %1$s कहता हूँ। मेरी आवाज की सेटिंग में इसे बदल सकते हैं।</string>
     <string name="hudhud_intro">मैं हुदहुद हूँ, आपकी दुकान का सहायक। अपने खाते के बारे में बोलकर या लिखकर पूछें।</string>
+    <string name="hudhud_intro_pc">मैं हुदहुद हूँ, आपकी दुकान का सहायक। अपने खाते के बारे में लिखकर पूछें; जवाब यहाँ लिखा मिलेगा।</string>
     <string name="hudhud_l_islamic">इस्लामी तारीख</string>
     <string name="hudhud_l_time">समय</string>
     <string name="hudhud_hijri_note">यह कैलेंडर से निकाली गई है; चाँद के हिसाब से एक दिन का फर्क हो सकता है।</string>

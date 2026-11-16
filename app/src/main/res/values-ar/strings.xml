@@ -4762,6 +4762,7 @@
     <string name="hudhud_owner_unnamed">لم تخبرني باسمك بعد. قل “اسمي …” أو اكتبه في إعدادات صوتي، وسأناديك به.</string>
     <string name="hudhud_owner_named">أناديك %1$s. يمكنك تغييره في إعدادات صوتي.</string>
     <string name="hudhud_intro">أنا هُدهُد، مساعد متجرك. اسأل عن دفترك بصوتك أو كتابةً.</string>
+    <string name="hudhud_intro_pc">أنا هُدهُد، مساعد متجرك. اسأل عن دفترك كتابةً؛ الإجابة مكتوبة هنا.</string>
     <string name="hudhud_l_islamic">التاريخ الهجري</string>
     <string name="hudhud_l_time">الوقت</string>
     <string name="hudhud_hijri_note">محسوب بالتقويم؛ وقد يختلف يومًا بحسب رؤية الهلال.</string>

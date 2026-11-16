@@ -4493,6 +4493,7 @@
     <string name="hudhud_owner_unnamed">توهان اڃا مون کي پنهنجو نالو نه ٻڌايو آهي. چئو “منهنجو نالو … آهي” يا منهنجي آواز جي سيٽنگن ۾ لکي ڇڏيو، مان توهان کي ان ئي نالي سان سڏيندس.</string>
     <string name="hudhud_owner_named">مان توهان کي %1$s سڏيان ٿو. منهنجي آواز جي سيٽنگن ۾ اهو بدلائي سگهو ٿا.</string>
     <string name="hudhud_intro">مان هُدهُد آهيان، توهان جي دڪان جو مددگار. پنهنجي کاتي بابت ڳالهائي يا لکي پڇو.</string>
+    <string name="hudhud_intro_pc">مان هُدهُد آهيان، توهان جي دڪان جو مددگار. پنهنجي کاتي بابت لکي پڇو؛ جواب هتي لکيل ملندو.</string>
     <string name="hudhud_l_islamic">اسلامي تاريخ</string>
     <string name="hudhud_l_time">وقت</string>
     <string name="hudhud_hijri_note">هي ڪئلينڊر مان ڪڍي وئي آهي؛ چنڊ جي حساب سان هڪ ڏينهن جو فرق ٿي سگهي ٿو.</string>

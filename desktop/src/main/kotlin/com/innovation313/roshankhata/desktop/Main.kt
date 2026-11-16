@@ -721,6 +721,8 @@ private fun Book(
     // The bell's list (LedgerAlerts, the phone's own rules) and its window.
     var alerts by remember { mutableStateOf<List<com.innovation313.roshankhata.data.LedgerAlerts.Alert>>(emptyList()) }
     var showAlerts by remember { mutableStateOf(false) }
+    // Hudhud's panel (16 Nov 2026, audit T23): the phone's assistant, typed, on the shared answers.
+    var showHudhud by remember { mutableStateOf(false) }
     // The newest backup this computer holds: a daily copy, or one saved by hand this session.
     var lastBackupAt by remember { mutableStateOf<Long?>(null) }
     // Back up now while it writes (a whole percent) and how many it has finished here, for the chip (3 Nov 2026).
@@ -1058,6 +1060,7 @@ private fun Book(
             // The late payers' row counts as Home counts it (3 Nov 2026 audit, L50: Home said 4 while the bell said 3).
             alerts = bookAlerts.size + extraAlerts.size + (if (late > 0) 1 else 0),
             onAlerts = { showAlerts = true },
+            onHudhud = { showHudhud = true },
             // What the rail does not hold, in the phone's groups (25 Oct 2026, the audit: the menu repeated the
             // rail's Daily copies, Help and Business Profile, and filed the shop's own settings under Display).
             menu = listOf(
@@ -2454,6 +2457,32 @@ private fun Book(
     if (lockSettings) {
         AppDialog(onCloseRequest = { lockSettings = false },onPreviewKeyEvent = escCloses { lockSettings = false }, title = word(W.app_lock), state = rememberDialogState(width = fitW(520.dp), height = fitH(460.dp))) {
             AppLockSettings(appPrefs) { lockSettings = false }
+        }
+    }
+    if (showHudhud) {
+        val closeHudhud = { showHudhud = false }
+        val hudhudEnv = remember(activeBusiness, words) {
+            HudhudDeskEnv(words, Locale.getDefault(), settings, appPrefs, activeBusiness, reminders)
+        }
+        AppDialog(
+            onCloseRequest = closeHudhud,
+            onPreviewKeyEvent = escCloses(closeHudhud),
+            title = word(W.hudhud_name),
+            state = rememberDialogState(width = fitW(600.dp), height = fitH(680.dp))
+        ) {
+            HudhudPanel(
+                dao, parties, hudhudEnv,
+                onOpen = { s -> showHudhud = false; section = s },
+                onParty = { id, form ->
+                    showHudhud = false
+                    selected = id
+                    section = Section.KHATA
+                    // "Ali ko 500 diye": his entry opens filled in; nothing is written until the owner saves it there.
+                    if (form != null) { entryAmount = form.amount; entryWay = form.isGiven }
+                },
+                onAutomations = { showHudhud = false; showAutomations = true },
+                onClose = closeHudhud
+            )
         }
     }
     if (showAlerts) {

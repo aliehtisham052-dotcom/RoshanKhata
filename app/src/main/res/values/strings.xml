@@ -4678,6 +4678,7 @@
     <string name="hudhud_owner_unnamed">You haven\'t told me your name yet. Say “my name is …” or write it in my voice settings, and I\'ll greet you by it.</string>
     <string name="hudhud_owner_named">I call you %1$s. You can change it in my voice settings.</string>
     <string name="hudhud_intro">I\'m Hudhud, your shop\'s assistant. Ask about your khata, by voice or in writing.</string>
+    <string name="hudhud_intro_pc">I\'m Hudhud, your shop\'s assistant. Ask about your khata in writing; the answer is written here.</string>
     <string name="hudhud_l_islamic">Islamic date</string>
     <string name="hudhud_l_time">Time</string>
     <string name="hudhud_hijri_note">Worked out by calendar; by the moon it may differ by a day.</string>

@@ -4439,6 +4439,7 @@
     <string name="hudhud_owner_unnamed">Anda belum memberi tahu nama Anda. Ucapkan “nama saya …” atau tulis di pengaturan suara saya, dan saya akan menyapa Anda dengan nama itu.</string>
     <string name="hudhud_owner_named">Saya memanggil Anda %1$s. Anda bisa mengubahnya di pengaturan suara saya.</string>
     <string name="hudhud_intro">Saya Hudhud, asisten toko Anda. Tanyakan tentang buku Anda, dengan suara atau ketikan.</string>
+    <string name="hudhud_intro_pc">Saya Hudhud, asisten toko Anda. Tanyakan tentang buku Anda dengan ketikan; jawabannya tertulis di sini.</string>
     <string name="hudhud_l_islamic">Tanggal Hijriah</string>
     <string name="hudhud_l_time">Waktu</string>
     <string name="hudhud_hijri_note">Dihitung dengan kalender; menurut rukyat bisa berbeda satu hari.</string>

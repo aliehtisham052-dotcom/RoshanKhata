@@ -4465,6 +4465,7 @@
     <string name="hudhud_owner_unnamed">Aap ne abhi mujhe apna naam nahi bataya. Kahein “mera naam … hai” ya meri awaaz ki settings mein likh dein, main aap ko isi naam se pukaroon ga.</string>
     <string name="hudhud_owner_named">Main aap ko %1$s kehta hoon. Meri awaaz ki settings mein ise badal sakte hain.</string>
     <string name="hudhud_intro">Main Hudhud hoon, aap ki dukaan ka madadgaar. Apne khate ke baare mein bol kar ya likh kar poochein.</string>
+    <string name="hudhud_intro_pc">Main Hudhud hoon, aap ki dukaan ka madadgaar. Apne khate ke baare mein likh kar poochein; jawab yahan likha milega.</string>
     <string name="hudhud_l_islamic">Islami tareekh</string>
     <string name="hudhud_l_time">Waqt</string>
     <string name="hudhud_hijri_note">Ye calendar se nikali gayi hai; chaand ke hisaab se ek din ka farq ho sakta hai.</string>

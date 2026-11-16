@@ -548,6 +548,26 @@ class ScreenProofTest {
                 val f = File(dir, "dialog-laptop-receipt-en.png").also { it.writeBytes(png) }
                 assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
             } finally { receiptCard.close() }
+            // Hudhud, typed (16 Nov 2026, audit T23): his panel with its first card and the day's chips, on the made-up book.
+            val hudhudEnv = HudhudDeskEnv(
+                words, Locale.ENGLISH, com.innovation313.roshankhata.data.FileShopSettings(home.resolve("shop.properties")),
+                AppPrefs(home.resolve("app.properties")), 1L, ReminderStore(home.resolve("reminders_b1.properties"))
+            )
+            val hudhudPanel = ImageComposeScene(width = 750, height = 850, density = Density(1.25f)) {
+                DeskTheme(dark = false) {
+                    ProvideWords(words) {
+                        HudhudPanel(dao, partiesNow, hudhudEnv, onOpen = {}, onParty = { _, _ -> }, onAutomations = {}, onClose = {})
+                    }
+                }
+            }
+            try {
+                hudhudPanel.render(0); hudhudPanel.render(16_000_000)
+                // The chips come from the book a moment after the panel opens.
+                repeat(4) { n -> Thread.sleep(400); hudhudPanel.render(250_000_000L + n * 100_000_000L) }
+                val png = hudhudPanel.render(1_500_000_000).encodeToData(EncodedImageFormat.PNG)!!.bytes
+                val f = File(dir, "dialog-laptop-hudhud-en.png").also { it.writeBytes(png) }
+                assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 20_000)
+            } finally { hudhudPanel.close() }
             // Marhala 4, part 10: Help in the page frame (the shortcuts with Ctrl+F, Report a problem as one window, the
             // support address, the version); Schemes, Seasons and Duplicates on the frame with their cards. Drawn last,
             // so the proofs above keep their book.

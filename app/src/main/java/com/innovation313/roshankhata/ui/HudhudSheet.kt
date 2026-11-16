@@ -757,11 +757,8 @@ object HudhudSheet {
                 // taken for; a list of names offered ("whose?") keeps the one before. A matter of faith or his own story
                 // is a detour: the shop's talk goes on from where it was, not from it.
                 val taken = (result.ask as? Hudhud.Ask.Guessed)?.ask ?: result.ask
-                if (!result.answer.reverent && taken != null && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown &&
-                    taken !is Hudhud.Ask.NeedName && taken !is Hudhud.Ask.Voice && taken !is Hudhud.Ask.NeedGoods &&
-                    taken !is Hudhud.Ask.CallMe && taken !is Hudhud.Ask.Look && taken !is Hudhud.Ask.LookDone &&
-                    taken !is Hudhud.Ask.SpanLimit
-                ) {
+                // The rule is shared with the computer's panel (AnswerBook.carriesOn, 16 Nov 2026).
+                if (taken != null && com.innovation313.roshankhata.data.AnswerBook.carriesOn(taken, result.answer.reverent)) {
                     before = taken
                 }
                 // The tab follows the answer: Personal for a matter of faith or his story, the shop's for the rest.
@@ -816,14 +813,11 @@ object HudhudSheet {
         private fun chipsFor(
             heard: String, ask: Hudhud.Ask?, answer: HudhudBook.Answer, names: List<Hudhud.Name>, products: List<Hudhud.Name>
         ): List<Hudhud.Ask> {
-            val language = Locale.getDefault().toLanguageTag()
-            return when {
-                ask == null -> emptyList()
-                ask == Hudhud.Ask.Unknown -> Hudhud.suggest(heard, names, topics, language, products)
-                answer.tookAs != null -> answer.options + Hudhud.suggest(heard, names, topics, language, products, skip = ask) +
-                    HudhudBook.next(ctx, ask)
-                else -> answer.options + HudhudBook.next(ctx, ask)
-            }
+            // One rule with the computer's panel (AnswerBook.chipsFor, shared since 16 Nov 2026).
+            return com.innovation313.roshankhata.data.AnswerBook.chipsFor(
+                com.innovation313.roshankhata.data.HudhudPhoneEnv(ctx), heard, ask, answer.options, answer.tookAs != null,
+                names, products, topics, Locale.getDefault().toLanguageTag()
+            )
         }
 
         // ------------------------------------------------------------------------------------- the card
@@ -1126,32 +1120,9 @@ object HudhudSheet {
 
         // ------------------------------------------------------------------------------------- chips
 
-        /** The questions he always knows, as chips: the figures only for those who may see them (REPORTS). */
-        private fun usualChips(): List<Hudhud.Ask> {
-            val reports = HudhudGate.reports()
-            return buildList {
-                // What he can tell first (13 Nov 2026): nobody has to guess what to ask him.
-                add(Hudhud.Ask.Abilities)
-                // What needs the owner today: his morning's question.
-                add(Hudhud.Ask.Today)
-                if (reports) add(Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
-                // Who is in his usual paying days (the Payment Radar, where it is on).
-                if (reports && RadarUi.on(ctx)) add(Hudhud.Ask.WhenPays(emptyList()))
-                if (reports) add(Hudhud.Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST))
-                if (reports) add(Hudhud.Ask.Activity(VoiceQuestion.Window.TODAY))
-                add(Hudhud.Ask.BackupStatus)
-                if (reports) {
-                    add(Hudhud.Ask.Drawer)
-                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.PROFIT_MONTH))
-                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
-                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GIVE))
-                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.NOT_PAID))
-                    add(Hudhud.Ask.Figure(VoiceQuestion.Kind.EXPIRING))
-                }
-                add(Hudhud.Ask.Status(Hudhud.StatusOf.BOOK))
-                add(Hudhud.Ask.Clock)
-            }
-        }
+        /** The questions he always knows, as chips: one rule with the computer's panel (AnswerBook.usualChips). */
+        private fun usualChips(): List<Hudhud.Ask> =
+            com.innovation313.roshankhata.data.AnswerBook.usualChips(com.innovation313.roshankhata.data.HudhudPhoneEnv(ctx))
 
         /**
          * The chips under the card (13 Nov 2026): [first] — what follows from the answer, the choices it offers, or the
