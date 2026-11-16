@@ -2965,6 +2965,15 @@ Each of these cost a build or a bug.
     every fix. A guard that keeps one side from the sense must be run against it too: the first payable guard turned the Farsi
     "biggest debtor" and a Bengali "owes me" the other way, and the same test caught both at once.
 
+152. **A generator that scans source text scans the comments too.** The phone's WordIds collects every `W.x` in the shared
+    sources; a doc comment that said "`W.x`" named a string "x" and the phone failed to compile (16 Nov 2026, BC-105). It now
+    skips comment lines, and `scripts/check_word_keys.py` (Strings CI) holds every key the shared code names to values/ in
+    seconds. Any build-time scan of names (WordIds, the catalog, the readonly check) is checked against comments before it is trusted.
+
+153. **A deliberate breakage runs on a committed tree.** `git checkout -- file` to undo a mutation also threw away a helper's
+    uncommitted edits to the same file (16 Nov 2026); they were found missing and written again. Commit (or copy the file
+    aside) before breaking anything, and let `mutate.sh` put the file back.
+
 ---
 
 ## Working with the owner
@@ -4291,6 +4300,42 @@ Three helpers (D, E, F) in separate worktrees, merged by cherry-pick; the lead's
   bundled (eSpeak NG GPL and robotic, Piper has none, MMS non-commercial). Decision for Windows Hudhud: written answers, the
   computer's own voices only for its own languages, said once (audit folder, phase_t24_windows_voice.md).
 - Register: `docs/bug-classes.tsv` 101 classes, 94 with a test.
+
+### 16-17 Nov 2026 (night): the audit's third round — one answer layer, Windows Hudhud, why, days, two entries (CI only)
+
+Four helpers in separate worktrees with separate files (G, H, I in the repository, J outside it), merged by cherry-pick; every
+merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on Android and Windows. Nothing tried on a device.
+
+- **One answer layer (T22, G):** HudhudBook, HudhudFacts, HudhudCounterFacts and HudhudRecordFacts moved to `:shared` as
+  `AnswerBook`, `AnswerFacts`, `AnswerCounterFacts`, `AnswerRecordFacts`, with `AnswerCard` (ScreenId, OpenWith), `AnswerEnv`
+  (everything a platform must supply) and `AnswerGate`; words are W keys. The phone keeps thin facades (`HudhudBook`,
+  `HudhudFacts`, `HudhudGate`) and `HudhudPhoneEnv` (ScreenId -> Activity). The golden answers did not change. A `%d` in Bengali,
+  Farsi or Arabic now formats in 0-9 (lesson 28's screen rule). `AnswerBook.FEATURES` is the shared feature-page list
+  (HudhudFeaturePagesTest holds it to FeatureIntro); `chipsFor`, `usualChips`, `carriesOn` are the one chip rule.
+- **Hudhud on Windows, typed (T23, G):** `HudhudPane.kt` (`HudhudPanel`, `HudhudDeskEnv`), a header button; no voice, said once
+  (`hudhud_intro_pc`); the cashier's gate; pages the computer lacks give no Open. `sense.bin` is copied into the desktop's
+  resources at build time. HudhudPanelTest; proof dialog-laptop-hudhud-en. Not yet: what a page opens on, the usage counts.
+- **Why (T8, H):** `HudhudWhyAsk` (strict), `Ask.Why(of, window, down)`, `AnswerWhy`: the figure against the span before and
+  the parts that moved most (expense categories, customers' money in and balance moves, lines with no cost) — never a cause the
+  book cannot show. REPORTS. "Why is your name Hudhud" stays the story. 15 strings.
+- **The day of an entry (H):** "kal", "parson", "12/11", "12-11", "12/11/2026" (day first; only "11/25" is read month first)
+  carry the day to the entry form (`Ask.Entry.day`, `Hudhud.entryTime`, `OpenWith.EntryForm.time`, phone
+  `EXTRA_VOICE_TIME`, the computer's `EntryEditor(startTime)`), never in the future. A date's figures are no amount ("12/11 ko
+  Ali ko 500 diye" made Rs 12, BC-112). A promise ("kal 500 dega") is no entry, in Hudhud and on the Khata microphone
+  (`voice_future_promise`, BC-113). Two entries in one sentence are offered one at a time (`Ask.Entries`, BC-114).
+- **Radar (H):** `LedgerPoint.isOpening`: an opening balance is debt, but not in the pace, the norm or promises kept (BC-115).
+- **Data and checks (I):** `scripts/hudhud_sets.py` (JSONL view, `--check` quality gate: leakage with a frozen overlap list,
+  real-looking numbers, labels no reading can be, languages, columns); `check_invented_numbers.py` (BC-077),
+  `check_room_aliases.py` (BC-078), `check_word_keys.py` (BC-105, the lead) in Strings CI; `docs/hudhud-annotation-guide.md`;
+  180 impossible accepted readings removed from owner_1000.tsv (floors unchanged); HudhudNamedPayableTest kills the last survivor.
+- **Outside the repository (J):** a sealed test set v1 (1,000 + 150 conversations) in the audit folder — it fails Phase 9's
+  leakage gate today (rough count 937 of 1,439 overlap), so it is not frozen; model licences (T19): e5-small and ONNX Runtime
+  MIT, Qwen3-0.6B, Gemma 4 E2B and LiteRT-LM Apache 2.0 (Gemma's prohibited-use policy still to be read).
+- **The lesson-133 loop now has 19 Python steps:** add check_invented_numbers.py, check_room_aliases.py, "hudhud_sets.py --check"
+  and check_word_keys.py to the list in lesson 133's command.
+- **Left:** golden answers for Why and Entries (needs a CI artifact); a native read of the new Sindhi, Bengali, Farsi and Arabic
+  words; 6 held-out and 254 owner/review sentences that are also train sentences (frozen, removed at the next retrain);
+  `gen_hudhud_bank.key()` drops Indic vowel signs (at the next retrain); aab.yml runs only 5 of the Strings checks.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
