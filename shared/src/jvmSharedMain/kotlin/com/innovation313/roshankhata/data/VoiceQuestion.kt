@@ -48,7 +48,9 @@ object VoiceQuestion {
         // 13 Nov 2026 (Hudhud Brain v2): "kaun nahi de raha", the present and the plural.
         "nahi diye", "nahin diye", "nahi de raha", "nahi de rahe", "nahi de rahi", "nahi deta", "nahi dete",
         "belum membayar", "نہیں دیا", "نہیں دیے", "نہیں دئیے", "ادا نہیں", "نه ڏنو", "نه ڏنا", "لم يدفع", "لم يسدد", "پرداخت نکرده",
-        "नहीं दिया", "नहीं दिए", "দেয়নি", "দেননি", "পরিশোধ করেনি")
+        "नहीं दिया", "नहीं दिए", "দেয়নি", "দেননি", "পরিশোধ করেনি",
+        // 16 Nov 2026 (audit T10, wrong side): "paise na dene wale kaun hain" are the ones who do not pay, not the shop's debt.
+        "na dene wale", "na dene wala", "na dene waale", "nahi dene wale", "nahi dene wala", "نہ دینے والے", "न देने वाले")
     private val MOST = listOf("sab se zyada", "sabse zyada", "sab se ziada", "most", "highest", "biggest", "terbanyak", "paling",
         "terbesar",
         "سب سے زیادہ", "سڀ کان وڌيڪ", "الأكثر", "أكثر", "اكثر", "بیشترین", "सबसे ज़्यादा", "सबसे ज्यादा",
@@ -674,14 +676,18 @@ object VoiceQuestion {
         return when {
             saysAny(t, PROFIT) -> Kind.PROFIT_MONTH
             saysAny(t, EXPIRING) -> Kind.EXPIRING
-            saysAny(t, NOT_PAID) -> Kind.NOT_PAID
+            // Not paid TO somebody (16 Nov 2026, audit T10): "kis ko aaj tak nahi diya", "kis supplier ko nahi diya" are whom
+            // the shop has not paid — its payables, never who has not paid the shop.
+            saysAny(t, NOT_PAID) -> if (unpaidByTheShop(t)) Kind.TO_GIVE else Kind.NOT_PAID
             // The smallest first (15 Nov 2026): Indonesian's "paling sedikit" holds the word "paling" of "most", and the balance, the debtor
             // and "-nya" are the debt's own words beside a least.
             saysAny(t, LEAST) && (owedToUs(t) || saysAny(t, LEAST_DEBT)) && !owedByTheShop(t) -> Kind.WHO_OWES_LEAST
             // "Sab se zyada kis ko dena hai" is whom the shop owes most: the shop's payables, not who owes it most.
             saysAny(t, MOST) && saysAny(t, TO_GIVE) && !owedToTheShop(t) -> Kind.TO_GIVE
             // "Kisi ne sabse zyada paise dene hain" says "dene" and somebody else gives: who owes the shop most (14 Nov 2026).
-            saysAny(t, MOST) && owedToUs(t) -> Kind.WHO_OWES_MOST
+            saysAny(t, MOST) && owedToUs(t) && !supplierOwed(t) -> Kind.WHO_OWES_MOST
+            // "Whose money is with me" (16 Nov 2026, audit T10): the shop's own debt said without a word of giving.
+            saysAny(t, MY_DEBT) && !owedToTheShop(t) && !saysAny(t, TO_GET) -> Kind.TO_GIVE
             saysAny(t, SALES) -> if (saysAny(t, TODAY) || windowOf(heard) == Window.TODAY) Kind.SALES_TODAY else Kind.SALES_MONTH
             // Which way the money is owed, by who gives (14 Nov 2026, the owner's sentences): "kis kis ne mera paisa dena
             // hai" says "dena" but somebody else gives — the shop's to get; "mera qarz", "supplier ka baqaya" are what the
@@ -701,6 +707,27 @@ object VoiceQuestion {
     /** Money is the shop's to get: its debtors' words, "lena", or somebody else who has to give. */
     private fun owedToUs(t: String): Boolean =
         saysAny(t, DEBT) || saysAny(t, TO_GET) || (saysAny(t, TO_GIVE) && owedToTheShop(t))
+
+    /** A supplier's side with nobody else giving and nothing to take: what is owed there is the shop's to pay. */
+    private fun supplierOwed(t: String): Boolean =
+        saysAny(t, SUPPLIER_SIDE) && !saysAny(t, OTHERS_GIVE) && !saysAny(t, TO_GET) && !otherDoer(t)
+
+    /** "Not paid" said of whom the shop pays: a supplier, or "kis ko" with no other doer and no word of credit given. */
+    private fun unpaidByTheShop(t: String): Boolean =
+        supplierOwed(t) || (saysAny(t, TO_WHOM) && !otherDoer(t) && !saysAny(t, OTHERS_GIVE) && !saysAny(t, DEBT))
+
+    /** "To whom", the one who receives (Urdu, Roman Urdu, Hindi). */
+    private val TO_WHOM = listOf("kis ko", "kisko", "kis kis ko", "kin ko", "kinko", "کس کو", "کس کس کو", "किस को", "किसको", "किन को")
+
+    /**
+     * The sentence says the money is the shop's to pay (16 Nov 2026, audit T10): a supplier owed, the shop's own debt, or
+     * "not paid" to whom. Hudhud keeps such a reading on the payable side whatever the sense learnt (his `decide`).
+     */
+    fun payableSaid(heard: String): Boolean {
+        val t = normalise(heard)
+        if (t.isEmpty()) return false
+        return supplierOwed(t) || (saysAny(t, MY_DEBT) && !owedToTheShop(t)) || (saysAny(t, NOT_PAID) && unpaidByTheShop(t))
+    }
 
     /** The doer's mark in Urdu, Hindi and Roman Urdu ("ne"), normalised. */
     private val NE_WORDS = setOf("ne", "نے", "ने")
@@ -741,14 +768,22 @@ object VoiceQuestion {
         "kisi ne", "kisine", "jis ne", "jisne", "kisi kisi ne",
         "کس نے", "کس کس نے", "لوگوں نے", "انہوں نے", "اس نے", "گاہک نے", "किस ने", "किसने", "लोगों ने", "उसने", "ग्राहक ने",
         "کسی نے", "جس نے", "किसी ने", "जिसने", "जिस ने",
-        "কে দেবে", "কারা দেবে", "আমাকে দেবে", "من يدين لي", "يدينون لي", "به من بدهکار", "siapa yang berutang",
+        "কে দেবে", "কারা দেবে", "আমাকে দেবে", "কে আমার কাছে", "من يدين لي", "يدينون لي", "به من بدهکار", "siapa yang berutang",
         // 16 Nov 2026 (audit T11): Farsi "the customers' debt (to the shop)" — بدهی alone is the shop's own.
-        "بدهی مشتری", "بدهی مشتریان", "بدهی مشتریها", "به مغازه بدهکار"
+        "بدهی مشتری", "بدهی مشتریان", "بدهی مشتریها", "به مغازه بدهکار",
+        // 16 Nov 2026 (audit T10): "payment dene wala" is the one who pays the shop, not what the shop owes.
+        // Only with "who": "dene wali raqam" is the sum the shop has to give.
+        "dene wala kaun", "dene wale kaun", "dene waale kaun", "dene wala kon", "dene wale kon", "دینے والا کون", "دینے والے کون",
+        "देने वाला कौन", "देने वाले कौन",
+        // Farsi "who is" with a debt word: "بیشترین بدهکار کیست" is the shop's biggest debtor (review sets D and O).
+        "کیست"
     )
 
     private val MY_DEBT = listOf(
         "mera qarz", "meri qarz", "mere qarz", "mera karz", "mere zimme", "mere zime", "mujh par", "mujhpar", "humara qarz",
-        "my debt", "i owe", "we owe", "میرا قرض", "میرے ذمے", "مجھ پر", "ہمارا قرض", "मेरा कर्ज", "मेरा क़र्ज़", "मेरे जिम्मे",
+        "my debt", "i owe", "we owe",
+        // 16 Nov 2026 (audit T10): "kis kis ka paisa mere paas hai", whose money the shop holds.
+        "paisa mere paas", "paise mere paas", "raqam mere paas", "پیسے میرے پاس", "پیسہ میرے پاس", "पैसा मेरे पास", "पैसे मेरे पास", "میرا قرض", "میرے ذمے", "مجھ پر", "ہمارا قرض", "मेरा कर्ज", "मेरा क़र्ज़", "मेरे जिम्मे",
         "मुझ पर", "আমার ঋণ", "আমার দেনা", "ديني", "علي دين", "بدهی من", "منهنجو قرض", "utang saya", "hutang saya",
         // 16 Nov 2026 (audit T11): Indonesian's other "I/we" and the joined "my"; Arabic "on us".
         "utang aku", "hutang aku", "utangku", "hutangku", "utang kami", "hutang kami", "علينا"

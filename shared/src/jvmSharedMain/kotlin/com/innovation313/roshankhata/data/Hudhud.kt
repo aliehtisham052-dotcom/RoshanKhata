@@ -1513,6 +1513,10 @@ object Hudhud {
 
     private val SIDES = setOf(VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.TO_GIVE)
     private val SIDE_LABELS = setOf("to_get", "to_give")
+    /** The sense's labels that read money as the shop's to get (16 Nov 2026, audit T10). */
+    private val RECEIVABLE_LABELS = setOf("to_get", "who_owes_most", "who_owes_least", "not_paid")
+    private val RECEIVABLE_KINDS = setOf(VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.WHO_OWES_MOST,
+        VoiceQuestion.Kind.WHO_OWES_LEAST, VoiceQuestion.Kind.NOT_PAID)
 
     private fun decide(
         heard: String, ruled: Ask, guesses: List<HudhudSense.Guess>, names: List<Name>, topics: List<Topic>,
@@ -1535,7 +1539,13 @@ object Hudhud {
         if (ruled is Ask.Moved && (VoiceQuestion.windowOf(heard) == ruled.window || VoiceQuestion.unsupportedSpan(heard))) return ruled
         // A courtesy the sense learnt as a whole sentence ("salam Ali Raza ka number" -> salaam) never overturns what the
         // rules read when the sentence also asks the book (15 Nov 2026; courtesyOnly).
+        // The shop's to pay, said outright (16 Nov 2026, audit T10): "kis supplier ko nahi diya", "sab se zyada kis ko dena hai",
+        // "kis kis ka paisa mere paas hai". The rules read these as TO_GIVE ([VoiceQuestion.classify]); the sense's receivable
+        // reading never turns one, and an unrelated rules' reading with a receivable guess goes to the shop's payables.
         val first = guesses.firstOrNull() ?: return ruled
+        if (first.label in RECEIVABLE_LABELS && VoiceQuestion.payableSaid(heard) &&
+            namedBy(ruled).isEmpty() && ruled !is Ask.Goods
+        ) return Ask.Figure(VoiceQuestion.Kind.TO_GIVE)
         val top = if (first.label in COURTESY && !courtesyOnly(words(heard), names, goods)) {
             guesses.firstOrNull { it.label !in COURTESY } ?: return ruled
         } else first
@@ -1543,7 +1553,8 @@ object Hudhud {
         // Which way the money is owed (16 Nov 2026, audit T11): the rules read the side from who gives and who owes ("باید بدم",
         // "بدهی مشتریان به مغازه", "utang aku"); the sense learnt the words of debt without the side and turned three of them the
         // opposite way at 0.95. A side the sentence says outright is never turned by the sense; a bare word of debt still may be.
-        if (ruled is Ask.Figure && ruled.kind in SIDES && top.label in SIDE_LABELS && VoiceQuestion.sideSaid(heard)) return ruled
+        if (ruled is Ask.Figure && ruled.kind in SIDES && (top.label in SIDE_LABELS || top.label in RECEIVABLE_LABELS) &&
+            (ruled.kind == VoiceQuestion.Kind.TO_GIVE) == (top.label in RECEIVABLE_LABELS) && VoiceQuestion.sideSaid(heard)) return ruled
         // "Ali Raza last month", "Ali Raza pichle saal" (15 Nov 2026): the "last" is the span's. The rules read a named person with
         // nothing else asked (his account, or the one fact his words give), and the sense, which learnt "last" as his last
         // payment from sentences with no span in them, was sure of that at 0.95. Only that reading is turned back: a span's word

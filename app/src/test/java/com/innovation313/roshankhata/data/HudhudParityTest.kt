@@ -18,7 +18,6 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.Locale
@@ -260,7 +259,6 @@ class HudhudParityTest {
      * paid back 2,000 as an ordinary "I got" (he owes 3,000); Bashir lent 1,000, paid back 1,500 (the shop owes him 500).
      * Zakat says 3,000 of Qarz-e-Hasna, Hudhud would say 6,000. Left to the lead: the production code is not changed here.
      */
-    @Ignore("fault: Hudhud's Qarz sums the raw qarz column; Zakat.fromParties caps it per customer by what he owes (6,000 against 3,000)")
     @Test
     fun qarzPaidBackAsOrdinaryPaymentsIsZakatsFigure() {
         runBlocking {

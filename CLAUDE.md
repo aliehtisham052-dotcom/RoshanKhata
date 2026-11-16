@@ -2959,6 +2959,12 @@ Each of these cost a build or a bug.
     every sales figure counted them on the import day. A row's meaning that the figures must read goes into the row
     (`entryKind`), and every query that counts sales says which kinds it takes.
 
+151. **Score the entity, not only the meaning.** The review sets held 2,115 readings "right" while 14 put the money on the
+    wrong side and none checked an entry's amount: they spelled only "Ask:Figure" or "Entry" (16 Nov 2026). `HudhudEntityMetricsTest`
+    reads the side, amount, person, product and days of every labelled reading, floors the wrong ones per set, and is lowered with
+    every fix. A guard that keeps one side from the sense must be run against it too: the first payable guard turned the Farsi
+    "biggest debtor" and a Bengali "owes me" the other way, and the same test caught both at once.
+
 ---
 
 ## Working with the owner
@@ -4255,6 +4261,35 @@ lead merged by cherry-pick, ran the harness (726 tests) and the 14 Strings steps
   book name ("DELETE ALL ka rate"); the general fix is to read those readers on the sentence with the book's names taken out
   (task T44, its ignored test in HudhudInjectionTest). Also not done: two entries in one sentence, an entry said with a date
   keeps today's date, slash dates ("12/11"), the Radar still takes pace from an opening lot.
+
+### 16 Nov 2026 (evening): the audit's second parallel round — golden answers, entity metrics, names, windows, the payable side (CI only)
+
+Three helpers (D, E, F) in separate worktrees, merged by cherry-pick; the lead's own fixes after. Local: 743 shared tests, all
+16 Strings steps; floors held or raised (short 155, the 1,000 sentences 800, held-out 1,075).
+
+- **Golden answers and parity (T21, D):** `HudhudGoldenAnswersTest` (Robolectric) asks `HudhudBook.answer` every one of the 52
+  `Hudhud.Ask` subtypes and their enum values over a seeded book (`HudhudGoldenBook`, invented data, times relative to now),
+  as the owner, a cashier and after CallMe; the cards are written as text and compared with `app/src/test/resources/hudhud-golden/`.
+  **Its first CI run writes the goldens and fails on purpose**: build.yml uploads them as the `hudhud-golden` artifact; read
+  them, check them in, and the next run holds them. `HUDHUD_GOLDEN_UPDATE=1` rewrites them. `HudhudParityTest`: 13 money figures
+  equal the screen's own call (Insights, Profit, SalesReport, PartyTotals, the drawer, Valuation, Zakat). It found the Qarz card
+  summing the raw loan column: now `Zakat.qarzOf` per customer (BC-097). No clock hook in production yet: both tests skip the 30
+  minutes around midnight UTC.
+- **Entity metrics (T10, F):** `HudhudEntityMetricsTest` / `HudhudEntities` (lesson 151). It found 14 readings on the wrong side;
+  the lead fixed the class (`VoiceQuestion.payableSaid`, `supplierOwed`, `unpaidByTheShop`, the MY_DEBT branch, "dene wala kaun",
+  Farsi "کیست", Bengali "কে আমার কাছে"; `decide` keeps a stated payable side from the sense, and the stated-side guard now covers
+  who-owes and not-paid labels). Left on purpose, they read both ways: "Kis ki payment late ho gayi", "Kitna qarz baqi hai",
+  "Kis ka maal ka paisa baqi hai". Floors: held-out 0, owner short 1, owner 1,000 3, review sets 0; wrong amount 0 everywhere.
+- **A name made of a question's words (T38 / BC-036, E):** `Hudhud.byWholeName` reads the sentence again with a whole book name
+  masked (`wholeNamesIn`, `asksOfMasked`, `unmasked`) and the sense no longer takes a figure word as a name slot (`senseNameSlot`).
+- **One window rule (T40, E):** `DaySpans` — `[from, to)` wrappers for the six `(from, to]` cash sums (`cashbookCashOver`,
+  `khataCashOver`, …) and the working day; Automations' evening notice uses them (it took a row at tomorrow's midnight). A new
+  caller of a cash sum uses the `*Over` wrapper. **Calendar day in the bell (T41):** `LedgerAlerts` by the calendar and the working
+  day (`yesterdaysDrawer`). **Check log (T37):** each row names its shop; deleting a shop takes its rows (`HudhudCheck.forgetBusiness`).
+- **Windows voice (T24, research):** Windows ships no Urdu, Sindhi, Farsi or Bengali voice; no free offline Urdu voice may be
+  bundled (eSpeak NG GPL and robotic, Piper has none, MMS non-commercial). Decision for Windows Hudhud: written answers, the
+  computer's own voices only for its own languages, said once (audit folder, phase_t24_windows_voice.md).
+- Register: `docs/bug-classes.tsv` 101 classes, 94 with a test.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 

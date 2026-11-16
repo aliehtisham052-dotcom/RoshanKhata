@@ -296,12 +296,12 @@ class HudhudEntityMetricsTest {
          * what this build reads (16 Nov 2026). Lower them with every fix, never raise them.
          */
         val FLOORS = mapOf(
-            // "paise na dene wale kaun hain" (who does not pay: customers) is read as what the shop owes.
-            "heldout" to (1 to 0),
-            // Supplier questions read as the customers' figures ("Sab se zyada kis ko dena hai" => who owes most) and
-            // "Sab se achha payment dene wala kaun hai" read as what the shop owes. Amounts are not labelled in these lists.
-            "owner_set" to (3 to 0),
-            "owner_1000" to (10 to 0),
+            // 16 Nov 2026, the payable class fixed (BC-097): supplier and "kis ko … nahi diya" questions, "mere paas", "dene
+            // wala kaun", the Farsi and Bengali debtor. What is left reads both ways and is not turned: "Kis ki payment late ho
+            // gayi" (customers' late payments too), "Kitna qarz baqi hai", "Kis ka maal ka paisa baqi hai".
+            "heldout" to (0 to 0),
+            "owner_set" to (1 to 0),
+            "owner_1000" to (3 to 0),
             "review_d" to (0 to 0),
             "review_o" to (0 to 0),
         )

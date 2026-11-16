@@ -1354,14 +1354,16 @@ internal object HudhudFacts {
         val label = c.getString(R.string.hudhud_t_qarz)
         val note = c.getString(R.string.hudhud_qarz_note)
         if (!reports()) return ownerOnly(c, label)
-        val owed = dao.observeZakatBalancesByParty().first().filter { it.qarz > 0.005 }.sortedByDescending { it.qarz }
+        // Zakat's own rule per customer (audit parity BC-097): a loan paid back as ordinary payments is counted once.
+        val owed = dao.observeZakatBalancesByParty().first().map { it.partyId to Zakat.qarzOf(it) }
+            .filter { Money.isPositive(it.second) }.sortedByDescending { it.second }
         if (owed.isEmpty()) {
             return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.hudhud_qarz_none), note),
                 open = KhataActivity::class.java)
         }
         val byId = parties.associateBy { it.id }
-        val rows = owed.take(TOP).mapNotNull { q -> byId[q.partyId]?.let { p -> Row(p.id, p.name, HudhudBook.money(q.qarz), null) } }
-        return Answer(Mood.CALM, label = label, figure = HudhudBook.money(owed.sumOf { it.qarz }), rows = rows,
+        val rows = owed.take(TOP).mapNotNull { (id, q) -> byId[id]?.let { p -> Row(p.id, p.name, HudhudBook.money(q), null) } }
+        return Answer(Mood.CALM, label = label, figure = HudhudBook.money(owed.sumOf { it.second }), rows = rows,
             lines = listOf(Digits.quantity(c.resources, R.plurals.hudhud_qarz_people, owed.size, owed.size), note),
             open = ZakatActivity::class.java, money = true)
     }

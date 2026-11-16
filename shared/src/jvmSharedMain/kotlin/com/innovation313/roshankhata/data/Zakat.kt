@@ -159,6 +159,13 @@ object Zakat {
         )
     }
 
+    /**
+     * One customer's Qarz-e-Hasna as [fromParties] counts it (16 Nov 2026, audit parity BC-097): his loan scaled by the
+     * same share, so a loan paid back as ordinary payments is not counted twice. The assistant's Qarz card reads this,
+     * so it can never say more than the Zakat screen.
+     */
+    fun qarzOf(p: PartyZakatBalance): Double = fromParties(listOf(p)).qarzeHasnaGiven
+
     /** Zakat due — zero unless wealth has reached nisab. */
     fun zakatDue(zakatableWealth: Double, nisab: Double): Double =
         if (nisab > 0 && zakatableWealth >= nisab) zakatableWealth * RATE else 0.0

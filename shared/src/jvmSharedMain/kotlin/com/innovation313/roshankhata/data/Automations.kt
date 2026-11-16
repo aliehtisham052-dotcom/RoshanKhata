@@ -145,8 +145,9 @@ object Automations {
         val counted = drawer.last?.let { it.day == DayCloseMath.businessDayOf(now, tz) } == true
         // Cash that moved TODAY (8 Nov 2026, L81): the drawer's own cash-in/out run since the last count, so a drawer
         // left uncounted for days made every evening's notice say "moved".
-        val cashToday = dao.cashbookCashBetween(true, from - 1, to) + dao.cashbookCashBetween(false, from - 1, to) +
-            dao.khataCashBetween(true, from - 1, to) + dao.khataCashBetween(false, from - 1, to)
+        // [from, to) through the window wrappers (16 Nov 2026, T40 / BC-096): "from - 1" also took a row at tomorrow's midnight.
+        val cashToday = dao.cashbookCashOver(true, from, to) + dao.cashbookCashOver(false, from, to) +
+            dao.khataCashOver(true, from, to) + dao.khataCashOver(false, from, to)
         val moved = Money.isPositive(sales) || Money.isPositive(received) || Money.isPositive(cashToday)
         return DayEnd(sales, received, drawer.expected, counted, moved)
     }
