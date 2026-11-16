@@ -1069,7 +1069,7 @@
     <string name="hudhud_why_title_profit">Laba: apa yang berubah</string>
     <string name="hudhud_why_title_expenses">Pengeluaran: apa yang berubah</string>
     <string name="hudhud_why_title_collected">Uang yang masuk: apa yang berubah</string>
-    <string name="hudhud_why_title_dues">Piutang pelanggan: apa yang berubah</string>
+    <string name="hudhud_why_title_dues">Piutang baru pelanggan pada hari-hari ini (bersih): apa yang berubah</string>
     <string name="hudhud_why_now">Sekarang (%1$s)</string>
     <string name="hudhud_why_before">Sebelumnya (%1$s)</string>
     <string name="hudhud_why_before_so_far">Hari yang sama sebelumnya (%1$s)</string>

@@ -1091,7 +1091,7 @@
     <string name="hudhud_why_title_profit">লাভ: কী বদলেছে</string>
     <string name="hudhud_why_title_expenses">খরচ: কী বদলেছে</string>
     <string name="hudhud_why_title_collected">আদায় হওয়া টাকা: কী বদলেছে</string>
-    <string name="hudhud_why_title_dues">গ্রাহকদের বাকি: কী বদলেছে</string>
+    <string name="hudhud_why_title_dues">এই দিনগুলোতে গ্রাহকরা কত বাকি নিলেন (নিট): কী বদলেছে</string>
     <string name="hudhud_why_now">এখন (%1$s)</string>
     <string name="hudhud_why_before">আগে (%1$s)</string>
     <string name="hudhud_why_before_so_far">আগের একই দিনগুলো (%1$s)</string>

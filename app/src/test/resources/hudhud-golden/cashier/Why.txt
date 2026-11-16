@@ -64,17 +64,17 @@ ask: Why(of=COLLECTED, window=THIS_MONTH, down=null)
 
 === Why(of=DUES, window=TODAY, down=true)
 mood: CALM
-label: Customers' credit: what changed
+label: Credit customers took in these days (net): what changed
 line: Only the owner or a manager can see this figure.
-speech: Customers' credit: what changed. Only the owner or a manager can see this figure.
-speechHidden: Customers' credit: what changed. Only the owner or a manager can see this figure.
+speech: Credit customers took in these days (net): what changed. Only the owner or a manager can see this figure.
+speechHidden: Credit customers took in these days (net): what changed. Only the owner or a manager can see this figure.
 ask: Why(of=DUES, window=TODAY, down=true)
 
 === Why(of=DUES, window=THIS_MONTH, down=null)
 mood: CALM
-label: Customers' credit: what changed
+label: Credit customers took in these days (net): what changed
 line: Only the owner or a manager can see this figure.
-speech: Customers' credit: what changed. Only the owner or a manager can see this figure.
-speechHidden: Customers' credit: what changed. Only the owner or a manager can see this figure.
+speech: Credit customers took in these days (net): what changed. Only the owner or a manager can see this figure.
+speechHidden: Credit customers took in these days (net): what changed. Only the owner or a manager can see this figure.
 ask: Why(of=DUES, window=THIS_MONTH, down=null)
 

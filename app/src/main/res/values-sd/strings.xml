@@ -1079,7 +1079,7 @@
     <string name="hudhud_why_title_profit">منافعو: ڇا بدليو</string>
     <string name="hudhud_why_title_expenses">خرچ: ڇا بدليو</string>
     <string name="hudhud_why_title_collected">وصول ٿيل رقم: ڇا بدليو</string>
-    <string name="hudhud_why_title_dues">گراهڪن جو اڌار: ڇا بدليو</string>
+    <string name="hudhud_why_title_dues">انهن ڏينهن ۾ گراهڪن ڪيترو اڌار ورتو (خالص): ڇا بدليو</string>
     <string name="hudhud_why_now">هاڻي (%1$s)</string>
     <string name="hudhud_why_before">اڳ (%1$s)</string>
     <string name="hudhud_why_before_so_far">اڳ جا ايترا ئي ڏينهن (%1$s)</string>

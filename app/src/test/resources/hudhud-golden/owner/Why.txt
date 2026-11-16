@@ -143,7 +143,7 @@ ask: Why(of=COLLECTED, window=THIS_MONTH, down=null)
 
 === Why(of=DUES, window=TODAY, down=true)
 mood: CARE
-label: Customers' credit: what changed
+label: Credit customers took in these days (net): what changed
 figure: +Rs 8,000
 line: Now (<date>): Rs 8,000
 line: The same days before (<date>): Rs 0
@@ -154,13 +154,13 @@ line: Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0)
 line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
 open: AgingActivity
 money: true
-speech: Customers' credit: what changed: +Rs 8,000. Now (<date>): Rs 8,000. The same days before (<date>): Rs 0. Difference: +Rs 8,000. It did not go down: it went up by Rs 8,000. What moved most. Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
-speechHidden: Customers' credit: what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+speech: Credit customers took in these days (net): what changed: +Rs 8,000. Now (<date>): Rs 8,000. The same days before (<date>): Rs 0. Difference: +Rs 8,000. It did not go down: it went up by Rs 8,000. What moved most. Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Credit customers took in these days (net): what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
 ask: Why(of=DUES, window=TODAY, down=true)
 
 === Why(of=DUES, window=THIS_MONTH, down=null)
 mood: CARE
-label: Customers' credit: what changed
+label: Credit customers took in these days (net): what changed
 figure: +Rs 8,000
 line: Now (<date> – <date>): Rs 8,000
 line: The same days before (<date> – <date>): Rs 0
@@ -170,7 +170,7 @@ line: Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0)
 line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
 open: AgingActivity
 money: true
-speech: Customers' credit: what changed: +Rs 8,000. Now (<date> – <date>): Rs 8,000. The same days before (<date> – <date>): Rs 0. Difference: +Rs 8,000. What moved most. Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
-speechHidden: Customers' credit: what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+speech: Credit customers took in these days (net): what changed: +Rs 8,000. Now (<date> – <date>): Rs 8,000. The same days before (<date> – <date>): Rs 0. Difference: +Rs 8,000. What moved most. Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Credit customers took in these days (net): what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
 ask: Why(of=DUES, window=THIS_MONTH, down=null)
 
