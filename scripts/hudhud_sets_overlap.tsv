@@ -1,0 +1,263 @@
+# Train sentences that were also held-out, owner or review sentences on 16 Nov 2026 (hudhud_sets.py).
+# Each goes when the bank is next changed and the sense learnt again; nothing may be added by hand.
+# set<TAB>sentence as compared (no case, marks or punctuation)
+heldout.tsv	good morning
+heldout.tsv	hudhud
+heldout.tsv	salam alaikum
+heldout.tsv	thank you so much
+heldout.tsv	سلام علیکم
+heldout.tsv	هدهد
+owner_1000.tsv	aaj ka khulasa batao
+owner_1000.tsv	aaj ki total sale
+owner_1000.tsv	assalam o alaikum
+owner_1000.tsv	backup kaise lun
+owner_1000.tsv	bohat achhe
+owner_1000.tsv	cash in hand kitna hai
+owner_1000.tsv	dene wali raqam batao
+owner_1000.tsv	is hafte kitna kamaya
+owner_1000.tsv	is mahine kitna faida hua
+owner_1000.tsv	kal ki sale kitni thi
+owner_1000.tsv	kaun sa maal expire hone wala hai
+owner_1000.tsv	khuda hafiz
+owner_1000.tsv	kis cheez ki expiry qareeb hai
+owner_1000.tsv	lene wali raqam batao
+owner_1000.tsv	mera data mehfooz hai
+owner_1000.tsv	mera naam kya hai
+owner_1000.tsv	naya customer kaise add karun
+owner_1000.tsv	sab se bara baqayadar kaun hai
+owner_1000.tsv	sale kitni hui aaj
+owner_1000.tsv	shukriya
+owner_set.tsv	aaj ki total sale
+owner_set.tsv	is mahine kitna faida hua
+owner_set.tsv	naya customer kaise add karun
+owner_set.tsv	sab se zyada kis ne dena hai
+owner_set.tsv	sale kitni hui aaj
+review_d.tsv	aaj kitna bika
+review_d.tsv	aaj kitna maal wapas aaya
+review_d.tsv	aaj kya tareekh hai
+review_d.tsv	ada berapa pemasok
+review_d.tsv	apa kabar
+review_d.tsv	assalam o alaikum
+review_d.tsv	backup
+review_d.tsv	backup kaise lun
+review_d.tsv	barang apa yang masuk hari ini
+review_d.tsv	berapa cek yang belum cair
+review_d.tsv	berapa penjualan hari ini
+review_d.tsv	berapa uang di laci
+review_d.tsv	cara bikin faktur
+review_d.tsv	cashbook today
+review_d.tsv	cheque
+review_d.tsv	cheques
+review_d.tsv	date
+review_d.tsv	did the backup happen
+review_d.tsv	give me todays summary
+review_d.tsv	goods returned today
+review_d.tsv	how are you doing
+review_d.tsv	how do i make an invoice
+review_d.tsv	how many cheques are pending
+review_d.tsv	how many customers do i have
+review_d.tsv	how many invoices today
+review_d.tsv	how many suppliers do i have
+review_d.tsv	how much profit this month
+review_d.tsv	invoice kaise banaun
+review_d.tsv	is mahine kitna faida hua
+review_d.tsv	kamu bisa apa saja
+review_d.tsv	kitne customer hain
+review_d.tsv	last month profit
+review_d.tsv	munafa
+review_d.tsv	nama toko saya apa
+review_d.tsv	penjualan kemarin
+review_d.tsv	ringkasan hari ini
+review_d.tsv	salary due
+review_d.tsv	sale kitni hui aaj
+review_d.tsv	shop phone number
+review_d.tsv	siapa yang belum bayar
+review_d.tsv	siapa yang belum bayar sampai sekarang
+review_d.tsv	staff ki salary
+review_d.tsv	terima kasih
+review_d.tsv	thanks a lot
+review_d.tsv	time
+review_d.tsv	todays expenses
+review_d.tsv	what can you do
+review_d.tsv	what happened today
+review_d.tsv	what is running low
+review_d.tsv	what time is it
+review_d.tsv	who is my biggest debtor
+review_d.tsv	who owes me the most
+review_d.tsv	اج کا خلاصہ
+review_d.tsv	اج کتنا مال واپس ایا
+review_d.tsv	اج کتنی وصولی ہويی
+review_d.tsv	اج کیا تاریخ ہے
+review_d.tsv	اس مہینے کتنا فايدہ ہوا
+review_d.tsv	الربح
+review_d.tsv	انوايس کیسے بناوں
+review_d.tsv	اپ کیا کیا بتا سکتے ہو
+review_d.tsv	اڄ جو خلاصو
+review_d.tsv	اڄ ڪهڙي تاريخ اهي
+review_d.tsv	اڄ ڪيترو خرچ ٿيو
+review_d.tsv	اڄ ڪيتري وصولي ٿي
+review_d.tsv	این هفته چقدر فروختیم
+review_d.tsv	بیک اپ
+review_d.tsv	حالت چطور است
+review_d.tsv	خلاصه امروز
+review_d.tsv	دڪان جو نالو ڇا اهي
+review_d.tsv	سود
+review_d.tsv	شكرا لك
+review_d.tsv	شکریہ
+review_d.tsv	فروش دیروز
+review_d.tsv	كم حصلنا اليوم
+review_d.tsv	كم في الصندوق
+review_d.tsv	كم مرتجع اليوم
+review_d.tsv	كم مورد عندي
+review_d.tsv	كيف حالك
+review_d.tsv	ما تاريخ اليوم
+review_d.tsv	ماذا تستطيع ان تفعل
+review_d.tsv	ملخص اليوم
+review_d.tsv	ممنون
+review_d.tsv	من لم يدفع
+review_d.tsv	منافع
+review_d.tsv	مهرباني
+review_d.tsv	نفعو
+review_d.tsv	هن مهيني جو نفعو ڪيترو اهي
+review_d.tsv	هن هفتي ڪيترو وڪرو ٿيو
+review_d.tsv	چقدر نقد دارم
+review_d.tsv	چند مشتری دارم
+review_d.tsv	کتنے گاہک ہیں
+review_d.tsv	کس نے پیسے نہیں دیے
+review_d.tsv	ڪنهن پيسا نه ڏنا اهن
+review_d.tsv	ڪيترا گراهڪ اهن
+review_d.tsv	ڪيين اهيو
+review_d.tsv	گذريل مهيني جو نفعو
+review_d.tsv	گلي ۾ ڪيترا پيسا اهن
+review_d.tsv	گلے میں کتنے پیسے ہیں
+review_d.tsv	आज कतन मल वपस आय
+review_d.tsv	इनवइस कस बनऊ
+review_d.tsv	कतन गरहक ह
+review_d.tsv	कस ह भई
+review_d.tsv	कसन पस नह दए
+review_d.tsv	गलल म कतन पस ह
+review_d.tsv	दकन क नम
+review_d.tsv	धनयवद
+review_d.tsv	मनफ
+review_d.tsv	আজ ক ক হল
+review_d.tsv	আজ কত খরচ হল
+review_d.tsv	আজ কত তরখ
+review_d.tsv	আজ কত মল ফরত এল
+review_d.tsv	আজকর সরশ
+review_d.tsv	ইনভযস কভব বনব
+review_d.tsv	এখন পরযনত আজ কত বকর
+review_d.tsv	কমন আছ
+review_d.tsv	গত মসর লভ
+review_d.tsv	গতকলর বকর
+review_d.tsv	দকনর নম ক
+review_d.tsv	ধনযবদ
+review_o.tsv	aaj kitne bill aaye
+review_o.tsv	allah hafiz
+review_o.tsv	assalamualaikum
+review_o.tsv	backup kaise lete hain
+review_o.tsv	buku kas kemarin
+review_o.tsv	bye
+review_o.tsv	cara ganti bahasa
+review_o.tsv	cash in hand
+review_o.tsv	cicilan
+review_o.tsv	galla
+review_o.tsv	halo
+review_o.tsv	hello
+review_o.tsv	hi there
+review_o.tsv	how much cash should be in the drawer
+review_o.tsv	how to change the language
+review_o.tsv	is mahine kis kis ki qist aani hai
+review_o.tsv	kamu siapa
+review_o.tsv	kapan backup terakhir
+review_o.tsv	kitne cheque clear ho gaye
+review_o.tsv	pengeluaran hari ini
+review_o.tsv	penjualan bulan ini
+review_o.tsv	pichle hafte ki sale batao
+review_o.tsv	pichle mahine ki total sale
+review_o.tsv	profit today
+review_o.tsv	salam bhai
+review_o.tsv	total penjualan bulan lalu
+review_o.tsv	untung hari ini berapa
+review_o.tsv	when was the last backup
+review_o.tsv	which cheques are pending
+review_o.tsv	who are you
+review_o.tsv	اج کتنے بل ايے
+review_o.tsv	اج کتنے کا مال بکا
+review_o.tsv	اج کی بکری بتاو
+review_o.tsv	اخري بيڪ اپ ڪڏهن ٿيو
+review_o.tsv	اخرین بکاپ کی بود
+review_o.tsv	السلام عليكم
+review_o.tsv	السلام عليڪم
+review_o.tsv	السلام علیکم
+review_o.tsv	الشيكات
+review_o.tsv	اللہ حافظ
+review_o.tsv	امروز چقدر فروختیم
+review_o.tsv	اڄ جو خرچ
+review_o.tsv	اڄ جي سيل
+review_o.tsv	اڄ ڪيترا پيسا ايا
+review_o.tsv	اڄ ڪيترو وڪرو ٿيو
+review_o.tsv	ایکسپايری والا مال
+review_o.tsv	بيڪ اپ ڪيين وٺان
+review_o.tsv	بیک اپ کیسے لوں
+review_o.tsv	تم کون ہو
+review_o.tsv	تو کی هستی
+review_o.tsv	توهان ڪير اهيو
+review_o.tsv	خدا حافظ
+review_o.tsv	خداحافظ
+review_o.tsv	دراز ۾ ڪيترا پيسا هجڻ گهرجن
+review_o.tsv	سب سے بڑا بقایا دار کون ہے
+review_o.tsv	سلام
+review_o.tsv	سلام علیکم
+review_o.tsv	سڀ کان وڌيڪ اڌار ڪنهن تي اهي
+review_o.tsv	شكرا
+review_o.tsv	فروش امروز
+review_o.tsv	فروش این هفته
+review_o.tsv	كم الربح هذا الشهر
+review_o.tsv	كم بعنا اليوم
+review_o.tsv	كيف اغير اللغة
+review_o.tsv	لو اسٹاک ايٹمز
+review_o.tsv	ما البضاعة التي قاربت على النفاد
+review_o.tsv	مبيعات اليوم
+review_o.tsv	مبيعات هذا الاسبوع
+review_o.tsv	متى اخر نسخة احتياطية
+review_o.tsv	مرحبا
+review_o.tsv	مصاريف اليوم
+review_o.tsv	مع السلامة
+review_o.tsv	من انت
+review_o.tsv	چيڪ
+review_o.tsv	چیک
+review_o.tsv	کتنے چیک کلیير ہو گيے
+review_o.tsv	کل کی سیل کتنی تھی
+review_o.tsv	کون سا چیک باونس ہوا
+review_o.tsv	کیا حال ہے
+review_o.tsv	کیش ان ہینڈ کتنا ہے
+review_o.tsv	ڪالهه جو وڪرو
+review_o.tsv	अससलम अलकम
+review_o.tsv	आज कतन क मल बक
+review_o.tsv	इनवइस कस बनऊ
+review_o.tsv	कन स चक बउस हआ
+review_o.tsv	कस ह
+review_o.tsv	कसत
+review_o.tsv	चक
+review_o.tsv	तम कन ह
+review_o.tsv	नमसत
+review_o.tsv	बकअप
+review_o.tsv	बकअप कस ल
+review_o.tsv	मनफ
+review_o.tsv	सबस बड बकयदर कन ह
+review_o.tsv	আজ বকর
+review_o.tsv	আজকর খরচ
+review_o.tsv	আসসলম আলইকম
+review_o.tsv	এই মসর বকর
+review_o.tsv	ক টক দচছ ন
+review_o.tsv	কন চক বউনস হযছ
+review_o.tsv	কমন আছ
+review_o.tsv	চক
+review_o.tsv	তম ক
+review_o.tsv	তম ক ক করত পর
+review_o.tsv	তম ক পর
+review_o.tsv	নমসকর
+review_o.tsv	বদয
+review_o.tsv	বযকআপ কভব নব
+review_o.tsv	ভষ কভব বদলব
+review_o.tsv	সবচয বশ বক কর
