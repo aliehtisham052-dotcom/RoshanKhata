@@ -35,8 +35,9 @@ import com.innovation313.roshankhata.data.ReminderLadder
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
+import com.innovation313.roshankhata.words.LocalWords
 import com.innovation313.roshankhata.words.WP
-import com.innovation313.roshankhata.words.plural
+import com.innovation313.roshankhata.words.Words
 import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -146,32 +147,40 @@ fun RadarChip(r: PaymentRadar.Reading, onClick: () -> Unit) {
 
 /** Every reason, one line each, in the owner's language (the phone's RadarUi.reasons); [tone] the step that worked. */
 @Composable
-fun radarReasons(r: PaymentRadar.Reading, promise: Long?, tone: Int = 0): String {
+fun radarReasons(r: PaymentRadar.Reading, promise: Long?, tone: Int = 0): String =
+    radarReasonsText(LocalWords.current, r, promise, tone)
+
+/**
+ * The Radar's reasons in [words] — the one rule (17 Nov 2026): the reasons dialog above and Hudhud's answer
+ * (HudhudDeskEnv.radarReasons, made off the window's thread) both say these lines; there were two copies of it.
+ */
+fun radarReasonsText(words: Words, r: PaymentRadar.Reading, promise: Long?, tone: Int = 0): String {
+    fun days(n: Int) = words.plural(WP.radar_days, n, n)
     val lines = mutableListOf<String>()
-    lines += word(when (r.light) {
+    lines += words.text(when (r.light) {
         PaymentRadar.Light.GREEN -> W.radar_on_time
         PaymentRadar.Light.AMBER -> W.radar_late
         PaymentRadar.Light.RED -> W.radar_very_late
         PaymentRadar.Light.NONE -> W.radar_new
     })
-    r.typicalDays?.let { lines += word(W.radar_typical, plural(WP.radar_days, it, it)) }
-    r.shopDays?.let { lines += word(W.radar_shop_typical, plural(WP.radar_days, it, it)) }
-    r.oldestOpenDays?.takeIf { it > 0 }?.let { lines += word(W.radar_oldest, plural(WP.radar_days, it, it)) }
-    r.payDay?.let { lines += word(W.radar_pay_day, it.toString()) }
+    r.typicalDays?.let { lines += words.text(W.radar_typical, days(it)) }
+    r.shopDays?.let { lines += words.text(W.radar_shop_typical, days(it)) }
+    r.oldestOpenDays?.takeIf { it > 0 }?.let { lines += words.text(W.radar_oldest, days(it)) }
+    r.payDay?.let { lines += words.text(W.radar_pay_day, it.toString()) }
     val from = r.nextFrom
     val to = r.nextTo
-    if (from != null && to != null) lines += word(W.radar_next, short(from), short(to))
-    if (r.promiseOverdue && promise != null) lines += word(W.radar_promise_passed, Format.dateOnly(promise))
-    if (r.behindHabit) lines += word(W.radar_behind)
+    if (from != null && to != null) lines += words.text(W.radar_next, short(from), short(to))
+    if (r.promiseOverdue && promise != null) lines += words.text(W.radar_promise_passed, Format.dateOnly(promise))
+    if (r.behindHabit) lines += words.text(W.radar_behind)
     val promised = r.promisesKept + r.promisesBroken
-    if (promised > 0) lines += word(W.radar_promises, r.promisesKept.toString(), promised.toString())
+    if (promised > 0) lines += words.text(W.radar_promises, r.promisesKept.toString(), promised.toString())
     when (tone) {
         ReminderLadder.GENTLE -> W.reminder_step_gentle
         ReminderLadder.PLAIN -> W.reminder_step_plain
         ReminderLadder.SERIOUS -> W.reminder_step_serious
         else -> null
-    }?.let { lines += word(W.radar_tone, word(it)) }
-    return lines.joinToString("\n") { "• $it" } + "\n\n" + word(W.radar_private)
+    }?.let { lines += words.text(W.radar_tone, words.text(it)) }
+    return lines.joinToString("\n") { "\u2022 $it" } + "\n\n" + words.text(W.radar_private)
 }
 
 /** The reasons, with the switch to turn the Radar off on this computer. */

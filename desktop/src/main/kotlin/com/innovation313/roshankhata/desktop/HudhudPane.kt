@@ -33,7 +33,6 @@ import com.innovation313.roshankhata.data.AnswerEnv
 import com.innovation313.roshankhata.data.AnswerGate
 import com.innovation313.roshankhata.data.AnswerProfile
 import com.innovation313.roshankhata.data.Automations
-import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.FileShopSettings
 import com.innovation313.roshankhata.data.Hudhud
 import com.innovation313.roshankhata.data.HudhudLook
@@ -53,7 +52,6 @@ import com.innovation313.roshankhata.data.taxLabelFor
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
-import com.innovation313.roshankhata.words.WP
 import com.innovation313.roshankhata.words.Words
 import com.innovation313.roshankhata.words.desktopWords
 import com.innovation313.roshankhata.words.word
@@ -169,7 +167,8 @@ class HudhudDeskEnv(
 
     override fun remindedToday(now: Long): Set<Long> = reminders.openedToday(now)
     override suspend fun radarShopDays(dao: KhataDao): Int? = RadarDesk.shopDays(dao)
-    override fun radarReasons(reading: PaymentRadar.Reading, promise: Long?, tone: Int): String = reasonsText(words, reading, promise, tone)
+    // The Radar dialog's own rule (Radar.kt): one text, so Hudhud and the dialog can never word the reasons apart.
+    override fun radarReasons(reading: PaymentRadar.Reading, promise: Long?, tone: Int): String = radarReasonsText(words, reading, promise, tone)
     override fun toneThatWorked(partyId: Long, balance: Double): Int =
         ReminderLadder.learned(reminders.state(partyId), balance, System.currentTimeMillis())
     override fun automationSettings(): Automations.Settings = DesktopAutomationSettings(prefs, business)
@@ -241,40 +240,6 @@ class HudhudDeskEnv(
             ScreenId.VIEWER -> null
             ScreenId.WARIS -> null
             ScreenId.ZAKAT -> Section.ZAKAT
-        }
-
-        /**
-         * The Radar's reasons in words (the computer's RadarDialog says the same lines through [radarReasons], which is
-         * @Composable; this is its rule for an answer made off the window's thread).
-         */
-        fun reasonsText(words: Words, r: PaymentRadar.Reading, promise: Long?, tone: Int): String {
-            fun days(n: Int) = words.plural(WP.radar_days, n, n)
-            fun short(t: Long) = DateWords.format("d MMM", t)
-            val lines = mutableListOf<String>()
-            lines += words.text(when (r.light) {
-                PaymentRadar.Light.GREEN -> W.radar_on_time
-                PaymentRadar.Light.AMBER -> W.radar_late
-                PaymentRadar.Light.RED -> W.radar_very_late
-                PaymentRadar.Light.NONE -> W.radar_new
-            })
-            r.typicalDays?.let { lines += words.text(W.radar_typical, days(it)) }
-            r.shopDays?.let { lines += words.text(W.radar_shop_typical, days(it)) }
-            r.oldestOpenDays?.takeIf { it > 0 }?.let { lines += words.text(W.radar_oldest, days(it)) }
-            r.payDay?.let { lines += words.text(W.radar_pay_day, it.toString()) }
-            val from = r.nextFrom
-            val to = r.nextTo
-            if (from != null && to != null) lines += words.text(W.radar_next, short(from), short(to))
-            if (r.promiseOverdue && promise != null) lines += words.text(W.radar_promise_passed, Format.dateOnly(promise))
-            if (r.behindHabit) lines += words.text(W.radar_behind)
-            val promised = r.promisesKept + r.promisesBroken
-            if (promised > 0) lines += words.text(W.radar_promises, r.promisesKept.toString(), promised.toString())
-            when (tone) {
-                ReminderLadder.GENTLE -> W.reminder_step_gentle
-                ReminderLadder.PLAIN -> W.reminder_step_plain
-                ReminderLadder.SERIOUS -> W.reminder_step_serious
-                else -> null
-            }?.let { lines += words.text(W.radar_tone, words.text(it)) }
-            return lines.joinToString("\n") { "• $it" } + "\n\n" + words.text(W.radar_private)
         }
 
         @Volatile
