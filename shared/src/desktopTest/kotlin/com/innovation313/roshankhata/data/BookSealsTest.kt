@@ -385,4 +385,12 @@ class BookSealsTest {
         assertEquals(null, LiveControl.parseSeal("not json"))
         assertEquals(false, LiveControl.parse("""{"seal": false}"""))
     }
+
+    @Test
+    fun `a root is pinned only for a witness the seal asks, by a whole SHA-256`() {
+        // Empty until a root is confirmed from two official sources (L014): BookSeals.ROOT_PINS says why.
+        val names = BookSeals.WITNESSES.map { it.name }.toSet()
+        assertTrue(BookSeals.ROOT_PINS.keys.all { it in names })
+        assertTrue(BookSeals.ROOT_PINS.values.flatten().all { it.matches(Regex("[0-9a-f]{64}")) })
+    }
 }

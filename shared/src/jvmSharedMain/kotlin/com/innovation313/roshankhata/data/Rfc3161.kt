@@ -10,7 +10,14 @@ import java.net.URL
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.security.Signature
+import java.security.cert.CertPathBuilder
+import java.security.cert.CertStore
 import java.security.cert.CertificateFactory
+import java.security.cert.CollectionCertStoreParameters
+import java.security.cert.PKIXBuilderParameters
+import java.security.cert.PKIXCertPathBuilderResult
+import java.security.cert.TrustAnchor
+import java.security.cert.X509CertSelector
 import java.security.cert.X509Certificate
 import java.util.Calendar
 import java.util.Date
@@ -27,8 +34,8 @@ import javax.security.auth.x500.X500Principal
  * token's one SignerInfo signs it ([verify]): its signed attributes name the content a TSTInfo and carry the digest of
  * exactly that TSTInfo, and their signature verifies with the public key of the certificate the token carries for that
  * signer — a certificate for time-stamping (the critical extended key usage of RFC 3161 §2.3), valid at genTime.
- * **Whose certificate it is, is NOT known here**: that is the TSA's CA chain, which the app does not hold. The proof
- * file tells how to check it with OpenSSL. So a token kept here is one that adds up, never one called verified; a token
+ * **Whose certificate it is, is NOT known here** unless that service's CA certificates are pinned ([chain], [pinned];
+ * none is pinned yet, 16 Nov 2026 — see BookSeals.ROOT_PINS). The proof file tells how to check it with OpenSSL. So a token kept here is one that adds up, never one called verified; a token
  * is kept whole, as the TSA sent it (DER), so that check can be made by anyone, any time later.
  */
 object Rfc3161 {
@@ -313,10 +320,7 @@ object Rfc3161 {
             return "message digest is not the TSTInfo's"
         }
 
-        val factory = CertificateFactory.getInstance("X.509")
-        val cert = certs.asSequence()
-            .mapNotNull { c -> runCatching { factory.generateCertificate(ByteArrayInputStream(c.whole)) as X509Certificate }.getOrNull() }
-            .firstOrNull { identifies(sid, it) } ?: return "no certificate for the signer"
+        val cert = x509(certs).firstOrNull { identifies(sid, it) } ?: return "no certificate for the signer"
         val critical = cert.criticalExtensionOIDs ?: emptySet<String>()
         val usage = runCatching { cert.extendedKeyUsage }.getOrNull() ?: emptyList<String>()
         if (EXT_KEY_USAGE !in critical || KP_TIME_STAMPING !in usage) return "certificate not for time-stamping"
@@ -382,6 +386,77 @@ object Rfc3161 {
             order
         }
         return tlv(0x31, *parts.toTypedArray())
+    }
+
+    // ---------- Whose answer it is: the TSA's CA chain (L014, 16 Nov 2026) ----------
+
+    /** What the time service's CA chain says of a token ([chain]). */
+    sealed class Chain {
+        /** The signer's certificate leads, through certificates the token carries (or [chain]'s), to a pinned [root]. */
+        class Holds(val root: X509Certificate, val genTime: Long) : Chain()
+        /** No root is pinned for this service: the token may still add up ([verify]), but whose it is stays unknown. */
+        object NotPinned : Chain()
+        /** It does not add up ([verify]), or it leads to none of the roots pinned for its service. */
+        class Fails(val why: String) : Chain()
+    }
+
+    /**
+     * [token] for [digest] checked whole: everything [verify] checks, then its signer's certificate built into a chain
+     * to one of [roots] — the service's own CA certificates, pinned by fingerprint ([pinned]) — by the JDK's own PKIX
+     * (CertPathBuilder): names, signatures, CA and key-usage constraints, every certificate valid at the token's
+     * genTime, the signer's extended key usage time-stamping. The chain's middle certificates come from the token
+     * itself and [intermediates]. Revocation is NOT checked (no network call is made here; a revoked TSA certificate
+     * still reads as holding). Never throws.
+     */
+    fun chain(
+        token: ByteArray, digest: ByteArray, roots: Collection<X509Certificate>,
+        intermediates: Collection<X509Certificate> = emptyList()
+    ): Chain = try {
+        when (val v = verify(token, digest)) {
+            is Verdict.Fails -> Chain.Fails(v.why)
+            is Verdict.Holds -> if (roots.isEmpty()) Chain.NotPinned else {
+                val t = only(token)
+                val signed = t.children()[1].children().single().children()
+                val rest = signed.drop(3)
+                val carried = x509(rest.firstOrNull { it.tag == 0xA0 }?.children()?.filter { it.tag == 0x30 }.orEmpty())
+                val sid = rest.last().children().single().children()[1]
+                val signer = carried.first { identifies(sid, it) }
+                val target = X509CertSelector().apply {
+                    certificate = signer
+                    extendedKeyUsage = setOf(KP_TIME_STAMPING)
+                }
+                val params = PKIXBuilderParameters(roots.map { TrustAnchor(it, null) }.toSet(), target).apply {
+                    isRevocationEnabled = false
+                    date = Date(v.genTime)
+                    addCertStore(CertStore.getInstance("Collection", CollectionCertStoreParameters(carried + intermediates)))
+                }
+                val built = CertPathBuilder.getInstance("PKIX").build(params) as PKIXCertPathBuilderResult
+                Chain.Holds(built.trustAnchor.trustedCert, v.genTime)
+            }
+        }
+    } catch (e: Exception) {
+        Chain.Fails("no chain to a pinned root: " + (e.message ?: e.javaClass.simpleName).take(200))
+    }
+
+    /**
+     * Of [candidates] (certificates' DER, as a platform ships them), those whose SHA-256 is one of [sha256Hex] (lower
+     * case hex of the whole DER): a file replaced without its pin being changed in the code is never trusted.
+     */
+    fun pinned(candidates: Collection<ByteArray>, sha256Hex: Collection<String>): List<X509Certificate> {
+        if (sha256Hex.isEmpty()) return emptyList()
+        val want = sha256Hex.map { it.lowercase().replace(":", "") }.toSet()
+        val factory = CertificateFactory.getInstance("X.509")
+        return candidates.mapNotNull { der ->
+            val hex = MessageDigest.getInstance("SHA-256").digest(der).joinToString("") { "%02x".format(it) }
+            if (hex !in want) null
+            else runCatching { factory.generateCertificate(ByteArrayInputStream(der)) as X509Certificate }.getOrNull()
+        }
+    }
+
+    /** The certificates among [tlvs] that read as X.509 (the others are passed over). */
+    private fun x509(tlvs: List<Tlv>): List<X509Certificate> {
+        val factory = CertificateFactory.getInstance("X.509")
+        return tlvs.mapNotNull { c -> runCatching { factory.generateCertificate(ByteArrayInputStream(c.whole)) as X509Certificate }.getOrNull() }
     }
 
     private val TIME = Regex("^(\\d{4})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(?:[.,](\\d+))?Z\$")

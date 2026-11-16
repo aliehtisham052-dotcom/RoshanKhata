@@ -127,6 +127,16 @@ object BookSeals {
         Witness("DigiCert", "http://timestamp.digicert.com")
     )
 
+    /**
+     * Each witness's CA roots, pinned by the SHA-256 of their DER (L014, [Rfc3161.chain], [Rfc3161.pinned]). EMPTY on
+     * purpose (16 Nov 2026): a root goes here only when its certificate's bytes and fingerprint were confirmed from the
+     * service's own official page AND a second official source, and its chain was seen to hold for a live token
+     * (.github/workflows/tsa-check.yml stamps once against each service and prints every certificate's fingerprint).
+     * Until then the screens keep saying "answers received", never "verified". A pinned root also needs its file in
+     * the app (res/raw on the phone) read by the platform and passed to [Rfc3161.pinned].
+     */
+    val ROOT_PINS: Map<String, Set<String>> = emptyMap()
+
     /** One witness's stamp as it is kept: the token as base64 DER and the genTime read from it when it came. */
     class Stamp(val token: String, val time: Long)
 

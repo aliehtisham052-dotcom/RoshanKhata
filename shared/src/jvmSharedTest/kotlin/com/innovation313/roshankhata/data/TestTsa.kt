@@ -25,7 +25,11 @@ class TestTsa(
     private val eku: Boolean = true,
     private val ekuCritical: Boolean = true,
     private val validFrom: Long = System.currentTimeMillis() - DAY,
-    private val validTo: Long = System.currentTimeMillis() + 365 * DAY
+    private val validTo: Long = System.currentTimeMillis() + 365 * DAY,
+    /** The CA that issues the TSA's certificate (L014, chain tests); null: self-signed, as before. */
+    private val issuer: TestCa? = null,
+    /** Further certificates the token carries beside the TSA's own (its CA chain, as a real TSA may send it). */
+    private val carry: List<ByteArray> = emptyList()
 ) {
     enum class Fault {
         NONE,
@@ -49,7 +53,13 @@ class TestTsa(
     private val name = seq(set(seq(oid("2.5.4.3"), tlv(0x0C, "Test TSA (made in the test)".toByteArray()))))
     private val keyId = sha1(keys.public.encoded).copyOf(20)
 
-    /** The certificate's DER: self-signed, version 3, the extended key usage as asked, a subject key identifier. */
+    /** The name in the certificate's issuer field: the issuing CA's, else its own. */
+    private val issuerName = issuer?.name ?: name
+
+    /**
+     * The certificate's DER: version 3, the extended key usage as asked, a subject key identifier; self-signed, or
+     * signed by [issuer].
+     */
     val cert: ByteArray = run {
         val extensions = ArrayList<ByteArray>()
         if (eku) {
@@ -58,17 +68,7 @@ class TestTsa(
             else seq(oid("2.5.29.37"), tlv(0x04, usage))
         }
         extensions += seq(oid("2.5.29.14"), tlv(0x04, tlv(0x04, keyId)))
-        val tbs = seq(
-            tlv(0xA0, tlv(0x02, byteArrayOf(2))),
-            tlv(0x02, serial.toByteArray()),
-            certAlgorithm(),
-            name,
-            seq(utcTime(validFrom), utcTime(validTo)),
-            name,
-            keys.public.encoded,
-            tlv(0xA3, seq(*extensions.toTypedArray()))
-        )
-        seq(tbs, certAlgorithm(), tlv(0x03, byteArrayOf(0) + sign(keys.private, tbs)))
+        certificate(name, keys.public.encoded, issuerName, issuer?.keys?.private ?: keys.private, serial, validFrom, validTo, extensions)
     }
 
     /** A TimeStampResp granting [digest] with [nonce] at [genTime], or one with [fault]. */
@@ -104,7 +104,7 @@ class TestTsa(
         val asSet = set(*sorted.toTypedArray())
         val signer = if (fault == Fault.OTHER_KEY) other.private else keys.private
         val signature = if (fault == Fault.ZERO_SIGNATURE) ByteArray(if (ec) 72 else 256) else sign(signer, asSet)
-        val sid = if (byKeyId) tlv(0x80, keyId) else seq(name, tlv(0x02, serial.toByteArray()))
+        val sid = if (byKeyId) tlv(0x80, keyId) else seq(issuerName, tlv(0x02, serial.toByteArray()))
         val signerInfo = seq(
             tlv(0x02, byteArrayOf(if (byKeyId) 3 else 1)),
             sid,
@@ -118,20 +118,12 @@ class TestTsa(
         parts += tlv(0x02, byteArrayOf(3))
         parts += set(seq(oid("2.16.840.1.101.3.4.2.1"), byteArrayOf(0x05, 0x00)))
         parts += seq(oid("1.2.840.113549.1.9.16.1.4"), tlv(0xA0, tlv(0x04, info)))
-        if (fault != Fault.NO_CERT) parts += tlv(0xA0, cert)
+        if (fault != Fault.NO_CERT) parts += tlv(0xA0, cert, *carry.toTypedArray())
         parts += infos
         return seq(oid("1.2.840.113549.1.7.2"), tlv(0xA0, seq(*parts.toTypedArray())))
     }
 
-    private fun certAlgorithm(): ByteArray =
-        if (ec) seq(oid("1.2.840.10045.4.3.2")) else seq(oid("1.2.840.113549.1.1.11"), byteArrayOf(0x05, 0x00))
-
-    private fun sign(key: PrivateKey, data: ByteArray): ByteArray {
-        val s = Signature.getInstance(if (ec) "SHA256withECDSA" else "SHA256withRSA")
-        s.initSign(key)
-        s.update(data)
-        return s.sign()
-    }
+    private fun sign(key: PrivateKey, data: ByteArray): ByteArray = signWith(key, data)
 
     companion object {
         const val DAY = 24L * 60 * 60 * 1000
@@ -145,7 +137,38 @@ class TestTsa(
             else KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
 
         fun sha256(b: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(b)
-        private fun sha1(b: ByteArray): ByteArray = MessageDigest.getInstance("SHA-1").digest(b)
+        fun sha1(b: ByteArray): ByteArray = MessageDigest.getInstance("SHA-1").digest(b)
+
+        private fun ecKey(key: PrivateKey) = key.algorithm == "EC"
+
+        /** The signature algorithm a certificate signed by [key] names. */
+        private fun algorithmOf(key: PrivateKey): ByteArray =
+            if (ecKey(key)) seq(oid("1.2.840.10045.4.3.2")) else seq(oid("1.2.840.113549.1.1.11"), byteArrayOf(0x05, 0x00))
+
+        fun signWith(key: PrivateKey, data: ByteArray): ByteArray {
+            val s = Signature.getInstance(if (ecKey(key)) "SHA256withECDSA" else "SHA256withRSA")
+            s.initSign(key)
+            s.update(data)
+            return s.sign()
+        }
+
+        /** A version 3 certificate's DER: [subject] with [publicKey], issued by [issuerName] and signed with [issuerKey]. */
+        fun certificate(
+            subject: ByteArray, publicKey: ByteArray, issuerName: ByteArray, issuerKey: PrivateKey, serial: BigInteger,
+            validFrom: Long, validTo: Long, extensions: List<ByteArray>
+        ): ByteArray {
+            val tbs = seq(
+                tlv(0xA0, tlv(0x02, byteArrayOf(2))),
+                tlv(0x02, serial.toByteArray()),
+                algorithmOf(issuerKey),
+                issuerName,
+                seq(utcTime(validFrom), utcTime(validTo)),
+                subject,
+                publicKey,
+                tlv(0xA3, seq(*extensions.toTypedArray()))
+            )
+            return seq(tbs, algorithmOf(issuerKey), tlv(0x03, byteArrayOf(0) + signWith(issuerKey, tbs)))
+        }
 
         private fun len(n: Int): ByteArray = when {
             n < 0x80 -> byteArrayOf(n.toByte())
@@ -193,4 +216,35 @@ class TestTsa(
         /** GeneralizedTime with milliseconds, as a TSA with a precise clock writes it. */
         fun generalized(ms: Long): String = utc("yyyyMMddHHmmss.SSS'Z'").format(Date(ms))
     }
+}
+
+/**
+ * A certificate authority for the chain tests (L014): an RSA key and a version 3 certificate made with the JDK alone —
+ * self-signed (a root) or issued by [parent] (an intermediate) — with the CA flag (critical basic constraints) and
+ * key usage keyCertSign + cRLSign, unless [ca] is false. Made-up names only.
+ */
+class TestCa(
+    cn: String,
+    val parent: TestCa? = null,
+    validFrom: Long = System.currentTimeMillis() - 10 * TestTsa.DAY,
+    validTo: Long = System.currentTimeMillis() + 3650 * TestTsa.DAY,
+    ca: Boolean = true
+) {
+    val keys: KeyPair = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
+    val name: ByteArray = TestTsa.seq(TestTsa.set(TestTsa.seq(TestTsa.oid("2.5.4.3"), TestTsa.tlv(0x0C, cn.toByteArray()))))
+    private val serial = BigInteger(1, TestTsa.sha1(cn.toByteArray()).copyOf(8))
+
+    val cert: ByteArray = run {
+        val critical = byteArrayOf(0x01, 0x01, 0xFF.toByte())
+        val extensions = ArrayList<ByteArray>()
+        if (ca) {
+            extensions += TestTsa.seq(TestTsa.oid("2.5.29.19"), critical, TestTsa.tlv(0x04, TestTsa.seq(byteArrayOf(0x01, 0x01, 0xFF.toByte()))))
+            extensions += TestTsa.seq(TestTsa.oid("2.5.29.15"), critical, TestTsa.tlv(0x04, TestTsa.tlv(0x03, byteArrayOf(0x01, 0x06))))
+        }
+        extensions += TestTsa.seq(TestTsa.oid("2.5.29.14"), TestTsa.tlv(0x04, TestTsa.tlv(0x04, TestTsa.sha1(keys.public.encoded))))
+        TestTsa.certificate(name, keys.public.encoded, parent?.name ?: name, parent?.keys?.private ?: keys.private, serial, validFrom, validTo, extensions)
+    }
+
+    val x509: java.security.cert.X509Certificate =
+        java.security.cert.CertificateFactory.getInstance("X.509").generateCertificate(cert.inputStream()) as java.security.cert.X509Certificate
 }
