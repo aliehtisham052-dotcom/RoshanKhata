@@ -27,9 +27,8 @@ class LiveSyncTest {
     private val phoneSql get() = phone.syncSql()
     private val pcSql get() = pc.syncSql()
 
-    /** How far each side has read the other's log. */
-    private var pcReadPhone = 0L
-    private var phoneReadPc = 0L
+    private lateinit var phoneId: LiveSync.Identity
+    private lateinit var pcId: LiveSync.Identity
 
     @Before
     fun open() {
@@ -37,8 +36,11 @@ class LiveSyncTest {
         phone = DesktopDatabase.open(dir.resolve("phone.db"))
         pc = DesktopDatabase.open(dir.resolve("pc.db"))
         runBlocking {
-            val id = LiveSync.enable(phoneSql, install = "install-phone", name = "Phone")
-            LiveSync.enable(pcSql, install = "install-pc", name = "PC", adopt = id.book to id.key)
+            phoneId = LiveSync.enable(phoneSql, install = "install-phone", name = "Phone")
+            pcId = LiveSync.enable(pcSql, install = "install-pc", name = "PC", adopt = phoneId.book to phoneId.key)
+            // Each knows the other as a peer, as a pairing leaves them: the pointers live in the book (applyFrom).
+            LiveSync.putPeer(pcSql, phoneId.device, name = "Phone", sent = 0, recv = 0)
+            LiveSync.putPeer(phoneSql, pcId.device, name = "PC", sent = 0, recv = 0)
         }
     }
 
@@ -48,17 +50,20 @@ class LiveSyncTest {
         dir.deleteRecursively()
     }
 
-    /** The phone's changes to the computer, then the computer's to the phone, as one live round does. */
+    private suspend fun peerOf(sql: SyncSql, device: String) = LiveSync.state(sql).peers.first { it.device == device }
+
+    /**
+     * The phone's changes to the computer, then the computer's to the phone, as one live round does: each side's
+     * pointers read and moved by [LiveSync.applyFrom] in the parcel's own transaction (the rounds' only way in).
+     */
     private suspend fun round() {
-        val toPc = LiveSync.export(phoneSql, pcReadPhone)
-        val a = LiveSync.apply(pcSql, toPc, recv = pcReadPhone, sentToThem = phoneReadPc)
+        val toPc = LiveSync.export(phoneSql, peerOf(pcSql, phoneId.device).recv)
+        val a = LiveSync.applyFrom(pcSql, toPc, theirAck = peerOf(phoneSql, pcId.device).recv)
         assertTrue("$a", a is LiveSync.Applied.Done)
-        pcReadPhone = (a as LiveSync.Applied.Done).to
-        val toPhone = LiveSync.export(pcSql, phoneReadPc)
         // The phone has read what the computer just sent? Not yet: the computer's changes are unseen by it until here.
-        val b = LiveSync.apply(phoneSql, toPhone, recv = phoneReadPc, sentToThem = pcReadPhone)
+        val toPhone = LiveSync.export(pcSql, peerOf(phoneSql, pcId.device).recv)
+        val b = LiveSync.applyFrom(phoneSql, toPhone, theirAck = peerOf(pcSql, phoneId.device).recv)
         assertTrue("$b", b is LiveSync.Applied.Done)
-        phoneReadPc = (b as LiveSync.Applied.Done).to
     }
 
     @Test
@@ -89,7 +94,7 @@ class LiveSyncTest {
         phone.khataDao().insertParty(Party(name = "Ali"))
         round()
         assertEquals(0, LiveSync.export(pcSql, 0).changes.size)
-        val again = LiveSync.export(phoneSql, pcReadPhone)
+        val again = LiveSync.export(phoneSql, peerOf(pcSql, phoneId.device).recv)
         assertEquals(0, again.changes.size)
     }
 
@@ -142,8 +147,10 @@ class LiveSyncTest {
         phone.khataDao().insertParty(Party(name = "Bilal"))
         val all = LiveSync.export(phoneSql, 0)
         val later = all.copy(from = 1)
-        val r = LiveSync.apply(pcSql, later, recv = 0, sentToThem = 0)
+        val r = LiveSync.applyFrom(pcSql, later, theirAck = 0)
         assertEquals(LiveSync.Applied.Gap(0), r)
+        // Nothing read, so the pointer stays where it was.
+        assertEquals(0L, peerOf(pcSql, phoneId.device).recv)
         assertTrue(pc.khataDao().allPartiesForBackup().isEmpty())
     }
 
@@ -151,21 +158,23 @@ class LiveSyncTest {
     fun `another book's parcel is refused and writes nothing`() = runBlocking {
         phone.khataDao().insertParty(Party(name = "Ali"))
         val p = LiveSync.export(phoneSql, 0).copy(book = "f".repeat(32))
-        val r = LiveSync.apply(pcSql, p, recv = 0, sentToThem = 0)
+        val r = LiveSync.applyFrom(pcSql, p, theirAck = 0)
         assertTrue(r is LiveSync.Applied.Refused)
         assertTrue(pc.khataDao().allPartiesForBackup().isEmpty())
     }
 
     @Test
-    fun `a first copy brings every row, and the two books then match`() = runBlocking {
+    fun `every kind of row written since sync began arrives, a setting too, and the two books then match`() = runBlocking {
+        // A first copy of a whole book is the pairing's backup (LivePairingTest); here the log carries every row.
         val d = phone.khataDao()
         val ali = d.insertParty(Party(name = "Ali"))
         d.insertEntryWithItems(LedgerEntry(partyId = ali, amount = 500.0, isGiven = true, entryNumber = ""), emptyList())
         d.insertCashEntry(CashEntry(amount = 50.0, isIncome = false, category = "Tea"))
         d.setSetting(BookSettings.PRICES_INCLUDE_TAX, "1")
-        val copy = LiveSync.snapshot(phoneSql)
-        val r = LiveSync.apply(pcSql, copy.copy(from = 0), recv = 0, sentToThem = 0)
+        val all = LiveSync.export(phoneSql, 0)
+        val r = LiveSync.applyFrom(pcSql, all, theirAck = 0)
         assertTrue("$r", r is LiveSync.Applied.Done)
+        assertEquals(all.to, peerOf(pcSql, phoneId.device).recv)
         assertEquals("1", pc.khataDao().settingValue(BookSettings.PRICES_INCLUDE_TAX))
         assertEquals(LiveSync.fingerprint(phoneSql), LiveSync.fingerprint(pcSql))
     }

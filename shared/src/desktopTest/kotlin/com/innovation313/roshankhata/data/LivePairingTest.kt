@@ -18,8 +18,42 @@ import java.nio.file.Files
  */
 class LivePairingTest {
 
+    /**
+     * Every synced row as it travels (no local id, no file paths, every pointer the uid of the row it names), read
+     * here with plain SQL from [SyncSchema] — on its own, not through the engine, so the engine is checked and not
+     * believed (8 Nov 2026 review m1 took away the test-only LiveSync.snapshot). The settings that never travel
+     * (BookSettings.ACCESS_KEYS) are left out, as the engine leaves them.
+     */
     private fun rowsOf(sql: SyncSql): Map<String, JSONObject> = runBlocking {
-        LiveSync.snapshot(sql).changes.associate { (it.table + "/" + it.uid) to it.row!! }
+        val out = LinkedHashMap<String, JSONObject>()
+        for (t in SyncSchema.tables) {
+            sql.read {
+                val cols = rows("PRAGMA table_info(${t.name})", types = "ITTITI")
+                    .map { (it[1] as String) to (it[2] as String?).orEmpty().uppercase() }
+                    .filter { (name, _) -> name != "id" && name !in t.localOnly }
+                val types = cols.joinToString("") { (name, declared) ->
+                    when {
+                        t.fks[name] != null -> "T"
+                        "INT" in declared -> "I"
+                        "REAL" in declared || "FLOA" in declared || "DOUB" in declared -> "R"
+                        else -> "T"
+                    }
+                }
+                val select = cols.joinToString(", ") { (name, _) ->
+                    val target = t.fks[name]
+                    if (target != null) "(SELECT x.uid FROM `$target` x WHERE x.id = s.`$name`)" else "s.`$name`"
+                }
+                val at = cols.indexOfFirst { it.first == t.idColumn }
+                for (r in rows("SELECT $select FROM `${t.name}` s WHERE s.`${t.idColumn}` IS NOT NULL", types = types)) {
+                    val key = r[at] as String
+                    if (t.keyed && key in BookSettings.ACCESS_KEYS) continue
+                    val o = JSONObject()
+                    cols.forEachIndexed { i, (name, _) -> o.put(name, r[i] ?: JSONObject.NULL) }
+                    out[t.name + "/" + key] = o
+                }
+            }
+        }
+        out
     }
 
     private fun differences(a: Map<String, JSONObject>, b: Map<String, JSONObject>): List<String> {

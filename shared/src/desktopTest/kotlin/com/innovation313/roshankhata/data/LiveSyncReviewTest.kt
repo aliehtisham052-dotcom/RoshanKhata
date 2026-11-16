@@ -144,13 +144,17 @@ class LiveSyncReviewTest {
         // The entry alone first (as a page that ended before its customer would): it waits aside.
         val entryOnly = LiveSync.export(phoneSql, 1)
         assertTrue(entryOnly.changes.all { it.table != "parties" })
-        val a = LiveSync.apply(pcSql, entryOnly, recv = 1, sentToThem = 0)
+        // The computer has read line 1 already (its pointer says so), so the parcel from line 1 is no gap.
+        LiveSync.putPeer(pcSql, phoneId.device, recv = 1)
+        val a = LiveSync.applyFrom(pcSql, entryOnly, theirAck = 0)
         assertTrue("$a", a is LiveSync.Applied.Done)
         assertEquals(1, LiveSync.state(pcSql).held)
         assertTrue(pc.khataDao().entriesPageForBackup(0, 10).isEmpty())
         // Then the customer: the entry kept aside is written with him, pointing at the computer's own id.
         val customer = LiveSync.export(phoneSql, 0, page = 1)
-        val b = LiveSync.apply(pcSql, customer, recv = 0, sentToThem = 0)
+        // Then line 1 itself is sent again (the page that carried it was lost on the way): the pointer goes back to 0.
+        LiveSync.putPeer(pcSql, phoneId.device, recv = 0)
+        val b = LiveSync.applyFrom(pcSql, customer, theirAck = 0)
         assertTrue("$b", b is LiveSync.Applied.Done)
         assertEquals(0, LiveSync.state(pcSql).held)
         val aliHere = pc.khataDao().allPartiesForBackup().single()

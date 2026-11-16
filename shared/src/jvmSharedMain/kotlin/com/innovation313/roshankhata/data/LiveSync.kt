@@ -620,8 +620,8 @@ object LiveSync {
 
     /**
      * One row's change: [op] "U" (here it is, as it now stands) or "D" (gone).
-     * [seq] is the sender's last log line for the row in this parcel; null in
-     * a first copy and from an older version.
+     * [seq] is the sender's last log line for the row in this parcel; null
+     * from an older version (taken whatever was read, as before).
      */
     data class Change(val table: String, val uid: String, val op: String, val row: JSONObject?, val seq: Long? = null)
 
@@ -777,28 +777,6 @@ object LiveSync {
         Parcel(id.first, id.second, after, to, changes, lines.size == page)
     }
 
-    /**
-     * Every row of the book as changes, for a first copy (a device that has
-     * nothing yet). Parents before children; [after] and [to] are this
-     * device's log line at the moment the copy was taken.
-     */
-    suspend fun snapshot(sql: SyncSql): Parcel = sql.read {
-        val book = meta("book") ?: error("live sync is off")
-        val device = meta("device") ?: error("live sync is off")
-        val last = logCounter()
-        val cache = HashMap<String, List<Col>>()
-        val changes = ArrayList<Change>()
-        for (t in SyncSchema.tables) {
-            val keys = rows("SELECT `${t.idColumn}` FROM `${t.name}` WHERE `${t.idColumn}` IS NOT NULL ORDER BY rowid", types = "T")
-            for (k in keys) {
-                val u = k[0] as String
-                if (t.keyed && u in BookSettings.ACCESS_KEYS) continue
-                rowOut(t, u, cache)?.let { changes.add(Change(t.name, u, "U", it)) }
-            }
-        }
-        Parcel(book, device, 0, last, changes, false)
-    }
-
     /** How a parcel went in. */
     sealed interface Applied {
         /** Written: [rows] changes landed; this device has now read the sender's log up to [to]. */
@@ -810,25 +788,8 @@ object LiveSync {
     }
 
     /**
-     * Writes [p] (from the device [p].device) into this book, all of it or
-     * none of it. [recv] is how far this device had read that device's log;
-     * [sentToThem] how far that device had read this one's (a row this device
-     * changed after that line is a change the other has not seen: a conflict).
-     * The pointers are the caller's; a round moves them with [applyFrom].
-     */
-    suspend fun apply(sql: SyncSql, p: Parcel, recv: Long, sentToThem: Long, now: Long = System.currentTimeMillis()): Applied {
-        if (p.protocol != PROTOCOL) return Applied.Refused("protocol ${p.protocol}")
-        if (p.schema != KHATA_DB_VERSION) return Applied.Refused("schema ${p.schema}")
-        if (p.from > recv) return Applied.Gap(recv)
-        if (p.to <= recv) return Applied.Done(0, 0, recv)
-        val result = sql.write { applyIn(p, recv, sentToThem, now) }
-        if (result is Applied.Done && result.rows > 0) changed.value = changed.value + 1
-        return result
-    }
-
-    /**
-     * [p] from a peer written in, with this device's pointers for that peer
-     * read and moved in the same transaction (22 Oct 2026, the review: on the
+     * [p] from a peer written in — the only way a parcel goes into a book —, with this device's pointers for that
+     * peer read and moved in the same transaction (22 Oct 2026, the review: on the
      * computer the WiFi round and the relay ran at once, each read the same
      * pointer, and the slower one moved it back — so changes were written a
      * second time over newer edits). [theirAck] is how far that device has
