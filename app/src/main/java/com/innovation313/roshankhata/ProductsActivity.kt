@@ -83,7 +83,9 @@ class ProductsActivity : BaseActivity() {
         lifecycleScope.launch {
             val plan = withContext(Dispatchers.IO) {
                 runCatching {
-                    val text = contentResolver.openInputStream(uri)!!.use { it.readBytes().toString(Charsets.UTF_8) }
+                    // Read as the computer reads it (8 Nov review L18, 17 Nov 2026 BC-225): a file Excel saved as UTF-16 or
+                    // Windows-1252 came in as garbled names here, while the same file read right on the computer.
+                    val text = contentResolver.openInputStream(uri)!!.use { com.innovation313.roshankhata.data.CsvImport.decode(it.readBytes()) }
                     val rows = com.innovation313.roshankhata.data.ProductCsv.parse(text)
                     if (rows.isEmpty()) null else com.innovation313.roshankhata.data.ProductCsv.plan(rows, dao.productsOnce())
                 }.getOrNull()
@@ -96,6 +98,7 @@ class ProductsActivity : BaseActivity() {
                 .setMessage(lines)
                 .setPositiveButton(R.string.save) { _, _ ->
                     lifecycleScope.launch {
+                        // Written in Who did what as an import by the DAO itself (17 Nov 2026, BC-224), as on the computer.
                         val (added, updated) = withContext(Dispatchers.IO) { dao.importProducts(plan) }
                         Toast.makeText(this@ProductsActivity, com.innovation313.roshankhata.data.Digits.string(resources, R.string.products_imported, added, updated), Toast.LENGTH_LONG).show()
                         refresh()

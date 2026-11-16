@@ -141,8 +141,12 @@ class SchemesActivity : BaseActivity() {
         )
         ChoiceSheet.show(this, s.name, options) { i ->
             when (i) {
-                0 -> showForm(s)
-                1 -> if (s.claimedAmount == null) askClaim(s) else AppScope.launch { dao.setSchemeClaim(s.id, null, null) }
+                // A change to what is written asks a cashier for a manager's PIN, as the computer does (17 Nov 2026,
+                // BC-223: here only the delete asked, so anyone at the till could edit, claim or unclaim a scheme).
+                0 -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { showForm(s) }
+                1 -> com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) {
+                    if (s.claimedAmount == null) askClaim(s) else AppScope.launch { dao.setSchemeClaim(s.id, null, null) }
+                }
                 2 -> MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.scheme_delete)
                     .setMessage(getString(R.string.scheme_delete_confirm, s.name))
