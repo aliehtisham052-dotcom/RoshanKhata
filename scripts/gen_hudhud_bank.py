@@ -31,17 +31,22 @@ LANGS = ["en", "ur", "ur-Latn", "hi", "bn", "ar", "fa", "sd", "id"]
 HELD_OUT = {3, 8}
 
 
-def lines_of(path):
+def numbered_lines_of(path):
+    """(line number, meaning, sentence) for every line of a bank file; scripts/hudhud_sets.py reads the bank through this."""
     out = []
-    for raw in path.read_text(encoding="utf-8").splitlines():
+    for n, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         if not raw.strip():
             continue
         label, _, text = raw.partition("\t")
         label, text = label.strip(), " ".join(text.split())
         if not label or not text or "\t" in text:
             raise SystemExit(f"{path.name}: a line without a meaning and a sentence: {raw!r}")
-        out.append((label, text))
+        out.append((n, label, text))
     return out
+
+
+def lines_of(path):
+    return [(label, text) for _, label, text in numbered_lines_of(path)]
 
 
 def key(text):

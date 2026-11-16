@@ -214,19 +214,15 @@ def records(engine, problems):
     def bad(where, why):
         problems.append(f"{where}: {why}")
 
-    # train and held-out, by the bank's own reading of its source files (gen_hudhud_bank.read), each row traced back
-    # to its file and line.
+    # train and held-out, by the bank's own reader (gen_hudhud_bank.read and numbered_lines_of), each row traced back to
+    # its file and line; no second parser of the bank's files.
     first, more = {}, {}
     for lang in BANK.LANGS:
         for folder, into in ((BANK.SRC, first), (BANK.MORE, more)):
             path = folder / f"{lang}.tsv"
-            if not path.exists():
-                continue
-            for n, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-                if not raw.strip():
-                    continue
-                label, _, text = raw.partition("\t")
-                into.setdefault((lang, label.strip(), " ".join(text.split())), f"{path.relative_to(ROOT)}:{n}")
+            if path.exists():
+                for n, label, text in BANK.numbered_lines_of(path):
+                    into.setdefault((lang, label, text), f"{path.relative_to(ROOT)}:{n}")
     bank, held = BANK.read()
     for split, rows in (("train", bank), ("heldout", held)):
         for i, (lang, label, text) in enumerate(rows):
