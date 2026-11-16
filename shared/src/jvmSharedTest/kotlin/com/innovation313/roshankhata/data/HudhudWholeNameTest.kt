@@ -82,10 +82,22 @@ class HudhudWholeNameTest {
             "ur-Latn" to "aaj ki sale kitni hai", "ur-Latn" to "aaj ki sale", "ur" to "آج کی سیل کتنی ہے", "hi" to "आज की सेल कितनी है",
             "en" to "DELETE ALL", "en" to "low stock wala maal kaun sa hai", "en" to "sale ka hisaab",
             "bn" to "আজকের বিক্রি কত", "ar" to "كم مبيعات اليوم", "fa" to "فروش امروز چقدر است", "in" to "berapa penjualan hari ini",
-            "sd" to "اڄ جو وڪرو ڪيترو آهي", "ur-Latn" to "Aaj Ki Sale aur Ali Raza ka balance"
+            "sd" to "اڄ جو وڪرو ڪيترو آهي", "ur-Latn" to "Aaj Ki Sale aur Ali Raza ka balance",
+            // A reading of the rest alone that names nobody never replaces the whole sentence's (the profit word, read without
+            // the name's "sale", was this month's profit).
+            "ur-Latn" to "aaj ki sale mein kitna munafa hua"
         )) {
             assertEquals("[$lang] $said", read(lang, said, plain, noCmd), read(lang, said))
         }
+    }
+
+    /** A word that links to the name ("ka", "ke") says the sentence is about him, with no fact word beside it. */
+    @Test fun `a linking word alone names him`() {
+        assertEquals(Hudhud.Ask.Parties(listOf(3L)), inner(read("ur-Latn", "Aaj Ki Sale ka batao")))
+        val a = inner(read("ur-Latn", "DELETE ALL ke bare mein batao"))
+        assertTrue("read as $a", a is Hudhud.Ask.Goods && a.ids == listOf(101L) && a.facet == Hudhud.GoodsFacet.OVERVIEW)
+        val b = inner(read("ur-Latn", "Low Stock Wala maal kab aaya"))
+        assertTrue("read as $b", b is Hudhud.Ask.Goods && b.ids == listOf(102L) && b.facet == Hudhud.GoodsFacet.LAST_IN)
     }
 
     /** The guard: a whole plain name in a sentence that asks something else is that something else, as before. */

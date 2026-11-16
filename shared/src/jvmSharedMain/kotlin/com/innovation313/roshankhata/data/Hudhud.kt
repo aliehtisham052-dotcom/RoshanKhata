@@ -451,8 +451,9 @@ object Hudhud {
      * - the second names him and asks something OF him ([asksOfMasked]): a fact of his (number, limit, a product's rate or stock),
      *   or, for his bare account or a product's overview, the sentence links to the name ("ka", "ki", "'s", "of", Bengali "-এর")
      *   or says his account in its other words ("balance", "hisaab").
-     * When nothing is asked of him and the name holds a word of a question, the sentence is read as a book without him reads it
-     * (the sense too had taken his words for a name: "فروش امروز چقدر است" with a customer "فروش امروز" was "whose?").
+     * With nothing asked of him the first reading stands; it reads the sentence as a book without him does, because neither the
+     * name search ([namedIn]) nor the sense ([senseNameSlot]) takes a word of a question for a name ("فروش امروز چقدر است"
+     * with a customer "فروش امروز" was "whose?" while the sense did).
      * So "aaj ki sale kitni hai" in a book with a customer "Aaj Ki Sale" stays the day's sale (nothing is asked of him), "Ali Raza
      * ka khata delete kar do" stays the delete page (the second reading names nobody either), and a bare "DELETE ALL" is read as
      * before. A single-word name that is itself a word of a question ("Sale", "Note") is never stood in: the sentence's own
@@ -464,13 +465,7 @@ object Hudhud {
         val mask = wholeNamesIn(clean, n, g, st) ?: return null
         if (namesMasked(plain, mask)) return null
         val read = readAll(mask.text, mask.text, mask.names, topics, language, mask.goods, before, mask.staff)
-        if (namesMasked(read, mask) && asksOfMasked(read, mask)) return unmasked(read, mask)
-        // Nothing asked of him: the sentence's own question, as a book without him reads it. His words had still been taken by
-        // the sense for a name ("فروش امروز چقدر است" in a book with a customer "فروش امروز" was "whose?", not today's sale).
-        if (!mask.madeOfQuestion) return null
-        return readAll(clean, clean, n.filterNot { it.id in mask.partyIds && mask.questionNamed(0, it.id) }, topics, language,
-            g.filterNot { it.id in mask.goodsIds && mask.questionNamed(1, it.id) }, before,
-            st.filterNot { it.id in mask.staffIds && mask.questionNamed(2, it.id) })
+        return if (namesMasked(read, mask) && asksOfMasked(read, mask)) unmasked(read, mask) else null
     }
 
     /**
@@ -481,13 +476,8 @@ object Hudhud {
     private class Masked(
         val text: String, val names: List<Name>, val goods: List<Name>, val staff: List<Name>,
         val partyIds: Set<Long>, val goodsIds: Set<Long>, val staffIds: Set<Long>,
-        val linked: Boolean, val rest: List<String>, val said: Map<String, List<String>>,
-        /** The stood-in names (kind 0 party, 1 product, 2 staff, and id) that hold a word of a question ("Aaj Ki Sale", "DELETE ALL"). */
-        val questionMade: Set<Pair<Int, Long>>
-    ) {
-        val madeOfQuestion: Boolean get() = questionMade.isNotEmpty()
-        fun questionNamed(kind: Int, id: Long) = (kind to id) in questionMade
-    }
+        val linked: Boolean, val rest: List<String>, val said: Map<String, List<String>>
+    )
 
     /** Stand-ins that mean nothing in any language and are far from each other (no search comes near one from another). */
     private val MASK_WORDS = listOf("qqbookone", "qqbooktwo", "qqbookthree", "qqbookfour")
@@ -512,10 +502,6 @@ object Hudhud {
      */
     private fun senseNameSlot(w: String, list: List<Name>): Boolean =
         w !in QUIET_SET && !HudhudMind.isHardWord(w) && VoiceQuestion.keywordsIn(w).isEmpty() && knownName(w, list)
-
-    /** A word that asks by itself (a concept, a figure's word, a delete or a note): narrower than [questionWord], no little word. */
-    private fun askingWord(w: String): Boolean =
-        HudhudMind.isHardWord(w) || VoiceQuestion.keywordsIn(w).isNotEmpty() || w in ERASE_FIRST || HudhudNote.isNoteWord(w)
 
     private fun wholeNamesIn(clean: String, n: List<Name>, g: List<Name>, st: List<Name>): Masked? {
         val raw = clean.trim().split(SPACE_RUN).filter { it.isNotEmpty() }
@@ -595,8 +581,7 @@ object Hudhud {
             runs.filter { it.third.kind == 0 }.map { it.third.name.id }.toSet(),
             runs.filter { it.third.kind == 1 }.map { it.third.name.id }.toSet(),
             runs.filter { it.third.kind == 2 }.map { it.third.name.id }.toSet(),
-            linked, rest, said,
-            runs.filter { run -> run.third.parts.any { askingWord(it) } }.map { it.third.kind to it.third.name.id }.toSet()
+            linked, rest, said
         )
     }
 
