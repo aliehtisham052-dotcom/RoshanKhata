@@ -1110,6 +1110,9 @@
     <string name="hudhud_compare_unknown">दोनों में से एक रकम पता नहीं, इसलिए अंतर नहीं बता सकता।</string>
     <string name="hudhud_call_me_confirm">क्या मैं आपको %1$s कहूँ? सेव करें दबाएँ, तो कहूँगा।</string>
     <string name="hudhud_owner_only">यह रकम सिर्फ मालिक या मैनेजर देख सकते हैं।</string>
+    <string name="hudhud_own_sales_label">आपकी आज की बिक्री</string>
+    <string name="hudhud_own_sales_count">आज आपके बनाए हुए टिकट: %1$d</string>
+    <string name="hudhud_own_sales_shop">दुकान की पूरी बिक्री सिर्फ़ मालिक या मैनेजर देख सकता है।</string>
     <string name="hudhud_owner_only_exact">यह सिर्फ मालिक देख सकते हैं।</string>
     <string name="hudhud_limit_manager">काउंटर वाले फोन पर यह सिर्फ मालिक या मैनेजर के PIN से खुलता है।</string>
     <string name="hudhud_limit_owner">काउंटर वाले फोन पर यह सिर्फ मालिक के PIN से खुलता है।</string>

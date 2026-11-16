@@ -1070,6 +1070,9 @@
     <string name="hudhud_compare_unknown">Dono mein se ek raqam maloom nahi, is liye farq nahi bata sakta.</string>
     <string name="hudhud_call_me_confirm">Kya main aap ko %1$s kahoon? Mehfooz Karein dabayein to kahunga.</string>
     <string name="hudhud_owner_only">Ye raqam sirf maalik ya manager dekh sakte hain.</string>
+    <string name="hudhud_own_sales_label">Aap ki aaj ki sale</string>
+    <string name="hudhud_own_sales_count">Aaj aap ki banayi hui ticketein: %1$d</string>
+    <string name="hudhud_own_sales_shop">Dukaan ki poori sale sirf owner ya manager dekh sakta hai.</string>
     <string name="hudhud_owner_only_exact">Ye sirf maalik dekh sakte hain.</string>
     <string name="hudhud_limit_manager">Counter wale phone par ye sirf maalik ya manager ke PIN se khulta hai.</string>
     <string name="hudhud_limit_owner">Counter wale phone par ye sirf maalik ke PIN se khulta hai.</string>

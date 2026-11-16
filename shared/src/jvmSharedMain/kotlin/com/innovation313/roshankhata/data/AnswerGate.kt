@@ -28,6 +28,12 @@ object AnswerGate {
     fun settings() = Access.can(Access.Permission.SETTINGS)
 
     /**
+     * The signed-in staff member who may hear only his OWN counter sales (17 Nov 2026, the owner's T5): somebody signed in
+     * at a counter without REPORTS. Null for the owner, a manager, or a phone with counter mode off (they see the shop's).
+     */
+    fun ownSalesOnly(): String? = if (reports()) null else Access.userName?.takeIf { it.isNotBlank() }
+
+    /**
      * The words that say who may open a page whose own gate asks [p] (15 Nov 2026, the owner's "hudood"): null when anyone
      * signed in may open it. The owner's own things (settings, backup, staff) say the owner; the rest, the owner or a manager.
      */

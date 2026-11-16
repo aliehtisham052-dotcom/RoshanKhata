@@ -1158,6 +1158,9 @@
     <string name="hudhud_compare_unknown">أحد الرقمين غير معروف، لذلك لا أذكر الفرق.</string>
     <string name="hudhud_call_me_confirm">هل أناديك %1$s؟ اضغط حفظ وسأفعل.</string>
     <string name="hudhud_owner_only">هذا الرقم يراه المالك أو المدير فقط.</string>
+    <string name="hudhud_own_sales_label">مبيعاتك اليوم</string>
+    <string name="hudhud_own_sales_count">التذاكر التي سجّلتها اليوم: %1$d</string>
+    <string name="hudhud_own_sales_shop">مبيعات المتجر كلها يراها المالك أو المدير فقط.</string>
     <string name="hudhud_owner_only_exact">هذا يراه المالك فقط.</string>
     <string name="hudhud_limit_manager">على هاتف الكاونتر لا يُفتح هذا إلا للمالك أو المدير برمز PIN الخاص به.</string>
     <string name="hudhud_limit_owner">على هاتف الكاونتر لا يُفتح هذا إلا للمالك برمز PIN الخاص به.</string>

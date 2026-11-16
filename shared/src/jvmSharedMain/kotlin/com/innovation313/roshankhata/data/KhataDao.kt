@@ -5317,6 +5317,24 @@ interface KhataDao {
     )
     suspend fun cashRefundedBy(user: String?, from: Long, to: Long, mark: String = ""): Double
 
+    /**
+     * What [user] rang up on the counter in [from, to): the done tickets they wrote, by their grand totals, and how many
+     * (17 Nov 2026, the owner's T5: a signed-in cashier asking Hudhud "my sale today" is told his own, never the shop's).
+     * Read only; every device's tickets of that name count (the shift's own drawer is [cashTakenBy]).
+     */
+    @Query(
+        "SELECT COALESCE(SUM(grandTotal), 0) FROM sales WHERE isDeleted = 0 AND status = 'done' " +
+        "AND timestamp >= :from AND timestamp < :to AND createdBy = :user"
+    )
+    suspend fun salesTotalByUser(user: String, from: Long, to: Long): Double
+
+    /** How many done tickets [user] rang up in [from, to) ([salesTotalByUser]'s count). */
+    @Query(
+        "SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'done' " +
+        "AND timestamp >= :from AND timestamp < :to AND createdBy = :user"
+    )
+    suspend fun salesCountByUser(user: String, from: Long, to: Long): Int
+
     /** A shift opened at the counter, with its audit row; refused when this person already has one open. */
     @Transaction
     suspend fun openShift(shift: Shift): Long {

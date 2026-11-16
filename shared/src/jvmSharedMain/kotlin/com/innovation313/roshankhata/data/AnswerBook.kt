@@ -659,6 +659,9 @@ object AnswerBook {
     ): AnswerCard {
         val labelRes = labelOf(kind)
         val label = context.getString(labelRes)
+        // A cashier asking today's sale is told his own counter tickets (17 Nov 2026, the owner's T5), never the shop's.
+        val own = AnswerGate.ownSalesOnly()
+        if (own != null && kind == VoiceQuestion.Kind.SALES_TODAY) return ownSales(context, dao, own)
         if (!AnswerGate.reports()) {
             return AnswerCard(Mood.CALM, label = label, lines = listOf(context.getString(W.hudhud_owner_only)))
         }
@@ -1071,6 +1074,25 @@ object AnswerBook {
     }
 
     /** An amount with its heading: glad of more than nothing unless it is what the shop owes ([calm]). */
+    /** [user]'s own counter sales today (the owner's T5): his tickets' total and count; the shop's total stays the owner's. */
+    private suspend fun ownSales(context: AnswerEnv, dao: KhataDao, user: String): AnswerCard {
+        val dayStart = DayMath.startOfDay(System.currentTimeMillis())
+        val dayEnd = Calendar.getInstance().apply { timeInMillis = dayStart; add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
+        val total = dao.salesTotalByUser(user, dayStart, dayEnd)
+        val count = dao.salesCountByUser(user, dayStart, dayEnd)
+        return AnswerCard(
+            if (Money.isPositive(total)) Mood.GOOD else Mood.CALM,
+            label = context.getString(W.hudhud_own_sales_label),
+            figure = money(total),
+            lines = listOf(
+                context.getString(W.hudhud_own_sales_count, count),
+                context.getString(W.hudhud_own_sales_shop)
+            ),
+            open = ScreenId.SHIFT,
+            money = true
+        )
+    }
+
     private fun sum(labelRes: String, label: String, value: Double, open: ScreenId, calm: Boolean = false) = AnswerCard(
         if (!calm && Money.isPositive(value)) Mood.GOOD else Mood.CALM,
         label = label,

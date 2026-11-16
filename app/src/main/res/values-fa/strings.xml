@@ -1098,6 +1098,9 @@
     <string name="hudhud_compare_unknown">یکی از دو رقم معلوم نیست، پس اختلافی نمی‌گویم.</string>
     <string name="hudhud_call_me_confirm">شما را %1$s صدا بزنم؟ ذخیره را بزنید تا همین کار را بکنم.</string>
     <string name="hudhud_owner_only">این رقم را فقط مالک یا مدیر می‌بیند.</string>
+    <string name="hudhud_own_sales_label">فروش امروز شما</string>
+    <string name="hudhud_own_sales_count">بلیت‌هایی که امروز ثبت کردید: %1$d</string>
+    <string name="hudhud_own_sales_shop">کل فروش مغازه را فقط مالک یا مدیر می‌بیند.</string>
     <string name="hudhud_owner_only_exact">این را فقط مالک می‌بیند.</string>
     <string name="hudhud_limit_manager">روی گوشی کانتر، این فقط با PIN مالک یا مدیر باز می‌شود.</string>
     <string name="hudhud_limit_owner">روی گوشی کانتر، این فقط با PIN مالک باز می‌شود.</string>

@@ -1098,6 +1098,9 @@
     <string name="hudhud_compare_unknown">ٻنهي مان هڪ رقم معلوم ناهي، تنهن ڪري فرق نه ٿو ٻڌائي سگهان.</string>
     <string name="hudhud_call_me_confirm">ڇا مان توهان کي %1$s سڏيان؟ محفوظ ڪريو دٻايو ته سڏيندس.</string>
     <string name="hudhud_owner_only">هي رقم رڳو مالڪ يا مئنيجر ڏسي سگهن ٿا.</string>
+    <string name="hudhud_own_sales_label">توهان جو اڄ جو وڪرو</string>
+    <string name="hudhud_own_sales_count">اڄ توهان جون ٺاهيل ٽڪيٽون: %1$d</string>
+    <string name="hudhud_own_sales_shop">دڪان جو سڄو وڪرو صرف مالڪ يا مئنيجر ڏسي سگهي ٿو.</string>
     <string name="hudhud_owner_only_exact">هي رڳو مالڪ ڏسي سگهي ٿو.</string>
     <string name="hudhud_limit_manager">ڪائونٽر واري فون تي هي رڳو مالڪ يا مئنيجر جي PIN سان کلي ٿو.</string>
     <string name="hudhud_limit_owner">ڪائونٽر واري فون تي هي رڳو مالڪ جي PIN سان کلي ٿو.</string>

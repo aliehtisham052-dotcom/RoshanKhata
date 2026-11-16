@@ -1112,6 +1112,9 @@
     <string name="hudhud_compare_unknown">One of the two figures is not known, so I give no difference.</string>
     <string name="hudhud_call_me_confirm">Shall I call you %1$s? Tap Save and I will.</string>
     <string name="hudhud_owner_only">Only the owner or a manager can see this figure.</string>
+    <string name="hudhud_own_sales_label">Your sales today</string>
+    <string name="hudhud_own_sales_count">Tickets you rang up today: %1$d</string>
+    <string name="hudhud_own_sales_shop">The shop\'s whole sale is for the owner or a manager.</string>
     <string name="hudhud_owner_only_exact">Only the owner can see this.</string>
     <string name="hudhud_limit_manager">On a counter phone, this opens only for the owner or a manager, with the PIN.</string>
     <string name="hudhud_limit_owner">On a counter phone, this opens only for the owner, with the PIN.</string>
