@@ -2,7 +2,7 @@ package com.innovation313.roshankhata.data
 
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.Words
-import java.util.Calendar
+import java.util.TimeZone
 
 /**
  * The part of the bell that comes from the ledger alone (20 Oct, moved out of
@@ -19,11 +19,25 @@ object LedgerAlerts {
     /** One row of the bell: what kind, a title, a quieter line under it, and an optional short tag ("Today", "Late"). */
     data class Alert(val kind: Kind, val title: String, val sub: String, val tag: String? = null)
 
-    private const val DAY = 24L * 60 * 60 * 1000
+    /** Today's first moment, by the calendar. */
+    private fun today(): Long = DayMath.startOfDay(System.currentTimeMillis())
 
-    private fun today(): Long = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
+    /**
+     * The days the bell counts by (16 Nov 2026, audit D-05): the calendar's, never a fixed 24 hours — on the day the clocks
+     * move a day is 23 or 25 hours, and "today + 24 h" ended today an hour early or late. [t0] is today's first moment.
+     */
+    internal fun tomorrowStart(t0: Long, tz: TimeZone = TimeZone.getDefault()): Long = DaySpans.nextDayStart(t0, tz)
+
+    /**
+     * Yesterday's drawer, as Close the day files it (16 Nov 2026, audit D-05): the working day before the one [now] is in
+     * ([DayCloseMath.businessDayOf], 04:00 to 04:00), its number and its moments as `[from, to)` ([DaySpans.workingDay]). The
+     * bell said "yesterday's drawer was not counted" at 02:00 for a day whose till was still open, and counted the cash of a
+     * fixed 24 hours from midnight, against a close filed by the working day.
+     */
+    internal fun yesterdaysDrawer(now: Long, tz: TimeZone = TimeZone.getDefault()): Pair<Long, Pair<Long, Long>> {
+        val day = DayCloseMath.businessDayOf(now, tz) - 1
+        return day to DaySpans.workingDay(day, tz)
+    }
 
     /** The three counts the phone's daily notice says, by this bell's own rules (3 Nov 2026 audit, M14). */
     data class Due(val cheques: Int, val plans: Int, val expiring: Int)
@@ -35,7 +49,7 @@ object LedgerAlerts {
      */
     suspend fun dueCounts(dao: KhataDao): Due {
         val t0 = today()
-        val t1 = t0 + DAY
+        val t1 = tomorrowStart(t0)
         // Cheques by the one rule ([ChequesDue]) the bell and the Cheque reminders automation also use.
         val endToday = ChequesDue.endOfToday(System.currentTimeMillis())
         val cheques = dao.pendingChequesOnce().count { ChequesDue.isDue(it, endToday) }
@@ -58,7 +72,7 @@ object LedgerAlerts {
         if (syncOff) out += Alert(Kind.SYNC, words.text(W.na_sync_off), words.text(W.na_sync_off_sub))
         if (syncConflicts > 0) out += Alert(Kind.SYNC, words.text(W.na_sync_conflict, syncConflicts.toString()), words.text(W.na_sync_conflict_sub))
         val t0 = today()
-        val t1 = t0 + DAY
+        val t1 = tomorrowStart(t0)
         val parties = dao.partiesWithBalanceOnce()
         val names = parties.associate { it.id to it.name }
 
@@ -80,7 +94,7 @@ object LedgerAlerts {
         }
         val owed = parties.filter { it.balance < 0 }.associate { it.id to -it.balance }
         val (items, _) = CashFlow.items(emptyList(), emptyList(), emptyList(), dao.cashFlowBillsOnce(), owed)
-        items.filter { it.kind == CashFlow.Kind.BILL && it.date < t0 + 3 * DAY }.forEach { b ->
+        items.filter { it.kind == CashFlow.Kind.BILL && it.date < DaySpans.dayStartAfter(t0, 3) }.forEach { b ->
             out += Alert(Kind.BILL, words.text(W.na_bill_due, DateWords.format("d MMM", b.date)),
                 b.name + " · " + money(b.amount))
         }
@@ -97,13 +111,15 @@ object LedgerAlerts {
         if (lowRows.isNotEmpty()) out += Alert(Kind.STOCK, words.text(W.na_low_stock, lowRows.size.toString()),
             lowRows.take(3).joinToString(" · ") { it.name })
 
-        // Yesterday's drawer (POS Phase 4): money moved yesterday and no count was made for it.
-        val yesterday = DayCloseMath.dayOf(t0) - 1
+        // Yesterday's drawer (POS Phase 4): money moved yesterday and no count was made for it — yesterday's working day, as
+        // Close the day files a count, and its moments as [from, to) (the four cash sums through DaySpans' wrappers).
+        val (yesterday, span) = yesterdaysDrawer(now)
+        val (yFrom, yTo) = span
         val last = dao.lastDayClose()
         // L81 (8 Nov 2026 review): a khata-only shop has no counter tickets; cash that moved counts as well.
-        val yesterdayMoved = dao.doneSaleCount(t0 - DAY, t0) > 0 ||
-            dao.cashbookCashBetween(true, t0 - DAY, t0) + dao.cashbookCashBetween(false, t0 - DAY, t0) +
-            dao.khataCashBetween(true, t0 - DAY, t0) + dao.khataCashBetween(false, t0 - DAY, t0) > 0.0
+        val yesterdayMoved = dao.doneSaleCount(yFrom, yTo) > 0 ||
+            dao.cashbookCashOver(true, yFrom, yTo) + dao.cashbookCashOver(false, yFrom, yTo) +
+            dao.khataCashOver(true, yFrom, yTo) + dao.khataCashOver(false, yFrom, yTo) > 0.0
         if ((last == null || last.day < yesterday) && yesterdayMoved) {
             out += Alert(Kind.DRAWER, words.text(W.z_yesterday_open), "")
         }
