@@ -28,8 +28,6 @@ import kotlin.math.abs
  */
 object AnswerFacts {
 
-    internal fun now() = System.currentTimeMillis()
-
     // Every gate is asked through AnswerGate (the catalog holds each fact to the gate of the screen that shows it).
     internal fun reports() = AnswerGate.reports()
 
@@ -50,9 +48,9 @@ object AnswerFacts {
 
     internal fun line(c: AnswerEnv, label: String, value: String) = line(c.getString(label), value)
 
-    internal fun whenOf(c: AnswerEnv, t: Long) = WhenWords.whenWords(t, now(), c.words)
+    internal fun whenOf(c: AnswerEnv, t: Long) = WhenWords.whenWords(t, c.now(), c.words)
 
-    internal fun dayOf(c: AnswerEnv, t: Long) = WhenWords.dayWord(t, now(), c.words)
+    internal fun dayOf(c: AnswerEnv, t: Long) = WhenWords.dayWord(t, c.now(), c.words)
 
     /** A count as a figure. */
     internal fun n(count: Int): String = count.toString()
@@ -64,7 +62,7 @@ object AnswerFacts {
     class Over(val label: String, val span: Pair<Long, Long>, val oneDay: Boolean)
 
     /** The span asked, or today when none was. */
-    private fun spanOf(window: VoiceQuestion.Window?): Pair<Long, Long> = Hudhud.span(window ?: VoiceQuestion.Window.TODAY)
+    private fun spanOf(c: AnswerEnv, window: VoiceQuestion.Window?): Pair<Long, Long> = Hudhud.span(window ?: VoiceQuestion.Window.TODAY, c.now())
 
     internal fun heading(c: AnswerEnv, title: String, window: VoiceQuestion.Window?): String =
         if (window == null) c.getString(title) else c.getString(title) + " · " + c.getString(AnswerBook.windowWord(window))
@@ -228,7 +226,7 @@ object AnswerFacts {
                 if (day == null) {
                     AnswerCard(Mood.CALM, label = name, lines = listOf(c.getString(W.hudhud_promise_none), balance), openParty = p.id)
                 } else {
-                    val passed = DayMath.startOfDay(day) < DayMath.startOfDay(now()) && Money.isPositive(p.balance)
+                    val passed = DayMath.startOfDay(day) < DayMath.startOfDay(c.now()) && Money.isPositive(p.balance)
                     AnswerCard(if (passed) Mood.CARE else Mood.CALM, label = name, figure = Format.dateOnly(day),
                         lines = listOfNotNull(c.getString(W.hudhud_l_promise), if (passed) c.getString(W.hudhud_promise_passed) else null, balance),
                         openParty = p.id)
@@ -352,7 +350,7 @@ object AnswerFacts {
             }
             Hudhud.GoodsFacet.BUYERS -> {
                 // The days asked, when a span was said ("aaj Urea kis ne li"); else every sale of it.
-                val (from, to) = if (window == null) 0L to Long.MAX_VALUE else Hudhud.span(window)
+                val (from, to) = if (window == null) 0L to Long.MAX_VALUE else Hudhud.span(window, c.now())
                 val who = dao.customersWhoBought(p.id, from, to)
                 val shown = if (window == null) name else name + " · " + c.getString(AnswerBook.windowWord(window))
                 val extras = OpenWith.ProductBuyers(p.id, p.name)
@@ -368,7 +366,7 @@ object AnswerFacts {
                 val w = window ?: VoiceQuestion.Window.THIS_MONTH
                 val label = name + " · " + c.getString(AnswerBook.windowWord(w))
                 if (!reports()) return ownerOnly(c, label)
-                val (from, to) = Hudhud.span(w)
+                val (from, to) = Hudhud.span(w, c.now())
                 val sold = dao.topProductsBetween(from, to, ALL_PRODUCTS).firstOrNull { it.name.trim().equals(name.trim(), ignoreCase = true) }
                 if (sold == null || sold.qty <= 0.0) {
                     AnswerCard(Mood.CALM, label = label, lines = listOf(c.getString(W.hudhud_sold_none)))
@@ -382,7 +380,7 @@ object AnswerFacts {
                 // How long the shelf lasts at the last 30 days' pace (StockCover); a book younger than that is divided by its own age.
                 val label = name + " · " + c.getString(W.hudhud_chip_cover)
                 if (!reports()) return ownerOnly(c, label)
-                val now = System.currentTimeMillis()
+                val now = c.now()
                 val first = dao.firstSaleAt()
                 val windowDays = if (first != null && first > now - StockCover.WINDOW_MS)
                     kotlin.math.ceil((now - first) / 86_400_000.0).toInt().coerceIn(1, StockCover.DAYS) else StockCover.DAYS
@@ -479,7 +477,7 @@ object AnswerFacts {
                     AnswerCard(Mood.CALM, label = name, lines = listOf(c.getString(W.hudhud_batches_none)), open = open)
                 } else {
                     val soonest = lots.firstNotNullOfOrNull { it.expiryDate }
-                    val now = System.currentTimeMillis()
+                    val now = c.now()
                     AnswerCard(if (soonest != null && soonest < now) Mood.CARE else Mood.CALM, label = name,
                         figure = soonest?.let { Format.dateOnly(it) } ?: n(lots.size),
                         lines = listOf(c.getString(if (soonest != null) W.expiry_date else W.inspector_count_batches)),
@@ -679,8 +677,8 @@ object AnswerFacts {
         DateWords.format("d MMMM yyyy", millisOf(d), c.locale)
 
     /** Whole calendar days from [d] to today, never below nought. */
-    private fun daysSince(d: HistoryDay): Long =
-        (DayMath.dayNumber(now()) - DayMath.dayNumber(millisOf(d))).coerceAtLeast(0)
+    private fun daysSince(c: AnswerEnv, d: HistoryDay): Long =
+        (DayMath.dayNumber(c.now()) - DayMath.dayNumber(millisOf(d))).coerceAtLeast(0)
 
     /**
      * When the app began, when it was published and when Hudhud was added — only the days the project's own records hold
@@ -698,8 +696,8 @@ object AnswerFacts {
         val hudhudLine = c.getString(W.hudhud_hist_hudhud, hudhud)
         val testBuild = c.testBuild()
         val testLine = c.getString(W.hudhud_hist_test_build)
-        val sinceFirst = line(c, W.hudhud_l_days_since, n(daysSince(AppHistory.STARTED).toInt()))
-        val sinceHudhud = line(c, W.hudhud_l_days_hudhud, n(daysSince(AppHistory.HUDHUD).toInt()))
+        val sinceFirst = line(c, W.hudhud_l_days_since, n(daysSince(c, AppHistory.STARTED).toInt()))
+        val sinceHudhud = line(c, W.hudhud_l_days_hudhud, n(daysSince(c, AppHistory.HUDHUD).toInt()))
         return when (topic) {
             Hudhud.AboutTopic.APP_STARTED -> AnswerCard(Mood.CALM, lines = listOf(startedLine, sinceFirst))
             Hudhud.AboutTopic.APP_PUBLISHED ->
@@ -720,7 +718,7 @@ object AnswerFacts {
      * worked out: by the moon it may be a day off), the Persian date where the shop keeps that calendar, and the time.
      */
     fun clock(c: AnswerEnv): AnswerCard {
-        val t = now()
+        val t = c.now()
         val date = DateWords.format("EEEE, d MMMM yyyy", t)
         val key = monthKey(c)
         val (hy, hm, hd) = ShopCalendar.ymd(ShopCalendar.Kind.HIJRI, t)
@@ -759,7 +757,7 @@ object AnswerFacts {
      * when none was said, with the whole book's count beside it); the app's own counts, with the day they began.
      */
     suspend fun count(c: AnswerEnv, dao: KhataDao, thing: Hudhud.Thing, window: VoiceQuestion.Window?, parties: List<PartyWithBalance>): AnswerCard {
-        val (from, to) = spanOf(window)
+        val (from, to) = spanOf(c, window)
         val w = window ?: VoiceQuestion.Window.TODAY
         return when (thing) {
             Hudhud.Thing.CUSTOMERS -> {
@@ -882,7 +880,7 @@ object AnswerFacts {
         if (pending.isEmpty()) {
             return AnswerCard(Mood.GOOD, label = label, lines = listOf(c.getString(W.hudhud_cheques_none)), open = ScreenId.CHEQUES)
         }
-        val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY).second
+        val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY, c.now()).second
         val due = pending.count { it.dueDate < endOfToday }
         val got = pending.filter { it.isReceived }
         val gave = pending.filter { !it.isReceived }
@@ -927,7 +925,7 @@ object AnswerFacts {
      */
     private suspend fun invoicesDue(c: AnswerEnv, dao: KhataDao): AnswerCard {
         val label = c.getString(W.hudhud_t_invoices_due)
-        val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY).second
+        val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY, c.now()).second
         val owing = ArrayList<Pair<Invoice, Double>>()
         var unrecorded = 0
         for (inv in dao.invoicesWithPaymentOnce()) {
@@ -962,7 +960,7 @@ object AnswerFacts {
         if (open.isEmpty()) {
             return AnswerCard(Mood.CALM, label = label, lines = listOf(c.getString(W.hudhud_plans_none)), open = ScreenId.PLANS)
         }
-        val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY).second
+        val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY, c.now()).second
         val due = open.filter { (it.nextDueDate ?: Long.MAX_VALUE) < endOfToday }
         return AnswerCard(if (due.isNotEmpty()) Mood.CARE else Mood.CALM, label = label, figure = n(open.size),
             lines = listOfNotNull(
@@ -981,7 +979,7 @@ object AnswerFacts {
             return AnswerCard(Mood.GOOD, label = label, lines = listOf(c.getString(W.hudhud_bills_none)), open = ScreenId.BILLS)
         }
         val owed = PartyTotals.of(parties.filter { !it.isCustomer }.map { it.balance }).give
-        val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY).second
+        val endOfToday = Hudhud.span(VoiceQuestion.Window.TODAY, c.now()).second
         val due = unpaid.count { (it.dueDate ?: Long.MAX_VALUE) < endOfToday }
         return AnswerCard(if (due > 0) Mood.CARE else Mood.CALM, label = label, figure = n(unpaid.size),
             lines = listOfNotNull(
@@ -1040,7 +1038,7 @@ object AnswerFacts {
     private suspend fun salaries(c: AnswerEnv, dao: KhataDao): AnswerCard {
         val label = c.getString(W.hudhud_t_salary)
         if (!staff()) return ownerExact(c, label)
-        val (from, to, days) = Payroll.monthRange(now())
+        val (from, to, days) = Payroll.monthRange(c.now())
         val staff = dao.staffCardsOnce().filter { it.isActive }.sortedBy { it.name }
         val marks = dao.observeAttendanceBetween(from, to).first()
         val pays = dao.observeStaffPaymentsBetween(from, to).first()
@@ -1066,7 +1064,7 @@ object AnswerFacts {
     suspend fun deliveries(c: AnswerEnv, dao: KhataDao, window: VoiceQuestion.Window?): AnswerCard {
         val label = heading(c, W.hudhud_t_deliveries, window)
         val all = dao.observeBills().first().sortedByDescending { it.billDate }
-        val bills = if (window == null) all.take(TOP) else Hudhud.span(window).let { (from, to) -> all.filter { it.billDate >= from && it.billDate < to } }
+        val bills = if (window == null) all.take(TOP) else Hudhud.span(window, c.now()).let { (from, to) -> all.filter { it.billDate >= from && it.billDate < to } }
         if (bills.isEmpty()) {
             return AnswerCard(Mood.CALM, label = label, lines = listOf(c.getString(W.hudhud_deliveries_none)), open = ScreenId.BILLS)
         }
@@ -1088,7 +1086,7 @@ object AnswerFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val label = over?.label ?: heading(c, W.hudhud_t_activity, w)
         if (!reports()) return ownerOnly(c, label)
-        val (from, to) = over?.span ?: Hudhud.span(w)
+        val (from, to) = over?.span ?: Hudhud.span(w, c.now())
         val oneDay = over?.oneDay ?: (w == VoiceQuestion.Window.TODAY || w == VoiceQuestion.Window.YESTERDAY)
         val entries = dao.entryCountBetween(from, to)
         val rows = DayBook.rows(dao, from, to)
@@ -1142,7 +1140,7 @@ object AnswerFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val label = over?.label ?: heading(c, W.hudhud_t_collected, w)
         if (!reports()) return ownerOnly(c, label)
-        val (from, to) = over?.span ?: Hudhud.span(w)
+        val (from, to) = over?.span ?: Hudhud.span(w, c.now())
         val oneDay = over?.oneDay ?: (w == VoiceQuestion.Window.TODAY || w == VoiceQuestion.Window.YESTERDAY)
         val total = dao.customerReceivedBetween(from, to)
         val all = DayBook.rows(dao, from, to)
@@ -1248,7 +1246,7 @@ object AnswerFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val label = heading(c, W.hudhud_t_cashbook, w)
         if (!reports()) return ownerOnly(c, label)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val rows = dao.cashbookRowsBetween(from, to)
         val open = ScreenId.CASHBOOK
         if (rows.isEmpty()) {
@@ -1276,7 +1274,7 @@ object AnswerFacts {
     suspend fun returns(c: AnswerEnv, dao: KhataDao, window: VoiceQuestion.Window?): AnswerCard {
         val w = window ?: VoiceQuestion.Window.TODAY
         val label = heading(c, W.hudhud_t_returns, w)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val all = dao.returnsBetween(from, to).filter { it.status == "done" }
         val open = ScreenId.COUNTER_SALE
         if (all.isEmpty()) {
@@ -1304,7 +1302,7 @@ object AnswerFacts {
      */
     suspend fun topGoods(c: AnswerEnv, dao: KhataDao, window: VoiceQuestion.Window?): AnswerCard {
         val w = window ?: VoiceQuestion.Window.THIS_MONTH
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val top = dao.topProductsBetween(from, to, TOP)
         val label = heading(c, W.hudhud_t_top_goods, w)
         if (!reports()) return ownerOnly(c, label)
@@ -1349,6 +1347,7 @@ object AnswerFacts {
         val words = c.words
         val rows = Automations.Kind.values().map { k ->
             val hour = java.util.Calendar.getInstance().apply {
+                timeInMillis = c.now()
                 set(java.util.Calendar.HOUR_OF_DAY, settings.hour(k)); set(java.util.Calendar.MINUTE, 0)
             }.timeInMillis
             Row(0, words.text(k.word), c.getString(if (settings.isOn(k)) W.hudhud_auto_on else W.hudhud_auto_off),
@@ -1379,7 +1378,7 @@ object AnswerFacts {
         if (products.isEmpty()) {
             return AnswerCard(Mood.CALM, label = label, lines = listOf(c.getString(W.no_products)), open = ScreenId.PRODUCTS)
         }
-        val (from, to) = Hudhud.span(VoiceQuestion.Window.THIS_MONTH)
+        val (from, to) = Hudhud.span(VoiceQuestion.Window.THIS_MONTH, c.now())
         val best = dao.topProductsBetween(from, to, TOP).map { it.name.lowercase(Locale.ROOT) }
         val ordered = products.sortedWith(compareBy({ best.indexOf(it.name.lowercase(Locale.ROOT)).let { i -> if (i < 0) Int.MAX_VALUE else i } }, { it.name }))
         val rows = ordered.take(TOP).map { p -> Row(0, p.name, "", null, ask = Hudhud.Ask.Goods(listOf(p.id), facet)) }
@@ -1540,7 +1539,7 @@ object AnswerFacts {
         if (schemes.isEmpty()) {
             return AnswerCard(Mood.CALM, label = label, lines = listOf(c.getString(W.schemes_empty)), open = ScreenId.SCHEMES)
         }
-        val now = System.currentTimeMillis()
+        val now = c.now()
         val ordered = schemes.sortedWith(compareBy({ it.endDate < now }, { it.endDate }))
         val money = reports()
         fun amountText(s: Scheme, v: Double) = if (s.measure == SchemeMath.BY_VALUE) AnswerBook.money(v) else Format.qty(v, s.unit)

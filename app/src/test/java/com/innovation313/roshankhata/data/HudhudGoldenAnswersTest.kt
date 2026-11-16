@@ -47,6 +47,12 @@ import java.util.TimeZone
  *
  * Runs under Robolectric (the real SQLite, as LedgerBalanceTest and HudhudCashierGateTest), in UTC, en-US, with the
  * book's currency sign. It skips itself (Assume) within 30 minutes of midnight, where "a few minutes ago" is yesterday.
+ *
+ * The answers' own clock (17 Nov 2026, audit L035): every card is asked through an env whose [AnswerEnv.now] is held at the
+ * moment the book was seeded, so the answer layer cannot cross midnight in the middle of a run. The skip stays, because not
+ * every reading behind a card takes that clock yet: the bell's rows (HomeAlerts / LedgerAlerts.compute), who was reminded
+ * today (ReminderLog), the follow-up habits inside Automations.collect (PaymentHabit.forAll's default) and the spoken lambdas
+ * (HudhudBook.card builds them over a fresh env) still read the system clock. When they all take a `now`, the skip can go.
  */
 @RunWith(AndroidJUnit4::class)
 class HudhudGoldenAnswersTest {
@@ -93,7 +99,7 @@ class HudhudGoldenAnswersTest {
             suspend fun pass(role: String, list: List<Hudhud.Ask>) {
                 for (ask in list) {
                     val parties = dao.partiesWithBalanceOnce()
-                    val text = runCatching { HudhudBook.answer(context, dao, ask, parties) }
+                    val text = runCatching { HudhudBook.card(AnswerBook.answer(HudhudPhoneEnv(context) { now }, dao, ask, parties)) }
                         .fold({ HudhudGoldenText.block(context, ask, it) }, { HudhudGoldenText.threw(ask, it) })
                     files.getOrPut(role + "/" + ask.javaClass.simpleName + ".txt") { StringBuilder() }.append(text).append('\n')
                 }

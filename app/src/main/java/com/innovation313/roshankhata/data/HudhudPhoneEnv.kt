@@ -60,8 +60,13 @@ import java.util.Locale
  * The phone's side of Hudhud's shared answers (16 Nov 2026, audit T22): an [AnswerEnv] over a [Context], every member the very
  * call the answers made before they moved to :shared (HudhudPrefs, RadarUi, BusinessProfile, HomeAlerts, the screens' own
  * gates…), so a card reads exactly as it did. A [Context] in another language is another env ([inLanguage]): the voice's.
+ *
+ * [clock] is the moment the answers count from ([AnswerEnv.now]): the real clock on the phone; a test holds it still
+ * (HudhudGoldenAnswersTest). Another language keeps it.
  */
-class HudhudPhoneEnv(val context: Context) : AnswerEnv {
+class HudhudPhoneEnv(val context: Context, private val clock: () -> Long = { System.currentTimeMillis() }) : AnswerEnv {
+
+    override fun now(): Long = clock()
 
     override val words: Words = AndroidWords(context)
 
@@ -70,7 +75,7 @@ class HudhudPhoneEnv(val context: Context) : AnswerEnv {
     override fun inLanguage(locale: Locale): AnswerEnv {
         val config = Configuration(context.resources.configuration)
         config.setLocale(locale)
-        return HudhudPhoneEnv(context.createConfigurationContext(config))
+        return HudhudPhoneEnv(context.createConfigurationContext(config), clock)
     }
 
     override fun callMe(): String? = HudhudPrefs.callMe(context)

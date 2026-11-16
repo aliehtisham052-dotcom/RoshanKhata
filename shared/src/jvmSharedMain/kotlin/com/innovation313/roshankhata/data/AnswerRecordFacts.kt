@@ -40,8 +40,8 @@ internal object AnswerRecordFacts {
     // ------------------------------------------------------------------------------------------------ the staff
 
     /** The month the question is about: this month, or last month when it was said (Staff's own month, [Payroll.monthRange]). */
-    private fun monthOf(window: VoiceQuestion.Window?): Triple<Long, Long, Int> {
-        val now = AnswerFacts.now()
+    private fun monthOf(c: AnswerEnv, window: VoiceQuestion.Window?): Triple<Long, Long, Int> {
+        val now = c.now()
         val this_ = Payroll.monthRange(now)
         return if (window == VoiceQuestion.Window.LAST_MONTH) Payroll.monthRange(this_.first - 1) else this_
     }
@@ -53,7 +53,7 @@ internal object AnswerRecordFacts {
     suspend fun staffPay(c: AnswerEnv, dao: KhataDao, ids: List<Long>, window: VoiceQuestion.Window?): AnswerCard {
         val label = c.getString(W.hudhud_t_salary)
         if (!staff()) return AnswerFacts.ownerExact(c, label)
-        val (from, to, days) = monthOf(window)
+        val (from, to, days) = monthOf(c, window)
         val people = activeStaff(dao).filter { it.id in ids }
         if (people.isEmpty()) return AnswerCard(Mood.CALM, label = label, lines = listOf(c.getString(W.staff_none)), open = ScreenId.STAFF)
         val marks = dao.observeAttendanceBetween(from, to).first()
@@ -90,7 +90,7 @@ internal object AnswerRecordFacts {
     suspend fun staffPaid(c: AnswerEnv, dao: KhataDao, ids: List<Long>, window: VoiceQuestion.Window?): AnswerCard {
         val title = AnswerFacts.heading(c, W.hudhud_t_staff_paid, window ?: VoiceQuestion.Window.THIS_MONTH)
         if (!staff()) return AnswerFacts.ownerExact(c, title)
-        val (from, to) = if (window == null) monthOf(null).let { it.first to it.second } else Hudhud.span(window)
+        val (from, to) = if (window == null) monthOf(c, null).let { it.first to it.second } else Hudhud.span(window, c.now())
         val names = dao.staffCardsOnce().associate { it.id to it.name }
         val pays = dao.observeStaffPaymentsBetween(from, to).first()
             .filter { !it.isDeleted && (ids.isEmpty() || it.staffId in ids) }.sortedByDescending { it.timestamp }
@@ -118,7 +118,7 @@ internal object AnswerRecordFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val title = AnswerFacts.heading(c, W.staff_attendance, w)
         if (!staff()) return AnswerFacts.ownerExact(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val people = activeStaff(dao).filter { ids.isEmpty() || it.id in ids }
         if (people.isEmpty()) return AnswerCard(Mood.CALM, label = title, lines = listOf(c.getString(W.staff_none)), open = ScreenId.STAFF)
         val marks = dao.observeAttendanceBetween(from, to).first().filter { m -> people.any { it.id == m.staffId } }
@@ -251,7 +251,7 @@ internal object AnswerRecordFacts {
         val label = AnswerFacts.heading(c, W.hudhud_t_plans_closed, window)
         val money = reports()
         val made = dao.allPlansForBackup().associateBy { it.id }
-        val span = window?.let { Hudhud.span(it) }
+        val span = window?.let { Hudhud.span(it, c.now()) }
         val closed = dao.observePlans().first().filter { it.isClosed && (ids.isEmpty() || it.partyId in ids) }
             .map { it to made[it.id]?.closedAt }
             .filter { (_, at) -> span == null || (at != null && at >= span.first && at < span.second) }

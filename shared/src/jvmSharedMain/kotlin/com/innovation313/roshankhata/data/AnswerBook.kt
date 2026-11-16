@@ -282,7 +282,7 @@ object AnswerBook {
      * lines by [moved]'s rule — each behind its own gate. A day not yet come is said so, never answered with a figure.
      */
     private suspend fun onDays(context: AnswerEnv, dao: KhataDao, ask: Hudhud.Ask.OnDays, parties: List<PartyWithBalance>): AnswerCard {
-        val span = Hudhud.span(ask.days)
+        val span = Hudhud.span(ask.days, context.now())
             ?: return AnswerCard(Mood.CALM, lines = listOf(context.getString(W.hudhud_date_ahead)))
         val (from, to) = span
         val words = daysWords(ask.days, from)
@@ -297,8 +297,8 @@ object AnswerBook {
                 val label = context.getString(W.hudhud_profit_on, words)
                 if (!AnswerGate.reports()) return AnswerCard(Mood.CALM, label = label, lines = listOf(context.getString(W.hudhud_owner_only)))
                 when (span) {
-                    Hudhud.span(VoiceQuestion.Window.THIS_MONTH) -> profit(context, W.hudhud_profit_on, label, Profit.thisMonth(dao), ScreenId.INSIGHTS)
-                    Hudhud.span(VoiceQuestion.Window.LAST_MONTH) -> profit(context, W.hudhud_profit_on, label, Profit.lastMonth(dao), ScreenId.INSIGHTS)
+                    Hudhud.span(VoiceQuestion.Window.THIS_MONTH, context.now()) -> profit(context, W.hudhud_profit_on, label, monthProfit(context, dao, VoiceQuestion.Window.THIS_MONTH), ScreenId.INSIGHTS)
+                    Hudhud.span(VoiceQuestion.Window.LAST_MONTH, context.now()) -> profit(context, W.hudhud_profit_on, label, monthProfit(context, dao, VoiceQuestion.Window.LAST_MONTH), ScreenId.INSIGHTS)
                     else -> profit(context, W.hudhud_profit_on, label, Profit.between(dao, from, to), null)
                 }
             }
@@ -357,19 +357,19 @@ object AnswerBook {
     private suspend fun spanFigure(context: AnswerEnv, dao: KhataDao, a: Hudhud.Ask): Pair<String, Double?>? = when (a) {
         is Hudhud.Ask.Period -> {
             val label = context.getString(periodLabel(a.measure, a.window))
-            val (from, to) = Hudhud.span(a.window)
+            val (from, to) = Hudhud.span(a.window, context.now())
             label to when (a.measure) {
                 Hudhud.Measure.SALES -> dao.salesTotalBetween(from, to)
                 Hudhud.Measure.PROFIT -> when (a.window) {
-                    VoiceQuestion.Window.THIS_MONTH -> Profit.thisMonth(dao)
-                    VoiceQuestion.Window.LAST_MONTH -> Profit.lastMonth(dao)
+                    VoiceQuestion.Window.THIS_MONTH -> monthProfit(context, dao, VoiceQuestion.Window.THIS_MONTH)
+                    VoiceQuestion.Window.LAST_MONTH -> monthProfit(context, dao, VoiceQuestion.Window.LAST_MONTH)
                     else -> Profit.between(dao, from, to)
                 }.let { r -> if (r.isEmpty) null else r.grossProfit }
             }
         }
         is Hudhud.Ask.OnDays -> {
             val sales = a.of == Hudhud.DatedOf.SALES
-            val span = Hudhud.span(a.days)
+            val span = Hudhud.span(a.days, context.now())
             if (span == null) {
                 context.getString(W.hudhud_date_ahead) to null
             } else {
@@ -666,7 +666,7 @@ object AnswerBook {
             return AnswerCard(Mood.CALM, label = label, lines = listOf(context.getString(W.hudhud_owner_only)))
         }
         // The day and the month exactly as Insights' own voice answers took them.
-        val c = Calendar.getInstance().apply { timeInMillis = DayMath.startOfDay(System.currentTimeMillis()) }
+        val c = Calendar.getInstance().apply { timeInMillis = DayMath.startOfDay(context.now()) }
         val dayStart = c.timeInMillis
         val dayEnd = (c.clone() as Calendar).apply { add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
         c.set(Calendar.DAY_OF_MONTH, 1)
@@ -679,7 +679,7 @@ object AnswerBook {
             VoiceQuestion.Kind.SALES_MONTH -> sum(labelRes, label, dao.salesTotalBetween(monthStart, monthEnd), ScreenId.INSIGHTS)
             VoiceQuestion.Kind.TO_GET -> sum(labelRes, label, PartyTotals.of(parties.map { it.balance }).get, ScreenId.KHATA, calm = true)
             VoiceQuestion.Kind.TO_GIVE -> sum(labelRes, label, PartyTotals.of(parties.map { it.balance }).give, ScreenId.KHATA, calm = true)
-            VoiceQuestion.Kind.PROFIT_MONTH -> profit(context, labelRes, label, Profit.thisMonth(dao), ScreenId.INSIGHTS)
+            VoiceQuestion.Kind.PROFIT_MONTH -> profit(context, labelRes, label, monthProfit(context, dao, VoiceQuestion.Window.THIS_MONTH), ScreenId.INSIGHTS)
             VoiceQuestion.Kind.WHO_OWES_MOST -> {
                 val top = parties.filter { Money.isPositive(it.balance) }.sortedByDescending { it.balance }.take(TOP)
                 if (top.isEmpty()) {
@@ -715,6 +715,13 @@ object AnswerBook {
     }
 
     /** A profit with its heading, as Insights says it: its share of the sales it stands on, or that none is known. */
+    /**
+     * This month's or last month's profit exactly as [Profit.thisMonth] and [Profit.lastMonth] read it (the calendar month,
+     * [from, to)), but on the env's clock ([AnswerEnv.now]), so a held clock holds the month too.
+     */
+    private suspend fun monthProfit(context: AnswerEnv, dao: KhataDao, window: VoiceQuestion.Window): Profit.ProfitReport =
+        Hudhud.span(window, context.now()).let { (from, to) -> Profit.between(dao, from, to) }
+
     private fun profit(context: AnswerEnv, labelRes: String, label: String, r: Profit.ProfitReport, open: ScreenId?): AnswerCard =
         if (r.isEmpty) {
             AnswerCard(Mood.CALM, label = label, lines = listOf(context.getString(W.insights_profit_none)), open = open)
@@ -743,13 +750,13 @@ object AnswerBook {
         if (!AnswerGate.reports()) {
             return AnswerCard(Mood.CALM, label = label, lines = listOf(context.getString(W.hudhud_owner_only)))
         }
-        val (from, to) = Hudhud.span(window)
+        val (from, to) = Hudhud.span(window, context.now())
         return when (measure) {
             Hudhud.Measure.SALES -> sum(labelRes, label, dao.salesTotalBetween(from, to), ScreenId.SALES_REPORT)
                 .copy(openWith = salesReportDays(window, from, to, if (window == VoiceQuestion.Window.ALL_TIME) dao.firstSaleAt() else null))
             Hudhud.Measure.PROFIT -> when (window) {
-                VoiceQuestion.Window.THIS_MONTH -> profit(context, labelRes, label, Profit.thisMonth(dao), ScreenId.INSIGHTS)
-                VoiceQuestion.Window.LAST_MONTH -> profit(context, labelRes, label, Profit.lastMonth(dao), ScreenId.INSIGHTS)
+                VoiceQuestion.Window.THIS_MONTH -> profit(context, labelRes, label, monthProfit(context, dao, VoiceQuestion.Window.THIS_MONTH), ScreenId.INSIGHTS)
+                VoiceQuestion.Window.LAST_MONTH -> profit(context, labelRes, label, monthProfit(context, dao, VoiceQuestion.Window.LAST_MONTH), ScreenId.INSIGHTS)
                 else -> profit(context, labelRes, label, Profit.between(dao, from, to), null)
             }
         }
@@ -813,7 +820,7 @@ object AnswerBook {
         context: AnswerEnv, dao: KhataDao, ids: List<Long>, window: VoiceQuestion.Window, got: Boolean,
         parties: List<PartyWithBalance>
     ): AnswerCard {
-        val (from, to) = Hudhud.span(window)
+        val (from, to) = Hudhud.span(window, context.now())
         return movedOver(context, dao, ids, from, to, context.getString(windowWord(window)), got, parties)
     }
 
@@ -936,7 +943,7 @@ object AnswerBook {
             return AnswerCard(Mood.CALM, label = label, lines = listOf(context.getString(W.hudhud_owner_only)))
         }
         if (!context.radarOn()) return AnswerCard(Mood.CALM, label = label, lines = listOf(context.getString(W.radar_state_off)))
-        val now = System.currentTimeMillis()
+        val now = context.now()
         if (ids.isEmpty()) {
             val promises = dao.observePromises().first().associate { it.partyId to it.due }
             val likely = PaymentRadar.likelyNow(LedgerLines.owingOf(dao, parties), context.radarShopDays(dao), promises, now)
@@ -1009,7 +1016,7 @@ object AnswerBook {
      * greeting and one line of counts — never an amount.
      */
     private suspend fun today(context: AnswerEnv, dao: KhataDao): AnswerCard {
-        val now = System.currentTimeMillis()
+        val now = context.now()
         val radar = AnswerGate.reports() && context.radarOn()
         val collect = if (context.viewer()) null
         else runCatching { Automations.collect(dao, context.remindedToday(now), now, radar = radar) }.getOrNull()
@@ -1043,7 +1050,7 @@ object AnswerBook {
      * else how many rows the bell has, else that nothing is waiting. [bell] is the bell's own count.
      */
     suspend fun greetingLine(context: AnswerEnv, dao: KhataDao, bell: Int): String {
-        val now = System.currentTimeMillis()
+        val now = context.now()
         val remind = if (context.viewer()) 0
         else runCatching { Automations.collect(dao, context.remindedToday(now), now).count }.getOrDefault(0)
         return headline(context, remind, bell)
@@ -1059,7 +1066,7 @@ object AnswerBook {
      * The greeting by the shop's country and the hour ([Hudhud.greeting], the owner's rule), with what the owner asked
      * to be called when he gave it ("Assalam-o-Alaikum, Ali bhai!", 13 Nov 2026).
      */
-    fun greeting(context: AnswerEnv, now: Long = System.currentTimeMillis()): String {
+    fun greeting(context: AnswerEnv, now: Long = context.now()): String {
         val hour = Calendar.getInstance().apply { timeInMillis = now }.get(Calendar.HOUR_OF_DAY)
         val word = context.getString(
             when (Hudhud.greeting(context.profile.country(), hour)) {
@@ -1076,7 +1083,7 @@ object AnswerBook {
     /** An amount with its heading: glad of more than nothing unless it is what the shop owes ([calm]). */
     /** [user]'s own counter sales today (the owner's T5): his tickets' total and count; the shop's total stays the owner's. */
     private suspend fun ownSales(context: AnswerEnv, dao: KhataDao, user: String): AnswerCard {
-        val dayStart = DayMath.startOfDay(System.currentTimeMillis())
+        val dayStart = DayMath.startOfDay(context.now())
         val dayEnd = Calendar.getInstance().apply { timeInMillis = dayStart; add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
         val total = dao.salesTotalByUser(user, dayStart, dayEnd)
         val count = dao.salesCountByUser(user, dayStart, dayEnd)
@@ -1146,7 +1153,7 @@ object AnswerBook {
             failed > last -> care(context.getString(W.notif_backup_failed_title), context.getString(W.na_backup_failed_sub))
             last == 0L -> care(context.getString(W.na_backup_never), context.getString(W.na_backup_sub))
             else -> {
-                val days = ((System.currentTimeMillis() - last) / DAY_MS).toInt()
+                val days = ((context.now() - last) / DAY_MS).toInt()
                 if (days >= OLD_BACKUP_DAYS) {
                     care(context.getString(W.na_backup, days.toString()), context.getString(W.na_backup_sub))
                 } else {
@@ -1166,7 +1173,7 @@ object AnswerBook {
             return AnswerCard(Mood.CALM, label = context.getString(W.z_expected),
                 lines = listOf(context.getString(W.hudhud_owner_only)))
         }
-        val f = DayCloseMath.drawerByTheBooks(dao)
+        val f = DayCloseMath.drawerByTheBooks(dao, context.now())
         val last = f.last
         val since = if (last == null) context.getString(W.dayclose_since_first)
         else context.getString(W.dayclose_since_last, Format.dateTime(last.closedAt))

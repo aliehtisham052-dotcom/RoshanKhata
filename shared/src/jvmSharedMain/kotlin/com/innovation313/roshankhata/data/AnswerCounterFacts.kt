@@ -22,7 +22,6 @@ import kotlin.math.abs
  */
 internal object AnswerCounterFacts {
 
-    private fun now() = System.currentTimeMillis()
 
     // Every gate is asked through AnswerGate (the catalog holds each fact to the gate of the screen that shows it).
     private fun reports() = AnswerGate.reports()
@@ -34,7 +33,7 @@ internal object AnswerCounterFacts {
 
     private fun line(c: AnswerEnv, label: String, value: String) = line(c.getString(label), value)
 
-    private fun whenOf(c: AnswerEnv, t: Long) = WhenWords.whenWords(t, now(), c.words)
+    private fun whenOf(c: AnswerEnv, t: Long) = WhenWords.whenWords(t, c.now(), c.words)
 
     private fun n(count: Int): String = count.toString()
 
@@ -126,7 +125,7 @@ internal object AnswerCounterFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val title = heading(c, W.hudhud_t_biggest, w)
         if (!reports()) return ownerOnly(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val top = dao.biggestSalesBetween(from, to, TOP + 1)
         return ticket(c, dao, top.firstOrNull()?.id, title, top.drop(1))
     }
@@ -178,7 +177,7 @@ internal object AnswerCounterFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val title = heading(c, W.hudhud_t_by_cashier, w)
         if (!reports()) return ownerOnly(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val open = ScreenId.COUNTER_SALE
         val all = dao.salesByCashierBetween(from, to)
         if (all.isEmpty()) return none(c, title, open)
@@ -203,7 +202,7 @@ internal object AnswerCounterFacts {
         }, w)
         if (!reports()) return ownerOnly(c, title)
         val open = ScreenId.DAY_BOOK
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         if (dao.salesBetween(from, to).size > MAX_TICKETS) return tooMany(c, title, open)
         val z = ZReport.compute(dao, from, to)
         if (z.saleCount == 0) return none(c, title, open)
@@ -233,7 +232,7 @@ internal object AnswerCounterFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val title = heading(c, W.hudhud_t_voided, w)
         if (!reports()) return ownerOnly(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val open = ScreenId.COUNTER_SALE
         val sales = dao.voidedSalesBetween(from, to, 200)
         val returns = dao.voidedReturnsBetween(from, to, 200)
@@ -265,7 +264,7 @@ internal object AnswerCounterFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val title = heading(c, W.hudhud_t_return_reasons, w)
         if (!reports()) return ownerOnly(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val open = ScreenId.COUNTER_SALE
         val rows = dao.returnsWhyBetween(from, to, RETURN_READ)
         if (rows.isEmpty()) return none(c, title, open)
@@ -290,7 +289,7 @@ internal object AnswerCounterFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val title = heading(c, W.hudhud_t_return_ways, w)
         if (!reports()) return ownerOnly(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val open = ScreenId.COUNTER_SALE
         val rows = dao.returnsWhyBetween(from, to, RETURN_READ)
         if (rows.isEmpty()) return none(c, title, open)
@@ -307,7 +306,7 @@ internal object AnswerCounterFacts {
         val w = window ?: VoiceQuestion.Window.TODAY
         val title = heading(c, W.hudhud_t_return_goods, w)
         if (!reports()) return ownerOnly(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val open = ScreenId.COUNTER_SALE
         val lines = dao.returnedGoodsBetween(from, to, GOODS_READ)
         if (lines.isEmpty()) return none(c, title, open)
@@ -329,7 +328,7 @@ internal object AnswerCounterFacts {
         val w = window ?: VoiceQuestion.Window.THIS_WEEK
         val title = heading(c, W.shift_title, w)
         if (!reports()) return ownerOnly(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val open = ScreenId.SHIFT
         val all = dao.shiftsBetween(from, to).let { list -> if (onlyShort) list.filter { s -> s.difference?.let { Money.isNotZero(it) } == true } else list }
         if (all.isEmpty()) return none(c, title, open)
@@ -366,7 +365,7 @@ internal object AnswerCounterFacts {
         if (!reports()) return ownerOnly(c, title)
         val open = ScreenId.CASHBOOK
         val closes = if (window == null) listOfNotNull(dao.lastDayClose()) else {
-            val (from, to) = Hudhud.span(window)
+            val (from, to) = Hudhud.span(window, c.now())
             dao.dayClosesBetween(DayCloseMath.dayOf(from), DayCloseMath.dayOf(to - 1) + 1, TOP)
         }.sortedByDescending { it.day }
         val first = closes.firstOrNull()
@@ -410,7 +409,7 @@ internal object AnswerCounterFacts {
         val title = heading(c, W.loyalty_section, w)
         if (!reports()) return ownerOnly(c, title)
         val open = ScreenId.KHATA
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         if (ids.size == 1) {
             val id = ids.first()
             val name = dao.getPartyName(id) ?: return none(c, title, open)
@@ -447,7 +446,7 @@ internal object AnswerCounterFacts {
         val w = window ?: VoiceQuestion.Window.THIS_MONTH
         val title = heading(c, W.hudhud_t_written_off, w)
         if (!reports()) return ownerOnly(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val open = ScreenId.PRODUCTS
         val rows = dao.adjustmentsBetween(from, to, ADJUST_READ)
         if (rows.size >= ADJUST_READ) return tooMany(c, title, open)
@@ -468,7 +467,7 @@ internal object AnswerCounterFacts {
         val w = window ?: VoiceQuestion.Window.THIS_MONTH
         val title = heading(c, W.hudhud_t_stock_changes, w)
         if (!reports()) return ownerOnly(c, title)
-        val (from, to) = Hudhud.span(w)
+        val (from, to) = Hudhud.span(w, c.now())
         val open = ScreenId.PRODUCTS
         val rows = dao.adjustmentsBetween(from, to, ADJUST_READ)
         if (rows.isEmpty()) return none(c, title, open)

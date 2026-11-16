@@ -35,7 +35,7 @@ object AnswerWhy {
     suspend fun answer(c: AnswerEnv, dao: KhataDao, ask: Hudhud.Ask.Why): AnswerCard {
         val title = c.getString(titleOf(ask.of))
         if (!AnswerGate.reports()) return AnswerCard(Mood.CALM, label = title, lines = listOf(c.getString(W.hudhud_owner_only)))
-        val spans = HudhudWhyAsk.spans(ask.window) ?: return AnswerCard(Mood.CALM, label = title, lines = listOf(c.getString(W.hudhud_unknown)))
+        val spans = HudhudWhyAsk.spans(ask.window, c.now()) ?: return AnswerCard(Mood.CALM, label = title, lines = listOf(c.getString(W.hudhud_unknown)))
         val (nowFrom, nowTo) = spans.now
         val (beforeFrom, beforeTo) = spans.before
         val figures = when (ask.of) {

@@ -25,6 +25,13 @@ interface AnswerEnv {
 
     fun quantity(name: String, count: Int, vararg args: Any): String = words.plural(name, count, *args)
 
+    /**
+     * The moment the answers count from (17 Nov 2026, audit L035): "today", "this month", "a few minutes ago" and every span
+     * of days are worked out from it, never from the system clock directly, so a test can hold the clock still. The real
+     * clock unless an env says otherwise; [inLanguage] keeps it.
+     */
+    fun now(): Long = System.currentTimeMillis()
+
     /** The same env with its words in [locale]. */
     fun inLanguage(locale: Locale): AnswerEnv
 
