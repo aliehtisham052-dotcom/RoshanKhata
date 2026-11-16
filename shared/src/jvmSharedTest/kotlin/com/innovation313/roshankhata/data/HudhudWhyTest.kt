@@ -79,6 +79,8 @@ class HudhudWhyTest {
         assertEquals(why(WhyOf.SALES), HudhudWhyAsk.read("Hudhud sale kyun kam hui", calling = { it == "hudhud" }))
         // Two figures with no other word: not one figure, not read (only this guard refuses it, lesson 129).
         assertNull(HudhudWhyAsk.read("sale munafa kyun kam hua"))
+        // Arabic "لم" is "did not" here, no "why": a statement that the sales did not fall is not asked why.
+        assertNull(HudhudWhyAsk.read("لم تنخفض المبيعات"))
         // A word that is the reader's own and a name the book holds ("Sabab", a customer): his, not the shop's "why".
         assertNull(HudhudWhyAsk.read("sabab ki sale kam hui", isName = { it == "sabab" }))
         assertEquals(why(WhyOf.SALES), HudhudWhyAsk.read("sabab ki sale kam hui"))

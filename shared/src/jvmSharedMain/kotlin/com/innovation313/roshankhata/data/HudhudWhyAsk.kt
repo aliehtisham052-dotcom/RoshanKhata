@@ -33,7 +33,8 @@ object HudhudWhyAsk {
         "why kyun kyon kyu kyoon kiyon kiun kiyun wajah waja wajeh wajha sabab reason reasons cause",
         "کیوں کیونکر وجہ وجوہات سبب",
         "ڇو ڇالاءِ ڇالاء سبب ڪارڻ",
-        "لماذا لم سبب السبب اسباب",
+        // Not "لم": it is "did not" far more often than the classical "why" ("لم تنخفض المبيعات" says the sales did not fall).
+        "لماذا سبب السبب اسباب",
         "چرا دلیل علت",
         "क्यों क्यूं क्यो वजह कारण",
         "কেন কারণ",
