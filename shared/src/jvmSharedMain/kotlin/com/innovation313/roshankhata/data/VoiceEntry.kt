@@ -85,6 +85,11 @@ object VoiceEntry {
         "das" to 10.0, "dus" to 10.0, "دس" to 10.0,
         "bees" to 20.0, "بیس" to 20.0,
         "pachas" to 50.0, "pachaas" to 50.0, "پچاس" to 50.0,
+        // One and a half and two and a half are single words (16 Nov 2026, audit T30: "dedh hazar" was read as 1000,
+        // the bare multiplier, a wrong figure with no warning).
+        "dedh" to 1.5, "derh" to 1.5, "dairh" to 1.5, "ڈیڑھ" to 1.5, "ڈیڑہ" to 1.5,
+        "dhai" to 2.5, "dhaai" to 2.5, "adhai" to 2.5, "arhai" to 2.5, "arhaai" to 2.5,
+        "ڈھائی" to 2.5, "اڑھائی" to 2.5, "ڈھائ" to 2.5,
 
         // English, for an owner who has set the app to English. Written out to
         // nineteen and then by tens, because English says "twenty five" where
@@ -109,6 +114,33 @@ object VoiceEntry {
         "crore" to 10_000_000.0, "karor" to 10_000_000.0, "کروڑ" to 10_000_000.0,
         "hundred" to 100.0, "thousand" to 1000.0, "million" to 1_000_000.0
     )
+
+    /**
+     * Words that change the number after them (16 Nov 2026, audit T30): "sawa sau" 125, "saade teen hazar" 3,500,
+     * "paune do lakh" 1,75,000. Applied only when a number word or a scale follows straight after; alone they are
+     * ignored (Urdu سوا also means "apart from"). Roman Urdu and Urdu only: other languages' words wait for a native
+     * check (T35).
+     */
+    private val MODIFIERS = mapOf(
+        "sawa" to 0.25, "sava" to 0.25, "سوا" to 0.25,
+        "saade" to 0.5, "sade" to 0.5, "saadhe" to 0.5, "sadhe" to 0.5, "saarhe" to 0.5, "ساڑھے" to 0.5,
+        "paune" to -0.25, "pone" to -0.25, "paunay" to -0.25, "پونے" to -0.25
+    )
+
+    /**
+     * A scale written on to the digits (16 Nov 2026, audit T30): "5k", "1.5k", "2lac", "5rb". "5k" was read as 5 —
+     * the entry form opened with Rs 5. Only letters joined to the figure with no space count ("500 k saman" is "500 ke").
+     */
+    private val JOINED_SCALE = mapOf("k" to 1000.0)
+
+    private fun joinedScale(letters: String): Double? =
+        if (letters.isEmpty()) null else JOINED_SCALE[letters] ?: MULTIPLIERS[letters] ?: DIGIT_MULTIPLIERS[letters]
+
+    /** A figure with its scale joined on ("5k", "2lac"): a number, never part of a name. */
+    private fun isJoinedFigure(word: String): Boolean {
+        val i = word.indexOfFirst { !it.isDigit() && it != '.' && it != ',' }
+        return i > 0 && word[0].isDigit() && joinedScale(word.substring(i)) != null
+    }
 
     /**
      * Scale words in Persian, Arabic and Sindhi, honoured ONLY straight after
@@ -374,6 +406,8 @@ object VoiceEntry {
             UNITS.containsKey(word) ||
             MULTIPLIERS.containsKey(word) ||
             DIGIT_MULTIPLIERS.containsKey(word) ||
+            MODIFIERS.containsKey(word) ||
+            isJoinedFigure(word) ||
             word in GAVE ||
             word in GOT ||
             word.all { it.isDigit() }
@@ -546,6 +580,10 @@ object VoiceEntry {
         figure.find(text)?.let { m ->
             val cleaned = if (dotGroups) m.value.replace(".", "").replace(',', '.') else m.value.replace(",", "")
             cleaned.toDoubleOrNull()?.let { digits ->
+                // "5k", "2lac": a scale joined to the figure, then a non-letter or the end.
+                val rest = text.substring(m.range.last + 1)
+                val joined = rest.takeWhile { it.isLetter() }
+                joinedScale(joined)?.let { return digits * it }
                 // "5 hazaar" — a digit followed by a multiplier word.
                 val after = text.substring(m.range.last + 1).trim().split(" ").firstOrNull()
                     ?.trimEnd('.', ',', '।', '؟', '?', '!', '،')
@@ -571,19 +609,33 @@ object VoiceEntry {
         var total = 0.0
         var current = 0.0
         var seen = false
+        // "sawa", "saade", "paune": waits for the very next word, which must be a number word or a scale.
+        var pending = 0.0
 
         for (w in text.split(" ", "،", ",")) {
+            if (w.isEmpty()) continue
+            val mod = MODIFIERS[w]
+            if (mod != null) {
+                pending = mod
+                continue
+            }
             val unit = UNITS[w] ?: if (persian) PERSIAN_UNITS[w] else null
             if (unit != null) {
-                current += unit
+                current += unit + pending
+                pending = 0.0
                 seen = true
                 continue
             }
-            val mult = MULTIPLIERS[w] ?: (if (persian) PERSIAN_MULTIPLIERS[w] else null) ?: continue
+            val mult = MULTIPLIERS[w] ?: (if (persian) PERSIAN_MULTIPLIERS[w] else null)
+            if (mult == null) {
+                pending = 0.0
+                continue
+            }
             seen = true
             // A multiplier with nothing before it counts once: "hazaar" is one
-            // thousand, not none.
-            val take = if (current == 0.0) 1.0 else current
+            // thousand, not none; "sawa sau" is one and a quarter hundreds.
+            val take = if (current == 0.0) 1.0 + pending else current
+            pending = 0.0
             if (mult >= 1000.0) {
                 total += take * mult
                 current = 0.0

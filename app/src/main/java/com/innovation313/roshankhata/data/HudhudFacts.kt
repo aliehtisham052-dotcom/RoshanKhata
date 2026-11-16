@@ -42,7 +42,7 @@ import kotlin.math.abs
  * cheques, plans, bills, stock and salaries stand; what came in and what happened today and who did it; the date.
  *
  * Every figure is read from the open shop's book by the rule of the screen the card opens — the stock by [Valuation]
- * (Products and the bell), money in by the day book's rows ([DayBook]), salaries by [Payroll] (Staff), suppliers' rates
+ * (Products and the bell), money in by [KhataDao.customerReceivedBetween] (Insights), salaries by [Payroll] (Staff), suppliers' rates
  * by the bill lines Purchase rates reads — so Hudhud and the screen never disagree. Nothing is estimated: what the
  * book does not hold he says it does not hold ("No price is set for this item"), and the app's own counts that began
  * with this build say since when they count. Every answer only READS. Money (purchase rates, the day's takings) is
@@ -1103,7 +1103,7 @@ internal object HudhudFacts {
 
     /**
      * What happened in the book over a span (today when none was said) and who did it — the owner's check and balance:
-     * entries written, money in and out (the day book's rows), invoices, bills, counter tickets, what was edited or
+     * entries written, money in (customers' real payments, Insights' rule) and out (the day book's rows), invoices, bills, counter tickets, what was edited or
      * deleted and by whom (the audit log), the calculator's sums and how often the app came to the front.
      */
     suspend fun activity(c: Context, dao: KhataDao, window: VoiceQuestion.Window?): Answer {
@@ -1113,7 +1113,8 @@ internal object HudhudFacts {
         val (from, to) = Hudhud.span(w)
         val entries = dao.entryCountBetween(from, to)
         val rows = DayBook.rows(dao, from, to)
-        val moneyIn = rows.filter { it.kind == DayBook.Kind.GOT && isCustomerRow(it) || it.kind == DayBook.Kind.CASH_IN }.sumOf { it.amount }
+        // Money in by the one rule (16 Nov 2026, audit T3 / D-01): what Insights and [collected] say came in.
+        val moneyIn = dao.customerReceivedBetween(from, to)
         val moneyOut = rows.filter { it.kind == DayBook.Kind.CASH_OUT || it.kind == DayBook.Kind.BILL_PAID || it.kind == DayBook.Kind.STAFF_PAID }.sumOf { it.amount }
         val invoices = dao.observeInvoicesFrom(from).first().count { it.invoiceDate < to && it.kind == DocKind.INVOICE }
         val bills = dao.observeBills().first().count { it.billDate >= from && it.billDate < to }
@@ -1151,27 +1152,37 @@ internal object HudhudFacts {
     private fun isCustomerRow(r: DayBook.Row): Boolean = r.customer
 
     /**
-     * Money that came in over a span (today when none was said): customers' payments (their "I got", any way of
-     * paying) and the cashbook's income — the day book's own rows — with how it came (cash, bank, wallet…).
+     * Money that came in over a span (today when none was said), by the Insights rule (16 Nov 2026, audit T3 / D-01, the
+     * owner: "money received" means customers' real payments): the figure is [KhataDao.customerReceivedBetween] — the same
+     * call Insights' "Received today" and the 21:00 closing notice make — so Hudhud and the screen can never disagree. It is
+     * customers' "I got" that is money (a goods return carries its goods as lines and is not) and the counter's walk-in
+     * payments (cashbook income of category Sale); the owner's own money put in the cashbook is not money received. Before,
+     * Hudhud summed the day book's rows itself and counted both. The parts and the ways of paying are those same rows.
      */
     suspend fun collected(c: Context, dao: KhataDao, window: VoiceQuestion.Window?): Answer {
         val w = window ?: VoiceQuestion.Window.TODAY
         val label = heading(c, R.string.hudhud_t_collected, w)
         if (!reports()) return ownerOnly(c, label)
         val (from, to) = Hudhud.span(w)
-        val rows = DayBook.rows(dao, from, to).filter { it.kind == DayBook.Kind.GOT && isCustomerRow(it) || it.kind == DayBook.Kind.CASH_IN }
-        val total = rows.sumOf { it.amount }
-        val khata = rows.filter { it.kind == DayBook.Kind.GOT }.sumOf { it.amount }
-        val cash = rows.filter { it.kind == DayBook.Kind.CASH_IN }.sumOf { it.amount }
+        val total = dao.customerReceivedBetween(from, to)
+        val all = DayBook.rows(dao, from, to)
+        val khataRows = all.filter { it.kind == DayBook.Kind.GOT && isCustomerRow(it) && dao.itemsOfEntry(it.ref).isEmpty() }
+        val counterRows = all.filter { it.kind == DayBook.Kind.CASH_IN && it.who == COUNTER_SALE }
+        val rows = khataRows + counterRows
+        val khata = khataRows.sumOf { it.amount }
+        val counter = counterRows.sumOf { it.amount }
         val words = AndroidWords(c)
         val ways = rows.groupBy { it.method ?: "" }.filterKeys { it.isNotEmpty() }
             .map { (m, list) -> line(PaymentMethod.label(words, m), HudhudBook.money(list.sumOf { it.amount })) }
         val open = if (w == VoiceQuestion.Window.TODAY || w == VoiceQuestion.Window.YESTERDAY) DayBookActivity::class.java else null
         val extras = if (open != null) Bundle().apply { putLong(DayBookActivity.EXTRA_DAY, from) } else null
         return Answer(if (Money.isPositive(total)) Mood.GOOD else Mood.CALM, label = label, figure = HudhudBook.money(total),
-            lines = listOf(line(c, R.string.hudhud_l_from_customers, HudhudBook.money(khata)), line(c, R.string.hudhud_l_cashbook_in, HudhudBook.money(cash))) + ways,
+            lines = listOf(line(c, R.string.hudhud_l_from_customers, HudhudBook.money(khata)), line(c, R.string.pos_walk_in, HudhudBook.money(counter))) + ways,
             open = open, openExtras = extras, money = true)
     }
+
+    /** The cashbook category the counter writes a walk-in's payment under ([KhataDao.customerReceivedBetween]'s 'Sale'). */
+    private const val COUNTER_SALE = "Sale"
 
     // ------------------------------------------------------------------------------------------------ told, not asked
 

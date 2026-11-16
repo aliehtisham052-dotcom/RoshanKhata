@@ -2945,6 +2945,11 @@ Each of these cost a build or a bug.
 147. **A review's sentences are kept, not thrown away.** The 1,115 of 15 Nov are `review_d.tsv`: the ones read as meant are held to their exact reading (`HudhudReviewSetTest`), the
     rest are listed to be promoted. It costs a test run, and it finds the next fix that costs another class. Helpers save time, not tokens.
 
+148. **A guard that keeps the rules' reading from the sense must ask whether the rules read it from a stated cue.** The money-side
+    guard first kept every TO_GET the rules gave; one of them came only from a bare word of debt ("كم علي من ديون"), which the sense
+    had been placing right, and the review set caught it turning wrong (16 Nov 2026). Protect a reading only where the sentence
+    itself says it (`VoiceQuestion.sideSaid`); leave the defaults to the layer that was getting them right.
+
 ---
 
 ## Working with the owner
@@ -4176,6 +4181,40 @@ whole pipeline (lesson 145), find the CLASS of each misread, fix by class, keep 
   for X, and only the features the app has can have one; many of the 2,000 ask for features the app lacks (accounting journal, payroll
   commissions, bank reconciliation, photo recognition…), which is the feature-gap list, not Hudhud's. About 140 still read as the abilities list
   and 60 as the activity of the day for talk about chats and history (Hudhud keeps no chat history).
+
+### 16 Nov 2026: the audit's Batch 1 — money safety in Hudhud (T30, T11, T7, T3, T42; CI only, nothing tried on a real phone)
+
+The Final Master Audit (16 Nov; its files are outside the repository) found 33 findings; the owner asked that every one be
+worked through ("jo jo karna hai professionally manage karo"). Batch 1 is the money-safety part, none of it depending on any
+AI model choice.
+
+- **T30, shorthand amounts** (`VoiceEntry`): "5k" opened the entry form with Rs 5 and "dedh hazar" with Rs 1,000. A scale
+  joined to the figure counts ("5k", "1.5k", "2lac", "5rb"; `JOINED_SCALE`, only with no space: "500 k saman" is "500 ke");
+  "dedh"/"derh"/ڈیڑھ are 1.5 and "dhai"/"adhai"/ڈھائی 2.5 (`UNITS`); "sawa", "saade", "paune" (and their Urdu) change only the
+  number word or scale straight after them (`MODIFIERS`: "sawa sau" 125, "saade teen hazar" 3,500, "paune do lakh" 175,000).
+  Such words are never a name part (`isNoise`). Roman Urdu and Urdu only; other languages' spoken amounts wait for a native
+  check (T35). Tests: VoiceAmountShorthandTest, HudhudEntryAmountTest; five deliberate breakages, all caught.
+- **T11, which side owes** (`VoiceQuestion`, `Hudhud.decide`): the held-out set read four of 36 the opposite way. New words:
+  Farsi "باید بدم…" (TO_GIVE), Hindi देनदारी / लेनदारी, Indonesian "ditagih", "utang aku/utangku" (MY_DEBT), Arabic "علينا", Farsi
+  "بدهی مشتریان" (OTHERS_GIVE). And a guard in `decide`: when the sentence says the side outright (`VoiceQuestion.sideSaid`), the
+  sense may not turn TO_GET into TO_GIVE or back — a bare word of debt ("كم علي من ديون") is still the sense's to place.
+  Held-out strict 1,050 → 1,057, opposite sides 4 → 0 (the held-out set is now dev data: it was used to find these).
+  Test: HudhudMoneySideTest (27 sentences, nine languages); six deliberate breakages, all caught.
+- **T7, off the book** (`Hudhud.offTopic`, `Ask.OffTopic`, `OffTopicWhy`): "500 aur 300 ka total" and "2+2" opened an entry
+  form; "cricket score", "joke sunao", "Pakistan ka capital" showed the profile, the owner's name, About. Now, with nobody and
+  nothing of the book named and no giving verb: a sum written with signs is worked out by `Calc.eval` and opens the calculator;
+  a sum in words ("total", "jama") opens it; a topic no book holds (`OFF_BOOK`: weather, cricket, joke, film, song, politics, a
+  capital city — "mausam" alone is also the season, so only "mausam kaisa") is refused plainly with "what can you tell me" as a
+  chip. A word of the book's figures beside it keeps it the book's ("12 / 11 ki sale" is a date). Strings (nine languages):
+  hudhud_off_topic, hudhud_sum_here. **Sindhi, Bengali, Farsi and Arabic wording is for a native read.** Test: HudhudOffTopicTest.
+- **T3, one rule for money in** (`HudhudFacts.collected`, `activity`): Hudhud summed the day book itself and counted a customer's
+  goods return and the owner's own cash put in the cashbook (Rs 1,000 + 300 read as Rs 3,800). The figure is now
+  `KhataDao.customerReceivedBetween` — Insights' and the 21:00 notice's own call; the parts are the same rows (khata payments
+  without goods, walk-in Sale income). `hudhud_l_cashbook_in` went; the walk-in line uses `pos_walk_in`. Test (on device):
+  HudhudMoneyInOnDeviceTest.
+- **T42, the book refuses an impossible amount** (`requireBookAmount` in KhataDao.kt): `insertEntryNumbered`,
+  `updateEntryWithItems` and `insertCashEntryAudited` refuse a minus, NaN, infinity or a figure past `Calc.MAX_ABS` inside the
+  transaction (zero stays: goods at no price). Test (desktop): BookAmountGuardTest.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 

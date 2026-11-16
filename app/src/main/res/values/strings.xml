@@ -1087,6 +1087,8 @@
     <string name="hudhud_speaking">Speaking</string>
     <string name="hudhud_replay">Hear again</string>
     <string name="hudhud_unknown">I could not find this in your khata. The nearest questions I can answer are below.</string>
+    <string name="hudhud_off_topic">I help only with your shop\'s book and this app, so I cannot answer this.</string>
+    <string name="hudhud_sum_here">For sums, the calculator is one tap away.</string>
     <string name="hudhud_owner_only">Only the owner or a manager can see this figure.</string>
     <string name="hudhud_owner_only_exact">Only the owner can see this.</string>
     <string name="hudhud_limit_manager">On a counter phone, this opens only for the owner or a manager, with the PIN.</string>
@@ -4695,7 +4697,6 @@
     <string name="hudhud_activity_none">Nothing was written in this time.</string>
     <string name="hudhud_t_collected">Money that came in</string>
     <string name="hudhud_l_from_customers">From customers</string>
-    <string name="hudhud_l_cashbook_in">Cashbook income</string>
     <string name="hudhud_can_people">A customer\'s number, last payment, limit, promise or private note — ask with the name</string>
     <string name="hudhud_can_goods">An item\'s price, stock, purchase rate and which supplier is cheaper</string>
     <string name="hudhud_can_book">Today\'s invoices, goods that came in, money that came in, and who changed what</string>

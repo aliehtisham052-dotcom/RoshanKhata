@@ -79,6 +79,13 @@ object Hudhud {
         /** Nothing Hudhud knows; he says so and offers what he can answer. */
         object Unknown : Ask()
 
+        /**
+         * Not a question of the shop's book (16 Nov 2026, audit T7 / H-05, H-08, the owner: refuse plainly): the weather, a
+         * cricket score, a joke — said plainly that he helps only with the book and the app — or a sum to work out, never an
+         * entry: [sum] is the expression when it was written with signs and [result] the calculator's own answer ([Calc.eval]).
+         */
+        data class OffTopic(val why: OffTopicWhy, val sum: String? = null, val result: Double? = null) : Ask()
+
         // 13 Nov 2026, the owner: "har angle se Hudhud ko pata hona chahiye… lekin accuracy, fake data nahi". Each
         // of these is read from the book by the rule of the screen it names, and only read.
 
@@ -384,7 +391,63 @@ object Hudhud {
     fun understand(
         heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
         goods: List<Name> = emptyList(), before: Ask? = null, staff: List<Name> = emptyList()
-    ): Ask = whatIf(heard, understandRead(salaamHeadRead(withoutSelf(heard)), asRead(names), topics, language, asRead(goods), before, asRead(staff)))
+    ): Ask = offTopic(heard, whatIf(heard, understandRead(salaamHeadRead(withoutSelf(heard)), asRead(names), topics, language, asRead(goods), before, asRead(staff))))
+
+    /** Why a sentence is not a question of the book ([Ask.OffTopic]). */
+    enum class OffTopicWhy { GENERAL, SUM }
+
+    /**
+     * Off the book (16 Nov 2026, audit T7). "500 aur 300 ka total kya hai" and "2+2 kitne hote hain" opened an entry form;
+     * "cricket score" showed the shop's profile, "joke sunao" the owner's name, "Pakistan ka capital" the app's About. Only a
+     * sentence that names nobody and no product of the book, and says no entry (no giving or taking verb):
+     * - a sum: two figures joined by a sign (+ × * ÷, and - or / with a space on both sides: "12/11" is a date, "0300-1234567"
+     *   a number), or two figures with a word of adding ("total", "jama", "jod", "sum", "plus"); a sign's sum is worked out by
+     *   the calculator's own [Calc.eval], never by guessing;
+     * - a topic no shop's book holds: the weather, cricket, a joke, a film, a song, politics, a capital city — and no word of
+     *   the book's figures beside it ("Kis cheez ki sale mausam ke saath badhti hai" is a sales question and stays one;
+     *   "mausam" alone is also the season, so only "mausam kaisa" is the weather).
+     */
+    private fun offTopic(heard: String, ask: Ask): Ask {
+        // Talk ("kaise ho") is kept unless it carries a topic word: "joke sunao" was taken as "how are you" by the sense.
+        if (ask is Ask.Voice || ask is Ask.Look || ask is Ask.CallMe || ask is Ask.Act ||
+            ask is Ask.Abilities || (ask is Ask.About && (ask.topic in STORY_TOPICS || ask.topic in FAITH_TOPICS))
+        ) return ask
+        if (partyOf(ask) != null || goodsOf(ask) != null) return ask
+        if (VoiceEntry.parse(heard, emptyList()).isGiven != null) return ask
+        // A word of the book's figures beside the signs ("12 / 11 ki sale") makes it the book's question, the slash a date's.
+        val bookFigure = VoiceQuestion.classify(heard) != null
+        val joined = words(heard).joinToString(" ")
+        // A sum is read before a help page found by its words ("1200 aur 800 jama karo" found the business page by "jama"),
+        // unless the sentence asks how ("jama kaise karun").
+        if (!bookFigure && !has(joined, HOW)) {
+            SIGN_SUM.find(heard)?.let { m ->
+                val expr = m.value.trim()
+                val result = com.innovation313.roshankhata.ui.Calc.eval(expr.replace('×', '*').replace('÷', '/').replace('x', '*').replace('X', '*'))
+                return Ask.OffTopic(OffTopicWhy.SUM, expr, result)
+            }
+            if (FIGURE.findAll(heard).count() >= 2 && has(joined, ADDING)) return Ask.OffTopic(OffTopicWhy.SUM)
+        }
+        if (ask is Ask.Help) return ask
+        if (has(joined, OFF_BOOK) && !bookFigure) return Ask.OffTopic(OffTopicWhy.GENERAL)
+        return ask
+    }
+
+    private val FIGURE = Regex("\\p{Nd}[\\p{Nd},.]*")
+    private val SIGN_SUM = Regex("\\p{Nd}[\\p{Nd},.]*(\\s*[+×*÷xX]\\s*|\\s+[-/]\\s+)\\p{Nd}[\\p{Nd},.]*")
+
+    private val ADDING = listOf("total", "jama", "jod", "jor", "sum", "plus", "add", "ٹوٹل", "جمع", "जोड़", "जोड़ो", "टोटल",
+        "مجموع", "جمع کن", "jumlah", "যোগ", "মোট কত")
+
+    private val OFF_BOOK = listOf(
+        "cricket", "کرکٹ", "ڪرڪيٽ", "क्रिकेट", "ক্রিকেট", "كريكيت", "کریکت", "kriket",
+        "weather", "mausam kaisa", "mosam kaisa", "موسم کیسا", "मौसम कैसा", "الطقس", "آب و هوا", "আবহাওয়া", "cuaca",
+        "joke", "jokes", "latifa", "lateefa", "لطیفہ", "لطیفے", "चुटकुला", "चुटकुले", "কৌতুক", "نكتة", "جوک", "lelucon",
+        "movie", "movies", "film", "فلم", "फ़िल्म", "फिल्म", "সিনেমা", "فيلم", "فیلم",
+        "song", "songs", "گانا", "गाना", "أغنية", "آهنگ", "lagu",
+        "politics", "siyasat", "سیاست", "سياسة", "राजनीति", "রাজনীতি", "politik",
+        "capital city", "capital of", "pakistan ka capital", "india ka capital", "daral hukumat", "darul hukumat", "دارالحکومت",
+        "राजधानी", "রাজধানী", "عاصمة", "پایتخت", "ibu kota"
+    )
 
     /**
      * A "what if" about how the app behaves (16 Nov 2026, the owner's lists 2101-3100 and 6101-7100: "agar sale price minus likhi jaye
@@ -1032,6 +1095,9 @@ object Hudhud {
         return words(heard).all { it in QUIET_SET || it in VOCATIVE_SET || NameSearch.fold(it) in own }
     }
 
+    private val SIDES = setOf(VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.TO_GIVE)
+    private val SIDE_LABELS = setOf("to_get", "to_give")
+
     private fun decide(
         heard: String, ruled: Ask, guesses: List<HudhudSense.Guess>, names: List<Name>, topics: List<Topic>,
         language: String?, goods: List<Name>, before: Ask? = null
@@ -1058,6 +1124,10 @@ object Hudhud {
             guesses.firstOrNull { it.label !in COURTESY } ?: return ruled
         } else first
         if (labelOf(ruled) == top.label) return ruled
+        // Which way the money is owed (16 Nov 2026, audit T11): the rules read the side from who gives and who owes ("باید بدم",
+        // "بدهی مشتریان به مغازه", "utang aku"); the sense learnt the words of debt without the side and turned three of them the
+        // opposite way at 0.95. A side the sentence says outright is never turned by the sense; a bare word of debt still may be.
+        if (ruled is Ask.Figure && ruled.kind in SIDES && top.label in SIDE_LABELS && VoiceQuestion.sideSaid(heard)) return ruled
         // "Ali Raza last month", "Ali Raza pichle saal" (15 Nov 2026): the "last" is the span's. The rules read a named person with
         // nothing else asked (his account, or the one fact his words give), and the sense, which learnt "last" as his last
         // payment from sentences with no span in them, was sure of that at 0.95. Only that reading is turned back: a span's word
@@ -1357,7 +1427,7 @@ object Hudhud {
             Move.JUMP -> "act_jump"
         }
         Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
-        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record -> null
+        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic -> null
     }
 
     /**

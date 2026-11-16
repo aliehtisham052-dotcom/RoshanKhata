@@ -1073,6 +1073,8 @@
     <string name="hudhud_speaking">ٻڌائي رهيو آهيان</string>
     <string name="hudhud_replay">ٻيهر ٻڌو</string>
     <string name="hudhud_unknown">هي توهان جي کاتي ۾ نه مليو. ان جي ويجهو سوال، جن جو جواب ڏئي سگهان ٿو، هيٺ آهن.</string>
+    <string name="hudhud_off_topic">مان رڳو توهان جي دڪان جي کاتي ۽ هن ايپ ۾ مدد ڪريان ٿو، تنهنڪري ان جو جواب نٿو ڏئي سگهان.</string>
+    <string name="hudhud_sum_here">حساب لاءِ ڪيلڪيوليٽر هڪ ٽيپ تي آهي.</string>
     <string name="hudhud_owner_only">هي رقم رڳو مالڪ يا مئنيجر ڏسي سگهن ٿا.</string>
     <string name="hudhud_owner_only_exact">هي رڳو مالڪ ڏسي سگهي ٿو.</string>
     <string name="hudhud_limit_manager">ڪائونٽر واري فون تي هي رڳو مالڪ يا مئنيجر جي PIN سان کلي ٿو.</string>
@@ -4510,7 +4512,6 @@
     <string name="hudhud_activity_none">هن عرصي ۾ ڪجهه به نه لکيو ويو.</string>
     <string name="hudhud_t_collected">وصول ٿيل رقم</string>
     <string name="hudhud_l_from_customers">گراهڪن کان</string>
-    <string name="hudhud_l_cashbook_in">روڪڙ ڪتاب جي آمدني</string>
     <string name="hudhud_can_people">ڪنهن گراهڪ جو نمبر، آخري ادائيگي، حد، واعدو يا ذاتي نوٽ — نالو وٺي پڇو</string>
     <string name="hudhud_can_goods">ڪنهن شيءِ جي قيمت، اسٽاڪ، خريد ريٽ ۽ ڪهڙي سپلائر جو سستو آهي</string>
     <string name="hudhud_can_book">اڄ جون انوائسون، آيل مال، آيل رقم، ۽ ڪنهن ڇا بدلايو</string>

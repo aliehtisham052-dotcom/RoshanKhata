@@ -308,6 +308,7 @@ object HudhudBook {
             Hudhud.Ask.Abilities -> abilities(context)
             is Hudhud.Ask.Chat -> chat(context, ask)
             Hudhud.Ask.Unknown -> unknown(context)
+            is Hudhud.Ask.OffTopic -> offTopic(context, ask)
             // Brain v2 (13 Nov 2026): the wider knowledge, each by its screen's own rule (HudhudFacts).
             is Hudhud.Ask.Person -> HudhudFacts.person(context, dao, ask.ids, ask.facet, parties)
             is Hudhud.Ask.Goods -> HudhudFacts.goods(context, dao, ask.ids, ask.facet, ask.window)
@@ -598,6 +599,25 @@ object HudhudBook {
      * ([Hudhud.suggest], from the words he was given).
      */
     internal fun unknown(context: Context) = Answer(Mood.CALM, lines = listOf(context.getString(R.string.hudhud_unknown)))
+
+    /**
+     * Off the book (16 Nov 2026, audit T7): a sum opens the calculator (with the calculator's own answer when it was written
+     * with signs: "2+2 = 4"); any other topic is refused plainly, with what he can tell offered as a chip. Never an entry.
+     */
+    private fun offTopic(context: Context, ask: Hudhud.Ask.OffTopic): Answer = when (ask.why) {
+        Hudhud.OffTopicWhy.SUM -> Answer(
+            Mood.CALM,
+            label = ask.sum?.let { Format.ltr(it) },
+            figure = ask.result?.let { Format.ltr(com.innovation313.roshankhata.ui.Calc.trim(it)) },
+            lines = listOf(context.getString(R.string.hudhud_sum_here)),
+            open = CalculatorActivity::class.java
+        )
+        Hudhud.OffTopicWhy.GENERAL -> Answer(
+            Mood.CALM,
+            lines = listOf(context.getString(R.string.hudhud_off_topic)),
+            options = listOf(Hudhud.Ask.Abilities)
+        )
+    }
 
     /** The words each of VoiceQuestion's figures goes by. */
     fun labelOf(kind: VoiceQuestion.Kind): Int = when (kind) {
@@ -1224,6 +1244,7 @@ object HudhudBook {
         is Hudhud.Ask.TopGoods -> c.getString(R.string.hudhud_t_top_goods)
         Hudhud.Ask.Qarz -> c.getString(R.string.hudhud_t_qarz)
         Hudhud.Ask.Automations -> c.getString(R.string.auto_title)
+        is Hudhud.Ask.OffTopic -> null
         // A value of the look as a chip: "Text size Large", "Theme Dark" (the others, a step and "show", have none).
         is Hudhud.Ask.Look -> when (val r = ask.request) {
             is HudhudLook.Request.SizeTo -> lookChip(c, r.setting, r.level)

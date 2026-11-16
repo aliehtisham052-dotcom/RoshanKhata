@@ -1133,6 +1133,8 @@
     <string name="hudhud_speaking">أتحدث</string>
     <string name="hudhud_replay">استمع مرة أخرى</string>
     <string name="hudhud_unknown">لم أجد هذا في دفترك. أقرب الأسئلة التي أستطيع الإجابة عنها في الأسفل.</string>
+    <string name="hudhud_off_topic">أساعد فقط في دفتر متجرك وفي هذا التطبيق، لذلك لا أستطيع الإجابة عن هذا.</string>
+    <string name="hudhud_sum_here">للحساب، الآلة الحاسبة على بُعد لمسة واحدة.</string>
     <string name="hudhud_owner_only">هذا الرقم يراه المالك أو المدير فقط.</string>
     <string name="hudhud_owner_only_exact">هذا يراه المالك فقط.</string>
     <string name="hudhud_limit_manager">على هاتف الكاونتر لا يُفتح هذا إلا للمالك أو المدير برمز PIN الخاص به.</string>
@@ -4779,7 +4781,6 @@
     <string name="hudhud_activity_none">لم يُكتب شيء في هذه المدة.</string>
     <string name="hudhud_t_collected">المبالغ المحصّلة</string>
     <string name="hudhud_l_from_customers">من العملاء</string>
-    <string name="hudhud_l_cashbook_in">دخل دفتر النقد</string>
     <string name="hudhud_can_people">رقم عميل، وآخر دفعة منه، وحدّه أو وعده أو ملاحظته الخاصة — اسأل مع الاسم</string>
     <string name="hudhud_can_goods">سعر صنف ومخزونه وسعر شرائه، وأي مورّد أرخص</string>
     <string name="hudhud_can_book">فواتير اليوم، والبضائع الواردة، والمبالغ المحصّلة، ومن غيّر ماذا</string>

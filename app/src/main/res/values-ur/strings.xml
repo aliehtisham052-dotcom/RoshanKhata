@@ -1045,6 +1045,8 @@
     <string name="hudhud_speaking">بتا رہا ہوں</string>
     <string name="hudhud_replay">دوبارہ سنیں</string>
     <string name="hudhud_unknown">یہ آپ کے کھاتے میں نہیں ملا۔ اس کے قریب ترین سوال، جن کا جواب دے سکتا ہوں، نیچے ہیں۔</string>
+    <string name="hudhud_off_topic">میں صرف آپ کی دکان کے کھاتے اور اس ایپ میں مدد کرتا ہوں، اس لیے اس کا جواب نہیں دے سکتا۔</string>
+    <string name="hudhud_sum_here">حساب لگانے کے لیے کیلکولیٹر ایک ٹیپ پر ہے۔</string>
     <string name="hudhud_owner_only">یہ رقم صرف مالک یا منیجر دیکھ سکتے ہیں۔</string>
     <string name="hudhud_owner_only_exact">یہ صرف مالک دیکھ سکتے ہیں۔</string>
     <string name="hudhud_limit_manager">کاؤنٹر والے فون پر یہ صرف مالک یا منیجر کے PIN سے کھلتا ہے۔</string>
@@ -4482,7 +4484,6 @@
     <string name="hudhud_activity_none">اس عرصے میں کچھ نہیں لکھا گیا۔</string>
     <string name="hudhud_t_collected">وصول ہوئی رقم</string>
     <string name="hudhud_l_from_customers">گاہکوں سے</string>
-    <string name="hudhud_l_cashbook_in">کیش بک کی آمدنی</string>
     <string name="hudhud_can_people">کسی گاہک کا نمبر، آخری ادائیگی، حد، وعدہ یا نجی نوٹ — نام لے کر پوچھیں</string>
     <string name="hudhud_can_goods">کسی آئٹم کی قیمت، اسٹاک، خرید ریٹ اور کس سپلائر کا سستا ہے</string>
     <string name="hudhud_can_book">آج کی انوائسیں، آیا ہوا مال، آئی ہوئی رقم، اور کس نے کیا بدلا</string>

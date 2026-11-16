@@ -1045,6 +1045,8 @@
     <string name="hudhud_speaking">Bata raha hoon</string>
     <string name="hudhud_replay">Dobara sunein</string>
     <string name="hudhud_unknown">Yeh aap ke khate mein nahi mila. Is ke qareeb tareen sawal, jin ka jawab de sakta hoon, neeche hain.</string>
+    <string name="hudhud_off_topic">Main sirf aap ki dukaan ke khate aur is app mein madad karta hoon, is liye is ka jawab nahi de sakta.</string>
+    <string name="hudhud_sum_here">Hisaab lagane ke liye calculator ek tap par hai.</string>
     <string name="hudhud_owner_only">Ye raqam sirf maalik ya manager dekh sakte hain.</string>
     <string name="hudhud_owner_only_exact">Ye sirf maalik dekh sakte hain.</string>
     <string name="hudhud_limit_manager">Counter wale phone par ye sirf maalik ya manager ke PIN se khulta hai.</string>
@@ -4482,7 +4484,6 @@
     <string name="hudhud_activity_none">Is arse mein kuch nahi likha gaya.</string>
     <string name="hudhud_t_collected">Wusool hui raqam</string>
     <string name="hudhud_l_from_customers">Gahakon se</string>
-    <string name="hudhud_l_cashbook_in">Cashbook ki aamdani</string>
     <string name="hudhud_can_people">Kisi gahak ka number, aakhri adaigi, hadd, wada ya niji note — naam le kar poochein</string>
     <string name="hudhud_can_goods">Kisi item ki qeemat, stock, khareed rate aur kis supplier ka sasta hai</string>
     <string name="hudhud_can_book">Aaj ki invoices, aaya hua maal, aayi hui raqam, aur kis ne kya badla</string>

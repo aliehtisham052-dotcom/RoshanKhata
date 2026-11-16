@@ -245,7 +245,10 @@ object VoiceQuestion {
         // "what is on me", Indonesian's "what must be paid".
         "بدهی", "ما عليّ", "harus dibayar",
         // 15 Nov 2026 (review O, everyday asks): the accountant's word, and "to pay off" said as "ada karna".
-        "payable", "payables", "ada karna", "ادا کرنا", "अदा करना")
+        "payable", "payables", "ada karna", "ادا کرنا", "अदा करना",
+        // 16 Nov 2026 (audit T11, the held-out set read these the opposite way): Farsi "the money I must give", Hindi's
+        // accountant's word for payables.
+        "باید بدم", "باید بدهم", "باید بپردازم", "باید بدیم", "باید بدهیم", "باید بپردازیم", "देनदारी")
     private val TO_GET = listOf("lena", "lene", "to get", "receive", "collect", "piutang", "tagih", "لینا", "لینے", "وٺڻا",
         "وٺڻو", "لي عند", "طلبکار", "دریافت", "लेना", "लेने", "পাওনা", "পেতে",
         // 12 Nov 2026 (Hudhud), from the app's own chips: Arabic "what is mine", Indonesian "what must be received".
@@ -253,7 +256,9 @@ object VoiceQuestion {
         // 15 Nov 2026 (review O, everyday asks): the accountant's word; "to collect" said as "wusool karna"; Bengali's "I will get";
         // Arabic's "on the customers". Money still to come ("paise kitne aane hain") is HudhudEveryday's: it needs its guards.
         "receivable", "receivables", "wusool karna", "wasool karna", "wasool karne", "wusool karne", "وصول کرنا", "वसूल करना",
-        "পাব", "পাবো", "على الزبائن", "على العملاء")
+        "পাব", "পাবো", "على الزبائن", "على العملاء",
+        // 16 Nov 2026 (audit T11): Hindi's receivables; Indonesian "to be billed" (tagih alone was there, not its forms).
+        "लेनदारी", "ditagih", "menagih")
 
     // Made once, before anything below first spells a word.
     // Arabic-script vowel marks, madda and hamza above or below (taken off their letter by [normalise]'s NFD), the
@@ -536,6 +541,16 @@ object VoiceQuestion {
     /** The shop's own "I" and "we" before that mark ("main ne", "hum ne"), normalised: these give, the shop is the doer. */
     private val SHOP_DOERS = setOf("main", "mai", "mein", "me", "mujh", "hum", "ham", "میں", "ہم", "मैं", "मै", "हम")
 
+    /**
+     * The sentence says outright which side owes (16 Nov 2026, audit T11): a word of giving or getting, the shop's own debt, or
+     * somebody else who gives. A bare word of debt ("ديون", "baqaya") does not: its side is the default, and Hudhud's sense may
+     * still turn it ("كم علي من ديون" is the shop's debt).
+     */
+    fun sideSaid(heard: String): Boolean {
+        val t = normalise(heard)
+        return saysAny(t, TO_GIVE) || saysAny(t, TO_GET) || saysAny(t, MY_DEBT) || owedToTheShop(t)
+    }
+
     /** [otherDoer] for a sentence as it was said (Hudhud keeps a figure the rules read from it; see his `decide`). */
     fun hasOtherDoer(heard: String): Boolean = otherDoer(normalise(heard))
 
@@ -559,13 +574,17 @@ object VoiceQuestion {
         "kisi ne", "kisine", "jis ne", "jisne", "kisi kisi ne",
         "کس نے", "کس کس نے", "لوگوں نے", "انہوں نے", "اس نے", "گاہک نے", "किस ने", "किसने", "लोगों ने", "उसने", "ग्राहक ने",
         "کسی نے", "جس نے", "किसी ने", "जिसने", "जिस ने",
-        "কে দেবে", "কারা দেবে", "আমাকে দেবে", "من يدين لي", "يدينون لي", "به من بدهکار", "siapa yang berutang"
+        "কে দেবে", "কারা দেবে", "আমাকে দেবে", "من يدين لي", "يدينون لي", "به من بدهکار", "siapa yang berutang",
+        // 16 Nov 2026 (audit T11): Farsi "the customers' debt (to the shop)" — بدهی alone is the shop's own.
+        "بدهی مشتری", "بدهی مشتریان", "بدهی مشتریها", "به مغازه بدهکار"
     )
 
     private val MY_DEBT = listOf(
         "mera qarz", "meri qarz", "mere qarz", "mera karz", "mere zimme", "mere zime", "mujh par", "mujhpar", "humara qarz",
         "my debt", "i owe", "we owe", "میرا قرض", "میرے ذمے", "مجھ پر", "ہمارا قرض", "मेरा कर्ज", "मेरा क़र्ज़", "मेरे जिम्मे",
-        "मुझ पर", "আমার ঋণ", "আমার দেনা", "ديني", "علي دين", "بدهی من", "منهنجو قرض", "utang saya", "hutang saya"
+        "मुझ पर", "আমার ঋণ", "আমার দেনা", "ديني", "علي دين", "بدهی من", "منهنجو قرض", "utang saya", "hutang saya",
+        // 16 Nov 2026 (audit T11): Indonesian's other "I/we" and the joined "my"; Arabic "on us".
+        "utang aku", "hutang aku", "utangku", "hutangku", "utang kami", "hutang kami", "علينا"
     )
 
     /** A supplier's side of the book: what is owed there is the shop's to pay. */

@@ -1051,6 +1051,7 @@ interface KhataDao {
      */
     @Transaction
     suspend fun insertCashEntryAudited(entry: CashEntry): Long {
+        requireBookAmount(entry.amount)
         val id = insertCashEntry(entry)
         log(AuditAction.CASH_ADDED, Access.userName, "cashbook", id, auditAmount(entry.amount))
         return id
@@ -3104,6 +3105,7 @@ interface KhataDao {
      */
     @Transaction
     suspend fun insertEntryNumbered(entry: LedgerEntry): Long {
+        requireBookAmount(entry.amount)
         // The next number is one past the HIGHEST number already in the book,
         // not one past the row count. A count shrinks when an entry is deleted
         // for good (emptying the Recycle Bin, the 30-day purge), and count+1
@@ -3171,6 +3173,7 @@ interface KhataDao {
      */
     @Transaction
     suspend fun updateEntryWithItems(entry: LedgerEntry, items: List<EntryItem>) {
+        requireBookAmount(entry.amount)
         // 8 Nov 2026 review (L70): a screen opened before the entry was binned (here or by the other device) wrote
         // the whole row back, isDeleted = false included, and brought the entry back. A binned row stays binned.
         val stored = getEntry(entry.id)
@@ -5417,6 +5420,20 @@ interface KhataDao {
         setSetting(BookSeals.SWITCH, if (on) "1" else null)
         log(if (on) BookSeals.AUDIT_ON else BookSeals.AUDIT_OFF, user, "book_settings")
         return true
+    }
+}
+
+/**
+ * An amount the book may hold (16 Nov 2026, audit T42 / D-06): the forms refuse a minus, an empty box and a figure past the
+ * calculator's range, but any path that skips a form (a voice entry, a scripted import, a future assistant) reached the
+ * table unchecked. A minus is never an amount here (the side is [LedgerEntry.isGiven] / [CashEntry.isIncome]); NaN and
+ * infinity are no amount at all; a figure past [com.innovation313.roshankhata.ui.Calc.MAX_ABS] cannot be exact to the
+ * paisa. Zero stays allowed: goods given at no price, a free ticket. Thrown inside the transaction, so nothing is written.
+ */
+private fun requireBookAmount(amount: Double) {
+    // A hair below zero is arithmetic noise from a computed remainder, not a minus anyone typed.
+    require(amount.isFinite() && amount > -1e-6 && amount <= com.innovation313.roshankhata.ui.Calc.MAX_ABS) {
+        "not an amount the book may hold: $amount"
     }
 }
 

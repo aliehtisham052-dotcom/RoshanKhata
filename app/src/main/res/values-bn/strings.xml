@@ -1085,6 +1085,8 @@
     <string name="hudhud_speaking">বলছি</string>
     <string name="hudhud_replay">আবার শুনুন</string>
     <string name="hudhud_unknown">এটি আপনার খাতায় পাইনি। কাছাকাছি যে প্রশ্নগুলোর উত্তর দিতে পারি, নিচে আছে।</string>
+    <string name="hudhud_off_topic">আমি শুধু আপনার দোকানের খাতা আর এই অ্যাপে সাহায্য করি, তাই এর উত্তর দিতে পারছি না।</string>
+    <string name="hudhud_sum_here">হিসাবের জন্য ক্যালকুলেটর এক ট্যাপেই খোলে।</string>
     <string name="hudhud_owner_only">এই অঙ্ক শুধু মালিক বা ম্যানেজার দেখতে পারেন।</string>
     <string name="hudhud_owner_only_exact">এটা শুধু মালিক দেখতে পারেন।</string>
     <string name="hudhud_limit_manager">কাউন্টারের ফোনে এটা শুধু মালিক বা ম্যানেজারের PIN দিয়ে খোলে।</string>
@@ -4530,7 +4532,6 @@
     <string name="hudhud_activity_none">এই সময়ে কিছু লেখা হয়নি।</string>
     <string name="hudhud_t_collected">আদায় হওয়া টাকা</string>
     <string name="hudhud_l_from_customers">গ্রাহকদের থেকে</string>
-    <string name="hudhud_l_cashbook_in">ক্যাশবুকের আয়</string>
     <string name="hudhud_can_people">কোনো গ্রাহকের নম্বর, শেষ পরিশোধ, সীমা, প্রতিশ্রুতি বা ব্যক্তিগত নোট — নাম বলে জিজ্ঞাসা করুন</string>
     <string name="hudhud_can_goods">কোনো আইটেমের দর, স্টক, কেনার দর আর কোন সরবরাহকারীর সস্তা</string>
     <string name="hudhud_can_book">আজকের ইনভয়েস, আসা মাল, আসা টাকা, আর কে কী বদলেছে</string>
