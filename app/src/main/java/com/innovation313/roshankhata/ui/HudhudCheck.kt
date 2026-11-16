@@ -5,12 +5,15 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Hudhud
 import com.innovation313.roshankhata.data.HudhudBook
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * The owner's check of a test build (14 Nov 2026, the owner: "final APK par test karunga… kitne sahi aur kitne ghalat
@@ -20,6 +23,11 @@ import java.util.Locale
  *
  * The list may hold customers' names and figures: it stays in the app's own storage (not in the book, a backup, a
  * sync or Android's backup — allowBackup is off) until the owner shares or clears it.
+ *
+ * A shared copy (16 Nov 2026, audit T16) is written to cache/hudhud/ for the share sheet and deleted again: ten minutes
+ * after the share is handed over (the app that was picked reads it first — Backup.sweepCache's and the Waris card's
+ * reason), and, for one a closed app left behind, the next time the list is shared or its settings open. Clear takes
+ * every copy with the list.
  */
 object HudhudCheck {
 
@@ -72,14 +80,29 @@ object HudhudCheck {
     @Synchronized
     fun clear(context: Context) {
         file(context).delete()
+        sweepCopies(context, keepMs = 0L)
+    }
+
+    /**
+     * Deletes the shared copies in cache/hudhud/ older than [keepMs] ([CheckLog.staleCopies]); nothing else in that folder
+     * is touched. Never throws: a copy that cannot be deleted now is tried again next time.
+     */
+    fun sweepCopies(context: Context, keepMs: Long = CheckLog.SHARE_KEEP_MS) {
+        runCatching {
+            val dir = File(context.applicationContext.cacheDir, SHARE_DIR)
+            val files = dir.listFiles { f -> f.isFile }?.toList().orEmpty()
+            val stale = CheckLog.staleCopies(files.map { it.name to it.lastModified() }, System.currentTimeMillis(), keepMs).toSet()
+            files.filter { it.name in stale }.forEach { runCatching { it.delete() } }
+        }
     }
 
     /** The list, through the share sheet; false when there is nothing to send. */
     fun share(activity: Activity): Boolean {
         val lines = synchronized(this) { read(activity) }
         if (CheckLog.counts(lines).asked == 0) return false
+        sweepCopies(activity)
         val dir = File(activity.cacheDir, SHARE_DIR).apply { mkdirs() }
-        val out = File(dir, "hudhud_check_" + SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date()) + ".tsv")
+        val out = File(dir, CheckLog.COPY_PREFIX + SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date()) + CheckLog.COPY_SUFFIX)
         // A spreadsheet opens the tabs as columns; the byte-order mark keeps Urdu letters readable in Excel.
         out.writeText("﻿" + lines.joinToString("\n", postfix = "\n"), Charsets.UTF_8)
         val uri = FileProvider.getUriForFile(activity, activity.packageName + ".fileprovider", out)
@@ -89,9 +112,14 @@ object HudhudCheck {
             putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.hudhud_check_title))
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        return runCatching {
+        val sent = runCatching {
             activity.startActivity(Intent.createChooser(send, activity.getString(R.string.hudhud_check_share)))
         }.isSuccess
+        if (!sent) runCatching { out.delete() }
+        // Not at once: the chooser hands the file over before the chosen app has read it. By its path, so a screen closed
+        // meanwhile still has it deleted; a process killed before then leaves it to the next sweep.
+        else AppScope.launch { delay(CheckLog.SHARE_KEEP_MS); runCatching { out.delete() } }
+        return sent
     }
 
     private fun stamp(): String = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).format(Date())
@@ -136,6 +164,22 @@ object CheckLog {
     const val WRONG = "wrong"
     /** The oldest rows go first past this many, so the file never grows without end. */
     const val MAX_ROWS = 3000
+
+    /** A shared copy's name: [COPY_PREFIX] + a time + [COPY_SUFFIX] (HudhudCheck.share). */
+    const val COPY_PREFIX = "hudhud_check_"
+    const val COPY_SUFFIX = ".tsv"
+    /** How long a shared copy may stay for the app it was handed to (as the Waris card's picture). */
+    const val SHARE_KEEP_MS = 10 * 60_000L
+
+    /**
+     * Of [files] (name to last-modified time) in cache/hudhud/, the shared copies of the list older than [keepMs] at [now]
+     * (16 Nov 2026, audit T16): only names this list writes, so another file in that folder is never touched. A copy with a
+     * time in the future (a clock set back) is old too — it can never become old by waiting.
+     */
+    fun staleCopies(files: List<Pair<String, Long>>, now: Long, keepMs: Long): List<String> =
+        files.filter { (name, at) ->
+            name.startsWith(COPY_PREFIX) && name.endsWith(COPY_SUFFIX) && (at > now || now - at >= keepMs)
+        }.map { it.first }
 
     data class Counts(val asked: Int, val right: Int, val wrong: Int) {
         val marked: Int get() = right + wrong

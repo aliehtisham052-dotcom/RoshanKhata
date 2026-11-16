@@ -25,6 +25,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.slider.Slider
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.HudhudChirp
 import com.innovation313.roshankhata.data.HudhudPace
@@ -32,6 +33,7 @@ import com.innovation313.roshankhata.data.HudhudPronounce
 import com.innovation313.roshankhata.data.HudhudSay
 import com.innovation313.roshankhata.data.string
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 /**
  * Hudhud's voice (13-14 Nov 2026, the owner: "awaazon ko behtar… do teen qism ki awaaz… professionally", "cartoonish,
@@ -460,6 +462,8 @@ object HudhudVoiceSheet {
 
         /** The owner's check of a test build (14 Nov 2026, [HudhudCheck]): the switch, the counts, Share and Clear. */
         private fun startCheck() {
+            // A shared copy a closed app left behind goes when these settings next open (audit T16).
+            AppScope.launch { HudhudCheck.sweepCopies(ctx) }
             swCheck.isChecked = HudhudCheck.isOn(ctx)
             swCheck.setOnCheckedChangeListener { _, on -> HudhudCheck.setOn(ctx, on) }
             showCheckCount()
