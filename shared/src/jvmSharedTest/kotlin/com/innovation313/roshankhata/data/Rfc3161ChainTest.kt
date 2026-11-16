@@ -78,6 +78,17 @@ class Rfc3161ChainTest {
     }
 
     @Test
+    fun `a chain is judged at the stamp's own time, not today`() {
+        // A middle CA that was valid when the token was made and has expired since: the stamp still holds.
+        val now = System.currentTimeMillis()
+        val then = now - 20 * TestTsa.DAY
+        val retired = TestCa("Retired CA (made in the test)", parent = root, validFrom = now - 40 * TestTsa.DAY, validTo = now - 10 * TestTsa.DAY)
+        val tsa = TestTsa(issuer = retired, carry = listOf(retired.cert), validFrom = now - 30 * TestTsa.DAY)
+        val r = Rfc3161.chain(tsa.token(digest, null, then), digest, listOf(root.x509))
+        assertTrue("$r", r is Rfc3161.Chain.Holds)
+    }
+
+    @Test
     fun `a root file is trusted only by its pinned fingerprint`() {
         val pin = TestTsa.sha256(root.cert).joinToString("") { "%02x".format(it) }
         assertEquals(listOf(root.x509), Rfc3161.pinned(listOf(root.cert, stranger.cert), listOf(pin)))

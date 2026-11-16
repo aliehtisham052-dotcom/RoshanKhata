@@ -226,7 +226,7 @@ class TestTsa(
 class TestCa(
     cn: String,
     val parent: TestCa? = null,
-    validFrom: Long = System.currentTimeMillis() - 10 * TestTsa.DAY,
+    validFrom: Long = System.currentTimeMillis() - 365 * TestTsa.DAY,
     validTo: Long = System.currentTimeMillis() + 3650 * TestTsa.DAY,
     ca: Boolean = true
 ) {
