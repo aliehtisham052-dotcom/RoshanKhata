@@ -332,6 +332,37 @@
                     android:textColor="@color/brand_green_text" />
             </LinearLayout>
 
+            <!-- What the entry counts as (schema 45, 16 Nov 2026, the audit's D-02): an ordinary entry or an opening
+                 balance, which stays in the balance and is never a sale. Outside the receipt card, as the season:
+                 it is the shop's bookkeeping. Change asks EDIT_BOOK and is written in Who did what. -->
+            <LinearLayout
+                android:id="@+id/rowKind"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:textAlignment="viewStart"
+                    android:id="@+id/tvKind"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnKind"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/season_change"
+                    android:textColor="@color/brand_green_text" />
+            </LinearLayout>
+
             <!-- Spray advice (2 Oct): written after the sale, printed on the receipt above. -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAdvice"

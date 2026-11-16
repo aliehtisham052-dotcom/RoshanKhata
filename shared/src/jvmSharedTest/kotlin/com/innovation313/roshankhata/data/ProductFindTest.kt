@@ -40,4 +40,28 @@ class ProductFindTest {
         assertNull(ProductFind.byCode(listOf(a, a.copy(id = 9)), "111222"))
         assertNull(ProductFind.byCode(listOf(a, b), ""))
     }
+
+    // The shop's other names for a product (schema 45, the audit's T34): "Urea" found by "یوریا" and "यूरिया".
+    @Test
+    fun `a product is found by any of the other names the shop wrote for it`() {
+        val other = "یوریا، यूरिया"
+        assertTrue(ProductFind.matches("Urea", null, null, null, "یوریا", other))
+        assertTrue(ProductFind.matches("Urea", null, null, null, "यूरिया", other))
+        assertTrue("typed as it is said, the name rule's own slip", ProductFind.matches("Urea", null, null, null, "یوری", other))
+        assertFalse("no other names: the other script finds nothing", ProductFind.matches("Urea", null, null, null, "یوریا", null))
+        assertFalse("another product's names are its own", ProductFind.matches("DAP", null, null, null, "یوریا", "ڈی اے پی"))
+        assertTrue("a name of several words", ProductFind.matches("DAP", null, null, null, "ڈی اے پی", "ڈی اے پی"))
+    }
+
+    @Test
+    fun `the other names are a short clean list, by comma, Arabic comma, semicolon or a new line`() {
+        assertEquals(listOf("یوریا", "यूरिया", "urea", "بوری"), ProductFind.otherNamesOf("یوریا، यूरिया, urea ; UREA\nبوری"))
+        assertEquals("یوریا, यूरिया", ProductFind.cleanOtherNames("  یوریا ,, यूरिया  "))
+        assertNull(ProductFind.cleanOtherNames(" , "))
+        assertNull(ProductFind.cleanOtherNames(null))
+        assertEquals(ProductFind.MAX_OTHER_NAMES, ProductFind.otherNamesOf((1..20).joinToString(",") { "n$it" }).size)
+        val long = ProductFind.cleanOtherNames((1..12).joinToString(",") { "x".repeat(40) + it })!!
+        assertTrue(long.length <= ProductFind.MAX_OTHER_NAMES_CHARS)
+        assertTrue("a name is left out whole, never cut", ProductFind.otherNamesOf(long).all { it.length == 41 || it.length == 42 })
+    }
 }

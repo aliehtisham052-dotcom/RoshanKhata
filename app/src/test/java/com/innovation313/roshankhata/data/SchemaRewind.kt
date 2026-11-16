@@ -52,8 +52,22 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
-    /** Undo version 44: the book's seals, one table and its index (4 Nov 2026). */
+    /** Undo version 45: an entry's kind on transactions and a product's other names (16 Nov 2026). */
+    fun undo45(raw: SQLiteDatabase) {
+        raw.execSQL("PRAGMA foreign_keys = OFF")
+        raw.execSQL("PRAGMA legacy_alter_table = ON")
+        for ((table, cols) in Schema45.newColumns) stripColumns(raw, table, cols)
+        for ((table, cols) in Schema45.newColumns) {
+            val now = raw.rawQuery("PRAGMA table_info($table)", null).use { c ->
+                buildList { while (c.moveToNext()) add(c.getString(c.getColumnIndexOrThrow("name"))) }
+            }
+            assertTrue("rewind left ${cols.filter { it in now }} on $table", cols.none { it in now })
+        }
+    }
+
+    /** Undo version 44: the book's seals, one table and its index (4 Nov 2026). Undoes 45 first. */
     fun undo44(raw: SQLiteDatabase) {
+        undo45(raw)
         for (t in Schema44.newTables) raw.execSQL("DROP TABLE IF EXISTS `$t`")
         val left = raw.rawQuery("SELECT name FROM sqlite_master", null).use { c ->
             buildSet { while (c.moveToNext()) add(c.getString(0)) }

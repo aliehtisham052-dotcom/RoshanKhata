@@ -546,6 +546,8 @@ object PdfExport {
                 e.note?.takeIf { it.isNotBlank() }?.let { add(it) }
                 if (!e.paymentRef.isNullOrBlank()) PaymentMethod.saidOn(context, e.paymentMethod, e.paymentRef)?.let { add(it) }
                 if (e.isQarzeHasna) add(context.getString(R.string.pdf_stmt_qarze_hasna))
+                // An opening balance brought into the book (schema 45) says so: it was owed before, not given that day.
+                if (e.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING) add(context.getString(R.string.pdf_stmt_opening))
             }.joinToString("  ·  ")
 
             // Wrapped, not cut: three items and a long note take up to three lines (L124).

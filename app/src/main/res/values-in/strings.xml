@@ -3694,6 +3694,16 @@
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">Catatan diubah</string>
     <string name="audit_entry_added">Catatan ditambahkan</string>
+    <string name="audit_entry_kind_changed">Jenis catatan diubah</string>
+    <string name="entry_kind_line">Dihitung sebagai: %1$s</string>
+    <string name="entry_kind_normal">Catatan biasa</string>
+    <string name="entry_kind_title">Catatan apa ini?</string>
+    <string name="entry_kind_help">Saldo awal adalah uang terutang dari sebelum buku ini. Tetap ada di saldo dan laporan, dan tidak pernah dihitung sebagai penjualan.</string>
+    <string name="entry_kind_refused">Hanya jumlah uang biasa yang bisa jadi saldo awal: bukan barang, pinjaman, separuh penjualan tunai, atau catatan yang ditulis tagihan, cicilan, cek, atau penjualan kasir.</string>
+    <string name="entry_cash_lent">Uang dipinjamkan: Qardhul Hasan (bukan penjualan)</string>
+    <string name="entry_cash_lent_help">Uang yang dipinjamkan tanpa laba, atau pinjaman yang dikembalikan. Tetap ada di saldo dan tidak pernah dihitung sebagai penjualan atau laba. Tidak pernah dikenakan bunga atau denda keterlambatan.</string>
+    <string name="product_other_names">Nama lain (opsional)</string>
+    <string name="product_other_names_hint">Barang yang sama dalam aksara lain, pisahkan dengan koma</string>
     <string name="audit_entry_deleted">Catatan dihapus</string>
     <string name="audit_cash_added">Baris buku kas ditambah</string>
     <string name="audit_cash_edited">Baris buku kas diubah</string>

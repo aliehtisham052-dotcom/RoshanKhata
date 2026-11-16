@@ -134,9 +134,16 @@ fun EntryReceiptCard(
     var advising by remember { mutableStateOf<EntryItem?>(null) }
     var choosingLine by remember { mutableStateOf(false) }
     var choosingSeason by remember { mutableStateOf(false) }
+    var choosingKind by remember { mutableStateOf(false) }
+    var kindRefused by remember { mutableStateOf(false) }
     var signing by remember { mutableStateOf(false) }
     var photo by remember { mutableStateOf(false) }
-    val title = if (e == null) word(W.receipt_title) else com.innovation313.roshankhata.data.ReceiptBalance.title(words, e.isGiven)
+    // An opening balance (schema 45) is titled as one: owed before the book, not given or paid that day.
+    val title = when {
+        e == null -> word(W.receipt_title)
+        e.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING -> word(W.pdf_stmt_opening)
+        else -> com.innovation313.roshankhata.data.ReceiptBalance.title(words, e.isGiven)
+    }
     run {
         DialogFrame(
             title,
@@ -193,6 +200,16 @@ fun EntryReceiptCard(
                         Text(word(W.season_entry, if (own == null) word(W.season_from_date, seasonName(shown)) else seasonName(shown)), Modifier.weight(1f), color = c.ink, fontSize = 14.sp)
                         FluentButton(word(W.season_change), { Gates.edit { choosingSeason = true } }, kind = ButtonKind.SUBTLE)
                     }
+                }
+                // What it counts as (schema 45, the audit's D-02): an ordinary entry or an opening balance — owed, never a sale.
+                // Shown on an opening balance and on an entry that could be one (EntryKind.refusal); EDIT_BOOK, written in Who did what.
+                val opening = e.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING
+                if (!e.isDeleted && (opening || com.innovation313.roshankhata.data.EntryKind.refusal(e, items.isNotEmpty(), owner) == null)) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(word(W.entry_kind_line, word(if (opening) W.pdf_stmt_opening else W.entry_kind_normal)), Modifier.weight(1f), color = c.ink, fontSize = 14.sp)
+                        FluentButton(word(W.season_change), { choosingKind = true }, kind = ButtonKind.SUBTLE)
+                    }
+                    if (opening) Text(word(W.entry_kind_help), color = c.textMuted, fontSize = 12.sp)
                 }
                 // The dealer's spray advice on a sale's items (an agri shop's): one item at once, or which one first.
                 val goodsLines = items.filter { !it.itemName.isNullOrBlank() }
@@ -259,6 +276,25 @@ fun EntryReceiptCard(
             }
         }
     }
+    if (choosingKind && e != null) {
+        val kinds = listOf(com.innovation313.roshankhata.data.EntryKind.NORMAL, com.innovation313.roshankhata.data.EntryKind.OPENING)
+        val now = com.innovation313.roshankhata.data.EntryKind.of(e.entryKind)
+        PickDialog(word(W.entry_kind_title), listOf(word(W.entry_kind_normal), word(W.pdf_stmt_opening)), chosen = kinds.indexOf(now), onPick = { i ->
+            choosingKind = false
+            val to = kinds[i]
+            if (to != now) Gates.needBy(com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK) { by ->
+                scope.launch {
+                    val refused = withContext(Dispatchers.IO) {
+                        runCatching { dao.setEntryKind(e.id, to, allowedBy = by) }.getOrElse { com.innovation313.roshankhata.data.EntryKind.Refusal.LINKED }
+                    }
+                    kindRefused = refused != null
+                    version++
+                    onChanged()
+                }
+            }
+        }, onDismiss = { choosingKind = false })
+    }
+    if (kindRefused) TellDialog(word(W.entry_kind_title), word(W.entry_kind_refused), { kindRefused = false })
     if (choosingSeason && e != null) {
         val byDate = SeasonBook.seasonOf(e.timestamp)
         val options = listOf(byDate.previous(), byDate, byDate.next())

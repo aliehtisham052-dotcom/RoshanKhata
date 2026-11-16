@@ -53,7 +53,12 @@ object BackupCodec {
      * tokens) — a new table, so an older release refuses the file instead of
      * restoring a book whose proofs it would drop in silence. The helper's copy
      * (secrets = false) carries them too: they hold no PIN and no readable
-     * entry, only hashes and the TSAs' signed times.
+     * entry, only hashes and the TSAs' signed times; 20 (16 Nov 2026, schema 45)
+     * an entry's kind (entryKind: NORMAL or OPENING — an opening balance is no
+     * sale, [EntryKind]) and a product's other names (otherNames). Neither is a
+     * secret, so a helper's copy carries both. A file before 20 restores every
+     * entry as NORMAL and every product with no other names: nothing then said
+     * which entry was an opening balance.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -62,7 +67,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 19
+    const val FORMAT_VERSION = 20
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -917,6 +922,8 @@ object BackupCodec {
         put("pairedEntryId", e.pairedEntryId ?: JSONObject.NULL)
         put("season", e.season ?: JSONObject.NULL)
         put("saleId", e.saleId ?: JSONObject.NULL)
+        // Format 20 (schema 45): NORMAL or OPENING; an opening balance is owed, never a sale.
+        put("entryKind", EntryKind.of(e.entryKind))
         // Format 15: where this phone keeps the bill's photo. An absolute path, right for the phone
         // that wrote it; a restore of the photos re-points it by file name (BackupImages), and a path
         // with no file behind it shows no photo.
@@ -958,6 +965,8 @@ object BackupCodec {
         season = o.optNullableString("season"),
         // Absent before format 8: written by hand.
         saleId = o.optNullableLong("saleId"),
+        // Absent before format 20: every entry was counted as an ordinary one. A word this release does not know is NORMAL.
+        entryKind = EntryKind.of(o.optNullableString("entryKind")),
         // Absent before format 15: no photo is linked (as every restore before it did).
         billPhotoPath = o.optNullableString("billPhotoPath")?.takeIf { it.isNotBlank() },
         isDeleted = o.optBoolean("isDeleted", false),
@@ -1227,6 +1236,8 @@ object BackupCodec {
         put("taxRate", p.taxRate ?: JSONObject.NULL)
         put("parentId", p.parentId ?: JSONObject.NULL)
         put("variant", p.variant ?: JSONObject.NULL)
+        // Format 20 (schema 45): the names the shop also knows it by. Not a secret.
+        put("otherNames", p.otherNames ?: JSONObject.NULL)
         put("createdAt", p.createdAt)
         put("isDeleted", p.isDeleted)
         put("deletedAt", p.deletedAt ?: JSONObject.NULL)
@@ -1273,6 +1284,8 @@ object BackupCodec {
             taxRate = o.optNullableDouble("taxRate"),
             parentId = o.optNullableLong("parentId"),
             variant = o.optNullableString("variant"),
+            // Absent before format 20.
+            otherNames = ProductFind.cleanOtherNames(o.optNullableString("otherNames")),
             createdAt = o.optLong("createdAt", System.currentTimeMillis()),
             isDeleted = o.optBoolean("isDeleted", false),
             deletedAt = o.optNullableLong("deletedAt")

@@ -491,6 +491,8 @@ object AuditAction {
     const val ENTRY_DELETED = "entry_deleted"
     /** A hand-written khata entry (8 Nov review M44): until then only edits and deletes were written down. */
     const val ENTRY_ADDED = "entry_added"
+    /** An entry marked an opening balance, or back to an ordinary one (schema 45): detail "NORMAL>OPENING" ([EntryKind]). */
+    const val ENTRY_KIND_CHANGED = "entry_kind_changed"
     const val CASH_ADDED = "cash_added"
     const val CASH_EDITED = "cash_edited"
     const val CASH_DELETED = "cash_deleted"

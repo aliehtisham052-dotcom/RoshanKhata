@@ -62,6 +62,8 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
     var barcode by remember { mutableStateOf(product.barcode.orEmpty()) }
     // Where it is kept, or a word about it (3 Nov 2026): the product's note, on a form for the first time.
     var note by remember { mutableStateOf(product.note.orEmpty()) }
+    // The names the shop also knows it by (schema 45, the audit's T34): "یوریا, यूरिया" for "Urea", found by the search and Hudhud.
+    var otherNames by remember { mutableStateOf(product.otherNames.orEmpty()) }
     var cost by remember { mutableStateOf(product.costPrice?.let { Calc.trim(it) }.orEmpty()) }
     var lowStock by remember { mutableStateOf(product.lowStockLevel?.let { Calc.trim(it) }.orEmpty()) }
     var packUnit by remember { mutableStateOf(product.packUnit.orEmpty()) }
@@ -115,6 +117,7 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             creditPrice = typed(credit)?.let { Calc.evalPad(it) },
             barcode = typed(barcode),
             note = typed(note),
+            otherNames = com.innovation313.roshankhata.data.ProductFind.cleanOtherNames(otherNames),
             costPrice = typed(cost)?.let { Calc.evalPad(it) },
             lowStockLevel = typed(lowStock)?.let { Calc.evalPad(it) },
             // A pack needs both its name and how many are in it; half of one is no pack.
@@ -159,10 +162,11 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             product.creditPrice?.let { Calc.trim(it) }.orEmpty(), product.productType.orEmpty(), product.technicalName.orEmpty(), product.formulation.orEmpty(),
             product.registrationNumber.orEmpty(), product.barcode.orEmpty(), product.note.orEmpty(), product.costPrice?.let { Calc.trim(it) }.orEmpty(),
             product.lowStockLevel?.let { Calc.trim(it) }.orEmpty(), product.packUnit.orEmpty(), product.packSize?.let { Calc.trim(it) }.orEmpty(),
-            product.packPrice?.let { Calc.trim(it) }.orEmpty(), product.taxRate?.let { Calc.trim(it) }.orEmpty(), product.variant.orEmpty())
+            product.packPrice?.let { Calc.trim(it) }.orEmpty(), product.taxRate?.let { Calc.trim(it) }.orEmpty(), product.variant.orEmpty(),
+            product.otherNames.orEmpty())
     }
     AppDialog(onCloseRequest = onClose, dirty = {
-        listOf(name, company, unit, cash, credit, type, technical, formulation, registration, barcode, note, cost, lowStock, packUnit, packSize, packPrice, taxRate, variant) != opened
+        listOf(name, company, unit, cash, credit, type, technical, formulation, registration, barcode, note, cost, lowStock, packUnit, packSize, packPrice, taxRate, variant, otherNames) != opened
     }, title = product.name.ifBlank { word(W.product_add) }, state = rememberDialogState(width = fitW(560.dp), height = fitH(920.dp))) {
         // The app's own frame (Marhala 4): one title and ✕, the fields, Cancel and Save always in sight at its foot.
         DialogFrame(
@@ -188,6 +192,8 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             // unit's cost to the shop, and the stock level that warns in the bell.
             Field(word(W.product_barcode_hint), barcode) { barcode = it; problem = null }
             Outlined(note, { note = it }, label = { Text(word(W.product_note_label)) }, placeholder = { Text(word(W.product_note_hint)) },
+                singleLine = true, modifier = Modifier.fillMaxWidth())
+            Outlined(otherNames, { otherNames = it }, label = { Text(word(W.product_other_names)) }, placeholder = { Text(word(W.product_other_names_hint)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Outlined(cost, { cost = it }, label = { Text(word(W.product_cost_hint)) }, singleLine = true, modifier = Modifier.weight(1f), enabled = mayPrice, calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)

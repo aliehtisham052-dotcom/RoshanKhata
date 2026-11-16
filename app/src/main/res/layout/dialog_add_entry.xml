@@ -562,6 +562,29 @@
             android:minLines="1"
             android:scrollbars="vertical" />
 
+        <!--
+          Money lent, not a sale (16 Nov 2026, the audit's D-03): right under the note, where the owner looks first,
+          named as what it is — "Cash lent: Qarz-e-Hasna (not a sale)". It is the one mark every sales figure, profit,
+          the Radar and Zakat already read (isQarzeHasna); it sat at the foot of the details under the goods before.
+        -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbQarzeHasna"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/entry_cash_lent"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvCashLentHelp"
+            android:textAlignment="viewStart"
+            android:layout_marginTop="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/entry_cash_lent_help"
+            android:textColor="@color/text_muted"
+            android:textSize="11sp" />
+
         <!-- The customer's signature, taken with the entry itself (18 Oct). -->
         <include layout="@layout/item_signature_row" />
 
@@ -904,22 +927,6 @@
         -->
         
 
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/cbQarzeHasna"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/qarze_hasna"
-            android:textSize="14sp" />
-
-        <TextView
-            android:textAlignment="viewStart"
-            android:layout_marginTop="2dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/qarze_hasna_help"
-            android:textColor="@color/text_muted"
-            android:textSize="11sp" />
 
         <!-- An equal share of whatever the page has spare. -->
 

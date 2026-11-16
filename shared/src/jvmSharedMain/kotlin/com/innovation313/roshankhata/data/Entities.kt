@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -328,6 +329,14 @@ data class LedgerEntry(
      * the rows it must reverse.
      */
     val saleId: Long? = null,
+
+    /**
+     * What this entry is beyond its direction (schema 45, 16 Nov 2026): [EntryKind.NORMAL], or [EntryKind.OPENING] —
+     * a balance owed from before the book (another app's file, or the owner's own mark). An opening balance counts in
+     * every balance and statement and never in a sales figure. Changed only by [KhataDao.setEntryKind] (EDIT_BOOK,
+     * written in Who did what); an edit of the entry keeps it. Every entry written before the column is NORMAL.
+     */
+    @ColumnInfo(defaultValue = "NORMAL") val entryKind: String = EntryKind.NORMAL,
 
     /**
      * This row's identity across copies of the book (schema 36): a random id

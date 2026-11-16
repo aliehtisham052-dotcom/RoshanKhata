@@ -14,7 +14,9 @@ data class DayBookEntry(
     val entryNumber: String,
     val timestamp: Long,
     val paymentMethod: String?,
-    val isQarzeHasna: Boolean
+    val isQarzeHasna: Boolean,
+    /** [EntryKind] (schema 45): an opening balance brought in that day is said as one, not as a sale. */
+    val entryKind: String = EntryKind.NORMAL
 )
 
 /** A supplier bill paid in cash on delivery, with no khata entry of its own: money out of the drawer that day. */
@@ -46,6 +48,8 @@ object DayBook {
         val detail: String?,
         /** A khata entry's Qarz-e-Hasna mark. */
         val loan: Boolean = false,
+        /** A khata entry that is an opening balance ([EntryKind.OPENING], schema 45): owed from before, not moved today. */
+        val opening: Boolean = false,
         /** A staff payment's kind ([Payroll.ADVANCE] / [Payroll.SALARY]). */
         val staffKind: Int = 0,
         /** The row it was read from (an entry's, a cashbook row's, a bill's or a payment's id): with [kind], its key. */
@@ -65,7 +69,7 @@ object DayBook {
         dao.dayBookEntries(from, to).forEach { e ->
             out += Row(e.timestamp, if (e.isGiven) Kind.GAVE else Kind.GOT, e.partyName, e.paymentMethod, e.amount,
                 listOfNotNull(e.entryNumber.takeIf { it.isNotBlank() }, e.note?.takeIf { it.isNotBlank() }).joinToString(" · ").ifEmpty { null },
-                loan = e.isQarzeHasna, ref = e.id, customer = e.isCustomer)
+                loan = e.isQarzeHasna, opening = e.entryKind == EntryKind.OPENING, ref = e.id, customer = e.isCustomer)
         }
         dao.cashbookRowsBetween(from, to).forEach { c ->
             out += Row(c.timestamp, if (c.isIncome) Kind.CASH_IN else Kind.CASH_OUT, c.category, c.paymentMethod, c.amount,
@@ -125,6 +129,7 @@ object DayBook {
         return listOfNotNull(
             kind,
             if (r.loan) words.text(W.pdf_stmt_qarze_hasna) else null,
+            if (r.opening) words.text(W.pdf_stmt_opening) else null,
             // A bill or a staff payment is cash by its own rule: the way is not said twice.
             r.method?.takeIf { r.kind != Kind.BILL_PAID && r.kind != Kind.STAFF_PAID }?.let { PaymentMethod.label(words, it) }
         ).joinToString(" · ")

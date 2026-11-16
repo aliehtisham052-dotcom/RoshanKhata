@@ -52,6 +52,8 @@ class StaffMigrationOnDeviceTest {
         // transactions and schema 43 (4 Nov 2026) adds a column each to parties, cashbook and cheques: nothing of any
         // of them reaches these three tables.
         // Schema 44 (4 Nov 2026) adds one table of its own, book_seals, and nothing to these three.
+        // Schema 45 (16 Nov 2026) adds a column to transactions (entryKind) and one to products (otherNames): nothing to
+        // these three, so no line of it belongs here (lesson 32 is about columns ON these tables).
 
         val room = Room.inMemoryDatabaseBuilder(context, KhataDatabase::class.java).build()
         val fresh = room.openHelper.writableDatabase

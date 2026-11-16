@@ -288,6 +288,8 @@ class StatementPrint(
                 // The payment's reference with its way (schema 39), as the phone's statement prints it.
                 if (!e.paymentRef.isNullOrBlank()) PaymentMethod.said(words, e.paymentMethod, e.paymentRef)?.let { add(it) }
                 if (e.isQarzeHasna) add(words.text(W.pdf_stmt_qarze_hasna))
+                // An opening balance brought into the book (schema 45) says so, as the phone's statement does.
+                if (e.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING) add(words.text(W.pdf_stmt_opening))
             }.joinToString("  ·  ")
             g.color = muted
             g.font = Font(PrintFonts.family, Font.PLAIN, 8)

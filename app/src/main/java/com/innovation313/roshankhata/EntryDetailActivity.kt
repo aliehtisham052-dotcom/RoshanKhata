@@ -163,6 +163,52 @@ class EntryDetailActivity : BaseActivity() {
         }
     }
 
+    /**
+     * "Counted as: Opening balance · Change" (schema 45, 16 Nov 2026, the audit's D-02). Shown on an opening balance, and on
+     * an entry that could be one (a plain amount: no goods, no loan, nothing another record wrote, not half of a paid-now
+     * sale — [EntryKind.refusal]); not on a helper's read-only phone. The change asks EDIT_BOOK (a cashier: a manager's or
+     * the owner's PIN) and the DAO writes it in Who did what; an opening balance stays in the balance and is never a sale.
+     */
+    private fun renderKind(e: LedgerEntry) {
+        val row = findViewById<View>(R.id.rowKind)
+        row.visibility = View.GONE
+        if (e.isDeleted || com.innovation313.roshankhata.data.ViewerMode.isOn(this)) return
+        val dao = KhataDatabase.get(this).khataDao()
+        val opening = com.innovation313.roshankhata.data.EntryKind.of(e.entryKind) == com.innovation313.roshankhata.data.EntryKind.OPENING
+        lifecycleScope.launch {
+            val owner = runCatching { dao.entryOwner(e.id) }.getOrNull()
+            val could = com.innovation313.roshankhata.data.EntryKind.refusal(e, items.isNotEmpty(), owner) == null
+            if (isFinishing || isDestroyed || (!opening && !could)) return@launch
+            row.visibility = View.VISIBLE
+            findViewById<TextView>(R.id.tvKind).text =
+                getString(R.string.entry_kind_line, getString(if (opening) R.string.pdf_stmt_opening else R.string.entry_kind_normal))
+            findViewById<MaterialButton>(R.id.btnKind).setOnClickListener {
+                val kinds = listOf(com.innovation313.roshankhata.data.EntryKind.NORMAL, com.innovation313.roshankhata.data.EntryKind.OPENING)
+                val options = listOf(
+                    ChoiceSheet.Option(getString(R.string.entry_kind_normal)),
+                    ChoiceSheet.Option(getString(R.string.pdf_stmt_opening))
+                )
+                ChoiceSheet.show(this@EntryDetailActivity, getString(R.string.entry_kind_title), options, if (opening) 1 else 0,
+                    message = getString(R.string.entry_kind_help)) { i ->
+                    val to = kinds[i]
+                    if (to == com.innovation313.roshankhata.data.EntryKind.of(e.entryKind)) return@show
+                    com.innovation313.roshankhata.ui.AccessUi.allowed(
+                        this@EntryDetailActivity, dao, com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK,
+                        com.innovation313.roshankhata.ui.AccessUi.what(this@EntryDetailActivity, com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK)
+                    ) { by ->
+                        lifecycleScope.launch {
+                            val refused = runCatching { dao.setEntryKind(e.id, to, allowedBy = by) }.getOrElse { com.innovation313.roshankhata.data.EntryKind.Refusal.LINKED }
+                            if (refused != null && !isFinishing && !isDestroyed) {
+                                Toast.makeText(this@EntryDetailActivity, R.string.entry_kind_refused, Toast.LENGTH_LONG).show()
+                            }
+                            load()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /** "Write spray advice" on a sale with goods lines (v25). */
     private fun renderAdvice(e: LedgerEntry) {
         val btn = findViewById<MaterialButton>(R.id.btnAdvice)
@@ -249,6 +295,7 @@ class EntryDetailActivity : BaseActivity() {
     private fun render(e: LedgerEntry) {
         // A sale can become an invoice; a payment received cannot.
         renderSeason(e)
+        renderKind(e)
         renderAdvice(e)
         renderSealProof()
 
@@ -283,7 +330,10 @@ class EntryDetailActivity : BaseActivity() {
         // The card is the customer's paper too (shared, printed): names, never "you" (4 Nov 2026, ReceiptBalance).
         val words = com.innovation313.roshankhata.data.AndroidWords(this)
         val shop = receiptShop()
-        findViewById<TextView>(R.id.tvReceiptSub).text = com.innovation313.roshankhata.data.ReceiptBalance.title(words, e.isGiven)
+        // An opening balance (schema 45) is titled as one: it was owed before the book, not given or paid that day.
+        findViewById<TextView>(R.id.tvReceiptSub).text =
+            if (e.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING) getString(R.string.pdf_stmt_opening)
+            else com.innovation313.roshankhata.data.ReceiptBalance.title(words, e.isGiven)
         tvDirection.text = com.innovation313.roshankhata.data.ReceiptBalance.way(words, e.isGiven, shop, partyName)
         banner.setBackgroundResource(if (e.isGiven) R.drawable.bg_receipt_red else R.drawable.bg_receipt_green)
         tvAmount.text = Format.money(e.amount)

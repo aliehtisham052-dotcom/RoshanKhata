@@ -3699,6 +3699,16 @@
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">Indiraaj badla gaya</string>
     <string name="audit_entry_added">Indiraaj likha gaya</string>
+    <string name="audit_entry_kind_changed">Indiraaj ki qisam badli gayi</string>
+    <string name="entry_kind_line">Shumar ba-taur: %1$s</string>
+    <string name="entry_kind_normal">Aam indiraaj</string>
+    <string name="entry_kind_title">Yeh indiraaj kya hai?</string>
+    <string name="entry_kind_help">Ibtidai balance is khate se pehle ka wajib-ul-ada paisa hai. Yeh balance aur statement mein rehta hai aur kabhi sale mein nahi gina jata.</string>
+    <string name="entry_kind_refused">Sirf saada raqam ibtidai balance ban sakti hai: saman, qarz, naqd sale ka aadha hissa, ya bill, qist, cheque ya counter sale ka likha indiraaj nahi.</string>
+    <string name="entry_cash_lent">Naqd qarz: Qarz-e-Hasna (sale nahi)</string>
+    <string name="entry_cash_lent_help">Bagair munafa diya gaya qarz, ya wapas mila qarz. Yeh balance mein rehta hai aur kabhi sale ya munafa mein nahi gina jata. Is par kabhi sood ya takheeri fees nahi lagti.</string>
+    <string name="product_other_names">Doosre naam (ikhtiyari)</string>
+    <string name="product_other_names_hint">Yahi saman doosri likhai mein, comma se alag karein</string>
     <string name="audit_entry_deleted">Indiraaj mitaya gaya</string>
     <string name="audit_cash_added">Cashbook mein indiraaj</string>
     <string name="audit_cash_edited">Cashbook ka indiraaj badla</string>

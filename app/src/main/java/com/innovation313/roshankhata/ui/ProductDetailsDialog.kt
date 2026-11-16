@@ -135,6 +135,9 @@ object ProductDetailsDialog {
         val etBarcode = field(R.id.etBarcode).apply { setText(product.barcode ?: "") }
         // Where it is kept, or a word about it (3 Nov 2026): the product's note, on a form for the first time.
         val etNote = field(R.id.etProductNote).apply { setText(product.note ?: "") }
+        // The names the shop also knows it by (schema 45, the audit's T34): the same goods in another script, found by the search,
+        // the price check and Hudhud.
+        val etOtherNames = field(R.id.etProductOtherNames).apply { setText(product.otherNames ?: "") }
         val etCostPrice = field(R.id.etCostPrice).apply { setText(product.costPrice?.let { Format.plain(it) } ?: ""); isEnabled = mayPrice }
         val etLowStock = field(R.id.etLowStock).apply { setText(product.lowStockLevel?.let { Format.plain(it) } ?: "") }
         // Packs and tax (schema 36). The pack price and the tax are prices: a cashier sees them, the owner sets them.
@@ -206,6 +209,7 @@ object ProductDetailsDialog {
             creditPrice = Digits.parse(typed(etCreditPrice)),
             barcode = typed(etBarcode),
             note = typed(etNote),
+            otherNames = com.innovation313.roshankhata.data.ProductFind.cleanOtherNames(typed(etOtherNames)),
             costPrice = Digits.parse(typed(etCostPrice)),
             lowStockLevel = Digits.parse(typed(etLowStock)),
             // A pack needs both its name and how many are in it; half of one is no pack.
@@ -347,7 +351,7 @@ object ProductDetailsDialog {
         FormFocus.chain(
             listOf(
                 R.id.etProductName, R.id.etProductCompany, R.id.etProductUnit, R.id.etSalePrice, R.id.etCreditPrice,
-                R.id.etBarcode, R.id.etProductNote, R.id.etCostPrice, R.id.etLowStock, R.id.etPackUnit,
+                R.id.etBarcode, R.id.etProductNote, R.id.etProductOtherNames, R.id.etCostPrice, R.id.etLowStock, R.id.etPackUnit,
                 R.id.etPackSize, R.id.etPackPrice, R.id.etTaxRate, R.id.etVariantOf, R.id.etVariant,
                 R.id.etProductType, R.id.etTechnicalName, R.id.etFormulation, R.id.etRegistrationNumber
             ).mapNotNull { view.findViewById<android.widget.EditText>(it) }

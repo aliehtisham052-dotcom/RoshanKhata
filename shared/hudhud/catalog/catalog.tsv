@@ -15,7 +15,7 @@ table	invoices	class=Invoice;file=shared/src/jvmSharedMain/kotlin/com/innovation
 table	loyalty	class=LoyaltyEntry;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Loyalty.kt;columns=8	-	
 table	parties	class=Party;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Entities.kt;columns=16	-	
 table	payment_plans	class=PaymentPlan;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Installment.kt;columns=12	-	
-table	products	class=Product;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Product.kt;columns=27	-	
+table	products	class=Product;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Product.kt;columns=28	-	
 table	purchase_order_items	class=PurchaseOrderItem;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Inventory.kt;columns=10	-	
 table	purchase_orders	class=PurchaseOrder;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Inventory.kt;columns=10	-	
 table	sale_items	class=SaleItem;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Sale.kt;columns=16	-	
@@ -30,7 +30,7 @@ table	staff_attendance	class=StaffAttendance;file=shared/src/jvmSharedMain/kotli
 table	staff_payments	class=StaffPayment;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Staff.kt;columns=8	-	
 table	stock_adjustments	class=StockAdjustment;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Inventory.kt;columns=13	-	
 table	supplier_bills	class=SupplierBill;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/SupplierBill.kt;columns=14	-	
-table	transactions	class=LedgerEntry;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Entities.kt;columns=25	-	
+table	transactions	class=LedgerEntry;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Entities.kt;columns=26	-	
 column	audit_log.action	String	READ	reader=HudhudFacts.activity;gate=REPORTS;screen=AuditActivity
 column	audit_log.detail	String?	READ	reader=HudhudFacts.activity;via=HudhudRecordFacts.auditRows;gate=REPORTS;screen=AuditActivity;why=the day's answer lists the newest rows in the Who did what screen's own words (auditActionName), what they touched and, for an amount row, the amount, free text in a detail stays the screen's
 column	audit_log.hash	String?	WITHHELD	why=the seal chain of the log: proof material for the Who did what screen, never a thing to say
@@ -207,6 +207,7 @@ column	products.name	String	READ	reader=HudhudFacts.goods;gate=NONE;screen=Produ
 column	products.nameKey	String	STRUCT	pattern
 column	products.normalisedName	String	STRUCT	pattern
 column	products.note	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.otherNames	String?	STRUCT	why=the shop's other names for a product (schema 45) are handed to Hudhud as more names of the same product with its id (HudhudSheet's goods list), so a product asked in another script is found, a way to find it and not a fact to tell
 column	products.packPrice	Double?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.packSize	Double?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.packUnit	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
@@ -403,6 +404,7 @@ column	transactions.billItemId	Long?	STRUCT	pattern
 column	transactions.billPhotoPath	String?	WITHHELD	why=a picture's file path on this phone
 column	transactions.createdBy	String?	READ	reader=HudhudFacts.person;gate=REPORTS;screen=EntryDetailActivity;stricter=who wrote an entry is told only to who may see reports
 column	transactions.deletedAt	Long?	STRUCT	pattern
+column	transactions.entryKind	String	GAP	why=an opening balance (schema 45) is left out of every sale figure Hudhud reads through KhataDao's sale rule, but no card yet says which entry was brought in as one (the receipt and the statement say it)
 column	transactions.entryNumber	String	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
 column	transactions.id	Long	STRUCT	pattern
 column	transactions.isDeleted	Boolean	STRUCT	pattern

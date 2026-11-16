@@ -3727,6 +3727,16 @@
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">داخلا بدلائي وئي</string>
     <string name="audit_entry_added">داخلا شامل ڪئي وئي</string>
+    <string name="audit_entry_kind_changed">داخلا جو قسم بدلايو ويو</string>
+    <string name="entry_kind_line">ڳڻپ طور: %1$s</string>
+    <string name="entry_kind_normal">عام داخلا</string>
+    <string name="entry_kind_title">هي داخلا ڇا آهي؟</string>
+    <string name="entry_kind_help">شروعاتي بيلنس هن کاتي کان اڳ جو واجب الادا پئسو آهي. اهو بيلنس ۽ اسٽيٽمينٽ ۾ رهي ٿو ۽ ڪڏهن به وڪري ۾ نٿو ڳڻيو وڃي.</string>
+    <string name="entry_kind_refused">رڳو سادي رقم شروعاتي بيلنس ٿي سگهي ٿي: سامان، قرض، نقد وڪري جو اڌ حصو، يا بل، قسط، چيڪ يا ڪائونٽر وڪري جو لکيل داخلا نه.</string>
+    <string name="entry_cash_lent">نقد قرض: قرض حسنه (وڪرو نه)</string>
+    <string name="entry_cash_lent_help">بنا نفعي ڏنل قرض، يا واپس مليل قرض. اهو بيلنس ۾ رهي ٿو ۽ ڪڏهن به وڪري يا نفعي ۾ نٿو ڳڻيو وڃي. ان تي ڪڏهن به وياج يا دير جو ڏنڊ نٿو لڳي.</string>
+    <string name="product_other_names">ٻيا نالا (اختياري)</string>
+    <string name="product_other_names_hint">ساڳيو سامان ٻي لکت ۾، ڪاما سان الڳ ڪريو</string>
     <string name="audit_entry_deleted">داخلا ميٽي وئي</string>
     <string name="audit_cash_added">ڪيش بڪ ۾ داخلا</string>
     <string name="audit_cash_edited">ڪيش بڪ جي داخلا بدلائي</string>

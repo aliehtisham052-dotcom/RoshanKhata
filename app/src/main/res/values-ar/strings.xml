@@ -3911,6 +3911,16 @@
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">تم تغيير قيد</string>
     <string name="audit_entry_added">تمت إضافة قيد</string>
+    <string name="audit_entry_kind_changed">تم تغيير نوع القيد</string>
+    <string name="entry_kind_line">يُحسب: %1$s</string>
+    <string name="entry_kind_normal">قيد عادي</string>
+    <string name="entry_kind_title">ما هذا القيد؟</string>
+    <string name="entry_kind_help">الرصيد الافتتاحي مال مستحق من قبل هذا الدفتر. يبقى في الرصيد وكشف الحساب ولا يُحسب أبدًا من المبيعات.</string>
+    <string name="entry_kind_refused">المبلغ المجرد وحده يمكن أن يكون رصيدًا افتتاحيًا: لا بضاعة ولا قرض ولا نصف بيع نقدي ولا قيد كتبته فاتورة أو خطة أو شيك أو بيع على الكاشير.</string>
+    <string name="entry_cash_lent">نقد مُقرَض: قرض حسن (ليس بيعًا)</string>
+    <string name="entry_cash_lent_help">مال أُقرض بلا ربح، أو قرض رُدّ. يبقى في الرصيد ولا يُحسب أبدًا من المبيعات أو الربح. لا تُطبق عليه فائدة ولا غرامة تأخير أبدًا.</string>
+    <string name="product_other_names">أسماء أخرى (اختياري)</string>
+    <string name="product_other_names_hint">البضاعة نفسها بخط آخر، مفصولة بفواصل</string>
     <string name="audit_entry_deleted">تم حذف قيد</string>
     <string name="audit_cash_added">قيد في دفتر النقد</string>
     <string name="audit_cash_edited">تم تغيير قيد في دفتر النقد</string>

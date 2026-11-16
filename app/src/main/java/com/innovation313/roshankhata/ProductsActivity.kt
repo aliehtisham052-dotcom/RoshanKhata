@@ -54,6 +54,8 @@ class ProductsActivity : BaseActivity() {
     /** Each product's barcode and note (its place), so the search finds a scanned code or "Rack 3" (3 Nov 2026). */
     private var barcodeById: Map<Long, String> = emptyMap()
     private var noteById: Map<Long, String> = emptyMap()
+    /** Each product's other names (schema 45): the search finds "Urea" by "یوریا" when the shop wrote it. */
+    private var otherNamesById: Map<Long, String> = emptyMap()
     /** The products themselves, for the price check a scanned code opens. */
     private var allProducts: List<com.innovation313.roshankhata.data.Product> = emptyList()
     private lateinit var btnLink: MaterialButton
@@ -348,6 +350,7 @@ class ProductsActivity : BaseActivity() {
             technicalById = products.mapNotNull { p -> p.technicalName?.takeIf { it.isNotBlank() }?.let { p.id to it } }.toMap()
             barcodeById = products.mapNotNull { p -> p.barcode?.trim()?.takeIf { it.isNotEmpty() }?.let { p.id to it } }.toMap()
             noteById = products.mapNotNull { p -> p.note?.trim()?.takeIf { it.isNotEmpty() }?.let { p.id to it } }.toMap()
+            otherNamesById = products.mapNotNull { p -> p.otherNames?.takeIf { it.isNotBlank() }?.let { p.id to it } }.toMap()
             allProducts = products
 
             allStock = stock
@@ -366,7 +369,7 @@ class ProductsActivity : BaseActivity() {
         // By name, technical name, barcode (whole, or four of its digits) or note: one rule with the computer's page.
         val shown = if (q.isEmpty()) allStock
         else allStock.filter {
-            com.innovation313.roshankhata.data.ProductFind.matches(it.name, technicalById[it.productId], barcodeById[it.productId], noteById[it.productId], q)
+            com.innovation313.roshankhata.data.ProductFind.matches(it.name, technicalById[it.productId], barcodeById[it.productId], noteById[it.productId], q, otherNamesById[it.productId])
         }
         adapter.submitList(shown.map { ProductAdapter.Row(it, noteById[it.productId]) })
         tvEmptyText.setText(if (allStock.isEmpty()) R.string.no_products else R.string.products_no_match)

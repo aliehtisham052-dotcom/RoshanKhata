@@ -3699,6 +3699,16 @@
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">اندراج بدلا گیا</string>
     <string name="audit_entry_added">اندراج لکھا گیا</string>
+    <string name="audit_entry_kind_changed">اندراج کی قسم بدلی گئی</string>
+    <string name="entry_kind_line">شمار بطور: %1$s</string>
+    <string name="entry_kind_normal">عام اندراج</string>
+    <string name="entry_kind_title">یہ اندراج کیا ہے؟</string>
+    <string name="entry_kind_help">ابتدائی بیلنس اس کھاتے سے پہلے کا واجب الادا پیسہ ہے۔ یہ بیلنس اور اسٹیٹمنٹ میں رہتا ہے اور کبھی سیل میں نہیں گنا جاتا۔</string>
+    <string name="entry_kind_refused">صرف سادہ رقم ابتدائی بیلنس بن سکتی ہے: سامان، قرض، نقد سیل کا آدھا حصہ، یا بل، قسط، چیک یا کاؤنٹر سیل کا لکھا اندراج نہیں۔</string>
+    <string name="entry_cash_lent">نقد قرض: قرضِ حسنہ (سیل نہیں)</string>
+    <string name="entry_cash_lent_help">بغیر منافع دیا گیا قرض، یا واپس ملا قرض۔ یہ بیلنس میں رہتا ہے اور کبھی سیل یا منافع میں نہیں گنا جاتا۔ اس پر کبھی سود یا تاخیری فیس نہیں لگتی۔</string>
+    <string name="product_other_names">دوسرے نام (اختیاری)</string>
+    <string name="product_other_names_hint">یہی سامان دوسری لکھائی میں، کاما سے الگ کریں</string>
     <string name="audit_entry_deleted">اندراج مٹایا گیا</string>
     <string name="audit_cash_added">کیش بک میں اندراج</string>
     <string name="audit_cash_edited">کیش بک کا اندراج بدلا</string>

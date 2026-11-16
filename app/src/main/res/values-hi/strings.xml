@@ -3747,6 +3747,16 @@
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">एंट्री बदली गई</string>
     <string name="audit_entry_added">एंट्री जोड़ी गई</string>
+    <string name="audit_entry_kind_changed">एंट्री का प्रकार बदला गया</string>
+    <string name="entry_kind_line">गिनती: %1$s</string>
+    <string name="entry_kind_normal">सामान्य एंट्री</string>
+    <string name="entry_kind_title">यह एंट्री क्या है?</string>
+    <string name="entry_kind_help">शुरुआती बैलेंस इस खाते से पहले का बकाया पैसा है। यह बैलेंस और स्टेटमेंट में रहता है और कभी बिक्री में नहीं गिना जाता।</string>
+    <string name="entry_kind_refused">सिर्फ़ सादी रकम शुरुआती बैलेंस बन सकती है: सामान, कर्ज़, नकद बिक्री का आधा हिस्सा, या बिल, किस्त, चेक या काउंटर बिक्री की लिखी एंट्री नहीं।</string>
+    <string name="entry_cash_lent">नकद कर्ज़: क़र्ज़-ए-हसना (बिक्री नहीं)</string>
+    <string name="entry_cash_lent_help">बिना मुनाफ़े दिया गया कर्ज़, या लौटाया गया कर्ज़। यह बैलेंस में रहता है और कभी बिक्री या मुनाफ़े में नहीं गिना जाता। इस पर कभी कोई ब्याज या देरी का शुल्क नहीं लगता।</string>
+    <string name="product_other_names">दूसरे नाम (वैकल्पिक)</string>
+    <string name="product_other_names_hint">यही सामान दूसरी लिपि में, कॉमा से अलग करें</string>
     <string name="audit_entry_deleted">एंट्री मिटाई गई</string>
     <string name="audit_cash_added">कैशबुक में एंट्री</string>
     <string name="audit_cash_edited">कैशबुक की एंट्री बदली</string>

@@ -98,6 +98,13 @@ fun auditDetail(a: AuditLog, staff: List<com.innovation313.roshankhata.data.Staf
     return when (a.action) {
         // "Entry added · <customer> · Rs 800": the amount was stored as "800.00", the customer is looked up (8 Nov 2026).
         AuditAction.ENTRY_ADDED -> listOfNotNull(names.entryParty[a.refId], AuditNames.amount(detail)?.let { Format.moneyLtr(it) } ?: detail).joinToString(" \u00b7 ")
+        // "Counted as: Opening balance · <customer>" (schema 45): the kind it became, in words; the stored detail is "NORMAL>OPENING".
+        AuditAction.ENTRY_KIND_CHANGED -> com.innovation313.roshankhata.data.EntryKind.changedTo(detail)?.let { to ->
+            listOfNotNull(
+                word(W.entry_kind_line, word(if (to == com.innovation313.roshankhata.data.EntryKind.OPENING) W.pdf_stmt_opening else W.entry_kind_normal)),
+                names.entryParty[a.refId]
+            ).joinToString(" \u00b7 ")
+        } ?: detail
         AuditAction.CASH_ADDED, AuditAction.CASH_EDITED, AuditAction.CASH_DELETED ->
             AuditNames.amount(detail)?.let { Format.moneyLtr(it) } ?: detail
         // "4,555,225.00 (4,554,000.00 / 555.00)": the figure COUNTED, and the count it replaced when the day was closed again.
@@ -200,6 +207,7 @@ fun auditActionName(words: Words, a: AuditLog, names: AuditNames = AuditNames.No
     AuditAction.ENTRY_EDITED -> words.text(W.audit_entry_edited)
     AuditAction.ENTRY_DELETED -> words.text(W.audit_entry_deleted)
     AuditAction.ENTRY_ADDED -> words.text(W.audit_entry_added)
+    AuditAction.ENTRY_KIND_CHANGED -> words.text(W.audit_entry_kind_changed)
     // Money in / Money out by the row's direction when it can still be read, else the neutral words.
     AuditAction.CASH_ADDED -> when (names.cashIncome[a.refId]) {
         true -> words.text(W.audit_cash_in_added)
@@ -260,7 +268,7 @@ class AuditNames(
                     when {
                         a.refTable == "parties" && (a.action == AuditAction.EXPORT || a.action == AuditAction.KHATA_LINK_SENT || a.action == AuditAction.KHATA_LINK_STOPPED) ->
                             if (id !in party) dao.getPartyName(id)?.let { party[id] = it }
-                        a.refTable == "transactions" && a.action == AuditAction.ENTRY_ADDED ->
+                        a.refTable == "transactions" && (a.action == AuditAction.ENTRY_ADDED || a.action == AuditAction.ENTRY_KIND_CHANGED) ->
                             if (id !in entryParty) dao.getEntry(id)?.let { e -> dao.getPartyName(e.partyId)?.let { entryParty[id] = it } }
                         a.refTable == "cashbook" && (a.action == AuditAction.CASH_ADDED || a.action == AuditAction.CASH_DELETED) ->
                             if (id !in cash) dao.cashIsIncome(id)?.let { cash[id] = it }

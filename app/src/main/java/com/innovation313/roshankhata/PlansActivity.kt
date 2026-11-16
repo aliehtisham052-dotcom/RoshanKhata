@@ -314,6 +314,7 @@ class PlansActivity : BaseActivity() {
         // This dialog is reused from the ledger; the fields that make no sense
         // for an instalment are hidden rather than left to confuse.
         view.findViewById<View>(R.id.cbQarzeHasna).visibility = View.GONE
+        view.findViewById<View>(R.id.tvCashLentHelp).visibility = View.GONE
         view.findViewById<View>(R.id.rgRecovery).visibility = View.GONE
         view.findViewById<View>(R.id.tvRecoveryLabel).visibility = View.GONE
         view.findViewById<View>(R.id.etItemName).visibility = View.GONE

@@ -535,13 +535,14 @@ fun EntryEditor(
                 }
             }
             if (isGiven) {
-                // A loan of money cannot carry a list of goods (the phone's rule).
+                // A loan of money cannot carry a list of goods (the phone's rule). Named as what it is (16 Nov 2026, the audit's
+                // D-03): cash lent, not a sale — the one mark the sales figures, profit, the Radar and Zakat read.
                 val loanAllowed = all.isEmpty()
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(qarz && loanAllowed, { qarz = it }, enabled = loanAllowed)
-                    Text(word(W.qarze_hasna), color = if (loanAllowed) c.ink else c.textMuted, fontSize = 14.sp)
+                    Text(word(W.entry_cash_lent), Modifier.weight(1f), color = if (loanAllowed) c.ink else c.textMuted, fontSize = 14.sp)
                 }
-                Text(word(W.qarze_hasna_help), color = c.textMuted, fontSize = 12.sp)
+                Text(word(W.entry_cash_lent_help), color = c.textMuted, fontSize = 12.sp)
                 Text(word(W.recovery_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 TwoWay(word(W.recovery_certain), word(W.recovery_doubtful), !doubtful) { certain -> doubtful = !certain }
             }

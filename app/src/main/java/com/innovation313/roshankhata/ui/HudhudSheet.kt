@@ -286,7 +286,7 @@ object HudhudSheet {
 
         /** The shop's products by name, read once for the sheet: "Urea ka rate" is the product's (13 Nov 2026). */
         val goods: Deferred<List<Hudhud.Name>> = host.lifecycleScope.async(Dispatchers.IO) {
-            try { dao.productsOnce().map { Hudhud.Name(it.id, it.name) } } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
+            try { dao.productsOnce().flatMap { p -> listOf(Hudhud.Name(p.id, p.name)) + com.innovation313.roshankhata.data.ProductFind.otherNamesOf(p.otherNames).map { Hudhud.Name(p.id, it) } } } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
         }
 
         /**

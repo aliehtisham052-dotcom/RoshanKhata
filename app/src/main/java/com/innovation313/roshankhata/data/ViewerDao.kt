@@ -21,6 +21,8 @@ class ViewerDao(private val real: KhataDao) : KhataDao by real {
     override suspend fun insertParty(party: Party): Long = refused()
     override suspend fun updateParty(party: Party): Unit = refused()
     override suspend fun setEntrySeason(id: Long, season: String?): Unit = refused()
+    override suspend fun writeEntryKind(id: Long, kind: String): Unit = refused()
+    override suspend fun setEntryKind(id: Long, kind: String, user: String?, allowedBy: String?): EntryKind.Refusal? = refused()
     override suspend fun insertEntry(entry: LedgerEntry): Long = refused()
     override suspend fun softDeleteParty(id: Long, now: Long): Unit = refused()
     override suspend fun softDeleteEntriesOfParty(partyId: Long, now: Long): Unit = refused()

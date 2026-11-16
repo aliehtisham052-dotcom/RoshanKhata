@@ -3747,6 +3747,16 @@
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">এন্ট্রি বদলানো হয়েছে</string>
     <string name="audit_entry_added">এন্ট্রি যোগ করা হয়েছে</string>
+    <string name="audit_entry_kind_changed">এন্ট্রির ধরন বদলানো হয়েছে</string>
+    <string name="entry_kind_line">গণনা: %1$s</string>
+    <string name="entry_kind_normal">সাধারণ এন্ট্রি</string>
+    <string name="entry_kind_title">এই এন্ট্রিটি কী?</string>
+    <string name="entry_kind_help">প্রারম্ভিক ব্যালেন্স হলো এই খাতার আগের পাওনা টাকা। এটি ব্যালেন্স ও স্টেটমেন্টে থাকে এবং কখনো বিক্রিতে গোনা হয় না।</string>
+    <string name="entry_kind_refused">শুধু সাধারণ টাকার অঙ্কই প্রারম্ভিক ব্যালেন্স হতে পারে: পণ্য, ঋণ, নগদ বিক্রির অর্ধেক, অথবা বিল, কিস্তি, চেক বা কাউন্টার বিক্রির লেখা এন্ট্রি নয়।</string>
+    <string name="entry_cash_lent">নগদ ধার: কর্জে হাসানা (বিক্রি নয়)</string>
+    <string name="entry_cash_lent_help">লাভ ছাড়া দেওয়া ধার, অথবা ফেরত পাওয়া ধার। এটি ব্যালেন্সে থাকে এবং কখনো বিক্রি বা লাভে গোনা হয় না। এতে কখনো সুদ বা দেরির জরিমানা ধরা হয় না।</string>
+    <string name="product_other_names">অন্য নাম (ঐচ্ছিক)</string>
+    <string name="product_other_names_hint">একই পণ্য অন্য লিপিতে, কমা দিয়ে আলাদা করুন</string>
     <string name="audit_entry_deleted">এন্ট্রি মোছা হয়েছে</string>
     <string name="audit_cash_added">ক্যাশবুকে এন্ট্রি</string>
     <string name="audit_cash_edited">ক্যাশবুকের এন্ট্রি বদলানো হয়েছে</string>

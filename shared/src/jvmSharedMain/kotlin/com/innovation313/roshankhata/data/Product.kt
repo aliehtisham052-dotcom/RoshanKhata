@@ -212,6 +212,13 @@ data class Product(
      */
     val parentId: Long? = null,
     val variant: String? = null,
+    /**
+     * The other names the shop knows this product by (schema 45, 16 Nov 2026, the audit's T34): the same goods written
+     * in another script or as people say them — "یوریا, यूरिया" for "Urea" — separated by commas or new lines
+     * ([ProductFind.otherNamesOf]). The Products search, the price check and the assistant find the product by any of
+     * them. Not a secret: a helper's copy carries them. Null on every product written before the column.
+     */
+    val otherNames: String? = null,
     /** This row's identity across devices and backups (schema 38, live sync). */
     val uid: String? = Uid.next()
 )

@@ -265,8 +265,8 @@ fun ProductsPane(dao: KhataDao, words: Words) {
     val c = LocalRoshanColors.current
     val products by remember { dao.observeProducts() }.collectAsState(emptyList())
     var query by remember { mutableStateOf("") }
-    // By name, company, barcode (a USB scanner types it here) or note: one rule with the phone's page (3 Nov 2026).
-    val shown = products.filter { com.innovation313.roshankhata.data.ProductFind.matches(it.name, it.company, it.barcode, it.note, query) }
+    // By name, company, barcode (a USB scanner types it here), note or other names (schema 45): one rule with the phone's page.
+    val shown = products.filter { com.innovation313.roshankhata.data.ProductFind.matches(it.name, it.company, it.barcode, it.note, query, it.otherNames) }
     var buyersOf by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
     buyersOf?.let { ProductBuyers(dao, words, it) { buyersOf = null } }
     var editing by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }

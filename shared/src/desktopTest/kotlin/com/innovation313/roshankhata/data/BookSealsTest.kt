@@ -355,7 +355,9 @@ class BookSealsTest {
         val text = StringWriter().also { BackupCodec.exportTo(dao, "Shop", JSONObject(), it) }.toString()
         val (result, data) = BackupCodec.parseText(text)
         assertTrue("$result", result is BackupCodec.ImportResult.Ok)
-        assertEquals(19, data!!.version)
+        // Written at the format of the day; the seals came with 19 (format 20, 16 Nov 2026, added an entry's kind).
+        assertEquals(BackupCodec.FORMAT_VERSION, data!!.version)
+        assertTrue(data.version >= 19)
         assertEquals(mine, data.bookSeals)
 
         val other = DesktopDatabase.open(dir.resolve("other.db"))

@@ -223,6 +223,27 @@
             android:maxLength="120"
             android:textAlignment="viewStart" />
 
+        <!-- The names the shop also knows it by (schema 45, 16 Nov 2026, the audit's T34): "یوریا, यूरिया" for "Urea",
+             separated by commas. The products search, the price check and Hudhud find the product by any of them. -->
+        <TextView
+            android:id="@+id/tvProductOtherNamesLabel"
+            style="@style/FormFieldLabel"
+            android:layout_marginTop="12dp"
+            android:labelFor="@+id/etProductOtherNames"
+            android:text="@string/product_other_names" />
+
+        <EditText
+            style="@style/EditorField"
+            android:id="@+id/etProductOtherNames"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:hint="@string/product_other_names_hint"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLength="300"
+            android:textAlignment="viewStart" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

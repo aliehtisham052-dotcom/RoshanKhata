@@ -3911,6 +3911,16 @@
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">Entry changed</string>
     <string name="audit_entry_added">Entry added</string>
+    <string name="audit_entry_kind_changed">Entry type changed</string>
+    <string name="entry_kind_line">Counted as: %1$s</string>
+    <string name="entry_kind_normal">Ordinary entry</string>
+    <string name="entry_kind_title">What is this entry?</string>
+    <string name="entry_kind_help">An opening balance is money owed from before this book. It stays in the balance and the statement and is never counted as a sale.</string>
+    <string name="entry_kind_refused">Only a plain amount can be an opening balance: not goods, a loan, half of a cash sale, or an entry a bill, plan, cheque or counter sale wrote.</string>
+    <string name="entry_cash_lent">Cash lent: Qarz-e-Hasna (not a sale)</string>
+    <string name="entry_cash_lent_help">Money lent without profit, or a loan paid back. It stays in the balance and is never counted as a sale or profit. No interest or late fee is ever applied to it.</string>
+    <string name="product_other_names">Other names (optional)</string>
+    <string name="product_other_names_hint">The same goods in other scripts, separated by commas</string>
     <string name="audit_entry_deleted">Entry deleted</string>
     <string name="audit_cash_added">Cashbook row added</string>
     <string name="audit_cash_edited">Cashbook row changed</string>

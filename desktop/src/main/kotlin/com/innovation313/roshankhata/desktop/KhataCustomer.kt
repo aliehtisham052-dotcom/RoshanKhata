@@ -432,7 +432,8 @@ private fun LedgerRow(w: EntryWithItems, balanceAfter: Double, picking: Boolean,
         time,
         e.entryNumber.takeIf { it.isNotBlank() }?.let { Format.ltr(it) },
         note.takeIf { goods.isNotEmpty() },
-        if (e.isQarzeHasna) word(W.pdf_stmt_qarze_hasna) else null
+        if (e.isQarzeHasna) word(W.pdf_stmt_qarze_hasna) else null,
+        if (e.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING) word(W.pdf_stmt_opening) else null
     ).joinToString(" · ")
     val none = c.textMuted.copy(alpha = 0.55f)
     Row(

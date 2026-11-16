@@ -153,6 +153,31 @@ interface KhataDao {
     @Query("UPDATE transactions SET season = :season WHERE id = :id")
     suspend fun setEntrySeason(id: Long, season: String?)
 
+    @Query("UPDATE transactions SET entryKind = :kind WHERE id = :id")
+    suspend fun writeEntryKind(id: Long, kind: String)
+
+    /**
+     * An entry marked an opening balance, or back to an ordinary one (schema 45, 16 Nov 2026, D-02). EDIT_BOOK: a
+     * cashier needs a manager's or the owner's PIN ([allowedBy]); written in Who did what with the two kinds
+     * ([EntryKind.auditDetail]). Only an entry [EntryKind.refusal] allows becomes OPENING (no goods, no loan, nothing
+     * another record wrote, not half of a paid-now sale, not in the bin); back to NORMAL is always allowed. Returns the
+     * refusal, or null when written (or already of that kind: nothing is written then).
+     */
+    @Transaction
+    suspend fun setEntryKind(id: Long, kind: String, user: String? = Access.userName, allowedBy: String? = null): EntryKind.Refusal? {
+        Access.requireAllowed(Access.Permission.EDIT_BOOK, allowedBy)
+        val to = EntryKind.of(kind)
+        val e = getEntry(id) ?: return EntryKind.Refusal.BINNED
+        val from = EntryKind.of(e.entryKind)
+        if (from == to) return null
+        if (to == EntryKind.OPENING) {
+            EntryKind.refusal(e, itemsOfEntry(id).isNotEmpty(), entryOwner(id))?.let { return it }
+        }
+        writeEntryKind(id, to)
+        log(AuditAction.ENTRY_KIND_CHANGED, user, "transactions", id, EntryKind.auditDetail(from, to) + Access.allowedNote(allowedBy))
+        return null
+    }
+
     // ---------- Ledger entries ----------
 
     @Insert
@@ -894,7 +919,7 @@ interface KhataDao {
     @Query(
         """
         SELECT t.id, p.name AS partyName, p.isCustomer, t.amount, t.isGiven, t.note, t.entryNumber, t.timestamp,
-               t.paymentMethod, t.isQarzeHasna
+               t.paymentMethod, t.isQarzeHasna, t.entryKind
         FROM transactions t
         JOIN parties p ON p.id = t.partyId
         WHERE t.isDeleted = 0 AND p.isDeleted = 0
@@ -944,7 +969,7 @@ interface KhataDao {
                MIN(t.timestamp) AS firstAt, MAX(t.timestamp) AS lastAt, SUM(t.amount) AS total
         FROM transactions t
         JOIN parties p ON p.id = t.partyId
-        WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0 AND p.isDeleted = 0 AND p.isCustomer = 1
+        WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL' AND p.isDeleted = 0 AND p.isCustomer = 1
         GROUP BY t.partyId
         HAVING COUNT(DISTINCT t.timestamp / 86400000) >= 3
         """
@@ -1343,7 +1368,9 @@ interface KhataDao {
      * Customers brought in from another app (CsvImport): one party each and,
      * when the balance is not zero, one opening entry carrying it. All or
      * nothing: a file that fails half way leaves the book as it was.
-     * Returns how many parties were added.
+     * Returns how many parties were added. Each balance is written as an
+     * [EntryKind.OPENING] entry (schema 45, D-02): owed, in the balance and on
+     * the statement, but no sale on the day of the import.
      */
     @Transaction
     suspend fun importOpeningBalances(rows: List<CsvImport.Row>, note: String, now: Long = System.currentTimeMillis(), user: String? = Access.userName): Int {
@@ -1353,7 +1380,7 @@ interface KhataDao {
                 // Who brought them in, on each entry and in the log (22 Oct 2026, the review: they read as the owner's).
                 insertEntryNumbered(
                     LedgerEntry(partyId = id, amount = kotlin.math.abs(r.balance), isGiven = r.balance > 0, note = note, entryNumber = "",
-                        timestamp = now, createdBy = user)
+                        timestamp = now, createdBy = user, entryKind = EntryKind.OPENING)
                 )
             }
         }
@@ -2279,7 +2306,7 @@ interface KhataDao {
         JOIN parties p ON p.id = t.partyId
         LEFT JOIN products pr ON pr.id = ei.productId
         LEFT JOIN bill_items bi ON bi.id = ei.billItemId
-        WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0
+        WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL'
           AND (ei.quantity IS NOT NULL OR ei.productId IS NOT NULL)
           AND t.timestamp >= :from AND t.timestamp <= :to
         ORDER BY t.timestamp ASC, t.id ASC, ei.lineNo ASC, ei.id ASC
@@ -2930,13 +2957,15 @@ interface KhataDao {
     // with it. The same rule the season and recall lists already follow.
 
     // Not a sale (21 Oct 2026, the critical review): a Qarz-e-Hasna loan, and the cash handed back
-    // for a return (sale_returns.refundEntryId). And the counter's walk-in tickets ARE sales, though
+    // for a return (sale_returns.refundEntryId). Nor an opening balance (schema 45, 16 Nov 2026, D-02):
+    // t.entryKind = 'NORMAL' on every sale figure — money owed from before the book was not sold on the
+    // day it was brought in. Balances, statements and dues by age read every kind. And the counter's walk-in tickets ARE sales, though
     // they never touch a customer's khata: they are added from the sales table.
 
     /** Total value of sales between two timestamps: khata sales and the counter's walk-in tickets. */
     @Query("SELECT (SELECT COALESCE(SUM(t.amount), 0) FROM transactions t " +
            "JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL' " +
            "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
            "AND t.timestamp >= :from AND t.timestamp < :to) + " +
            "(SELECT COALESCE(SUM(grandTotal), 0) FROM sales WHERE isDeleted = 0 AND status = 'done' AND partyId IS NULL " +
@@ -2946,7 +2975,7 @@ interface KhataDao {
     /** How many sales (entry count, and walk-in tickets) between two timestamps. */
     @Query("SELECT (SELECT COUNT(*) FROM transactions t " +
            "JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL' " +
            "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
            "AND t.timestamp >= :from AND t.timestamp < :to) + " +
            "(SELECT COUNT(*) FROM sales WHERE isDeleted = 0 AND status = 'done' AND partyId IS NULL " +
@@ -2961,7 +2990,7 @@ interface KhataDao {
     @Query("SELECT MIN(firstAt) FROM (" +
            "SELECT MIN(t.timestamp) AS firstAt FROM transactions t " +
            "JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL' " +
            "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
            "UNION ALL " +
            "SELECT MIN(timestamp) AS firstAt FROM sales WHERE isDeleted = 0 AND status = 'done' AND partyId IS NULL)")
@@ -2978,7 +3007,7 @@ interface KhataDao {
            "SELECT ei.itemName AS name, ei.quantity AS qty, ei.unit AS unit, 1 AS lines " +
            "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
            "JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.entryKind = 'NORMAL' " +
            "AND t.timestamp >= :from AND t.timestamp < :to " +
            "AND ei.itemName IS NOT NULL AND ei.itemName != '' AND ei.quantity IS NOT NULL " +
            "UNION ALL " +
@@ -3008,7 +3037,7 @@ interface KhataDao {
            "(SELECT pr.defaultUnit FROM products pr WHERE pr.id = ei.productId) AS productUnit " +
            "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
            "JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isDeleted = 0 AND p.isCustomer = 1 " +
+           "WHERE t.isDeleted = 0 AND p.isCustomer = 1 AND t.entryKind = 'NORMAL' " +
            "AND t.timestamp >= :from AND t.timestamp < :to " +
            "AND ei.quantity IS NOT NULL ORDER BY t.timestamp")
     suspend fun profitSaleLinesBetween(from: Long, to: Long): List<Profit.SaleLine>
@@ -3046,7 +3075,7 @@ interface KhataDao {
     /** Top customers by total purchases in a period. */
     @Query("SELECT p.name AS name, SUM(t.amount) AS total " +
            "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL' " +
            "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
            "AND t.timestamp >= :from AND t.timestamp < :to " +
            "GROUP BY t.partyId ORDER BY total DESC LIMIT :limit")
@@ -3069,11 +3098,12 @@ interface KhataDao {
      * Money that came IN from customers in [from, to) (3 Nov 2026 audit, M15): their "I got" entries that are money
      * (a goods return carries its goods as lines and is not), and the counter's walk-in payments (cashbook, Sale).
      * [receivedBetween] counted every "I got", a supplier's credit bill too: 40,000 of goods on credit read as
-     * "Received 40,000" in the closing summary, while walk-in takings were missing.
+     * "Received 40,000" in the closing summary, while walk-in takings were missing. Nor an opening balance (schema 45): a
+     * customer's advance brought in from another app's file came in before the book, not on the day of the import.
      */
     @Query(
         "SELECT COALESCE((SELECT SUM(t.amount) FROM transactions t JOIN parties p ON p.id = t.partyId " +
-            "WHERE t.isGiven = 0 AND t.isDeleted = 0 AND p.isCustomer = 1 " +
+            "WHERE t.isGiven = 0 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.entryKind = 'NORMAL' " +
             "AND NOT EXISTS (SELECT 1 FROM entry_items i WHERE i.entryId = t.id) " +
             "AND t.timestamp >= :from AND t.timestamp < :to), 0) + " +
         "COALESCE((SELECT SUM(amount) FROM cashbook WHERE isIncome = 1 AND isDeleted = 0 AND category = 'Sale' " +
@@ -3178,7 +3208,11 @@ interface KhataDao {
         // the whole row back, isDeleted = false included, and brought the entry back. A binned row stays binned.
         val stored = getEntry(entry.id)
         if (stored != null && stored.isDeleted && !entry.isDeleted) return
-        updateEntry(entry)
+        // The entry's kind (schema 45) is changed only by setEntryKind, gated and written in Who did what: an edit keeps
+        // the stored one, whatever the screen's copy of the row says (a form that builds a new LedgerEntry would read
+        // NORMAL). Goods given are a sale, so an opening balance that gains goods lines is an ordinary entry again.
+        val kind = if (items.isNotEmpty()) EntryKind.NORMAL else EntryKind.of(stored?.entryKind ?: entry.entryKind)
+        updateEntry(entry.copy(entryKind = kind))
         deleteItemsOfEntry(entry.id)
         if (items.isNotEmpty()) {
             insertEntryItems(items.mapIndexed { i, item -> item.copy(id = 0, entryId = entry.id, lineNo = i) })
@@ -3202,7 +3236,7 @@ interface KhataDao {
         FROM entry_items ei
         JOIN transactions t ON t.id = ei.entryId
         JOIN parties p ON p.id = t.partyId
-        WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0
+        WHERE t.isDeleted = 0 AND t.isGiven = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL'
           AND t.timestamp >= :from AND t.timestamp <= :to
         GROUP BY t.id
         HAVING COUNT(*) > 1
@@ -4816,7 +4850,7 @@ interface KhataDao {
         FROM transactions t JOIN parties p ON p.id = t.partyId
         LEFT JOIN entry_items ei ON ei.entryId = t.id
         LEFT JOIN products pr ON pr.id = ei.productId
-        WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0
+        WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL'
           AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL)
           AND t.id NOT IN (SELECT ledgerEntryId FROM sales WHERE ledgerEntryId IS NOT NULL AND isDeleted = 0 AND status = 'done')
           AND t.timestamp >= :from AND t.timestamp < :to

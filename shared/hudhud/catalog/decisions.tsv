@@ -48,6 +48,7 @@ column	payment_plans	READ	cols=totalAmount,installmentAmount	reader=HudhudRecord
 column	payment_plans	READ	cols=note,createdAt,isClosed,closedAt	reader=HudhudRecordFacts.plan	gate=NONE	screen=PlansActivity	also=HudhudRecordFacts.plansClosed
 column	products	READ	cols=name,defaultUnit,company,salePrice,creditPrice	reader=HudhudFacts.goods	gate=NONE	screen=ProductsActivity
 column	products	READ	cols=costPrice	reader=HudhudFacts.goods	gate=REPORTS	screen=ProductsActivity	stricter=the product form greys the cost box for a cashier but still shows it, Hudhud keeps the cost (and so the margin) with REPORTS
+column	products	STRUCT	cols=otherNames	why=the shop's other names for a product (schema 45) are handed to Hudhud as more names of the same product with its id (HudhudSheet's goods list), so a product asked in another script is found, a way to find it and not a fact to tell
 column	products	READ	cols=lowStockLevel	reader=HudhudFacts.lowStock	gate=NONE	screen=ProductsActivity	via=Valuation.compute
 column	products	READ	cols=category,productType,formulation,registrationNumber,technicalName,note,createdAt,barcode,packUnit,packSize,packPrice,taxRate,variant	reader=HudhudFacts.goods	gate=NONE	screen=ProductsActivity	also=HudhudFacts.needGoods
 column	purchase_order_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.lastOrder	gate=NONE	screen=OrdersActivity
@@ -95,6 +96,7 @@ column	transactions	READ	cols=note,entryNumber,itemName,quantity,unit,paymentRef
 column	transactions	READ	cols=createdBy	reader=HudhudFacts.person	gate=REPORTS	screen=EntryDetailActivity	stricter=who wrote an entry is told only to who may see reports
 column	transactions	READ	cols=rateType,season	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity	why=the last-entry card says the rate list the entry was at and the season the owner chose (only where the shop keeps seasons)
 column	transactions	READ	cols=recovery	reader=HudhudFacts.person	gate=REPORTS	screen=EntryDetailActivity	stricter=the entry screen shows the chance of recovery to anyone who opens it, but a doubtful debt is the owner's private judgement and Hudhud says it only to who may see reports
+column	transactions	GAP	cols=entryKind	why=an opening balance (schema 45) is left out of every sale figure Hudhud reads through KhataDao's sale rule, but no card yet says which entry was brought in as one (the receipt and the statement say it)
 column	transactions	WITHHELD	cols=billPhotoPath	why=a picture's file path on this phone
 
 # ---- profile

@@ -3727,6 +3727,16 @@
     <!-- Audit rows for edits, deletes and the cashbook (21 Oct 2026, the critical review) -->
     <string name="audit_entry_edited">ثبت تغییر کرد</string>
     <string name="audit_entry_added">ثبت اضافه شد</string>
+    <string name="audit_entry_kind_changed">نوع ثبت تغییر کرد</string>
+    <string name="entry_kind_line">حساب‌شده به‌عنوان: %1$s</string>
+    <string name="entry_kind_normal">ثبت معمولی</string>
+    <string name="entry_kind_title">این ثبت چیست؟</string>
+    <string name="entry_kind_help">مانده ابتدایی پولی است که از پیش از این دفتر طلب دارید. در مانده و صورت‌حساب می‌ماند و هرگز فروش حساب نمی‌شود.</string>
+    <string name="entry_kind_refused">فقط یک مبلغ ساده می‌تواند مانده ابتدایی باشد: نه کالا، نه وام، نه نیمی از یک فروش نقدی، و نه ثبتی که فاکتور، طرح، چک یا فروش صندوق نوشته است.</string>
+    <string name="entry_cash_lent">پول قرض‌داده: قرض‌الحسنه (فروش نیست)</string>
+    <string name="entry_cash_lent_help">پولی که بی‌سود قرض داده شده، یا وامی که پس داده شده. در مانده می‌ماند و هرگز فروش یا سود حساب نمی‌شود. هرگز بهره یا جریمه دیرکرد به آن تعلق نمی‌گیرد.</string>
+    <string name="product_other_names">نام‌های دیگر (اختیاری)</string>
+    <string name="product_other_names_hint">همین کالا به خط‌های دیگر، با ویرگول جدا کنید</string>
     <string name="audit_entry_deleted">ثبت حذف شد</string>
     <string name="audit_cash_added">ردیف دفتر نقدی افزوده شد</string>
     <string name="audit_cash_edited">ردیف دفتر نقدی تغییر کرد</string>
