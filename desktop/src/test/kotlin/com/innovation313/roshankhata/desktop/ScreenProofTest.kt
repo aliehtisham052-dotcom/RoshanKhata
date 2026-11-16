@@ -556,7 +556,7 @@ class ScreenProofTest {
             val hudhudPanel = ImageComposeScene(width = 750, height = 850, density = Density(1.25f)) {
                 DeskTheme(dark = false) {
                     ProvideWords(words) {
-                        HudhudPanel(dao, partiesNow, hudhudEnv, onOpen = {}, onParty = { _, _ -> }, onAutomations = {}, onClose = {})
+                        HudhudPanel(dao, partiesNow, hudhudEnv, onOpen = { _, _ -> }, onParty = { _, _ -> }, onAutomations = {}, onClose = {})
                     }
                 }
             }

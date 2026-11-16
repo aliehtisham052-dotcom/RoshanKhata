@@ -33,6 +33,7 @@ import com.innovation313.roshankhata.data.AnswerEnv
 import com.innovation313.roshankhata.data.AnswerGate
 import com.innovation313.roshankhata.data.AnswerProfile
 import com.innovation313.roshankhata.data.Automations
+import com.innovation313.roshankhata.data.DayCloseMath
 import com.innovation313.roshankhata.data.FileShopSettings
 import com.innovation313.roshankhata.data.Hudhud
 import com.innovation313.roshankhata.data.HudhudLook
@@ -50,6 +51,7 @@ import com.innovation313.roshankhata.data.ShopCalendar
 import com.innovation313.roshankhata.data.ShopCountry
 import com.innovation313.roshankhata.data.taxLabelFor
 import com.innovation313.roshankhata.screens.LocalRoshanColors
+import com.innovation313.roshankhata.screens.ReportPeriod
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.Words
@@ -74,17 +76,41 @@ import java.util.Locale
  * customer's page, a button opens a page, the entry form is only filled in — the owner saves on the page that has its checks.
  */
 
+/**
+ * What a page opens on, in the computer's terms (17 Nov 2026): each is a start its pane already takes, so a card's button
+ * opens the page on what the card said — the phone's [OpenWith] extras, turned by [HudhudDeskEnv.startOf]. The entry form
+ * filled in ([OpenWith.EntryForm]) is the customer's page's own (HudhudPanel's onParty), not one of these.
+ */
+sealed interface DeskStart {
+    /** The sales report on one of its own periods. */
+    data class SalesPeriod(val period: ReportPeriod) : DeskStart
+    /** The sales report from [firstDay] to [lastDay], each a day's first moment (its range picker's own values). */
+    data class SalesDays(val firstDay: Long, val lastDay: Long) : DeskStart
+    /** The cashbook's day report on [day], a DayCloseMath day number (the phone's day book on that day). */
+    data class DayReport(val day: Long) : DeskStart
+    /** Who bought a product (Products' own Who bought window). */
+    data class Buyers(val productId: Long) : DeskStart
+}
+
 /** The computer's [AnswerEnv]: its words, this computer's settings file and the open business's own files. */
 class HudhudDeskEnv(
-    override val words: Words,
+    appWords: Words,
     override val locale: Locale,
     private val settings: FileShopSettings,
     private val prefs: AppPrefs,
     private val business: Long,
-    private val reminders: ReminderStore
+    private val reminders: ReminderStore,
+    /** This computer's own counts of app opens and calculator sums (null: none kept, as in a test that names none). */
+    private val usage: UsageCounts? = null
 ) : AnswerEnv {
 
-    override fun inLanguage(locale: Locale): AnswerEnv = HudhudDeskEnv(desktopWords(locale), locale, settings, prefs, business, reminders)
+    /**
+     * The answers' words as the computer says them ([DeskWords]): the shared answers name the phone's words ("on this phone");
+     * where the computer has its own twin ("on this computer") it is said instead (17 Nov 2026).
+     */
+    override val words: Words = DeskWords.of(appWords)
+
+    override fun inLanguage(locale: Locale): AnswerEnv = HudhudDeskEnv(desktopWords(locale), locale, settings, prefs, business, reminders, usage)
 
     override fun callMe(): String? = prefs.prop(KEY_CALL_ME)?.trim()?.takeIf { it.isNotEmpty() }
 
@@ -154,9 +180,16 @@ class HudhudDeskEnv(
     override fun appVersion(): String? = UpdateCheck.installed()
     /** Not claimed: the computer's build has no store to be another of. */
     override fun testBuild(): Boolean = false
-    /** The computer keeps no counts of its own opens and sums: none is said, never a made-up figure. */
-    override fun usageCount(thing: Hudhud.Thing, from: Long, to: Long): Int = 0
-    override fun usageSince(): Long? = null
+    /**
+     * The computer's own counts (17 Nov 2026, [UsageCounts]: counted from the day this build first ran, on this computer
+     * only, nothing of the book); none kept, none is said — never a made-up figure.
+     */
+    override fun usageCount(thing: Hudhud.Thing, from: Long, to: Long): Int = when (thing) {
+        Hudhud.Thing.CALCULATIONS -> usage?.count(UsageCounts.What.CALCULATIONS, from, to) ?: 0
+        Hudhud.Thing.APP_OPENS -> usage?.count(UsageCounts.What.APP_OPENS, from, to) ?: 0
+        else -> 0
+    }
+    override fun usageSince(): Long? = usage?.since()
     override fun lastBackupAt(): Long = prefs.lastSavedBackup(business) ?: 0L
     override fun otherPhoneAt(): Long = 0L
     override fun backupFailedAt(): Long = 0L
@@ -242,6 +275,28 @@ class HudhudDeskEnv(
             ScreenId.ZAKAT -> Section.ZAKAT
         }
 
+        /**
+         * What the computer's page opens on for a card's [OpenWith] (17 Nov 2026: the panel opened every page plain, so "is
+         * hafte ki sale" opened today's report and "Urea kis ne li" the whole product list). No else: an OpenWith added in
+         * :shared does not build here until the computer says what its page opens on. Null: the page as usual.
+         */
+        fun startOf(openWith: OpenWith?): DeskStart? = when (openWith) {
+            null -> null
+            is OpenWith.SalesPeriod -> ReportPeriod.values().firstOrNull { it.name == openWith.period }?.let { DeskStart.SalesPeriod(it) }
+            is OpenWith.SalesDays -> DeskStart.SalesDays(openWith.firstDay, openWith.lastDay)
+            is OpenWith.Day -> DeskStart.DayReport(DayCloseMath.dayOf(openWith.day))
+            is OpenWith.ProductBuyers -> DeskStart.Buyers(openWith.productId)
+            // The customer's page with his entry form filled in: HudhudPanel's onParty carries it.
+            is OpenWith.EntryForm -> null
+        }
+
+        /** The page a [DeskStart] belongs to: it is taken only there, and let go of when another page is opened. */
+        fun sectionFor(start: DeskStart): Section = when (start) {
+            is DeskStart.SalesPeriod, is DeskStart.SalesDays -> Section.SALES
+            is DeskStart.DayReport -> Section.CASHBOOK
+            is DeskStart.Buyers -> Section.PRODUCTS
+        }
+
         @Volatile
         private var senseSet = false
 
@@ -266,9 +321,19 @@ class HudhudDeskEnv(
                 AnswerCard(AnswerCard.Mood.CALM, lines = listOf(words.text(W.hudhud_intro_pc)), ask = card.ask)
             } else card
 
-        /** The first card: the greeting, and once that the answers are written here. */
-        fun opening(env: AnswerEnv): AnswerCard =
-            AnswerCard(AnswerCard.Mood.CALM, label = AnswerBook.greeting(env), lines = listOf(env.getString(W.hudhud_intro_pc)))
+        /**
+         * The first card: the greeting, that the answers are written here, and — the first time only — that the book stays
+         * on this computer (the phone's line said once with his introduction, AnswerBook.intro; here in the computer's words,
+         * hudhud_privacy_once_pc through [DeskWords], 17 Nov 2026). After that only when asked ("data mehfooz hai?").
+         */
+        fun opening(env: AnswerEnv): AnswerCard {
+            val privacy = env.privacyDue()
+            if (privacy) env.privacyTold()
+            return AnswerCard(
+                AnswerCard.Mood.CALM, label = AnswerBook.greeting(env),
+                lines = listOfNotNull(env.getString(W.hudhud_intro_pc), if (privacy) env.getString(W.hudhud_privacy_once) else null)
+            )
+        }
 
         /** A list of chips with their words: each once, each in its own words or the card's ([AnswerCard.optionLabels]). */
         fun labelled(env: AnswerEnv, asks: List<Hudhud.Ask>, card: AnswerCard?): List<Pair<Hudhud.Ask, String>> {
@@ -283,15 +348,16 @@ class HudhudDeskEnv(
 }
 
 /**
- * Hudhud's panel: the card, the chips under it, and the box to type in. [onOpen] opens a page, [onParty] a customer's page
- * (with his entry form filled in when the card offers that: [OpenWith.EntryForm]), [onAutomations] the automations' window.
+ * Hudhud's panel: the card, the chips under it, and the box to type in. [onOpen] opens a page, on what the card said when it
+ * said something ([DeskStart]: the sales report's days, the day report's day, a product's buyers), [onParty] a customer's
+ * page (with his entry form filled in when the card offers that: [OpenWith.EntryForm]), [onAutomations] the automations' window.
  */
 @Composable
 fun HudhudPanel(
     dao: KhataDao,
     parties: List<PartyWithBalance>,
     env: HudhudDeskEnv,
-    onOpen: (Section) -> Unit,
+    onOpen: (Section, DeskStart?) -> Unit,
     onParty: (Long, OpenWith.EntryForm?) -> Unit,
     onAutomations: () -> Unit,
     onClose: () -> Unit
@@ -396,7 +462,7 @@ fun HudhudPanel(
 @Composable
 private fun AnswerCardView(
     card: AnswerCard,
-    onOpen: (Section) -> Unit,
+    onOpen: (Section, DeskStart?) -> Unit,
     onParty: (Long, OpenWith.EntryForm?) -> Unit,
     onAutomations: () -> Unit,
     onAsk: (Hudhud.Ask, String) -> Unit
@@ -436,7 +502,7 @@ private fun AnswerCardView(
             val go: (() -> Unit)? = when {
                 rowAsk != null -> { -> onAsk(rowAsk, r.name) }
                 r.partyId > 0 -> { -> onParty(r.partyId, entry) }
-                screen != null -> { -> onOpen(screen) }
+                screen != null -> { -> onOpen(screen, null) }
                 else -> null
             }
             Row(
@@ -460,7 +526,7 @@ private fun AnswerCardView(
         val action: (() -> Unit)? = when {
             party != null -> { -> onParty(party, form) }
             card.automations -> onAutomations
-            open != null -> { -> onOpen(open) }
+            open != null -> { -> onOpen(open, HudhudDeskEnv.startOf(card.openWith)) }
             else -> null
         }
         if (action != null && !card.voiceSettings) {

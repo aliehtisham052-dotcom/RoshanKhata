@@ -261,7 +261,13 @@ private fun BillState(b: BillSummary) {
 }
 
 @Composable
-fun ProductsPane(dao: KhataDao, words: Words) {
+fun ProductsPane(
+    dao: KhataDao, words: Words,
+    /** Open who bought this product (Hudhud's "Urea kis ne khareedi" card, the phone's Product customers screen). */
+    startBuyers: Long? = null,
+    /** Told once [startBuyers] is taken, so a later visit opens as usual. */
+    onStartedBuyers: () -> Unit = {}
+) {
     val c = LocalRoshanColors.current
     val products by remember { dao.observeProducts() }.collectAsState(emptyList())
     var query by remember { mutableStateOf("") }
@@ -269,6 +275,12 @@ fun ProductsPane(dao: KhataDao, words: Words) {
     val shown = products.filter { com.innovation313.roshankhata.data.ProductFind.matches(it.name, it.company, it.barcode, it.note, query, it.otherNames) }
     var buyersOf by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
     buyersOf?.let { ProductBuyers(dao, words, it) { buyersOf = null } }
+    LaunchedEffect(startBuyers) {
+        val id = startBuyers ?: return@LaunchedEffect
+        // A product binned since the card was made opens nothing: the page as usual.
+        buyersOf = withContext(Dispatchers.IO) { runCatching { dao.productById(id) }.getOrNull() }?.takeIf { !it.isDeleted }
+        onStartedBuyers()
+    }
     var editing by remember { mutableStateOf<com.innovation313.roshankhata.data.Product?>(null) }
     editing?.let { ProductEditDialog(dao, it) { editing = null } }
     // The list as a spreadsheet and back, and the labels (POS Phase 2).

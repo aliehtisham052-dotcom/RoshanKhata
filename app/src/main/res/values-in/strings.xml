@@ -4460,6 +4460,16 @@
     <string name="hudhud_owner_named">Saya memanggil Anda %1$s. Anda bisa mengubahnya di pengaturan suara saya.</string>
     <string name="hudhud_intro">Saya Hudhud, asisten toko Anda. Tanyakan tentang buku Anda, dengan suara atau ketikan.</string>
     <string name="hudhud_intro_pc">Saya Hudhud, asisten toko Anda. Tanyakan tentang buku Anda dengan ketikan; jawabannya tertulis di sini.</string>
+    <string name="hudhud_privacy_once_pc">Buku Anda tetap di komputer ini. Saya membaca setiap jawaban darinya di sini dan tidak membagikannya kepada siapa pun.</string>
+    <string name="hudhud_hello_pc">Tanyakan tentang buku Anda. Setiap jawaban berasal dari buku Anda sendiri, di komputer ini.</string>
+    <string name="hudhud_chat_who_pc">Saya Hudhud, asisten toko Anda. Saya membaca buku Anda di komputer ini dan menjawab secara tertulis.</string>
+    <string name="hudhud_chat_bye_pc">Sampai jumpa. Buku Anda tetap aman di komputer ini.</string>
+    <string name="hudhud_about_app_pc">Roshan Khata adalah buku toko Anda di komputer ini: utang dan pembayaran, buku kas, stok, tagihan, faktur, dan laporan. Tidak perlu akun, dan buku Anda hanya keluar dari komputer untuk yang Anda nyalakan sendiri, seperti salinan di folder yang dipilih atau sinkronisasi.</string>
+    <string name="hudhud_about_privacy_pc">Buku Anda tetap di komputer ini, dan saya mencari setiap jawaban di sini. Tidak ada isi buku Anda yang keluar dari komputer kecuali Anda sendiri yang menyalakannya — salinan di folder yang dipilih, atau sinkronisasi.</string>
+    <string name="hudhud_counted_since_pc">Dihitung di komputer ini sejak %1$s.</string>
+    <string name="radar_private_pc">Hanya Anda yang melihat ini. Dihitung di komputer ini dari catatan Anda sendiri dan tidak pernah ditunjukkan kepada pelanggan.</string>
+    <string name="hudhud_limit_manager_pc">Dalam mode kasir, ini hanya terbuka untuk pemilik atau manajer dengan PIN.</string>
+    <string name="hudhud_limit_owner_pc">Dalam mode kasir, ini hanya terbuka untuk pemilik dengan PIN.</string>
     <string name="hudhud_l_islamic">Tanggal Hijriah</string>
     <string name="hudhud_l_time">Waktu</string>
     <string name="hudhud_hijri_note">Dihitung dengan kalender; menurut rukyat bisa berbeda satu hari.</string>

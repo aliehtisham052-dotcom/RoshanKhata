@@ -228,6 +228,12 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
             RadarDesk.attach(it)
         }
     }
+    // This computer's own counts of the app's openings and the calculator's sums (17 Nov 2026, the phone's UsageLog), beside
+    // app.properties and never in a book: the app starting is one opening — once, here, not again on a business switch.
+    remember {
+        DeskUsage.attach(UsageCounts(File(home, "usage.properties")))
+        DeskUsage.opened()
+    }
     var language by remember { mutableStateOf(appPrefs.language() ?: Locale.getDefault().toLanguageTag()) }
     val locale = remember(language) { Locale.forLanguageTag(language).also { Locale.setDefault(it) } }
     val words = remember(locale) { desktopWords(locale) }
@@ -398,15 +404,25 @@ private fun androidx.compose.ui.window.ApplicationScope.app(home: File) {
         runCatching { db.close() }
         exitApplication()
     }
+    // Opened filling the screen: a laptop's 768 rows otherwise cut off the entry buttons.
+    val mainWindow = rememberWindowState(placement = WindowPlacement.Maximized, width = 1100.dp, height = 740.dp)
     Window(
         visible = !closing,
         onCloseRequest = closeApp,
         onPreviewKeyEvent = { keys.handle(it) },
         title = words.text(W.app_name),
         icon = painterResource("roshan_khata_icon.png"),
-        // Opened filling the screen: a laptop's 768 rows otherwise cut off the entry buttons.
-        state = rememberWindowState(placement = WindowPlacement.Maximized, width = 1100.dp, height = 740.dp)
+        state = mainWindow
     ) {
+        // Brought back from the taskbar after being minimised: the app came to the front again, an opening (the phone's
+        // "its screens went from none to one"). Another window taking the focus, or a page change, is not.
+        LaunchedEffect(mainWindow) {
+            var wasMinimized = mainWindow.isMinimized
+            androidx.compose.runtime.snapshotFlow { mainWindow.isMinimized }.collect { minimized ->
+                if (wasMinimized && !minimized) DeskUsage.opened()
+                wasMinimized = minimized
+            }
+        }
         val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
         LaunchedEffect(theme, systemDark) {
             DwmTitleBar.apply(window, when (theme) { ThemeChoice.SYSTEM -> systemDark; ThemeChoice.LIGHT -> false; ThemeChoice.DARK -> true })
@@ -889,6 +905,11 @@ private fun Book(
     var showRadar by remember { mutableStateOf(false) }
     var orderLowAsked by remember { mutableStateOf(false) }
     var reportWindowAsked by remember { mutableStateOf<Pair<Long, Long>?>(null) }
+    // What a Hudhud card asked its page to open on (17 Nov 2026): the sales report's days, the day report's day, a product's
+    // buyers. Taken by that page once; let go of if another page is opened first, so a later visit opens as usual.
+    var hudhudStart by remember { mutableStateOf<DeskStart?>(null) }
+    // A Hudhud card's start is for its own page only: another page opened first lets it go.
+    LaunchedEffect(section) { hudhudStart?.let { if (HudhudDeskEnv.sectionFor(it) != section) hudhudStart = null } }
     LaunchedEffect(activeBusiness) {
         kotlinx.coroutines.delay(8000)
         while (true) {
@@ -1170,14 +1191,28 @@ private fun Book(
                     }
                     Section.AUDIT -> Box(Modifier.fillMaxSize()) { AuditPane(dao) }
                     Section.INVENTORY -> Box(Modifier.fillMaxSize()) { InventoryPane(dao, words, reload, businesses = businesses, activeBusiness = activeBusiness) { reload++ } }
-                    Section.SALES -> Box(Modifier.fillMaxSize()) { SalesReportPane(dao, words, rtl, shop, reload) }
+                    Section.SALES -> Box(Modifier.fillMaxSize()) {
+                        SalesReportPane(
+                            dao, words, rtl, shop, reload,
+                            startPeriod = (hudhudStart as? DeskStart.SalesPeriod)?.period,
+                            startDays = (hudhudStart as? DeskStart.SalesDays)?.let { it.firstDay to it.lastDay },
+                            onStarted = { hudhudStart = null }
+                        )
+                    }
                     Section.ORDERS -> Box(Modifier.fillMaxSize()) { OrdersPane(dao, parties, words, rtl, shop, startLow = orderLowAsked, onStartedLow = { orderLowAsked = false }) { reload++ } }
-                    Section.CASHBOOK -> Box(Modifier.fillMaxSize()) { CashbookPane(dao, home, otherBooks = { picturesOfOtherBooks(businesses, activeBusiness) }) }
+                    Section.CASHBOOK -> Box(Modifier.fillMaxSize()) {
+                        CashbookPane(
+                            dao, home, otherBooks = { picturesOfOtherBooks(businesses, activeBusiness) },
+                            startDay = (hudhudStart as? DeskStart.DayReport)?.day, onStartedDay = { hudhudStart = null }
+                        )
+                    }
                     Section.CHEQUES -> Box(Modifier.fillMaxSize()) { ChequesPane(dao, parties, words, home, otherBooks = { picturesOfOtherBooks(businesses, activeBusiness) }) { reload++ } }
                     Section.PLANS -> Box(Modifier.fillMaxSize()) { PlansPane(dao, parties, words) { reload++ } }
                     Section.EXPIRY -> Box(Modifier.fillMaxSize()) { ExpiryPane(dao) }
                     Section.BILLS -> Box(Modifier.fillMaxSize()) { BillsPane(dao, parties, words, home, startAdding = newBill, onStarted = { newBill = false }, onExpiry = { section = Section.EXPIRY }) { reload++ } }
-                    Section.PRODUCTS -> Box(Modifier.fillMaxSize()) { ProductsPane(dao, words) }
+                    Section.PRODUCTS -> Box(Modifier.fillMaxSize()) {
+                        ProductsPane(dao, words, startBuyers = (hudhudStart as? DeskStart.Buyers)?.productId, onStartedBuyers = { hudhudStart = null })
+                    }
                     Section.INVOICES -> Box(Modifier.fillMaxSize()) { InvoicesPane(dao, parties, words, rtl, shop, settings.businessAddress(), designs = { com.innovation313.roshankhata.desktop.invoice.Context(words, settings, images, rtl) }, fields = invoiceFields, onFields = onInvoiceFields, openId = invoiceToOpen) }
                     Section.INSIGHTS -> Box(Modifier.fillMaxSize()) { InsightsPane(dao, reload) { id -> selected = id; section = Section.KHATA } }
                     Section.ZAKAT -> Box(Modifier.fillMaxSize()) { ZakatPane(dao) }
@@ -2464,7 +2499,7 @@ private fun Book(
     if (showHudhud) {
         val closeHudhud = { showHudhud = false }
         val hudhudEnv = remember(activeBusiness, words) {
-            HudhudDeskEnv(words, Locale.getDefault(), settings, appPrefs, activeBusiness, reminders)
+            HudhudDeskEnv(words, Locale.getDefault(), settings, appPrefs, activeBusiness, reminders, DeskUsage.counts)
         }
         AppDialog(
             onCloseRequest = closeHudhud,
@@ -2474,7 +2509,12 @@ private fun Book(
         ) {
             HudhudPanel(
                 dao, parties, hudhudEnv,
-                onOpen = { s -> showHudhud = false; section = s },
+                onOpen = { s, start ->
+                    showHudhud = false
+                    // The page opens on what the card said (the sales report's days, the day report's day, who bought).
+                    hudhudStart = start?.takeIf { HudhudDeskEnv.sectionFor(it) == s }
+                    section = s
+                },
                 onParty = { id, form ->
                     showHudhud = false
                     selected = id

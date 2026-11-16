@@ -4699,6 +4699,16 @@
     <string name="hudhud_owner_named">I call you %1$s. You can change it in my voice settings.</string>
     <string name="hudhud_intro">I\'m Hudhud, your shop\'s assistant. Ask about your khata, by voice or in writing.</string>
     <string name="hudhud_intro_pc">I\'m Hudhud, your shop\'s assistant. Ask about your khata in writing; the answer is written here.</string>
+    <string name="hudhud_privacy_once_pc">Your book stays on this computer. I read every answer from it here and share it with no one.</string>
+    <string name="hudhud_hello_pc">Ask about your khata. Every answer comes from your own book, on this computer.</string>
+    <string name="hudhud_chat_who_pc">I\'m Hudhud, your shop\'s assistant. I read your khata on this computer and answer in writing.</string>
+    <string name="hudhud_chat_bye_pc">Goodbye. Your book stays safe on this computer.</string>
+    <string name="hudhud_about_app_pc">Roshan Khata is your shop\'s khata on this computer: credit and payments, cashbook, stock, bills, invoices and reports. No account is needed, and your book leaves the computer only for what you turn on yourself, like a copy in the folder you chose, or sync.</string>
+    <string name="hudhud_about_privacy_pc">Your book stays on this computer, and I work out every answer here. Nothing of your book leaves the computer unless you turn it on yourself — a copy in the folder you chose, or sync.</string>
+    <string name="hudhud_counted_since_pc">Counted on this computer since %1$s.</string>
+    <string name="radar_private_pc">Only you see this. It is worked out on this computer from your own khata and is never shown to the customer.</string>
+    <string name="hudhud_limit_manager_pc">In counter mode, this opens only for the owner or a manager, with the PIN.</string>
+    <string name="hudhud_limit_owner_pc">In counter mode, this opens only for the owner, with the PIN.</string>
     <string name="hudhud_l_islamic">Islamic date</string>
     <string name="hudhud_l_time">Time</string>
     <string name="hudhud_hijri_note">Worked out by calendar; by the moon it may differ by a day.</string>

@@ -145,10 +145,16 @@ fun RadarChip(r: PaymentRadar.Reading, onClick: () -> Unit) {
     }
 }
 
-/** Every reason, one line each, in the owner's language (the phone's RadarUi.reasons); [tone] the step that worked. */
+/**
+ * Every reason, one line each, in the owner's language (the phone's RadarUi.reasons); [tone] the step that worked. In the
+ * computer's words ([DeskWords]): the last line says the reading is worked out on this computer, not "this phone".
+ */
 @Composable
-fun radarReasons(r: PaymentRadar.Reading, promise: Long?, tone: Int = 0): String =
-    radarReasonsText(LocalWords.current, r, promise, tone)
+fun radarReasons(r: PaymentRadar.Reading, promise: Long?, tone: Int = 0): String {
+    val words = LocalWords.current
+    val desk = remember(words) { DeskWords.of(words) }
+    return radarReasonsText(desk, r, promise, tone)
+}
 
 /**
  * The Radar's reasons in [words] — the one rule (17 Nov 2026): the reasons dialog above and Hudhud's answer

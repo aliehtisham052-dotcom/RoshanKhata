@@ -49,7 +49,15 @@ import kotlinx.coroutines.withContext
  * (the same rows the phone shows — reportRows), to Excel or a sheet.
  */
 @Composable
-fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, reload: Int) {
+fun SalesReportPane(
+    dao: KhataDao, words: Words, rtl: Boolean, shopName: String?, reload: Int,
+    /** Opened on one of its own periods (Hudhud's "is hafte ki sale" card, the phone's EXTRA_PERIOD). */
+    startPeriod: ReportPeriod? = null,
+    /** Opened on the owner's own days, the first and the last day's first moment (the phone's EXTRA_FIRST_DAY/LAST_DAY). */
+    startDays: Pair<Long, Long>? = null,
+    /** Told once the start above is taken, so a later visit opens as usual. */
+    onStarted: () -> Unit = {}
+) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
     var period by remember { mutableStateOf(ReportPeriod.TODAY) }
@@ -61,6 +69,18 @@ fun SalesReportPane(dao: KhataDao, words: Words, rtl: Boolean, shopName: String?
     var view by remember { mutableStateOf(ReportView.ITEM) }
     var report by remember { mutableStateOf<SalesReport?>(null) }
     var told by remember { mutableStateOf<String?>(null) }
+    // What a Hudhud card asked the page to open on (17 Nov 2026): the same days the card's figure was summed over.
+    LaunchedEffect(startPeriod, startDays) {
+        if (startPeriod == null && startDays == null) return@LaunchedEffect
+        if (startDays != null) {
+            first = startDays.first
+            last = startDays.second
+            period = ReportPeriod.CUSTOM
+        } else if (startPeriod != null) {
+            period = startPeriod
+        }
+        onStarted()
+    }
     LaunchedEffect(period, custom, reload) {
         val (from, to) = periodWindow(period, custom = custom)
         report = withContext(Dispatchers.IO) { runCatching { SalesReport.compute(dao, from, to) }.getOrNull() }

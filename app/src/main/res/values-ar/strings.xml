@@ -4783,6 +4783,16 @@
     <string name="hudhud_owner_named">أناديك %1$s. يمكنك تغييره في إعدادات صوتي.</string>
     <string name="hudhud_intro">أنا هُدهُد، مساعد متجرك. اسأل عن دفترك بصوتك أو كتابةً.</string>
     <string name="hudhud_intro_pc">أنا هُدهُد، مساعد متجرك. اسأل عن دفترك كتابةً؛ الإجابة مكتوبة هنا.</string>
+    <string name="hudhud_privacy_once_pc">دفترك يبقى على هذا الحاسوب. أقرأ كل إجابة منه هنا ولا أشاركه مع أحد.</string>
+    <string name="hudhud_hello_pc">اسأل عن دفترك. كل إجابة من دفترك أنت، على هذا الحاسوب.</string>
+    <string name="hudhud_chat_who_pc">أنا هُدهُد، مساعد متجرك. أقرأ دفترك على هذا الحاسوب وأجيب كتابةً.</string>
+    <string name="hudhud_chat_bye_pc">مع السلامة. دفترك محفوظ على هذا الحاسوب.</string>
+    <string name="hudhud_about_app_pc">روشن كهاتا هو دفتر متجرك على هذا الحاسوب: الآجل والدفعات، ودفتر النقد، والمخزون، والفواتير، والتقارير. لا حاجة إلى حساب، ولا يغادر دفترك الحاسوب إلا لما تشغّله بنفسك، مثل نسخة في المجلد المختار أو المزامنة.</string>
+    <string name="hudhud_about_privacy_pc">يبقى دفترك على هذا الحاسوب، وأستخرج كل جواب هنا. لا يغادر شيء من دفترك الحاسوب ما لم تشغّله بنفسك — نسخة في المجلد المختار، أو مزامنة.</string>
+    <string name="hudhud_counted_since_pc">يُحسب على هذا الحاسوب منذ %1$s.</string>
+    <string name="radar_private_pc">أنت فقط ترى هذا. يُحسب على هذا الحاسوب من دفترك أنت ولا يُعرض على العميل أبدًا.</string>
+    <string name="hudhud_limit_manager_pc">في وضع الكاشير لا يُفتح هذا إلا للمالك أو المدير برمز PIN الخاص به.</string>
+    <string name="hudhud_limit_owner_pc">في وضع الكاشير لا يُفتح هذا إلا للمالك برمز PIN الخاص به.</string>
     <string name="hudhud_l_islamic">التاريخ الهجري</string>
     <string name="hudhud_l_time">الوقت</string>
     <string name="hudhud_hijri_note">محسوب بالتقويم؛ وقد يختلف يومًا بحسب رؤية الهلال.</string>

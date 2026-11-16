@@ -63,6 +63,8 @@ internal object CalcMemory {
         if (typed.trim() != answer) {
             history += "$typed = ${Format.signedIfNegative(value)}"
             while (history.size > 3) history.removeAt(0)
+            // Only a real sum is counted, as on the phone (Hudhud's "calculator" answer, 17 Nov 2026).
+            DeskUsage.calculated()
         }
         text = answer
     }

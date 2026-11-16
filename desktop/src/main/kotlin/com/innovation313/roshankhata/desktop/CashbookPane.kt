@@ -71,7 +71,14 @@ fun CashbookPane(
     /** The app's folder on this computer, where the receipts' pictures are kept (schema 43). */
     home: java.io.File,
     /** The pictures the other businesses' books point at, so a changed picture is never deleted from under them. */
-    otherBooks: suspend () -> Set<String>? = { emptySet() }
+    otherBooks: suspend () -> Set<String>? = { emptySet() },
+    /**
+     * Open the day report on this day (a DayCloseMath day number): a Hudhud card for one day's money (17 Nov 2026, the
+     * phone opens its day book on that day). Asked as the page's own button asks: REPORTS, a manager's PIN for a cashier.
+     */
+    startDay: Long? = null,
+    /** Told once [startDay] is taken, so a later visit opens as usual. */
+    onStartedDay: () -> Unit = {}
 ) {
     val c = LocalRoshanColors.current
     val scope = rememberCoroutineScope()
@@ -117,7 +124,14 @@ fun CashbookPane(
     var closing by remember { mutableStateOf(false) }
     if (closing) DayCloseDialog(dao) { closing = false }
     var reporting by remember { mutableStateOf(false) }
-    if (reporting) ZReportDialog(dao) { reporting = false }
+    var reportDay by remember { mutableStateOf<Long?>(null) }
+    if (reporting) ZReportDialog(dao, startDay = reportDay) { reporting = false; reportDay = null }
+    LaunchedEffect(startDay) {
+        val day = startDay ?: return@LaunchedEffect
+        // Not held to the big-shop tools switch: the owner asked for that day's figures by name, as on the phone.
+        Gates.need(com.innovation313.roshankhata.data.Access.Permission.REPORTS) { reportDay = day; reporting = true }
+        onStartedDay()
+    }
     // The day report is a big-shop tool, as on the counter (25 Oct 2026, the audit: it showed with the tools off).
     var advanced by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -534,10 +548,16 @@ fun CorrectCountDialog(dao: KhataDao, close: com.innovation313.roshankhata.data.
  * the app's preview or as a thermal receipt.
  */
 @Composable
-fun ZReportDialog(dao: KhataDao, onReceipt: ((List<ThermalReceipt.Line>) -> Unit)? = null, onClose: () -> Unit) {
+fun ZReportDialog(
+    dao: KhataDao,
+    onReceipt: ((List<ThermalReceipt.Line>) -> Unit)? = null,
+    /** The day it opens on (a DayCloseMath day number); null: today. */
+    startDay: Long? = null,
+    onClose: () -> Unit
+) {
     val c = LocalRoshanColors.current
     val words = com.innovation313.roshankhata.words.LocalWords.current
-    var day by remember { mutableStateOf(com.innovation313.roshankhata.data.DayCloseMath.dayOf(System.currentTimeMillis())) }
+    var day by remember { mutableStateOf(startDay ?: com.innovation313.roshankhata.data.DayCloseMath.dayOf(System.currentTimeMillis())) }
     var report by remember { mutableStateOf<com.innovation313.roshankhata.data.ZReport?>(null) }
     // The day's every entry under its figures (3 Nov 2026, the day book): the phone's DayBookScreen draws the same rows.
     var rows by remember { mutableStateOf<List<com.innovation313.roshankhata.data.DayBook.Row>?>(null) }

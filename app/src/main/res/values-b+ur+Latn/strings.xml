@@ -4486,6 +4486,16 @@
     <string name="hudhud_owner_named">Main aap ko %1$s kehta hoon. Meri awaaz ki settings mein ise badal sakte hain.</string>
     <string name="hudhud_intro">Main Hudhud hoon, aap ki dukaan ka madadgaar. Apne khate ke baare mein bol kar ya likh kar poochein.</string>
     <string name="hudhud_intro_pc">Main Hudhud hoon, aap ki dukaan ka madadgaar. Apne khate ke baare mein likh kar poochein; jawab yahan likha milega.</string>
+    <string name="hudhud_privacy_once_pc">Aap ka khata isi computer par rehta hai. Main har jawab yahin se parh kar deta hoon aur kisi se share nahi karta.</string>
+    <string name="hudhud_hello_pc">Apne khate ke baare mein poochein. Har jawab isi computer par aap ke apne khate se aata hai.</string>
+    <string name="hudhud_chat_who_pc">Main Hudhud hoon, aap ki dukaan ka madadgaar. Isi computer par aap ka khata dekh kar likh kar jawab deta hoon.</string>
+    <string name="hudhud_chat_bye_pc">Khuda hafiz. Aap ka khata isi computer par mehfooz hai.</string>
+    <string name="hudhud_about_app_pc">Roshan Khata isi computer par aap ki dukaan ka khata hai: udhaar aur wusooli, cashbook, stock, bill, invoice aur reports. Koi account nahi chahiye, aur aap ka khata computer se bahar sirf wahin jata hai jo aap khud on karein, jaise chune hue folder mein copy ya sync.</string>
+    <string name="hudhud_about_privacy_pc">Aap ka khata isi computer par rehta hai, aur main har jawab yahin nikalta hoon. Aap ke khate ka kuch bhi computer se bahar nahi jata jab tak aap khud on na karein — chune hue folder mein copy, ya sync.</string>
+    <string name="hudhud_counted_since_pc">Is computer par %1$s se gina ja raha hai.</string>
+    <string name="radar_private_pc">Yeh sirf aap dekhte hain. Yeh isi computer par aap ke apne khate se nikala jata hai aur gahak ko kabhi nahi dikhaya jata.</string>
+    <string name="hudhud_limit_manager_pc">Counter mode mein ye sirf maalik ya manager ke PIN se khulta hai.</string>
+    <string name="hudhud_limit_owner_pc">Counter mode mein ye sirf maalik ke PIN se khulta hai.</string>
     <string name="hudhud_l_islamic">Islami tareekh</string>
     <string name="hudhud_l_time">Waqt</string>
     <string name="hudhud_hijri_note">Ye calendar se nikali gayi hai; chaand ke hisaab se ek din ka farq ho sakta hai.</string>
