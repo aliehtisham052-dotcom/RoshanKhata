@@ -19,7 +19,12 @@ object VoiceEntry {
         val partyName: String?,
         val amount: Double?,
         /** true = the shop gave, false = the shop received, null = unclear. */
-        val isGiven: Boolean?
+        val isGiven: Boolean?,
+        /**
+         * The day the sentence says it happened ([VoiceQuestion.entryDay], 16 Nov 2026): "kal", "parson", "12/11", "12 November";
+         * null: today, as before. The form opens on that day ([Hudhud.entryTime]), never in the future.
+         */
+        val day: VoiceQuestion.Dated? = null
     )
 
     // Both scripts, because the recogniser returns whichever the speaker used.
@@ -254,7 +259,11 @@ object VoiceEntry {
      * can be checked without a database behind it.
      */
     fun parse(spoken: String, knownNames: List<String>, language: String? = null): Parsed {
-        val text = normalise(spoken)
+        // The figures of a date are no amount (16 Nov 2026): "Ali ko 12/11 ko 500 diye" was 12 rupees on today's page, on the Khata
+        // screen's microphone as on Hudhud's. A word of a name the book holds is never a month ("June Traders").
+        val nameWords = knownNames.flatMap { n -> n.split(' ').map { VoiceQuestion.normalise(it) } }.toSet()
+        val isName: (String) -> Boolean = { it in nameWords }
+        val text = normalise(VoiceQuestion.withoutDate(spoken, isName))
         val lang = language?.lowercase().orEmpty()
         val persian = lang.startsWith("fa")
         // Indonesian writes thousands with a dot: "5.000" is five thousand (21 Oct).
@@ -262,7 +271,8 @@ object VoiceEntry {
         return Parsed(
             partyName = findParty(text, knownNames),
             amount = findAmount(text, persian, dotGroups),
-            isGiven = findDirection(text)
+            isGiven = findDirection(text),
+            day = VoiceQuestion.entryDay(spoken, isName)
         )
     }
 
@@ -358,8 +368,17 @@ object VoiceEntry {
      * with confidence, the next best thing is to search for them the way any
      * other screen would, not to hand back the whole book.
      */
-    fun nameWords(spoken: String): List<String> =
-        tokenise(normalise(spoken)).filterNot { isNoise(it) }
+    fun nameWords(spoken: String): List<String> {
+        // A day said with the entry ("kal", "parson", "pichle hafte") is no part of a name: "Ali ko kal 500 diye" looked for
+        // "ali" and "kal", and "kal" could be somebody's (Kaleem). Only the words of a span the sentence says are set aside.
+        val spanWords = VoiceQuestion.spanWordsIn(VoiceQuestion.normalise(spoken))
+        // "pichle jumme": the weekday of a day said is the day's, not a name's (only when the sentence does name that day).
+        val weekday = VoiceQuestion.entryDay(spoken)?.weekday != null
+        return tokenise(normalise(spoken)).filterNot { w ->
+            val n = VoiceQuestion.normalise(w)
+            isNoise(w) || n in spanWords || (weekday && VoiceQuestion.isWeekdayWord(n))
+        }
+    }
 
     /**
      * Which of the recogniser's answers to act on, by index.

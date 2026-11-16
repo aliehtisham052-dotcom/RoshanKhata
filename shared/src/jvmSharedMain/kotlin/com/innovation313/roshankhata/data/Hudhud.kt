@@ -59,7 +59,14 @@ object Hudhud {
          * written here. [ids]: the one customer, or those it could be (none: every customer is offered, nearest first,
          * by [nameWords]). [isGiven]: the shop gave, as VoiceEntry reads it.
          */
-        data class Entry(val amount: Double, val isGiven: Boolean, val ids: List<Long>, val nameWords: List<String>) : Ask()
+        data class Entry(
+            val amount: Double, val isGiven: Boolean, val ids: List<Long>, val nameWords: List<String>,
+            /**
+             * The day the sentence says it happened (16 Nov 2026): "Ali ko kal 500 diye", "parson", "12/11 ko" ([VoiceQuestion.entryDay]);
+             * null: now. The form opens on [entryTime] of it, never in the future.
+             */
+            val day: VoiceQuestion.Dated? = null
+        ) : Ask()
 
         /** When the named customer is likely to pay, by the Payment Radar; none named: who is likely to pay now. */
         data class WhenPays(val ids: List<Long>) : Ask()
@@ -1947,7 +1954,7 @@ object Hudhud {
                     if (named.isEmpty()) Ask.NeedName(null) else Ask.Parties(named)
                 } else {
                     val nameWords = VoiceEntry.nameWords(heard)
-                    Ask.Entry(amount, entry.isGiven ?: (label == "entry_gave"), partiesOf(names, nameWords), nameWords)
+                    Ask.Entry(amount, entry.isGiven ?: (label == "entry_gave"), partiesOf(names, nameWords), nameWords, entryDayOf(heard, names, goods))
                 }
             }
             "goods_price" -> goodsOf(GoodsFacet.PRICE)
@@ -2046,7 +2053,7 @@ object Hudhud {
         val given = entry.isGiven
         if (!asking && amount != null && amount > 0.0 && given != null) {
             val nameWords = VoiceEntry.nameWords(heard)
-            return Ask.Entry(amount, given, partiesOf(names, nameWords), nameWords)
+            return Ask.Entry(amount, given, partiesOf(names, nameWords), nameWords, entryDayOf(heard, names, goods))
         }
         val figure = VoiceQuestion.classify(heard)
         val window = VoiceQuestion.windowOf(heard)
@@ -3652,6 +3659,19 @@ object Hudhud {
         }
         return null
     }
+
+    /**
+     * The moment an entry said with a day is written at (16 Nov 2026): that day at the time of day it is now, never later than the
+     * day's end and never in the future; null for a day that has not yet come (the form then opens on now, as with no day said).
+     */
+    fun entryTime(d: VoiceQuestion.Dated, now: Long = System.currentTimeMillis(), tz: TimeZone = TimeZone.getDefault()): Long? {
+        val (from, to) = span(d, now, tz) ?: return null
+        val today = span(VoiceQuestion.Window.TODAY, now, tz).first
+        return minOf(from + (now - today), to - 1, now)
+    }
+
+    private fun entryDayOf(heard: String, names: List<Name>, goods: List<Name>): VoiceQuestion.Dated? =
+        VoiceQuestion.entryDay(heard) { w -> knownName(w, names) || knownName(w, goods) }
 
     /** The customer an entry names: one when NameSearch is sure, else those it could be (at most five), else none. */
     private fun partiesOf(names: List<Name>, nameWords: List<String>): List<Long> {

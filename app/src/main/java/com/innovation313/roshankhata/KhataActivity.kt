@@ -1638,6 +1638,8 @@ class KhataActivity : BaseActivity() {
 
         // A local, for the smart cast: VoiceEntry's result is from the shared module.
         val spokenAmount = parsed.amount
+        // The day the sentence said ("kal", "parson", "12/11"), as the moment the form opens on (16 Nov 2026); null: now.
+        val spokenTime = parsed.day?.let { com.innovation313.roshankhata.data.Hudhud.entryTime(it) }
         if (spokenAmount == null || spokenAmount <= 0.0) {
             showSpokenProblem(heard, getString(R.string.voice_no_amount))
             return
@@ -1648,7 +1650,7 @@ class KhataActivity : BaseActivity() {
             // than the door: a shop with a hundred customers has said the hard
             // part already, and a dead end here would send them back to typing
             // the whole entry.
-            pickPartyForSpoken(heard, spokenAmount, parsed.isGiven ?: true)
+            pickPartyForSpoken(heard, spokenAmount, parsed.isGiven ?: true, spokenTime)
             return
         }
 
@@ -1662,7 +1664,8 @@ class KhataActivity : BaseActivity() {
 
         showVoiceStrip(
             heard = heard,
-            summary = "${party.name}  ·  ${Format.money(spokenAmount)}  ·  $direction",
+            summary = "${party.name}  ·  ${Format.money(spokenAmount)}  ·  $direction" +
+                (spokenTime?.let { "  ·  ${Format.dateOnly(it)}" } ?: ""),
             // Waving the strip away is the clearest signal there is that the
             // confident match was the wrong customer: there is no way to
             // change the party once the entry has opened on their page, so an
@@ -1676,6 +1679,7 @@ class KhataActivity : BaseActivity() {
                             PartyDetailActivity.EXTRA_VOICE_IS_GIVEN,
                             parsed.isGiven ?: true
                         )
+                        .apply { spokenTime?.let { putExtra(PartyDetailActivity.EXTRA_VOICE_TIME, it) } }
                 )
             }
         )
@@ -1764,7 +1768,7 @@ class KhataActivity : BaseActivity() {
      * list, it shows a list without the customer in it and tells the owner
      * something untrue about their own book.
      */
-    private fun pickPartyForSpoken(heard: String, amount: Double, isGiven: Boolean) {
+    private fun pickPartyForSpoken(heard: String, amount: Double, isGiven: Boolean, time: Long? = null) {
         if (allParties.isEmpty()) {
             showSpokenProblem(heard, getString(R.string.voice_no_party))
             return
@@ -1787,6 +1791,7 @@ class KhataActivity : BaseActivity() {
                     .putExtra(PartyDetailActivity.EXTRA_PARTY_ID, chosen.id)
                     .putExtra(PartyDetailActivity.EXTRA_VOICE_AMOUNT, amount)
                     .putExtra(PartyDetailActivity.EXTRA_VOICE_IS_GIVEN, isGiven)
+                    .apply { time?.let { putExtra(PartyDetailActivity.EXTRA_VOICE_TIME, it) } }
             )
         }
     }

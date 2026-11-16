@@ -475,6 +475,9 @@ object VoiceQuestion {
 
     private val ORDINAL = Regex("(\\d{1,2})(st|nd|rd|th)")
 
+    /** "12/11", "12-11", "12/11/2026", "12/11/26": a day and a month, and maybe a year, written with figures ([dateFound]). */
+    private val SLASH_DATE = Regex("(\\d{1,2})[/-](\\d{1,2})(?:[/-](\\d{4}|\\d{2}))?")
+
     /** What a date found in a sentence is, and which of its words (by their place in the sentence's raw words) are figures of it. */
     private class DateFound(val dated: Dated, val figures: Set<Int>)
 
@@ -524,6 +527,32 @@ object VoiceQuestion {
             return null
         }
         fun monthWord(j: Int) = word.getOrNull(j)?.let { saysAny(it, MONTH) } == true
+        // ---- a day written with figures and a slash or a dash: "12/11", "12-11", "12/11/2026" (16 Nov 2026). Day first, the way
+        // the app's countries write a date; only "11/25", whose second figure can be no month, is read month first. A dot is never a
+        // date's mark ("2.5" is two and a half), and only one or two figures each side ("0300-1234567" is a phone number).
+        for ((i, r) in raw.withIndex()) {
+            val m = SLASH_DATE.matchEntire(Digits.toLatin(r).trimEnd(',', '.', '?', '!', '،', '؟', '۔')) ?: continue
+            val a = m.groupValues[1].toInt()
+            val b = m.groupValues[2].toInt()
+            val (day, month) = when {
+                a in 1..31 && b in 1..12 -> a to b
+                a in 1..12 && b in 13..31 -> b to a
+                else -> continue
+            }
+            val y = m.groupValues[3]
+            val year = when (y.length) {
+                0 -> null
+                2 -> 2000 + y.toInt()
+                else -> y.toInt().takeIf { it in 2000..2099 } ?: continue
+            }
+            val yearsBack = when {
+                year != null -> null
+                window == Window.THIS_YEAR -> 0
+                window == Window.LAST_YEAR -> 1
+                else -> null
+            }
+            return DateFound(Dated(day = day, month = month, year = year, yearsBack = yearsBack), setOf(i))
+        }
         // ---- a month, with its day and year beside it
         for (j in word.indices) {
             val (m, sure) = monthAt(j) ?: continue
@@ -576,6 +605,24 @@ object VoiceQuestion {
         }
         return null
     }
+
+    /**
+     * The day an entry said as a fact names (16 Nov 2026): "Ali ko kal 500 diye" is yesterday's, "parson Bashir se 300 liye" the
+     * day before, "12/11 ko …" and "12 November ko …" that day, "pichle jumme" the last Friday. Today, a month without its day, and
+     * a sentence in the future of the verb ("kal dega" is a promise, and "kal" is tomorrow there) name no day: the form opens on
+     * now, as before. Read by the very date reader the questions use ([datedOf]); the app turns it into a moment that is never in
+     * the future ([Hudhud.entryTime]).
+     */
+    fun entryDay(heard: String, isName: (String) -> Boolean = { false }): Dated? {
+        val t = normalise(Digits.toLatin(heard))
+        val future = saysAny(t, FUTURE_WORDS) || t.split(' ').any { w -> w.length >= 3 && FUTURE_ENDS.any { e -> w.endsWith(e) && w != e } }
+        if (future) return null
+        dateFound(heard, isName)?.dated?.let { d -> return if (d.day == null && d.daysBack == null && d.weekday == null) null else d }
+        return if (windowOf(heard) == Window.YESTERDAY) Dated(daysBack = 1) else null
+    }
+
+    /** Whether [w] (normalised) is a weekday a "last" may stand before ("jumme" of "pichle jumme"). */
+    internal fun isWeekdayWord(w: String): Boolean = w in WEEKDAY_OF
 
     private class Spans(val window: Window?, val unsupported: Boolean)
 

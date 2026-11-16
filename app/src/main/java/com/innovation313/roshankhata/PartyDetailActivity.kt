@@ -172,6 +172,12 @@ class PartyDetailActivity : BaseActivity() {
         const val EXTRA_VOICE_IS_GIVEN = "voice_is_given"
 
         /**
+         * The moment a spoken entry said it happened (16 Nov 2026: "Ali ko kal 500 diye", "12/11 ko …"), as [Hudhud.entryTime] makes
+         * it: that day at the time of day it was said. The form opens on it, never later than now; absent: now, as before.
+         */
+        const val EXTRA_VOICE_TIME = "voice_time"
+
+        /**
          * A payment a wallet or bank app announced (PaymentVoice, 5 Nov 2026), beside [EXTRA_VOICE_AMOUNT]: the
          * note, the way it was paid (a PaymentMethod key) and its reference, put in the form for the owner to
          * check. Like the spoken amount, nothing is saved until Save.
@@ -502,9 +508,11 @@ class PartyDetailActivity : BaseActivity() {
             val method = runCatching { intent.getStringExtra(EXTRA_PREFILL_METHOD) }.getOrNull()
                 ?.takeIf { it in PaymentMethod.ALL }
             val ref = runCatching { intent.getStringExtra(EXTRA_PREFILL_REF) }.getOrNull()
+            // The day the sentence said, never ahead of now (a wrong clock or a stale intent must not date an entry tomorrow).
+            val spokenTime = intent.getLongExtra(EXTRA_VOICE_TIME, 0L).takeIf { it > 0L }
             findViewById<View>(android.R.id.content).post {
                 showAddEntryDialog(spokenGiven, prefillAmount = spokenAmount,
-                    prefillNote = note, prefillMethod = method, prefillRef = ref)
+                    prefillNote = note, prefillMethod = method, prefillRef = ref, prefillTime = spokenTime)
             }
         }
         if (partyId == 0L) {
@@ -820,7 +828,9 @@ class PartyDetailActivity : BaseActivity() {
         // A payment a wallet app announced (EXTRA_PREFILL_*): the note, the way it came and its reference.
         prefillNote: String? = null,
         prefillMethod: String? = null,
-        prefillRef: String? = null
+        prefillRef: String? = null,
+        // The moment a spoken entry said it happened (EXTRA_VOICE_TIME); clamped to now.
+        prefillTime: Long? = null
     ) {
         val view = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
@@ -886,7 +896,9 @@ class PartyDetailActivity : BaseActivity() {
         // When it happened. Defaults to now — right most of the time — but an
         // entry written up in the evening for something that changed hands at
         // noon should carry noon, not the evening.
-        var chosenTime = editing?.entry?.timestamp ?: System.currentTimeMillis()
+        var chosenTime = editing?.entry?.timestamp
+            ?: prefillTime?.coerceAtMost(System.currentTimeMillis())
+            ?: System.currentTimeMillis()
         fun attachDate() = DateTimeField.attach(
             activity = this,
             button = view.findViewById(R.id.btnEntryDate),
