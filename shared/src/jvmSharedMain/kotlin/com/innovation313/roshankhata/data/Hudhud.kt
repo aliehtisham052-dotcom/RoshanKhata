@@ -421,9 +421,245 @@ object Hudhud {
         val n = asRead(names)
         val g = asRead(goods)
         val st = asRead(staff)
+        val plain = readAll(heard, clean, n, topics, language, g, before, st)
+        return byWholeName(clean, plain, n, topics, language, g, before, st) ?: plain
+    }
+
+    /** The whole reading of one sentence: the rules and the sense, two spans compared, two questions, off the book. */
+    private fun readAll(
+        heard: String, clean: String, n: List<Name>, topics: List<Topic>, language: String?, g: List<Name>, before: Ask?, st: List<Name>
+    ): Ask {
         val whole = understandRead(clean, n, topics, language, g, before, st)
         val read = compareOf(clean, n, g) ?: bothOf(clean, whole, n, topics, language, g, before, st) ?: whole
         return offTopic(heard, whatIf(heard, read))
+    }
+
+    // ------------------------------------------------------------------------------- a name made of the words of a question
+
+    /**
+     * A name of the book made of the words of a question (16 Nov 2026, audit T38 / BC-036): a product "DELETE ALL", a customer
+     * "Aaj Ki Sale". Every reader that runs before the name search (the delete order, the low stock, the day's dealings, the
+     * figures) reads such a name's own words as the question, and the name search sets those very words aside as the
+     * question's, so "DELETE ALL ka rate" opened the delete page and "Aaj Ki Sale ka balance" was the day's sale. The private
+     * note met the same class for its one word (lesson 122, [noteAsk]); this is the rule for every word and every reader.
+     *
+     * When a name is said WHOLE ([wholeNamesIn]: every word of a name of two words or more, in its order, or a single-word name of
+     * four letters or more that is no word of a question), the sentence is read again with the name stood in by a word that
+     * means nothing ([MASK_WORDS]) — the readers then see only the rest of the sentence, the name search and the sense find the
+     * stand-in as that customer, supplier, staff member or product. The second reading is taken only when:
+     * - the first reading named none of those (a reading that found him already stands), and
+     * - the second names him and asks something OF him ([asksOfMasked]): a fact of his (number, limit, a product's rate or stock),
+     *   or, for his bare account or a product's overview, the sentence links to the name ("ka", "ki", "'s", "of", Bengali "-এর")
+     *   or says his account in its other words ("balance", "hisaab").
+     * When nothing is asked of him and the name holds a word of a question, the sentence is read as a book without him reads it
+     * (the sense too had taken his words for a name: "فروش امروز چقدر است" with a customer "فروش امروز" was "whose?").
+     * So "aaj ki sale kitni hai" in a book with a customer "Aaj Ki Sale" stays the day's sale (nothing is asked of him), "Ali Raza
+     * ka khata delete kar do" stays the delete page (the second reading names nobody either), and a bare "DELETE ALL" is read as
+     * before. A single-word name that is itself a word of a question ("Sale", "Note") is never stood in: the sentence's own
+     * question is far likelier, and such a name stays reachable with a fact of his ("Sale ka number" names him in the first reading).
+     */
+    private fun byWholeName(
+        clean: String, plain: Ask, n: List<Name>, topics: List<Topic>, language: String?, g: List<Name>, before: Ask?, st: List<Name>
+    ): Ask? {
+        val mask = wholeNamesIn(clean, n, g, st) ?: return null
+        if (namesMasked(plain, mask)) return null
+        val read = readAll(mask.text, mask.text, mask.names, topics, language, mask.goods, before, mask.staff)
+        if (namesMasked(read, mask) && asksOfMasked(read, mask)) return unmasked(read, mask)
+        // Nothing asked of him: the sentence's own question, as a book without him reads it. His words had still been taken by
+        // the sense for a name ("فروش امروز چقدر است" in a book with a customer "فروش امروز" was "whose?", not today's sale).
+        if (!mask.madeOfQuestion) return null
+        return readAll(clean, clean, n.filterNot { it.id in mask.partyIds && mask.questionNamed(0, it.id) }, topics, language,
+            g.filterNot { it.id in mask.goodsIds && mask.questionNamed(1, it.id) }, before,
+            st.filterNot { it.id in mask.staffIds && mask.questionNamed(2, it.id) })
+    }
+
+    /**
+     * The sentence with each name said whole stood in by a word of [MASK_WORDS], and the lists with those names renamed to it.
+     * [ids]: the customers' and suppliers' ([partyIds]), the products' ([goodsIds]) and the staff's ([staffIds]) stood in.
+     * [linked]: a word that links to a name stands beside one ("X ka", "X's", "of X", "X-এর"). [rest]: the sentence's other words.
+     */
+    private class Masked(
+        val text: String, val names: List<Name>, val goods: List<Name>, val staff: List<Name>,
+        val partyIds: Set<Long>, val goodsIds: Set<Long>, val staffIds: Set<Long>,
+        val linked: Boolean, val rest: List<String>, val said: Map<String, List<String>>,
+        /** The stood-in names (kind 0 party, 1 product, 2 staff, and id) that hold a word of a question ("Aaj Ki Sale", "DELETE ALL"). */
+        val questionMade: Set<Pair<Int, Long>>
+    ) {
+        val madeOfQuestion: Boolean get() = questionMade.isNotEmpty()
+        fun questionNamed(kind: Int, id: Long) = (kind to id) in questionMade
+    }
+
+    /** Stand-ins that mean nothing in any language and are far from each other (no search comes near one from another). */
+    private val MASK_WORDS = listOf("qqbookone", "qqbooktwo", "qqbookthree", "qqbookfour")
+
+    /** Words that link to the name before them ("Ali ka", "علی کا", "अली का", Sindhi "علي جو") — and English "'s", left as "s". */
+    private val LINK_AFTER = setOf("ka", "ki", "ke", "kay", "kaa", "کا", "کی", "کے", "का", "की", "के", "جو", "جي", "جا", "s", "এর", "র")
+        .map { norm(it) }.toSet()
+    /** Words that link to the name after them ("the rate of X", "rate dari X"). */
+    private val LINK_BEFORE = setOf("of", "dari").map { norm(it) }.toSet()
+
+    /** A single word that a question is made of: a concept, a figure's word, a little word, a word of the language. */
+    private fun questionWord(w: String): Boolean =
+        HudhudMind.meaningOf(w).isNotEmpty() || HudhudMind.isSoftWord(w) || VoiceQuestion.keywordsIn(w).isNotEmpty() ||
+            w in STOP_SET || w in INTENT_SET || w in QUIET_SET || w in VOCATIVE_SET || w in ERASE_FIRST || HudhudNote.isNoteWord(w) ||
+            HudhudSense.knowsWord(w)
+
+    /**
+     * Whether the sense is shown [w] as a name of [list] (its "qqname"/"qqitem" slot). Never a little word, a concept or a figure's
+     * own word ("sale", "aaj", "baqaya"): the name search sets those aside as the question's ([namedIn]), and the sense must read
+     * them the same way, or a customer "Aaj Ki Sale" turned "sale ka hisaab" into "whose?" (16 Nov 2026, BC-036). A name made of
+     * such words is still found when it is said whole ([byWholeName]).
+     */
+    private fun senseNameSlot(w: String, list: List<Name>): Boolean =
+        w !in QUIET_SET && !HudhudMind.isHardWord(w) && VoiceQuestion.keywordsIn(w).isEmpty() && knownName(w, list)
+
+    /** A word that asks by itself (a concept, a figure's word, a delete or a note): narrower than [questionWord], no little word. */
+    private fun askingWord(w: String): Boolean =
+        HudhudMind.isHardWord(w) || VoiceQuestion.keywordsIn(w).isNotEmpty() || w in ERASE_FIRST || HudhudNote.isNoteWord(w)
+
+    private fun wholeNamesIn(clean: String, n: List<Name>, g: List<Name>, st: List<Name>): Masked? {
+        val raw = clean.trim().split(SPACE_RUN).filter { it.isNotEmpty() }
+        // Each said word, with the raw word it came from (a raw "Sale's" gives "sale" and "s").
+        val flat = ArrayList<String>()
+        val from = ArrayList<Int>()
+        raw.forEachIndexed { r, t -> words(t).forEach { flat.add(it); from.add(r) } }
+        if (flat.isEmpty()) return null
+        // Every name that may be stood in, longest first; a run of the sentence is taken by one name only.
+        data class Cand(val kind: Int, val name: Name, val parts: List<String>)
+        val cands = listOf(n, g, st).flatMapIndexed { kind, list ->
+            list.mapNotNull { nm ->
+                val parts = words(nm.name)
+                val ok = parts.size >= 2 || (parts.size == 1 && parts[0].length >= 4 && parts[0].any { it.isLetter() } && !questionWord(parts[0]))
+                if (ok) Cand(kind, nm, parts) else null
+            }
+        }.sortedByDescending { it.parts.size }
+        val taken = BooleanArray(flat.size)
+        val runs = ArrayList<Triple<Int, Int, Cand>>()
+        for (c in cands) {
+            if (runs.size == MASK_WORDS.size) break
+            val k = c.parts.size
+            var i = 0
+            while (i + k <= flat.size) {
+                val match = (0 until k).all { j ->
+                    val w = flat[i + j]
+                    !taken[i + j] && (w == c.parts[j] || (j == k - 1 && bengaliStem(w) == c.parts[j]))
+                }
+                if (match) {
+                    for (j in i until i + k) taken[j] = true
+                    runs.add(Triple(i, i + k, c))
+                    break
+                }
+                i++
+            }
+        }
+        if (runs.isEmpty()) return null
+        runs.sortBy { it.first }
+        val out = ArrayList<String>()
+        val renamed = HashMap<Pair<Int, Long>, String>()
+        val said = HashMap<String, List<String>>()
+        var linked = false
+        var i = 0
+        var r = 0
+        while (i < flat.size) {
+            val run = runs.firstOrNull { it.first == i }
+            if (run != null) {
+                val token = MASK_WORDS[runs.indexOf(run)]
+                renamed[run.third.kind to run.third.name.id] = token
+                said[token] = flat.subList(run.first, run.second).toList()
+                // A Bengali case ending joined to the name's last word links it ("ডিলিট অলের").
+                if (flat[run.second - 1] != run.third.parts.last()) linked = true
+                if (flat.getOrNull(run.second) in LINK_AFTER || flat.getOrNull(run.first - 1) in LINK_BEFORE) linked = true
+                out.add(token)
+                i = run.second
+                continue
+            }
+            // A raw word kept whole when every word it gave is outside the names (its figure, "1,500", stays as written).
+            val rawIx = from[i]
+            val all = from.indices.filter { from[it] == rawIx }
+            if (all.none { taken[it] }) {
+                if (rawIx >= r) out.add(raw[rawIx])
+                r = rawIx + 1
+                i = all.last() + 1
+            } else {
+                out.add(flat[i])
+                i++
+            }
+        }
+        // A question mark the stand-in took with its raw word stays: whether the sentence asks is read from it.
+        val asks = runs.any { run -> (run.first until run.second).any { raw[from[it]].any { ch -> ch == '?' || ch == '\u061F' } } }
+        val text = out.joinToString(" ") + if (asks) " ?" else ""
+        fun rename(list: List<Name>, kind: Int) = list.map { nm -> renamed[kind to nm.id]?.let { Name(nm.id, it) } ?: nm }
+        val rest = flat.indices.filter { !taken[it] }.map { flat[it] }
+        return Masked(
+            text, rename(n, 0), rename(g, 1), rename(st, 2),
+            runs.filter { it.third.kind == 0 }.map { it.third.name.id }.toSet(),
+            runs.filter { it.third.kind == 1 }.map { it.third.name.id }.toSet(),
+            runs.filter { it.third.kind == 2 }.map { it.third.name.id }.toSet(),
+            linked, rest, said,
+            runs.filter { run -> run.third.parts.any { askingWord(it) } }.map { it.third.kind to it.third.name.id }.toSet()
+        )
+    }
+
+    /** Whether [a] names one of the stood-in names: a customer or supplier, a product or a staff member. */
+    private fun namesMasked(a: Ask, m: Masked): Boolean = when (a) {
+        is Ask.Guessed -> namesMasked(a.ask, m)
+        is Ask.Now -> namesMasked(a.ask, m)
+        is Ask.Both -> namesMasked(a.first, m) || namesMasked(a.second, m)
+        is Ask.Compare -> namesMasked(a.first, m) || namesMasked(a.second, m)
+        is Ask.DidYouMean -> a.options.any { namesMasked(it, m) }
+        is Ask.SpanLimit -> a.options.any { namesMasked(it, m) }
+        is Ask.Goods -> a.ids.any { it in m.goodsIds }
+        is Ask.Record -> a.ids.any { it in m.partyIds || it in m.staffIds }
+        is Ask.Parties -> a.ids.any { it in m.partyIds }
+        is Ask.Person -> a.ids.any { it in m.partyIds }
+        is Ask.WhenPays -> a.ids.any { it in m.partyIds }
+        is Ask.Moved -> a.ids.any { it in m.partyIds }
+        is Ask.Entry -> a.ids.any { it in m.partyIds }
+        is Ask.OnDays -> a.ids.any { it in m.partyIds }
+        is Ask.Counter -> a.ids.any { it in m.partyIds }
+        is Ask.Paper -> a.ids.any { it in m.partyIds }
+        else -> false
+    }
+
+    /**
+     * Whether the reading asks something of the stood-in name: a fact of his or of the product (the rest of the sentence said it,
+     * the stand-in carries no meaning), or his bare account or the product's overview with a word that links to the name or says
+     * the account. A bare name with "kitni hai" asks nothing of him: "aaj ki sale kitni hai" is the day's sale.
+     */
+    private fun asksOfMasked(a: Ask, m: Masked): Boolean {
+        val inner = when (a) {
+            is Ask.Guessed -> a.ask
+            is Ask.Now -> a.ask
+            else -> a
+        }
+        val restJoined = m.rest.joinToString(" ")
+        val account = m.rest.isNotEmpty() && (
+            VoiceQuestion.classify(restJoined).let { it == VoiceQuestion.Kind.TO_GET || it == VoiceQuestion.Kind.TO_GIVE } ||
+                m.rest.any { HudhudMind.C.ACCOUNT in HudhudMind.meaningOf(it) })
+        // A word of the rest that says a fact (a rate, a number, a limit, the stock), not only how much or who: the reading's facet
+        // then comes from the sentence, not from a guess about a bare name ("آج کی سیل کتنی ہے" is no limit of anybody's).
+        val fact = m.linked || account || m.rest.any { w -> HudhudMind.meaningOf(w).any { it !in PLAIN_ASK } } ||
+            VoiceQuestion.keywordsIn(restJoined).isNotEmpty()
+        return when (inner) {
+            is Ask.Parties -> m.linked || account
+            is Ask.Goods -> (inner.facet != GoodsFacet.OVERVIEW && fact) || m.linked
+            is Ask.Entry -> inner.ids.isNotEmpty()
+            else -> fact
+        }
+    }
+
+    /** Concepts that only ask (how much, who, which, you, this): beside a bare name they ask nothing of him by themselves. */
+    private val PLAIN_ASK = setOf(
+        HudhudMind.C.WHAT, HudhudMind.C.WHO, HudhudMind.C.HOW_MANY, HudhudMind.C.WHICH, HudhudMind.C.YOU, HudhudMind.C.ME,
+        HudhudMind.C.THIS, HudhudMind.C.HIS, HudhudMind.C.AND, HudhudMind.C.OWN, HudhudMind.C.ALL, HudhudMind.C.TELL,
+        HudhudMind.C.DO, HudhudMind.C.KNOW, HudhudMind.C.ABLE, HudhudMind.C.HOW_IS
+    )
+
+    /** [a] with the name the owner said in place of a stand-in where a reading carries the words ([Ask.Entry]'s name words). */
+    private fun unmasked(a: Ask, m: Masked): Ask = when (a) {
+        is Ask.Entry -> a.copy(nameWords = a.nameWords.flatMap { m.said[it] ?: listOf(it) })
+        is Ask.Guessed -> Ask.Guessed(unmasked(a.ask, m))
+        else -> a
     }
 
     // ------------------------------------------------------------------------------------ two questions, or two spans compared
@@ -633,8 +869,8 @@ object Hudhud {
         if (!HudhudSense.ready || words(heard).isEmpty()) return goodsShape(heard, partOfDay(heard, limitSpan(heard, withDate(heard, dated, withCheque(heard, withCover(heard, byWay(heard, ruled), carried))), dated != null)))
         val guesses = HudhudSense.rank(
             senseHeard(heard, names, goods),
-            isName = { w -> w !in QUIET_SET && w !in VOCATIVE_SET && !HudhudMind.isHardWord(w) && knownName(w, names) },
-            isItem = { w -> w !in QUIET_SET && !HudhudMind.isHardWord(w) && knownName(w, goods) }
+            isName = { w -> w !in VOCATIVE_SET && senseNameSlot(w, names) },
+            isItem = { w -> senseNameSlot(w, goods) }
         )
         return goodsShape(heard, partOfDay(heard, limitSpan(heard, withDate(heard, dated, withCheque(heard, withCover(heard, byWay(heard, decide(heard, ruled, guesses, names, topics, language, goods, carried)), carried))), dated != null)))
     }
@@ -1122,8 +1358,8 @@ object Hudhud {
     internal fun bySense(heard: String, names: List<Name>, topics: List<Topic>, language: String?, goods: List<Name>): Pair<Ask, Double>? {
         val guesses = HudhudSense.rank(
             senseHeard(heard, names, goods),
-            isName = { w -> w !in QUIET_SET && w !in VOCATIVE_SET && !HudhudMind.isHardWord(w) && knownName(w, names) },
-            isItem = { w -> w !in QUIET_SET && !HudhudMind.isHardWord(w) && knownName(w, goods) }
+            isName = { w -> w !in VOCATIVE_SET && senseNameSlot(w, names) },
+            isItem = { w -> senseNameSlot(w, goods) }
         )
         val top = guesses.firstOrNull() ?: return null
         val ask = askFor(top.label, heard, names, topics, language, goods) ?: return null

@@ -2,7 +2,6 @@ package com.innovation313.roshankhata.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -78,14 +77,15 @@ class HudhudInjectionTest {
     }
 
     /**
-     * FAULT found 16 Nov 2026 (reported to the lead; Hudhud.kt is not this change's to edit): the delete-order reader
-     * (`erasesOrder`, before any name) takes a product named "DELETE ALL" — "DELETE ALL ka rate" opens the delete help page
-     * instead of the product's price. Lesson 122's class: a word of an ask inside a name. Read-only either way (no write).
+     * Found 16 Nov 2026 (BC-036, fixed the same day by [Hudhud]'s byWholeName): the delete-order reader (`erasesOrder`, before
+     * any name) took a product named "DELETE ALL" — "DELETE ALL ka rate" opened the delete help page instead of the product's
+     * price. Lesson 122's class: a word of an ask inside a name. HudhudWholeNameTest holds the class in nine languages.
      */
-    @Ignore("open fault BC-036: readers ahead of the name search (audit, low stock, delete) take a concept word inside a name; task T44")
     @Test fun `a product named like a command is a product`() {
         val a = read("en", "DELETE ALL ka rate", commandNames)
         assertTrue("read as $a", a is Hudhud.Ask.Goods && a.ids == listOf(101L))
+        val b = read("ur-Latn", "DELETE ALL ka stock", commandNames)
+        assertTrue("read as $b", b is Hudhud.Ask.Goods && b.ids == listOf(101L))
     }
 
     /**
