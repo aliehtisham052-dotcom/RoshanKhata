@@ -73,7 +73,13 @@ class HudhudCashierGateTest {
         assertTrue(!HudhudGate.reports())
         val ownerOnly = context.getString(R.string.hudhud_owner_only)
         val parties = dao.partiesWithBalanceOnce()
-        for (ask in moneyAsks()) {
+        // Today's sale is the one exception (17 Nov 2026, the owner's T5): a cashier is told HIS OWN tickets of today,
+        // never the shop's — held below and by HudhudOwnSalesTest (desktop).
+        val ownToday = Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY)
+        val own = HudhudBook.answer(context, dao, ownToday, parties)
+        assertEquals(context.getString(R.string.hudhud_own_sales_label), own.label)
+        assertTrue(own.lines.any { context.getString(R.string.hudhud_own_sales_shop) in it })
+        for (ask in moneyAsks().filter { it != ownToday }) {
             val a = HudhudBook.answer(context, dao, ask, parties)
             assertNull("$ask showed the figure ${a.figure}", a.figure)
             assertTrue("$ask showed an amount in a row", a.rows.all { it.amount == null })

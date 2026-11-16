@@ -39,11 +39,15 @@ speechHidden: Who owes the least. Only the owner or a manager can see this figur
 ask: Figure(kind=WHO_OWES_LEAST)
 
 === Figure(kind=SALES_TODAY)
-mood: CALM
-label: Today's sale
-line: Only the owner or a manager can see this figure.
-speech: Today's sale. Only the owner or a manager can see this figure.
-speechHidden: Today's sale. Only the owner or a manager can see this figure.
+mood: GOOD
+label: Your sales today
+figure: Rs 200
+line: Tickets you rang up today: 1
+line: The shop's whole sale is for the owner or a manager.
+open: ShiftActivity
+money: true
+speech: Your sales today: Rs 200. Tickets you rang up today: 1. The shop's whole sale is for the owner or a manager.
+speechHidden: Your sales today. Tickets you rang up today: 1. The shop's whole sale is for the owner or a manager. [an amount left out]
 ask: Figure(kind=SALES_TODAY)
 
 === Figure(kind=SALES_MONTH)

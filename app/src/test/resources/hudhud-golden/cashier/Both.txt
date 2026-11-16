@@ -11,11 +11,13 @@ ask: Both(first=Figure(kind=TO_GET), second=Count(thing=CUSTOMERS, window=null))
 
 === Both(first=Figure(kind=SALES_TODAY), second=Drawer)
 mood: CALM
-line: Today's sale
-line: Only the owner or a manager can see this figure.
+line: Your sales today: Rs 200
+line: Tickets you rang up today: 1
+line: The shop's whole sale is for the owner or a manager.
 line: Should be in drawer
 line: Only the owner or a manager can see this figure.
-speech: Today's sale. Only the owner or a manager can see this figure. Should be in drawer. Only the owner or a manager can see this figure.
-speechHidden: Today's sale. Only the owner or a manager can see this figure. Should be in drawer. Only the owner or a manager can see this figure.
+open: ShiftActivity
+speech: Your sales today: Rs 200. Tickets you rang up today: 1. The shop's whole sale is for the owner or a manager. Should be in drawer. Only the owner or a manager can see this figure.
+speechHidden: Tickets you rang up today: 1. The shop's whole sale is for the owner or a manager. Should be in drawer. Only the owner or a manager can see this figure. [an amount left out]
 ask: Both(first=Figure(kind=SALES_TODAY), second=Drawer)
 
