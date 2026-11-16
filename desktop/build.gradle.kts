@@ -129,7 +129,7 @@ val syncTileIcons by tasks.registering(Sync::class) {
             // the header's backup cloud — the phone's two-tone menu icons and one-colour glyphs.
             "drawable/ic_menu_home.xml", "drawable/ic_menu_help.xml", "drawable/ic_menu_duplicate.xml",
             "drawable/ic_qr_scan.xml", "drawable/ic_register_sales.xml", "drawable/ic_register_stock.xml",
-            "drawable/ic_feature_stock.xml", "drawable/ic_feature_insights.xml", "drawable/ic_truck.xml",
+            "drawable/ic_feature_stock.xml", "drawable/ic_truck.xml",
             "drawable/ic_list_all.xml", "drawable/ic_people.xml", "drawable/ic_seal_stamp.xml",
             "drawable/ic_shield_check.xml", "drawable/ic_tune.xml", "drawable/ic_feature_backup.xml",
             // The Khata page's tools (Marhala 4): WhatsApp, Filter, Order, Excel, choosing several.

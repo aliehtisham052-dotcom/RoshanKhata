@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.text.Layout
 import android.text.StaticLayout
@@ -376,12 +375,7 @@ class WarisActivity : BaseActivity() {
     }
 
     private fun askNotifications() {
-        if (Build.VERSION.SDK_INT < 33) return
-        val granted = ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) ==
-            android.content.pm.PackageManager.PERMISSION_GRANTED
-        if (!granted) androidx.core.app.ActivityCompat.requestPermissions(
-            this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 315
-        )
+        com.innovation313.roshankhata.ui.PermissionAsk.ask(this, android.Manifest.permission.POST_NOTIFICATIONS) { }
     }
 
     private fun addHeir() {

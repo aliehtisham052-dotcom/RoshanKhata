@@ -74,7 +74,7 @@ class AlertsActivity : BaseActivity() {
                     HomeAlerts.Kind.BACKUP,
                     HomeAlerts.Kind.BACKUP_FAILED,
                     HomeAlerts.Kind.BACKUP_OTHER_PHONE -> Triple(R.drawable.ic_alert_backup, R.color.tile_backup_bg, BackupActivity::class.java)
-                    HomeAlerts.Kind.CASHFLOW -> Triple(R.drawable.ic_tile_insights, R.color.tile_insights_bg, CashFlowActivity::class.java)
+                    HomeAlerts.Kind.CASHFLOW -> Triple(R.drawable.ic_tile_cashflow, R.color.tile_insights_bg, CashFlowActivity::class.java)
                     HomeAlerts.Kind.UPDATED -> Triple(R.drawable.ic_alert_update, R.color.tile_bills_bg, AboutActivity::class.java)
                     HomeAlerts.Kind.SYNC -> Triple(R.drawable.ic_alert_backup, R.color.tile_bin_bg, BackupActivity::class.java)
                     HomeAlerts.Kind.LATE -> Triple(R.drawable.ic_tile_followup, R.color.tile_followup_bg, FollowUpActivity::class.java)

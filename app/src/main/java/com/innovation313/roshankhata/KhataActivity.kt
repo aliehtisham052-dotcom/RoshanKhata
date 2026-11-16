@@ -9,8 +9,6 @@ import com.innovation313.roshankhata.data.string
 
 import com.innovation313.roshankhata.ui.ChoiceSheet
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -23,7 +21,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -545,34 +542,9 @@ class KhataActivity : BaseActivity() {
         AutomationWorker.ensureChannel(this)
         AutomationWorker.schedule(this)
         // Never on a helper's read-only phone, which is told nothing (3 Nov 2026 audit, M24).
-        if (Build.VERSION.SDK_INT >= 33 && !com.innovation313.roshankhata.data.ViewerMode.isOn(this)) {
-            val granted = ContextCompat.checkSelfPermission(
-                this, android.Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-            // Said no once: the reason first, in the owner's words, then Android's own question (M24).
-            // The reason is told at most once a week: after a "no" it came back at every Khata opening (M61).
-            val whyPrefs = getSharedPreferences("notif_permission_ui", MODE_PRIVATE)
-            val whyDue = System.currentTimeMillis() - whyPrefs.getLong("why_at", 0L) > 7L * 24 * 60 * 60 * 1000
-            if (!granted && ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.POST_NOTIFICATIONS)) {
-                if (!whyDue) return
-                whyPrefs.edit().putLong("why_at", System.currentTimeMillis()).apply()
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.notif_permission_why)
-                    .setPositiveButton(R.string.ok) { _, _ ->
-                        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 313)
-                    }
-                    .setNegativeButton(R.string.cancel, null)
-                    .show()
-            } else if (!granted) {
-                // No "asked once" flag: allowBackup restores SharedPreferences
-                // across reinstalls, so a remembered flag silently blocked the
-                // dialog forever (found on the owner's device). Android itself
-                // stops showing the dialog after two denials, so requesting on
-                // every launch until granted cannot become spam.
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 313
-                )
-            }
+        if (!com.innovation313.roshankhata.data.ViewerMode.isOn(this)) {
+            // One asker for every screen (16 Nov 2026): the reason once a week after a "no", else Android's question.
+            com.innovation313.roshankhata.ui.PermissionAsk.notificationsWithReason(this)
         }
     }
 

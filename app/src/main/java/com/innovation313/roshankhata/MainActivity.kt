@@ -329,7 +329,7 @@ class MainActivity : BaseActivity() {
             Feature(R.drawable.ic_tile_supplier_rates, R.string.sr_title, SupplierRatesActivity::class.java,
                 R.color.tile_zakat_bg),
             // The sales report (POS Phase 7): what sold, to whom, at what profit.
-            Feature(R.drawable.ic_tile_cashflow, R.string.sales_report_title, SalesReportActivity::class.java,
+            Feature(R.drawable.ic_tile_sales, R.string.sales_report_title, SalesReportActivity::class.java,
                 R.color.tile_insights_bg),
             Feature(R.drawable.ic_tile_insights, R.string.tile_insights, InsightsActivity::class.java,
                 R.color.tile_insights_bg),

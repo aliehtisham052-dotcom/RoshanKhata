@@ -220,12 +220,7 @@ class PaymentVoiceActivity : BaseActivity() {
 
     /** Android 13+: the notice with Add to khata needs the app's notification permission. */
     private fun askNotifications() {
-        if (Build.VERSION.SDK_INT < 33) return
-        val granted = ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) ==
-            android.content.pm.PackageManager.PERMISSION_GRANTED
-        if (!granted) androidx.core.app.ActivityCompat.requestPermissions(
-            this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 314
-        )
+        com.innovation313.roshankhata.ui.PermissionAsk.ask(this, android.Manifest.permission.POST_NOTIFICATIONS) { }
     }
 
     override fun onDestroy() {

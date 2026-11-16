@@ -203,7 +203,6 @@ object HudhudSheet {
         var job: Job? = null
         var thinkingLater: Runnable? = null
         var listenLauncher: ActivityResultLauncher<Intent>? = null
-        var micAsk: ActivityResultLauncher<String>? = null
         var speakJob: Job? = null
         var voiceJob: Job? = null
         /**
@@ -449,8 +448,6 @@ object HudhudSheet {
             ears.destroy()
             listenLauncher?.unregister()
             listenLauncher = null
-            micAsk?.unregister()
-            micAsk = null
             if (shown?.get() === sheet) shown = null
         }
 
@@ -507,10 +504,9 @@ object HudhudSheet {
         /** He says why he needs the microphone, then Android asks; a yes and he listens, a no and the box opens. */
         private fun askForMic() {
             showCard(lines = listOf(ctx.getString(R.string.hudhud_mic_why)))
-            val launcher = micAsk ?: host.activityResultRegistry.register(
-                "hudhud-mic-" + System.nanoTime(), ActivityResultContracts.RequestPermission()
-            ) { granted ->
-                if (closed) return@register
+            // The one asker (PermissionAsk, 16 Nov 2026); a question that cannot even open is no refusal.
+            PermissionAsk.ask(host, Manifest.permission.RECORD_AUDIO, onUnavailable = { googleBox() }) { granted ->
+                if (closed) return@ask
                 if (granted) {
                     HudhudPrefs.setMicDenied(ctx, false)
                     conversing = speakAllowed && voiceOn
@@ -520,11 +516,6 @@ object HudhudSheet {
                     HudhudPrefs.setMicDenied(ctx, true)
                     if (HudhudEars.online(ctx)) googleBox() else heardNothing(HudhudEars.Trouble.OFFLINE)
                 }
-            }.also { micAsk = it }
-            try {
-                launcher.launch(Manifest.permission.RECORD_AUDIO)
-            } catch (e: Exception) {
-                googleBox()
             }
         }
 

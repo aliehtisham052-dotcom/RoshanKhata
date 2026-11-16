@@ -4108,6 +4108,27 @@ Importance 6 (words only, no figure moves). Rules only; the bank, `sense.bin`, H
 - `HudhudReviewDClassesTest` (4 tests, through `understand` with the sense); each guard was broken one at a time (6 variants), all killed. Ten rows of review D now read as meant and are OK (960 held); the "which supplier bills are unpaid" row had already been fixed by an earlier round.
 - **Measured here:** 646 shared tests, HudhudWordsTest 9, 14 Strings steps; owner's 1,000 sentences 797 (floor raised to 797), short lists 153, held-out 1068. Remaining review D misses: about 150 (a product written in Urdu/Hindi script for a Latin-saved product is the biggest class; stopped as risky).
 
+### 16 Nov 2026: one permission asker, one picture per tile (phone, with the Windows rail; CI only, nothing tried on a real phone)
+
+Importance 5 (what the owner sees, no figure moves). The owner's rule of 14 Nov: wherever a prompt is duplicated in a way that professionally
+should not be, find and fix it across the whole app.
+
+- **`ui/PermissionAsk`** is the one place the app asks Android for a runtime permission: `granted` (a permission this Android does not ask about
+  — notifications before 13, Bluetooth before 12 — counts as given), `ask(host, permission, onUnavailable?, onResult)` (answered at once when
+  given; nothing told to a screen that was closed or rebuilt meanwhile; a launcher that cannot open is `onUnavailable`, never a recorded refusal)
+  and `notificationsWithReason` (Khata's rule: the reason first and at most once a week after a "no", else Android's question). Before: the
+  notification permission was asked three ways (Khata, Waris and Payment voice with their own unused request codes 313/314/315), Bluetooth twice
+  (an entry's receipt and `TextReceipt`, the second also with its own SDK test in `kickDrawer`) and the microphone twice (Hudhud's sheet and his
+  voice settings, each with a cached launcher). **Not moved, on purpose:** the contacts screen (its refused-for-good page is its own) and the
+  Downloads permission on Android 7-9 (`BaseActivity.withDownloadsAccess`, an answer that must outlive a rebuilt screen). A new permission asks
+  through `PermissionAsk`, never `requestPermissions` or a launcher of its own. A screen rebuilt while Android's question is open drops that one
+  answer (the owner taps again and finds the permission given) — the same as `TextReceipt` always did; the entry receipt's old fixed-key launcher
+  did keep it. PermissionAskTest (Robolectric at API 30, 32 and 34 — the first test of this app to ask for an SDK other than the properties file's).
+- **Sales report has its own tile picture** (`ic_tile_sales`, a receipt, blue family): Home's Sales report and Cash flow tiles both wore
+  `ic_tile_cashflow`; the bell's cash-flow row wore Insights' picture (now Cash flow's). Windows' rail takes the same phone picture
+  (`Section.SALES`), so the phone and the computer show one picture for one page and `TileIconsTest` still holds each picture worn once;
+  `ic_feature_insights` (its old one-colour glyph) is gone, with its line in desktop/build.gradle.kts.
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the

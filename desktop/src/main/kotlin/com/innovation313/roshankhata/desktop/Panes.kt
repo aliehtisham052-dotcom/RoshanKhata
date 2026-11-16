@@ -90,7 +90,7 @@ enum class Section(val word: String, val icon: String, val tile: String, val gro
     INVOICES(W.documents_title, "ic_tile_invoice", "tile_invoice_bg", Group.SALES),
     REPORT(W.ledger_report_title, "ic_list_all", "tile_khata_bg", Group.REPORTS, ink = "fi_green_b"),
     REGISTER(W.register_title, "ic_register_sales", "tile_invoice_bg", Group.REPORTS, ink = "fi_pink_b"),
-    SALES(W.sales_report_title, "ic_feature_insights", "tile_insights_bg", Group.REPORTS, ink = "fi_blue_b"),
+    SALES(W.sales_report_title, "ic_tile_sales", "tile_insights_bg", Group.REPORTS),
     INSIGHTS(W.insights_title, "ic_tile_insights", "tile_insights_bg", Group.REPORTS),
     AGING(W.aging_title, "ic_calendar", "tile_followup_bg", Group.REPORTS, ink = "fi_green_b"),
     CASHFLOW(W.cf_title, "ic_tile_cashflow", "tile_insights_bg", Group.REPORTS),

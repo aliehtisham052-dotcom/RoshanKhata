@@ -847,22 +847,11 @@ class EntryDetailActivity : BaseActivity() {
 
     // ---------- Print (5 Oct): the receipt card on a paired Bluetooth printer ----------
 
-    private val askConnect = registerForActivityResult(
-        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (granted) choosePrinter()
-        else Toast.makeText(this, R.string.print_permission, Toast.LENGTH_LONG).show()
-    }
-
     private fun printReceipt() {
-        if (android.os.Build.VERSION.SDK_INT >= 31 &&
-            checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) !=
-            android.content.pm.PackageManager.PERMISSION_GRANTED
-        ) {
-            askConnect.launch(android.Manifest.permission.BLUETOOTH_CONNECT)
-            return
+        com.innovation313.roshankhata.ui.PermissionAsk.ask(this, android.Manifest.permission.BLUETOOTH_CONNECT) { granted ->
+            if (granted) choosePrinter()
+            else Toast.makeText(this, R.string.print_permission, Toast.LENGTH_LONG).show()
         }
-        choosePrinter()
     }
 
     /** Pick from the printers the phone has paired; the last one used is ticked. */

@@ -16,8 +16,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -110,7 +108,6 @@ object HudhudVoiceSheet {
         val tvCheckCount: TextView = view.findViewById(R.id.tvHudCheckCount)
         val btnCheckShare: View = view.findViewById(R.id.btnHudCheckShare)
         val btnCheckClear: View = view.findViewById(R.id.btnHudCheckClear)
-        var micAsk: ActivityResultLauncher<String>? = null
         var closed = false
 
         /**
@@ -145,8 +142,6 @@ object HudhudVoiceSheet {
             saveName()
             voice.shutdown()
             ears.destroy()
-            micAsk?.unregister()
-            micAsk = null
         }
 
         // ------------------------------------------------------------------------------------------ what he calls you
@@ -423,20 +418,14 @@ object HudhudVoiceSheet {
 
         /** Android asks for the microphone; once it will not ask again, its own page for the app's permissions. */
         private fun askForMic() {
-            val launcher = micAsk ?: host.activityResultRegistry.register(
-                "hudhud-voice-mic-" + System.nanoTime(), ActivityResultContracts.RequestPermission()
-            ) { granted ->
-                if (closed) return@register
+            // The one asker (PermissionAsk, 16 Nov 2026); a question that cannot even open goes to the settings page.
+            PermissionAsk.ask(host, Manifest.permission.RECORD_AUDIO, onUnavailable = { openAppSettings() }) { granted ->
+                if (closed) return@ask
                 HudhudPrefs.setMicDenied(ctx, !granted)
                 if (!granted && !ActivityCompat.shouldShowRequestPermissionRationale(host, Manifest.permission.RECORD_AUDIO)) {
                     openAppSettings()
                 }
                 refreshListening()
-            }.also { micAsk = it }
-            try {
-                launcher.launch(Manifest.permission.RECORD_AUDIO)
-            } catch (e: Exception) {
-                openAppSettings()
             }
         }
 

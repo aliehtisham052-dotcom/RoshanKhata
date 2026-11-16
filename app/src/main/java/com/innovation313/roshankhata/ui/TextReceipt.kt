@@ -107,9 +107,7 @@ object TextReceipt {
      */
     fun kickDrawer(activity: Activity, scope: LifecycleCoroutineScope) {
         if (!settings(activity).drawer) return
-        if (android.os.Build.VERSION.SDK_INT >= 31 &&
-            activity.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) != android.content.pm.PackageManager.PERMISSION_GRANTED
-        ) return
+        if (!PermissionAsk.granted(activity, android.Manifest.permission.BLUETOOTH_CONNECT)) return
         val adapter = ReceiptPrinter.adapter(activity) ?: return
         if (!adapter.isEnabled) return
         val address = prefs(activity).getString("address", null) ?: return
@@ -124,22 +122,13 @@ object TextReceipt {
         // Android 12 and later ask the owner before any paired printer may be listed (21 Oct 2026:
         // the counter and the cashbook went straight to the list, and the app closed on a
         // SecurityException; only an entry's receipt asked). Asked here once, then the print goes on.
-        if (android.os.Build.VERSION.SDK_INT >= 31 &&
-            activity.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) != android.content.pm.PackageManager.PERMISSION_GRANTED
-        ) {
+        if (!PermissionAsk.granted(activity, android.Manifest.permission.BLUETOOTH_CONNECT)) {
             val host = activity as? androidx.activity.ComponentActivity
             if (host == null) { Toast.makeText(activity, R.string.print_permission, Toast.LENGTH_LONG).show(); return }
-            var launcher: androidx.activity.result.ActivityResultLauncher<String>? = null
-            launcher = host.activityResultRegistry.register(
-                "receipt-bt-" + System.nanoTime(),
-                androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
-            ) { granted ->
-                launcher?.unregister()
-                if (activity.isFinishing) return@register
+            PermissionAsk.ask(host, android.Manifest.permission.BLUETOOTH_CONNECT) { granted ->
                 if (granted) printOrChoose(activity, scope, text, cash, direct)
                 else Toast.makeText(activity, R.string.print_permission, Toast.LENGTH_LONG).show()
             }
-            launcher.launch(android.Manifest.permission.BLUETOOTH_CONNECT)
             return
         }
         val adapter = ReceiptPrinter.adapter(activity)
