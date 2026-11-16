@@ -330,9 +330,9 @@ fun ProductsPane(
                 FluentButton(word(W.save), {
                     importPlan = null
                     scope.launch {
+                        // Written down as the import it was by the DAO itself, in the reader's language when shown (17 Nov
+                        // 2026, BC-224: this screen wrote it in the language of the day, and the phone wrote nothing).
                         val (added, updated) = withContext(Dispatchers.IO) { dao.importProducts(plan) }
-                        // Written down as the import it was (the audit: it read "Price changed").
-                        withContext(Dispatchers.IO) { dao.log(com.innovation313.roshankhata.data.AuditAction.IMPORT, com.innovation313.roshankhata.data.Access.userName, detail = words.text(W.products_imported, added, updated)) }
                         told = words.text(W.products_imported, added, updated)
                     }
                 }, kind = ButtonKind.ACCENT)

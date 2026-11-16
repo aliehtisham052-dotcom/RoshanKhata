@@ -4320,6 +4320,10 @@
     <string name="share_app_text">রোশন খাতা আমার দোকানের খাতা ফোনে রাখে, বিনামূল্যে, অ্যাকাউন্ট ছাড়া। দেখুন: %1$s</string>
     <string name="home_add_first_customer">আপনার খাতা খালি — প্রথম গ্রাহক যোগ করতে এখানে চাপুন</string>
     <string name="audit_cheque_deleted">চেক মুছে ফেলা হয়েছে</string>
+    <string name="audit_cheque_cleared">চেক ক্লিয়ার চিহ্নিত</string>
+    <string name="audit_cheque_bounced">চেক বাউন্স চিহ্নিত</string>
+    <string name="audit_cheque_cancelled">চেক বাতিল চিহ্নিত</string>
+    <string name="audit_cheque_reopened">চেক আবার অপেক্ষমাণ</string>
     <string name="cheque_delete_confirm">এই চেক মুছবেন? এটি তালিকা থেকে সরে যাবে। এর থেকে আগেই লেখা পেমেন্ট খাতায় থাকবে।</string>
     <string name="audit_party_type">গ্রাহক/সরবরাহকারীর ধরন বদলানো হয়েছে</string>
     <string name="audit_bin_restored">বিন থেকে ফিরিয়ে আনা হয়েছে</string>

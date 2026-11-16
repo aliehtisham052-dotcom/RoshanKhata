@@ -739,6 +739,84 @@ interface KhataDao {
         if (everything) purgeBinnedSchemes()
     }
 
+    // ---------- Recycle Bin: what a person does there, written down in the same transaction ----------
+    //
+    // One rule for both platforms (17 Nov 2026, BC-222): the phone wrote BIN_RESTORED / BIN_PURGED / BIN_EMPTIED
+    // from its screen, the computer's Cashbook-and-more tab did too, and the computer's Khata tab (customers and
+    // entries) and its Empty bin wrote nothing. The bin's own 30-day sweep ([purgeBinKinds], [purgeOldEntries],
+    // [purgeOldParties]) is the app's, not a person's, and stays unwritten. [table] is the row's table as the audit
+    // row names it: parties, transactions, cashbook, cheques, supplier_bills, invoices, schemes.
+
+    /**
+     * One binned row back, by the undo of its own kind (a customer with the entries binned with him, an entry with
+     * the binned other half of its cash sale). True, and a BIN_RESTORED row with [user], only when it really came
+     * back; false (nothing written) when it was gone, not binned, or held back by its kind's rule.
+     */
+    @Transaction
+    suspend fun restoreFromBin(table: String, id: Long, deletedAt: Long? = null, user: String? = Access.userName): Boolean {
+        val done = when (table) {
+            BinTable.PARTIES -> {
+                if (getParty(id)?.isDeleted != true) false
+                else { restorePartyWithEntries(id, deletedAt); getParty(id)?.isDeleted == false }
+            }
+            BinTable.ENTRIES -> {
+                if (getEntry(id)?.isDeleted != true) false
+                else { restoreEntryWithPair(id); getEntry(id)?.isDeleted == false }
+            }
+            BinTable.CASH -> restoreCashRow(id) == 1
+            BinTable.CHEQUES -> restoreCheque(id)
+            BinTable.BILLS -> restoreSupplierBill(id)
+            BinTable.DOCUMENTS -> restoreDocument(id)
+            BinTable.SCHEMES -> restoreScheme(id) == 1
+            else -> false
+        }
+        if (done) log(AuditAction.BIN_RESTORED, user, table, id)
+        return done
+    }
+
+    /**
+     * One binned row deleted for good. True, and a BIN_PURGED row with [user], only when it went: a customer the bin
+     * keeps (his bills, cheques, plans or counter tickets) is false, and so is a row already gone. A customer's and an
+     * entry's RK- numbers are not given out again.
+     */
+    @Transaction
+    suspend fun purgeFromBin(table: String, id: Long, user: String? = Access.userName): Boolean {
+        val gone = when (table) {
+            BinTable.PARTIES -> { keepEntryNumberHigh(); purgeParty(id) > 0 }
+            BinTable.ENTRIES -> {
+                val binned = getEntry(id)?.isDeleted == true
+                purgeEntry(id)
+                binned && getEntry(id) == null
+            }
+            BinTable.CASH -> purgeCashRow(id) == 1
+            BinTable.CHEQUES -> purgeChequeRow(id) == 1
+            BinTable.BILLS -> {
+                val binned = getBill(id)?.isDeleted == true
+                purgeSupplierBill(id)
+                binned && getBill(id) == null
+            }
+            BinTable.DOCUMENTS -> purgeDocument(id)
+            BinTable.SCHEMES -> purgeScheme(id) == 1
+            else -> false
+        }
+        if (gone) log(AuditAction.BIN_PURGED, user, table, id)
+        return gone
+    }
+
+    /**
+     * Empty bin, the same on both platforms: the cashbook lines, cheques, bills, documents and schemes first (a bill
+     * takes the entries it owned), then the entries binned on their own, then the customers (a binned customer's
+     * entries go with him). One BIN_EMPTIED row with [user]. Returns how many customers the bin keeps.
+     */
+    @Transaction
+    suspend fun emptyBin(user: String? = Access.userName): Int {
+        purgeBinKinds(0L, true)
+        purgeAllEntries()
+        purgeAllParties()
+        log(AuditAction.BIN_EMPTIED, user)
+        return binnedPartyCount()
+    }
+
     // ---------- Totals ----------
 
     /**
@@ -1017,9 +1095,13 @@ interface KhataDao {
      * A cheque received is an "I got" (it lowers what they owe); one issued
      * is an "I gave". Returns the new entry's id, or null when the cheque is
      * gone or no longer pending (a second click posts nothing).
+     *
+     * Who cleared it is written in Who did what in the same transaction, and the
+     * payment carries the name ([user], the signed-in one) as a hand entry does
+     * (17 Nov 2026, BC-220: a cleared cheque posted money with no trace of who).
      */
     @Transaction
-    suspend fun clearCheque(chequeId: Long, note: String, now: Long = System.currentTimeMillis()): Long? {
+    suspend fun clearCheque(chequeId: Long, note: String, now: Long = System.currentTimeMillis(), user: String? = Access.userName): Long? {
         val cheque = getCheque(chequeId) ?: return null
         if (cheque.isDeleted || cheque.status != ChequeStatus.PENDING) return null
         val entryId = insertEntryNumbered(
@@ -1033,10 +1115,12 @@ interface KhataDao {
                 // Marked as a cheque, so it is never counted as cash in the drawer (21 Oct 2026).
                 paymentMethod = PaymentMethod.CHEQUE,
                 // The cheque's own number is the payment's reference, as the entry form writes one (8 Nov review m40).
-                paymentRef = PaymentRef.clean(PaymentMethod.CHEQUE, cheque.chequeNumber)
+                paymentRef = PaymentRef.clean(PaymentMethod.CHEQUE, cheque.chequeNumber),
+                createdBy = user
             )
         )
         updateCheque(cheque.copy(status = ChequeStatus.CLEARED, settledAt = now, ledgerEntryId = entryId))
+        log(AuditAction.CHEQUE_CLEARED, user, "cheques", chequeId, auditAmount(cheque.amount))
         return entryId
     }
 
@@ -1048,20 +1132,24 @@ interface KhataDao {
      * opened before the other device cleared the cheque marked it bounced, its
      * payment stayed, and back to pending + cleared posted it a second time.
      * Clearing is [clearCheque] alone. One transaction; false = nothing changed.
+     * A change made is written in Who did what with [user] in the same transaction
+     * (17 Nov 2026, BC-220); a refused one writes nothing.
      */
     @Transaction
-    suspend fun settleCheque(chequeId: Long, status: Int?, now: Long = System.currentTimeMillis()): Boolean {
+    suspend fun settleCheque(chequeId: Long, status: Int?, now: Long = System.currentTimeMillis(), user: String? = Access.userName): Boolean {
         val cheque = getCheque(chequeId) ?: return false
         if (cheque.isDeleted) return false
         if (status == null) {
             val reopenable = (cheque.status == ChequeStatus.BOUNCED || cheque.status == ChequeStatus.CANCELLED) && cheque.ledgerEntryId == null
             if (!reopenable) return false
             updateCheque(cheque.copy(status = ChequeStatus.PENDING, settledAt = null))
+            log(AuditAction.CHEQUE_REOPENED, user, "cheques", chequeId, auditAmount(cheque.amount))
             return true
         }
         if (status != ChequeStatus.BOUNCED && status != ChequeStatus.CANCELLED) return false
         if (cheque.status != ChequeStatus.PENDING) return false
         updateCheque(cheque.copy(status = status, settledAt = now))
+        log(if (status == ChequeStatus.BOUNCED) AuditAction.CHEQUE_BOUNCED else AuditAction.CHEQUE_CANCELLED, user, "cheques", chequeId, auditAmount(cheque.amount))
         return true
     }
 
@@ -1342,6 +1430,11 @@ interface KhataDao {
     @Query("UPDATE payment_plans SET nextDueDate = :due WHERE id = :id")
     suspend fun setPlanNextDue(id: Long, due: Long?)
 
+    /**
+     * An instalment received: the khata "I got", the plan's line and, when it is paid up, the plan closed, in one
+     * transaction. The entry carries who took it and is written in Who did what as ENTRY_ADDED, as a hand entry is
+     * (17 Nov 2026, BC-221: on both platforms a plan payment put money in the khata with no trace of who).
+     */
     @Transaction
     suspend fun recordPlanPayment(
         planId: Long,
@@ -1352,11 +1445,14 @@ interface KhataDao {
         note: String?,
         now: Long = System.currentTimeMillis(),
         /** How the instalment came: Cash unless the owner says otherwise, as every "I got" (21 Oct 2026). */
-        method: String? = PaymentMethod.CASH
+        method: String? = PaymentMethod.CASH,
+        user: String? = Access.userName
     ): Long {
         val entryId = insertEntryNumbered(
-            LedgerEntry(partyId = partyId, amount = amount, isGiven = false, note = entryNote, entryNumber = "", timestamp = now, paymentMethod = method)
+            LedgerEntry(partyId = partyId, amount = amount, isGiven = false, note = entryNote, entryNumber = "", timestamp = now,
+                paymentMethod = method, createdBy = user)
         )
+        log(AuditAction.ENTRY_ADDED, user, "transactions", entryId, auditAmount(amount))
         insertInstallment(Installment(planId = planId, amount = amount, ledgerEntryId = entryId, paidAt = now, note = note))
         getPlan(planId)?.let { plan ->
             // The half-paisa line (3 Nov 2026 audit): 1,250.10 + 2,500.20 is 3750.2999…, and a 3,750.30 plan stayed open.
@@ -4294,7 +4390,7 @@ interface KhataDao {
      * (added, updated).
      */
     @Transaction
-    suspend fun importProducts(plan: ProductCsv.Plan): Pair<Int, Int> {
+    suspend fun importProducts(plan: ProductCsv.Plan, user: String? = Access.userName): Pair<Int, Int> {
         var added = 0; var updated = 0
         for (r in plan.toAdd) {
             val p = ProductCsv.newProduct(r)
@@ -4308,6 +4404,9 @@ interface KhataDao {
             val code = if (owner != null && owner.id != have.id) have.barcode else p.barcode
             updateProduct(p.copy(barcode = code)); updated++
         }
+        // Written down as the import it was, on both platforms (17 Nov 2026, BC-224: only the computer wrote it, from
+        // its screen, in its own language). The detail is language-free: "<added> <updated>" ([ProductImportNote]).
+        log(AuditAction.IMPORT, user, ProductImportNote.TABLE, detail = ProductImportNote.detail(added, updated))
         return added to updated
     }
 

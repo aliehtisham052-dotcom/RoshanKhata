@@ -22,9 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.innovation313.roshankhata.data.AuditAction
 import com.innovation313.roshankhata.data.KhataDao
-import com.innovation313.roshankhata.data.audit
 import com.innovation313.roshankhata.data.totals
 import com.innovation313.roshankhata.screens.LocalRoshanColors
 import com.innovation313.roshankhata.ui.Format
@@ -43,7 +41,8 @@ import kotlinx.coroutines.withContext
  * nowhere to be seen — no way back, nothing that ever sent them off. The phone's bin lists them; so does this page,
  * with the same DAO rules (KhataDao's bin section: each restore undoes exactly what its delete did, a cheque or bill
  * whose money is gone for good says why it cannot come back). Restore and Delete forever ask for the manager's PIN
- * like the rest of the bin ([Gates.edit]) and are written in Who did what (BIN_RESTORED / BIN_PURGED).
+ * like the rest of the bin ([Gates.edit]) and are written in Who did what (BIN_RESTORED / BIN_PURGED) by the DAO itself,
+ * in the same transaction ([KhataDao.restoreFromBin], [KhataDao.purgeFromBin]), as on the phone and the Khata tab.
  */
 private class BinRow(
     val key: String,
@@ -88,8 +87,8 @@ fun OtherBinKinds(
                         "c" + e.id, words.text(if (e.isIncome) W.cash_income else W.cash_expense),
                         listOf(e.category, Format.money(e.amount)).filter { it.isNotBlank() }.joinToString(" · "),
                         e.note.orEmpty(), e.deletedAt ?: 0L, "cashbook", e.id, words.text(W.bin_restore_cash_confirm),
-                        { if (dao.restoreCashRow(e.id) == 1) null else words.text(W.bin_restore_gone) },
-                        { dao.purgeCashRow(e.id) }
+                        { if (dao.restoreFromBin(com.innovation313.roshankhata.data.BinTable.CASH, e.id)) null else words.text(W.bin_restore_gone) },
+                        { dao.purgeFromBin(com.innovation313.roshankhata.data.BinTable.CASH, e.id) }
                     )
                 }
                 cheques.forEach { q ->
@@ -100,8 +99,8 @@ fun OtherBinKinds(
                             .filterNotNull().joinToString(" · "),
                         words.text(if (q.isReceived) W.cheque_received else W.cheque_issued), q.deletedAt ?: 0L, "cheques", q.id,
                         words.text(W.bin_restore_cheque_confirm),
-                        { if (dao.restoreCheque(q.id)) null else words.text(W.bin_restore_cheque_blocked) },
-                        { dao.purgeChequeRow(q.id) }
+                        { if (dao.restoreFromBin(com.innovation313.roshankhata.data.BinTable.CHEQUES, q.id)) null else words.text(W.bin_restore_cheque_blocked) },
+                        { dao.purgeFromBin(com.innovation313.roshankhata.data.BinTable.CHEQUES, q.id) }
                     )
                 }
                 bills.forEach { b ->
@@ -111,8 +110,8 @@ fun OtherBinKinds(
                         listOf(b.billNumber?.takeIf { it.isNotBlank() }, party.takeIf { it.isNotBlank() }?.let { Format.name(it) }, Format.money(b.totalAmount))
                             .filterNotNull().joinToString(" · "),
                         "", b.deletedAt ?: 0L, "supplier_bills", b.id, words.text(W.bin_restore_bill_confirm),
-                        { if (dao.restoreSupplierBill(b.id)) null else words.text(W.bin_restore_bill_blocked) },
-                        { dao.purgeSupplierBill(b.id) }
+                        { if (dao.restoreFromBin(com.innovation313.roshankhata.data.BinTable.BILLS, b.id)) null else words.text(W.bin_restore_bill_blocked) },
+                        { dao.purgeFromBin(com.innovation313.roshankhata.data.BinTable.BILLS, b.id) }
                     )
                 }
                 docs.forEach { d ->
@@ -122,16 +121,16 @@ fun OtherBinKinds(
                         listOf(d.invoiceNumber.takeIf { it.isNotBlank() }, d.customerName.takeIf { it.isNotBlank() }?.let { Format.name(it) }, Format.money(total))
                             .filterNotNull().joinToString(" · "),
                         "", d.deletedAt ?: 0L, "invoices", d.id, words.text(W.bin_restore_doc_confirm),
-                        { if (dao.restoreDocument(d.id)) null else words.text(W.bin_restore_gone) },
-                        { dao.purgeDocument(d.id) }
+                        { if (dao.restoreFromBin(com.innovation313.roshankhata.data.BinTable.DOCUMENTS, d.id)) null else words.text(W.bin_restore_gone) },
+                        { dao.purgeFromBin(com.innovation313.roshankhata.data.BinTable.DOCUMENTS, d.id) }
                     )
                 }
                 schemes.forEach { s ->
                     out += BinRow(
                         "s" + s.id, words.text(W.bin_kind_scheme), Format.name(s.name), s.company.orEmpty(),
                         0L, "schemes", s.id, words.text(W.bin_restore_scheme_confirm),
-                        { if (dao.restoreScheme(s.id) == 1) null else words.text(W.bin_restore_gone) },
-                        { dao.purgeScheme(s.id) }
+                        { if (dao.restoreFromBin(com.innovation313.roshankhata.data.BinTable.SCHEMES, s.id)) null else words.text(W.bin_restore_gone) },
+                        { dao.purgeFromBin(com.innovation313.roshankhata.data.BinTable.SCHEMES, s.id) }
                     )
                 }
                 out.sortedByDescending { it.at }
@@ -159,7 +158,6 @@ fun OtherBinKinds(
                             Gates.edit {
                                 askPurge(words.text(W.delete_entry_forever_confirm, r.title)) {
                                     r.purge()
-                                    dao.audit(AuditAction.BIN_PURGED, r.table, r.id)
                                     null
                                 }
                             }
@@ -182,7 +180,6 @@ fun OtherBinKinds(
                     val blocked = withContext(Dispatchers.IO) {
                         runCatching { r.restore() }.getOrElse { failText(words, it) }
                     }
-                    if (blocked == null) withContext(Dispatchers.IO) { dao.audit(AuditAction.BIN_RESTORED, r.table, r.id) }
                     onChanged()
                     if (blocked != null) onTell(words.text(W.restore), blocked)
                 }

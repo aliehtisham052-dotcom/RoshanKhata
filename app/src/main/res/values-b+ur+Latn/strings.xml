@@ -4272,6 +4272,10 @@
     <string name="share_app_text">Roshan Khata mein meri dukaan ka khata phone par rehta hai, muft, bina account. Azmayein: %1$s</string>
     <string name="home_add_first_customer">Aap ki book khali hai — pehla customer yahan se add karein</string>
     <string name="audit_cheque_deleted">Cheque delete kiya gaya</string>
+    <string name="audit_cheque_cleared">Cheque clear nishan zad hua</string>
+    <string name="audit_cheque_bounced">Cheque bounce nishan zad hua</string>
+    <string name="audit_cheque_cancelled">Cheque mansookh nishan zad hua</string>
+    <string name="audit_cheque_reopened">Cheque dobara pending</string>
     <string name="cheque_delete_confirm">Yeh cheque delete karein? Yeh list se hat jayega. Isse pehle se darj adaigi khate mein rahegi.</string>
     <string name="audit_party_type">Customer/supplier ki qism badli gayi</string>
     <string name="audit_bin_restored">Bin se bahal kiya gaya</string>

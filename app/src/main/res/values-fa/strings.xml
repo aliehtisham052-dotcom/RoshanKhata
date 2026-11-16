@@ -4300,6 +4300,10 @@
     <string name="share_app_text">روشن خاتا دفتر مغازه‌ام را روی گوشی نگه می‌دارد، رایگان و بدون حساب کاربری. امتحان کنید: %1$s</string>
     <string name="home_add_first_customer">دفتر شما خالی است — برای افزودن اولین مشتری اینجا را بزنید</string>
     <string name="audit_cheque_deleted">چک حذف شد</string>
+    <string name="audit_cheque_cleared">چک وصول‌شده علامت خورد</string>
+    <string name="audit_cheque_bounced">چک برگشتی علامت خورد</string>
+    <string name="audit_cheque_cancelled">چک باطل‌شده علامت خورد</string>
+    <string name="audit_cheque_reopened">چک دوباره در انتظار</string>
     <string name="cheque_delete_confirm">این چک حذف شود؟ از فهرست برداشته می‌شود. پرداختی که پیش‌تر از آن ثبت شده در دفتر می‌ماند.</string>
     <string name="audit_party_type">نوع مشتری/تأمین‌کننده تغییر کرد</string>
     <string name="audit_bin_restored">از سطل بازگردانی شد</string>

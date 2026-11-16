@@ -4485,6 +4485,10 @@
     <string name="share_app_text">Roshan Khata keeps the khata of my shop on my phone, free, no account. Try it: %1$s</string>
     <string name="home_add_first_customer">Your book is empty — tap here to add your first customer</string>
     <string name="audit_cheque_deleted">Cheque deleted</string>
+    <string name="audit_cheque_cleared">Cheque cleared</string>
+    <string name="audit_cheque_bounced">Cheque bounced</string>
+    <string name="audit_cheque_cancelled">Cheque cancelled</string>
+    <string name="audit_cheque_reopened">Cheque back to pending</string>
     <string name="cheque_delete_confirm">Delete this cheque? It leaves the list. A payment it already posted stays in the khata.</string>
     <string name="audit_party_type">Customer/supplier type changed</string>
     <string name="audit_bin_restored">Restored from the bin</string>

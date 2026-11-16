@@ -4250,6 +4250,10 @@
     <string name="share_app_text">Roshan Khata menyimpan buku kas toko saya di ponsel, gratis, tanpa akun. Coba: %1$s</string>
     <string name="home_add_first_customer">Buku Anda masih kosong — ketuk di sini untuk menambah pelanggan pertama</string>
     <string name="audit_cheque_deleted">Cek dihapus</string>
+    <string name="audit_cheque_cleared">Cek ditandai cair</string>
+    <string name="audit_cheque_bounced">Cek ditandai ditolak</string>
+    <string name="audit_cheque_cancelled">Cek ditandai dibatalkan</string>
+    <string name="audit_cheque_reopened">Cek kembali menunggu</string>
     <string name="cheque_delete_confirm">Hapus cek ini? Cek hilang dari daftar. Pembayaran yang sudah dicatat darinya tetap ada di buku.</string>
     <string name="audit_party_type">Jenis pelanggan/pemasok diubah</string>
     <string name="audit_bin_restored">Dipulihkan dari tempat sampah</string>

@@ -4320,6 +4320,10 @@
     <string name="share_app_text">रोशन खाता मेरी दुकान का खाता फ़ोन में रखता है, मुफ़्त, बिना अकाउंट। आज़माएँ: %1$s</string>
     <string name="home_add_first_customer">आपकी बही खाली है — पहला ग्राहक जोड़ने के लिए यहाँ दबाएँ</string>
     <string name="audit_cheque_deleted">चेक हटाया गया</string>
+    <string name="audit_cheque_cleared">चेक क्लियर चिह्नित</string>
+    <string name="audit_cheque_bounced">चेक बाउंस चिह्नित</string>
+    <string name="audit_cheque_cancelled">चेक रद्द चिह्नित</string>
+    <string name="audit_cheque_reopened">चेक फिर बाकी में</string>
     <string name="cheque_delete_confirm">यह चेक हटाएँ? यह सूची से हट जाएगा। इससे पहले दर्ज हुआ भुगतान खाते में रहेगा।</string>
     <string name="audit_party_type">ग्राहक/सप्लायर का प्रकार बदला गया</string>
     <string name="audit_bin_restored">बिन से वापस लाया गया</string>

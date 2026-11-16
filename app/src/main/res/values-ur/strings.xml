@@ -4272,6 +4272,10 @@
     <string name="share_app_text">روشن کھاتہ میں میری دکان کا کھاتہ فون پر رہتا ہے، مفت، بغیر اکاؤنٹ۔ آزمائیں: %1$s</string>
     <string name="home_add_first_customer">آپ کی کتاب خالی ہے — پہلا گاہک یہاں سے شامل کریں</string>
     <string name="audit_cheque_deleted">چیک حذف کیا گیا</string>
+    <string name="audit_cheque_cleared">چیک کلیئر نشان زد ہوا</string>
+    <string name="audit_cheque_bounced">چیک باؤنس نشان زد ہوا</string>
+    <string name="audit_cheque_cancelled">چیک منسوخ نشان زد ہوا</string>
+    <string name="audit_cheque_reopened">چیک دوبارہ زیرِ التوا</string>
     <string name="cheque_delete_confirm">یہ چیک حذف کریں؟ یہ فہرست سے ہٹ جائے گا۔ اس سے پہلے سے درج ادائیگی کھاتے میں رہے گی۔</string>
     <string name="audit_party_type">گاہک/سپلائر کی قسم بدلی گئی</string>
     <string name="audit_bin_restored">بن سے بحال کیا گیا</string>

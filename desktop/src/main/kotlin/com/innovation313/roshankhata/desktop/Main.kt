@@ -2192,9 +2192,10 @@ private fun Book(
                 partyName = { id -> parties.firstOrNull { it.id == id }?.name.orEmpty() },
                 onRestoreParty = { p ->
                     scope.launch {
-                        // The phone's restore: the customer and the entries binned with them.
+                        // The phone's restore: the customer and the entries binned with them, written in Who did what
+                        // in the same transaction (17 Nov 2026, BC-222: the computer's Khata bin wrote nothing).
                         withContext(Dispatchers.IO) {
-                            dao.restorePartyWithEntries(p.id, p.deletedAt)
+                            dao.restoreFromBin(com.innovation313.roshankhata.data.BinTable.PARTIES, p.id, p.deletedAt)
                         }
                         reload++
                     }
@@ -2202,7 +2203,7 @@ private fun Book(
                 onRestoreEntry = { e ->
                     scope.launch {
                         // A cash sale's binned other half comes back with it, as on the phone (3 Nov 2026 audit, M13).
-                        withContext(Dispatchers.IO) { dao.restoreEntryWithPair(e.id) }
+                        withContext(Dispatchers.IO) { dao.restoreFromBin(com.innovation313.roshankhata.data.BinTable.ENTRIES, e.id) }
                         reload++
                     }
                 },
@@ -2216,17 +2217,16 @@ private fun Book(
                             "\n\n" + words.text(if (Money.isPositive(b)) W.bin_party_owed_to_me else W.bin_party_i_owe, Format.money(b))
                         }.orEmpty()
                         purging = Pair(ask + money, suspend {
-                            if ((dao.keepEntryNumberHigh().let { dao.purgeParty(p.id) }) > 0) null else words.text(W.bin_party_kept)
+                            if (dao.purgeFromBin(com.innovation313.roshankhata.data.BinTable.PARTIES, p.id)) null else words.text(W.bin_party_kept)
                         })
                     }
                 },
-                onPurgeEntry = { e -> purging = Pair(words.text(W.delete_entry_forever_confirm, e.entryNumber), suspend { dao.purgeEntry(e.id); null }) },
+                onPurgeEntry = { e -> purging = Pair(words.text(W.delete_entry_forever_confirm, e.entryNumber), suspend { dao.purgeFromBin(com.innovation313.roshankhata.data.BinTable.ENTRIES, e.id); null }) },
                 onEmpty = {
                     purging = Pair(words.text(W.empty_bin_confirm), suspend {
-                        // Entries binned on their own first; a binned customer's go with him (the cascade).
-                        dao.purgeBinKinds(0L, true)
-                        dao.purgeAllEntries(); dao.purgeAllParties()
-                        dao.binnedPartyCount().takeIf { it > 0 }?.let { words.text(W.bin_emptied_kept, it) }
+                        // Entries binned on their own first; a binned customer's go with him (the cascade). One rule with
+                        // the phone, written as BIN_EMPTIED in the same transaction (KhataDao.emptyBin).
+                        dao.emptyBin().takeIf { it > 0 }?.let { words.text(W.bin_emptied_kept, it) }
                     })
                 }
             )

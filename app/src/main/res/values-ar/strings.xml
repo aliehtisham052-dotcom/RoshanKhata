@@ -4552,6 +4552,10 @@
     <string name="share_app_text">روشن كهاتا يحفظ دفتر محلي في هاتفي، مجانًا وبلا حساب. جرّبه: %1$s</string>
     <string name="home_add_first_customer">دفترك فارغ — اضغط هنا لإضافة أول عميل</string>
     <string name="audit_cheque_deleted">تم حذف الشيك</string>
+    <string name="audit_cheque_cleared">عُلّم الشيك كمصروف</string>
+    <string name="audit_cheque_bounced">عُلّم الشيك كمرتجع</string>
+    <string name="audit_cheque_cancelled">عُلّم الشيك كملغى</string>
+    <string name="audit_cheque_reopened">الشيك قيد الانتظار مرة أخرى</string>
     <string name="cheque_delete_confirm">هل تحذف هذا الشيك؟ سيختفي من القائمة، وتبقى الدفعة التي سجّلها من قبل في الدفتر.</string>
     <string name="audit_party_type">تغيير نوع العميل/المورّد</string>
     <string name="audit_bin_restored">تمت الاستعادة من السلة</string>

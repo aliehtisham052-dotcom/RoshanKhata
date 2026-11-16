@@ -202,33 +202,19 @@ class RecycleBinActivity : BaseActivity() {
     private fun restore(item: BinItem) {
         AppScope.launch {
             // A kind the bin cannot bring back safely says why (blocked) instead of "Restored".
-            var blocked: Int? = null
-            when (item) {
-                is BinItem.DeletedParty -> {
-                    // Bring the party back together with the entries that
-                    // were swept in with it, so the ledger is whole again.
-                    dao.restorePartyWithEntries(item.id, item.deletedAt)
-                }
-                is BinItem.DeletedEntry -> {
-                    // Guard: an entry must not surface into a ledger whose
-                    // party is still sitting in the bin. A cash sale's binned
-                    // other half comes back with it (3 Nov 2026 audit, M13).
-                    dao.restoreEntryWithPair(item.id)
-                }
-                // Each of the newer kinds undoes exactly what its own delete did (KhataDao: the bin section).
-                is BinItem.DeletedCash -> if (dao.restoreCashRow(item.id) != 1) blocked = R.string.bin_restore_gone
-                is BinItem.DeletedCheque -> if (!dao.restoreCheque(item.id)) blocked = R.string.bin_restore_cheque_blocked
-                is BinItem.DeletedBill -> if (!dao.restoreSupplierBill(item.id)) blocked = R.string.bin_restore_bill_blocked
-                is BinItem.DeletedDoc -> if (!dao.restoreDocument(item.id)) blocked = R.string.bin_restore_gone
-                is BinItem.DeletedScheme -> if (dao.restoreScheme(item.id) != 1) blocked = R.string.bin_restore_gone
-            }
-            val reason: Int? = blocked
-            if (reason == null) {
-                // L75 (8 Nov 2026 review): who brought it back is written down, as who put it in the bin is.
-                runCatching {
-                    dao.log(com.innovation313.roshankhata.data.AuditAction.BIN_RESTORED, com.innovation313.roshankhata.data.Access.userName,
-                        tableOf(item), item.id)
-                }
+            // Each kind undoes exactly what its own delete did (KhataDao: the bin section): a customer comes back with
+            // the entries swept in with him; an entry with the binned other half of its cash sale (3 Nov 2026 audit,
+            // M13), never into a ledger whose customer is still in the bin. Who brought it back is written down by the
+            // DAO in the same transaction, only when it really came back (L75; one rule with the computer since
+            // 17 Nov 2026, BC-222).
+            val back = dao.restoreFromBin(tableOf(item), item.id, (item as? BinItem.DeletedParty)?.deletedAt)
+            val reason: Int? = when {
+                back -> null
+                // A customer or an entry held back says "Restored" as it always did (the list shows it still there).
+                item is BinItem.DeletedParty || item is BinItem.DeletedEntry -> null
+                item is BinItem.DeletedCheque -> R.string.bin_restore_cheque_blocked
+                item is BinItem.DeletedBill -> R.string.bin_restore_bill_blocked
+                else -> R.string.bin_restore_gone
             }
             withContext(Dispatchers.Main) {
                 if (!isFinishing && !isDestroyed) {
@@ -248,13 +234,13 @@ class RecycleBinActivity : BaseActivity() {
 
     /** The table a bin row came from, as the audit log names it. */
     private fun tableOf(item: BinItem): String = when (item) {
-        is BinItem.DeletedParty -> "parties"
-        is BinItem.DeletedEntry -> "transactions"
-        is BinItem.DeletedCash -> "cashbook"
-        is BinItem.DeletedCheque -> "cheques"
-        is BinItem.DeletedBill -> "supplier_bills"
-        is BinItem.DeletedDoc -> "invoices"
-        is BinItem.DeletedScheme -> "schemes"
+        is BinItem.DeletedParty -> com.innovation313.roshankhata.data.BinTable.PARTIES
+        is BinItem.DeletedEntry -> com.innovation313.roshankhata.data.BinTable.ENTRIES
+        is BinItem.DeletedCash -> com.innovation313.roshankhata.data.BinTable.CASH
+        is BinItem.DeletedCheque -> com.innovation313.roshankhata.data.BinTable.CHEQUES
+        is BinItem.DeletedBill -> com.innovation313.roshankhata.data.BinTable.BILLS
+        is BinItem.DeletedDoc -> com.innovation313.roshankhata.data.BinTable.DOCUMENTS
+        is BinItem.DeletedScheme -> com.innovation313.roshankhata.data.BinTable.SCHEMES
     }
 
     /**
@@ -311,20 +297,10 @@ class RecycleBinActivity : BaseActivity() {
                 AppScope.launch {
                     // A customer with supplier bills, cheques, plans or counter tickets is kept, and
                     // said so (22 Oct 2026, the review: the screen said "deleted forever" either way).
+                    // Written down by the DAO in the same transaction, and only when it went (BC-222: a customer the bin
+                    // keeps was logged "deleted forever" too). L67: a customer's entries' RK numbers are not given out again.
                     val gone = BillPhoto.purgingOrphans(applicationContext, dao) {
-                        when (item) {
-                            is BinItem.DeletedParty -> { dao.keepEntryNumberHigh(); dao.purgeParty(item.id) > 0 } // L67: its entries' RK numbers are not given out again
-                            is BinItem.DeletedEntry -> { dao.purgeEntry(item.id); true }
-                            is BinItem.DeletedCash -> { dao.purgeCashRow(item.id); true }
-                            is BinItem.DeletedCheque -> { dao.purgeChequeRow(item.id); true }
-                            is BinItem.DeletedBill -> { dao.purgeSupplierBill(item.id); true }
-                            is BinItem.DeletedDoc -> { dao.purgeDocument(item.id); true }
-                            is BinItem.DeletedScheme -> { dao.purgeScheme(item.id); true }
-                        }
-                    }
-                    runCatching {
-                        dao.log(com.innovation313.roshankhata.data.AuditAction.BIN_PURGED, com.innovation313.roshankhata.data.Access.userName,
-                            tableOf(item), item.id)
+                        dao.purgeFromBin(tableOf(item), item.id) || item !is BinItem.DeletedParty
                     }
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
@@ -361,14 +337,9 @@ class RecycleBinActivity : BaseActivity() {
                 // cheques, plans or counter tickets — keeps them too, and
                 // comes back whole (22 Oct 2026, the review).
                 AppScope.launch {
-                    val kept = BillPhoto.purgingOrphans(applicationContext, dao) {
-                        // The cashbook lines, cheques, bills, documents and schemes first: a bill takes the entries it owned.
-                        dao.purgeBinKinds(0L, true)
-                        dao.purgeAllEntries()
-                        dao.purgeAllParties()
-                        dao.binnedPartyCount()
-                    }
-                    runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.BIN_EMPTIED, com.innovation313.roshankhata.data.Access.userName) }
+                    // The cashbook lines, cheques, bills, documents and schemes first (a bill takes the entries it owned),
+                    // then the entries, then the customers, with its BIN_EMPTIED row: one rule with the computer (KhataDao.emptyBin).
+                    val kept = BillPhoto.purgingOrphans(applicationContext, dao) { dao.emptyBin() }
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) {
                             if (kept == 0) {

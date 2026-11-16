@@ -4300,6 +4300,10 @@
     <string name="share_app_text">روشن کاتو منهنجي دڪان جو کاتو فون تي رکي ٿو، مفت، بنا اڪائونٽ. آزمايو: %1$s</string>
     <string name="home_add_first_customer">توهان جو کاتو خالي آهي — پهريون گراهڪ هتان شامل ڪريو</string>
     <string name="audit_cheque_deleted">چيڪ ڊليٽ ڪيو ويو</string>
+    <string name="audit_cheque_cleared">چيڪ ڪليئر نشان لڳو</string>
+    <string name="audit_cheque_bounced">چيڪ بائونس نشان لڳو</string>
+    <string name="audit_cheque_cancelled">چيڪ منسوخ نشان لڳو</string>
+    <string name="audit_cheque_reopened">چيڪ ٻيهر زير التوا</string>
     <string name="cheque_delete_confirm">هي چيڪ ڊليٽ ڪريون؟ اهو فهرست مان هٽي ويندو. ان مان اڳ ۾ درج ٿيل ادائيگي کاتي ۾ رهندي.</string>
     <string name="audit_party_type">گراهڪ/سپلائر جي قسم تبديل ٿي</string>
     <string name="audit_bin_restored">ٽوڪري مان بحال ڪيو ويو</string>

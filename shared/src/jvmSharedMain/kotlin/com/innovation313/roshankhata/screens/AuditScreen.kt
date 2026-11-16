@@ -107,6 +107,13 @@ fun auditDetail(a: AuditLog, staff: List<com.innovation313.roshankhata.data.Staf
         } ?: detail
         AuditAction.CASH_ADDED, AuditAction.CASH_EDITED, AuditAction.CASH_DELETED ->
             AuditNames.amount(detail)?.let { Format.moneyLtr(it) } ?: detail
+        // "Cheque cleared · <customer> · Rs 5,000" (17 Nov 2026): the amount stored as "5,000.00", the party looked up.
+        AuditAction.CHEQUE_CLEARED, AuditAction.CHEQUE_BOUNCED, AuditAction.CHEQUE_CANCELLED, AuditAction.CHEQUE_REOPENED ->
+            listOfNotNull(names.chequeParty[a.refId], AuditNames.amount(detail)?.let { Format.moneyLtr(it) } ?: detail).joinToString(" \u00b7 ")
+        // A product spreadsheet: "3 added, 2 updated" in the reader's words (stored as "3 2"); a customers' file keeps its count.
+        AuditAction.IMPORT -> if (a.refTable == com.innovation313.roshankhata.data.ProductImportNote.TABLE)
+            com.innovation313.roshankhata.data.ProductImportNote.parse(detail)?.let { (added, updated) -> word(W.products_imported, added, updated) } ?: detail
+            else detail
         // "4,555,225.00 (4,554,000.00 / 555.00)": the figure COUNTED, and the count it replaced when the day was closed again.
         AuditAction.DAY_CLOSED -> {
             val m = Regex("^(-?[0-9,.]+)(?: \\((-?[0-9,.]+) / (-?[0-9,.]+)\\))?\$").find(detail.trim())
@@ -224,6 +231,10 @@ fun auditActionName(words: Words, a: AuditLog, names: AuditNames = AuditNames.No
     AuditAction.PARTY_MERGED -> words.text(W.audit_party_merged)
     AuditAction.PARTY_TYPE_CHANGED -> words.text(W.audit_party_type)
     AuditAction.CHEQUE_DELETED -> words.text(W.audit_cheque_deleted)
+    AuditAction.CHEQUE_CLEARED -> words.text(W.audit_cheque_cleared)
+    AuditAction.CHEQUE_BOUNCED -> words.text(W.audit_cheque_bounced)
+    AuditAction.CHEQUE_CANCELLED -> words.text(W.audit_cheque_cancelled)
+    AuditAction.CHEQUE_REOPENED -> words.text(W.audit_cheque_reopened)
     AuditAction.BIN_RESTORED -> words.text(W.audit_bin_restored)
     AuditAction.BIN_PURGED -> words.text(W.audit_bin_purged)
     AuditAction.BIN_EMPTIED -> words.text(W.audit_bin_emptied)
@@ -250,10 +261,14 @@ fun auditActionName(words: Words, a: AuditLog, names: AuditNames = AuditNames.No
 class AuditNames(
     val party: Map<Long?, String>,
     val entryParty: Map<Long?, String>,
-    val cashIncome: Map<Long?, Boolean>
+    val cashIncome: Map<Long?, Boolean>,
+    /** The customer or supplier of a cheque the row names (a cheque settled by hand, 17 Nov 2026). */
+    val chequeParty: Map<Long?, String> = emptyMap()
 ) {
     companion object {
         val None = AuditNames(emptyMap(), emptyMap(), emptyMap())
+
+        private val CHEQUE_SETTLED = setOf(AuditAction.CHEQUE_CLEARED, AuditAction.CHEQUE_BOUNCED, AuditAction.CHEQUE_CANCELLED, AuditAction.CHEQUE_REOPENED)
 
         /** "1,250.00" (what [com.innovation313.roshankhata.data.auditAmount] writes) as a number. */
         fun amount(text: String): Double? = text.trim().replace(",", "").toDoubleOrNull()
@@ -262,6 +277,7 @@ class AuditNames(
             val party = HashMap<Long?, String>()
             val entryParty = HashMap<Long?, String>()
             val cash = HashMap<Long?, Boolean>()
+            val cheque = HashMap<Long?, String>()
             for (a in rows) {
                 val id = a.refId ?: continue
                 runCatching {
@@ -272,10 +288,12 @@ class AuditNames(
                             if (id !in entryParty) dao.getEntry(id)?.let { e -> dao.getPartyName(e.partyId)?.let { entryParty[id] = it } }
                         a.refTable == "cashbook" && (a.action == AuditAction.CASH_ADDED || a.action == AuditAction.CASH_DELETED) ->
                             if (id !in cash) dao.cashIsIncome(id)?.let { cash[id] = it }
+                        a.refTable == "cheques" && a.action in CHEQUE_SETTLED ->
+                            if (id !in cheque) dao.getCheque(id)?.let { q -> dao.getPartyName(q.partyId)?.let { cheque[id] = it } }
                     }
                 }
             }
-            return AuditNames(party, entryParty, cash)
+            return AuditNames(party, entryParty, cash, cheque)
         }
     }
 }

@@ -501,6 +501,15 @@ object AuditAction {
     const val PARTY_MERGED = "party_merged"
     const val PARTY_TYPE_CHANGED = "party_type_changed"
     const val CHEQUE_DELETED = "cheque_deleted"
+    /**
+     * A cheque settled by hand (17 Nov 2026, BC-220): refTable "cheques", refId the cheque, detail its amount
+     * ([auditAmount]). Written by [KhataDao.clearCheque] and [KhataDao.settleCheque] in their own transaction, so every
+     * caller on both platforms is covered. Cleared also posted a khata entry, carrying the same name.
+     */
+    const val CHEQUE_CLEARED = "cheque_cleared"
+    const val CHEQUE_BOUNCED = "cheque_bounced"
+    const val CHEQUE_CANCELLED = "cheque_cancelled"
+    const val CHEQUE_REOPENED = "cheque_reopened"
     const val BIN_RESTORED = "bin_restored"
     const val BIN_PURGED = "bin_purged"
     const val BIN_EMPTIED = "bin_emptied"
