@@ -44,6 +44,13 @@ on:
       # The bug-class register: every class found, its guard and the test that holds it (check_bug_classes.py).
       - 'docs/bug-classes.tsv'
       - 'scripts/check_bug_classes.py'
+      # No real phone number in the public repository; no Room alias that is an SQL keyword (BC-077, BC-078).
+      - 'scripts/check_invented_numbers.py'
+      - 'scripts/check_room_aliases.py'
+      - 'app/src/test/**'
+      - 'app/src/androidTest/**'
+      - 'desktop/src/test/**'
+      - 'docs/**'
       # The shared harness's file lists (scripts/shared_harness/run.sh --lists-only).
       - 'scripts/shared_harness/**'
   pull_request:
@@ -79,6 +86,13 @@ on:
       # The bug-class register: every class found, its guard and the test that holds it (check_bug_classes.py).
       - 'docs/bug-classes.tsv'
       - 'scripts/check_bug_classes.py'
+      # No real phone number in the public repository; no Room alias that is an SQL keyword (BC-077, BC-078).
+      - 'scripts/check_invented_numbers.py'
+      - 'scripts/check_room_aliases.py'
+      - 'app/src/test/**'
+      - 'app/src/androidTest/**'
+      - 'desktop/src/test/**'
+      - 'docs/**'
       # The shared harness's file lists (scripts/shared_harness/run.sh --lists-only).
       - 'scripts/shared_harness/**'
 
@@ -129,6 +143,13 @@ jobs:
       # of mistake is caught next time. Names only, not a run (lesson 125); a class with NONE is the honest backlog, printed here.
       - name: The bug-class register names guards and tests that exist
         run: python3 scripts/check_bug_classes.py
+      # Lesson 80 (BC-077): five customers' numbers from the owner's photo once reached a public comment. Every Pakistani
+      # mobile number in a tracked file is the invented family or listed as made up after a person read it.
+      - name: No real phone number in the repository (only the invented family or listed made-up numbers)
+        run: python3 scripts/check_invented_numbers.py
+      # Lesson 143 (BC-078): Room's grammar refuses an alias that is an SQL keyword (AS first), which SQLite takes.
+      - name: No Room query alias is an SQL keyword
+        run: python3 scripts/check_room_aliases.py
       # The local Gradle-free harness (lesson 93) finds its files by list: a file moved or renamed fails here, not at the next run.
       - name: The shared harness's file lists are current
         run: bash scripts/shared_harness/run.sh --lists-only
