@@ -250,6 +250,10 @@ fun auditActionName(words: Words, a: AuditLog, names: AuditNames = AuditNames.No
     // The book seal's switch (7 Nov 2026, the seal's review M9: audited, never synced).
     com.innovation313.roshankhata.data.BookSeals.AUDIT_ON -> words.text(W.audit_seal_on)
     com.innovation313.roshankhata.data.BookSeals.AUDIT_OFF -> words.text(W.audit_seal_off)
+    // The backup password (17 Nov 2026, BackupPassword): set, changed, removed — never the password itself.
+    com.innovation313.roshankhata.data.BackupPassword.AUDIT_SET -> words.text(W.audit_backup_pw_set)
+    com.innovation313.roshankhata.data.BackupPassword.AUDIT_CHANGED -> words.text(W.audit_backup_pw_changed)
+    com.innovation313.roshankhata.data.BackupPassword.AUDIT_REMOVED -> words.text(W.audit_backup_pw_removed)
     else -> a.action
 }
 

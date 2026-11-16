@@ -291,10 +291,13 @@ object BackupCodec {
         return root
     }
 
-    /** Read a backup the app saved itself. */
-    fun parseFile(file: File): Pair<ImportResult, ParsedBackup?> {
+    /**
+     * Read a backup the app saved itself. [passwords]: what to try on a locked backup ([BackupSeal]), the typed one and
+     * this device's own; a plain backup ignores them.
+     */
+    fun parseFile(file: File, passwords: List<String> = emptyList()): Pair<ImportResult, ParsedBackup?> {
         return try {
-            file.inputStream().buffered(64 * 1024).use { parseStream(it) }
+            file.inputStream().buffered(64 * 1024).use { parseStream(it, passwords) }
         } catch (e: Exception) {
             ImportResult.Failed(ImportResult.Why.UNREADABLE) to null
         }
@@ -324,7 +327,12 @@ object BackupCodec {
         data class Failed(val why: Why, val count: Int = 0, val detail: String? = null) : ImportResult() {
         }
 
-        enum class Why { UNREADABLE, NOT_OURS, TOO_NEW, INCOMPLETE }
+        /**
+         * LOCKED: a backup locked with a password ([BackupSeal]) and none given that opens it but this device's own —
+         * the screen asks for one. WRONG_PASSWORD: the passwords given do not open it. Neither says anything of the
+         * book inside, and nothing is read past the lock's check (17 Nov 2026).
+         */
+        enum class Why { UNREADABLE, NOT_OURS, TOO_NEW, INCOMPLETE, LOCKED, WRONG_PASSWORD }
     }
 
 
@@ -363,7 +371,37 @@ object BackupCodec {
      * same code that has always read it, so nothing about what a backup
      * means has changed. The row converters are the old ones.
      */
-    fun parseStream(input: java.io.InputStream): Pair<ImportResult, ParsedBackup?> {
+    fun parseStream(input: java.io.InputStream, passwords: List<String> = emptyList()): Pair<ImportResult, ParsedBackup?> {
+        // A locked backup (17 Nov 2026, [BackupSeal]) is told by its first four bytes; a plain one starts with "{".
+        val head = if (input.markSupported()) input else java.io.BufferedInputStream(input, 64 * 1024)
+        val sealed = try {
+            BackupSeal.startsSealed(head)
+        } catch (e: Exception) {
+            return ImportResult.Failed(ImportResult.Why.UNREADABLE, detail = e.message) to null
+        }
+        if (!sealed) return parsePlain(head)
+        return when (val opened = BackupSeal.open(head, passwords)) {
+            is BackupSeal.Open.Ok -> {
+                // The reader closes what it reads at its end; the lock's stream stays open for [BackupSeal.finish].
+                val parsed = parsePlain(BackupSeal.notClosing(opened.plain))
+                if (parsed.first !is ImportResult.Ok) parsed
+                else try {
+                    // To its very end: a last record missing, changed or followed by more bytes is a damaged file,
+                    // even when the text inside looked whole — never a book restored from part of a file.
+                    BackupSeal.finish(opened.plain)
+                    parsed
+                } catch (e: Exception) {
+                    ImportResult.Failed(ImportResult.Why.UNREADABLE, detail = e.message) to null
+                }
+            }
+            BackupSeal.Open.NeedPassword -> ImportResult.Failed(ImportResult.Why.LOCKED) to null
+            BackupSeal.Open.WrongPassword -> ImportResult.Failed(ImportResult.Why.WRONG_PASSWORD) to null
+            is BackupSeal.Open.Damaged -> ImportResult.Failed(ImportResult.Why.UNREADABLE, detail = "locked backup: " + opened.why) to null
+        }
+    }
+
+    /** The plain backup's text from [input] ([parseStream] after the lock, if there was one). */
+    private fun parsePlain(input: java.io.InputStream): Pair<ImportResult, ParsedBackup?> {
         return try {
             val rest = JSONObject()
             val parties = ArrayList<Party>()

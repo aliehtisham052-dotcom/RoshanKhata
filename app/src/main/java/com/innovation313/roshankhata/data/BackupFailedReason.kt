@@ -14,6 +14,9 @@ fun BackupCodec.ImportResult.Failed.reason(context: Context): String {
         BackupCodec.ImportResult.Why.NOT_OURS -> context.getString(R.string.backup_err_not_ours)
         BackupCodec.ImportResult.Why.TOO_NEW -> context.getString(R.string.backup_err_too_new)
         BackupCodec.ImportResult.Why.INCOMPLETE -> Digits.string(context.resources, R.string.backup_err_incomplete, count)
+        // A locked backup (BackupSeal, 17 Nov 2026): the screens ask for the password before they show this.
+        BackupCodec.ImportResult.Why.LOCKED -> context.getString(R.string.backup_pw_ask_title)
+        BackupCodec.ImportResult.Why.WRONG_PASSWORD -> context.getString(R.string.backup_pw_wrong)
     }
     return if (detail.isNullOrBlank()) text else "$text\n($detail)"
 }
