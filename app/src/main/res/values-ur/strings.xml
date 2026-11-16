@@ -1062,6 +1062,7 @@
     <string name="hudhud_why_part">%1$s: %2$s (اب %3$s، پہلے %4$s)</string>
     <string name="hudhud_why_no_cost">لاگت قیمت کے بغیر سیل لائنیں: اب %1$d، پہلے %2$d۔ ان کا منافع شامل نہیں۔</string>
     <string name="hudhud_why_only_book">یہ کھاتے کے اپنے اعداد ہیں۔ کھاتے سے باہر کی وجہ (مارکیٹ، موسم) اس میں نہیں۔</string>
+    <string name="hudhud_entry_one_at_a_time">ایک جملے میں دو اندراج ہیں۔ میں ایک ایک کر کے بھرتا ہوں: ہر ایک پر ٹیپ کریں، فارم دیکھیں اور محفوظ کریں۔</string>
     <string name="hudhud_sales_on">بکری · %1$s</string>
     <string name="hudhud_profit_on">منافع · %1$s</string>
     <string name="hudhud_date_ahead">وہ دن ابھی آیا نہیں، اس لیے کھاتے میں اس کا کچھ نہیں۔</string>

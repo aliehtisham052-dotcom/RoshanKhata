@@ -1080,6 +1080,7 @@
     <string name="hudhud_why_part">%1$s: %2$s (sekarang %3$s, sebelumnya %4$s)</string>
     <string name="hudhud_why_no_cost">Baris penjualan tanpa harga pokok: sekarang %1$d, sebelumnya %2$d. Labanya tidak dihitung.</string>
     <string name="hudhud_why_only_book">Ini angka buku itu sendiri. Alasan di luar buku (pasar, cuaca) tidak ada di dalamnya.</string>
+    <string name="hudhud_entry_one_at_a_time">Ada dua catatan dalam satu kalimat. Saya mengisinya satu per satu: ketuk masing-masing, periksa formulirnya, lalu simpan.</string>
     <string name="hudhud_sales_on">Penjualan · %1$s</string>
     <string name="hudhud_profit_on">Laba · %1$s</string>
     <string name="hudhud_date_ahead">Hari itu belum tiba, jadi belum ada apa pun di buku untuknya.</string>

@@ -1150,6 +1150,7 @@
     <string name="hudhud_why_part">%1$s: %2$s (الآن %3$s، قبل %4$s)</string>
     <string name="hudhud_why_no_cost">بنود بيع بلا سعر تكلفة: الآن %1$d، قبل %2$d. ربحها غير محسوب.</string>
     <string name="hudhud_why_only_book">هذه أرقام الدفتر نفسه. أي سبب خارج الدفتر (السوق، الطقس) ليس فيه.</string>
+    <string name="hudhud_entry_one_at_a_time">قيدان في جملة واحدة. أملؤهما واحدًا تلو الآخر: اضغط على كل منهما لفتح نموذجه وراجعه واحفظه.</string>
     <string name="hudhud_sales_on">المبيعات · %1$s</string>
     <string name="hudhud_profit_on">الربح · %1$s</string>
     <string name="hudhud_date_ahead">لم يأتِ ذلك اليوم بعد، فليس في الدفتر شيء عنه.</string>

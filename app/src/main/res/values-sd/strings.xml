@@ -1090,6 +1090,7 @@
     <string name="hudhud_why_part">%1$s: %2$s (هاڻي %3$s، اڳ %4$s)</string>
     <string name="hudhud_why_no_cost">خريد جي قيمت کان سواءِ وڪري جون لائينون: هاڻي %1$d، اڳ %2$d. انهن جو منافعو شامل ناهي.</string>
     <string name="hudhud_why_only_book">هي کاتي جا پنهنجا انگ آهن. کاتي کان ٻاهر جو سبب (مارڪيٽ، موسم) هن ۾ ناهي.</string>
+    <string name="hudhud_entry_one_at_a_time">هڪ جملي ۾ ٻه داخلائون آهن. آئون هڪ هڪ ڪري ڀريان ٿو: هر هڪ تي ٽيپ ڪريو، فارم ڏسو ۽ محفوظ ڪريو.</string>
     <string name="hudhud_sales_on">وڪرو · %1$s</string>
     <string name="hudhud_profit_on">نفعو · %1$s</string>
     <string name="hudhud_date_ahead">اهو ڏينهن اڃا نه آيو آهي، تنهن ڪري کاتي ۾ ان جو ڪجهه ناهي.</string>

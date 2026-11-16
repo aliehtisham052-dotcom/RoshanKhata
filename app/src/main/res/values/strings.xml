@@ -1104,6 +1104,7 @@
     <string name="hudhud_why_part">%1$s: %2$s (now %3$s, before %4$s)</string>
     <string name="hudhud_why_no_cost">Sale lines with no cost price: %1$d now, %2$d before. Their profit is not counted.</string>
     <string name="hudhud_why_only_book">These are the book\'s own figures. A reason outside the book (the market, the weather) is not in it.</string>
+    <string name="hudhud_entry_one_at_a_time">Two entries in one sentence. I fill them one at a time: tap each to open its form, check it and save.</string>
     <string name="hudhud_sales_on">Sale · %1$s</string>
     <string name="hudhud_profit_on">Profit · %1$s</string>
     <string name="hudhud_date_ahead">That day has not come yet, so the book has nothing for it.</string>

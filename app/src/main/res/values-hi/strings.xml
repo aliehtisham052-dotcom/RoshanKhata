@@ -1102,6 +1102,7 @@
     <string name="hudhud_why_part">%1$s: %2$s (अब %3$s, पहले %4$s)</string>
     <string name="hudhud_why_no_cost">बिना लागत कीमत वाली बिक्री की लाइनें: अब %1$d, पहले %2$d। उनका मुनाफा शामिल नहीं।</string>
     <string name="hudhud_why_only_book">ये खाते के अपने आंकड़े हैं। खाते के बाहर की वजह (बाज़ार, मौसम) इसमें नहीं है।</string>
+    <string name="hudhud_entry_one_at_a_time">एक वाक्य में दो एंट्री हैं। मैं एक-एक करके भरता हूँ: हर एक पर टैप करें, फ़ॉर्म देखें और सेव करें।</string>
     <string name="hudhud_sales_on">बिक्री · %1$s</string>
     <string name="hudhud_profit_on">मुनाफ़ा · %1$s</string>
     <string name="hudhud_date_ahead">वह दिन अभी आया नहीं, इसलिए खाते में उसका कुछ नहीं है।</string>

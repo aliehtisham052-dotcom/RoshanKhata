@@ -1090,6 +1090,7 @@
     <string name="hudhud_why_part">%1$s: %2$s (اکنون %3$s، قبل %4$s)</string>
     <string name="hudhud_why_no_cost">ردیف‌های فروش بدون قیمت تمام‌شده: اکنون %1$d، قبل %2$d. سود آن‌ها حساب نشده است.</string>
     <string name="hudhud_why_only_book">این‌ها ارقام خود دفتر است. دلیلی بیرون از دفتر (بازار، آب و هوا) در آن نیست.</string>
+    <string name="hudhud_entry_one_at_a_time">دو ثبت در یک جمله است. یکی‌یکی پر می‌کنم: روی هر کدام بزنید، فرمش را ببینید و ذخیره کنید.</string>
     <string name="hudhud_sales_on">فروش · %1$s</string>
     <string name="hudhud_profit_on">سود · %1$s</string>
     <string name="hudhud_date_ahead">آن روز هنوز نرسیده است، پس در دفتر چیزی برایش نیست.</string>

@@ -1062,6 +1062,7 @@
     <string name="hudhud_why_part">%1$s: %2$s (ab %3$s, pehle %4$s)</string>
     <string name="hudhud_why_no_cost">Laagat qeemat ke baghair sale lines: ab %1$d, pehle %2$d. Un ka munafa shamil nahi.</string>
     <string name="hudhud_why_only_book">Ye khaate ke apne figures hain. Khaate se bahar ki wajah (market, mausam) is mein nahi.</string>
+    <string name="hudhud_entry_one_at_a_time">Ek jumle mein do indiraaj hain. Main ek ek kar ke bharta hoon: har ek par tap karein, form check karein aur save karein.</string>
     <string name="hudhud_sales_on">Bikri · %1$s</string>
     <string name="hudhud_profit_on">Munafa · %1$s</string>
     <string name="hudhud_date_ahead">Woh din abhi aaya nahi, is liye khate mein us ka kuch nahi.</string>

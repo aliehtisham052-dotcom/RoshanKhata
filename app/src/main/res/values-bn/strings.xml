@@ -1102,6 +1102,7 @@
     <string name="hudhud_why_part">%1$s: %2$s (এখন %3$s, আগে %4$s)</string>
     <string name="hudhud_why_no_cost">কেনা দাম ছাড়া বিক্রির লাইন: এখন %1$d, আগে %2$d। এগুলোর লাভ ধরা হয়নি।</string>
     <string name="hudhud_why_only_book">এগুলো খাতার নিজের হিসাব। খাতার বাইরের কারণ (বাজার, আবহাওয়া) এতে নেই।</string>
+    <string name="hudhud_entry_one_at_a_time">এক বাক্যে দুটি এন্ট্রি আছে। আমি একটা একটা করে ভরি: প্রতিটিতে ট্যাপ করুন, ফর্ম দেখে সেভ করুন।</string>
     <string name="hudhud_sales_on">বিক্রি · %1$s</string>
     <string name="hudhud_profit_on">লাভ · %1$s</string>
     <string name="hudhud_date_ahead">সেই দিন এখনও আসেনি, তাই খাতায় তার কিছু নেই।</string>

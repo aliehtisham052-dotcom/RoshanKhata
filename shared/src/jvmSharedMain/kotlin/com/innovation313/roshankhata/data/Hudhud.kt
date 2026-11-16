@@ -68,6 +68,12 @@ object Hudhud {
             val day: VoiceQuestion.Dated? = null
         ) : Ask()
 
+        /**
+         * Two entries said in one sentence (16 Nov 2026): "Ali ko 500 diye aur Bashir se 300 liye" was one wrong entry — 500 given,
+         * to a choice of Ali and Bashir. Each is offered on its own, to be filled one at a time; nothing is written.
+         */
+        data class Entries(val entries: List<Entry>) : Ask()
+
         /** When the named customer is likely to pay, by the Payment Radar; none named: who is likely to pay now. */
         data class WhenPays(val ids: List<Long>) : Ask()
 
@@ -833,7 +839,7 @@ object Hudhud {
      */
     private fun whatIf(heard: String, ask: Ask): Ask {
         if (ask is Ask.Help || ask == Ask.Unknown || ask is Ask.Chat || ask is Ask.Voice || (ask is Ask.About && ask.topic != AboutTopic.PRIVACY) || ask is Ask.Look ||
-            ask is Ask.CallMe || ask is Ask.Abilities || ask is Ask.DidYouMean || ask is Ask.Entry
+            ask is Ask.CallMe || ask is Ask.Abilities || ask is Ask.DidYouMean || ask is Ask.Entry || ask is Ask.Entries
         ) return ask
         if (partyOf(ask) != null || goodsOf(ask) != null) return ask
         val w = words(heard)
@@ -1665,7 +1671,7 @@ object Hudhud {
         // question (utility or supplier), never settled by the sense, which learnt every "bill" as a count of supplier bills.
         if (isBareBillChoice(ruled, heard)) return ruled
         if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods ||
-            ruled is Ask.CallMe || ruled is Ask.Look || ruled is Ask.Why
+            ruled is Ask.CallMe || ruled is Ask.Look || ruled is Ask.Why || ruled is Ask.Entries
         ) {
             return ruled
         }
@@ -1874,7 +1880,7 @@ object Hudhud {
         }
         is Ask.OnDays, is Ask.Both, is Ask.Compare,
         Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
-        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic, is Ask.Why -> null
+        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic, is Ask.Why, is Ask.Entries -> null
     }
 
     /**
@@ -1954,7 +1960,8 @@ object Hudhud {
                     if (named.isEmpty()) Ask.NeedName(null) else Ask.Parties(named)
                 } else {
                     val nameWords = VoiceEntry.nameWords(heard)
-                    Ask.Entry(amount, entry.isGiven ?: (label == "entry_gave"), partiesOf(names, nameWords), nameWords, entryDayOf(heard, names, goods))
+                    twoEntries(heard, names, goods, language)
+                        ?: Ask.Entry(amount, entry.isGiven ?: (label == "entry_gave"), partiesOf(names, nameWords), nameWords, entryDayOf(heard, names, goods))
                 }
             }
             "goods_price" -> goodsOf(GoodsFacet.PRICE)
@@ -2051,6 +2058,9 @@ object Hudhud {
         // The count of a span ("3" of "pichle 3 mahine") is no amount of money.
         val amount = entry.amount?.takeUnless { it in VoiceQuestion.spanFigures(heard) || orderDo(heard, it) }
         val given = entry.isGiven
+        // Two entries joined by "and": each offered on its own, never one wrong entry made of both. Before the single entry, which
+        // needs one way for the whole sentence: "gave" and "got" together left it none, and the sentence was read as a person.
+        if (!asking) twoEntries(heard, names, goods, language)?.let { return it }
         if (!asking && amount != null && amount > 0.0 && given != null) {
             val nameWords = VoiceEntry.nameWords(heard)
             return Ask.Entry(amount, given, partiesOf(names, nameWords), nameWords, entryDayOf(heard, names, goods))
@@ -3672,6 +3682,33 @@ object Hudhud {
 
     private fun entryDayOf(heard: String, names: List<Name>, goods: List<Name>): VoiceQuestion.Dated? =
         VoiceQuestion.entryDay(heard) { w -> knownName(w, names) || knownName(w, goods) }
+
+    /**
+     * Two entries said in one sentence, joined by "and" in any of the nine languages ([AND_WORDS]): "Ali ko 500 diye aur Bashir se
+     * 300 liye", "I gave Ali 500 and got 300 from Bashir". Each half must say an entry on its own — an amount and which way it went —
+     * or it is one entry as before ("Ali aur Bashir ko 500 diye" names two people for one amount; "500 aur 300 diye" is one sentence
+     * the owner checks on the form). A half that names no day takes the day the whole sentence names.
+     */
+    private fun twoEntries(heard: String, names: List<Name>, goods: List<Name>, language: String?): Ask.Entries? {
+        val raw = heard.trim().split(SPACE_RUN)
+        if (raw.size < 5) return null
+        val whole = entryDayOf(heard, names, goods)
+        for (i in 2 until raw.size - 2) {
+            if (norm(raw[i]) !in AND_WORDS) continue
+            val halves = listOf(raw.subList(0, i).joinToString(" "), raw.subList(i + 1, raw.size).joinToString(" "))
+            val entries = halves.map { half ->
+                val noDate = VoiceQuestion.withoutDate(half) { w -> knownName(w, names) || knownName(w, goods) }
+                val e = VoiceEntry.parse(noDate, emptyList(), language)
+                val amount = e.amount?.takeUnless { it in VoiceQuestion.spanFigures(half) || orderDo(half, it) }
+                val given = e.isGiven
+                if (amount == null || amount <= 0.0 || given == null) null
+                else VoiceEntry.nameWords(half).let { w -> Ask.Entry(amount, given, partiesOf(names, w), w, entryDayOf(half, names, goods) ?: whole) }
+            }
+            if (entries.any { it == null }) continue
+            return Ask.Entries(entries.filterNotNull())
+        }
+        return null
+    }
 
     /** The customer an entry names: one when NameSearch is sure, else those it could be (at most five), else none. */
     private fun partiesOf(names: List<Name>, nameWords: List<String>): List<Long> {
