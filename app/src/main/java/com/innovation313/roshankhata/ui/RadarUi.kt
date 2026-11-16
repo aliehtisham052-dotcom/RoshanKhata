@@ -67,7 +67,8 @@ object RadarUi {
             PaymentRadar.read(
                 // With their pairing and loan mark (3 Nov 2026 audit, M26/M34): a paid-now sale nets out, a loan is left out.
                 entries.filter { !it.isDeleted }.map {
-                    LedgerPoint(partyId, it.timestamp, it.amount, it.isGiven, id = it.id, pairedEntryId = it.pairedEntryId, isQarzeHasna = it.isQarzeHasna)
+                    LedgerPoint(partyId, it.timestamp, it.amount, it.isGiven, id = it.id, pairedEntryId = it.pairedEntryId, isQarzeHasna = it.isQarzeHasna,
+                        isOpening = it.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING)
                 },
                 System.currentTimeMillis(), shop, promise, promises
             )

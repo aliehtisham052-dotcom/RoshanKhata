@@ -118,7 +118,8 @@ object PaymentRadar {
 
     /** [rows] of one customer, any order. */
     internal fun book(rows: List<LedgerPoint>): Book {
-        class Lot(var left: Double, val at: Long)
+        // [opening]: a lot that is an opening balance (D-02): repaid, it is no measure of his pace.
+        class Lot(var left: Double, val at: Long, val opening: Boolean)
         val lots = ArrayDeque<Lot>()
         val repaid = ArrayList<Int>()
         val payments = ArrayList<Long>()
@@ -131,10 +132,11 @@ object PaymentRadar {
                 val fromAhead = minOf(ahead, r.amount)
                 ahead -= fromAhead
                 val owed = r.amount - fromAhead
-                if (owed > PENNY) lots.addLast(Lot(owed, r.timestamp))
+                if (owed > PENNY) lots.addLast(Lot(owed, r.timestamp, r.isOpening))
             } else {
                 balance -= r.amount
-                payments += r.timestamp
+                // An advance brought in as an opening balance pays what comes after, but it is no payment he made in the book.
+                if (!r.isOpening) payments += r.timestamp
                 var pay = r.amount
                 while (pay > 0.0 && lots.isNotEmpty()) {
                     val lot = lots.first()
@@ -142,8 +144,9 @@ object PaymentRadar {
                         pay -= lot.left
                         lots.removeFirst()
                         val took = r.timestamp - lot.at
-                        // Paid within the hour: a cash sale written as two lines, not credit.
-                        if (took >= HOUR) repaid += (took / DAY).toInt()
+                        // Paid within the hour: a cash sale written as two lines, not credit. An opening balance's lot
+                        // is dated the day it was brought in, not the day the credit was given: no measure of pace.
+                        if (took >= HOUR && !lot.opening) repaid += (took / DAY).toInt()
                     } else {
                         lot.left -= pay
                         pay = 0.0

@@ -104,7 +104,8 @@ interface KhataDao {
      * Up to [LedgerLines.SLICE] ids: SQLite before 3.32 (Android 10 and older) takes at most 999 values.
      */
     @Query(
-        "SELECT t.partyId, t.timestamp, t.amount, t.isGiven, t.id, t.pairedEntryId, t.isQarzeHasna FROM transactions t " +
+        "SELECT t.partyId, t.timestamp, t.amount, t.isGiven, t.id, t.pairedEntryId, t.isQarzeHasna, " +
+            "CASE WHEN t.entryKind = 'OPENING' THEN 1 ELSE 0 END AS isOpening FROM transactions t " +
             "WHERE t.isDeleted = 0 AND t.partyId IN (:partyIds) ORDER BY t.partyId, t.timestamp"
     )
     suspend fun ledgerPointsOf(partyIds: List<Long>): List<LedgerPoint>

@@ -96,7 +96,7 @@ fun rememberRadar(dao: KhataDao, partyId: Long, isCustomer: Boolean, entries: Li
             withContext(Dispatchers.Default) {
                 PaymentRadar.read(
                     // With their pairing and loan mark (3 Nov 2026 audit, M26/M34), as the phone reads them.
-                    entries.map { LedgerPoint(partyId, it.entry.timestamp, it.entry.amount, it.entry.isGiven, id = it.entry.id, pairedEntryId = it.entry.pairedEntryId, isQarzeHasna = it.entry.isQarzeHasna) },
+                    entries.map { LedgerPoint(partyId, it.entry.timestamp, it.entry.amount, it.entry.isGiven, id = it.entry.id, pairedEntryId = it.entry.pairedEntryId, isQarzeHasna = it.entry.isQarzeHasna, isOpening = it.entry.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING) },
                     System.currentTimeMillis(), shop, promise, promises
                 )
             }

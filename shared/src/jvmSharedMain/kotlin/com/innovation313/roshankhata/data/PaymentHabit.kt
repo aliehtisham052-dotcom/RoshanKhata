@@ -12,7 +12,13 @@ data class LedgerPoint(
     val id: Long = 0,
     val pairedEntryId: Long? = null,
     /** A loan of goodwill, never judged as trade credit (3 Nov 2026 audit, M34). */
-    val isQarzeHasna: Boolean = false
+    val isQarzeHasna: Boolean = false,
+    /**
+     * An opening balance ([EntryKind.OPENING], schema 45, 16 Nov 2026): money owed from before the book. It is debt — in the balance
+     * and in what has waited longest — but no sale and no payment: its day is the day it was brought in, so it says nothing of how
+     * fast this customer pays. The Payment Radar's pace and the shop's normal leave it out, and so do the payment days of the rhythm.
+     */
+    val isOpening: Boolean = false
 )
 
 /**
@@ -88,7 +94,8 @@ object PaymentHabit {
         for (p in lines.sortedBy { it.timestamp }) {
             val before = balance
             balance += if (p.isGiven) p.amount else -p.amount
-            if (!p.isGiven) paymentDays += DayMath.dayNumber(p.timestamp, tz)
+            // An opening balance the customer had paid ahead (an advance brought in) is no payment day of his rhythm.
+            if (!p.isGiven && !p.isOpening) paymentDays += DayMath.dayNumber(p.timestamp, tz)
             when {
                 !Money.isPositive(balance) -> debtStart = null
                 !Money.isPositive(before) -> debtStart = p.timestamp
