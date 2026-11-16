@@ -46,6 +46,7 @@ on:
       - 'scripts/check_bug_classes.py'
       # No real phone number in the public repository; no Room alias that is an SQL keyword (BC-077, BC-078).
       - 'scripts/check_invented_numbers.py'
+      - 'scripts/check_word_keys.py'
       - 'scripts/check_room_aliases.py'
       # Hudhud's sentence sets: one JSONL view and a quality gate (hudhud_sets.py --check, T27).
       - 'scripts/hudhud_sets.py'
@@ -91,6 +92,7 @@ on:
       - 'scripts/check_bug_classes.py'
       # No real phone number in the public repository; no Room alias that is an SQL keyword (BC-077, BC-078).
       - 'scripts/check_invented_numbers.py'
+      - 'scripts/check_word_keys.py'
       - 'scripts/check_room_aliases.py'
       # Hudhud's sentence sets: one JSONL view and a quality gate (hudhud_sets.py --check, T27).
       - 'scripts/hudhud_sets.py'
@@ -161,6 +163,9 @@ jobs:
       # empty sentence, a language not among the nine and columns out of place (scripts/hudhud_sets.py).
       - name: Hudhud's sentence sets pass the quality gate (no leakage, no real number, every label a reading)
         run: python3 scripts/hudhud_sets.py --check
+      # BC-105: a word key the shared code names must be a resource, or the phone's WordIds fails to compile on CI.
+      - name: Every word key the shared code names is a resource
+        run: python3 scripts/check_word_keys.py
       # The local Gradle-free harness (lesson 93) finds its files by list: a file moved or renamed fails here, not at the next run.
       - name: The shared harness's file lists are current
         run: bash scripts/shared_harness/run.sh --lists-only
