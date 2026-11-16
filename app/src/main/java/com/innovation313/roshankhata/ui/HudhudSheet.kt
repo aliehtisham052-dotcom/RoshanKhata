@@ -57,7 +57,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -296,7 +295,7 @@ object HudhudSheet {
          */
         val staffNames: Deferred<List<Hudhud.Name>> = host.lifecycleScope.async(Dispatchers.IO) {
             try {
-                if (HudhudGate.staff()) dao.observeStaff().first().map { Hudhud.Name(it.id, it.name) } else emptyList()
+                if (HudhudGate.staff()) dao.staffCardsOnce().filter { it.isActive }.map { Hudhud.Name(it.id, it.name) } else emptyList()
             } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
         }
 
@@ -493,7 +492,7 @@ object HudhudSheet {
             conversing = speakAllowed && voiceOn && HudhudEars.canHear(ctx) && HudhudEars.micGranted(ctx)
             turns = 0
             when {
-                !HudhudEars.canHear(ctx) -> googleBox()
+                !HudhudEars.canHear(ctx) -> boxOrLocal()
                 HudhudEars.micGranted(ctx) -> hearMyself()
                 HudhudPrefs.micDenied(ctx) ->
                     if (HudhudEars.online(ctx)) googleBox() else heardNothing(HudhudEars.Trouble.OFFLINE)
@@ -505,7 +504,7 @@ object HudhudSheet {
         private fun askForMic() {
             showCard(lines = listOf(ctx.getString(R.string.hudhud_mic_why)))
             // The one asker (PermissionAsk, 16 Nov 2026); a question that cannot even open is no refusal.
-            PermissionAsk.ask(host, Manifest.permission.RECORD_AUDIO, onUnavailable = { googleBox() }) { granted ->
+            PermissionAsk.ask(host, Manifest.permission.RECORD_AUDIO, onUnavailable = { boxOrLocal() }) { granted ->
                 if (closed) return@ask
                 if (granted) {
                     HudhudPrefs.setMicDenied(ctx, false)
@@ -574,6 +573,20 @@ object HudhudSheet {
          */
         private fun heardNothing(trouble: HudhudEars.Trouble) {
             setState(null)
+            // Only on this phone (audit T14): the card says why in those words, never "no internet", and no box opens.
+            if (HudhudPrefs.listenOnPhoneOnly(ctx) && trouble != HudhudEars.Trouble.NOTHING_HEARD && trouble != HudhudEars.Trouble.BUSY) {
+                if (trouble == HudhudEars.Trouble.PACK_MISSING) show(
+                    HudhudBook.Answer(
+                        HudhudBook.Mood.CALM,
+                        lines = listOf(ctx.getString(R.string.hudhud_listen_local_pack)),
+                        openLabel = R.string.hudhud_pack_download,
+                        spoken = { it.getString(R.string.hudhud_listen_local_pack) },
+                        doIt = { downloadPack() }
+                    ),
+                    speak = true
+                ) else spokenCard(R.string.hudhud_listen_local_none)
+                return
+            }
             when (trouble) {
                 HudhudEars.Trouble.NOTHING_HEARD -> spokenCard(R.string.hudhud_heard_nothing)
                 HudhudEars.Trouble.OFFLINE -> spokenCard(R.string.hudhud_offline)
@@ -610,8 +623,17 @@ object HudhudSheet {
             show(HudhudBook.Answer(HudhudBook.Mood.CALM, lines = lines), speak = false)
         }
 
+        /**
+         * The phone's voice-search box, unless the owner asked to listen on this phone only (audit T14): that box is the
+         * phone's online recogniser, so with the switch on he says why he cannot hear instead.
+         */
+        private fun boxOrLocal() {
+            if (HudhudPrefs.listenOnPhoneOnly(ctx)) heardNothing(HudhudEars.Trouble.NOT_OFFLINE_HERE) else googleBox()
+        }
+
         /** The phone's voice-search box (RecognizerIntent), as voice entry asks it: without the microphone permission. */
         private fun googleBox() {
+            if (HudhudPrefs.listenOnPhoneOnly(ctx)) { heardNothing(HudhudEars.Trouble.NOT_OFFLINE_HERE); return }
             val launcher = listenLauncher ?: host.activityResultRegistry.register(
                 "hudhud-" + System.nanoTime(), ActivityResultContracts.StartActivityForResult()
             ) { result ->
