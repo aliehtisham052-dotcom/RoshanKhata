@@ -3,111 +3,111 @@
 # and writes catalog.tsv. A new column, screen or More entry has no line until someone decides, and the script refuses it.
 
 # ---- column
-column	audit_log	READ	cols=timestamp,user,action	reader=HudhudFacts.activity	gate=REPORTS	screen=AuditActivity
-column	audit_log	READ	cols=refTable,detail	reader=HudhudFacts.activity	gate=REPORTS	screen=AuditActivity	via=HudhudRecordFacts.auditRows	why=the day's answer lists the newest rows in the Who did what screen's own words (auditActionName), what they touched and, for an amount row, the amount, free text in a detail stays the screen's
+column	audit_log	READ	cols=timestamp,user,action	reader=AnswerFacts.activity	gate=REPORTS	screen=AuditActivity
+column	audit_log	READ	cols=refTable,detail	reader=AnswerFacts.activity	gate=REPORTS	screen=AuditActivity	via=AnswerRecordFacts.auditRows	why=the day's answer lists the newest rows in the Who did what screen's own words (auditActionName), what they touched and, for an amount row, the amount, free text in a detail stays the screen's
 column	audit_log	WITHHELD	cols=hash	why=the seal chain of the log: proof material for the Who did what screen, never a thing to say
-column	bill_items	READ	cols=productName	reader=HudhudFacts.deliveries	gate=NONE	screen=BillsActivity	also=HudhudFacts.count+HudhudFacts.goods
-column	bill_items	READ	cols=rate	reader=HudhudFacts.goods	gate=REPORTS	screen=SupplierRatesActivity	via=KhataDao.supplierRateLinesOnce
-column	bill_items	READ	cols=quantity,unit,batchNumber,expiryDate,note	reader=HudhudFacts.lastBill	gate=NONE	screen=BillsActivity	also=HudhudFacts.goods
+column	bill_items	READ	cols=productName	reader=AnswerFacts.deliveries	gate=NONE	screen=BillsActivity	also=AnswerFacts.count+AnswerFacts.goods
+column	bill_items	READ	cols=rate	reader=AnswerFacts.goods	gate=REPORTS	screen=SupplierRatesActivity	via=KhataDao.supplierRateLinesOnce
+column	bill_items	READ	cols=quantity,unit,batchNumber,expiryDate,note	reader=AnswerFacts.lastBill	gate=NONE	screen=BillsActivity	also=AnswerFacts.goods
 column	book_seals	WITHHELD	cols=tokens	why=the time services' signed answers: raw proof bytes
 column	book_seals	GAP	cols=sealedAt,leafCount	why=no question reaches it yet (the Seals screen holds them)
 column	book_seals	STRUCT	cols=leaves,auditHead,prevDigest,digest	why=the seal chain's own material, shown only in the proof file
 column	book_settings	WITHHELD	cols=key,value	why=the book's own settings: PIN hashes, access keys and relay passes live here
-column	cashbook	READ	cols=amount,isIncome,category,note,timestamp	reader=HudhudFacts.cashbook	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cashbook	READ	cols=paymentMethod	reader=HudhudFacts.collected	gate=REPORTS	screen=DayBookActivity	via=DayBook.rows	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cashbook	READ	cols=paymentRef	reader=HudhudFacts.cashbook	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it	why=a row's reference (the TID) rides in its line and is shown, never said
+column	cashbook	READ	cols=amount,isIncome,category,note,timestamp	reader=AnswerFacts.cashbook	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook	READ	cols=paymentMethod	reader=AnswerFacts.collected	gate=REPORTS	screen=DayBookActivity	via=DayBook.rows	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook	READ	cols=paymentRef	reader=AnswerFacts.cashbook	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it	why=a row's reference (the TID) rides in its line and is shown, never said
 column	cashbook	WITHHELD	cols=photoPath	why=a picture's file path on this phone
-column	cheques	READ	cols=isReceived,dueDate	reader=HudhudFacts.cheques	gate=NONE	screen=ChequesActivity
-column	cheques	READ	cols=amount	reader=HudhudFacts.cheques	gate=REPORTS	screen=ChequesActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cheques	READ	cols=chequeNumber,bankName,status	reader=HudhudFacts.chequesIn	gate=NONE	screen=ChequesActivity	via=HudhudRecordFacts.chequeRows	also=HudhudFacts.cheques	stricter=its amount stays with REPORTS (the sum and each row's figure)
-column	cheques	READ	cols=settledAt,createdAt	reader=HudhudRecordFacts.cheques	gate=NONE	screen=ChequesActivity	via=HudhudRecordFacts.chequeRows	also=HudhudFacts.chequesIn
-column	cheques	READ	cols=note	reader=HudhudRecordFacts.cheques	gate=REPORTS	screen=ChequesActivity	via=HudhudRecordFacts.chequeRows	also=HudhudFacts.chequesIn	stricter=the screen shows the note to anyone who opens it, but a note often holds a bank's memo or a sum and Hudhud tells it only with REPORTS like the amount
+column	cheques	READ	cols=isReceived,dueDate	reader=AnswerFacts.cheques	gate=NONE	screen=ChequesActivity
+column	cheques	READ	cols=amount	reader=AnswerFacts.cheques	gate=REPORTS	screen=ChequesActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cheques	READ	cols=chequeNumber,bankName,status	reader=AnswerFacts.chequesIn	gate=NONE	screen=ChequesActivity	via=AnswerRecordFacts.chequeRows	also=AnswerFacts.cheques	stricter=its amount stays with REPORTS (the sum and each row's figure)
+column	cheques	READ	cols=settledAt,createdAt	reader=AnswerRecordFacts.cheques	gate=NONE	screen=ChequesActivity	via=AnswerRecordFacts.chequeRows	also=AnswerFacts.chequesIn
+column	cheques	READ	cols=note	reader=AnswerRecordFacts.cheques	gate=REPORTS	screen=ChequesActivity	via=AnswerRecordFacts.chequeRows	also=AnswerFacts.chequesIn	stricter=the screen shows the note to anyone who opens it, but a note often holds a bank's memo or a sum and Hudhud tells it only with REPORTS like the amount
 column	cheques	WITHHELD	cols=photoPath	why=a picture's file path on this phone
-column	day_close	READ	cols=closedAt	reader=HudhudBook.drawer	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	day_close	READ	cols=day,opening,cashIn,cashOut,counted,note	reader=HudhudCounterFacts.dayCount	gate=REPORTS	screen=CashbookActivity	via=KhataDao.dayClosesBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close	READ	cols=closedAt	reader=AnswerBook.drawer	gate=REPORTS	screen=CashbookActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close	READ	cols=day,opening,cashIn,cashOut,counted,note	reader=AnswerCounterFacts.dayCount	gate=REPORTS	screen=CashbookActivity	via=KhataDao.dayClosesBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	dismissed_duplicates	STRUCT	cols=partyIdsKey,dismissedAt	why=remembers the owner's 'not a duplicate' answers so the Duplicates screen does not ask again
-column	entry_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.topGoods	gate=REPORTS	screen=InsightsActivity	via=KhataDao.topProductsBetween
-column	entry_items	READ	cols=rate,isBonus	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity
-column	entry_items	READ	cols=crop,pest,dose	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity	via=ReceiptGoods.advice
-column	invoice_items	READ	cols=itemName,quantity,unit,rate	reader=HudhudFacts.lastInvoice	gate=NONE	screen=InvoicesActivity
-column	installments	READ	cols=amount	reader=HudhudRecordFacts.plan	gate=REPORTS	screen=PlansActivity	stricter=the screen lists the instalments to anyone who opens it, but Hudhud's card adds them up and that stays with REPORTS
-column	installments	READ	cols=paidAt,note	reader=HudhudRecordFacts.plan	gate=NONE	screen=PlansActivity
-column	invoices	READ	cols=invoiceNumber,customerName,invoiceDate	reader=HudhudFacts.count	gate=NONE	screen=InvoicesActivity
-column	invoices	READ	cols=dueDate,receivedAmount,taxPercent,discountPercent,additionalChargeAmount,discountAmount,kind,status	reader=HudhudFacts.invoicesDue	gate=REPORTS	screen=InvoicesActivity	via=KhataDao.invoicesWithPaymentOnce	stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
-column	invoices	READ	cols=customerPhone,createdAt	reader=HudhudFacts.lastInvoice	gate=NONE	screen=InvoicesActivity	why=the last-invoice card says the day it was written and the phone printed for the customer (shown, never said)
-column	invoices	READ	cols=additionalChargeLabel,note	reader=HudhudFacts.lastInvoice	gate=REPORTS	screen=InvoicesActivity	stricter=the invoice screen shows the note and the extra charge to anyone who opens it, but a note often holds a sum and the charge is money, so Hudhud tells them with REPORTS like a cheque's note
-column	loyalty	READ	cols=points,timestamp	reader=HudhudCounterFacts.loyalty	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.pointRowsBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	entry_items	READ	cols=itemName,quantity,unit	reader=AnswerFacts.topGoods	gate=REPORTS	screen=InsightsActivity	via=KhataDao.topProductsBetween
+column	entry_items	READ	cols=rate,isBonus	reader=AnswerFacts.person	gate=NONE	screen=EntryDetailActivity
+column	entry_items	READ	cols=crop,pest,dose	reader=AnswerFacts.person	gate=NONE	screen=EntryDetailActivity	via=ReceiptGoods.advice
+column	invoice_items	READ	cols=itemName,quantity,unit,rate	reader=AnswerFacts.lastInvoice	gate=NONE	screen=InvoicesActivity
+column	installments	READ	cols=amount	reader=AnswerRecordFacts.plan	gate=REPORTS	screen=PlansActivity	stricter=the screen lists the instalments to anyone who opens it, but Hudhud's card adds them up and that stays with REPORTS
+column	installments	READ	cols=paidAt,note	reader=AnswerRecordFacts.plan	gate=NONE	screen=PlansActivity
+column	invoices	READ	cols=invoiceNumber,customerName,invoiceDate	reader=AnswerFacts.count	gate=NONE	screen=InvoicesActivity
+column	invoices	READ	cols=dueDate,receivedAmount,taxPercent,discountPercent,additionalChargeAmount,discountAmount,kind,status	reader=AnswerFacts.invoicesDue	gate=REPORTS	screen=InvoicesActivity	via=KhataDao.invoicesWithPaymentOnce	stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices	READ	cols=customerPhone,createdAt	reader=AnswerFacts.lastInvoice	gate=NONE	screen=InvoicesActivity	why=the last-invoice card says the day it was written and the phone printed for the customer (shown, never said)
+column	invoices	READ	cols=additionalChargeLabel,note	reader=AnswerFacts.lastInvoice	gate=REPORTS	screen=InvoicesActivity	stricter=the invoice screen shows the note and the extra charge to anyone who opens it, but a note often holds a sum and the charge is money, so Hudhud tells them with REPORTS like a cheque's note
+column	loyalty	READ	cols=points,timestamp	reader=AnswerCounterFacts.loyalty	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.pointRowsBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	loyalty	GAP	cols=note	why=the note is the reason words of one point row (a sale, a void, a return), no question asks why a point moved
-column	parties	READ	cols=name,phone,fatherName,village,isCustomer,creditLimit,harvestPromise	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity
-column	parties	READ	cols=note	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity	also=HudhudFacts.notesList
+column	parties	READ	cols=name,phone,fatherName,village,isCustomer,creditLimit,harvestPromise	reader=AnswerFacts.person	gate=NONE	screen=PartyDetailActivity
+column	parties	READ	cols=note	reader=AnswerFacts.person	gate=NONE	screen=PartyDetailActivity	also=AnswerFacts.notesList
 column	parties	WITHHELD	cols=qrToken,photoPath	why=the card's secret token and a picture's file path
-column	parties	READ	cols=createdAt	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity	why=the since card says the day the customer was added beside the day of his first entry
+column	parties	READ	cols=createdAt	reader=AnswerFacts.person	gate=NONE	screen=PartyDetailActivity	why=the since card says the day the customer was added beside the day of his first entry
 column	parties	STRUCT	cols=noEntryShare	why=the customer's own switch for the WhatsApp offer after an entry, a setting of the entry flow and not a fact about the account
-column	payment_plans	READ	cols=nextDueDate	reader=HudhudFacts.plans	gate=NONE	screen=PlansActivity
-column	payment_plans	READ	cols=totalAmount,installmentAmount	reader=HudhudRecordFacts.plan	gate=REPORTS	screen=PlansActivity	also=HudhudRecordFacts.plansClosed	stricter=the screen lists the plans to anyone who opens it, but Hudhud's card adds paid and left into figures and that stays with REPORTS
-column	payment_plans	READ	cols=note,createdAt,isClosed,closedAt	reader=HudhudRecordFacts.plan	gate=NONE	screen=PlansActivity	also=HudhudRecordFacts.plansClosed
-column	products	READ	cols=name,defaultUnit,company,salePrice,creditPrice	reader=HudhudFacts.goods	gate=NONE	screen=ProductsActivity
-column	products	READ	cols=costPrice	reader=HudhudFacts.goods	gate=REPORTS	screen=ProductsActivity	stricter=the product form greys the cost box for a cashier but still shows it, Hudhud keeps the cost (and so the margin) with REPORTS
+column	payment_plans	READ	cols=nextDueDate	reader=AnswerFacts.plans	gate=NONE	screen=PlansActivity
+column	payment_plans	READ	cols=totalAmount,installmentAmount	reader=AnswerRecordFacts.plan	gate=REPORTS	screen=PlansActivity	also=AnswerRecordFacts.plansClosed	stricter=the screen lists the plans to anyone who opens it, but Hudhud's card adds paid and left into figures and that stays with REPORTS
+column	payment_plans	READ	cols=note,createdAt,isClosed,closedAt	reader=AnswerRecordFacts.plan	gate=NONE	screen=PlansActivity	also=AnswerRecordFacts.plansClosed
+column	products	READ	cols=name,defaultUnit,company,salePrice,creditPrice	reader=AnswerFacts.goods	gate=NONE	screen=ProductsActivity
+column	products	READ	cols=costPrice	reader=AnswerFacts.goods	gate=REPORTS	screen=ProductsActivity	stricter=the product form greys the cost box for a cashier but still shows it, Hudhud keeps the cost (and so the margin) with REPORTS
 column	products	STRUCT	cols=otherNames	why=the shop's other names for a product (schema 45) are handed to Hudhud as more names of the same product with its id (HudhudSheet's goods list), so a product asked in another script is found, a way to find it and not a fact to tell
-column	products	READ	cols=lowStockLevel	reader=HudhudFacts.lowStock	gate=NONE	screen=ProductsActivity	via=Valuation.compute
-column	products	READ	cols=category,productType,formulation,registrationNumber,technicalName,note,createdAt,barcode,packUnit,packSize,packPrice,taxRate,variant	reader=HudhudFacts.goods	gate=NONE	screen=ProductsActivity	also=HudhudFacts.needGoods
-column	purchase_order_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.lastOrder	gate=NONE	screen=OrdersActivity
-column	purchase_order_items	READ	cols=rate	reader=HudhudFacts.lastOrder	gate=REPORTS	screen=OrdersActivity	stricter=an order line's rate is what a supplier charges, which Hudhud keeps with REPORTS as the supplier rates are
-column	purchase_orders	READ	cols=orderNumber,timestamp,status,note	reader=HudhudFacts.lastOrder	gate=NONE	screen=OrdersActivity
-column	purchase_orders	READ	cols=createdBy	reader=HudhudFacts.lastOrder	gate=REPORTS	screen=OrdersActivity	stricter=who wrote an order is told only to who may see reports, as for an entry
-column	sale_items	READ	cols=itemName,quantity,unit	reader=HudhudFacts.topGoods	gate=REPORTS	screen=InsightsActivity	via=KhataDao.topProductsBetween
-column	sale_items	READ	cols=rate,discount	reader=HudhudCounterFacts.ticket	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_items	READ	cols=taxAmount,taxIncluded	reader=HudhudCounterFacts.dayFigures	gate=REPORTS	screen=CounterSaleActivity	via=ZReport.compute	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	products	READ	cols=lowStockLevel	reader=AnswerFacts.lowStock	gate=NONE	screen=ProductsActivity	via=Valuation.compute
+column	products	READ	cols=category,productType,formulation,registrationNumber,technicalName,note,createdAt,barcode,packUnit,packSize,packPrice,taxRate,variant	reader=AnswerFacts.goods	gate=NONE	screen=ProductsActivity	also=AnswerFacts.needGoods
+column	purchase_order_items	READ	cols=itemName,quantity,unit	reader=AnswerFacts.lastOrder	gate=NONE	screen=OrdersActivity
+column	purchase_order_items	READ	cols=rate	reader=AnswerFacts.lastOrder	gate=REPORTS	screen=OrdersActivity	stricter=an order line's rate is what a supplier charges, which Hudhud keeps with REPORTS as the supplier rates are
+column	purchase_orders	READ	cols=orderNumber,timestamp,status,note	reader=AnswerFacts.lastOrder	gate=NONE	screen=OrdersActivity
+column	purchase_orders	READ	cols=createdBy	reader=AnswerFacts.lastOrder	gate=REPORTS	screen=OrdersActivity	stricter=who wrote an order is told only to who may see reports, as for an entry
+column	sale_items	READ	cols=itemName,quantity,unit	reader=AnswerFacts.topGoods	gate=REPORTS	screen=InsightsActivity	via=KhataDao.topProductsBetween
+column	sale_items	READ	cols=rate,discount	reader=AnswerCounterFacts.ticket	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_items	READ	cols=taxAmount,taxIncluded	reader=AnswerCounterFacts.dayFigures	gate=REPORTS	screen=CounterSaleActivity	via=ZReport.compute	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_items	GAP	cols=costRate,taxRate	why=costRate is what the shop paid and is told only through the profit figures (Profit, ZReport), and the line rate of tax is folded into taxAmount
-column	sale_payments	READ	cols=method,amount,reference	reader=HudhudCounterFacts.ticket	gate=REPORTS	screen=CounterSaleActivity	also=HudhudCounterFacts.dayFigures	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_return_items	READ	cols=itemName,quantity,unit,rate	reader=HudhudCounterFacts.returnGoods	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.returnedGoodsBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns	READ	cols=returnNumber,customerName,timestamp	reader=HudhudFacts.returns	gate=NONE	screen=CounterSaleActivity
-column	sale_returns	READ	cols=total,refundAmount	reader=HudhudFacts.returns	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns	READ	cols=refundMethod	reader=HudhudCounterFacts.returnWays	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns	READ	cols=reason,note,createdBy	reader=HudhudCounterFacts.returnReasons	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.returnsWhyBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns	READ	cols=voidReason,voidedAt,status	reader=HudhudCounterFacts.voided	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.voidedReturnsBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales	READ	cols=saleNumber,customerName,timestamp	reader=HudhudFacts.count	gate=NONE	screen=CounterSaleActivity
-column	sales	READ	cols=grandTotal	reader=HudhudFacts.count	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	schemes	READ	cols=name,company,startDate,endDate,note	reader=HudhudFacts.schemeAnswer	gate=NONE	screen=SchemesActivity
-column	schemes	READ	cols=measure,unit,claimedAmount,claimedAt	reader=HudhudFacts.schemeAnswer	gate=REPORTS	screen=SchemesActivity	stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
-column	schemes	READ	cols=rewardKind	reader=HudhudFacts.schemeAnswer	gate=REPORTS	screen=SchemesActivity	via=HudhudFacts.rewardText	stricter=a scheme's reward is told only to who may see reports
-column	schemes	READ	cols=target1,reward1,target2,reward2,target3,reward3	reader=HudhudFacts.schemeAnswer	gate=REPORTS	screen=SchemesActivity	via=SchemeMath.slabs	stricter=a scheme's targets and rewards are told only to who may see reports
+column	sale_payments	READ	cols=method,amount,reference	reader=AnswerCounterFacts.ticket	gate=REPORTS	screen=CounterSaleActivity	also=AnswerCounterFacts.dayFigures	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_return_items	READ	cols=itemName,quantity,unit,rate	reader=AnswerCounterFacts.returnGoods	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.returnedGoodsBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns	READ	cols=returnNumber,customerName,timestamp	reader=AnswerFacts.returns	gate=NONE	screen=CounterSaleActivity
+column	sale_returns	READ	cols=total,refundAmount	reader=AnswerFacts.returns	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns	READ	cols=refundMethod	reader=AnswerCounterFacts.returnWays	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns	READ	cols=reason,note,createdBy	reader=AnswerCounterFacts.returnReasons	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.returnsWhyBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns	READ	cols=voidReason,voidedAt,status	reader=AnswerCounterFacts.voided	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.voidedReturnsBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales	READ	cols=saleNumber,customerName,timestamp	reader=AnswerFacts.count	gate=NONE	screen=CounterSaleActivity
+column	sales	READ	cols=grandTotal	reader=AnswerFacts.count	gate=REPORTS	screen=CounterSaleActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	schemes	READ	cols=name,company,startDate,endDate,note	reader=AnswerFacts.schemeAnswer	gate=NONE	screen=SchemesActivity
+column	schemes	READ	cols=measure,unit,claimedAmount,claimedAt	reader=AnswerFacts.schemeAnswer	gate=REPORTS	screen=SchemesActivity	stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
+column	schemes	READ	cols=rewardKind	reader=AnswerFacts.schemeAnswer	gate=REPORTS	screen=SchemesActivity	via=AnswerFacts.rewardText	stricter=a scheme's reward is told only to who may see reports
+column	schemes	READ	cols=target1,reward1,target2,reward2,target3,reward3	reader=AnswerFacts.schemeAnswer	gate=REPORTS	screen=SchemesActivity	via=SchemeMath.slabs	stricter=a scheme's targets and rewards are told only to who may see reports
 column	schemes	GAP	cols=createdAt	why=the Schemes screen shows no day for when a scheme was written, and nobody asks it
-column	sales	READ	cols=subtotal,discountAmount,taxPercent,taxAmount,roundOff,paidTotal,note,createdBy	reader=HudhudCounterFacts.ticket	gate=REPORTS	screen=CounterSaleActivity	also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales	READ	cols=voidReason,voidedAt,status	reader=HudhudCounterFacts.voided	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.voidedSalesBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	shifts	READ	cols=user,openedAt,openingFloat,closedAt,counted,expected,note	reader=HudhudCounterFacts.shifts	gate=REPORTS	screen=ShiftActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales	READ	cols=subtotal,discountAmount,taxPercent,taxAmount,roundOff,paidTotal,note,createdBy	reader=AnswerCounterFacts.ticket	gate=REPORTS	screen=CounterSaleActivity	also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales	READ	cols=voidReason,voidedAt,status	reader=AnswerCounterFacts.voided	gate=REPORTS	screen=CounterSaleActivity	via=KhataDao.voidedSalesBetween	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	shifts	READ	cols=user,openedAt,openingFloat,closedAt,counted,expected,note	reader=AnswerCounterFacts.shifts	gate=REPORTS	screen=ShiftActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	shifts	STRUCT	cols=device	why=which phone or computer opened the shift: plumbing the shift's own drawer count uses (ShiftMath.markOf), not something a shopkeeper asks
-column	stock_adjustments	READ	cols=timestamp,quantity,unit,reason,note,createdBy	reader=HudhudCounterFacts.stockChanges	gate=REPORTS	screen=ProductsActivity	also=HudhudCounterFacts.writtenOff	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	stock_adjustments	READ	cols=bookQty,countedQty	reader=HudhudCounterFacts.lastCount	gate=REPORTS	screen=ProductsActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	staff	READ	cols=name	reader=HudhudFacts.salaries	gate=STAFF	screen=StaffActivity
-column	staff	READ	cols=phone,monthlySalary,isActive,createdAt,role	reader=HudhudRecordFacts.staffPerson	gate=STAFF	screen=StaffActivity	why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
+column	stock_adjustments	READ	cols=timestamp,quantity,unit,reason,note,createdBy	reader=AnswerCounterFacts.stockChanges	gate=REPORTS	screen=ProductsActivity	also=AnswerCounterFacts.writtenOff	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	stock_adjustments	READ	cols=bookQty,countedQty	reader=AnswerCounterFacts.lastCount	gate=REPORTS	screen=ProductsActivity	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	staff	READ	cols=name	reader=AnswerFacts.salaries	gate=STAFF	screen=StaffActivity
+column	staff	READ	cols=phone,monthlySalary,isActive,createdAt,role	reader=AnswerRecordFacts.staffPerson	gate=STAFF	screen=StaffActivity	why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
 column	staff	WITHHELD	cols=pinHash,pinSalt	why=a PIN's hash and salt: a secret
-column	staff_attendance	READ	cols=day,status	reader=HudhudRecordFacts.attendance	gate=STAFF	screen=StaffActivity	also=HudhudRecordFacts.staffPay
-column	staff_payments	READ	cols=amount,kind,timestamp,note	reader=HudhudRecordFacts.staffPaid	gate=STAFF	screen=StaffActivity	also=HudhudRecordFacts.staffPay
-column	supplier_bills	READ	cols=isPaidInFull,dueDate	reader=HudhudFacts.bills	gate=NONE	screen=BillsActivity
-column	supplier_bills	READ	cols=billDate	reader=HudhudFacts.deliveries	gate=NONE	screen=BillsActivity
-column	supplier_bills	READ	cols=totalAmount	reader=HudhudFacts.bills	gate=REPORTS	screen=BillsActivity	also=HudhudFacts.deliveries+HudhudFacts.count	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	supplier_bills	READ	cols=billNumber,note,createdAt	reader=HudhudFacts.lastBill	gate=NONE	screen=BillsActivity
+column	staff_attendance	READ	cols=day,status	reader=AnswerRecordFacts.attendance	gate=STAFF	screen=StaffActivity	also=AnswerRecordFacts.staffPay
+column	staff_payments	READ	cols=amount,kind,timestamp,note	reader=AnswerRecordFacts.staffPaid	gate=STAFF	screen=StaffActivity	also=AnswerRecordFacts.staffPay
+column	supplier_bills	READ	cols=isPaidInFull,dueDate	reader=AnswerFacts.bills	gate=NONE	screen=BillsActivity
+column	supplier_bills	READ	cols=billDate	reader=AnswerFacts.deliveries	gate=NONE	screen=BillsActivity
+column	supplier_bills	READ	cols=totalAmount	reader=AnswerFacts.bills	gate=REPORTS	screen=BillsActivity	also=AnswerFacts.deliveries+AnswerFacts.count	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	supplier_bills	READ	cols=billNumber,note,createdAt	reader=AnswerFacts.lastBill	gate=NONE	screen=BillsActivity
 column	supplier_bills	WITHHELD	cols=photoPath	why=a picture's file path on this phone
-column	transactions	READ	cols=amount,isGiven,timestamp	reader=HudhudFacts.person	gate=NONE	screen=PartyDetailActivity
-column	transactions	READ	cols=isQarzeHasna	reader=HudhudFacts.qarz	gate=REPORTS	screen=ZakatActivity	via=KhataDao.observeZakatBalancesByParty
-column	transactions	READ	cols=paymentMethod	reader=HudhudFacts.collected	gate=REPORTS	screen=DayBookActivity	via=DayBook.rows	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	transactions	READ	cols=note,entryNumber,itemName,quantity,unit,paymentRef	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity
-column	transactions	READ	cols=createdBy	reader=HudhudFacts.person	gate=REPORTS	screen=EntryDetailActivity	stricter=who wrote an entry is told only to who may see reports
-column	transactions	READ	cols=rateType,season	reader=HudhudFacts.person	gate=NONE	screen=EntryDetailActivity	why=the last-entry card says the rate list the entry was at and the season the owner chose (only where the shop keeps seasons)
-column	transactions	READ	cols=recovery	reader=HudhudFacts.person	gate=REPORTS	screen=EntryDetailActivity	stricter=the entry screen shows the chance of recovery to anyone who opens it, but a doubtful debt is the owner's private judgement and Hudhud says it only to who may see reports
+column	transactions	READ	cols=amount,isGiven,timestamp	reader=AnswerFacts.person	gate=NONE	screen=PartyDetailActivity
+column	transactions	READ	cols=isQarzeHasna	reader=AnswerFacts.qarz	gate=REPORTS	screen=ZakatActivity	via=KhataDao.observeZakatBalancesByParty
+column	transactions	READ	cols=paymentMethod	reader=AnswerFacts.collected	gate=REPORTS	screen=DayBookActivity	via=DayBook.rows	stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	transactions	READ	cols=note,entryNumber,itemName,quantity,unit,paymentRef	reader=AnswerFacts.person	gate=NONE	screen=EntryDetailActivity
+column	transactions	READ	cols=createdBy	reader=AnswerFacts.person	gate=REPORTS	screen=EntryDetailActivity	stricter=who wrote an entry is told only to who may see reports
+column	transactions	READ	cols=rateType,season	reader=AnswerFacts.person	gate=NONE	screen=EntryDetailActivity	why=the last-entry card says the rate list the entry was at and the season the owner chose (only where the shop keeps seasons)
+column	transactions	READ	cols=recovery	reader=AnswerFacts.person	gate=REPORTS	screen=EntryDetailActivity	stricter=the entry screen shows the chance of recovery to anyone who opens it, but a doubtful debt is the owner's private judgement and Hudhud says it only to who may see reports
 column	transactions	GAP	cols=entryKind	why=an opening balance (schema 45) is left out of every sale figure Hudhud reads through KhataDao's sale rule, but no card yet says which entry was brought in as one (the receipt and the statement say it)
 column	transactions	WITHHELD	cols=billPhotoPath	why=a picture's file path on this phone
 
 # ---- profile
-profile	BusinessProfile	READ	cols=businessName	reader=HudhudFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=PartyDetailActivity,InvoicesActivity,MainActivity	why=the shop's name is on every receipt, statement and the Home bar
-profile	BusinessProfile	READ	cols=businessAddress,businessPhone	reader=HudhudFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=BusinessCardActivity,RateListActivity,PosterActivity	why=the address and phone are on the cards, rate lists and posters anyone prints
-profile	BusinessProfile	READ	cols=trade	reader=HudhudFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=PosterActivity,InspectorReportActivity	why=the trade picks the words and the register every screen shows
-profile	BusinessProfile	READ	cols=currency	reader=HudhudFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=MainActivity	why=the sign is on every amount every screen shows (through Format), Home reads it to ask the country once
-profile	BusinessProfile	READ	cols=calendar	reader=HudhudFacts.clock	gate=NONE	screen=BusinessSettingsActivity	alsoseen=MainActivity	why=every date every screen shows is written in the shop's calendar
-profile	BusinessProfile	READ	cols=country,businessEmail,strn,taxLabel,bankName,bankAccountTitle,bankIban,bankJazzCash	reader=HudhudFacts.shop	gate=SETTINGS	screen=BusinessSettingsActivity	why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	BusinessProfile	READ	cols=businessNameUrdu	reader=HudhudFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=PosterActivity,BusinessCardActivity	why=the Urdu name is printed on the Urdu posters and the business card anyone prints
-profile	BusinessProfile	READ	cols=termsAndConditions	reader=HudhudFacts.shop	gate=SETTINGS	screen=BusinessSettingsActivity	why=the terms are written on the settings screen the owner opens, no other screen of a cashier shows them
+profile	BusinessProfile	READ	cols=businessName	reader=AnswerFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=PartyDetailActivity,InvoicesActivity,MainActivity	why=the shop's name is on every receipt, statement and the Home bar
+profile	BusinessProfile	READ	cols=businessAddress,businessPhone	reader=AnswerFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=BusinessCardActivity,RateListActivity,PosterActivity	why=the address and phone are on the cards, rate lists and posters anyone prints
+profile	BusinessProfile	READ	cols=trade	reader=AnswerFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=PosterActivity,InspectorReportActivity	why=the trade picks the words and the register every screen shows
+profile	BusinessProfile	READ	cols=currency	reader=AnswerFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=MainActivity	why=the sign is on every amount every screen shows (through Format), Home reads it to ask the country once
+profile	BusinessProfile	READ	cols=calendar	reader=AnswerFacts.clock	gate=NONE	screen=BusinessSettingsActivity	alsoseen=MainActivity	why=every date every screen shows is written in the shop's calendar
+profile	BusinessProfile	READ	cols=country,businessEmail,strn,taxLabel,bankName,bankAccountTitle,bankIban,bankJazzCash	reader=AnswerFacts.shop	gate=SETTINGS	screen=BusinessSettingsActivity	why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	BusinessProfile	READ	cols=businessNameUrdu	reader=AnswerFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=PosterActivity,BusinessCardActivity	why=the Urdu name is printed on the Urdu posters and the business card anyone prints
+profile	BusinessProfile	READ	cols=termsAndConditions	reader=AnswerFacts.shop	gate=SETTINGS	screen=BusinessSettingsActivity	why=the terms are written on the settings screen the owner opens, no other screen of a cashier shows them
 profile	BusinessProfile	GAP	cols=receiptHeader	why=made of the name, address, phone and tax number the shop card already tells (the tax number only with SETTINGS), so it has no answer of its own
 profile	BusinessProfile	GAP	cols=otherTradeName,otherTradeItems,logoDesign,photoOnStatement,sealChoice,askShareAfterEntry,paymentOnReminder	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
 
@@ -143,12 +143,12 @@ screen	SnapshotsActivity	OPEN
 screen	StaffActivity	OPEN
 screen	SupplierRatesActivity	OPEN
 screen	ZakatActivity	OPEN
-screen	AboutActivity	OPENED	by=HudhudFacts.about
-screen	AlertsActivity	OPENED	by=HudhudBook.today
-screen	BusinessSettingsActivity	OPENED	by=HudhudFacts.shop
-screen	DayBookActivity	OPENED	by=HudhudFacts.activity
+screen	AboutActivity	OPENED	by=AnswerFacts.about
+screen	AlertsActivity	OPENED	by=AnswerBook.today
+screen	BusinessSettingsActivity	OPENED	by=AnswerFacts.shop
+screen	DayBookActivity	OPENED	by=AnswerFacts.activity
 screen	PartyDetailActivity	OPENED	by=HudhudSheet.openParty	q=the customer page has no how-to page of its own yet (adding an entry, the menu)
-screen	ProductCustomersActivity	OPENED	by=HudhudFacts.goods
+screen	ProductCustomersActivity	OPENED	by=AnswerFacts.goods
 screen	DuplicateCustomersActivity	NOT-ASKED	why=tier NEVER (the owner's rule, he only says where it is): the screen_duplicates page tells where it is and what it does, he never opens it
 screen	HelpActivity	OPEN
 screen	MeraKhataActivity	OPEN

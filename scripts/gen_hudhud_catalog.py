@@ -243,7 +243,7 @@ def functions(path):
 
 
 def reader(sym, ctx):
-    """'HudhudFacts.person' -> (path, body) or None (and a problem written)."""
+    """'AnswerFacts.person' -> (path, body) or None (and a problem written)."""
     if '.' not in sym:
         fail('%s: reader %r is not Class.function' % (ctx, sym))
         return None
@@ -343,25 +343,35 @@ def more_entries():
     return out
 
 
+ANSWER_BOOK = os.path.join(ROOT, 'shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/AnswerBook.kt')
+PHONE_ENV = os.path.join(APP, 'data/HudhudPhoneEnv.kt')
+
+
+def screen_classes():
+    """ScreenId -> the phone's screen class, from HudhudPhoneEnv.activity (the one map the phone opens pages by)."""
+    src = strip(read(PHONE_ENV))
+    return dict(re.findall(r'ScreenId\.(\w+)\s*->\s*(\w+)::class\.java', src))
+
+
 def pages():
-    """Hudhud's help pages: key -> the screen it opens (or None), from HudhudBook.PAGES and screenOf."""
-    src = strip(read(os.path.join(APP, 'data/HudhudBook.kt')))
+    """Hudhud's help pages: key -> the screen it opens (or None), from AnswerBook.PAGES and its FEATURES (shared since 16 Nov
+    2026), each ScreenId read as the phone's screen class through HudhudPhoneEnv.activity."""
+    src = strip(read(ANSWER_BOOK))
+    screens = screen_classes()
     out = {}
-    for key, tail in re.findall(r'Page\("(\w+)",\s*R\.string\.\w+,\s*R\.string\.\w+,\s*([\w.]+(?:::class\.java)?)\)', src):
-        out[key] = tail.split('::')[0].split('.')[-1] if tail != 'null' else None
-    for topic, screen in re.findall(r'FeatureIntro\.Topic\.(\w+)\s*->\s*(\w+)::class\.java', src):
-        out['feature_' + topic.lower()] = screen
+    for key, tail in re.findall(r'Page\("(\w+)",\s*W\.\w+,\s*W\.\w+,\s*(null|ScreenId\.\w+)', src):
+        out[key] = screens.get(tail.split('.')[-1], tail) if tail != 'null' else None
+    for key, screen in re.findall(r'Feature\("(\w+)",\s*W\.\w+,\s*W\.\w+,\s*ScreenId\.(\w+)\)', src):
+        out['feature_' + key] = screens.get(screen, screen)
     return out
 
 
 def page_rows():
-    """HudhudBook.PAGES in the order the app builds it: the first ten pages, the feature sheets (FeatureIntro.Topic, in its
+    """AnswerBook.PAGES in the order the app builds it: the first ten pages, the feature sheets (FeatureIntro.Topic, in its
     own order, keyed intro_*), then the rest — each as (key, title string name, body string name)."""
-    src = strip(read(os.path.join(APP, 'data/HudhudBook.kt')))
-    book = re.findall(r'Page\("(\w+)",\s*R\.string\.(\w+),\s*R\.string\.(\w+),', src)
-    intro = strip(read(os.path.join(APP, 'ui/FeatureIntro.kt')))
-    intro = intro[intro.find('enum class Topic('):]
-    topics = re.findall(r'^\s+[A-Z][A-Z_]*\("(\w+)",\s*R\.string\.(\w+),\s*R\.string\.(\w+),', intro, re.M)
+    src = strip(read(ANSWER_BOOK))
+    book = re.findall(r'Page\("(\w+)",\s*W\.(\w+),\s*W\.(\w+),', src)
+    topics = re.findall(r'Feature\("(\w+)",\s*W\.(\w+),\s*W\.(\w+),', src)
     first = [r for r in book if r[0].startswith('faq_') and r[0] != 'faq_khata_link']
     # the app's list: the first listOf (the ten faq_ pages), then the feature sheets, then the second listOf (the rest)
     rest = [r for r in book if r not in first]
@@ -550,22 +560,23 @@ def gate_ok(m, d, perm, screen, ctx, tokens=()):
 
 
 def check_gates(m):
-    """HudhudGate is the one place Hudhud's files ask Access (so a gate is always one the catalog knows)."""
-    path = file_named('HudhudGate')
+    """AnswerGate (shared since 16 Nov 2026; the phone's HudhudGate only calls it) is the one place Hudhud's files — his own
+    Hudhud*.kt and the shared answers' Answer*.kt — ask Access (so a gate is always one the catalog knows)."""
+    path = file_named('AnswerGate')
     if not path:
-        fail('HudhudGate.kt is missing: Hudhud\'s gates all live there')
+        fail('AnswerGate.kt is missing: Hudhud\'s gates all live there')
         return
     for f in kotlin_files():
         base = os.path.basename(f)
-        if base in ('HudhudGate.kt',) or not base.startswith('Hudhud'):
+        if base in ('AnswerGate.kt',) or not base.startswith(('Hudhud', 'Answer')):
             continue
         for i, line in enumerate(strip(read(f)).splitlines(), 1):
             if re.search(r'\bAccess\.(can|ownerOnly|isOwner)\b', line):
-                fail('%s:%d: Hudhud asks Access directly; use HudhudGate (so the catalog can hold the gate to the screen\'s)' % (rel(f), i))
+                fail('%s:%d: Hudhud asks Access directly; use AnswerGate (so the catalog can hold the gate to the screen\'s)' % (rel(f), i))
     src = strip(read(path))
     for p in re.findall(r'fun (\w+)\(\)\s*(?::\s*Boolean\s*)?=\s*Access\.can\(Access\.Permission\.(\w+)\)', src):
         if camel(p[1]) != p[0]:
-            fail('HudhudGate.%s() reads Permission.%s: name it %s()' % (p[0], p[1], camel(p[1])))
+            fail('AnswerGate.%s() reads Permission.%s: name it %s()' % (p[0], p[1], camel(p[1])))
 
 
 def check_columns(m, kind):
@@ -598,7 +609,7 @@ def check_columns(m, kind):
                 gate_ok(m, d, d['kv']['gate'], d['kv']['screen'], ctx,
                         tokens=[by_col[(d['subject'], c)]['prop'] for c in cols if (d['subject'], c) in by_col])
                 if rd and d['kv']['gate'] != 'NONE':
-                    tok = r'\b(?:HudhudGate\.)?%s\(\)' % camel(d['kv']['gate'])
+                    tok = r'\b(?:AnswerGate\.)?%s\(\)' % camel(d['kv']['gate'])
                     if not re.search(tok, rd[1]):
                         fail('%s: reader %s never applies the gate %s (no %s() in its body)' % (ctx, d['kv']['reader'], d['kv']['gate'], camel(d['kv']['gate'])))
                 for key in ('facet',):
@@ -668,7 +679,7 @@ def check_profile(m):
             if all(d['kv'].get(k) for k in ('reader', 'gate', 'screen')):
                 rd = reader(d['kv']['reader'], ctx)
                 gate_ok(m, d, d['kv']['gate'], d['kv']['screen'], ctx, tokens=[g for g in d['kv'].get('cols', '').split(',') if g])
-                if rd and d['kv']['gate'] != 'NONE' and not re.search(r'\b(?:HudhudGate\.)?%s\(\)' % camel(d['kv']['gate']), rd[1]):
+                if rd and d['kv']['gate'] != 'NONE' and not re.search(r'\b(?:AnswerGate\.)?%s\(\)' % camel(d['kv']['gate']), rd[1]):
                     fail('%s: reader %s never applies the gate %s' % (ctx, d['kv']['reader'], d['kv']['gate']))
                 if d['kv'].get('facet'):
                     en, _, val = d['kv']['facet'].partition('.')
@@ -691,7 +702,8 @@ def check_profile(m):
                         fail('%s: %s is a number the card may show but never say; reader %s never sets secrets' % (ctx, g, d['kv']['reader']))
                 if dec == 'READ' and d['kv'].get('reader'):
                     rd = reader(d['kv']['reader'], ctx)
-                    if rd and not re.search(r'BusinessProfile\.%s\(' % g, rd[1]):
+                    # The phone's BusinessProfile.x(context), or the shared answers' env.profile.x() (16 Nov 2026).
+                    if rd and not re.search(r'(?:BusinessProfile|profile)\.%s\(' % g, rd[1]):
                         fail('%s: reader %s never calls BusinessProfile.%s' % (ctx, d['kv']['reader'], g))
     for g, typ in m.profile:
         d = decided.get(g)
@@ -728,7 +740,9 @@ def check_screens(m):
                 fail('%s: CHILD needs of=<an activity>' % ctx)
         if dec == 'OPENED':
             rd = reader(kv['by'], ctx) if kv.get('by') else fail('%s: OPENED needs by=Class.function' % ctx)
-            if rd and not re.search(r'\b%s::class\.java' % s, rd[1]):
+            # A shared answer opens a page by its ScreenId; HudhudPhoneEnv.activity names the phone's screen for it.
+            ids = [k for k, v in screen_classes().items() if v == s]
+            if rd and not re.search(r'\b%s::class\.java' % s, rd[1]) and not any(re.search(r'\bScreenId\.%s\b' % k, rd[1]) for k in ids):
                 fail('%s: %s never opens %s' % (ctx, kv['by'], s))
     for s in sorted(m.acts):
         d = decided.get(s)
@@ -748,7 +762,7 @@ def check_screens(m):
 
 
 def check_pages_tsv(m):
-    """The tests ask Hudhud about pages.tsv's pages, so it must be HudhudBook.PAGES: the same keys, the same two strings
+    """The tests ask Hudhud about pages.tsv's pages, so it must be AnswerBook.PAGES: the same keys, the same two strings
     each, in the same order (helpOf takes the first of two equal scores). Without this a page added to the app is never
     asked about by a test, and a page taken away is still asked about."""
     have = []
@@ -765,30 +779,30 @@ def check_pages_tsv(m):
         have.append(tuple(parts))
     want = page_rows()
     if not want:
-        fail('HudhudBook.PAGES: no page could be read (did its Page(...) shape change?)')
+        fail('AnswerBook.PAGES: no page could be read (did its Page(...) shape change?)')
         return
     wk, hk = [r[0] for r in want], [r[0] for r in have]
     for k in wk:
         if k not in hk:
-            fail('%s has no row for page %s of HudhudBook.PAGES: add it (key, title string, body string)' % (rel(PAGES_TSV), k))
+            fail('%s has no row for page %s of AnswerBook.PAGES: add it (key, title string, body string)' % (rel(PAGES_TSV), k))
     for k in hk:
         if k not in wk:
-            fail('%s has a row for page %s that HudhudBook.PAGES does not have (stale)' % (rel(PAGES_TSV), k))
+            fail('%s has a row for page %s that AnswerBook.PAGES does not have (stale)' % (rel(PAGES_TSV), k))
     for k in set(wk) & set(hk):
         if wk.count(k) > 1 or hk.count(k) > 1:
             fail('page %s is listed twice' % k)
     if set(wk) == set(hk) and wk != hk:
         i = next(i for i, (a, b) in enumerate(zip(wk, hk)) if a != b)
-        fail('%s: the order of the pages is not the app\'s (first difference at row %d: %s here, %s in HudhudBook.PAGES)' % (rel(PAGES_TSV), i + 1, hk[i], wk[i]))
+        fail('%s: the order of the pages is not the app\'s (first difference at row %d: %s here, %s in AnswerBook.PAGES)' % (rel(PAGES_TSV), i + 1, hk[i], wk[i]))
     appr = {r[0]: r for r in want}
     for r in have:
         a = appr.get(r[0])
         if a and tuple(a) != tuple(r):
-            fail('%s: page %s uses strings %s / %s, HudhudBook uses %s / %s' % (rel(PAGES_TSV), r[0], r[1], r[2], a[1], a[2]))
+            fail('%s: page %s uses strings %s / %s, AnswerBook uses %s / %s' % (rel(PAGES_TSV), r[0], r[1], r[2], a[1], a[2]))
     # The tests make a page a "feature" with Hudhud.isFeaturePage(key) (HudhudRealPages); the app must use the same rule, or a
     # customer called Waris is found by his name in the tests and taken for the Heir Access page on the phone.
-    if 'Hudhud.isFeaturePage(' not in strip(read(os.path.join(APP, 'data/HudhudBook.kt'))):
-        fail('HudhudBook.topics must decide a page\'s feature flag with Hudhud.isFeaturePage(key), the rule the tests use')
+    if 'Hudhud.isFeaturePage(' not in strip(read(ANSWER_BOOK)):
+        fail('AnswerBook.topics must decide a page\'s feature flag with Hudhud.isFeaturePage(key), the rule the tests use')
 
 
 def check_tiles(m):
@@ -888,7 +902,7 @@ def report(m):
 
 
 def explain(m):
-    hudhud = [f for f in kotlin_files() if os.path.basename(f) in ('HudhudFacts.kt', 'HudhudBook.kt', 'Hudhud.kt', 'HudhudSheet.kt')]
+    hudhud = [f for f in kotlin_files() if os.path.basename(f) in ('AnswerFacts.kt', 'AnswerBook.kt', 'AnswerCounterFacts.kt', 'AnswerRecordFacts.kt', 'Hudhud.kt', 'HudhudSheet.kt')]
     bodies = {}
     for f in hudhud:
         for fn, body in functions(f).items():

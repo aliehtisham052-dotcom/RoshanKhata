@@ -31,26 +31,26 @@ table	staff_payments	class=StaffPayment;file=shared/src/jvmSharedMain/kotlin/com
 table	stock_adjustments	class=StockAdjustment;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Inventory.kt;columns=13	-	
 table	supplier_bills	class=SupplierBill;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/SupplierBill.kt;columns=14	-	
 table	transactions	class=LedgerEntry;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Entities.kt;columns=26	-	
-column	audit_log.action	String	READ	reader=HudhudFacts.activity;gate=REPORTS;screen=AuditActivity
-column	audit_log.detail	String?	READ	reader=HudhudFacts.activity;via=HudhudRecordFacts.auditRows;gate=REPORTS;screen=AuditActivity;why=the day's answer lists the newest rows in the Who did what screen's own words (auditActionName), what they touched and, for an amount row, the amount, free text in a detail stays the screen's
+column	audit_log.action	String	READ	reader=AnswerFacts.activity;gate=REPORTS;screen=AuditActivity
+column	audit_log.detail	String?	READ	reader=AnswerFacts.activity;via=AnswerRecordFacts.auditRows;gate=REPORTS;screen=AuditActivity;why=the day's answer lists the newest rows in the Who did what screen's own words (auditActionName), what they touched and, for an amount row, the amount, free text in a detail stays the screen's
 column	audit_log.hash	String?	WITHHELD	why=the seal chain of the log: proof material for the Who did what screen, never a thing to say
 column	audit_log.id	Long	STRUCT	pattern
 column	audit_log.refId	Long?	STRUCT	pattern
-column	audit_log.refTable	String?	READ	reader=HudhudFacts.activity;via=HudhudRecordFacts.auditRows;gate=REPORTS;screen=AuditActivity;why=the day's answer lists the newest rows in the Who did what screen's own words (auditActionName), what they touched and, for an amount row, the amount, free text in a detail stays the screen's
-column	audit_log.timestamp	Long	READ	reader=HudhudFacts.activity;gate=REPORTS;screen=AuditActivity
-column	audit_log.user	String?	READ	reader=HudhudFacts.activity;gate=REPORTS;screen=AuditActivity
-column	bill_items.batchNumber	String?	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
+column	audit_log.refTable	String?	READ	reader=AnswerFacts.activity;via=AnswerRecordFacts.auditRows;gate=REPORTS;screen=AuditActivity;why=the day's answer lists the newest rows in the Who did what screen's own words (auditActionName), what they touched and, for an amount row, the amount, free text in a detail stays the screen's
+column	audit_log.timestamp	Long	READ	reader=AnswerFacts.activity;gate=REPORTS;screen=AuditActivity
+column	audit_log.user	String?	READ	reader=AnswerFacts.activity;gate=REPORTS;screen=AuditActivity
+column	bill_items.batchNumber	String?	READ	reader=AnswerFacts.lastBill;also=AnswerFacts.goods;gate=NONE;screen=BillsActivity
 column	bill_items.billId	Long	STRUCT	pattern
-column	bill_items.expiryDate	Long?	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
+column	bill_items.expiryDate	Long?	READ	reader=AnswerFacts.lastBill;also=AnswerFacts.goods;gate=NONE;screen=BillsActivity
 column	bill_items.id	Long	STRUCT	pattern
 column	bill_items.isDeleted	Boolean	STRUCT	pattern
-column	bill_items.note	String?	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
+column	bill_items.note	String?	READ	reader=AnswerFacts.lastBill;also=AnswerFacts.goods;gate=NONE;screen=BillsActivity
 column	bill_items.productId	Long?	STRUCT	pattern
-column	bill_items.productName	String	READ	reader=HudhudFacts.deliveries;also=HudhudFacts.count+HudhudFacts.goods;gate=NONE;screen=BillsActivity
-column	bill_items.quantity	Double	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
-column	bill_items.rate	Double?	READ	reader=HudhudFacts.goods;via=KhataDao.supplierRateLinesOnce;gate=REPORTS;screen=SupplierRatesActivity
+column	bill_items.productName	String	READ	reader=AnswerFacts.deliveries;also=AnswerFacts.count+AnswerFacts.goods;gate=NONE;screen=BillsActivity
+column	bill_items.quantity	Double	READ	reader=AnswerFacts.lastBill;also=AnswerFacts.goods;gate=NONE;screen=BillsActivity
+column	bill_items.rate	Double?	READ	reader=AnswerFacts.goods;via=KhataDao.supplierRateLinesOnce;gate=REPORTS;screen=SupplierRatesActivity
 column	bill_items.uid	String?	STRUCT	pattern
-column	bill_items.unit	String?	READ	reader=HudhudFacts.lastBill;also=HudhudFacts.goods;gate=NONE;screen=BillsActivity
+column	bill_items.unit	String?	READ	reader=AnswerFacts.lastBill;also=AnswerFacts.goods;gate=NONE;screen=BillsActivity
 column	book_seals.auditHead	String?	STRUCT	why=the seal chain's own material, shown only in the proof file
 column	book_seals.digest	String	STRUCT	why=the seal chain's own material, shown only in the proof file
 column	book_seals.fromId	Long	STRUCT	pattern
@@ -63,381 +63,381 @@ column	book_seals.toId	Long	STRUCT	pattern
 column	book_seals.tokens	String?	WITHHELD	why=the time services' signed answers: raw proof bytes
 column	book_settings.key	String	WITHHELD	why=the book's own settings: PIN hashes, access keys and relay passes live here
 column	book_settings.value	String?	WITHHELD	why=the book's own settings: PIN hashes, access keys and relay passes live here
-column	cashbook.amount	Double	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cashbook.category	String	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook.amount	Double	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook.category	String	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	cashbook.deletedAt	Long?	STRUCT	pattern
 column	cashbook.id	Long	STRUCT	pattern
 column	cashbook.isDeleted	Boolean	STRUCT	pattern
-column	cashbook.isIncome	Boolean	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cashbook.note	String?	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cashbook.paymentMethod	String?	READ	reader=HudhudFacts.collected;via=DayBook.rows;gate=REPORTS;screen=DayBookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cashbook.paymentRef	String?	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it;why=a row's reference (the TID) rides in its line and is shown, never said
+column	cashbook.isIncome	Boolean	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook.note	String?	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook.paymentMethod	String?	READ	reader=AnswerFacts.collected;via=DayBook.rows;gate=REPORTS;screen=DayBookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook.paymentRef	String?	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it;why=a row's reference (the TID) rides in its line and is shown, never said
 column	cashbook.photoPath	String?	WITHHELD	why=a picture's file path on this phone
 column	cashbook.saleId	Long?	STRUCT	pattern
-column	cashbook.timestamp	Long	READ	reader=HudhudFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook.timestamp	Long	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	cashbook.uid	String?	STRUCT	pattern
-column	cheques.amount	Double	READ	reader=HudhudFacts.cheques;gate=REPORTS;screen=ChequesActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cheques.bankName	String?	READ	reader=HudhudFacts.chequesIn;via=HudhudRecordFacts.chequeRows;also=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity;stricter=its amount stays with REPORTS (the sum and each row's figure)
-column	cheques.chequeNumber	String?	READ	reader=HudhudFacts.chequesIn;via=HudhudRecordFacts.chequeRows;also=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity;stricter=its amount stays with REPORTS (the sum and each row's figure)
-column	cheques.createdAt	Long	READ	reader=HudhudRecordFacts.cheques;via=HudhudRecordFacts.chequeRows;also=HudhudFacts.chequesIn;gate=NONE;screen=ChequesActivity
+column	cheques.amount	Double	READ	reader=AnswerFacts.cheques;gate=REPORTS;screen=ChequesActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cheques.bankName	String?	READ	reader=AnswerFacts.chequesIn;via=AnswerRecordFacts.chequeRows;also=AnswerFacts.cheques;gate=NONE;screen=ChequesActivity;stricter=its amount stays with REPORTS (the sum and each row's figure)
+column	cheques.chequeNumber	String?	READ	reader=AnswerFacts.chequesIn;via=AnswerRecordFacts.chequeRows;also=AnswerFacts.cheques;gate=NONE;screen=ChequesActivity;stricter=its amount stays with REPORTS (the sum and each row's figure)
+column	cheques.createdAt	Long	READ	reader=AnswerRecordFacts.cheques;via=AnswerRecordFacts.chequeRows;also=AnswerFacts.chequesIn;gate=NONE;screen=ChequesActivity
 column	cheques.deletedAt	Long?	STRUCT	pattern
-column	cheques.dueDate	Long	READ	reader=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity
+column	cheques.dueDate	Long	READ	reader=AnswerFacts.cheques;gate=NONE;screen=ChequesActivity
 column	cheques.id	Long	STRUCT	pattern
 column	cheques.isDeleted	Boolean	STRUCT	pattern
-column	cheques.isReceived	Boolean	READ	reader=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity
+column	cheques.isReceived	Boolean	READ	reader=AnswerFacts.cheques;gate=NONE;screen=ChequesActivity
 column	cheques.ledgerEntryId	Long?	STRUCT	pattern
-column	cheques.note	String?	READ	reader=HudhudRecordFacts.cheques;via=HudhudRecordFacts.chequeRows;also=HudhudFacts.chequesIn;gate=REPORTS;screen=ChequesActivity;stricter=the screen shows the note to anyone who opens it, but a note often holds a bank's memo or a sum and Hudhud tells it only with REPORTS like the amount
+column	cheques.note	String?	READ	reader=AnswerRecordFacts.cheques;via=AnswerRecordFacts.chequeRows;also=AnswerFacts.chequesIn;gate=REPORTS;screen=ChequesActivity;stricter=the screen shows the note to anyone who opens it, but a note often holds a bank's memo or a sum and Hudhud tells it only with REPORTS like the amount
 column	cheques.partyId	Long	STRUCT	pattern
 column	cheques.photoPath	String?	WITHHELD	why=a picture's file path on this phone
-column	cheques.settledAt	Long?	READ	reader=HudhudRecordFacts.cheques;via=HudhudRecordFacts.chequeRows;also=HudhudFacts.chequesIn;gate=NONE;screen=ChequesActivity
-column	cheques.status	Int	READ	reader=HudhudFacts.chequesIn;via=HudhudRecordFacts.chequeRows;also=HudhudFacts.cheques;gate=NONE;screen=ChequesActivity;stricter=its amount stays with REPORTS (the sum and each row's figure)
+column	cheques.settledAt	Long?	READ	reader=AnswerRecordFacts.cheques;via=AnswerRecordFacts.chequeRows;also=AnswerFacts.chequesIn;gate=NONE;screen=ChequesActivity
+column	cheques.status	Int	READ	reader=AnswerFacts.chequesIn;via=AnswerRecordFacts.chequeRows;also=AnswerFacts.cheques;gate=NONE;screen=ChequesActivity;stricter=its amount stays with REPORTS (the sum and each row's figure)
 column	cheques.uid	String?	STRUCT	pattern
-column	day_close.cashIn	Double	READ	reader=HudhudCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	day_close.cashOut	Double	READ	reader=HudhudCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	day_close.closedAt	Long	READ	reader=HudhudBook.drawer;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	day_close.counted	Double	READ	reader=HudhudCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	day_close.day	Long	READ	reader=HudhudCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close.cashIn	Double	READ	reader=AnswerCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close.cashOut	Double	READ	reader=AnswerCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close.closedAt	Long	READ	reader=AnswerBook.drawer;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close.counted	Double	READ	reader=AnswerCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close.day	Long	READ	reader=AnswerCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	day_close.id	Long	STRUCT	pattern
-column	day_close.note	String?	READ	reader=HudhudCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	day_close.opening	Double	READ	reader=HudhudCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close.note	String?	READ	reader=AnswerCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	day_close.opening	Double	READ	reader=AnswerCounterFacts.dayCount;via=KhataDao.dayClosesBetween;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	day_close.uid	String?	STRUCT	pattern
 column	dismissed_duplicates.dismissedAt	Long	STRUCT	why=remembers the owner's 'not a duplicate' answers so the Duplicates screen does not ask again
 column	dismissed_duplicates.partyIdsKey	String	STRUCT	why=remembers the owner's 'not a duplicate' answers so the Duplicates screen does not ask again
 column	entry_items.billItemId	Long?	STRUCT	pattern
-column	entry_items.crop	String?	READ	reader=HudhudFacts.person;via=ReceiptGoods.advice;gate=NONE;screen=EntryDetailActivity
-column	entry_items.dose	String?	READ	reader=HudhudFacts.person;via=ReceiptGoods.advice;gate=NONE;screen=EntryDetailActivity
+column	entry_items.crop	String?	READ	reader=AnswerFacts.person;via=ReceiptGoods.advice;gate=NONE;screen=EntryDetailActivity
+column	entry_items.dose	String?	READ	reader=AnswerFacts.person;via=ReceiptGoods.advice;gate=NONE;screen=EntryDetailActivity
 column	entry_items.entryId	Long	STRUCT	pattern
 column	entry_items.id	Long	STRUCT	pattern
-column	entry_items.isBonus	Boolean	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
-column	entry_items.itemName	String?	READ	reader=HudhudFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
+column	entry_items.isBonus	Boolean	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity
+column	entry_items.itemName	String?	READ	reader=AnswerFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
 column	entry_items.lineNo	Int	STRUCT	pattern
-column	entry_items.pest	String?	READ	reader=HudhudFacts.person;via=ReceiptGoods.advice;gate=NONE;screen=EntryDetailActivity
+column	entry_items.pest	String?	READ	reader=AnswerFacts.person;via=ReceiptGoods.advice;gate=NONE;screen=EntryDetailActivity
 column	entry_items.productId	Long?	STRUCT	pattern
-column	entry_items.quantity	Double?	READ	reader=HudhudFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
-column	entry_items.rate	Double?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
+column	entry_items.quantity	Double?	READ	reader=AnswerFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
+column	entry_items.rate	Double?	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity
 column	entry_items.uid	String?	STRUCT	pattern
-column	entry_items.unit	String?	READ	reader=HudhudFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
-column	installments.amount	Double	READ	reader=HudhudRecordFacts.plan;gate=REPORTS;screen=PlansActivity;stricter=the screen lists the instalments to anyone who opens it, but Hudhud's card adds them up and that stays with REPORTS
+column	entry_items.unit	String?	READ	reader=AnswerFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
+column	installments.amount	Double	READ	reader=AnswerRecordFacts.plan;gate=REPORTS;screen=PlansActivity;stricter=the screen lists the instalments to anyone who opens it, but Hudhud's card adds them up and that stays with REPORTS
 column	installments.id	Long	STRUCT	pattern
 column	installments.isDeleted	Boolean	STRUCT	pattern
 column	installments.ledgerEntryId	Long	STRUCT	pattern
-column	installments.note	String?	READ	reader=HudhudRecordFacts.plan;gate=NONE;screen=PlansActivity
-column	installments.paidAt	Long	READ	reader=HudhudRecordFacts.plan;gate=NONE;screen=PlansActivity
+column	installments.note	String?	READ	reader=AnswerRecordFacts.plan;gate=NONE;screen=PlansActivity
+column	installments.paidAt	Long	READ	reader=AnswerRecordFacts.plan;gate=NONE;screen=PlansActivity
 column	installments.planId	Long	STRUCT	pattern
 column	installments.uid	String?	STRUCT	pattern
 column	invoice_items.id	Long	STRUCT	pattern
 column	invoice_items.invoiceId	Long	STRUCT	pattern
 column	invoice_items.isDeleted	Boolean	STRUCT	pattern
-column	invoice_items.itemName	String	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
-column	invoice_items.quantity	Double	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
-column	invoice_items.rate	Double	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
+column	invoice_items.itemName	String	READ	reader=AnswerFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
+column	invoice_items.quantity	Double	READ	reader=AnswerFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
+column	invoice_items.rate	Double	READ	reader=AnswerFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
 column	invoice_items.uid	String?	STRUCT	pattern
-column	invoice_items.unit	String?	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
-column	invoices.additionalChargeAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
-column	invoices.additionalChargeLabel	String?	READ	reader=HudhudFacts.lastInvoice;gate=REPORTS;screen=InvoicesActivity;stricter=the invoice screen shows the note and the extra charge to anyone who opens it, but a note often holds a sum and the charge is money, so Hudhud tells them with REPORTS like a cheque's note
-column	invoices.createdAt	Long	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity;why=the last-invoice card says the day it was written and the phone printed for the customer (shown, never said)
-column	invoices.customerName	String	READ	reader=HudhudFacts.count;gate=NONE;screen=InvoicesActivity
-column	invoices.customerPhone	String?	READ	reader=HudhudFacts.lastInvoice;gate=NONE;screen=InvoicesActivity;why=the last-invoice card says the day it was written and the phone printed for the customer (shown, never said)
+column	invoice_items.unit	String?	READ	reader=AnswerFacts.lastInvoice;gate=NONE;screen=InvoicesActivity
+column	invoices.additionalChargeAmount	Double?	READ	reader=AnswerFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.additionalChargeLabel	String?	READ	reader=AnswerFacts.lastInvoice;gate=REPORTS;screen=InvoicesActivity;stricter=the invoice screen shows the note and the extra charge to anyone who opens it, but a note often holds a sum and the charge is money, so Hudhud tells them with REPORTS like a cheque's note
+column	invoices.createdAt	Long	READ	reader=AnswerFacts.lastInvoice;gate=NONE;screen=InvoicesActivity;why=the last-invoice card says the day it was written and the phone printed for the customer (shown, never said)
+column	invoices.customerName	String	READ	reader=AnswerFacts.count;gate=NONE;screen=InvoicesActivity
+column	invoices.customerPhone	String?	READ	reader=AnswerFacts.lastInvoice;gate=NONE;screen=InvoicesActivity;why=the last-invoice card says the day it was written and the phone printed for the customer (shown, never said)
 column	invoices.deletedAt	Long?	STRUCT	pattern
-column	invoices.discountAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
-column	invoices.discountPercent	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
-column	invoices.dueDate	Long?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.discountAmount	Double?	READ	reader=AnswerFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.discountPercent	Double?	READ	reader=AnswerFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.dueDate	Long?	READ	reader=AnswerFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices.id	Long	STRUCT	pattern
-column	invoices.invoiceDate	Long	READ	reader=HudhudFacts.count;gate=NONE;screen=InvoicesActivity
-column	invoices.invoiceNumber	String	READ	reader=HudhudFacts.count;gate=NONE;screen=InvoicesActivity
+column	invoices.invoiceDate	Long	READ	reader=AnswerFacts.count;gate=NONE;screen=InvoicesActivity
+column	invoices.invoiceNumber	String	READ	reader=AnswerFacts.count;gate=NONE;screen=InvoicesActivity
 column	invoices.isDeleted	Boolean	STRUCT	pattern
-column	invoices.kind	String	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
-column	invoices.note	String?	READ	reader=HudhudFacts.lastInvoice;gate=REPORTS;screen=InvoicesActivity;stricter=the invoice screen shows the note and the extra charge to anyone who opens it, but a note often holds a sum and the charge is money, so Hudhud tells them with REPORTS like a cheque's note
-column	invoices.receivedAmount	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.kind	String	READ	reader=AnswerFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.note	String?	READ	reader=AnswerFacts.lastInvoice;gate=REPORTS;screen=InvoicesActivity;stricter=the invoice screen shows the note and the extra charge to anyone who opens it, but a note often holds a sum and the charge is money, so Hudhud tells them with REPORTS like a cheque's note
+column	invoices.receivedAmount	Double?	READ	reader=AnswerFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices.sourceDocId	Long?	STRUCT	pattern
 column	invoices.sourceEntryId	Long?	STRUCT	pattern
-column	invoices.status	String	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
-column	invoices.taxPercent	Double?	READ	reader=HudhudFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.status	String	READ	reader=AnswerFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
+column	invoices.taxPercent	Double?	READ	reader=AnswerFacts.invoicesDue;via=KhataDao.invoicesWithPaymentOnce;gate=REPORTS;screen=InvoicesActivity;stricter=the screen shows an invoice's balance to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS
 column	invoices.templateId	Int	STRUCT	pattern
 column	invoices.uid	String?	STRUCT	pattern
 column	loyalty.id	Long	STRUCT	pattern
 column	loyalty.isDeleted	Boolean	STRUCT	pattern
 column	loyalty.note	String?	GAP	why=the note is the reason words of one point row (a sale, a void, a return), no question asks why a point moved
 column	loyalty.partyId	Long	STRUCT	pattern
-column	loyalty.points	Double	READ	reader=HudhudCounterFacts.loyalty;via=KhataDao.pointRowsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	loyalty.points	Double	READ	reader=AnswerCounterFacts.loyalty;via=KhataDao.pointRowsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	loyalty.saleId	Long?	STRUCT	pattern
-column	loyalty.timestamp	Long	READ	reader=HudhudCounterFacts.loyalty;via=KhataDao.pointRowsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	loyalty.timestamp	Long	READ	reader=AnswerCounterFacts.loyalty;via=KhataDao.pointRowsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	loyalty.uid	String?	STRUCT	pattern
-column	parties.createdAt	Long	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity;why=the since card says the day the customer was added beside the day of his first entry
-column	parties.creditLimit	Double?	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
+column	parties.createdAt	Long	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity;why=the since card says the day the customer was added beside the day of his first entry
+column	parties.creditLimit	Double?	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
 column	parties.deletedAt	Long?	STRUCT	pattern
-column	parties.fatherName	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
-column	parties.harvestPromise	Long?	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
+column	parties.fatherName	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
+column	parties.harvestPromise	Long?	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
 column	parties.id	Long	STRUCT	pattern
-column	parties.isCustomer	Boolean	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
+column	parties.isCustomer	Boolean	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
 column	parties.isDeleted	Boolean	STRUCT	pattern
-column	parties.name	String	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
+column	parties.name	String	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
 column	parties.noEntryShare	Boolean	STRUCT	why=the customer's own switch for the WhatsApp offer after an entry, a setting of the entry flow and not a fact about the account
-column	parties.note	String?	READ	reader=HudhudFacts.person;also=HudhudFacts.notesList;gate=NONE;screen=PartyDetailActivity
-column	parties.phone	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
+column	parties.note	String?	READ	reader=AnswerFacts.person;also=AnswerFacts.notesList;gate=NONE;screen=PartyDetailActivity
+column	parties.phone	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
 column	parties.photoPath	String?	WITHHELD	why=the card's secret token and a picture's file path
 column	parties.qrToken	String?	WITHHELD	why=the card's secret token and a picture's file path
 column	parties.uid	String?	STRUCT	pattern
-column	parties.village	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
-column	payment_plans.closedAt	Long?	READ	reader=HudhudRecordFacts.plan;also=HudhudRecordFacts.plansClosed;gate=NONE;screen=PlansActivity
-column	payment_plans.createdAt	Long	READ	reader=HudhudRecordFacts.plan;also=HudhudRecordFacts.plansClosed;gate=NONE;screen=PlansActivity
+column	parties.village	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
+column	payment_plans.closedAt	Long?	READ	reader=AnswerRecordFacts.plan;also=AnswerRecordFacts.plansClosed;gate=NONE;screen=PlansActivity
+column	payment_plans.createdAt	Long	READ	reader=AnswerRecordFacts.plan;also=AnswerRecordFacts.plansClosed;gate=NONE;screen=PlansActivity
 column	payment_plans.deletedAt	Long?	STRUCT	pattern
 column	payment_plans.id	Long	STRUCT	pattern
-column	payment_plans.installmentAmount	Double?	READ	reader=HudhudRecordFacts.plan;also=HudhudRecordFacts.plansClosed;gate=REPORTS;screen=PlansActivity;stricter=the screen lists the plans to anyone who opens it, but Hudhud's card adds paid and left into figures and that stays with REPORTS
-column	payment_plans.isClosed	Boolean	READ	reader=HudhudRecordFacts.plan;also=HudhudRecordFacts.plansClosed;gate=NONE;screen=PlansActivity
+column	payment_plans.installmentAmount	Double?	READ	reader=AnswerRecordFacts.plan;also=AnswerRecordFacts.plansClosed;gate=REPORTS;screen=PlansActivity;stricter=the screen lists the plans to anyone who opens it, but Hudhud's card adds paid and left into figures and that stays with REPORTS
+column	payment_plans.isClosed	Boolean	READ	reader=AnswerRecordFacts.plan;also=AnswerRecordFacts.plansClosed;gate=NONE;screen=PlansActivity
 column	payment_plans.isDeleted	Boolean	STRUCT	pattern
-column	payment_plans.nextDueDate	Long?	READ	reader=HudhudFacts.plans;gate=NONE;screen=PlansActivity
-column	payment_plans.note	String?	READ	reader=HudhudRecordFacts.plan;also=HudhudRecordFacts.plansClosed;gate=NONE;screen=PlansActivity
+column	payment_plans.nextDueDate	Long?	READ	reader=AnswerFacts.plans;gate=NONE;screen=PlansActivity
+column	payment_plans.note	String?	READ	reader=AnswerRecordFacts.plan;also=AnswerRecordFacts.plansClosed;gate=NONE;screen=PlansActivity
 column	payment_plans.partyId	Long	STRUCT	pattern
-column	payment_plans.totalAmount	Double	READ	reader=HudhudRecordFacts.plan;also=HudhudRecordFacts.plansClosed;gate=REPORTS;screen=PlansActivity;stricter=the screen lists the plans to anyone who opens it, but Hudhud's card adds paid and left into figures and that stays with REPORTS
+column	payment_plans.totalAmount	Double	READ	reader=AnswerRecordFacts.plan;also=AnswerRecordFacts.plansClosed;gate=REPORTS;screen=PlansActivity;stricter=the screen lists the plans to anyone who opens it, but Hudhud's card adds paid and left into figures and that stays with REPORTS
 column	payment_plans.uid	String?	STRUCT	pattern
-column	products.barcode	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
-column	products.category	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
-column	products.company	String?	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
-column	products.costPrice	Double?	READ	reader=HudhudFacts.goods;gate=REPORTS;screen=ProductsActivity;stricter=the product form greys the cost box for a cashier but still shows it, Hudhud keeps the cost (and so the margin) with REPORTS
-column	products.createdAt	Long	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
-column	products.creditPrice	Double?	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
-column	products.defaultUnit	String?	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
+column	products.barcode	String?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.category	String?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.company	String?	READ	reader=AnswerFacts.goods;gate=NONE;screen=ProductsActivity
+column	products.costPrice	Double?	READ	reader=AnswerFacts.goods;gate=REPORTS;screen=ProductsActivity;stricter=the product form greys the cost box for a cashier but still shows it, Hudhud keeps the cost (and so the margin) with REPORTS
+column	products.createdAt	Long	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.creditPrice	Double?	READ	reader=AnswerFacts.goods;gate=NONE;screen=ProductsActivity
+column	products.defaultUnit	String?	READ	reader=AnswerFacts.goods;gate=NONE;screen=ProductsActivity
 column	products.deletedAt	Long?	STRUCT	pattern
-column	products.formulation	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.formulation	String?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.id	Long	STRUCT	pattern
 column	products.isDeleted	Boolean	STRUCT	pattern
-column	products.lowStockLevel	Double?	READ	reader=HudhudFacts.lowStock;via=Valuation.compute;gate=NONE;screen=ProductsActivity
-column	products.name	String	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
+column	products.lowStockLevel	Double?	READ	reader=AnswerFacts.lowStock;via=Valuation.compute;gate=NONE;screen=ProductsActivity
+column	products.name	String	READ	reader=AnswerFacts.goods;gate=NONE;screen=ProductsActivity
 column	products.nameKey	String	STRUCT	pattern
 column	products.normalisedName	String	STRUCT	pattern
-column	products.note	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.note	String?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.otherNames	String?	STRUCT	why=the shop's other names for a product (schema 45) are handed to Hudhud as more names of the same product with its id (HudhudSheet's goods list), so a product asked in another script is found, a way to find it and not a fact to tell
-column	products.packPrice	Double?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
-column	products.packSize	Double?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
-column	products.packUnit	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.packPrice	Double?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.packSize	Double?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.packUnit	String?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.parentId	Long?	STRUCT	pattern
-column	products.productType	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
-column	products.registrationNumber	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
-column	products.salePrice	Double?	READ	reader=HudhudFacts.goods;gate=NONE;screen=ProductsActivity
-column	products.taxRate	Double?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
-column	products.technicalName	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.productType	String?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.registrationNumber	String?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.salePrice	Double?	READ	reader=AnswerFacts.goods;gate=NONE;screen=ProductsActivity
+column	products.taxRate	Double?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.technicalName	String?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	products.uid	String?	STRUCT	pattern
-column	products.variant	String?	READ	reader=HudhudFacts.goods;also=HudhudFacts.needGoods;gate=NONE;screen=ProductsActivity
+column	products.variant	String?	READ	reader=AnswerFacts.goods;also=AnswerFacts.needGoods;gate=NONE;screen=ProductsActivity
 column	purchase_order_items.id	Long	STRUCT	pattern
 column	purchase_order_items.isDeleted	Boolean	STRUCT	pattern
-column	purchase_order_items.itemName	String	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_order_items.itemName	String	READ	reader=AnswerFacts.lastOrder;gate=NONE;screen=OrdersActivity
 column	purchase_order_items.lineNo	Int	STRUCT	pattern
 column	purchase_order_items.orderId	Long	STRUCT	pattern
 column	purchase_order_items.productId	Long?	STRUCT	pattern
-column	purchase_order_items.quantity	Double	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
-column	purchase_order_items.rate	Double?	READ	reader=HudhudFacts.lastOrder;gate=REPORTS;screen=OrdersActivity;stricter=an order line's rate is what a supplier charges, which Hudhud keeps with REPORTS as the supplier rates are
+column	purchase_order_items.quantity	Double	READ	reader=AnswerFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_order_items.rate	Double?	READ	reader=AnswerFacts.lastOrder;gate=REPORTS;screen=OrdersActivity;stricter=an order line's rate is what a supplier charges, which Hudhud keeps with REPORTS as the supplier rates are
 column	purchase_order_items.uid	String?	STRUCT	pattern
-column	purchase_order_items.unit	String?	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_order_items.unit	String?	READ	reader=AnswerFacts.lastOrder;gate=NONE;screen=OrdersActivity
 column	purchase_orders.billId	Long?	STRUCT	pattern
-column	purchase_orders.createdBy	String?	READ	reader=HudhudFacts.lastOrder;gate=REPORTS;screen=OrdersActivity;stricter=who wrote an order is told only to who may see reports, as for an entry
+column	purchase_orders.createdBy	String?	READ	reader=AnswerFacts.lastOrder;gate=REPORTS;screen=OrdersActivity;stricter=who wrote an order is told only to who may see reports, as for an entry
 column	purchase_orders.id	Long	STRUCT	pattern
 column	purchase_orders.isDeleted	Boolean	STRUCT	pattern
-column	purchase_orders.note	String?	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
-column	purchase_orders.orderNumber	String	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_orders.note	String?	READ	reader=AnswerFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_orders.orderNumber	String	READ	reader=AnswerFacts.lastOrder;gate=NONE;screen=OrdersActivity
 column	purchase_orders.partyId	Long	STRUCT	pattern
-column	purchase_orders.status	String	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
-column	purchase_orders.timestamp	Long	READ	reader=HudhudFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_orders.status	String	READ	reader=AnswerFacts.lastOrder;gate=NONE;screen=OrdersActivity
+column	purchase_orders.timestamp	Long	READ	reader=AnswerFacts.lastOrder;gate=NONE;screen=OrdersActivity
 column	purchase_orders.uid	String?	STRUCT	pattern
 column	sale_items.billItemId	Long?	STRUCT	pattern
 column	sale_items.costRate	Double?	GAP	why=costRate is what the shop paid and is told only through the profit figures (Profit, ZReport), and the line rate of tax is folded into taxAmount
-column	sale_items.discount	Double	READ	reader=HudhudCounterFacts.ticket;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_items.discount	Double	READ	reader=AnswerCounterFacts.ticket;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_items.id	Long	STRUCT	pattern
 column	sale_items.isDeleted	Boolean	STRUCT	pattern
-column	sale_items.itemName	String	READ	reader=HudhudFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
+column	sale_items.itemName	String	READ	reader=AnswerFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
 column	sale_items.lineNo	Int	STRUCT	pattern
 column	sale_items.productId	Long?	STRUCT	pattern
-column	sale_items.quantity	Double	READ	reader=HudhudFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
-column	sale_items.rate	Double	READ	reader=HudhudCounterFacts.ticket;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_items.quantity	Double	READ	reader=AnswerFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
+column	sale_items.rate	Double	READ	reader=AnswerCounterFacts.ticket;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_items.saleId	Long	STRUCT	pattern
-column	sale_items.taxAmount	Double?	READ	reader=HudhudCounterFacts.dayFigures;via=ZReport.compute;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_items.taxIncluded	Boolean?	READ	reader=HudhudCounterFacts.dayFigures;via=ZReport.compute;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_items.taxAmount	Double?	READ	reader=AnswerCounterFacts.dayFigures;via=ZReport.compute;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_items.taxIncluded	Boolean?	READ	reader=AnswerCounterFacts.dayFigures;via=ZReport.compute;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_items.taxRate	Double?	GAP	why=costRate is what the shop paid and is told only through the profit figures (Profit, ZReport), and the line rate of tax is folded into taxAmount
 column	sale_items.uid	String?	STRUCT	pattern
-column	sale_items.unit	String?	READ	reader=HudhudFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
-column	sale_payments.amount	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_items.unit	String?	READ	reader=AnswerFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
+column	sale_payments.amount	Double	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_payments.cashEntryId	Long?	STRUCT	pattern
 column	sale_payments.id	Long	STRUCT	pattern
 column	sale_payments.ledgerEntryId	Long?	STRUCT	pattern
-column	sale_payments.method	String	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_payments.reference	String?	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_payments.method	String	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_payments.reference	String?	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_payments.saleId	Long	STRUCT	pattern
 column	sale_payments.uid	String?	STRUCT	pattern
 column	sale_return_items.billItemId	Long?	STRUCT	pattern
 column	sale_return_items.id	Long	STRUCT	pattern
 column	sale_return_items.isDeleted	Boolean	STRUCT	pattern
-column	sale_return_items.itemName	String	READ	reader=HudhudCounterFacts.returnGoods;via=KhataDao.returnedGoodsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_return_items.itemName	String	READ	reader=AnswerCounterFacts.returnGoods;via=KhataDao.returnedGoodsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_return_items.lineNo	Int	STRUCT	pattern
 column	sale_return_items.productId	Long?	STRUCT	pattern
-column	sale_return_items.quantity	Double	READ	reader=HudhudCounterFacts.returnGoods;via=KhataDao.returnedGoodsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_return_items.rate	Double	READ	reader=HudhudCounterFacts.returnGoods;via=KhataDao.returnedGoodsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_return_items.quantity	Double	READ	reader=AnswerCounterFacts.returnGoods;via=KhataDao.returnedGoodsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_return_items.rate	Double	READ	reader=AnswerCounterFacts.returnGoods;via=KhataDao.returnedGoodsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_return_items.returnId	Long	STRUCT	pattern
 column	sale_return_items.saleItemId	Long?	STRUCT	pattern
 column	sale_return_items.uid	String?	STRUCT	pattern
-column	sale_return_items.unit	String?	READ	reader=HudhudCounterFacts.returnGoods;via=KhataDao.returnedGoodsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns.createdBy	String?	READ	reader=HudhudCounterFacts.returnReasons;via=KhataDao.returnsWhyBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns.customerName	String?	READ	reader=HudhudFacts.returns;gate=NONE;screen=CounterSaleActivity
+column	sale_return_items.unit	String?	READ	reader=AnswerCounterFacts.returnGoods;via=KhataDao.returnedGoodsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns.createdBy	String?	READ	reader=AnswerCounterFacts.returnReasons;via=KhataDao.returnsWhyBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns.customerName	String?	READ	reader=AnswerFacts.returns;gate=NONE;screen=CounterSaleActivity
 column	sale_returns.deletedAt	Long?	STRUCT	pattern
 column	sale_returns.id	Long	STRUCT	pattern
 column	sale_returns.isDeleted	Boolean	STRUCT	pattern
 column	sale_returns.ledgerEntryId	Long?	STRUCT	pattern
-column	sale_returns.note	String?	READ	reader=HudhudCounterFacts.returnReasons;via=KhataDao.returnsWhyBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns.note	String?	READ	reader=AnswerCounterFacts.returnReasons;via=KhataDao.returnsWhyBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_returns.partyId	Long?	STRUCT	pattern
-column	sale_returns.reason	String	READ	reader=HudhudCounterFacts.returnReasons;via=KhataDao.returnsWhyBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns.refundAmount	Double	READ	reader=HudhudFacts.returns;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns.reason	String	READ	reader=AnswerCounterFacts.returnReasons;via=KhataDao.returnsWhyBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns.refundAmount	Double	READ	reader=AnswerFacts.returns;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_returns.refundCashId	Long?	STRUCT	pattern
 column	sale_returns.refundEntryId	Long?	STRUCT	pattern
-column	sale_returns.refundMethod	String	READ	reader=HudhudCounterFacts.returnWays;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns.returnNumber	String	READ	reader=HudhudFacts.returns;gate=NONE;screen=CounterSaleActivity
+column	sale_returns.refundMethod	String	READ	reader=AnswerCounterFacts.returnWays;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns.returnNumber	String	READ	reader=AnswerFacts.returns;gate=NONE;screen=CounterSaleActivity
 column	sale_returns.saleId	Long?	STRUCT	pattern
-column	sale_returns.status	String	READ	reader=HudhudCounterFacts.voided;via=KhataDao.voidedReturnsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns.timestamp	Long	READ	reader=HudhudFacts.returns;gate=NONE;screen=CounterSaleActivity
-column	sale_returns.total	Double	READ	reader=HudhudFacts.returns;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns.status	String	READ	reader=AnswerCounterFacts.voided;via=KhataDao.voidedReturnsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns.timestamp	Long	READ	reader=AnswerFacts.returns;gate=NONE;screen=CounterSaleActivity
+column	sale_returns.total	Double	READ	reader=AnswerFacts.returns;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_returns.uid	String?	STRUCT	pattern
-column	sale_returns.voidReason	String?	READ	reader=HudhudCounterFacts.voided;via=KhataDao.voidedReturnsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_returns.voidedAt	Long?	READ	reader=HudhudCounterFacts.voided;via=KhataDao.voidedReturnsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.createdBy	String?	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.customerName	String?	READ	reader=HudhudFacts.count;gate=NONE;screen=CounterSaleActivity
+column	sale_returns.voidReason	String?	READ	reader=AnswerCounterFacts.voided;via=KhataDao.voidedReturnsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sale_returns.voidedAt	Long?	READ	reader=AnswerCounterFacts.voided;via=KhataDao.voidedReturnsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.createdBy	String?	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.customerName	String?	READ	reader=AnswerFacts.count;gate=NONE;screen=CounterSaleActivity
 column	sales.deletedAt	Long?	STRUCT	pattern
-column	sales.discountAmount	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.grandTotal	Double	READ	reader=HudhudFacts.count;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.discountAmount	Double	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.grandTotal	Double	READ	reader=AnswerFacts.count;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sales.id	Long	STRUCT	pattern
 column	sales.invoiceId	Long?	STRUCT	pattern
 column	sales.isDeleted	Boolean	STRUCT	pattern
 column	sales.ledgerEntryId	Long?	STRUCT	pattern
-column	sales.note	String?	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.paidTotal	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.note	String?	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.paidTotal	Double	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sales.partyId	Long?	STRUCT	pattern
-column	sales.roundOff	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.saleNumber	String	READ	reader=HudhudFacts.count;gate=NONE;screen=CounterSaleActivity
-column	sales.status	String	READ	reader=HudhudCounterFacts.voided;via=KhataDao.voidedSalesBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.subtotal	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.taxAmount	Double	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.taxPercent	Double?	READ	reader=HudhudCounterFacts.ticket;also=HudhudCounterFacts.byCashier+HudhudCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.timestamp	Long	READ	reader=HudhudFacts.count;gate=NONE;screen=CounterSaleActivity
+column	sales.roundOff	Double	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.saleNumber	String	READ	reader=AnswerFacts.count;gate=NONE;screen=CounterSaleActivity
+column	sales.status	String	READ	reader=AnswerCounterFacts.voided;via=KhataDao.voidedSalesBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.subtotal	Double	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.taxAmount	Double	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.taxPercent	Double?	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.timestamp	Long	READ	reader=AnswerFacts.count;gate=NONE;screen=CounterSaleActivity
 column	sales.uid	String?	STRUCT	pattern
-column	sales.voidReason	String?	READ	reader=HudhudCounterFacts.voided;via=KhataDao.voidedSalesBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sales.voidedAt	Long?	READ	reader=HudhudCounterFacts.voided;via=KhataDao.voidedSalesBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	schemes.claimedAmount	Double?	READ	reader=HudhudFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
-column	schemes.claimedAt	Long?	READ	reader=HudhudFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
-column	schemes.company	String?	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
+column	sales.voidReason	String?	READ	reader=AnswerCounterFacts.voided;via=KhataDao.voidedSalesBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.voidedAt	Long?	READ	reader=AnswerCounterFacts.voided;via=KhataDao.voidedSalesBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	schemes.claimedAmount	Double?	READ	reader=AnswerFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
+column	schemes.claimedAt	Long?	READ	reader=AnswerFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
+column	schemes.company	String?	READ	reader=AnswerFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
 column	schemes.createdAt	Long	GAP	why=the Schemes screen shows no day for when a scheme was written, and nobody asks it
-column	schemes.endDate	Long	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
+column	schemes.endDate	Long	READ	reader=AnswerFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
 column	schemes.id	Long	STRUCT	pattern
 column	schemes.isDeleted	Boolean	STRUCT	pattern
-column	schemes.measure	String	READ	reader=HudhudFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
-column	schemes.name	String	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
-column	schemes.note	String?	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
+column	schemes.measure	String	READ	reader=AnswerFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
+column	schemes.name	String	READ	reader=AnswerFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
+column	schemes.note	String?	READ	reader=AnswerFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
 column	schemes.partyId	Long?	STRUCT	pattern
-column	schemes.reward1	Double	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
-column	schemes.reward2	Double?	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
-column	schemes.reward3	Double?	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
-column	schemes.rewardKind	String	READ	reader=HudhudFacts.schemeAnswer;via=HudhudFacts.rewardText;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward is told only to who may see reports
-column	schemes.startDate	Long	READ	reader=HudhudFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
-column	schemes.target1	Double	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
-column	schemes.target2	Double?	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
-column	schemes.target3	Double?	READ	reader=HudhudFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.reward1	Double	READ	reader=AnswerFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.reward2	Double?	READ	reader=AnswerFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.reward3	Double?	READ	reader=AnswerFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.rewardKind	String	READ	reader=AnswerFacts.schemeAnswer;via=AnswerFacts.rewardText;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward is told only to who may see reports
+column	schemes.startDate	Long	READ	reader=AnswerFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
+column	schemes.target1	Double	READ	reader=AnswerFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.target2	Double?	READ	reader=AnswerFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
+column	schemes.target3	Double?	READ	reader=AnswerFacts.schemeAnswer;via=SchemeMath.slabs;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's targets and rewards are told only to who may see reports
 column	schemes.uid	String?	STRUCT	pattern
-column	schemes.unit	String?	READ	reader=HudhudFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
-column	shifts.closedAt	Long?	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	shifts.counted	Double?	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	schemes.unit	String?	READ	reader=AnswerFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
+column	shifts.closedAt	Long?	READ	reader=AnswerCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	shifts.counted	Double?	READ	reader=AnswerCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	shifts.device	String?	STRUCT	why=which phone or computer opened the shift: plumbing the shift's own drawer count uses (ShiftMath.markOf), not something a shopkeeper asks
-column	shifts.expected	Double?	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	shifts.expected	Double?	READ	reader=AnswerCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	shifts.id	Long	STRUCT	pattern
-column	shifts.note	String?	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	shifts.openedAt	Long	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	shifts.openingFloat	Double	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	shifts.note	String?	READ	reader=AnswerCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	shifts.openedAt	Long	READ	reader=AnswerCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	shifts.openingFloat	Double	READ	reader=AnswerCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	shifts.uid	String?	STRUCT	pattern
-column	shifts.user	String?	READ	reader=HudhudCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	staff.createdAt	Long	READ	reader=HudhudRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
+column	shifts.user	String?	READ	reader=AnswerCounterFacts.shifts;gate=REPORTS;screen=ShiftActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	staff.createdAt	Long	READ	reader=AnswerRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
 column	staff.id	Long	STRUCT	pattern
-column	staff.isActive	Boolean	READ	reader=HudhudRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
-column	staff.monthlySalary	Double	READ	reader=HudhudRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
-column	staff.name	String	READ	reader=HudhudFacts.salaries;gate=STAFF;screen=StaffActivity
-column	staff.phone	String?	READ	reader=HudhudRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
+column	staff.isActive	Boolean	READ	reader=AnswerRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
+column	staff.monthlySalary	Double	READ	reader=AnswerRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
+column	staff.name	String	READ	reader=AnswerFacts.salaries;gate=STAFF;screen=StaffActivity
+column	staff.phone	String?	READ	reader=AnswerRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
 column	staff.pinHash	String?	WITHHELD	why=a PIN's hash and salt: a secret
 column	staff.pinSalt	String?	WITHHELD	why=a PIN's hash and salt: a secret
-column	staff.role	String?	READ	reader=HudhudRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
+column	staff.role	String?	READ	reader=AnswerRecordFacts.staffPerson;gate=STAFF;screen=StaffActivity;why=a person's page: the counter role, the phone (shown, never said), the salary, the day added and whether still on the list, the PIN's hash and salt are never read
 column	staff.uid	String?	STRUCT	pattern
-column	staff_attendance.day	Long	READ	reader=HudhudRecordFacts.attendance;also=HudhudRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
+column	staff_attendance.day	Long	READ	reader=AnswerRecordFacts.attendance;also=AnswerRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
 column	staff_attendance.id	Long	STRUCT	pattern
 column	staff_attendance.staffId	Long	STRUCT	pattern
-column	staff_attendance.status	Int	READ	reader=HudhudRecordFacts.attendance;also=HudhudRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
+column	staff_attendance.status	Int	READ	reader=AnswerRecordFacts.attendance;also=AnswerRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
 column	staff_attendance.uid	String?	STRUCT	pattern
-column	staff_payments.amount	Double	READ	reader=HudhudRecordFacts.staffPaid;also=HudhudRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
+column	staff_payments.amount	Double	READ	reader=AnswerRecordFacts.staffPaid;also=AnswerRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
 column	staff_payments.id	Long	STRUCT	pattern
 column	staff_payments.isDeleted	Boolean	STRUCT	pattern
-column	staff_payments.kind	Int	READ	reader=HudhudRecordFacts.staffPaid;also=HudhudRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
-column	staff_payments.note	String?	READ	reader=HudhudRecordFacts.staffPaid;also=HudhudRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
+column	staff_payments.kind	Int	READ	reader=AnswerRecordFacts.staffPaid;also=AnswerRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
+column	staff_payments.note	String?	READ	reader=AnswerRecordFacts.staffPaid;also=AnswerRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
 column	staff_payments.staffId	Long	STRUCT	pattern
-column	staff_payments.timestamp	Long	READ	reader=HudhudRecordFacts.staffPaid;also=HudhudRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
+column	staff_payments.timestamp	Long	READ	reader=AnswerRecordFacts.staffPaid;also=AnswerRecordFacts.staffPay;gate=STAFF;screen=StaffActivity
 column	staff_payments.uid	String?	STRUCT	pattern
 column	stock_adjustments.billItemId	Long?	STRUCT	pattern
-column	stock_adjustments.bookQty	Double?	READ	reader=HudhudCounterFacts.lastCount;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	stock_adjustments.countedQty	Double?	READ	reader=HudhudCounterFacts.lastCount;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	stock_adjustments.createdBy	String?	READ	reader=HudhudCounterFacts.stockChanges;also=HudhudCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	stock_adjustments.bookQty	Double?	READ	reader=AnswerCounterFacts.lastCount;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	stock_adjustments.countedQty	Double?	READ	reader=AnswerCounterFacts.lastCount;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	stock_adjustments.createdBy	String?	READ	reader=AnswerCounterFacts.stockChanges;also=AnswerCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	stock_adjustments.id	Long	STRUCT	pattern
 column	stock_adjustments.isDeleted	Boolean	STRUCT	pattern
-column	stock_adjustments.note	String?	READ	reader=HudhudCounterFacts.stockChanges;also=HudhudCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	stock_adjustments.note	String?	READ	reader=AnswerCounterFacts.stockChanges;also=AnswerCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	stock_adjustments.productId	Long	STRUCT	pattern
-column	stock_adjustments.quantity	Double	READ	reader=HudhudCounterFacts.stockChanges;also=HudhudCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	stock_adjustments.reason	String	READ	reader=HudhudCounterFacts.stockChanges;also=HudhudCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	stock_adjustments.timestamp	Long	READ	reader=HudhudCounterFacts.stockChanges;also=HudhudCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	stock_adjustments.quantity	Double	READ	reader=AnswerCounterFacts.stockChanges;also=AnswerCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	stock_adjustments.reason	String	READ	reader=AnswerCounterFacts.stockChanges;also=AnswerCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	stock_adjustments.timestamp	Long	READ	reader=AnswerCounterFacts.stockChanges;also=AnswerCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	stock_adjustments.uid	String?	STRUCT	pattern
-column	stock_adjustments.unit	String?	READ	reader=HudhudCounterFacts.stockChanges;also=HudhudCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	supplier_bills.billDate	Long	READ	reader=HudhudFacts.deliveries;gate=NONE;screen=BillsActivity
-column	supplier_bills.billNumber	String?	READ	reader=HudhudFacts.lastBill;gate=NONE;screen=BillsActivity
-column	supplier_bills.createdAt	Long	READ	reader=HudhudFacts.lastBill;gate=NONE;screen=BillsActivity
+column	stock_adjustments.unit	String?	READ	reader=AnswerCounterFacts.stockChanges;also=AnswerCounterFacts.writtenOff;gate=REPORTS;screen=ProductsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	supplier_bills.billDate	Long	READ	reader=AnswerFacts.deliveries;gate=NONE;screen=BillsActivity
+column	supplier_bills.billNumber	String?	READ	reader=AnswerFacts.lastBill;gate=NONE;screen=BillsActivity
+column	supplier_bills.createdAt	Long	READ	reader=AnswerFacts.lastBill;gate=NONE;screen=BillsActivity
 column	supplier_bills.deletedAt	Long?	STRUCT	pattern
-column	supplier_bills.dueDate	Long?	READ	reader=HudhudFacts.bills;gate=NONE;screen=BillsActivity
+column	supplier_bills.dueDate	Long?	READ	reader=AnswerFacts.bills;gate=NONE;screen=BillsActivity
 column	supplier_bills.id	Long	STRUCT	pattern
 column	supplier_bills.isDeleted	Boolean	STRUCT	pattern
-column	supplier_bills.isPaidInFull	Boolean	READ	reader=HudhudFacts.bills;gate=NONE;screen=BillsActivity
+column	supplier_bills.isPaidInFull	Boolean	READ	reader=AnswerFacts.bills;gate=NONE;screen=BillsActivity
 column	supplier_bills.ledgerEntryId	Long?	STRUCT	pattern
-column	supplier_bills.note	String?	READ	reader=HudhudFacts.lastBill;gate=NONE;screen=BillsActivity
+column	supplier_bills.note	String?	READ	reader=AnswerFacts.lastBill;gate=NONE;screen=BillsActivity
 column	supplier_bills.partyId	Long	STRUCT	pattern
 column	supplier_bills.photoPath	String?	WITHHELD	why=a picture's file path on this phone
-column	supplier_bills.totalAmount	Double	READ	reader=HudhudFacts.bills;also=HudhudFacts.deliveries+HudhudFacts.count;gate=REPORTS;screen=BillsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	supplier_bills.totalAmount	Double	READ	reader=AnswerFacts.bills;also=AnswerFacts.deliveries+AnswerFacts.count;gate=REPORTS;screen=BillsActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	supplier_bills.uid	String?	STRUCT	pattern
-column	transactions.amount	Double	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
+column	transactions.amount	Double	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
 column	transactions.billItemId	Long?	STRUCT	pattern
 column	transactions.billPhotoPath	String?	WITHHELD	why=a picture's file path on this phone
-column	transactions.createdBy	String?	READ	reader=HudhudFacts.person;gate=REPORTS;screen=EntryDetailActivity;stricter=who wrote an entry is told only to who may see reports
+column	transactions.createdBy	String?	READ	reader=AnswerFacts.person;gate=REPORTS;screen=EntryDetailActivity;stricter=who wrote an entry is told only to who may see reports
 column	transactions.deletedAt	Long?	STRUCT	pattern
 column	transactions.entryKind	String	GAP	why=an opening balance (schema 45) is left out of every sale figure Hudhud reads through KhataDao's sale rule, but no card yet says which entry was brought in as one (the receipt and the statement say it)
-column	transactions.entryNumber	String	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
+column	transactions.entryNumber	String	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity
 column	transactions.id	Long	STRUCT	pattern
 column	transactions.isDeleted	Boolean	STRUCT	pattern
-column	transactions.isGiven	Boolean	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
-column	transactions.isQarzeHasna	Boolean	READ	reader=HudhudFacts.qarz;via=KhataDao.observeZakatBalancesByParty;gate=REPORTS;screen=ZakatActivity
-column	transactions.itemName	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
-column	transactions.note	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
+column	transactions.isGiven	Boolean	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
+column	transactions.isQarzeHasna	Boolean	READ	reader=AnswerFacts.qarz;via=KhataDao.observeZakatBalancesByParty;gate=REPORTS;screen=ZakatActivity
+column	transactions.itemName	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity
+column	transactions.note	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity
 column	transactions.pairedEntryId	Long?	STRUCT	pattern
 column	transactions.partyId	Long	STRUCT	pattern
-column	transactions.paymentMethod	String?	READ	reader=HudhudFacts.collected;via=DayBook.rows;gate=REPORTS;screen=DayBookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	transactions.paymentRef	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
+column	transactions.paymentMethod	String?	READ	reader=AnswerFacts.collected;via=DayBook.rows;gate=REPORTS;screen=DayBookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	transactions.paymentRef	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity
 column	transactions.productId	Long?	STRUCT	pattern
-column	transactions.quantity	Double?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
-column	transactions.rateType	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity;why=the last-entry card says the rate list the entry was at and the season the owner chose (only where the shop keeps seasons)
-column	transactions.recovery	Int	READ	reader=HudhudFacts.person;gate=REPORTS;screen=EntryDetailActivity;stricter=the entry screen shows the chance of recovery to anyone who opens it, but a doubtful debt is the owner's private judgement and Hudhud says it only to who may see reports
+column	transactions.quantity	Double?	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity
+column	transactions.rateType	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity;why=the last-entry card says the rate list the entry was at and the season the owner chose (only where the shop keeps seasons)
+column	transactions.recovery	Int	READ	reader=AnswerFacts.person;gate=REPORTS;screen=EntryDetailActivity;stricter=the entry screen shows the chance of recovery to anyone who opens it, but a doubtful debt is the owner's private judgement and Hudhud says it only to who may see reports
 column	transactions.saleId	Long?	STRUCT	pattern
-column	transactions.season	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity;why=the last-entry card says the rate list the entry was at and the season the owner chose (only where the shop keeps seasons)
-column	transactions.timestamp	Long	READ	reader=HudhudFacts.person;gate=NONE;screen=PartyDetailActivity
+column	transactions.season	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity;why=the last-entry card says the rate list the entry was at and the season the owner chose (only where the shop keeps seasons)
+column	transactions.timestamp	Long	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
 column	transactions.uid	String?	STRUCT	pattern
-column	transactions.unit	String?	READ	reader=HudhudFacts.person;gate=NONE;screen=EntryDetailActivity
+column	transactions.unit	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity
 profile	askShareAfterEntry	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
-profile	bankAccountTitle	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	bankIban	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	bankJazzCash	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	bankName	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	businessAddress	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=BusinessCardActivity,RateListActivity,PosterActivity;why=the address and phone are on the cards, rate lists and posters anyone prints
-profile	businessEmail	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	businessName	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=PartyDetailActivity,InvoicesActivity,MainActivity;why=the shop's name is on every receipt, statement and the Home bar
-profile	businessNameUrdu	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=PosterActivity,BusinessCardActivity;why=the Urdu name is printed on the Urdu posters and the business card anyone prints
-profile	businessPhone	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=BusinessCardActivity,RateListActivity,PosterActivity;why=the address and phone are on the cards, rate lists and posters anyone prints
-profile	calendar	ShopCalendar.Kind	READ	reader=HudhudFacts.clock;gate=NONE;screen=BusinessSettingsActivity;alsoseen=MainActivity;why=every date every screen shows is written in the shop's calendar
-profile	country	ShopCountry	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	currency	String	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=MainActivity;why=the sign is on every amount every screen shows (through Format), Home reads it to ask the country once
+profile	bankAccountTitle	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	bankIban	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	bankJazzCash	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	bankName	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	businessAddress	String?	READ	reader=AnswerFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=BusinessCardActivity,RateListActivity,PosterActivity;why=the address and phone are on the cards, rate lists and posters anyone prints
+profile	businessEmail	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	businessName	String?	READ	reader=AnswerFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=PartyDetailActivity,InvoicesActivity,MainActivity;why=the shop's name is on every receipt, statement and the Home bar
+profile	businessNameUrdu	String?	READ	reader=AnswerFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=PosterActivity,BusinessCardActivity;why=the Urdu name is printed on the Urdu posters and the business card anyone prints
+profile	businessPhone	String?	READ	reader=AnswerFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=BusinessCardActivity,RateListActivity,PosterActivity;why=the address and phone are on the cards, rate lists and posters anyone prints
+profile	calendar	ShopCalendar.Kind	READ	reader=AnswerFacts.clock;gate=NONE;screen=BusinessSettingsActivity;alsoseen=MainActivity;why=every date every screen shows is written in the shop's calendar
+profile	country	ShopCountry	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	currency	String	READ	reader=AnswerFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=MainActivity;why=the sign is on every amount every screen shows (through Format), Home reads it to ask the country once
 profile	logoDesign	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
 profile	otherTradeItems	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
 profile	otherTradeName	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
@@ -445,10 +445,10 @@ profile	paymentOnReminder	Boolean	GAP	why=choices of how printed sheets and the 
 profile	photoOnStatement	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
 profile	receiptHeader	String	GAP	why=made of the name, address, phone and tax number the shop card already tells (the tax number only with SETTINGS), so it has no answer of its own
 profile	sealChoice	SealChoice	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
-profile	strn	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	taxLabel	String	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
-profile	termsAndConditions	String?	READ	reader=HudhudFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=the terms are written on the settings screen the owner opens, no other screen of a cashier shows them
-profile	trade	String?	READ	reader=HudhudFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=PosterActivity,InspectorReportActivity;why=the trade picks the words and the register every screen shows
+profile	strn	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	taxLabel	String	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
+profile	termsAndConditions	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=the terms are written on the settings screen the owner opens, no other screen of a cashier shows them
+profile	trade	String?	READ	reader=AnswerFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=PosterActivity,InspectorReportActivity;why=the trade picks the words and the register every screen shows
 more	about_us	group=help;target=AboutActivity	ANSWERED	tier=OPEN;ask=About;why=he tells what the app is, who made it, privacy and the version
 more	app_lock	group=security;target=appLock	ANSWERED	tier=NEVER;ask=Help;why=the faq_lock page says what it is, he never switches it
 more	auto_title	group=data;target=AutomationsDialog.show	ANSWERED	tier=OPEN;ask=Automations;why=he tells each automation's state and hour, Open shows the dialog
@@ -467,21 +467,21 @@ more	text_size	group=display;target=textSize	ANSWERED	tier=LOOK;ask=Look;why=at 
 more	theme	group=display;target=theme	ANSWERED	tier=LOOK;ask=Look;why=at the owner's word he changes the theme (light, dark, as the phone), the card says what it was and has an Undo (HudhudLookDoor is the only writer)
 more	viewer_menu	group=data;target=ViewerActivity	ANSWERED	tier=NEVER;ask=Help;why=the screen_viewer page says where it is and what it does, he never opens it and never does it
 more	waris_title	group=data;target=WarisActivity	ANSWERED	tier=NEVER;ask=Help;why=the screen_waris page says where it is and what it does, he never opens it and never does it
-screen	AboutActivity	parent=MainActivity;gate=NONE	OPENED	by=HudhudFacts.about
+screen	AboutActivity	parent=MainActivity;gate=NONE	OPENED	by=AnswerFacts.about
 screen	AgingActivity	parent=FollowUpActivity;gate=REPORTS	OPEN	pages=screen_aging
-screen	AlertsActivity	parent=MainActivity;gate=NONE	OPENED	by=HudhudBook.today
+screen	AlertsActivity	parent=MainActivity;gate=NONE	OPENED	by=AnswerBook.today
 screen	AuditActivity	parent=StaffActivity;gate=REPORTS	OPEN	pages=screen_audit
 screen	BackupActivity	parent=MainActivity;gate=BACKUP	OPEN	pages=faq_backup,faq_restore,feature_backup
 screen	BillsActivity	parent=MainActivity;gate=NONE	OPEN	pages=screen_bills
 screen	BusinessCardActivity	parent=MainActivity;gate=NONE	OPEN	pages=screen_card
-screen	BusinessSettingsActivity	parent=MainActivity;gate=SETTINGS	OPENED	by=HudhudFacts.shop
+screen	BusinessSettingsActivity	parent=MainActivity;gate=SETTINGS	OPENED	by=AnswerFacts.shop
 screen	BusinessSwitchActivity	parent=KhataActivity;gate=SETTINGS	OPEN	pages=faq_business
 screen	CalculatorActivity	parent=MainActivity;gate=NONE	OPEN	pages=faq_percent,screen_calc
 screen	CashFlowActivity	parent=InsightsActivity;gate=REPORTS	OPEN	pages=screen_cashflow
 screen	CashbookActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_cashbook
 screen	ChequesActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_cheques
 screen	CounterSaleActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_counter
-screen	DayBookActivity	parent=CashbookActivity;gate=NONE	OPENED	by=HudhudFacts.activity
+screen	DayBookActivity	parent=CashbookActivity;gate=NONE	OPENED	by=AnswerFacts.activity
 screen	DuplicateCustomersActivity	parent=MainActivity;gate=EDIT_BOOK	NOT-ASKED	why=tier NEVER (the owner's rule, he only says where it is): the screen_duplicates page tells where it is and what it does, he never opens it
 screen	EntryDetailActivity	parent=-;gate=NONE	CHILD	of=PartyDetailActivity
 screen	ExpiringActivity	parent=BillsActivity;gate=NONE	OPEN	pages=feature_expiry
@@ -510,7 +510,7 @@ screen	PaymentVoiceActivity	parent=MainActivity;gate=SETTINGS	OPEN	pages=screen_
 screen	PdfPreviewActivity	parent=-;gate=NONE	INFRA	why=shows a PDF that was just made
 screen	PlansActivity	parent=MainActivity;gate=NONE	OPEN	pages=feature_plans
 screen	PosterActivity	parent=BusinessCardActivity;gate=NONE	OPEN	pages=screen_posters
-screen	ProductCustomersActivity	parent=ProductsActivity;gate=NONE	OPENED	by=HudhudFacts.goods
+screen	ProductCustomersActivity	parent=ProductsActivity;gate=NONE	OPENED	by=AnswerFacts.goods
 screen	ProductsActivity	parent=MainActivity;gate=NONE	OPEN	pages=screen_products
 screen	RateListActivity	parent=ProductsActivity;gate=NONE	OPEN	pages=screen_rates
 screen	RecycleBinActivity	parent=MainActivity;gate=EDIT_BOOK	OPEN	pages=faq_delete,screen_bin

@@ -14,8 +14,9 @@ rule 4 below keeps every other setting out of his hands: language, the shop's
 profile, Automations, Payment Radar and the rest are opened for the owner,
 never changed by him.
 
-What is enforced, in every Kotlin file whose name starts with "Hudhud" (the
-phone's and the shared module's), comments and strings left out:
+What is enforced, in every Kotlin file whose name starts with "Hudhud" or
+"Answer" (the phone's, the shared module's and the computer's), comments and
+strings left out:
 
   1. No call to a write method of KhataDao. A write is the DAO's own rule
      (scripts/gen_viewer_dao.py: @Insert/@Update/@Delete/@Upsert, a @Query
@@ -137,8 +138,11 @@ ALSO = ("UsageLog.kt", "VoiceQuestion.kt")
 
 def hudhud_files():
     found = []
-    for base in ("app/src/main", "shared/src/jvmSharedMain", "shared/src/androidMain", "shared/src/desktopMain"):
+    for base in ("app/src/main", "shared/src/jvmSharedMain", "shared/src/androidMain", "shared/src/desktopMain", "desktop/src/main"):
         found += sorted((ROOT / base).rglob("Hudhud*.kt"))
+        # His answers, shared by the phone and the computer since 16 Nov 2026 (AnswerBook, AnswerFacts, ...), and the
+        # computer's own panel (desktop): the same rule holds there.
+        found += sorted((ROOT / base).rglob("Answer*.kt"))
         for name in ALSO:
             found += sorted((ROOT / base).rglob(name))
     return found

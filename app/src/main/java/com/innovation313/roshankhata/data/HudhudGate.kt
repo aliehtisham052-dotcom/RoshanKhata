@@ -1,40 +1,22 @@
 package com.innovation313.roshankhata.data
 
-import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.ui.AccessUi
 
 /**
- * The one door Hudhud's files ask "who may see this?" through (14 Nov 2026, the owner: "access poori deni chahiye… jo
- * professional tareeqa hai wohi use karo" — a cashier signed in under counter mode sees only what his own screens
- * show; the owner, and a phone with counter mode off, see everything).
- *
- * Why one door: `scripts/gen_hudhud_catalog.py` holds every fact Hudhud tells to the gate of the screen that shows
- * the same fact (`shared/hudhud/catalog/decisions.tsv`), so a gate must be one the catalog knows by name. A Hudhud
- * file that asked [Access] directly would be a gate nobody checked; `check_gates` in that script fails the build for it.
- *
- * Each function is named after the permission it reads (the script checks that too):
- *  - [reports]  the owner or a manager: every figure of money, the day's takings, purchase rates and costs.
- *  - [staff]    the owner only: the staff, their salaries and what was paid them (Staff is the owner's screen).
- *  - [settings] the owner only: Business Profile's private part — the shop's country, email, tax number, bank account,
- *               IBAN and wallet. (The shop's name, address, phone, currency and trade are printed on what a cashier hands
- *               out or read on every amount he sees, so they are not behind it; no screen of a cashier names the
- *               country, so it is.) What each of these is held to is in `HudhudFacts.shop`'s own note.
+ * The phone's door to the one gate Hudhud's answers ask "who may see this?" through ([AnswerGate], :shared since 16 Nov 2026,
+ * audit T22; its note says what each gate covers). The sheet asks the same three as the answers, and a page's own limit is
+ * read from the screen's own gate ([AccessUi.needs]) by AnswerGate's one rule.
  */
 internal object HudhudGate {
-    fun reports() = Access.can(Access.Permission.REPORTS)
+    fun reports() = AnswerGate.reports()
 
-    fun staff() = Access.can(Access.Permission.STAFF)
+    fun staff() = AnswerGate.staff()
 
-    fun settings() = Access.can(Access.Permission.SETTINGS)
+    fun settings() = AnswerGate.settings()
 
-    /**
-     * The words that say who may open [screen] on a counter phone (15 Nov 2026, the owner's "hudood"): read from the
-     * screen's own gate ([AccessUi.needs], the one table every screen asks), never from a list of Hudhud's, so a gate
-     * added or changed there is told here with no second place to edit. Null: anyone signed in may open it. The owner's
-     * own things (settings, backup, staff) say the owner; the rest, the owner or a manager.
-     */
+    /** The words (a resource) that say who may open [screen] on a counter phone; null: anyone signed in may open it. */
     fun pageLimit(screen: Class<*>?): Int? {
         val p = AccessUi.needs(screen ?: return null) ?: return null
-        return if (Access.ownerOnly(p)) R.string.hudhud_limit_owner else R.string.hudhud_limit_manager
+        return AnswerGate.limitWord(p)?.let { WordIds.string(it) }
     }
 }
