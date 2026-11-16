@@ -38,6 +38,12 @@ function limit($name, $default) {
     return ($v !== false && ctype_digit($v)) ? (int)$v : $default;
 }
 
+/** As limit(), for a count of days that a test instance may set below one (digits, one point, more digits). */
+function limit_days($name, $default) {
+    $v = getenv('RK_RELAY_' . $name);
+    return ($v !== false && preg_match('/^[0-9]+(\.[0-9]+)?$/', $v)) ? (float)$v : $default;
+}
+
 define('MAX_PARCEL', 1048576);                         // bytes of one parcel (as cloud/worker)
 define('TAKE_PAGE', 40);                               // parcels in one answer at most
 define('TAKE_BYTES', limit('TAKE_BYTES', 4194304));    // base64 in one answer (a shared host's memory)
@@ -59,7 +65,9 @@ define('MAX_STORE_BYTES', limit('MAX_STORE_BYTES', 1073741824)); // all books' f
 // YOUNG_BOOK_BYTES, is swept YOUNG_DAYS after it was made, and is refused parcels - as a NEW book is refused -
 // once the store holds half of MAX_STORE_BYTES (the answers stay 'full' and 'book-full': every client knows them).
 define('YOUNG_BOOK_BYTES', limit('YOUNG_BOOK_BYTES', 262144));
-define('YOUNG_DAYS', limit('YOUNG_DAYS', 3));
+// A fraction of a day only on a test instance (scripts/test_relay.py --sweep sets 0.0001, about 9 s), as the
+// Worker and Supabase read theirs; every deployed relay leaves it unset and keeps 3 days.
+define('YOUNG_DAYS', limit_days('YOUNG_DAYS', 3));
 define('DEVICE_IDLE_MS', limit('DEVICE_IDLE_MS', 30 * 86400000)); // a device not seen this long goes
 define('SWEEP_EVERY', limit('SWEEP_EVERY', 6 * 3600));          // seconds between idle-book sweeps (the tests: 0)
 // Waris ki Chaabi (heir access, 4 Nov 2026): one SQLite per vault in $store/waris/, never touched by the books'

@@ -58,11 +58,16 @@ jobs:
           # 2,000,000, and a DAY of 500 ms (a bare vault's alarm takes it 7 s after its setup).
           npx wrangler dev --port 8791 --inspector-port 9233 --ip 127.0.0.1 --persist-to .wrangler/wlimits \
             --var NEW_VAULTS_DAY:6 --var WARIS_BYTES:3000000 --var ACCOUNT_BYTES:2000000 --var WARIS_DAY_MS:500 > wr-wlimits.log 2>&1 &
-          for i in $(seq 1 60); do curl -sf 127.0.0.1:8788/v1/health && curl -sf 127.0.0.1:8789/v1/health && curl -sf 127.0.0.1:8790/v1/health && curl -sf 127.0.0.1:8791/v1/health && break; sleep 1; done
+          # C1's sweep (16 Nov 2026, L012): a book no second device joined goes YOUNG_DAYS after it was made, here 0.0001
+          # days (about 9 s); the alarm runs every second. A deployed Worker never sets these: 3 days, 6 hours.
+          npx wrangler dev --port 8792 --inspector-port 9234 --ip 127.0.0.1 --persist-to .wrangler/sweep \
+            --var YOUNG_DAYS:0.0001 --var PRUNE_EVERY_MS:1000 > wr-sweep.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf 127.0.0.1:8788/v1/health && curl -sf 127.0.0.1:8789/v1/health && curl -sf 127.0.0.1:8790/v1/health && curl -sf 127.0.0.1:8791/v1/health && curl -sf 127.0.0.1:8792/v1/health && break; sleep 1; done
           python3 ../../scripts/test_relay.py http://127.0.0.1:8788 --caps
           python3 ../../scripts/test_relay.py http://127.0.0.1:8789 --idle
           python3 ../../scripts/test_relay.py http://127.0.0.1:8790 --store
           python3 ../../scripts/test_relay.py http://127.0.0.1:8791 --wlimits
+          python3 ../../scripts/test_relay.py http://127.0.0.1:8792 --sweep
 
   deploy:
     needs: check

@@ -33,6 +33,13 @@ run them against a deployed relay, whose limits are the real ones):
              what all three promise: parcels go, then "full" (507) within 40 of
              30,000 bytes; a new book is refused "full"; a book already there still
              says hello and is read; once its devices left, a new book is taken.
+    --sweep  a book no second device joined goes YOUNG_DAYS after it was made, with what it holds, and a book of
+             two devices made beside it stays (16 Nov 2026, L012: C1's sweep had no test). The relay runs with
+             YOUNG_DAYS at 0.0001 (about 9 s) and sweeps often (PHP: RK_RELAY_YOUNG_DAYS=0.0001
+             RK_RELAY_SWEEP_EVERY=0, the sweep runs at every health call; Supabase: RK_YOUNG_DAYS=0.0001 and an
+             RK_KEEP_SECRET this script, run with the same, sends back as X-RK-Keep; the Worker: --var
+             YOUNG_DAYS:0.0001 --var PRUNE_EVERY_MS:1000, its alarm does it). Every deployed relay leaves these
+             unset: 3 days.
     (the plain run also checks that a book of one device holds only about 256 KiB until a second device
      joins; the store-wide modes below add nothing for it: half the store is kept for books of two or more)
     --wlimits  the heirs' vaults with their limits lowered (7 Nov 2026): 6 new vaults a
@@ -292,6 +299,46 @@ def young():
     check("young: the second device reads what the young book held", s == 200 and len(o.get("parcels", [])) == went + 1, (s, len(o.get("parcels", []))))
     call("POST", p + "leave", token, a)
     call("POST", p + "leave", token, b)
+
+
+def sweep():
+    """C1's sweep (16 Nov 2026, L012): a young book goes YOUNG_DAYS after it was made; a joined one stays."""
+    keep = os.environ.get("RK_KEEP_SECRET")
+    ty, tj = secrets.token_hex(32), secrets.token_hex(32)
+    a, b, c = (secrets.token_hex(8) for _ in range(3))
+    young_p = "/v1/b/" + secrets.token_hex(16) + "/"
+    joined_p = "/v1/b/" + secrets.token_hex(16) + "/"
+    started = time.time()
+    s, o = call("POST", young_p + "hello", ty, a)
+    check("sweep: a first device makes a book", s == 200, (s, o))
+    s, o = call("POST", young_p + "send", ty, a, b"a young book's parcel")
+    check("sweep: the young book takes a parcel", s == 200, (s, o))
+    call("POST", joined_p + "hello", tj, b)
+    s, o = call("POST", joined_p + "hello", tj, c)
+    check("sweep: a second book is made beside it and a second device joins it", s == 200, (s, o))
+    s, o = call("POST", joined_p + "send", tj, b, b"a joined book's parcel")
+    check("sweep: the joined book takes a parcel", s == 200, (s, o))
+    s, o = call("GET", young_p + "take?after=0", ty, a)
+    # Only said when it is true: the calls above may have been slower than YOUNG_DAYS on a busy runner.
+    if time.time() - started < 6:
+        check("sweep: before its time the young book is still there", s == 200 and len(o.get("parcels", [])) == 0, (s, o))
+    gone, deadline = False, time.time() + 45
+    while time.time() < deadline:
+        time.sleep(1)
+        health(keep)  # the hosting and Supabase sweep from health (Supabase only with the keep-alive pass)
+        s, o = call("GET", young_p + "take?after=0", ty, a)
+        if s == 403 and o.get("why") == "say-hello-first":
+            gone = True
+            break
+    check("sweep: a book no second device joined is gone YOUNG_DAYS after it was made", gone, (s, o))
+    s, o = call("GET", joined_p + "take?after=0", tj, c)
+    check("sweep: the book a second device joined stays, with its parcel",
+          s == 200 and len(o.get("parcels", [])) == 1, (s, o))
+    s, o = call("POST", young_p + "hello", ty, a)
+    check("sweep: a hello makes the swept book again, empty", s == 200 and o.get("top") == 0 and o.get("others") == [], (s, o))
+    call("POST", young_p + "leave", ty, a)
+    call("POST", joined_p + "leave", tj, b)
+    call("POST", joined_p + "leave", tj, c)
 
 
 def wcall(method, path, token=None, body=None, raw=False):
@@ -644,6 +691,8 @@ def main():
         return store()
     if MODE == "--wlimits":
         return wlimits()
+    if MODE == "--sweep":
+        return sweep()
     book = secrets.token_hex(16)
     token = secrets.token_hex(32)
     a, b, c, d = (secrets.token_hex(8) for _ in range(4))
