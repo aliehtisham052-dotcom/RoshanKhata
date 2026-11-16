@@ -1,0 +1,14 @@
+=== Today
+mood: CALM
+label: Assalam-o-Alaikum!
+line: • Supplier bill due <date>
+line: • Batches expiring within 60 days: 1
+line: • 1 items low on stock
+line: • No backup yet
+line: • Cash flow: the week of <date> is short by Rs 164,000
+open: AlertsActivity
+spoken: Assalam-o-Alaikum! 5 things need your eye today
+speech: Assalam-o-Alaikum! 5 things need your eye today
+speechHidden: Assalam-o-Alaikum! 5 things need your eye today
+ask: Today
+

@@ -1,0 +1,87 @@
+=== Figure(kind=PROFIT_MONTH)
+mood: GOOD
+label: This month's profit
+figure: Rs 1,030
+line: Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+open: InsightsActivity
+money: true
+speech: This month's profit: Rs 1,030. Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+speechHidden: This month's profit. Worked out from 99% of the sales this month. The rest has no product name or no purchase price. [an amount left out]
+ask: Figure(kind=PROFIT_MONTH)
+
+=== Figure(kind=EXPIRING)
+mood: CALM
+label: Stock expiring soon
+line: The Expiring stock screen lists what runs out soonest.
+open: ExpiringActivity
+speech: Stock expiring soon. The Expiring stock screen lists what runs out soonest.
+speechHidden: Stock expiring soon. The Expiring stock screen lists what runs out soonest.
+ask: Figure(kind=EXPIRING)
+
+=== Figure(kind=NOT_PAID)
+mood: CALM
+label: Who has not paid
+line: The Follow-up list puts the customers to chase first at the top.
+open: FollowUpActivity
+speech: Who has not paid. The Follow-up list puts the customers to chase first at the top.
+speechHidden: Who has not paid. The Follow-up list puts the customers to chase first at the top.
+ask: Figure(kind=NOT_PAID)
+
+=== Figure(kind=WHO_OWES_MOST)
+mood: CALM
+label: Who owes the most
+row: party=1 | Ali Raza | Rs 17,000 | -
+row: party=2 | Bashir Ahmad | Rs 3,000 | -
+open: KhataActivity
+money: true
+speech: Who owes the most. Ali Raza, Rs 17,000. Bashir Ahmad, Rs 3,000.
+speechHidden: Who owes the most. Ali Raza. Bashir Ahmad. [an amount left out]
+ask: Figure(kind=WHO_OWES_MOST)
+
+=== Figure(kind=WHO_OWES_LEAST)
+mood: CALM
+label: Who owes the least
+row: party=2 | Bashir Ahmad | Rs 3,000 | -
+row: party=1 | Ali Raza | Rs 17,000 | -
+open: KhataActivity
+money: true
+speech: Who owes the least. Bashir Ahmad, Rs 3,000. Ali Raza, Rs 17,000.
+speechHidden: Who owes the least. Bashir Ahmad. Ali Raza. [an amount left out]
+ask: Figure(kind=WHO_OWES_LEAST)
+
+=== Figure(kind=SALES_TODAY)
+mood: GOOD
+label: Today's sale
+figure: Rs 13,200
+open: InsightsActivity
+money: true
+speech: Today's sale: Rs 13,200.
+ask: Figure(kind=SALES_TODAY)
+
+=== Figure(kind=SALES_MONTH)
+mood: GOOD
+label: This month's sale
+figure: Rs 13,200
+open: InsightsActivity
+money: true
+speech: This month's sale: Rs 13,200.
+ask: Figure(kind=SALES_MONTH)
+
+=== Figure(kind=TO_GIVE)
+mood: CALM
+label: Total I have to give
+figure: Rs 164,000
+open: KhataActivity
+money: true
+speech: Total I have to give: Rs 164,000.
+ask: Figure(kind=TO_GIVE)
+
+=== Figure(kind=TO_GET)
+mood: CALM
+label: Total I have to get
+figure: Rs 20,000
+open: KhataActivity
+money: true
+speech: Total I have to get: Rs 20,000.
+ask: Figure(kind=TO_GET)
+

@@ -1,0 +1,521 @@
+=== Goods(ids=[1], facet=OVERVIEW, window=null)
+mood: CALM
+label: Urea
+line: Cash price: Rs 4,000 / bag
+line: Credit price: Rs 4,200 / bag
+line: In stock: 47 bag
+line: Last came in: Tariq Butt · <date> · Rs 3,500
+open: ProductsActivity
+money: true
+speech: Urea. Cash price: Rs 4,000 / bag. Credit price: Rs 4,200 / bag. In stock: 47 bag. Last came in: Tariq Butt <date> Rs 3,500.
+speechHidden: Urea. In stock: 47 bag. [an amount left out]
+ask: Goods(ids=[1], facet=OVERVIEW, window=null)
+
+=== Goods(ids=[1], facet=PRICE, window=null)
+mood: CALM
+label: Urea
+figure: Rs 4,000 / bag
+line: Cash price: Rs 4,000 / bag
+line: Credit price: Rs 4,200 / bag
+open: ProductsActivity
+money: true
+speech: Urea: Rs 4,000 / bag. Cash price: Rs 4,000 / bag. Credit price: Rs 4,200 / bag.
+ask: Goods(ids=[1], facet=PRICE, window=null)
+
+=== Goods(ids=[1], facet=STOCK, window=null)
+mood: CALM
+label: Urea
+figure: 47 bag
+line: In stock
+open: ProductsActivity
+speech: Urea: 47 bag. In stock.
+speechHidden: Urea: 47 bag. In stock.
+ask: Goods(ids=[1], facet=STOCK, window=null)
+
+=== Goods(ids=[1], facet=COST, window=null)
+mood: CALM
+label: Urea
+figure: Rs 3,500 / bag
+line: Cost price
+line: Last came in: Tariq Butt · <date> · Rs 3,500
+open: SupplierRatesActivity
+money: true
+speech: Urea: Rs 3,500 / bag. Cost price. Last came in: Tariq Butt <date> Rs 3,500.
+speechHidden: Urea. Cost price. [an amount left out]
+ask: Goods(ids=[1], facet=COST, window=null)
+
+=== Goods(ids=[1], facet=SUPPLIERS, window=null)
+mood: CALM
+label: Urea
+line: Cheapest: Tariq Butt · Rs 3,500
+row: party=3 | Tariq Butt | Rs 3,500 | <date>
+open: SupplierRatesActivity
+money: true
+speech: Urea. Cheapest: Tariq Butt Rs 3,500. Tariq Butt, Rs 3,500, <date>.
+speechHidden: Urea. Tariq Butt, <date>. [an amount left out]
+ask: Goods(ids=[1], facet=SUPPLIERS, window=null)
+
+=== Goods(ids=[1], facet=LAST_IN, window=null)
+mood: CALM
+label: Urea
+figure: <date>
+line: Last came in
+line: Tariq Butt · Rs 3,500
+row: party=3 | Tariq Butt | Rs 3,500 | <date>
+open: BillsActivity
+speech: Urea: <date>. Last came in. Tariq Butt Rs 3,500. Tariq Butt, Rs 3,500, <date>.
+speechHidden: Urea: <date>. Last came in. Tariq Butt, <date>. [an amount left out]
+ask: Goods(ids=[1], facet=LAST_IN, window=null)
+
+=== Goods(ids=[1], facet=BUYERS, window=null)
+mood: CALM
+label: Urea
+figure: 2
+line: Customers
+row: party=2 | Bashir Ahmad | Rs 0 | Settled
+row: party=1 | Ali Raza | Rs 0 | Settled
+open: ProductCustomersActivity
+openExtras: productId=1, productName=Urea
+speech: Urea: 2. Customers. Bashir Ahmad, Rs 0, Settled. Ali Raza, Rs 0, Settled.
+speechHidden: Urea: 2. Customers. Bashir Ahmad, Settled. Ali Raza, Settled. [an amount left out]
+ask: Goods(ids=[1], facet=BUYERS, window=null)
+
+=== Goods(ids=[1], facet=SOLD, window=null)
+mood: GOOD
+label: Urea · This month
+figure: 1 bag
+line: Sold
+open: SalesReportActivity
+speech: Urea This month: 1 bag. Sold.
+speechHidden: Urea This month: 1 bag. Sold.
+ask: Goods(ids=[1], facet=SOLD, window=null)
+
+=== Goods(ids=[1], facet=COVER, window=null)
+mood: CALM
+label: Urea · How long will it last?
+figure: 1410 days
+line: In stock: 47 bag
+line: Going by the last 30 days' sales: about 0.03 bag a day.
+open: ProductsActivity
+speech: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speechHidden: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+ask: Goods(ids=[1], facet=COVER, window=null)
+
+=== Goods(ids=[1], facet=LABEL, window=null)
+mood: CALM
+label: Urea
+line: Company: Green Field Co.
+open: ProductsActivity
+speech: Urea. Company: Green Field Co.
+speechHidden: Urea. Company: Green Field Co.
+ask: Goods(ids=[1], facet=LABEL, window=null)
+
+=== Goods(ids=[1], facet=BARCODE, window=null)
+mood: CALM
+label: Urea
+figure: 2100000000017
+line: Barcode
+open: ProductsActivity
+speech: Urea: It's on the screen. Barcode.
+speechHidden: Urea: It's on the screen. Barcode.
+ask: Goods(ids=[1], facet=BARCODE, window=null)
+secret: 2100000000017
+
+=== Goods(ids=[1], facet=PACK, window=null)
+mood: CALM
+label: Urea
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Urea. Nothing is filled in for this item yet.
+speechHidden: Urea. Nothing is filled in for this item yet.
+ask: Goods(ids=[1], facet=PACK, window=null)
+
+=== Goods(ids=[1], facet=TAX, window=null)
+mood: CALM
+label: Urea
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Urea. Nothing is filled in for this item yet.
+speechHidden: Urea. Nothing is filled in for this item yet.
+ask: Goods(ids=[1], facet=TAX, window=null)
+
+=== Goods(ids=[1], facet=SHELF, window=null)
+mood: CALM
+label: Urea
+line: Kept at: Shelf A
+open: ProductsActivity
+speech: Urea. Kept at: Shelf A.
+speechHidden: Urea. Kept at: Shelf A.
+ask: Goods(ids=[1], facet=SHELF, window=null)
+
+=== Goods(ids=[1], facet=ADDED, window=null)
+mood: CALM
+label: Urea
+figure: <date>
+line: Added on
+open: ProductsActivity
+speech: Urea: <date>. Added on.
+speechHidden: Urea: <date>. Added on.
+ask: Goods(ids=[1], facet=ADDED, window=null)
+
+=== Goods(ids=[1], facet=BATCHES, window=null)
+mood: CALM
+label: Urea
+figure: 1
+line: Batches in stock
+row: party=0 | U-01 | 47 bag | -
+open: ProductsActivity
+speech: Urea: 1. Batches in stock. U-01, 47 bag.
+speechHidden: Urea: 1. Batches in stock. U-01, 47 bag.
+ask: Goods(ids=[1], facet=BATCHES, window=null)
+secret: U-01
+
+=== Goods(ids=[1], facet=SCHEME, window=null)
+mood: CALM
+label: Urea
+figure: 1
+line: Urea season scheme
+line: Company: Green Field Co.
+line: <date> – <date>
+line: Targets and rewards
+line: 50 bag → Rs 5,000
+line: Bought so far: 0 bag
+row: party=0 | Urea season scheme | Running | <date> – <date> | open=SchemesActivity
+open: SchemesActivity
+speech: Urea: 1. Urea season scheme. Company: Green Field Co. <date> – <date>. Targets and rewards. 50 bag → Rs 5,000. Bought so far: 0 bag. Urea season scheme, Running, <date> – <date>.
+speechHidden: Urea: 1. Urea season scheme. Company: Green Field Co. <date> – <date>. Targets and rewards. Bought so far: 0 bag. Urea season scheme, Running, <date> – <date>. [an amount left out]
+ask: Goods(ids=[1], facet=SCHEME, window=null)
+
+=== Goods(ids=[1], facet=SOLD, window=TODAY)
+mood: GOOD
+label: Urea · Today
+figure: 1 bag
+line: Sold
+open: SalesReportActivity
+speech: Urea Today: 1 bag. Sold.
+speechHidden: Urea Today: 1 bag. Sold.
+ask: Goods(ids=[1], facet=SOLD, window=TODAY)
+
+=== Goods(ids=[1], facet=SOLD, window=THIS_MONTH)
+mood: GOOD
+label: Urea · This month
+figure: 1 bag
+line: Sold
+open: SalesReportActivity
+speech: Urea This month: 1 bag. Sold.
+speechHidden: Urea This month: 1 bag. Sold.
+ask: Goods(ids=[1], facet=SOLD, window=THIS_MONTH)
+
+=== Goods(ids=[1], facet=SOLD, window=LAST_6_MONTHS)
+mood: GOOD
+label: Urea · Last 6 months
+figure: 3 bag
+line: Sold
+open: SalesReportActivity
+speech: Urea Last 6 months: 3 bag. Sold.
+speechHidden: Urea Last 6 months: 3 bag. Sold.
+ask: Goods(ids=[1], facet=SOLD, window=LAST_6_MONTHS)
+
+=== Goods(ids=[1], facet=BUYERS, window=TODAY)
+mood: CALM
+label: Urea · Today
+figure: 1
+line: Customers
+row: party=2 | Bashir Ahmad | Rs 0 | Settled
+open: ProductCustomersActivity
+openExtras: productId=1, productName=Urea
+speech: Urea Today: 1. Customers. Bashir Ahmad, Rs 0, Settled.
+speechHidden: Urea Today: 1. Customers. Bashir Ahmad, Settled. [an amount left out]
+ask: Goods(ids=[1], facet=BUYERS, window=TODAY)
+
+=== Goods(ids=[1], facet=BUYERS, window=THIS_MONTH)
+mood: CALM
+label: Urea · This month
+figure: 1
+line: Customers
+row: party=2 | Bashir Ahmad | Rs 0 | Settled
+open: ProductCustomersActivity
+openExtras: productId=1, productName=Urea
+speech: Urea This month: 1. Customers. Bashir Ahmad, Rs 0, Settled.
+speechHidden: Urea This month: 1. Customers. Bashir Ahmad, Settled. [an amount left out]
+ask: Goods(ids=[1], facet=BUYERS, window=THIS_MONTH)
+
+=== Goods(ids=[1], facet=BUYERS, window=LAST_6_MONTHS)
+mood: CALM
+label: Urea · Last 6 months
+figure: 2
+line: Customers
+row: party=2 | Bashir Ahmad | Rs 0 | Settled
+row: party=1 | Ali Raza | Rs 0 | Settled
+open: ProductCustomersActivity
+openExtras: productId=1, productName=Urea
+speech: Urea Last 6 months: 2. Customers. Bashir Ahmad, Rs 0, Settled. Ali Raza, Rs 0, Settled.
+speechHidden: Urea Last 6 months: 2. Customers. Bashir Ahmad, Settled. Ali Raza, Settled. [an amount left out]
+ask: Goods(ids=[1], facet=BUYERS, window=LAST_6_MONTHS)
+
+=== Goods(ids=[1], facet=COVER, window=TODAY)
+mood: CALM
+label: Urea · How long will it last?
+figure: 1410 days
+line: In stock: 47 bag
+line: Going by the last 30 days' sales: about 0.03 bag a day.
+open: ProductsActivity
+speech: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speechHidden: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+ask: Goods(ids=[1], facet=COVER, window=TODAY)
+
+=== Goods(ids=[1], facet=COVER, window=THIS_MONTH)
+mood: CALM
+label: Urea · How long will it last?
+figure: 1410 days
+line: In stock: 47 bag
+line: Going by the last 30 days' sales: about 0.03 bag a day.
+open: ProductsActivity
+speech: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speechHidden: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+ask: Goods(ids=[1], facet=COVER, window=THIS_MONTH)
+
+=== Goods(ids=[1], facet=COVER, window=LAST_6_MONTHS)
+mood: CALM
+label: Urea · How long will it last?
+figure: 1410 days
+line: In stock: 47 bag
+line: Going by the last 30 days' sales: about 0.03 bag a day.
+open: ProductsActivity
+speech: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speechHidden: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+ask: Goods(ids=[1], facet=COVER, window=LAST_6_MONTHS)
+
+=== Goods(ids=[3], facet=OVERVIEW, window=null)
+mood: CALM
+label: Paracetamol
+line: Cash price: Rs 50 / packet
+line: In stock: 96 packet
+line: Last came in: Tariq Butt · <date> · Rs 40
+open: ProductsActivity
+money: true
+speech: Paracetamol. Cash price: Rs 50 / packet. In stock: 96 packet. Last came in: Tariq Butt <date> Rs 40.
+speechHidden: Paracetamol. In stock: 96 packet. [an amount left out]
+ask: Goods(ids=[3], facet=OVERVIEW, window=null)
+
+=== Goods(ids=[3], facet=PRICE, window=null)
+mood: CALM
+label: Paracetamol
+figure: Rs 50 / packet
+line: Cash price: Rs 50 / packet
+open: ProductsActivity
+money: true
+speech: Paracetamol: Rs 50 / packet. Cash price: Rs 50 / packet.
+ask: Goods(ids=[3], facet=PRICE, window=null)
+
+=== Goods(ids=[3], facet=STOCK, window=null)
+mood: CARE
+label: Paracetamol
+figure: 96 packet
+line: In stock
+line: Low stock
+open: ProductsActivity
+speech: Paracetamol: 96 packet. In stock. Low stock.
+speechHidden: Paracetamol: 96 packet. In stock. Low stock.
+ask: Goods(ids=[3], facet=STOCK, window=null)
+
+=== Goods(ids=[3], facet=COST, window=null)
+mood: CALM
+label: Paracetamol
+figure: Rs 40 / packet
+line: Cost price
+line: Last came in: Tariq Butt · <date> · Rs 40
+open: SupplierRatesActivity
+money: true
+speech: Paracetamol: Rs 40 / packet. Cost price. Last came in: Tariq Butt <date> Rs 40.
+speechHidden: Paracetamol. Cost price. [an amount left out]
+ask: Goods(ids=[3], facet=COST, window=null)
+
+=== Goods(ids=[3], facet=SUPPLIERS, window=null)
+mood: CALM
+label: Paracetamol
+line: Cheapest: Tariq Butt · Rs 40
+row: party=3 | Tariq Butt | Rs 40 | <date>
+open: SupplierRatesActivity
+money: true
+speech: Paracetamol. Cheapest: Tariq Butt Rs 40. Tariq Butt, Rs 40, <date>.
+speechHidden: Paracetamol. Tariq Butt, <date>. [an amount left out]
+ask: Goods(ids=[3], facet=SUPPLIERS, window=null)
+
+=== Goods(ids=[3], facet=LAST_IN, window=null)
+mood: CALM
+label: Paracetamol
+figure: <date>
+line: Last came in
+line: Tariq Butt · Rs 40
+row: party=3 | Tariq Butt | Rs 40 | <date>
+open: BillsActivity
+speech: Paracetamol: <date>. Last came in. Tariq Butt Rs 40. Tariq Butt, Rs 40, <date>.
+speechHidden: Paracetamol: <date>. Last came in. Tariq Butt, <date>. [an amount left out]
+ask: Goods(ids=[3], facet=LAST_IN, window=null)
+
+=== Goods(ids=[3], facet=BUYERS, window=null)
+mood: CALM
+label: Paracetamol
+line: No customer has bought this item yet.
+speech: Paracetamol. No customer has bought this item yet.
+speechHidden: Paracetamol. No customer has bought this item yet.
+ask: Goods(ids=[3], facet=BUYERS, window=null)
+
+=== Goods(ids=[3], facet=SOLD, window=null)
+mood: GOOD
+label: Paracetamol · This month
+figure: 4 packet
+line: Sold
+open: SalesReportActivity
+speech: Paracetamol This month: 4 packet. Sold.
+speechHidden: Paracetamol This month: 4 packet. Sold.
+ask: Goods(ids=[3], facet=SOLD, window=null)
+
+=== Goods(ids=[3], facet=COVER, window=null)
+mood: CARE
+label: Paracetamol · How long will it last?
+figure: 720 days
+line: In stock: 96 packet
+line: Going by the last 30 days' sales: about 0.13 packet a day.
+open: ProductsActivity
+speech: Paracetamol How long will it last?: 720 days. In stock: 96 packet. Going by the last 30 days' sales: about 0.13 packet a day.
+speechHidden: Paracetamol How long will it last?: 720 days. In stock: 96 packet. Going by the last 30 days' sales: about 0.13 packet a day.
+ask: Goods(ids=[3], facet=COVER, window=null)
+
+=== Goods(ids=[3], facet=LABEL, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=LABEL, window=null)
+
+=== Goods(ids=[3], facet=BARCODE, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=BARCODE, window=null)
+
+=== Goods(ids=[3], facet=PACK, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=PACK, window=null)
+
+=== Goods(ids=[3], facet=TAX, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=TAX, window=null)
+
+=== Goods(ids=[3], facet=SHELF, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=SHELF, window=null)
+
+=== Goods(ids=[3], facet=ADDED, window=null)
+mood: CALM
+label: Paracetamol
+figure: <date>
+line: Added on
+open: ProductsActivity
+speech: Paracetamol: <date>. Added on.
+speechHidden: Paracetamol: <date>. Added on.
+ask: Goods(ids=[3], facet=ADDED, window=null)
+
+=== Goods(ids=[3], facet=BATCHES, window=null)
+mood: CALM
+label: Paracetamol
+figure: <date>
+line: Expiry date
+row: party=0 | P-01 | 96 packet | <date>
+open: ProductsActivity
+speech: Paracetamol: <date>. Expiry date. P-01, 96 packet, <date>.
+speechHidden: Paracetamol: <date>. Expiry date. P-01, 96 packet, <date>.
+ask: Goods(ids=[3], facet=BATCHES, window=null)
+secret: P-01
+
+=== Goods(ids=[3], facet=SCHEME, window=null)
+mood: CALM
+label: Paracetamol
+line: No scheme is recorded for this item’s company.
+open: SchemesActivity
+speech: Paracetamol. No scheme is recorded for this item’s company.
+speechHidden: Paracetamol. No scheme is recorded for this item’s company.
+ask: Goods(ids=[3], facet=SCHEME, window=null)
+
+=== Goods(ids=[2], facet=OVERVIEW, window=null)
+mood: CALM
+label: DAP
+line: Cash price: Rs 9,000 / bag
+line: In stock: 9 bag
+line: Last came in: Tariq Butt · <date> · Rs 8,500
+open: ProductsActivity
+money: true
+speech: DAP. Cash price: Rs 9,000 / bag. In stock: 9 bag. Last came in: Tariq Butt <date> Rs 8,500.
+speechHidden: DAP. In stock: 9 bag. [an amount left out]
+ask: Goods(ids=[2], facet=OVERVIEW, window=null)
+
+=== Goods(ids=[2], facet=PRICE, window=null)
+mood: CALM
+label: DAP
+figure: Rs 9,000 / bag
+line: Cash price: Rs 9,000 / bag
+open: ProductsActivity
+money: true
+speech: DAP: Rs 9,000 / bag. Cash price: Rs 9,000 / bag.
+ask: Goods(ids=[2], facet=PRICE, window=null)
+
+=== Goods(ids=[2], facet=COST, window=null)
+mood: CALM
+label: DAP
+figure: Rs 8,500 / bag
+line: Cost price
+line: Last came in: Tariq Butt · <date> · Rs 8,500
+open: SupplierRatesActivity
+money: true
+speech: DAP: Rs 8,500 / bag. Cost price. Last came in: Tariq Butt <date> Rs 8,500.
+speechHidden: DAP. Cost price. [an amount left out]
+ask: Goods(ids=[2], facet=COST, window=null)
+
+=== Goods(ids=[2], facet=SUPPLIERS, window=null)
+mood: CALM
+label: DAP
+line: Cheapest: Tariq Butt · Rs 8,500
+row: party=3 | Tariq Butt | Rs 8,500 | <date>
+open: SupplierRatesActivity
+money: true
+speech: DAP. Cheapest: Tariq Butt Rs 8,500. Tariq Butt, Rs 8,500, <date>.
+speechHidden: DAP. Tariq Butt, <date>. [an amount left out]
+ask: Goods(ids=[2], facet=SUPPLIERS, window=null)
+
+=== Goods(ids=[1, 2], facet=PRICE, window=null)
+mood: CALM
+label: Which one do you mean?
+row: party=0 | Urea | Rs 4,000 | Green Field Co. | open=ProductsActivity
+row: party=0 | DAP | Rs 9,000 | Kisan Co. | open=ProductsActivity
+ask: Goods(ids=[1, 2], facet=PRICE, window=null)
+quiet: true
+
+=== Goods(ids=[], facet=PRICE, window=null)
+mood: CALM
+line: I could not find this in your khata. The nearest questions I can answer are below.
+speech: I could not find this in your khata. The nearest questions I can answer are below.
+speechHidden: I could not find this in your khata. The nearest questions I can answer are below.
+ask: Goods(ids=[], facet=PRICE, window=null)
+

@@ -1,0 +1,172 @@
+=== Person(ids=[1], facet=PHONE)
+mood: CALM
+label: Ali Raza
+figure: 0300 1234567
+line: Phone number
+openParty: 1
+spoken: Ali Raza: It's on the screen.
+speech: Ali Raza: It's on the screen.
+speechHidden: Ali Raza: It's on the screen.
+ask: Person(ids=[1], facet=PHONE)
+
+=== Person(ids=[1], facet=DETAILS)
+mood: CALM
+label: Ali Raza
+line: Customer
+line: Father's name: Raza Ahmad
+line: Village: Chak 12
+line: Phone number: 0300 1234567
+line: First entry: <date>
+line: Balance: Rs 17,000 · You will get
+openParty: 1
+speech: Ali Raza. Customer. Father's name: Raza Ahmad. Village: Chak 12. Phone number: It's on the screen. First entry: <date>. Balance: Rs 17,000 You will get.
+speechHidden: Ali Raza. Customer. Father's name: Raza Ahmad. Village: Chak 12. Phone number: It's on the screen. First entry: <date>. [an amount left out]
+ask: Person(ids=[1], facet=DETAILS)
+secret: 0300 1234567
+
+=== Person(ids=[1], facet=LAST_PAYMENT)
+mood: CALM
+label: Ali Raza
+figure: Rs 1,000
+line: Last payment: Today <time>
+line: Entry number: RK-000008
+line: Paid by: Cash
+line: Balance: Rs 17,000 · You will get
+openParty: 1
+money: true
+speech: Ali Raza: Rs 1,000. Last payment: Today <time> Entry number: RK-000008. Paid by: Cash. Balance: Rs 17,000 You will get.
+speechHidden: Ali Raza. Last payment: Today <time> Entry number: RK-000008. Paid by: Cash. [an amount left out]
+ask: Person(ids=[1], facet=LAST_PAYMENT)
+
+=== Person(ids=[1], facet=LAST_ENTRY)
+mood: CALM
+label: Ali Raza
+figure: Rs 1,000
+line: Last entry: Today <time> · I Got
+line: Entry number: RK-000008
+line: Paid by: Cash
+line: Balance: Rs 17,000 · You will get
+openParty: 1
+money: true
+speech: Ali Raza: Rs 1,000. Last entry: Today <time> I Got. Entry number: RK-000008. Paid by: Cash. Balance: Rs 17,000 You will get.
+speechHidden: Ali Raza. Last entry: Today <time> I Got. Entry number: RK-000008. Paid by: Cash. [an amount left out]
+ask: Person(ids=[1], facet=LAST_ENTRY)
+
+=== Person(ids=[1], facet=SINCE)
+mood: CALM
+label: Ali Raza
+figure: <date>
+line: First entry
+line: Entries: 5
+line: Added on: <date>
+openParty: 1
+speech: Ali Raza: <date>. First entry. Entries: 5. Added on: <date>.
+speechHidden: Ali Raza: <date>. First entry. Entries: 5. Added on: <date>.
+ask: Person(ids=[1], facet=SINCE)
+
+=== Person(ids=[1], facet=LIMIT)
+mood: CALM
+label: Ali Raza
+figure: Rs 50,000
+line: Credit limit
+line: Balance: Rs 17,000 · You will get
+line: Limit used: 34%
+openParty: 1
+money: true
+speech: Ali Raza: Rs 50,000. Credit limit. Balance: Rs 17,000 You will get. Limit used: 34%.
+speechHidden: Ali Raza. Credit limit. Limit used: 34%. [an amount left out]
+ask: Person(ids=[1], facet=LIMIT)
+
+=== Person(ids=[1], facet=PROMISE)
+mood: CALM
+label: Ali Raza
+figure: <date>
+line: Promised day
+line: Balance: Rs 17,000 · You will get
+openParty: 1
+speech: Ali Raza: <date>. Promised day. Balance: Rs 17,000 You will get.
+speechHidden: Ali Raza: <date>. Promised day. [an amount left out]
+ask: Person(ids=[1], facet=PROMISE)
+
+=== Person(ids=[1], facet=ENTRIES)
+mood: CALM
+label: Ali Raza
+figure: 5
+line: Entries
+line: I Gave: 3 · Rs 22,000
+line: I Got: 2 · Rs 5,000
+openParty: 1
+speech: Ali Raza: 5. Entries. I Gave: 3 Rs 22,000. I Got: 2 Rs 5,000.
+speechHidden: Ali Raza: 5. Entries. [an amount left out]
+ask: Person(ids=[1], facet=ENTRIES)
+
+=== Person(ids=[1], facet=NOTE)
+mood: CALM
+label: Ali Raza
+line: No private note is saved for Ali Raza.
+openParty: 1
+speech: Ali Raza. No private note is saved for Ali Raza.
+speechHidden: Ali Raza. No private note is saved for Ali Raza.
+ask: Person(ids=[1], facet=NOTE)
+
+=== Person(ids=[2], facet=NOTE)
+mood: CALM
+label: Bashir Ahmad
+line: Private note
+line: Pays after the harvest. Call 0300 7654321 first.
+openParty: 2
+speech: Bashir Ahmad. Private note. Pays after the harvest. Call It's on the screen first.
+speechHidden: Bashir Ahmad. Private note. Pays after the harvest. Call It's on the screen first.
+ask: Person(ids=[2], facet=NOTE)
+secret: 0300 7654321
+
+=== Person(ids=[2], facet=DETAILS)
+mood: CALM
+label: Bashir Ahmad
+line: Customer
+line: Phone number: 0300 7654321
+line: First entry: <date>
+line: Balance: Rs 3,000 · You will get
+openParty: 2
+speech: Bashir Ahmad. Customer. Phone number: It's on the screen. First entry: <date>. Balance: Rs 3,000 You will get.
+speechHidden: Bashir Ahmad. Customer. Phone number: It's on the screen. First entry: <date>. [an amount left out]
+ask: Person(ids=[2], facet=DETAILS)
+secret: 0300 7654321
+
+=== Person(ids=[3], facet=LAST_PAYMENT)
+mood: CALM
+label: Tariq Butt
+figure: Rs 100,000
+line: Last payment: <date> <time>
+line: Entry number: RK-000005
+line: Paid by: Cash
+line: Balance: Rs 164,000 · You will give
+openParty: 3
+money: true
+speech: Tariq Butt: Rs 100,000. Last payment: <date> <time> Entry number: RK-000005. Paid by: Cash. Balance: Rs 164,000 You will give.
+speechHidden: Tariq Butt. Last payment: <date> <time> Entry number: RK-000005. Paid by: Cash. [an amount left out]
+ask: Person(ids=[3], facet=LAST_PAYMENT)
+
+=== Person(ids=[1, 2], facet=DETAILS)
+mood: CALM
+label: Which one do you mean?
+row: party=1 | Ali Raza | Rs 17,000 | You will get
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+ask: Person(ids=[1, 2], facet=DETAILS)
+quiet: true
+
+=== Person(ids=[1, 2], facet=NOTE)
+mood: CALM
+label: Which one do you mean?
+row: party=1 | Ali Raza | Rs 17,000 | You will get | ask=Person(ids=[1], facet=NOTE)
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get | ask=Person(ids=[2], facet=NOTE)
+ask: Person(ids=[1, 2], facet=NOTE)
+quiet: true
+
+=== Person(ids=[], facet=PHONE)
+mood: CALM
+line: I could not find this in your khata. The nearest questions I can answer are below.
+speech: I could not find this in your khata. The nearest questions I can answer are below.
+speechHidden: I could not find this in your khata. The nearest questions I can answer are below.
+ask: Person(ids=[], facet=PHONE)
+

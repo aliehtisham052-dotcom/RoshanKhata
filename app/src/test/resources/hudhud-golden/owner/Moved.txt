@@ -1,0 +1,81 @@
+=== Moved(ids=[1], window=TODAY, got=true)
+mood: CALM
+label: Ali Raza
+figure: Rs 1,000
+line: I Got · Today
+openParty: 1
+money: true
+speech: Ali Raza: Rs 1,000. I Got Today.
+speechHidden: Ali Raza. I Got Today. [an amount left out]
+ask: Moved(ids=[1], window=TODAY, got=true)
+
+=== Moved(ids=[1], window=THIS_MONTH, got=true)
+mood: CALM
+label: Ali Raza
+figure: Rs 1,000
+line: I Got · This month
+openParty: 1
+money: true
+speech: Ali Raza: Rs 1,000. I Got This month.
+speechHidden: Ali Raza. I Got This month. [an amount left out]
+ask: Moved(ids=[1], window=THIS_MONTH, got=true)
+
+=== Moved(ids=[1], window=ALL_TIME, got=true)
+mood: CALM
+label: Ali Raza
+figure: Rs 5,000
+line: I Got · All time
+openParty: 1
+money: true
+speech: Ali Raza: Rs 5,000. I Got All time.
+speechHidden: Ali Raza. I Got All time. [an amount left out]
+ask: Moved(ids=[1], window=ALL_TIME, got=true)
+
+=== Moved(ids=[1], window=TODAY, got=false)
+mood: CALM
+label: Ali Raza
+figure: Rs 9,000
+line: I Gave · Today
+openParty: 1
+money: true
+speech: Ali Raza: Rs 9,000. I Gave Today.
+speechHidden: Ali Raza. I Gave Today. [an amount left out]
+ask: Moved(ids=[1], window=TODAY, got=false)
+
+=== Moved(ids=[1], window=THIS_MONTH, got=false)
+mood: CALM
+label: Ali Raza
+figure: Rs 9,000
+line: I Gave · This month
+openParty: 1
+money: true
+speech: Ali Raza: Rs 9,000. I Gave This month.
+speechHidden: Ali Raza. I Gave This month. [an amount left out]
+ask: Moved(ids=[1], window=THIS_MONTH, got=false)
+
+=== Moved(ids=[1], window=ALL_TIME, got=false)
+mood: CALM
+label: Ali Raza
+figure: Rs 22,000
+line: I Gave · All time
+openParty: 1
+money: true
+speech: Ali Raza: Rs 22,000. I Gave All time.
+speechHidden: Ali Raza. I Gave All time. [an amount left out]
+ask: Moved(ids=[1], window=ALL_TIME, got=false)
+
+=== Moved(ids=[1, 2], window=TODAY, got=true)
+mood: CALM
+label: Which one do you mean?
+row: party=1 | Ali Raza | Rs 17,000 | You will get
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+ask: Moved(ids=[1, 2], window=TODAY, got=true)
+quiet: true
+
+=== Moved(ids=[], window=TODAY, got=true)
+mood: CALM
+line: I could not find this in your khata. The nearest questions I can answer are below.
+speech: I could not find this in your khata. The nearest questions I can answer are below.
+speechHidden: I could not find this in your khata. The nearest questions I can answer are below.
+ask: Moved(ids=[], window=TODAY, got=true)
+

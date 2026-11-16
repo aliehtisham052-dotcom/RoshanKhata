@@ -1,0 +1,11 @@
+=== Drawer
+mood: CALM
+label: Should be in drawer
+figure: −Rs 90,850
+line: Since the last count, <date>, <time>
+open: CashbookActivity
+money: true
+speech: Should be in drawer: −Rs 90,850. Since the last count, <date>, <time>
+speechHidden: Should be in drawer. Since the last count, <date>, <time> [an amount left out]
+ask: Drawer
+

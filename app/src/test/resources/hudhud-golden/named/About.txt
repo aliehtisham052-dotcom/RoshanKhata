@@ -1,0 +1,10 @@
+=== About(topic=OWNER_NAME)
+mood: GOOD
+label: Ali bhai
+line: I call you Ali bhai. You can change it in my voice settings.
+openLabel: hudhud_settings
+speech: Ali bhai. I call you Ali bhai. You can change it in my voice settings.
+speechHidden: Ali bhai. I call you Ali bhai. You can change it in my voice settings.
+voiceSettings: true
+ask: About(topic=OWNER_NAME)
+

@@ -1,0 +1,32 @@
+=== Compare(first=Period(measure=SALES, window=TODAY), second=Period(measure=SALES, window=YESTERDAY))
+mood: CALM
+label: Comparison
+line: Only the owner or a manager can see this figure.
+speech: Comparison. Only the owner or a manager can see this figure.
+speechHidden: Comparison. Only the owner or a manager can see this figure.
+ask: Compare(first=Period(measure=SALES, window=TODAY), second=Period(measure=SALES, window=YESTERDAY))
+
+=== Compare(first=Period(measure=PROFIT, window=THIS_MONTH), second=Period(measure=PROFIT, window=LAST_MONTH))
+mood: CALM
+label: Comparison
+line: Only the owner or a manager can see this figure.
+speech: Comparison. Only the owner or a manager can see this figure.
+speechHidden: Comparison. Only the owner or a manager can see this figure.
+ask: Compare(first=Period(measure=PROFIT, window=THIS_MONTH), second=Period(measure=PROFIT, window=LAST_MONTH))
+
+=== Compare(first=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[]), second=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[]))
+mood: CALM
+label: Comparison
+line: Only the owner or a manager can see this figure.
+speech: Comparison. Only the owner or a manager can see this figure.
+speechHidden: Comparison. Only the owner or a manager can see this figure.
+ask: Compare(first=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[]), second=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[]))
+
+=== Compare(first=Drawer, second=Drawer)
+mood: CALM
+label: Comparison
+line: Only the owner or a manager can see this figure.
+speech: Comparison. Only the owner or a manager can see this figure.
+speechHidden: Comparison. Only the owner or a manager can see this figure.
+ask: Compare(first=Drawer, second=Drawer)
+

@@ -1,0 +1,13 @@
+=== Qarz
+mood: CALM
+label: Qarz-e-Hasna
+figure: Rs 5,000
+line: 1 person still has it to return
+line: Qarz-e-Hasna is money lent with no profit on it. It is written in the customer's khata with the Qarz-e-Hasna option, and the Zakat screen counts it on its own.
+row: party=1 | Ali Raza | Rs 5,000 | -
+open: ZakatActivity
+money: true
+speech: Qarz-e-Hasna: Rs 5,000. 1 person still has it to return. Qarz-e-Hasna is money lent with no profit on it. It is written in the customer's khata with the Qarz-e-Hasna option, and the Zakat screen counts it on its own. Ali Raza, Rs 5,000.
+speechHidden: Qarz-e-Hasna. 1 person still has it to return. Qarz-e-Hasna is money lent with no profit on it. It is written in the customer's khata with the Qarz-e-Hasna option, and the Zakat screen counts it on its own. Ali Raza. [an amount left out]
+ask: Qarz
+

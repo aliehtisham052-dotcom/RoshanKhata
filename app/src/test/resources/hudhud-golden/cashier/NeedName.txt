@@ -1,0 +1,122 @@
+=== NeedName(facet=null)
+mood: CALM
+label: Recent customers
+line: For one customer, add the name: “Ali's number”.
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+row: party=1 | Ali Raza | Rs 17,000 | You will get
+row: party=3 | Tariq Butt | Rs 164,000 | You will give
+open: KhataActivity
+speech: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, Rs 3,000, You will get. Ali Raza, Rs 17,000, You will get. Tariq Butt, Rs 164,000, You will give.
+speechHidden: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, You will get. Ali Raza, You will get. Tariq Butt, You will give. [an amount left out]
+ask: NeedName(facet=null)
+
+=== NeedName(facet=PHONE)
+mood: CALM
+label: Numbers of recent customers
+line: For one customer, add the name: “Ali's number”.
+row: party=2 | Bashir Ahmad | 0300 7654321 | -
+row: party=1 | Ali Raza | 0300 1234567 | -
+row: party=3 | Tariq Butt | 0300 0000001 | -
+open: KhataActivity
+speech: Numbers of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, It's on the screen. Ali Raza, It's on the screen. Tariq Butt, It's on the screen.
+speechHidden: Numbers of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, It's on the screen. Ali Raza, It's on the screen. Tariq Butt, It's on the screen.
+ask: NeedName(facet=PHONE)
+secret: 0300 7654321
+secret: 0300 1234567
+secret: 0300 0000001
+
+=== NeedName(facet=DETAILS)
+mood: CALM
+label: Recent customers
+line: For one customer, add the name: “Ali's number”.
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+row: party=1 | Ali Raza | Rs 17,000 | You will get
+row: party=3 | Tariq Butt | Rs 164,000 | You will give
+open: KhataActivity
+speech: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, Rs 3,000, You will get. Ali Raza, Rs 17,000, You will get. Tariq Butt, Rs 164,000, You will give.
+speechHidden: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, You will get. Ali Raza, You will get. Tariq Butt, You will give. [an amount left out]
+ask: NeedName(facet=DETAILS)
+
+=== NeedName(facet=LAST_PAYMENT)
+mood: CALM
+label: Last payments of recent customers
+line: For one customer, add the name: “Ali's number”.
+row: party=2 | Bashir Ahmad | Rs 4,000 | Today <time>
+row: party=1 | Ali Raza | Rs 1,000 | Today <time>
+row: party=3 | Tariq Butt | Rs 100,000 | <date> <time>
+open: KhataActivity
+speech: Last payments of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, Rs 4,000, Today <time> Ali Raza, Rs 1,000, Today <time> Tariq Butt, Rs 100,000, <date> <time>
+speechHidden: Last payments of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, Today <time> Ali Raza, Today <time> Tariq Butt, <date> <time> [an amount left out]
+ask: NeedName(facet=LAST_PAYMENT)
+
+=== NeedName(facet=LAST_ENTRY)
+mood: CALM
+label: Recent customers
+line: For one customer, add the name: “Ali's number”.
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+row: party=1 | Ali Raza | Rs 17,000 | You will get
+row: party=3 | Tariq Butt | Rs 164,000 | You will give
+open: KhataActivity
+speech: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, Rs 3,000, You will get. Ali Raza, Rs 17,000, You will get. Tariq Butt, Rs 164,000, You will give.
+speechHidden: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, You will get. Ali Raza, You will get. Tariq Butt, You will give. [an amount left out]
+ask: NeedName(facet=LAST_ENTRY)
+
+=== NeedName(facet=SINCE)
+mood: CALM
+label: Recent customers
+line: For one customer, add the name: “Ali's number”.
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+row: party=1 | Ali Raza | Rs 17,000 | You will get
+row: party=3 | Tariq Butt | Rs 164,000 | You will give
+open: KhataActivity
+speech: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, Rs 3,000, You will get. Ali Raza, Rs 17,000, You will get. Tariq Butt, Rs 164,000, You will give.
+speechHidden: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, You will get. Ali Raza, You will get. Tariq Butt, You will give. [an amount left out]
+ask: NeedName(facet=SINCE)
+
+=== NeedName(facet=LIMIT)
+mood: CALM
+label: Credit limits of recent customers
+line: For one customer, add the name: “Ali's number”.
+row: party=2 | Bashir Ahmad | - | No credit limit is set.
+row: party=1 | Ali Raza | Rs 50,000 | Rs 17,000 · You will get
+row: party=3 | Tariq Butt | - | No credit limit is set.
+open: KhataActivity
+speech: Credit limits of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, No credit limit is set. Ali Raza, Rs 50,000, Rs 17,000 You will get. Tariq Butt, No credit limit is set.
+speechHidden: Credit limits of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, No credit limit is set. Ali Raza. Tariq Butt, No credit limit is set. [an amount left out]
+ask: NeedName(facet=LIMIT)
+
+=== NeedName(facet=PROMISE)
+mood: CALM
+label: Promised days of recent customers
+line: For one customer, add the name: “Ali's number”.
+row: party=2 | Bashir Ahmad | - | No promised day is set.
+row: party=1 | Ali Raza | <date> | -
+row: party=3 | Tariq Butt | - | No promised day is set.
+open: KhataActivity
+speech: Promised days of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, No promised day is set. Ali Raza, <date>. Tariq Butt, No promised day is set.
+speechHidden: Promised days of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, No promised day is set. Ali Raza, <date>. Tariq Butt, No promised day is set.
+ask: NeedName(facet=PROMISE)
+
+=== NeedName(facet=ENTRIES)
+mood: CALM
+label: Recent customers
+line: For one customer, add the name: “Ali's number”.
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+row: party=1 | Ali Raza | Rs 17,000 | You will get
+row: party=3 | Tariq Butt | Rs 164,000 | You will give
+open: KhataActivity
+speech: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, Rs 3,000, You will get. Ali Raza, Rs 17,000, You will get. Tariq Butt, Rs 164,000, You will give.
+speechHidden: Recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, You will get. Ali Raza, You will get. Tariq Butt, You will give. [an amount left out]
+ask: NeedName(facet=ENTRIES)
+
+=== NeedName(facet=NOTE)
+mood: CALM
+label: Private notes
+line: With a private note: 1
+line: For one customer, add the name: “Ali's note”.
+row: party=2 | Bashir Ahmad | - | - | ask=Person(ids=[2], facet=NOTE)
+open: KhataActivity
+speech: Private notes. With a private note: 1. For one customer, add the name: “Ali's note”. Bashir Ahmad.
+speechHidden: Private notes. With a private note: 1. For one customer, add the name: “Ali's note”. Bashir Ahmad.
+ask: NeedName(facet=NOTE)
+

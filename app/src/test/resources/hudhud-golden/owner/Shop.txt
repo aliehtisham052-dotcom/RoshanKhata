@@ -1,0 +1,92 @@
+=== Shop(facet=ALL)
+mood: CALM
+label: Shop details
+line: Not filled in your Business Profile.
+line: Country: Pakistan
+line: Currency: Rs
+open: BusinessSettingsActivity
+speech: Shop details. Not filled in your Business Profile. Country: Pakistan. Currency: Rs.
+speechHidden: Shop details. Not filled in your Business Profile. Country: Pakistan. Currency: Rs.
+ask: Shop(facet=ALL)
+
+=== Shop(facet=NAME)
+mood: CALM
+label: Business name
+line: Not filled in your Business Profile.
+open: BusinessSettingsActivity
+speech: Business name. Not filled in your Business Profile.
+speechHidden: Business name. Not filled in your Business Profile.
+ask: Shop(facet=NAME)
+
+=== Shop(facet=ADDRESS)
+mood: CALM
+label: Shop address
+line: Not filled in your Business Profile.
+open: BusinessSettingsActivity
+speech: Shop address. Not filled in your Business Profile.
+speechHidden: Shop address. Not filled in your Business Profile.
+ask: Shop(facet=ADDRESS)
+
+=== Shop(facet=PHONE)
+mood: CALM
+label: Phone number
+line: Not filled in your Business Profile.
+open: BusinessSettingsActivity
+speech: Phone number. Not filled in your Business Profile.
+speechHidden: Phone number. Not filled in your Business Profile.
+ask: Shop(facet=PHONE)
+
+=== Shop(facet=EMAIL)
+mood: CALM
+label: Email
+line: Not filled in your Business Profile.
+open: BusinessSettingsActivity
+speech: Email. Not filled in your Business Profile.
+speechHidden: Email. Not filled in your Business Profile.
+ask: Shop(facet=EMAIL)
+
+=== Shop(facet=TAX)
+mood: CALM
+label: STRN
+line: Not filled in your Business Profile.
+open: BusinessSettingsActivity
+speech: STRN. Not filled in your Business Profile.
+speechHidden: STRN. Not filled in your Business Profile.
+ask: Shop(facet=TAX)
+
+=== Shop(facet=BANK)
+mood: CALM
+label: Bank account
+line: Not filled in your Business Profile.
+open: BusinessSettingsActivity
+speech: Bank account. Not filled in your Business Profile.
+speechHidden: Bank account. Not filled in your Business Profile.
+ask: Shop(facet=BANK)
+
+=== Shop(facet=CURRENCY)
+mood: CALM
+label: Currency
+figure: Rs
+open: BusinessSettingsActivity
+speech: Currency: Rs.
+speechHidden: Currency: Rs.
+ask: Shop(facet=CURRENCY)
+
+=== Shop(facet=COUNTRY)
+mood: CALM
+label: Country
+figure: Pakistan
+open: BusinessSettingsActivity
+speech: Country: Pakistan.
+speechHidden: Country: Pakistan.
+ask: Shop(facet=COUNTRY)
+
+=== Shop(facet=TRADE)
+mood: CALM
+label: Shop type
+line: Not filled in your Business Profile.
+open: BusinessSettingsActivity
+speech: Shop type. Not filled in your Business Profile.
+speechHidden: Shop type. Not filled in your Business Profile.
+ask: Shop(facet=TRADE)
+

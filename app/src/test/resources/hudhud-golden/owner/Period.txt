@@ -1,0 +1,156 @@
+=== Period(measure=SALES, window=TODAY)
+mood: GOOD
+label: Today's sale
+figure: Rs 13,200
+open: SalesReportActivity
+openExtras: sales_report_period=TODAY
+money: true
+speech: Today's sale: Rs 13,200.
+ask: Period(measure=SALES, window=TODAY)
+
+=== Period(measure=SALES, window=YESTERDAY)
+mood: CALM
+label: Yesterday's sale
+figure: Rs 0
+open: SalesReportActivity
+openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
+money: true
+speech: Yesterday's sale: Rs 0.
+ask: Period(measure=SALES, window=YESTERDAY)
+
+=== Period(measure=SALES, window=THIS_WEEK)
+mood: GOOD
+label: This week's sale
+figure: Rs 13,200
+open: SalesReportActivity
+openExtras: sales_report_period=WEEK
+money: true
+speech: This week's sale: Rs 13,200.
+ask: Period(measure=SALES, window=THIS_WEEK)
+
+=== Period(measure=SALES, window=LAST_WEEK)
+mood: CALM
+label: Last week's sale
+figure: Rs 0
+open: SalesReportActivity
+openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
+money: true
+speech: Last week's sale: Rs 0.
+ask: Period(measure=SALES, window=LAST_WEEK)
+
+=== Period(measure=SALES, window=THIS_MONTH)
+mood: GOOD
+label: This month's sale
+figure: Rs 13,200
+open: SalesReportActivity
+openExtras: sales_report_period=MONTH
+money: true
+speech: This month's sale: Rs 13,200.
+ask: Period(measure=SALES, window=THIS_MONTH)
+
+=== Period(measure=SALES, window=LAST_MONTH)
+mood: CALM
+label: Last month's sale
+figure: Rs 0
+open: SalesReportActivity
+openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
+money: true
+speech: Last month's sale: Rs 0.
+ask: Period(measure=SALES, window=LAST_MONTH)
+
+=== Period(measure=SALES, window=LAST_6_MONTHS)
+mood: GOOD
+label: Last 6 months' sale
+figure: Rs 21,200
+open: SalesReportActivity
+openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
+money: true
+speech: Last 6 months' sale: Rs 21,200.
+ask: Period(measure=SALES, window=LAST_6_MONTHS)
+
+=== Period(measure=SALES, window=ALL_TIME)
+mood: GOOD
+label: All-time sale
+figure: Rs 21,200
+open: SalesReportActivity
+openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
+money: true
+speech: All-time sale: Rs 21,200.
+ask: Period(measure=SALES, window=ALL_TIME)
+
+=== Period(measure=PROFIT, window=TODAY)
+mood: GOOD
+label: Today's profit
+figure: Rs 1,030
+line: Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+money: true
+speech: Today's profit: Rs 1,030. Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+speechHidden: Today's profit. Worked out from 99% of the sales this month. The rest has no product name or no purchase price. [an amount left out]
+ask: Period(measure=PROFIT, window=TODAY)
+
+=== Period(measure=PROFIT, window=YESTERDAY)
+mood: CALM
+label: Yesterday's profit
+line: No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+speech: Yesterday's profit. No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+speechHidden: Yesterday's profit. No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+ask: Period(measure=PROFIT, window=YESTERDAY)
+
+=== Period(measure=PROFIT, window=THIS_WEEK)
+mood: GOOD
+label: This week's profit
+figure: Rs 1,030
+line: Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+money: true
+speech: This week's profit: Rs 1,030. Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+speechHidden: This week's profit. Worked out from 99% of the sales this month. The rest has no product name or no purchase price. [an amount left out]
+ask: Period(measure=PROFIT, window=THIS_WEEK)
+
+=== Period(measure=PROFIT, window=LAST_WEEK)
+mood: CALM
+label: Last week's profit
+line: No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+speech: Last week's profit. No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+speechHidden: Last week's profit. No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+ask: Period(measure=PROFIT, window=LAST_WEEK)
+
+=== Period(measure=PROFIT, window=THIS_MONTH)
+mood: GOOD
+label: This month's profit
+figure: Rs 1,030
+line: Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+open: InsightsActivity
+money: true
+speech: This month's profit: Rs 1,030. Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+speechHidden: This month's profit. Worked out from 99% of the sales this month. The rest has no product name or no purchase price. [an amount left out]
+ask: Period(measure=PROFIT, window=THIS_MONTH)
+
+=== Period(measure=PROFIT, window=LAST_MONTH)
+mood: CALM
+label: Last month's profit
+line: No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+open: InsightsActivity
+speech: Last month's profit. No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+speechHidden: Last month's profit. No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+ask: Period(measure=PROFIT, window=LAST_MONTH)
+
+=== Period(measure=PROFIT, window=LAST_6_MONTHS)
+mood: GOOD
+label: Last 6 months' profit
+figure: Rs 2,030
+line: Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+money: true
+speech: Last 6 months' profit: Rs 2,030. Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+speechHidden: Last 6 months' profit. Worked out from 99% of the sales this month. The rest has no product name or no purchase price. [an amount left out]
+ask: Period(measure=PROFIT, window=LAST_6_MONTHS)
+
+=== Period(measure=PROFIT, window=ALL_TIME)
+mood: GOOD
+label: All-time profit
+figure: Rs 2,030
+line: Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+money: true
+speech: All-time profit: Rs 2,030. Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+speechHidden: All-time profit. Worked out from 99% of the sales this month. The rest has no product name or no purchase price. [an amount left out]
+ask: Period(measure=PROFIT, window=ALL_TIME)
+

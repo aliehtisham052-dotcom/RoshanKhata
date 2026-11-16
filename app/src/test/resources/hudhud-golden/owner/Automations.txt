@@ -1,0 +1,15 @@
+=== Automations
+mood: CALM
+label: Automations
+line: Each one tells you at its hour and opens the place to act. None of them sends a message or writes an entry by itself. Tap Open to change them.
+row: party=0 | Morning collection list | On | At <time>
+row: party=0 | Cheque reminders | On | At <time>
+row: party=0 | Low stock orders | On | At <time>
+row: party=0 | Expiry action | On | At <time>
+row: party=0 | Monthly report | On | At <time>
+row: party=0 | Closing summary | On | At <time>
+speech: Automations. Each one tells you at its hour and opens the place to act. None of them sends a message or writes an entry by itself. Tap Open to change them. Morning collection list, On, At <time> Cheque reminders, On, At <time> Low stock orders, On, At <time> Expiry action, On, At <time> Monthly report, On, At <time> Closing summary, On, At <time>
+speechHidden: Automations. Each one tells you at its hour and opens the place to act. None of them sends a message or writes an entry by itself. Tap Open to change them. Morning collection list, On, At <time> Cheque reminders, On, At <time> Low stock orders, On, At <time> Expiry action, On, At <time> Monthly report, On, At <time> Closing summary, On, At <time>
+automations: true
+ask: Automations
+

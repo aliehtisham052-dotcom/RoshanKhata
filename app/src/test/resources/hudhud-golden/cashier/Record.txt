@@ -1,0 +1,189 @@
+=== Record(facet=STAFF_PAY, ids=[], window=null)
+mood: CALM
+label: Salary still to pay
+line: Only the owner can see this.
+speech: Salary still to pay. Only the owner can see this.
+speechHidden: Salary still to pay. Only the owner can see this.
+ask: Record(facet=STAFF_PAY, ids=[], window=null)
+
+=== Record(facet=STAFF_PAY, ids=[1], window=null)
+mood: CALM
+label: Salary still to pay
+line: Only the owner can see this.
+speech: Salary still to pay. Only the owner can see this.
+speechHidden: Salary still to pay. Only the owner can see this.
+ask: Record(facet=STAFF_PAY, ids=[1], window=null)
+
+=== Record(facet=STAFF_PAY, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Salary still to pay
+line: Only the owner can see this.
+speech: Salary still to pay. Only the owner can see this.
+speechHidden: Salary still to pay. Only the owner can see this.
+ask: Record(facet=STAFF_PAY, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=STAFF_PAID, ids=[], window=null)
+mood: CALM
+label: Paid to staff · This month
+line: Only the owner can see this.
+speech: Paid to staff This month. Only the owner can see this.
+speechHidden: Paid to staff This month. Only the owner can see this.
+ask: Record(facet=STAFF_PAID, ids=[], window=null)
+
+=== Record(facet=STAFF_PAID, ids=[1], window=null)
+mood: CALM
+label: Paid to staff · This month
+line: Only the owner can see this.
+speech: Paid to staff This month. Only the owner can see this.
+speechHidden: Paid to staff This month. Only the owner can see this.
+ask: Record(facet=STAFF_PAID, ids=[1], window=null)
+
+=== Record(facet=STAFF_PAID, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Paid to staff · This month
+line: Only the owner can see this.
+speech: Paid to staff This month. Only the owner can see this.
+speechHidden: Paid to staff This month. Only the owner can see this.
+ask: Record(facet=STAFF_PAID, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=ATTENDANCE, ids=[], window=null)
+mood: CALM
+label: Attendance · Today
+line: Only the owner can see this.
+speech: Attendance Today. Only the owner can see this.
+speechHidden: Attendance Today. Only the owner can see this.
+ask: Record(facet=ATTENDANCE, ids=[], window=null)
+
+=== Record(facet=ATTENDANCE, ids=[1], window=null)
+mood: CALM
+label: Attendance · Today
+line: Only the owner can see this.
+speech: Attendance Today. Only the owner can see this.
+speechHidden: Attendance Today. Only the owner can see this.
+ask: Record(facet=ATTENDANCE, ids=[1], window=null)
+
+=== Record(facet=ATTENDANCE, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Attendance · This month
+line: Only the owner can see this.
+speech: Attendance This month. Only the owner can see this.
+speechHidden: Attendance This month. Only the owner can see this.
+ask: Record(facet=ATTENDANCE, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=STAFF_PERSON, ids=[], window=null)
+mood: CALM
+label: Staff
+line: Only the owner can see this.
+speech: Staff. Only the owner can see this.
+speechHidden: Staff. Only the owner can see this.
+ask: Record(facet=STAFF_PERSON, ids=[], window=null)
+
+=== Record(facet=STAFF_PERSON, ids=[1], window=null)
+mood: CALM
+label: Staff
+line: Only the owner can see this.
+speech: Staff. Only the owner can see this.
+speechHidden: Staff. Only the owner can see this.
+ask: Record(facet=STAFF_PERSON, ids=[1], window=null)
+
+=== Record(facet=STAFF_PERSON, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Staff
+line: Only the owner can see this.
+speech: Staff. Only the owner can see this.
+speechHidden: Staff. Only the owner can see this.
+ask: Record(facet=STAFF_PERSON, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=PLAN, ids=[], window=null)
+mood: CALM
+label: Plans
+line:  has no payment plan.
+open: PlansActivity
+speech: Plans. has no payment plan.
+speechHidden: Plans. has no payment plan.
+ask: Record(facet=PLAN, ids=[], window=null)
+
+=== Record(facet=PLAN, ids=[1], window=null)
+mood: CALM
+label: Ali Raza · Plans
+line: Next: <weekday>
+line: Started: <date>
+line: Instalments paid: 0
+line: Tractor parts
+open: PlansActivity
+money: true
+speech: Ali Raza Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
+speechHidden: Ali Raza Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
+ask: Record(facet=PLAN, ids=[1], window=null)
+
+=== Record(facet=PLAN, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Ali Raza · Plans
+line: Next: <weekday>
+line: Started: <date>
+line: Instalments paid: 0
+line: Tractor parts
+open: PlansActivity
+money: true
+speech: Ali Raza Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
+speechHidden: Ali Raza Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
+ask: Record(facet=PLAN, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=PLAN_CLOSED, ids=[], window=null)
+mood: CALM
+label: Plans that were closed
+line: No plan has been closed yet.
+open: PlansActivity
+speech: Plans that were closed. No plan has been closed yet.
+speechHidden: Plans that were closed. No plan has been closed yet.
+ask: Record(facet=PLAN_CLOSED, ids=[], window=null)
+
+=== Record(facet=PLAN_CLOSED, ids=[1], window=null)
+mood: CALM
+label: Plans that were closed
+line: No plan has been closed yet.
+open: PlansActivity
+speech: Plans that were closed. No plan has been closed yet.
+speechHidden: Plans that were closed. No plan has been closed yet.
+ask: Record(facet=PLAN_CLOSED, ids=[1], window=null)
+
+=== Record(facet=PLAN_CLOSED, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Plans that were closed · This month
+line: No plan has been closed yet.
+open: PlansActivity
+speech: Plans that were closed This month. No plan has been closed yet.
+speechHidden: Plans that were closed This month. No plan has been closed yet.
+ask: Record(facet=PLAN_CLOSED, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=CHEQUE, ids=[], window=null)
+mood: CALM
+label: Cheques
+line:  has no cheques.
+open: ChequesActivity
+speech: Cheques. has no cheques.
+speechHidden: Cheques. has no cheques.
+ask: Record(facet=CHEQUE, ids=[], window=null)
+
+=== Record(facet=CHEQUE, ids=[1], window=null)
+mood: CALM
+label: Ali Raza · Cheques
+figure: 1
+line: Pending: 1
+row: party=1 | Ali Raza | - | 000111 · Test Bank · Due <weekday> · Written <date>
+open: ChequesActivity
+speech: Ali Raza Cheques: 1. Pending: 1. Ali Raza, 000111 Test Bank Due <weekday> Written <date>
+speechHidden: Ali Raza Cheques: 1. Pending: 1. Ali Raza, 000111 Test Bank Due <weekday> Written <date>
+ask: Record(facet=CHEQUE, ids=[1], window=null)
+
+=== Record(facet=CHEQUE, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Ali Raza · Cheques
+figure: 1
+line: Pending: 1
+row: party=1 | Ali Raza | - | 000111 · Test Bank · Due <weekday> · Written <date>
+open: ChequesActivity
+speech: Ali Raza Cheques: 1. Pending: 1. Ali Raza, 000111 Test Bank Due <weekday> Written <date>
+speechHidden: Ali Raza Cheques: 1. Pending: 1. Ali Raza, 000111 Test Bank Due <weekday> Written <date>
+ask: Record(facet=CHEQUE, ids=[1], window=THIS_MONTH)
+

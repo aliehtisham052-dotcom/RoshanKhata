@@ -1,0 +1,101 @@
+=== Returns(window=null)
+mood: CALM
+label: Returns · Today
+figure: 1
+line: Worth of goods returned: Rs 50
+line: Refunded: Rs 50
+row: party=0 | Walk-in customer | Rs 50 | R-000001 · Today <time> | open=CounterSaleActivity
+open: CounterSaleActivity
+speech: Returns Today: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001 Today <time>
+speechHidden: Returns Today: 1. Walk-in customer, R-000001 Today <time> [an amount left out]
+ask: Returns(window=null)
+
+=== Returns(window=TODAY)
+mood: CALM
+label: Returns · Today
+figure: 1
+line: Worth of goods returned: Rs 50
+line: Refunded: Rs 50
+row: party=0 | Walk-in customer | Rs 50 | R-000001 · Today <time> | open=CounterSaleActivity
+open: CounterSaleActivity
+speech: Returns Today: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001 Today <time>
+speechHidden: Returns Today: 1. Walk-in customer, R-000001 Today <time> [an amount left out]
+ask: Returns(window=TODAY)
+
+=== Returns(window=YESTERDAY)
+mood: CALM
+label: Returns · Yesterday
+line: No goods came back in this time.
+open: CounterSaleActivity
+speech: Returns Yesterday. No goods came back in this time.
+speechHidden: Returns Yesterday. No goods came back in this time.
+ask: Returns(window=YESTERDAY)
+
+=== Returns(window=THIS_WEEK)
+mood: CALM
+label: Returns · This week
+figure: 1
+line: Worth of goods returned: Rs 50
+line: Refunded: Rs 50
+row: party=0 | Walk-in customer | Rs 50 | R-000001 · Today <time> | open=CounterSaleActivity
+open: CounterSaleActivity
+speech: Returns This week: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001 Today <time>
+speechHidden: Returns This week: 1. Walk-in customer, R-000001 Today <time> [an amount left out]
+ask: Returns(window=THIS_WEEK)
+
+=== Returns(window=LAST_WEEK)
+mood: CALM
+label: Returns · Last week
+line: No goods came back in this time.
+open: CounterSaleActivity
+speech: Returns Last week. No goods came back in this time.
+speechHidden: Returns Last week. No goods came back in this time.
+ask: Returns(window=LAST_WEEK)
+
+=== Returns(window=THIS_MONTH)
+mood: CALM
+label: Returns · This month
+figure: 1
+line: Worth of goods returned: Rs 50
+line: Refunded: Rs 50
+row: party=0 | Walk-in customer | Rs 50 | R-000001 · Today <time> | open=CounterSaleActivity
+open: CounterSaleActivity
+speech: Returns This month: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001 Today <time>
+speechHidden: Returns This month: 1. Walk-in customer, R-000001 Today <time> [an amount left out]
+ask: Returns(window=THIS_MONTH)
+
+=== Returns(window=LAST_MONTH)
+mood: CALM
+label: Returns · Last month
+line: No goods came back in this time.
+open: CounterSaleActivity
+speech: Returns Last month. No goods came back in this time.
+speechHidden: Returns Last month. No goods came back in this time.
+ask: Returns(window=LAST_MONTH)
+
+=== Returns(window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Returns(window=TODAY) = Returns · Today
+option: Returns(window=THIS_WEEK) = Returns · This week
+option: Returns(window=THIS_MONTH) = Returns · This month
+option: Returns(window=LAST_MONTH) = Returns · Last month
+ask: SpanLimit(options=[Returns(window=TODAY), Returns(window=THIS_WEEK), Returns(window=THIS_MONTH), Returns(window=LAST_MONTH)], long=false)
+
+=== Returns(window=ALL_TIME)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Returns(window=TODAY) = Returns · Today
+option: Returns(window=THIS_WEEK) = Returns · This week
+option: Returns(window=THIS_MONTH) = Returns · This month
+option: Returns(window=LAST_MONTH) = Returns · Last month
+ask: SpanLimit(options=[Returns(window=TODAY), Returns(window=THIS_WEEK), Returns(window=THIS_MONTH), Returns(window=LAST_MONTH)], long=false)
+

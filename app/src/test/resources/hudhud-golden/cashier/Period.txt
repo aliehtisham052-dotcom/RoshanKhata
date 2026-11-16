@@ -1,0 +1,128 @@
+=== Period(measure=SALES, window=TODAY)
+mood: CALM
+label: Today's sale
+line: Only the owner or a manager can see this figure.
+speech: Today's sale. Only the owner or a manager can see this figure.
+speechHidden: Today's sale. Only the owner or a manager can see this figure.
+ask: Period(measure=SALES, window=TODAY)
+
+=== Period(measure=SALES, window=YESTERDAY)
+mood: CALM
+label: Yesterday's sale
+line: Only the owner or a manager can see this figure.
+speech: Yesterday's sale. Only the owner or a manager can see this figure.
+speechHidden: Yesterday's sale. Only the owner or a manager can see this figure.
+ask: Period(measure=SALES, window=YESTERDAY)
+
+=== Period(measure=SALES, window=THIS_WEEK)
+mood: CALM
+label: This week's sale
+line: Only the owner or a manager can see this figure.
+speech: This week's sale. Only the owner or a manager can see this figure.
+speechHidden: This week's sale. Only the owner or a manager can see this figure.
+ask: Period(measure=SALES, window=THIS_WEEK)
+
+=== Period(measure=SALES, window=LAST_WEEK)
+mood: CALM
+label: Last week's sale
+line: Only the owner or a manager can see this figure.
+speech: Last week's sale. Only the owner or a manager can see this figure.
+speechHidden: Last week's sale. Only the owner or a manager can see this figure.
+ask: Period(measure=SALES, window=LAST_WEEK)
+
+=== Period(measure=SALES, window=THIS_MONTH)
+mood: CALM
+label: This month's sale
+line: Only the owner or a manager can see this figure.
+speech: This month's sale. Only the owner or a manager can see this figure.
+speechHidden: This month's sale. Only the owner or a manager can see this figure.
+ask: Period(measure=SALES, window=THIS_MONTH)
+
+=== Period(measure=SALES, window=LAST_MONTH)
+mood: CALM
+label: Last month's sale
+line: Only the owner or a manager can see this figure.
+speech: Last month's sale. Only the owner or a manager can see this figure.
+speechHidden: Last month's sale. Only the owner or a manager can see this figure.
+ask: Period(measure=SALES, window=LAST_MONTH)
+
+=== Period(measure=SALES, window=LAST_6_MONTHS)
+mood: CALM
+label: Last 6 months' sale
+line: Only the owner or a manager can see this figure.
+speech: Last 6 months' sale. Only the owner or a manager can see this figure.
+speechHidden: Last 6 months' sale. Only the owner or a manager can see this figure.
+ask: Period(measure=SALES, window=LAST_6_MONTHS)
+
+=== Period(measure=SALES, window=ALL_TIME)
+mood: CALM
+label: All-time sale
+line: Only the owner or a manager can see this figure.
+speech: All-time sale. Only the owner or a manager can see this figure.
+speechHidden: All-time sale. Only the owner or a manager can see this figure.
+ask: Period(measure=SALES, window=ALL_TIME)
+
+=== Period(measure=PROFIT, window=TODAY)
+mood: CALM
+label: Today's profit
+line: Only the owner or a manager can see this figure.
+speech: Today's profit. Only the owner or a manager can see this figure.
+speechHidden: Today's profit. Only the owner or a manager can see this figure.
+ask: Period(measure=PROFIT, window=TODAY)
+
+=== Period(measure=PROFIT, window=YESTERDAY)
+mood: CALM
+label: Yesterday's profit
+line: Only the owner or a manager can see this figure.
+speech: Yesterday's profit. Only the owner or a manager can see this figure.
+speechHidden: Yesterday's profit. Only the owner or a manager can see this figure.
+ask: Period(measure=PROFIT, window=YESTERDAY)
+
+=== Period(measure=PROFIT, window=THIS_WEEK)
+mood: CALM
+label: This week's profit
+line: Only the owner or a manager can see this figure.
+speech: This week's profit. Only the owner or a manager can see this figure.
+speechHidden: This week's profit. Only the owner or a manager can see this figure.
+ask: Period(measure=PROFIT, window=THIS_WEEK)
+
+=== Period(measure=PROFIT, window=LAST_WEEK)
+mood: CALM
+label: Last week's profit
+line: Only the owner or a manager can see this figure.
+speech: Last week's profit. Only the owner or a manager can see this figure.
+speechHidden: Last week's profit. Only the owner or a manager can see this figure.
+ask: Period(measure=PROFIT, window=LAST_WEEK)
+
+=== Period(measure=PROFIT, window=THIS_MONTH)
+mood: CALM
+label: This month's profit
+line: Only the owner or a manager can see this figure.
+speech: This month's profit. Only the owner or a manager can see this figure.
+speechHidden: This month's profit. Only the owner or a manager can see this figure.
+ask: Period(measure=PROFIT, window=THIS_MONTH)
+
+=== Period(measure=PROFIT, window=LAST_MONTH)
+mood: CALM
+label: Last month's profit
+line: Only the owner or a manager can see this figure.
+speech: Last month's profit. Only the owner or a manager can see this figure.
+speechHidden: Last month's profit. Only the owner or a manager can see this figure.
+ask: Period(measure=PROFIT, window=LAST_MONTH)
+
+=== Period(measure=PROFIT, window=LAST_6_MONTHS)
+mood: CALM
+label: Last 6 months' profit
+line: Only the owner or a manager can see this figure.
+speech: Last 6 months' profit. Only the owner or a manager can see this figure.
+speechHidden: Last 6 months' profit. Only the owner or a manager can see this figure.
+ask: Period(measure=PROFIT, window=LAST_6_MONTHS)
+
+=== Period(measure=PROFIT, window=ALL_TIME)
+mood: CALM
+label: All-time profit
+line: Only the owner or a manager can see this figure.
+speech: All-time profit. Only the owner or a manager can see this figure.
+speechHidden: All-time profit. Only the owner or a manager can see this figure.
+ask: Period(measure=PROFIT, window=ALL_TIME)
+

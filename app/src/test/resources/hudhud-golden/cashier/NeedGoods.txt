@@ -1,0 +1,209 @@
+=== NeedGoods(facet=OVERVIEW, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=OVERVIEW, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=OVERVIEW, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=OVERVIEW, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=OVERVIEW, code=null)
+
+=== NeedGoods(facet=PRICE, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=PRICE, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=PRICE, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=PRICE, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=PRICE, code=null)
+
+=== NeedGoods(facet=STOCK, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=STOCK, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=STOCK, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=STOCK, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=STOCK, code=null)
+
+=== NeedGoods(facet=COST, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=COST, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=COST, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=COST, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=COST, code=null)
+
+=== NeedGoods(facet=SUPPLIERS, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=SUPPLIERS, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=SUPPLIERS, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=SUPPLIERS, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=SUPPLIERS, code=null)
+
+=== NeedGoods(facet=LAST_IN, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=LAST_IN, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=LAST_IN, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=LAST_IN, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=LAST_IN, code=null)
+
+=== NeedGoods(facet=BUYERS, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=BUYERS, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=BUYERS, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=BUYERS, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=BUYERS, code=null)
+
+=== NeedGoods(facet=SOLD, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=SOLD, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=SOLD, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=SOLD, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=SOLD, code=null)
+
+=== NeedGoods(facet=COVER, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=COVER, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=COVER, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=COVER, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=COVER, code=null)
+
+=== NeedGoods(facet=LABEL, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=LABEL, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=LABEL, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=LABEL, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=LABEL, code=null)
+
+=== NeedGoods(facet=BARCODE, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=BARCODE, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=BARCODE, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=BARCODE, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=BARCODE, code=null)
+
+=== NeedGoods(facet=PACK, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=PACK, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=PACK, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=PACK, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=PACK, code=null)
+
+=== NeedGoods(facet=TAX, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=TAX, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=TAX, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=TAX, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=TAX, code=null)
+
+=== NeedGoods(facet=SHELF, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=SHELF, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=SHELF, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=SHELF, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=SHELF, code=null)
+
+=== NeedGoods(facet=ADDED, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=ADDED, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=ADDED, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=ADDED, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=ADDED, code=null)
+
+=== NeedGoods(facet=BATCHES, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=BATCHES, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=BATCHES, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=BATCHES, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=BATCHES, code=null)
+
+=== NeedGoods(facet=SCHEME, code=null)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=SCHEME, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=SCHEME, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=SCHEME, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=SCHEME, code=null)
+
+=== NeedGoods(facet=PRICE, code=2100000000017)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=PRICE, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=PRICE, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=PRICE, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=PRICE, code=2100000000017)
+
+=== NeedGoods(facet=PRICE, code=0000000000000)
+mood: CALM
+label: Which product?
+line: Tell me the product's name, or tap one below.
+row: party=0 | Paracetamol | - | - | ask=Goods(ids=[3], facet=PRICE, window=null)
+row: party=0 | DAP | - | - | ask=Goods(ids=[2], facet=PRICE, window=null)
+row: party=0 | Urea | - | - | ask=Goods(ids=[1], facet=PRICE, window=null)
+speech: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+speechHidden: Which product? Tell me the product's name, or tap one below. Paracetamol. DAP. Urea.
+ask: NeedGoods(facet=PRICE, code=0000000000000)
+

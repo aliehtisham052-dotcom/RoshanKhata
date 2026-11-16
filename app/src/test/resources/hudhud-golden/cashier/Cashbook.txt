@@ -1,0 +1,72 @@
+=== Cashbook(window=null)
+mood: CALM
+label: Cashbook · Today
+line: Only the owner or a manager can see this figure.
+speech: Cashbook Today. Only the owner or a manager can see this figure.
+speechHidden: Cashbook Today. Only the owner or a manager can see this figure.
+ask: Cashbook(window=null)
+
+=== Cashbook(window=TODAY)
+mood: CALM
+label: Cashbook · Today
+line: Only the owner or a manager can see this figure.
+speech: Cashbook Today. Only the owner or a manager can see this figure.
+speechHidden: Cashbook Today. Only the owner or a manager can see this figure.
+ask: Cashbook(window=TODAY)
+
+=== Cashbook(window=YESTERDAY)
+mood: CALM
+label: Cashbook · Yesterday
+line: Only the owner or a manager can see this figure.
+speech: Cashbook Yesterday. Only the owner or a manager can see this figure.
+speechHidden: Cashbook Yesterday. Only the owner or a manager can see this figure.
+ask: Cashbook(window=YESTERDAY)
+
+=== Cashbook(window=THIS_WEEK)
+mood: CALM
+label: Cashbook · This week
+line: Only the owner or a manager can see this figure.
+speech: Cashbook This week. Only the owner or a manager can see this figure.
+speechHidden: Cashbook This week. Only the owner or a manager can see this figure.
+ask: Cashbook(window=THIS_WEEK)
+
+=== Cashbook(window=LAST_WEEK)
+mood: CALM
+label: Cashbook · Last week
+line: Only the owner or a manager can see this figure.
+speech: Cashbook Last week. Only the owner or a manager can see this figure.
+speechHidden: Cashbook Last week. Only the owner or a manager can see this figure.
+ask: Cashbook(window=LAST_WEEK)
+
+=== Cashbook(window=THIS_MONTH)
+mood: CALM
+label: Cashbook · This month
+line: Only the owner or a manager can see this figure.
+speech: Cashbook This month. Only the owner or a manager can see this figure.
+speechHidden: Cashbook This month. Only the owner or a manager can see this figure.
+ask: Cashbook(window=THIS_MONTH)
+
+=== Cashbook(window=LAST_MONTH)
+mood: CALM
+label: Cashbook · Last month
+line: Only the owner or a manager can see this figure.
+speech: Cashbook Last month. Only the owner or a manager can see this figure.
+speechHidden: Cashbook Last month. Only the owner or a manager can see this figure.
+ask: Cashbook(window=LAST_MONTH)
+
+=== Cashbook(window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: Only the owner or a manager can see this figure.
+speech: Time span. Only the owner or a manager can see this figure.
+speechHidden: Time span. Only the owner or a manager can see this figure.
+ask: SpanLimit(options=[Cashbook(window=TODAY), Cashbook(window=THIS_WEEK), Cashbook(window=THIS_MONTH), Cashbook(window=LAST_MONTH)], long=false)
+
+=== Cashbook(window=ALL_TIME)
+mood: CALM
+label: Time span
+line: Only the owner or a manager can see this figure.
+speech: Time span. Only the owner or a manager can see this figure.
+speechHidden: Time span. Only the owner or a manager can see this figure.
+ask: SpanLimit(options=[Cashbook(window=TODAY), Cashbook(window=THIS_WEEK), Cashbook(window=THIS_MONTH), Cashbook(window=LAST_MONTH)], long=false)
+

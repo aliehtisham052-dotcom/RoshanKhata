@@ -1,0 +1,158 @@
+=== About(topic=APP)
+mood: CALM
+line: Roshan Khata is your shop's khata on this phone: credit and payments, cashbook, stock, bills, invoices and reports. No account is needed, and your book leaves the phone only for what you turn on yourself, like a backup or sync.
+open: AboutActivity
+speech: Roshan Khata is your shop's khata on this phone: credit and payments, cashbook, stock, bills, invoices and reports. No account is needed, and your book leaves the phone only for what you turn on yourself, like a backup or sync.
+speechHidden: Roshan Khata is your shop's khata on this phone: credit and payments, cashbook, stock, bills, invoices and reports. No account is needed, and your book leaves the phone only for what you turn on yourself, like a backup or sync.
+ask: About(topic=APP)
+
+=== About(topic=MAKER)
+mood: CALM
+line: The developer of Roshan Khata — and of me, Hudhud — is Ehtisham Ali, of Innovation 313.
+line: Everything good in it is by Allah's grace and tawfiq. Alhamdulillah.
+open: AboutActivity
+speech: The developer of Roshan Khata — and of me, Hudhud — is Ehtisham Ali, of Innovation 313. Everything good in it is by Allah's grace and tawfiq. Alhamdulillah.
+speechHidden: The developer of Roshan Khata — and of me, Hudhud — is Ehtisham Ali, of Innovation 313. Everything good in it is by Allah's grace and tawfiq. Alhamdulillah.
+ask: About(topic=MAKER)
+
+=== About(topic=PRIVACY)
+mood: CALM
+line: Your book stays on this phone, and I work out every answer here. When you ask by voice, your phone's speech service hears the words. Nothing of your book leaves the phone unless you turn it on yourself — a backup, sync or a customer's khata link.
+open: AboutActivity
+speech: Your book stays on this phone, and I work out every answer here. When you ask by voice, your phone's speech service hears the words. Nothing of your book leaves the phone unless you turn it on yourself — a backup, sync or a customer's khata link.
+speechHidden: Your book stays on this phone, and I work out every answer here. When you ask by voice, your phone's speech service hears the words. Nothing of your book leaves the phone unless you turn it on yourself — a backup, sync or a customer's khata link.
+ask: About(topic=PRIVACY)
+
+=== About(topic=LANGUAGES)
+mood: CALM
+line: I understand all nine languages of the app: English, Urdu, Roman Urdu, Sindhi, Arabic, Farsi, Hindi, Bengali and Indonesian — typed, or spoken where your phone's speech service has the language. I answer in the app's language.
+open: LanguageActivity
+speech: I understand all nine languages of the app: English, Urdu, Roman Urdu, Sindhi, Arabic, Farsi, Hindi, Bengali and Indonesian — typed, or spoken where your phone's speech service has the language. I answer in the app's language.
+speechHidden: I understand all nine languages of the app: English, Urdu, Roman Urdu, Sindhi, Arabic, Farsi, Hindi, Bengali and Indonesian — typed, or spoken where your phone's speech service has the language. I answer in the app's language.
+ask: About(topic=LANGUAGES)
+
+=== About(topic=VERSION)
+mood: CALM
+line: Roshan Khata version #.#.#.
+open: AboutActivity
+speech: Roshan Khata version #.#.#.
+speechHidden: Roshan Khata version #.#.#.
+ask: About(topic=VERSION)
+
+=== About(topic=OWNER_NAME)
+mood: CALM
+line: You haven't told me your name yet. Say “my name is …” or write it in my voice settings, and I'll greet you by it.
+openLabel: hudhud_settings
+speech: You haven't told me your name yet. Say “my name is …” or write it in my voice settings, and I'll greet you by it.
+speechHidden: You haven't told me your name yet. Say “my name is …” or write it in my voice settings, and I'll greet you by it.
+voiceSettings: true
+ask: About(topic=OWNER_NAME)
+
+=== About(topic=NAME_STORY)
+mood: GOOD
+line: My name comes from the hoopoe, the hudhud of Prophet Sulaiman (peace be upon him), who brought him true news. I bring you true news too, from your own book; the people who made me want every account kept with truth and honesty.
+speech: My name comes from the hoopoe, the hudhud of Prophet Sulaiman (peace be upon him), who brought him true news. I bring you true news too, from your own book; the people who made me want every account kept with truth and honesty.
+speechHidden: My name comes from the hoopoe, the hudhud of Prophet Sulaiman (peace be upon him), who brought him true news. I bring you true news too, from your own book; the people who made me want every account kept with truth and honesty.
+ask: About(topic=NAME_STORY)
+
+=== About(topic=TAWHEED)
+mood: CALM
+line: Allah is One — He has no partner and nothing is like Him. This is Tawheed, the foundation of Islam. Surah Al-Ikhlas begins: “Say: He is Allah, the One.”
+line: The Quran also gives a proof from the order of the world: had there been other gods in the heavens and the earth besides Allah, both would have fallen into disorder (21:22). And the hoopoe — whose name I carry — told Prophet Sulaiman (peace be upon him): “Allah — there is no god but Him, the Lord of the Great Throne” (27:26).
+spoken: Allah is One — He has no partner and nothing is like Him. This is Tawheed, the foundation of Islam. Surah Al-Ikhlas begins: “Say: He is Allah, the One.” The Quran also gives a proof from the order of the world: had there been other gods in the heavens and the earth besides Allah, both would have fallen into disorder. And the hoopoe — whose name I carry — told Prophet Sulaiman (peace be upon him): “Allah — there is no god but Him, the Lord of the Great Throne”.
+speech: Allah is One — He has no partner and nothing is like Him. This is Tawheed, the foundation of Islam. Surah Al-Ikhlas begins: “Say: He is Allah, the One.” The Quran also gives a proof from the order of the world: had there been other gods in the heavens and the earth besides Allah, both would have fallen into disorder. And the hoopoe — whose name I carry — told Prophet Sulaiman (peace be upon him): “Allah — there is no god but Him, the Lord of the Great Throne”.
+speechHidden: Allah is One — He has no partner and nothing is like Him. This is Tawheed, the foundation of Islam. Surah Al-Ikhlas begins: “Say: He is Allah, the One.” The Quran also gives a proof from the order of the world: had there been other gods in the heavens and the earth besides Allah, both would have fallen into disorder. And the hoopoe — whose name I carry — told Prophet Sulaiman (peace be upon him): “Allah — there is no god but Him, the Lord of the Great Throne”.
+ask: About(topic=TAWHEED)
+verse: الإخلاص 112:1-4 قُلْ هُوَ ٱللَّهُ أَحَدٌ\nٱللَّهُ ٱلصَّمَدُ\nلَمْ يَلِدْ وَلَمْ يُولَدْ\nوَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌ
+verse: الأنبياء 21:22 لَوْ كَانَ فِيهِمَآ ءَالِهَةٌ إِلَّا ٱللَّهُ لَفَسَدَتَا ۚ فَسُبْحَـٰنَ ٱللَّهِ رَبِّ ٱلْعَرْشِ عَمَّا يَصِفُونَ
+verse: النمل 27:26 ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ رَبُّ ٱلْعَرْشِ ٱلْعَظِيمِ
+verseNote: A brief meaning, not a translation — for more, ask a qualified scholar.
+reverent: true
+
+=== About(topic=HAMD)
+mood: CALM
+line: All praise belongs to Allah, Lord of the worlds — Alhamdulillah. Everything in the heavens and the earth glorifies Him with His praise, though we do not understand how they do it (17:44); even the birds with wings spread know their own prayer and glorification (24:41).
+line: This work too is not by our strength — it is by Allah's grace and tawfiq. As Prophet Shuaib (peace be upon him) said: “My success is only through Allah; in Him I trust and to Him I turn” (11:88). Alhamdulillah.
+spoken: All praise belongs to Allah, Lord of the worlds — Alhamdulillah. Everything in the heavens and the earth glorifies Him with His praise, though we do not understand how they do it; even the birds with wings spread know their own prayer and glorification. This work too is not by our strength — it is by Allah's grace and tawfiq. As Prophet Shuaib (peace be upon him) said: “My success is only through Allah; in Him I trust and to Him I turn”. Alhamdulillah.
+speech: All praise belongs to Allah, Lord of the worlds — Alhamdulillah. Everything in the heavens and the earth glorifies Him with His praise, though we do not understand how they do it; even the birds with wings spread know their own prayer and glorification. This work too is not by our strength — it is by Allah's grace and tawfiq. As Prophet Shuaib (peace be upon him) said: “My success is only through Allah; in Him I trust and to Him I turn”. Alhamdulillah.
+speechHidden: All praise belongs to Allah, Lord of the worlds — Alhamdulillah. Everything in the heavens and the earth glorifies Him with His praise, though we do not understand how they do it; even the birds with wings spread know their own prayer and glorification. This work too is not by our strength — it is by Allah's grace and tawfiq. As Prophet Shuaib (peace be upon him) said: “My success is only through Allah; in Him I trust and to Him I turn”. Alhamdulillah.
+ask: About(topic=HAMD)
+verse: الفاتحة 1:2 ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ
+verse: الإسراء 17:44 تُسَبِّحُ لَهُ ٱلسَّمَـٰوَٰتُ ٱلسَّبْعُ وَٱلْأَرْضُ وَمَن فِيهِنَّ ۚ وَإِن مِّن شَىْءٍ إِلَّا يُسَبِّحُ بِحَمْدِهِۦ وَلَـٰكِن لَّا تَفْقَهُونَ تَسْبِيحَهُمْ ۗ إِنَّهُۥ كَانَ حَلِيمًا غَفُورًا
+verse: النور 24:41 أَلَمْ تَرَ أَنَّ ٱللَّهَ يُسَبِّحُ لَهُۥ مَن فِى ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ وَٱلطَّيْرُ صَـٰٓفَّـٰتٍ ۖ كُلٌّ قَدْ عَلِمَ صَلَاتَهُۥ وَتَسْبِيحَهُۥ ۗ وَٱللَّهُ عَلِيمٌۢ بِمَا يَفْعَلُونَ
+verse: هود 11:88 وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ
+verseNote: A brief meaning, not a translation — for more, ask a qualified scholar.
+reverent: true
+
+=== About(topic=RISALAT)
+mood: CALM
+line: Sayyiduna Muhammad ﷺ is the Messenger of Allah and the last of the prophets. The Kalima says it: “I bear witness that there is no god but Allah, and I bear witness that Muhammad is the Messenger of Allah.”
+line: Allah says: “Muhammad is not the father of any of your men, but he is the Messenger of Allah and the Seal of the Prophets” (33:40). And: “Allah and His angels send blessings on the Prophet; O believers, send blessings on him and greet him with peace” (33:56) — so we say: Sallallahu alayhi wa sallam.
+spoken: Sayyiduna Muhammad ﷺ is the Messenger of Allah and the last of the prophets. The Kalima says it: “I bear witness that there is no god but Allah, and I bear witness that Muhammad is the Messenger of Allah.” Allah says: “Muhammad is not the father of any of your men, but he is the Messenger of Allah and the Seal of the Prophets”. And: “Allah and His angels send blessings on the Prophet; O believers, send blessings on him and greet him with peace” — so we say: Sallallahu alayhi wa sallam.
+speech: Sayyiduna Muhammad ﷺ is the Messenger of Allah and the last of the prophets. The Kalima says it: “I bear witness that there is no god but Allah, and I bear witness that Muhammad is the Messenger of Allah.” Allah says: “Muhammad is not the father of any of your men, but he is the Messenger of Allah and the Seal of the Prophets”. And: “Allah and His angels send blessings on the Prophet; O believers, send blessings on him and greet him with peace” — so we say: Sallallahu alayhi wa sallam.
+speechHidden: Sayyiduna Muhammad ﷺ is the Messenger of Allah and the last of the prophets. The Kalima says it: “I bear witness that there is no god but Allah, and I bear witness that Muhammad is the Messenger of Allah.” Allah says: “Muhammad is not the father of any of your men, but he is the Messenger of Allah and the Seal of the Prophets”. And: “Allah and His angels send blessings on the Prophet; O believers, send blessings on him and greet him with peace” — so we say: Sallallahu alayhi wa sallam.
+ask: About(topic=RISALAT)
+verse: الشهادتان  أَشْهَدُ أَنْ لَا إِلَـٰهَ إِلَّا ٱللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ ٱللَّهِ
+verse: الأحزاب 33:40 مَّا كَانَ مُحَمَّدٌ أَبَآ أَحَدٍ مِّن رِّجَالِكُمْ وَلَـٰكِن رَّسُولَ ٱللَّهِ وَخَاتَمَ ٱلنَّبِيِّـۧنَ ۗ وَكَانَ ٱللَّهُ بِكُلِّ شَىْءٍ عَلِيمًا
+verse: الأحزاب 33:56 إِنَّ ٱللَّهَ وَمَلَـٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبِىِّ ۚ يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا
+verseNote: A brief meaning, not a translation — for more, ask a qualified scholar.
+reverent: true
+
+=== About(topic=APP_STARTED)
+mood: CALM
+line: The first work on Roshan Khata was saved on <date>.
+line: Days since the first work: #
+speech: The first work on Roshan Khata was saved on <date>. Days since the first work: #.
+speechHidden: The first work on Roshan Khata was saved on <date>. Days since the first work: #.
+ask: About(topic=APP_STARTED)
+
+=== About(topic=APP_PUBLISHED)
+mood: CALM
+line: Roshan Khata was published on Google Play: Google gave it production access on <date>, and it was confirmed public by <date>. The exact first day everyone could see it is not in my records.
+speech: Roshan Khata was published on Google Play: Google gave it production access on <date>, and it was confirmed public by <date>. The exact first day everyone could see it is not in my records.
+speechHidden: Roshan Khata was published on Google Play: Google gave it production access on <date>, and it was confirmed public by <date>. The exact first day everyone could see it is not in my records.
+ask: About(topic=APP_PUBLISHED)
+
+=== About(topic=HUDHUD_ADDED)
+mood: CALM
+line: Work on me, Hudhud, began on <date>.
+line: Days since Hudhud began: #
+speech: Work on me, Hudhud, began on <date>. Days since Hudhud began: #.
+speechHidden: Work on me, Hudhud, began on <date>. Days since Hudhud began: #.
+ask: About(topic=HUDHUD_ADDED)
+
+=== About(topic=APP_JOURNEY)
+mood: CALM
+label: The app's journey
+line: The first work on Roshan Khata was saved on <date>.
+line: Roshan Khata was published on Google Play: Google gave it production access on <date>, and it was confirmed public by <date>. The exact first day everyone could see it is not in my records.
+line: Work on me, Hudhud, began on <date>.
+line: Days since the first work: #
+line: Days since Hudhud began: #
+speech: The app's journey. The first work on Roshan Khata was saved on <date>. Roshan Khata was published on Google Play: Google gave it production access on <date>, and it was confirmed public by <date>. The exact first day everyone could see it is not in my records. Work on me, Hudhud, began on <date>. Days since the first work: #. Days since Hudhud began: #.
+speechHidden: The app's journey. The first work on Roshan Khata was saved on <date>. Roshan Khata was published on Google Play: Google gave it production access on <date>, and it was confirmed public by <date>. The exact first day everyone could see it is not in my records. Work on me, Hudhud, began on <date>. Days since the first work: #. Days since Hudhud began: #.
+ask: About(topic=APP_JOURNEY)
+
+=== About(topic=HOOPOE_STORY)
+mood: CALM
+label: Hudhud's story
+line: I am Hudhud, the hoopoe of Prophet Sulaiman (peace be upon him). Allah had taught Sulaiman the speech of the birds, and his armies of jinn, men and birds stood in ranks before him (27:16–17). This is my story as the Quran tells it, in Surah An-Naml.
+line: One day Sulaiman looked over the birds and did not see me. He said: “Why do I not see the hoopoe? Is he among the absent? I will punish him severely, or slaughter him, unless he brings me a clear reason” (27:20–21).
+line: I was not long in coming back. I said: “I have learned what you have not learned, and I have come to you from Saba (Sheba) with sure news” (27:22).
+line: “I found a woman ruling over them; she has been given of everything, and she has a great throne” (27:23).
+line: “I found her and her people bowing to the sun instead of Allah. Satan has made their deeds seem fair to them and has kept them from the Way, so they are not guided — so that they do not bow down to Allah, who brings out what is hidden in the heavens and the earth, and knows what you hide and what you show. Allah — there is no god but Him, the Lord of the Great Throne” (27:24–26).
+line: Sulaiman answered: “We shall see whether you have spoken the truth or are of the liars. Take this letter of mine, deliver it to them, then draw back from them and see what they send back” (27:27–28).
+line: From here the Quran itself tells what followed — it says nothing more of me. The queen told her chiefs: “A noble letter has been delivered to me. It is from Sulaiman, and it begins: In the name of Allah, the Most Merciful, the Ever Merciful. Do not rise up against me, and come to me in submission” (27:29–31).
+line: She asked her chiefs for counsel. They answered that they were strong and mighty in war, and the command was hers. She said that kings who enter a town ruin it and humble its honoured people, and that she would send a gift and see what the envoys bring back (27:32–35).
+line: When her envoy came to Sulaiman, he said: “Do you help me with wealth? What Allah has given me is better than what He has given you. It is you who rejoice in your gift. Go back to them” (27:36–37). Then one who had knowledge of the Book said he would bring her throne before the blink of an eye — and when Sulaiman saw it standing before him, he said: “This is by the favour of my Lord, to test me whether I am grateful or ungrateful” (27:38–40).
+line: Her throne was shown to her, disguised, and she was asked: “Is your throne like this?” She said: “It is as though it were it.” Then she was told to enter the palace; when she saw it she took it for a pool of water — and Sulaiman said it was a palace paved smooth with glass (27:41–44).
+line: And the Quran closes the account with her own words: “My Lord, I have wronged myself, and I submit with Sulaiman to Allah, the Lord of the worlds” (27:44). That is the outcome.
+spoken: I am Hudhud, the hoopoe of Prophet Sulaiman (peace be upon him). Allah had taught Sulaiman the speech of the birds, and his armies of jinn, men and birds stood in ranks before him. This is my story as the Quran tells it, in Surah An-Naml. One day Sulaiman looked over the birds and did not see me. He said: “Why do I not see the hoopoe? Is he among the absent? I will punish him severely, or slaughter him, unless he brings me a clear reason”. I was not long in coming back. I said: “I have learned what you have not learned, and I have come to you from Saba (Sheba) with sure news”. “I found a woman ruling over them; she has been given of everything, and she has a great throne”. “I found her and her people bowing to the sun instead of Allah. Satan has made their deeds seem fair to them and has kept them from the Way, so they are not guided — so that they do not bow down to Allah, who brings out what is hidden in the heavens and the earth, and knows what you hide and what you show. Allah — there is no god but Him, the Lord of the Great Throne”. Sulaiman answered: “We shall see whether you have spoken the truth or are of the liars. Take this letter of mine, deliver it to them, then draw back from them and see what they send back”. From here the Quran itself tells what followed — it says nothing more of me. The queen told her chiefs: “A noble letter has been delivered to me. It is from Sulaiman, and it begins: In the name of Allah, the Most Merciful, the Ever Merciful. Do not rise up against me, and come to me in submission”. She asked her chiefs for counsel. They answered that they were strong and mighty in war, and the command was hers. She said that kings who enter a town ruin it and humble its honoured people, and that she would send a gift and see what the envoys bring back. When her envoy came to Sulaiman, he said: “Do you help me with wealth? What Allah has given me is better than what He has given you. It is you who rejoice in your gift. Go back to them”. Then one who had knowledge of the Book said he would bring her throne before the blink of an eye — and when Sulaiman saw it standing before him, he said: “This is by the favour of my Lord, to test me whether I am grateful or ungrateful”. Her throne was shown to her, disguised, and she was asked: “Is your throne like this?” She said: “It is as though it were it.” Then she was told to enter the palace; when she saw it she took it for a pool of water — and Sulaiman said it was a palace paved smooth with glass. And the Quran closes the account with her own words: “My Lord, I have wronged myself, and I submit with Sulaiman to Allah, the Lord of the worlds”. That is the outcome.
+speech: I am Hudhud, the hoopoe of Prophet Sulaiman (peace be upon him). Allah had taught Sulaiman the speech of the birds, and his armies of jinn, men and birds stood in ranks before him. This is my story as the Quran tells it, in Surah An-Naml. One day Sulaiman looked over the birds and did not see me. He said: “Why do I not see the hoopoe? Is he among the absent? I will punish him severely, or slaughter him, unless he brings me a clear reason”. I was not long in coming back. I said: “I have learned what you have not learned, and I have come to you from Saba (Sheba) with sure news”. “I found a woman ruling over them; she has been given of everything, and she has a great throne”. “I found her and her people bowing to the sun instead of Allah. Satan has made their deeds seem fair to them and has kept them from the Way, so they are not guided — so that they do not bow down to Allah, who brings out what is hidden in the heavens and the earth, and knows what you hide and what you show. Allah — there is no god but Him, the Lord of the Great Throne”. Sulaiman answered: “We shall see whether you have spoken the truth or are of the liars. Take this letter of mine, deliver it to them, then draw back from them and see what they send back”. From here the Quran itself tells what followed — it says nothing more of me. The queen told her chiefs: “A noble letter has been delivered to me. It is from Sulaiman, and it begins: In the name of Allah, the Most Merciful, the Ever Merciful. Do not rise up against me, and come to me in submission”. She asked her chiefs for counsel. They answered that they were strong and mighty in war, and the command was hers. She said that kings who enter a town ruin it and humble its honoured people, and that she would send a gift and see what the envoys bring back. When her envoy came to Sulaiman, he said: “Do you help me with wealth? What Allah has given me is better than what He has given you. It is you who rejoice in your gift. Go back to them”. Then one who had knowledge of the Book said he would bring her throne before the blink of an eye — and when Sulaiman saw it standing before him, he said: “This is by the favour of my Lord, to test me whether I am grateful or ungrateful”. Her throne was shown to her, disguised, and she was asked: “Is your throne like this?” She said: “It is as though it were it.” Then she was told to enter the palace; when she saw it she took it for a pool of water — and Sulaiman said it was a palace paved smooth with glass. And the Quran closes the account with her own words: “My Lord, I have wronged myself, and I submit with Sulaiman to Allah, the Lord of the worlds”. That is the outcome.
+speechHidden: I am Hudhud, the hoopoe of Prophet Sulaiman (peace be upon him). Allah had taught Sulaiman the speech of the birds, and his armies of jinn, men and birds stood in ranks before him. This is my story as the Quran tells it, in Surah An-Naml. One day Sulaiman looked over the birds and did not see me. He said: “Why do I not see the hoopoe? Is he among the absent? I will punish him severely, or slaughter him, unless he brings me a clear reason”. I was not long in coming back. I said: “I have learned what you have not learned, and I have come to you from Saba (Sheba) with sure news”. “I found a woman ruling over them; she has been given of everything, and she has a great throne”. “I found her and her people bowing to the sun instead of Allah. Satan has made their deeds seem fair to them and has kept them from the Way, so they are not guided — so that they do not bow down to Allah, who brings out what is hidden in the heavens and the earth, and knows what you hide and what you show. Allah — there is no god but Him, the Lord of the Great Throne”. Sulaiman answered: “We shall see whether you have spoken the truth or are of the liars. Take this letter of mine, deliver it to them, then draw back from them and see what they send back”. From here the Quran itself tells what followed — it says nothing more of me. The queen told her chiefs: “A noble letter has been delivered to me. It is from Sulaiman, and it begins: In the name of Allah, the Most Merciful, the Ever Merciful. Do not rise up against me, and come to me in submission”. She asked her chiefs for counsel. They answered that they were strong and mighty in war, and the command was hers. She said that kings who enter a town ruin it and humble its honoured people, and that she would send a gift and see what the envoys bring back. When her envoy came to Sulaiman, he said: “Do you help me with wealth? What Allah has given me is better than what He has given you. It is you who rejoice in your gift. Go back to them”. Then one who had knowledge of the Book said he would bring her throne before the blink of an eye — and when Sulaiman saw it standing before him, he said: “This is by the favour of my Lord, to test me whether I am grateful or ungrateful”. Her throne was shown to her, disguised, and she was asked: “Is your throne like this?” She said: “It is as though it were it.” Then she was told to enter the palace; when she saw it she took it for a pool of water — and Sulaiman said it was a palace paved smooth with glass. And the Quran closes the account with her own words: “My Lord, I have wronged myself, and I submit with Sulaiman to Allah, the Lord of the worlds”. That is the outcome.
+ask: About(topic=HOOPOE_STORY)
+verse: النمل 27:26 ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ رَبُّ ٱلْعَرْشِ ٱلْعَظِيمِ
+verse: النمل 27:44 قَالَتْ رَبِّ إِنِّى ظَلَمْتُ نَفْسِى وَأَسْلَمْتُ مَعَ سُلَيْمَـٰنَ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ
+verseNote: A brief telling of Surah An-Naml (27:16–44), not a translation — for more, ask a qualified scholar.
+reverent: true
+

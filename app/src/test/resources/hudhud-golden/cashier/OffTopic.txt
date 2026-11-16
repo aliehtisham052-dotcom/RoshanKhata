@@ -1,0 +1,27 @@
+=== OffTopic(why=GENERAL, sum=null, result=null)
+mood: CALM
+line: I help only with your shop's book and this app, so I cannot answer this.
+speech: I help only with your shop's book and this app, so I cannot answer this.
+speechHidden: I help only with your shop's book and this app, so I cannot answer this.
+option: Abilities
+ask: OffTopic(why=GENERAL, sum=null, result=null)
+
+=== OffTopic(why=SUM, sum=2+2, result=4.0)
+mood: CALM
+label: 2+2
+figure: 4
+line: For sums, the calculator is one tap away.
+open: CalculatorActivity
+speech: 2+2: 4. For sums, the calculator is one tap away.
+speechHidden: 2+2: 4. For sums, the calculator is one tap away.
+ask: OffTopic(why=SUM, sum=2+2, result=4.0)
+
+=== OffTopic(why=SUM, sum=500 aur 300 ka total, result=null)
+mood: CALM
+label: 500 aur 300 ka total
+line: For sums, the calculator is one tap away.
+open: CalculatorActivity
+speech: 500 aur 300 ka total. For sums, the calculator is one tap away.
+speechHidden: 500 aur 300 ka total. For sums, the calculator is one tap away.
+ask: OffTopic(why=SUM, sum=500 aur 300 ka total, result=null)
+

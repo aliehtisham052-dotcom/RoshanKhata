@@ -1,0 +1,89 @@
+=== Deliveries(window=null)
+mood: CALM
+label: Goods that came in
+row: party=3 | Tariq Butt | - | <date> · Urea, DAP…
+open: BillsActivity
+speech: Goods that came in. Tariq Butt, <date> Urea, DAP…
+speechHidden: Goods that came in. Tariq Butt, <date> Urea, DAP…
+ask: Deliveries(window=null)
+
+=== Deliveries(window=TODAY)
+mood: CALM
+label: Goods that came in · Today
+line: No goods came in on a supplier bill in this time.
+open: BillsActivity
+speech: Goods that came in Today. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in Today. No goods came in on a supplier bill in this time.
+ask: Deliveries(window=TODAY)
+
+=== Deliveries(window=YESTERDAY)
+mood: CALM
+label: Goods that came in · Yesterday
+line: No goods came in on a supplier bill in this time.
+open: BillsActivity
+speech: Goods that came in Yesterday. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in Yesterday. No goods came in on a supplier bill in this time.
+ask: Deliveries(window=YESTERDAY)
+
+=== Deliveries(window=THIS_WEEK)
+mood: CALM
+label: Goods that came in · This week
+line: No goods came in on a supplier bill in this time.
+open: BillsActivity
+speech: Goods that came in This week. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in This week. No goods came in on a supplier bill in this time.
+ask: Deliveries(window=THIS_WEEK)
+
+=== Deliveries(window=LAST_WEEK)
+mood: CALM
+label: Goods that came in · Last week
+line: No goods came in on a supplier bill in this time.
+open: BillsActivity
+speech: Goods that came in Last week. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in Last week. No goods came in on a supplier bill in this time.
+ask: Deliveries(window=LAST_WEEK)
+
+=== Deliveries(window=THIS_MONTH)
+mood: CALM
+label: Goods that came in · This month
+line: No goods came in on a supplier bill in this time.
+open: BillsActivity
+speech: Goods that came in This month. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in This month. No goods came in on a supplier bill in this time.
+ask: Deliveries(window=THIS_MONTH)
+
+=== Deliveries(window=LAST_MONTH)
+mood: CALM
+label: Goods that came in · Last month
+line: No goods came in on a supplier bill in this time.
+open: BillsActivity
+speech: Goods that came in Last month. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in Last month. No goods came in on a supplier bill in this time.
+ask: Deliveries(window=LAST_MONTH)
+
+=== Deliveries(window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Deliveries(window=TODAY) = Goods that came in · Today
+option: Deliveries(window=THIS_WEEK) = Goods that came in · This week
+option: Deliveries(window=THIS_MONTH) = Goods that came in · This month
+option: Deliveries(window=LAST_MONTH) = Goods that came in · Last month
+ask: SpanLimit(options=[Deliveries(window=TODAY), Deliveries(window=THIS_WEEK), Deliveries(window=THIS_MONTH), Deliveries(window=LAST_MONTH)], long=false)
+
+=== Deliveries(window=ALL_TIME)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Deliveries(window=TODAY) = Goods that came in · Today
+option: Deliveries(window=THIS_WEEK) = Goods that came in · This week
+option: Deliveries(window=THIS_MONTH) = Goods that came in · This month
+option: Deliveries(window=LAST_MONTH) = Goods that came in · Last month
+ask: SpanLimit(options=[Deliveries(window=TODAY), Deliveries(window=THIS_WEEK), Deliveries(window=THIS_MONTH), Deliveries(window=LAST_MONTH)], long=false)
+

@@ -1,0 +1,53 @@
+=== Voice(change=AGAIN)
+mood: CALM
+line: I haven't told you anything yet. Ask me anything about your khata, or tap a question below.
+speech: I haven't told you anything yet. Ask me anything about your khata, or tap a question below.
+speechHidden: I haven't told you anything yet. Ask me anything about your khata, or tap a question below.
+ask: Voice(change=AGAIN)
+voice: AGAIN
+
+=== Voice(change=SLOWER)
+mood: CALM
+line: All right, I'll speak a little more slowly.
+speech: All right, I'll speak a little more slowly.
+speechHidden: All right, I'll speak a little more slowly.
+ask: Voice(change=SLOWER)
+voice: SLOWER
+
+=== Voice(change=FASTER)
+mood: CALM
+line: All right, I'll speak a little faster.
+speech: All right, I'll speak a little faster.
+speechHidden: All right, I'll speak a little faster.
+ask: Voice(change=FASTER)
+voice: FASTER
+
+=== Voice(change=QUIET)
+mood: CALM
+line: All right. Ask me whenever you like.
+ask: Voice(change=QUIET)
+quiet: true
+voice: QUIET
+
+=== Voice(change=OFF)
+mood: CALM
+line: My voice is off. I'll write my answers; tap the speaker at the top to hear me again.
+ask: Voice(change=OFF)
+quiet: true
+voice: OFF
+
+=== Voice(change=ON)
+mood: CALM
+line: My voice is on. I'll say my answers aloud.
+speech: My voice is on. I'll say my answers aloud.
+speechHidden: My voice is on. I'll say my answers aloud.
+ask: Voice(change=ON)
+voice: ON
+
+=== Voice(change=VOLUME)
+mood: CALM
+line: Your phone's volume buttons make me louder or quieter.
+ask: Voice(change=VOLUME)
+quiet: true
+voice: VOLUME
+

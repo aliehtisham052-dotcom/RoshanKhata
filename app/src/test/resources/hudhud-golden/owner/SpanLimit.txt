@@ -1,0 +1,22 @@
+=== SpanLimit(options=[Activity(window=TODAY), Activity(window=THIS_WEEK)], long=false)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Activity(window=TODAY) = What happened · Today
+option: Activity(window=THIS_WEEK) = What happened · This week
+ask: SpanLimit(options=[Activity(window=TODAY), Activity(window=THIS_WEEK)], long=false)
+
+=== SpanLimit(options=[Period(measure=SALES, window=THIS_MONTH), Period(measure=SALES, window=ALL_TIME)], long=true)
+mood: CALM
+label: Time span
+line: I can't give exactly that span. I can add this up for this month, last month, the last 6 months, this year, last year or since the start — tap one below.
+spoken: I can't give exactly that span. I can add this up for this month, last month, the last 6 months, this year, last year or since the start — tap one below.
+speech: I can't give exactly that span. I can add this up for this month, last month, the last 6 months, this year, last year or since the start — tap one below.
+speechHidden: I can't give exactly that span. I can add this up for this month, last month, the last 6 months, this year, last year or since the start — tap one below.
+option: Period(measure=SALES, window=THIS_MONTH) = This month's sale
+option: Period(measure=SALES, window=ALL_TIME) = All-time sale
+ask: SpanLimit(options=[Period(measure=SALES, window=THIS_MONTH), Period(measure=SALES, window=ALL_TIME)], long=true)
+

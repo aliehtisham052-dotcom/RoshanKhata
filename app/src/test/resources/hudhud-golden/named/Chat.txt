@@ -1,0 +1,16 @@
+=== Chat(talk=ADDRESS, salaam=false)
+mood: CALM
+line: Yes, Ali bhai. How can I help?
+spoken: Yes, Ali bhai. How can I help?
+speech: Yes, Ali bhai. How can I help?
+speechHidden: Yes, Ali bhai. How can I help?
+ask: Chat(talk=ADDRESS, salaam=false)
+
+=== Chat(talk=HOW_ARE_YOU, salaam=true)
+mood: GOOD
+line: Wa alaikum assalam, Ali bhai! All is well, thank you. Ask whatever you need to check.
+spoken: Wa alaikum assalam, Ali bhai! All is well, thank you. Ask whatever you need to check.
+speech: Wa alaikum assalam, Ali bhai! All is well, thank you. Ask whatever you need to check.
+speechHidden: Wa alaikum assalam, Ali bhai! All is well, thank you. Ask whatever you need to check.
+ask: Chat(talk=HOW_ARE_YOU, salaam=true)
+

@@ -1,0 +1,108 @@
+=== OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: Sale · <date>
+line: Only the owner or a manager can see this figure.
+speech: Sale <date>. Only the owner or a manager can see this figure.
+speechHidden: Sale <date>. Only the owner or a manager can see this figure.
+ask: OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: Sale · <date>
+line: Only the owner or a manager can see this figure.
+speech: Sale <date>. Only the owner or a manager can see this figure.
+speechHidden: Sale <date>. Only the owner or a manager can see this figure.
+ask: OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=PROFIT, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: Profit · <date>
+line: Only the owner or a manager can see this figure.
+speech: Profit <date>. Only the owner or a manager can see this figure.
+speechHidden: Profit <date>. Only the owner or a manager can see this figure.
+ask: OnDays(of=PROFIT, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=PROFIT, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: Profit · <date>
+line: Only the owner or a manager can see this figure.
+speech: Profit <date>. Only the owner or a manager can see this figure.
+speechHidden: Profit <date>. Only the owner or a manager can see this figure.
+ask: OnDays(of=PROFIT, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: Money that came in · <date>
+line: Only the owner or a manager can see this figure.
+speech: Money that came in <date>. Only the owner or a manager can see this figure.
+speechHidden: Money that came in <date>. Only the owner or a manager can see this figure.
+ask: OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: Money that came in · <date>
+line: Only the owner or a manager can see this figure.
+speech: Money that came in <date>. Only the owner or a manager can see this figure.
+speechHidden: Money that came in <date>. Only the owner or a manager can see this figure.
+ask: OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: What happened · <date>
+line: Only the owner or a manager can see this figure.
+speech: What happened <date>. Only the owner or a manager can see this figure.
+speechHidden: What happened <date>. Only the owner or a manager can see this figure.
+ask: OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: What happened · <date>
+line: Only the owner or a manager can see this figure.
+speech: What happened <date>. Only the owner or a manager can see this figure.
+speechHidden: What happened <date>. Only the owner or a manager can see this figure.
+ask: OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+mood: CALM
+label: Ali Raza
+figure: Rs 1,000
+line: I Got · <date>
+openParty: 1
+money: true
+speech: Ali Raza: Rs 1,000. I Got <date>.
+speechHidden: Ali Raza. I Got <date>. [an amount left out]
+ask: OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+
+=== OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+mood: CALM
+label: Ali Raza
+figure: Rs 0
+line: I Got · <date>
+openParty: 1
+money: true
+speech: Ali Raza: Rs 0. I Got <date>.
+speechHidden: Ali Raza. I Got <date>. [an amount left out]
+ask: OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+
+=== OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+mood: CALM
+label: Ali Raza
+figure: Rs 9,000
+line: I Gave · <date>
+openParty: 1
+money: true
+speech: Ali Raza: Rs 9,000. I Gave <date>.
+speechHidden: Ali Raza. I Gave <date>. [an amount left out]
+ask: OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+
+=== OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+mood: CALM
+label: Ali Raza
+figure: Rs 0
+line: I Gave · <date>
+openParty: 1
+money: true
+speech: Ali Raza: Rs 0. I Gave <date>.
+speechHidden: Ali Raza. I Gave <date>. [an amount left out]
+ask: OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+

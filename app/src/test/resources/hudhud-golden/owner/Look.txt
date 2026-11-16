@@ -1,0 +1,53 @@
+=== Look(request=Show(setting=SIZE))
+mood: CALM
+label: Text size
+figure: Normal
+speech: Text size: Normal.
+speechHidden: Text size: Normal.
+ask: Look(request=Show(setting=SIZE))
+
+=== Look(request=Show(setting=THEME))
+mood: CALM
+label: Theme
+figure: Light
+speech: Theme: Light.
+speechHidden: Theme: Light.
+ask: Look(request=Show(setting=THEME))
+
+=== Look(request=SizeTo(level=2))
+mood: CALM
+label: Text size
+ask: Look(request=SizeTo(level=2))
+quiet: true
+look: Made(setting=SIZE, from=1, to=2, undone=false)
+
+=== Look(request=SizeTo(level=1))
+mood: CALM
+label: Text size
+figure: Normal
+line: It is already set this way.
+speech: Text size: Normal. It is already set this way.
+speechHidden: Text size: Normal. It is already set this way.
+ask: Look(request=SizeTo(level=1))
+
+=== Look(request=SizeStep(by=1))
+mood: CALM
+label: Text size
+ask: Look(request=SizeStep(by=1))
+quiet: true
+look: Made(setting=SIZE, from=1, to=2, undone=false)
+
+=== Look(request=SizeStep(by=-1))
+mood: CALM
+label: Text size
+ask: Look(request=SizeStep(by=-1))
+quiet: true
+look: Made(setting=SIZE, from=1, to=0, undone=false)
+
+=== Look(request=ThemeTo(mode=1))
+mood: CALM
+label: Theme
+ask: Look(request=ThemeTo(mode=1))
+quiet: true
+look: Made(setting=THEME, from=0, to=1, undone=false)
+

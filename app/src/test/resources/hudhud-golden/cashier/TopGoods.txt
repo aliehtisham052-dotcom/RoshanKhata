@@ -1,0 +1,72 @@
+=== TopGoods(window=null)
+mood: CALM
+label: Best sellers · This month
+line: Only the owner or a manager can see this figure.
+speech: Best sellers This month. Only the owner or a manager can see this figure.
+speechHidden: Best sellers This month. Only the owner or a manager can see this figure.
+ask: TopGoods(window=null)
+
+=== TopGoods(window=TODAY)
+mood: CALM
+label: Best sellers · Today
+line: Only the owner or a manager can see this figure.
+speech: Best sellers Today. Only the owner or a manager can see this figure.
+speechHidden: Best sellers Today. Only the owner or a manager can see this figure.
+ask: TopGoods(window=TODAY)
+
+=== TopGoods(window=YESTERDAY)
+mood: CALM
+label: Best sellers · Yesterday
+line: Only the owner or a manager can see this figure.
+speech: Best sellers Yesterday. Only the owner or a manager can see this figure.
+speechHidden: Best sellers Yesterday. Only the owner or a manager can see this figure.
+ask: TopGoods(window=YESTERDAY)
+
+=== TopGoods(window=THIS_WEEK)
+mood: CALM
+label: Best sellers · This week
+line: Only the owner or a manager can see this figure.
+speech: Best sellers This week. Only the owner or a manager can see this figure.
+speechHidden: Best sellers This week. Only the owner or a manager can see this figure.
+ask: TopGoods(window=THIS_WEEK)
+
+=== TopGoods(window=LAST_WEEK)
+mood: CALM
+label: Best sellers · Last week
+line: Only the owner or a manager can see this figure.
+speech: Best sellers Last week. Only the owner or a manager can see this figure.
+speechHidden: Best sellers Last week. Only the owner or a manager can see this figure.
+ask: TopGoods(window=LAST_WEEK)
+
+=== TopGoods(window=THIS_MONTH)
+mood: CALM
+label: Best sellers · This month
+line: Only the owner or a manager can see this figure.
+speech: Best sellers This month. Only the owner or a manager can see this figure.
+speechHidden: Best sellers This month. Only the owner or a manager can see this figure.
+ask: TopGoods(window=THIS_MONTH)
+
+=== TopGoods(window=LAST_MONTH)
+mood: CALM
+label: Best sellers · Last month
+line: Only the owner or a manager can see this figure.
+speech: Best sellers Last month. Only the owner or a manager can see this figure.
+speechHidden: Best sellers Last month. Only the owner or a manager can see this figure.
+ask: TopGoods(window=LAST_MONTH)
+
+=== TopGoods(window=LAST_6_MONTHS)
+mood: CALM
+label: Best sellers · Last 6 months
+line: Only the owner or a manager can see this figure.
+speech: Best sellers Last 6 months. Only the owner or a manager can see this figure.
+speechHidden: Best sellers Last 6 months. Only the owner or a manager can see this figure.
+ask: TopGoods(window=LAST_6_MONTHS)
+
+=== TopGoods(window=ALL_TIME)
+mood: CALM
+label: Best sellers · All time
+line: Only the owner or a manager can see this figure.
+speech: Best sellers All time. Only the owner or a manager can see this figure.
+speechHidden: Best sellers All time. Only the owner or a manager can see this figure.
+ask: TopGoods(window=ALL_TIME)
+

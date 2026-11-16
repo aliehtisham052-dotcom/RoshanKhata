@@ -1,0 +1,8 @@
+=== Qarz
+mood: CALM
+label: Qarz-e-Hasna
+line: Only the owner or a manager can see this figure.
+speech: Qarz-e-Hasna. Only the owner or a manager can see this figure.
+speechHidden: Qarz-e-Hasna. Only the owner or a manager can see this figure.
+ask: Qarz
+

@@ -1,0 +1,412 @@
+=== Count(thing=CUSTOMERS, window=null)
+mood: CALM
+label: Customers
+figure: 2
+line: You will get: 2
+open: KhataActivity
+speech: Customers: 2. You will get: 2.
+speechHidden: Customers: 2. You will get: 2.
+ask: Count(thing=CUSTOMERS, window=null)
+
+=== Count(thing=CUSTOMERS, window=TODAY)
+mood: CALM
+label: Customers
+figure: 2
+line: You will get: 2
+open: KhataActivity
+speech: Customers: 2. You will get: 2.
+speechHidden: Customers: 2. You will get: 2.
+ask: Count(thing=CUSTOMERS, window=TODAY)
+
+=== Count(thing=CUSTOMERS, window=THIS_MONTH)
+mood: CALM
+label: Customers
+figure: 2
+line: You will get: 2
+open: KhataActivity
+speech: Customers: 2. You will get: 2.
+speechHidden: Customers: 2. You will get: 2.
+ask: Count(thing=CUSTOMERS, window=THIS_MONTH)
+
+=== Count(thing=CUSTOMERS, window=LAST_6_MONTHS)
+mood: CALM
+label: Customers
+figure: 2
+line: You will get: 2
+open: KhataActivity
+speech: Customers: 2. You will get: 2.
+speechHidden: Customers: 2. You will get: 2.
+ask: Count(thing=CUSTOMERS, window=LAST_6_MONTHS)
+
+=== Count(thing=SUPPLIERS, window=null)
+mood: CALM
+label: Suppliers
+figure: 1
+line: You will give: 1
+open: KhataActivity
+speech: Suppliers: 1. You will give: 1.
+speechHidden: Suppliers: 1. You will give: 1.
+ask: Count(thing=SUPPLIERS, window=null)
+
+=== Count(thing=SUPPLIERS, window=TODAY)
+mood: CALM
+label: Suppliers
+figure: 1
+line: You will give: 1
+open: KhataActivity
+speech: Suppliers: 1. You will give: 1.
+speechHidden: Suppliers: 1. You will give: 1.
+ask: Count(thing=SUPPLIERS, window=TODAY)
+
+=== Count(thing=SUPPLIERS, window=THIS_MONTH)
+mood: CALM
+label: Suppliers
+figure: 1
+line: You will give: 1
+open: KhataActivity
+speech: Suppliers: 1. You will give: 1.
+speechHidden: Suppliers: 1. You will give: 1.
+ask: Count(thing=SUPPLIERS, window=THIS_MONTH)
+
+=== Count(thing=SUPPLIERS, window=LAST_6_MONTHS)
+mood: CALM
+label: Suppliers
+figure: 1
+line: You will give: 1
+open: KhataActivity
+speech: Suppliers: 1. You will give: 1.
+speechHidden: Suppliers: 1. You will give: 1.
+ask: Count(thing=SUPPLIERS, window=LAST_6_MONTHS)
+
+=== Count(thing=PRODUCTS, window=null)
+mood: CALM
+label: Products
+figure: 3
+line: Low stock: 1
+open: ProductsActivity
+speech: Products: 3. Low stock: 1.
+speechHidden: Products: 3. Low stock: 1.
+ask: Count(thing=PRODUCTS, window=null)
+
+=== Count(thing=PRODUCTS, window=TODAY)
+mood: CALM
+label: Products
+figure: 3
+line: Low stock: 1
+open: ProductsActivity
+speech: Products: 3. Low stock: 1.
+speechHidden: Products: 3. Low stock: 1.
+ask: Count(thing=PRODUCTS, window=TODAY)
+
+=== Count(thing=PRODUCTS, window=THIS_MONTH)
+mood: CALM
+label: Products
+figure: 3
+line: Low stock: 1
+open: ProductsActivity
+speech: Products: 3. Low stock: 1.
+speechHidden: Products: 3. Low stock: 1.
+ask: Count(thing=PRODUCTS, window=THIS_MONTH)
+
+=== Count(thing=PRODUCTS, window=LAST_6_MONTHS)
+mood: CALM
+label: Products
+figure: 3
+line: Low stock: 1
+open: ProductsActivity
+speech: Products: 3. Low stock: 1.
+speechHidden: Products: 3. Low stock: 1.
+ask: Count(thing=PRODUCTS, window=LAST_6_MONTHS)
+
+=== Count(thing=STAFF, window=null)
+mood: CALM
+label: Staff
+line: Only the owner can see this.
+speech: Staff. Only the owner can see this.
+speechHidden: Staff. Only the owner can see this.
+ask: Count(thing=STAFF, window=null)
+
+=== Count(thing=STAFF, window=TODAY)
+mood: CALM
+label: Staff
+line: Only the owner can see this.
+speech: Staff. Only the owner can see this.
+speechHidden: Staff. Only the owner can see this.
+ask: Count(thing=STAFF, window=TODAY)
+
+=== Count(thing=STAFF, window=THIS_MONTH)
+mood: CALM
+label: Staff
+line: Only the owner can see this.
+speech: Staff. Only the owner can see this.
+speechHidden: Staff. Only the owner can see this.
+ask: Count(thing=STAFF, window=THIS_MONTH)
+
+=== Count(thing=STAFF, window=LAST_6_MONTHS)
+mood: CALM
+label: Staff
+line: Only the owner can see this.
+speech: Staff. Only the owner can see this.
+speechHidden: Staff. Only the owner can see this.
+ask: Count(thing=STAFF, window=LAST_6_MONTHS)
+
+=== Count(thing=ENTRIES, window=null)
+mood: CALM
+label: Entries · Today
+figure: 4
+line: All: 10
+row: party=0 | Bashir Ahmad | - | I Got · Today <time> | open=KhataActivity
+row: party=0 | Bashir Ahmad | - | I Gave · Today <time> | open=KhataActivity
+row: party=0 | Ali Raza | - | I Got · Today <time> | open=KhataActivity
+row: party=0 | Ali Raza | - | I Gave · Today <time> | open=KhataActivity
+open: KhataActivity
+speech: Entries Today: 4. All: 10. Bashir Ahmad, I Got Today <time> Bashir Ahmad, I Gave Today <time> Ali Raza, I Got Today <time> Ali Raza, I Gave Today <time>
+speechHidden: Entries Today: 4. All: 10. Bashir Ahmad, I Got Today <time> Bashir Ahmad, I Gave Today <time> Ali Raza, I Got Today <time> Ali Raza, I Gave Today <time>
+ask: Count(thing=ENTRIES, window=null)
+
+=== Count(thing=ENTRIES, window=TODAY)
+mood: CALM
+label: Entries · Today
+figure: 4
+row: party=0 | Bashir Ahmad | - | I Got · Today <time> | open=KhataActivity
+row: party=0 | Bashir Ahmad | - | I Gave · Today <time> | open=KhataActivity
+row: party=0 | Ali Raza | - | I Got · Today <time> | open=KhataActivity
+row: party=0 | Ali Raza | - | I Gave · Today <time> | open=KhataActivity
+open: KhataActivity
+speech: Entries Today: 4. Bashir Ahmad, I Got Today <time> Bashir Ahmad, I Gave Today <time> Ali Raza, I Got Today <time> Ali Raza, I Gave Today <time>
+speechHidden: Entries Today: 4. Bashir Ahmad, I Got Today <time> Bashir Ahmad, I Gave Today <time> Ali Raza, I Got Today <time> Ali Raza, I Gave Today <time>
+ask: Count(thing=ENTRIES, window=TODAY)
+
+=== Count(thing=ENTRIES, window=THIS_MONTH)
+mood: CALM
+label: Entries · This month
+figure: 4
+row: party=0 | Bashir Ahmad | - | I Got · Today <time> | open=KhataActivity
+row: party=0 | Bashir Ahmad | - | I Gave · Today <time> | open=KhataActivity
+row: party=0 | Ali Raza | - | I Got · Today <time> | open=KhataActivity
+row: party=0 | Ali Raza | - | I Gave · Today <time> | open=KhataActivity
+open: KhataActivity
+speech: Entries This month: 4. Bashir Ahmad, I Got Today <time> Bashir Ahmad, I Gave Today <time> Ali Raza, I Got Today <time> Ali Raza, I Gave Today <time>
+speechHidden: Entries This month: 4. Bashir Ahmad, I Got Today <time> Bashir Ahmad, I Gave Today <time> Ali Raza, I Got Today <time> Ali Raza, I Gave Today <time>
+ask: Count(thing=ENTRIES, window=THIS_MONTH)
+
+=== Count(thing=ENTRIES, window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Count(thing=ENTRIES, window=TODAY) = Entries · Today
+option: Count(thing=ENTRIES, window=THIS_WEEK) = Entries · This week
+option: Count(thing=ENTRIES, window=THIS_MONTH) = Entries · This month
+option: Count(thing=ENTRIES, window=LAST_MONTH) = Entries · Last month
+ask: SpanLimit(options=[Count(thing=ENTRIES, window=TODAY), Count(thing=ENTRIES, window=THIS_WEEK), Count(thing=ENTRIES, window=THIS_MONTH), Count(thing=ENTRIES, window=LAST_MONTH)], long=false)
+
+=== Count(thing=INVOICES, window=null)
+mood: CALM
+label: Invoices · Today
+figure: 1
+line: All: 1
+row: party=0 | Ali Raza | - | INV-000001 · Today | open=InvoicesActivity
+open: InvoicesActivity
+speech: Invoices Today: 1. All: 1. Ali Raza, INV-000001 Today.
+speechHidden: Invoices Today: 1. All: 1. Ali Raza, INV-000001 Today.
+ask: Count(thing=INVOICES, window=null)
+
+=== Count(thing=INVOICES, window=TODAY)
+mood: CALM
+label: Invoices · Today
+figure: 1
+row: party=0 | Ali Raza | - | INV-000001 · Today | open=InvoicesActivity
+open: InvoicesActivity
+speech: Invoices Today: 1. Ali Raza, INV-000001 Today.
+speechHidden: Invoices Today: 1. Ali Raza, INV-000001 Today.
+ask: Count(thing=INVOICES, window=TODAY)
+
+=== Count(thing=INVOICES, window=THIS_MONTH)
+mood: CALM
+label: Invoices · This month
+figure: 1
+row: party=0 | Ali Raza | - | INV-000001 · Today | open=InvoicesActivity
+open: InvoicesActivity
+speech: Invoices This month: 1. Ali Raza, INV-000001 Today.
+speechHidden: Invoices This month: 1. Ali Raza, INV-000001 Today.
+ask: Count(thing=INVOICES, window=THIS_MONTH)
+
+=== Count(thing=INVOICES, window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Count(thing=INVOICES, window=TODAY) = Invoices · Today
+option: Count(thing=INVOICES, window=THIS_WEEK) = Invoices · This week
+option: Count(thing=INVOICES, window=THIS_MONTH) = Invoices · This month
+option: Count(thing=INVOICES, window=LAST_MONTH) = Invoices · Last month
+ask: SpanLimit(options=[Count(thing=INVOICES, window=TODAY), Count(thing=INVOICES, window=THIS_WEEK), Count(thing=INVOICES, window=THIS_MONTH), Count(thing=INVOICES, window=LAST_MONTH)], long=false)
+
+=== Count(thing=BILLS, window=null)
+mood: CALM
+label: Supplier Bills · Today
+line: None in this time.
+line: All: 1
+open: BillsActivity
+speech: Supplier Bills Today. None in this time. All: 1.
+speechHidden: Supplier Bills Today. None in this time. All: 1.
+ask: Count(thing=BILLS, window=null)
+
+=== Count(thing=BILLS, window=TODAY)
+mood: CALM
+label: Supplier Bills · Today
+line: None in this time.
+open: BillsActivity
+speech: Supplier Bills Today. None in this time.
+speechHidden: Supplier Bills Today. None in this time.
+ask: Count(thing=BILLS, window=TODAY)
+
+=== Count(thing=BILLS, window=THIS_MONTH)
+mood: CALM
+label: Supplier Bills · This month
+line: None in this time.
+open: BillsActivity
+speech: Supplier Bills This month. None in this time.
+speechHidden: Supplier Bills This month. None in this time.
+ask: Count(thing=BILLS, window=THIS_MONTH)
+
+=== Count(thing=BILLS, window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Count(thing=BILLS, window=TODAY) = Supplier Bills · Today
+option: Count(thing=BILLS, window=THIS_WEEK) = Supplier Bills · This week
+option: Count(thing=BILLS, window=THIS_MONTH) = Supplier Bills · This month
+option: Count(thing=BILLS, window=LAST_MONTH) = Supplier Bills · Last month
+ask: SpanLimit(options=[Count(thing=BILLS, window=TODAY), Count(thing=BILLS, window=THIS_WEEK), Count(thing=BILLS, window=THIS_MONTH), Count(thing=BILLS, window=LAST_MONTH)], long=false)
+
+=== Count(thing=TICKETS, window=null)
+mood: CALM
+label: Counter sales · Today
+figure: 1
+row: party=0 | Walk-in customer | - | S-000001 · Today <time> | open=CounterSaleActivity
+open: CounterSaleActivity
+speech: Counter sales Today: 1. Walk-in customer, S-000001 Today <time>
+speechHidden: Counter sales Today: 1. Walk-in customer, S-000001 Today <time>
+ask: Count(thing=TICKETS, window=null)
+
+=== Count(thing=TICKETS, window=TODAY)
+mood: CALM
+label: Counter sales · Today
+figure: 1
+row: party=0 | Walk-in customer | - | S-000001 · Today <time> | open=CounterSaleActivity
+open: CounterSaleActivity
+speech: Counter sales Today: 1. Walk-in customer, S-000001 Today <time>
+speechHidden: Counter sales Today: 1. Walk-in customer, S-000001 Today <time>
+ask: Count(thing=TICKETS, window=TODAY)
+
+=== Count(thing=TICKETS, window=THIS_MONTH)
+mood: CALM
+label: Counter sales · This month
+figure: 1
+row: party=0 | Walk-in customer | - | S-000001 · Today <time> | open=CounterSaleActivity
+open: CounterSaleActivity
+speech: Counter sales This month: 1. Walk-in customer, S-000001 Today <time>
+speechHidden: Counter sales This month: 1. Walk-in customer, S-000001 Today <time>
+ask: Count(thing=TICKETS, window=THIS_MONTH)
+
+=== Count(thing=TICKETS, window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Count(thing=TICKETS, window=TODAY) = Counter sales · Today
+option: Count(thing=TICKETS, window=THIS_WEEK) = Counter sales · This week
+option: Count(thing=TICKETS, window=THIS_MONTH) = Counter sales · This month
+option: Count(thing=TICKETS, window=LAST_MONTH) = Counter sales · Last month
+ask: SpanLimit(options=[Count(thing=TICKETS, window=TODAY), Count(thing=TICKETS, window=THIS_WEEK), Count(thing=TICKETS, window=THIS_MONTH), Count(thing=TICKETS, window=LAST_MONTH)], long=false)
+
+=== Count(thing=CALCULATIONS, window=null)
+mood: CALM
+label: Calculator sums · Today
+line: None in this time.
+line: Since counting began: 0
+open: CalculatorActivity
+speech: Calculator sums Today. None in this time. Since counting began: 0.
+speechHidden: Calculator sums Today. None in this time. Since counting began: 0.
+ask: Count(thing=CALCULATIONS, window=null)
+
+=== Count(thing=CALCULATIONS, window=TODAY)
+mood: CALM
+label: Calculator sums · Today
+line: None in this time.
+open: CalculatorActivity
+speech: Calculator sums Today. None in this time.
+speechHidden: Calculator sums Today. None in this time.
+ask: Count(thing=CALCULATIONS, window=TODAY)
+
+=== Count(thing=CALCULATIONS, window=THIS_MONTH)
+mood: CALM
+label: Calculator sums · This month
+line: None in this time.
+open: CalculatorActivity
+speech: Calculator sums This month. None in this time.
+speechHidden: Calculator sums This month. None in this time.
+ask: Count(thing=CALCULATIONS, window=THIS_MONTH)
+
+=== Count(thing=CALCULATIONS, window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Count(thing=CALCULATIONS, window=TODAY) = Calculator sums · Today
+option: Count(thing=CALCULATIONS, window=THIS_WEEK) = Calculator sums · This week
+option: Count(thing=CALCULATIONS, window=THIS_MONTH) = Calculator sums · This month
+option: Count(thing=CALCULATIONS, window=LAST_MONTH) = Calculator sums · Last month
+ask: SpanLimit(options=[Count(thing=CALCULATIONS, window=TODAY), Count(thing=CALCULATIONS, window=THIS_WEEK), Count(thing=CALCULATIONS, window=THIS_MONTH), Count(thing=CALCULATIONS, window=LAST_MONTH)], long=false)
+
+=== Count(thing=APP_OPENS, window=null)
+mood: CALM
+label: Times the app opened · Today
+line: None in this time.
+line: Since counting began: 0
+speech: Times the app opened Today. None in this time. Since counting began: 0.
+speechHidden: Times the app opened Today. None in this time. Since counting began: 0.
+ask: Count(thing=APP_OPENS, window=null)
+
+=== Count(thing=APP_OPENS, window=TODAY)
+mood: CALM
+label: Times the app opened · Today
+line: None in this time.
+speech: Times the app opened Today. None in this time.
+speechHidden: Times the app opened Today. None in this time.
+ask: Count(thing=APP_OPENS, window=TODAY)
+
+=== Count(thing=APP_OPENS, window=THIS_MONTH)
+mood: CALM
+label: Times the app opened · This month
+line: None in this time.
+speech: Times the app opened This month. None in this time.
+speechHidden: Times the app opened This month. None in this time.
+ask: Count(thing=APP_OPENS, window=THIS_MONTH)
+
+=== Count(thing=APP_OPENS, window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Count(thing=APP_OPENS, window=TODAY) = Times the app opened · Today
+option: Count(thing=APP_OPENS, window=THIS_WEEK) = Times the app opened · This week
+option: Count(thing=APP_OPENS, window=THIS_MONTH) = Times the app opened · This month
+option: Count(thing=APP_OPENS, window=LAST_MONTH) = Times the app opened · Last month
+ask: SpanLimit(options=[Count(thing=APP_OPENS, window=TODAY), Count(thing=APP_OPENS, window=THIS_WEEK), Count(thing=APP_OPENS, window=THIS_MONTH), Count(thing=APP_OPENS, window=LAST_MONTH)], long=false)
+

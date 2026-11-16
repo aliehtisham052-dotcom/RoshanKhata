@@ -1,0 +1,20 @@
+=== Both(first=Figure(kind=TO_GET), second=Count(thing=CUSTOMERS, window=null))
+mood: CALM
+line: Total I have to get: Rs 20,000
+line: Customers: 2
+line: You will get: 2
+open: KhataActivity
+speech: Total I have to get: Rs 20,000. Customers: 2. You will get: 2.
+speechHidden: Customers: 2. You will get: 2. [an amount left out]
+ask: Both(first=Figure(kind=TO_GET), second=Count(thing=CUSTOMERS, window=null))
+
+=== Both(first=Figure(kind=SALES_TODAY), second=Drawer)
+mood: CALM
+line: Today's sale: Rs 13,200
+line: Should be in drawer: −Rs 90,850
+line: Since the last count, <date>, <time>
+open: InsightsActivity
+speech: Today's sale: Rs 13,200. Should be in drawer: −Rs 90,850. Since the last count, <date>, <time>
+speechHidden: Since the last count, <date>, <time> [an amount left out]
+ask: Both(first=Figure(kind=SALES_TODAY), second=Drawer)
+

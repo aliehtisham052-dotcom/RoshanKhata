@@ -1,0 +1,8 @@
+=== Salaam
+mood: GOOD
+line: Wa alaikum assalam, Ali bhai!
+line: Ask about your khata. Every answer comes from your own book, on this phone.
+speech: Wa alaikum assalam, Ali bhai! Ask about your khata. Every answer comes from your own book, on this phone.
+speechHidden: Wa alaikum assalam, Ali bhai! Ask about your khata. Every answer comes from your own book, on this phone.
+ask: Salaam
+

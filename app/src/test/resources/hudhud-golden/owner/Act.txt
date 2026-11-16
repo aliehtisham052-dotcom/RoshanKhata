@@ -1,0 +1,24 @@
+=== Act(move=FLY)
+mood: GOOD
+line: Watch me fly.
+speech: Watch me fly.
+speechHidden: Watch me fly.
+ask: Act(move=FLY)
+act: FLY
+
+=== Act(move=DANCE)
+mood: GOOD
+line: Watch me dance.
+speech: Watch me dance.
+speechHidden: Watch me dance.
+ask: Act(move=DANCE)
+act: DANCE
+
+=== Act(move=JUMP)
+mood: GOOD
+line: Watch me hop.
+speech: Watch me hop.
+speechHidden: Watch me hop.
+ask: Act(move=JUMP)
+act: JUMP
+

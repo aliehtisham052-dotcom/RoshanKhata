@@ -1,0 +1,72 @@
+=== Chat(talk=HOW_ARE_YOU, salaam=false)
+mood: GOOD
+line: All is well, thank you. Ask whatever you need to check.
+spoken: All is well, thank you. Ask whatever you need to check.
+speech: All is well, thank you. Ask whatever you need to check.
+speechHidden: All is well, thank you. Ask whatever you need to check.
+ask: Chat(talk=HOW_ARE_YOU, salaam=false)
+
+=== Chat(talk=WHO_ARE_YOU, salaam=false)
+mood: CALM
+line: I'm Hudhud, your shop's assistant. I read your khata on this phone and answer in writing and by voice.
+spoken: I'm Hudhud, your shop's assistant. I read your khata on this phone and answer in writing and by voice.
+speech: I'm Hudhud, your shop's assistant. I read your khata on this phone and answer in writing and by voice.
+speechHidden: I'm Hudhud, your shop's assistant. I read your khata on this phone and answer in writing and by voice.
+ask: Chat(talk=WHO_ARE_YOU, salaam=false)
+
+=== Chat(talk=THANKS, salaam=false)
+mood: GOOD
+line: You're welcome.
+spoken: You're welcome.
+speech: You're welcome.
+speechHidden: You're welcome.
+ask: Chat(talk=THANKS, salaam=false)
+
+=== Chat(talk=BYE, salaam=false)
+mood: CALM
+line: Goodbye. Your book stays safe on this phone.
+spoken: Goodbye. Your book stays safe on this phone.
+speech: Goodbye. Your book stays safe on this phone.
+speechHidden: Goodbye. Your book stays safe on this phone.
+ask: Chat(talk=BYE, salaam=false)
+
+=== Chat(talk=PRAISE, salaam=false)
+mood: GOOD
+line: Thank you.
+spoken: Thank you.
+speech: Thank you.
+speechHidden: Thank you.
+ask: Chat(talk=PRAISE, salaam=false)
+
+=== Chat(talk=FINE, salaam=false)
+mood: GOOD
+line: Good to hear. Ask whatever you need to check.
+spoken: Good to hear. Ask whatever you need to check.
+speech: Good to hear. Ask whatever you need to check.
+speechHidden: Good to hear. Ask whatever you need to check.
+ask: Chat(talk=FINE, salaam=false)
+
+=== Chat(talk=CAN_TALK, salaam=false)
+mood: CALM
+line: Yes, I can hear you. Please ask your question.
+spoken: Yes, I can hear you. Please ask your question.
+speech: Yes, I can hear you. Please ask your question.
+speechHidden: Yes, I can hear you. Please ask your question.
+ask: Chat(talk=CAN_TALK, salaam=false)
+
+=== Chat(talk=ADDRESS, salaam=false)
+mood: CALM
+line: Yes, how can I help?
+spoken: Yes, how can I help?
+speech: Yes, how can I help?
+speechHidden: Yes, how can I help?
+ask: Chat(talk=ADDRESS, salaam=false)
+
+=== Chat(talk=HOW_ARE_YOU, salaam=true)
+mood: GOOD
+line: Wa alaikum assalam! All is well, thank you. Ask whatever you need to check.
+spoken: Wa alaikum assalam! All is well, thank you. Ask whatever you need to check.
+speech: Wa alaikum assalam! All is well, thank you. Ask whatever you need to check.
+speechHidden: Wa alaikum assalam! All is well, thank you. Ask whatever you need to check.
+ask: Chat(talk=HOW_ARE_YOU, salaam=true)
+

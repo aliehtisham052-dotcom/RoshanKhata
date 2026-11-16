@@ -1,0 +1,18 @@
+=== DidYouMean(options=[Figure(kind=TO_GET), Status(of=BILLS, cheques=null)])
+mood: CALM
+label: Total I have to get
+figure: Rs 20,000
+open: KhataActivity
+money: true
+option: Status(of=BILLS, cheques=null)
+ask: Figure(kind=TO_GET)
+tookAs: Taken as: Total I have to get
+quiet: true
+
+=== DidYouMean(options=[])
+mood: CALM
+line: I could not find this in your khata. The nearest questions I can answer are below.
+speech: I could not find this in your khata. The nearest questions I can answer are below.
+speechHidden: I could not find this in your khata. The nearest questions I can answer are below.
+ask: DidYouMean(options=[])
+

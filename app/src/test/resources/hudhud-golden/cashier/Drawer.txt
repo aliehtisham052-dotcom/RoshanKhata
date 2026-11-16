@@ -1,0 +1,8 @@
+=== Drawer
+mood: CALM
+label: Should be in drawer
+line: Only the owner or a manager can see this figure.
+speech: Should be in drawer. Only the owner or a manager can see this figure.
+speechHidden: Should be in drawer. Only the owner or a manager can see this figure.
+ask: Drawer
+

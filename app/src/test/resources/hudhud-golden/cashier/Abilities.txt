@@ -1,0 +1,14 @@
+=== Abilities
+mood: GOOD
+line: Here's what I can tell you from your book:
+line: • An entry, said as it happened (“gave Ali 500”): I fill in the form, you press Save
+line: • A customer's number, last payment, limit, promise or private note — ask with the name
+line: • An item's price, stock, purchase rate and which supplier is cheaper
+line: • Your shop's details, today's date, and how often the app and calculator were used
+line: • Text size and theme (“make the text bigger”, “dark mode”): I change it, and Undo is one tap away
+line: • Your last backup, and how to use any part of the app
+line: • Greetings and short conversation
+speech: Here's what I can tell you from your book. An entry, said as it happened (“gave Ali 500”): I fill in the form, you press Save. A customer's number, last payment, limit, promise or private note — ask with the name. An item's price, stock, purchase rate and which supplier is cheaper. Your shop's details, today's date, and how often the app and calculator were used. Text size and theme (“make the text bigger”, “dark mode”): I change it, and Undo is one tap away. Your last backup, and how to use any part of the app. Greetings and short conversation.
+speechHidden: Here's what I can tell you from your book. An entry, said as it happened (“gave Ali 500”): I fill in the form, you press Save. A customer's number, last payment, limit, promise or private note — ask with the name. An item's price, stock, purchase rate and which supplier is cheaper. Your shop's details, today's date, and how often the app and calculator were used. Text size and theme (“make the text bigger”, “dark mode”): I change it, and Undo is one tap away. Your last backup, and how to use any part of the app. Greetings and short conversation.
+ask: Abilities
+

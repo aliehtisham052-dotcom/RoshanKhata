@@ -1,0 +1,136 @@
+=== OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: GOOD
+label: Sale · <date>
+figure: Rs 13,200
+open: SalesReportActivity
+openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
+money: true
+speech: Sale <date>: Rs 13,200.
+ask: OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: Sale · <date>
+figure: Rs 0
+open: SalesReportActivity
+openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
+money: true
+speech: Sale <date>: Rs 0.
+ask: OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=PROFIT, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: GOOD
+label: Profit · <date>
+figure: Rs 1,030
+line: Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+money: true
+speech: Profit <date>: Rs 1,030. Worked out from 99% of the sales this month. The rest has no product name or no purchase price.
+speechHidden: Profit <date>. Worked out from 99% of the sales this month. The rest has no product name or no purchase price. [an amount left out]
+ask: OnDays(of=PROFIT, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=PROFIT, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: Profit · <date>
+line: No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+speech: Profit <date>. No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+speechHidden: Profit <date>. No profit figure yet. Name the product on each sale and write the purchase price on the supplier bill.
+ask: OnDays(of=PROFIT, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: GOOD
+label: Money that came in · <date>
+figure: Rs 5,200
+line: From customers: Rs 5,000
+line: Walk-in customer: Rs 200
+line: Cash: Rs 5,200
+open: DayBookActivity
+openExtras: day=<millis>
+money: true
+speech: Money that came in <date>: Rs 5,200. From customers: Rs 5,000. Walk-in customer: Rs 200. Cash: Rs 5,200.
+ask: OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: Money that came in · <date>
+figure: Rs 0
+line: From customers: Rs 0
+line: Walk-in customer: Rs 0
+open: DayBookActivity
+openExtras: day=<millis>
+money: true
+speech: Money that came in <date>: Rs 0. From customers: Rs 0. Walk-in customer: Rs 0.
+ask: OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: What happened · <date>
+line: Entries: 4
+line: Money in: Rs 5,200
+line: Money out: Rs 2,550
+line: Invoices: 1
+line: Counter sales: 1
+line: Edited: 1 · Deleted: 0
+line: By: Hamid Khan
+row: party=0 | Day closed | Today <time> | by Owner | open=AuditActivity
+row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=AuditActivity
+row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
+open: DayBookActivity
+openExtras: day=<millis>
+speech: What happened <date>. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
+speechHidden: What happened <date>. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+ask: OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+mood: CALM
+label: What happened · <date>
+line: Nothing was written in this time.
+open: DayBookActivity
+openExtras: day=<millis>
+speech: What happened <date>. Nothing was written in this time.
+speechHidden: What happened <date>. Nothing was written in this time.
+ask: OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
+
+=== OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+mood: CALM
+label: Ali Raza
+figure: Rs 1,000
+line: I Got · <date>
+openParty: 1
+money: true
+speech: Ali Raza: Rs 1,000. I Got <date>.
+speechHidden: Ali Raza. I Got <date>. [an amount left out]
+ask: OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+
+=== OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+mood: CALM
+label: Ali Raza
+figure: Rs 0
+line: I Got · <date>
+openParty: 1
+money: true
+speech: Ali Raza: Rs 0. I Got <date>.
+speechHidden: Ali Raza. I Got <date>. [an amount left out]
+ask: OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+
+=== OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+mood: CALM
+label: Ali Raza
+figure: Rs 9,000
+line: I Gave · <date>
+openParty: 1
+money: true
+speech: Ali Raza: Rs 9,000. I Gave <date>.
+speechHidden: Ali Raza. I Gave <date>. [an amount left out]
+ask: OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+
+=== OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+mood: CALM
+label: Ali Raza
+figure: Rs 0
+line: I Gave · <date>
+openParty: 1
+money: true
+speech: Ali Raza: Rs 0. I Gave <date>.
+speechHidden: Ali Raza. I Gave <date>. [an amount left out]
+ask: OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
+

@@ -1,0 +1,29 @@
+=== LookDone(made=Made(setting=SIZE, from=1, to=2, undone=false))
+mood: CALM
+label: Text size
+figure: Normal
+line: Was: Normal
+speech: Text size: Normal. Was: Normal.
+speechHidden: Text size: Normal. Was: Normal.
+ask: LookDone(made=Made(setting=SIZE, from=1, to=2, undone=false))
+lookUndo: Made(setting=SIZE, from=2, to=1, undone=true)
+
+=== LookDone(made=Made(setting=SIZE, from=2, to=1, undone=true))
+mood: CALM
+label: Text size
+figure: Normal
+line: Taken back.
+speech: Text size: Normal. Taken back.
+speechHidden: Text size: Normal. Taken back.
+ask: LookDone(made=Made(setting=SIZE, from=2, to=1, undone=true))
+
+=== LookDone(made=Made(setting=THEME, from=2, to=1, undone=false))
+mood: CALM
+label: Theme
+figure: Light
+line: Was: Same as phone
+speech: Theme: Light. Was: Same as phone.
+speechHidden: Theme: Light. Was: Same as phone.
+ask: LookDone(made=Made(setting=THEME, from=2, to=1, undone=false))
+lookUndo: Made(setting=THEME, from=1, to=2, undone=true)
+

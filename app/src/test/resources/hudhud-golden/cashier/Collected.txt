@@ -1,0 +1,72 @@
+=== Collected(window=null)
+mood: CALM
+label: Money that came in · Today
+line: Only the owner or a manager can see this figure.
+speech: Money that came in Today. Only the owner or a manager can see this figure.
+speechHidden: Money that came in Today. Only the owner or a manager can see this figure.
+ask: Collected(window=null)
+
+=== Collected(window=TODAY)
+mood: CALM
+label: Money that came in · Today
+line: Only the owner or a manager can see this figure.
+speech: Money that came in Today. Only the owner or a manager can see this figure.
+speechHidden: Money that came in Today. Only the owner or a manager can see this figure.
+ask: Collected(window=TODAY)
+
+=== Collected(window=YESTERDAY)
+mood: CALM
+label: Money that came in · Yesterday
+line: Only the owner or a manager can see this figure.
+speech: Money that came in Yesterday. Only the owner or a manager can see this figure.
+speechHidden: Money that came in Yesterday. Only the owner or a manager can see this figure.
+ask: Collected(window=YESTERDAY)
+
+=== Collected(window=THIS_WEEK)
+mood: CALM
+label: Money that came in · This week
+line: Only the owner or a manager can see this figure.
+speech: Money that came in This week. Only the owner or a manager can see this figure.
+speechHidden: Money that came in This week. Only the owner or a manager can see this figure.
+ask: Collected(window=THIS_WEEK)
+
+=== Collected(window=LAST_WEEK)
+mood: CALM
+label: Money that came in · Last week
+line: Only the owner or a manager can see this figure.
+speech: Money that came in Last week. Only the owner or a manager can see this figure.
+speechHidden: Money that came in Last week. Only the owner or a manager can see this figure.
+ask: Collected(window=LAST_WEEK)
+
+=== Collected(window=THIS_MONTH)
+mood: CALM
+label: Money that came in · This month
+line: Only the owner or a manager can see this figure.
+speech: Money that came in This month. Only the owner or a manager can see this figure.
+speechHidden: Money that came in This month. Only the owner or a manager can see this figure.
+ask: Collected(window=THIS_MONTH)
+
+=== Collected(window=LAST_MONTH)
+mood: CALM
+label: Money that came in · Last month
+line: Only the owner or a manager can see this figure.
+speech: Money that came in Last month. Only the owner or a manager can see this figure.
+speechHidden: Money that came in Last month. Only the owner or a manager can see this figure.
+ask: Collected(window=LAST_MONTH)
+
+=== Collected(window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: Only the owner or a manager can see this figure.
+speech: Time span. Only the owner or a manager can see this figure.
+speechHidden: Time span. Only the owner or a manager can see this figure.
+ask: SpanLimit(options=[Collected(window=TODAY), Collected(window=THIS_WEEK), Collected(window=THIS_MONTH), Collected(window=LAST_MONTH)], long=false)
+
+=== Collected(window=ALL_TIME)
+mood: CALM
+label: Time span
+line: Only the owner or a manager can see this figure.
+speech: Time span. Only the owner or a manager can see this figure.
+speechHidden: Time span. Only the owner or a manager can see this figure.
+ask: SpanLimit(options=[Collected(window=TODAY), Collected(window=THIS_WEEK), Collected(window=THIS_MONTH), Collected(window=LAST_MONTH)], long=false)
+

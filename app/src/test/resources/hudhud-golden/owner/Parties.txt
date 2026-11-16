@@ -1,0 +1,37 @@
+=== Parties(ids=[1])
+mood: CALM
+label: Ali Raza
+figure: Rs 17,000
+line: You will get
+openParty: 1
+money: true
+speech: Ali Raza: Rs 17,000. You will get.
+speechHidden: Ali Raza. You will get. [an amount left out]
+ask: Parties(ids=[1])
+
+=== Parties(ids=[1, 2])
+mood: CALM
+label: Which one do you mean?
+row: party=1 | Ali Raza | Rs 17,000 | You will get
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+ask: Parties(ids=[1, 2])
+quiet: true
+
+=== Parties(ids=[3])
+mood: CALM
+label: Tariq Butt
+figure: Rs 164,000
+line: You will give
+openParty: 3
+money: true
+speech: Tariq Butt: Rs 164,000. You will give.
+speechHidden: Tariq Butt. You will give. [an amount left out]
+ask: Parties(ids=[3])
+
+=== Parties(ids=[9999])
+mood: CALM
+line: I could not find this in your khata. The nearest questions I can answer are below.
+speech: I could not find this in your khata. The nearest questions I can answer are below.
+speechHidden: I could not find this in your khata. The nearest questions I can answer are below.
+ask: Parties(ids=[9999])
+

@@ -1,0 +1,40 @@
+=== Compare(first=Period(measure=SALES, window=TODAY), second=Period(measure=SALES, window=YESTERDAY))
+mood: CALM
+label: Comparison
+figure: +Rs 13,200
+line: Today's sale: Rs 13,200
+line: Yesterday's sale: Rs 0
+line: Difference: +Rs 13,200
+money: true
+speech: Comparison: +Rs 13,200. Today's sale: Rs 13,200. Yesterday's sale: Rs 0. Difference: +Rs 13,200.
+ask: Compare(first=Period(measure=SALES, window=TODAY), second=Period(measure=SALES, window=YESTERDAY))
+
+=== Compare(first=Period(measure=PROFIT, window=THIS_MONTH), second=Period(measure=PROFIT, window=LAST_MONTH))
+mood: CALM
+label: Comparison
+line: This month's profit: Rs 1,030
+line: Last month's profit: —
+line: One of the two figures is not known, so I give no difference.
+money: true
+speech: Comparison. This month's profit: Rs 1,030. Last month's profit: —. One of the two figures is not known, so I give no difference.
+speechHidden: Comparison. Last month's profit: —. One of the two figures is not known, so I give no difference. [an amount left out]
+ask: Compare(first=Period(measure=PROFIT, window=THIS_MONTH), second=Period(measure=PROFIT, window=LAST_MONTH))
+
+=== Compare(first=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[]), second=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[]))
+mood: CALM
+label: Comparison
+figure: +Rs 13,200
+line: Sale · <date>: Rs 13,200
+line: Sale · <date>: Rs 0
+line: Difference: +Rs 13,200
+money: true
+speech: Comparison: +Rs 13,200. Sale <date>: Rs 13,200. Sale <date>: Rs 0. Difference: +Rs 13,200.
+ask: Compare(first=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[]), second=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[]))
+
+=== Compare(first=Drawer, second=Drawer)
+mood: CALM
+line: I could not find this in your khata. The nearest questions I can answer are below.
+speech: I could not find this in your khata. The nearest questions I can answer are below.
+speechHidden: I could not find this in your khata. The nearest questions I can answer are below.
+ask: Compare(first=Drawer, second=Drawer)
+

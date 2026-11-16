@@ -1,0 +1,128 @@
+=== Activity(window=null)
+mood: CALM
+label: What happened · Today
+line: Entries: 4
+line: Money in: Rs 5,200
+line: Money out: Rs 2,550
+line: Invoices: 1
+line: Counter sales: 1
+line: Edited: 1 · Deleted: 0
+line: By: Hamid Khan
+row: party=0 | Day closed | Today <time> | by Owner | open=AuditActivity
+row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=AuditActivity
+row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
+open: DayBookActivity
+openExtras: day=<millis>
+speech: What happened Today. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
+speechHidden: What happened Today. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+ask: Activity(window=null)
+
+=== Activity(window=TODAY)
+mood: CALM
+label: What happened · Today
+line: Entries: 4
+line: Money in: Rs 5,200
+line: Money out: Rs 2,550
+line: Invoices: 1
+line: Counter sales: 1
+line: Edited: 1 · Deleted: 0
+line: By: Hamid Khan
+row: party=0 | Day closed | Today <time> | by Owner | open=AuditActivity
+row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=AuditActivity
+row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
+open: DayBookActivity
+openExtras: day=<millis>
+speech: What happened Today. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
+speechHidden: What happened Today. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+ask: Activity(window=TODAY)
+
+=== Activity(window=YESTERDAY)
+mood: CALM
+label: What happened · Yesterday
+line: Nothing was written in this time.
+open: DayBookActivity
+openExtras: day=<millis>
+speech: What happened Yesterday. Nothing was written in this time.
+speechHidden: What happened Yesterday. Nothing was written in this time.
+ask: Activity(window=YESTERDAY)
+
+=== Activity(window=THIS_WEEK)
+mood: CALM
+label: What happened · This week
+line: Entries: 4
+line: Money in: Rs 5,200
+line: Money out: Rs 2,550
+line: Invoices: 1
+line: Counter sales: 1
+line: Edited: 1 · Deleted: 0
+line: By: Hamid Khan
+row: party=0 | Day closed | Today <time> | by Owner | open=AuditActivity
+row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=AuditActivity
+row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
+open: AuditActivity
+speech: What happened This week. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
+speechHidden: What happened This week. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+ask: Activity(window=THIS_WEEK)
+
+=== Activity(window=LAST_WEEK)
+mood: CALM
+label: What happened · Last week
+line: Nothing was written in this time.
+open: AuditActivity
+speech: What happened Last week. Nothing was written in this time.
+speechHidden: What happened Last week. Nothing was written in this time.
+ask: Activity(window=LAST_WEEK)
+
+=== Activity(window=THIS_MONTH)
+mood: CALM
+label: What happened · This month
+line: Entries: 4
+line: Money in: Rs 5,200
+line: Money out: Rs 2,550
+line: Invoices: 1
+line: Counter sales: 1
+line: Edited: 1 · Deleted: 0
+line: By: Hamid Khan
+row: party=0 | Day closed | Today <time> | by Owner | open=AuditActivity
+row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=AuditActivity
+row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
+open: AuditActivity
+speech: What happened This month. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
+speechHidden: What happened This month. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+ask: Activity(window=THIS_MONTH)
+
+=== Activity(window=LAST_MONTH)
+mood: CALM
+label: What happened · Last month
+line: Nothing was written in this time.
+open: AuditActivity
+speech: What happened Last month. Nothing was written in this time.
+speechHidden: What happened Last month. Nothing was written in this time.
+ask: Activity(window=LAST_MONTH)
+
+=== Activity(window=LAST_6_MONTHS)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Activity(window=TODAY) = What happened · Today
+option: Activity(window=THIS_WEEK) = What happened · This week
+option: Activity(window=THIS_MONTH) = What happened · This month
+option: Activity(window=LAST_MONTH) = What happened · Last month
+ask: SpanLimit(options=[Activity(window=TODAY), Activity(window=THIS_WEEK), Activity(window=THIS_MONTH), Activity(window=LAST_MONTH)], long=false)
+
+=== Activity(window=ALL_TIME)
+mood: CALM
+label: Time span
+line: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+spoken: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speech: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+speechHidden: I can't give exactly that span for this. I can list today, this week, this month or last month — tap one below.
+option: Activity(window=TODAY) = What happened · Today
+option: Activity(window=THIS_WEEK) = What happened · This week
+option: Activity(window=THIS_MONTH) = What happened · This month
+option: Activity(window=LAST_MONTH) = What happened · Last month
+ask: SpanLimit(options=[Activity(window=TODAY), Activity(window=THIS_WEEK), Activity(window=THIS_MONTH), Activity(window=LAST_MONTH)], long=false)
+

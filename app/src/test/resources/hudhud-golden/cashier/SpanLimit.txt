@@ -1,0 +1,16 @@
+=== SpanLimit(options=[Activity(window=TODAY), Activity(window=THIS_WEEK)], long=false)
+mood: CALM
+label: Time span
+line: Only the owner or a manager can see this figure.
+speech: Time span. Only the owner or a manager can see this figure.
+speechHidden: Time span. Only the owner or a manager can see this figure.
+ask: SpanLimit(options=[Activity(window=TODAY), Activity(window=THIS_WEEK)], long=false)
+
+=== SpanLimit(options=[Period(measure=SALES, window=THIS_MONTH), Period(measure=SALES, window=ALL_TIME)], long=true)
+mood: CALM
+label: Time span
+line: Only the owner or a manager can see this figure.
+speech: Time span. Only the owner or a manager can see this figure.
+speechHidden: Time span. Only the owner or a manager can see this figure.
+ask: SpanLimit(options=[Period(measure=SALES, window=THIS_MONTH), Period(measure=SALES, window=ALL_TIME)], long=true)
+

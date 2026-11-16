@@ -1,0 +1,72 @@
+=== Figure(kind=PROFIT_MONTH)
+mood: CALM
+label: This month's profit
+line: Only the owner or a manager can see this figure.
+speech: This month's profit. Only the owner or a manager can see this figure.
+speechHidden: This month's profit. Only the owner or a manager can see this figure.
+ask: Figure(kind=PROFIT_MONTH)
+
+=== Figure(kind=EXPIRING)
+mood: CALM
+label: Stock expiring soon
+line: Only the owner or a manager can see this figure.
+speech: Stock expiring soon. Only the owner or a manager can see this figure.
+speechHidden: Stock expiring soon. Only the owner or a manager can see this figure.
+ask: Figure(kind=EXPIRING)
+
+=== Figure(kind=NOT_PAID)
+mood: CALM
+label: Who has not paid
+line: Only the owner or a manager can see this figure.
+speech: Who has not paid. Only the owner or a manager can see this figure.
+speechHidden: Who has not paid. Only the owner or a manager can see this figure.
+ask: Figure(kind=NOT_PAID)
+
+=== Figure(kind=WHO_OWES_MOST)
+mood: CALM
+label: Who owes the most
+line: Only the owner or a manager can see this figure.
+speech: Who owes the most. Only the owner or a manager can see this figure.
+speechHidden: Who owes the most. Only the owner or a manager can see this figure.
+ask: Figure(kind=WHO_OWES_MOST)
+
+=== Figure(kind=WHO_OWES_LEAST)
+mood: CALM
+label: Who owes the least
+line: Only the owner or a manager can see this figure.
+speech: Who owes the least. Only the owner or a manager can see this figure.
+speechHidden: Who owes the least. Only the owner or a manager can see this figure.
+ask: Figure(kind=WHO_OWES_LEAST)
+
+=== Figure(kind=SALES_TODAY)
+mood: CALM
+label: Today's sale
+line: Only the owner or a manager can see this figure.
+speech: Today's sale. Only the owner or a manager can see this figure.
+speechHidden: Today's sale. Only the owner or a manager can see this figure.
+ask: Figure(kind=SALES_TODAY)
+
+=== Figure(kind=SALES_MONTH)
+mood: CALM
+label: This month's sale
+line: Only the owner or a manager can see this figure.
+speech: This month's sale. Only the owner or a manager can see this figure.
+speechHidden: This month's sale. Only the owner or a manager can see this figure.
+ask: Figure(kind=SALES_MONTH)
+
+=== Figure(kind=TO_GIVE)
+mood: CALM
+label: Total I have to give
+line: Only the owner or a manager can see this figure.
+speech: Total I have to give. Only the owner or a manager can see this figure.
+speechHidden: Total I have to give. Only the owner or a manager can see this figure.
+ask: Figure(kind=TO_GIVE)
+
+=== Figure(kind=TO_GET)
+mood: CALM
+label: Total I have to get
+line: Only the owner or a manager can see this figure.
+speech: Total I have to get. Only the owner or a manager can see this figure.
+speechHidden: Total I have to get. Only the owner or a manager can see this figure.
+ask: Figure(kind=TO_GET)
+

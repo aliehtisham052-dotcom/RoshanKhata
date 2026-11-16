@@ -1,0 +1,7 @@
+=== Hello
+mood: CALM
+line: Ask about your khata. Every answer comes from your own book, on this phone.
+speech: Ask about your khata. Every answer comes from your own book, on this phone.
+speechHidden: Ask about your khata. Every answer comes from your own book, on this phone.
+ask: Hello
+

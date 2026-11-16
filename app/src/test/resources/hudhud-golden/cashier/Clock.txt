@@ -1,0 +1,7 @@
+=== Clock
+mood: CALM
+label: <now>
+figure: <now>
+lines: 3
+ask: Clock
+

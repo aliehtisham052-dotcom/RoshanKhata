@@ -1,0 +1,113 @@
+=== Status(of=CHEQUES, cheques=null)
+mood: CALM
+label: Cheques
+figure: 1
+line: Cheques you got: 1 · Rs 2,500
+line: Cheques you gave: 0
+open: ChequesActivity
+speech: Cheques: 1. Cheques you got: 1 Rs 2,500. Cheques you gave: 0.
+speechHidden: Cheques: 1. Cheques you gave: 0. [an amount left out]
+ask: Status(of=CHEQUES, cheques=null)
+
+=== Status(of=PLANS, cheques=null)
+mood: CALM
+label: Plans
+figure: 1
+line: Still to come: Rs 10,000
+row: party=1 | Ali Raza | Rs 10,000 | <date>
+open: PlansActivity
+speech: Plans: 1. Still to come: Rs 10,000. Ali Raza, Rs 10,000, <date>.
+speechHidden: Plans: 1. Ali Raza, <date>. [an amount left out]
+ask: Status(of=PLANS, cheques=null)
+
+=== Status(of=BILLS, cheques=null)
+mood: CARE
+label: Supplier Bills
+figure: 1
+line: You owe suppliers: Rs 164,000
+line: Due today or passed: 1
+row: party=3 | Tariq Butt | Rs 264,000 | <date>
+open: BillsActivity
+speech: Supplier Bills: 1. You owe suppliers: Rs 164,000. Due today or passed: 1. Tariq Butt, Rs 264,000, <date>.
+speechHidden: Supplier Bills: 1. Due today or passed: 1. Tariq Butt, <date>. [an amount left out]
+ask: Status(of=BILLS, cheques=null)
+
+=== Status(of=LOW_STOCK, cheques=null)
+mood: CARE
+label: Low stock
+figure: 1
+row: party=0 | Paracetamol | 96 packet | - | open=ProductsActivity
+open: ProductsActivity
+speech: Low stock: 1. Paracetamol, 96 packet.
+speechHidden: Low stock: 1. Paracetamol, 96 packet.
+ask: Status(of=LOW_STOCK, cheques=null)
+
+=== Status(of=BOOK, cheques=null)
+mood: CALM
+label: Your book
+line: Customers: 2
+line: Suppliers: 1
+line: Entries: 10
+line: Products: 3
+line: Invoices: 1
+line: Last entry: Today <time>
+line: Last backup: No backup yet
+line: You will get: Rs 20,000
+line: You will give: Rs 164,000
+open: KhataActivity
+speech: Your book. Customers: 2. Suppliers: 1. Entries: 10. Products: 3. Invoices: 1. Last entry: Today <time> Last backup: No backup yet. You will get: Rs 20,000. You will give: Rs 164,000.
+speechHidden: Your book. Customers: 2. Suppliers: 1. Entries: 10. Products: 3. Invoices: 1. Last entry: Today <time> Last backup: No backup yet. [an amount left out]
+ask: Status(of=BOOK, cheques=null)
+
+=== Status(of=STAFF, cheques=null)
+mood: CALM
+label: Salary still to pay
+figure: Rs 27,000
+row: party=0 | Hamid Khan | Rs 27,000 | - | open=StaffActivity
+open: StaffActivity
+money: true
+speech: Salary still to pay: Rs 27,000. Hamid Khan, Rs 27,000.
+speechHidden: Salary still to pay. Hamid Khan. [an amount left out]
+ask: Status(of=STAFF, cheques=null)
+
+=== Status(of=INVOICES, cheques=null)
+mood: CALM
+label: Invoices with money still due
+figure: 1
+line: Still to come: Rs 8,000
+row: party=0 | Ali Raza | Rs 8,000 | INV-000001 · <weekday> | open=InvoicesActivity
+open: InvoicesActivity
+speech: Invoices with money still due: 1. Still to come: Rs 8,000. Ali Raza, Rs 8,000, INV-000001 <weekday>.
+speechHidden: Invoices with money still due: 1. Ali Raza, INV-000001 <weekday>. [an amount left out]
+ask: Status(of=INVOICES, cheques=null)
+
+=== Status(of=CHEQUES, cheques=PENDING)
+mood: CALM
+label: Cheques · Cleared
+line: No cheque has cleared.
+open: ChequesActivity
+speech: Cheques Cleared. No cheque has cleared.
+speechHidden: Cheques Cleared. No cheque has cleared.
+ask: Status(of=CHEQUES, cheques=PENDING)
+
+=== Status(of=CHEQUES, cheques=BOUNCED)
+mood: CARE
+label: Cheques · Bounced
+figure: 1
+line: Cheques you got: 1 · Rs 1,000
+line: Cheques you gave: 0
+row: party=2 | Bashir Ahmad | Rs 1,000 | 000222 · Test Bank · Due <date> · Written <date> · Bounced · Settled <date>
+open: ChequesActivity
+speech: Cheques Bounced: 1. Cheques you got: 1 Rs 1,000. Cheques you gave: 0. Bashir Ahmad, Rs 1,000, 000222 Test Bank Due <date> Written <date> Bounced Settled <date>
+speechHidden: Cheques Bounced: 1. Cheques you gave: 0. Bashir Ahmad, 000222 Test Bank Due <date> Written <date> Bounced Settled <date> [an amount left out]
+ask: Status(of=CHEQUES, cheques=BOUNCED)
+
+=== Status(of=CHEQUES, cheques=CLEARED)
+mood: CALM
+label: Cheques · Cleared
+line: No cheque has cleared.
+open: ChequesActivity
+speech: Cheques Cleared. No cheque has cleared.
+speechHidden: Cheques Cleared. No cheque has cleared.
+ask: Status(of=CHEQUES, cheques=CLEARED)
+

@@ -1,0 +1,490 @@
+=== Help(key=faq_backup)
+mood: CALM
+label: How do I keep my khata safe if I lose my phone?
+line: Open Backup & Restore from the home screen and sign in with your own Google account. Your ledger is saved to your Drive, where only you can reach it. Do this once a week and a lost phone costs you a phone, not your accounts.
+line: On a counter phone, this opens only for the owner, with the PIN.
+open: BackupActivity
+spoken: Open Backup & Restore from the home screen and sign in with your own Google account. Your ledger is saved to your Drive, where only you can reach it. Do this once a week and a lost phone costs you a phone, not your accounts. On a counter phone, this opens only for the owner, with the PIN.
+speech: Open Backup & Restore from the home screen and sign in with your own Google account. Your ledger is saved to your Drive, where only you can reach it. Do this once a week and a lost phone costs you a phone, not your accounts. On a counter phone, this opens only for the owner, with the PIN.
+speechHidden: Open Backup & Restore from the home screen and sign in with your own Google account. Your ledger is saved to your Drive, where only you can reach it. Do this once a week and a lost phone costs you a phone, not your accounts. On a counter phone, this opens only for the owner, with the PIN.
+ask: Help(key=faq_backup)
+
+=== Help(key=faq_restore)
+mood: CALM
+label: I changed my phone. How do I get my khata back?
+line: Install Roshan Khata on the new phone, open Backup & Restore, tap Restore, and sign in with the same Google account. The app asks Drive which shops it is holding and lists them by name, so you can bring back one or all of them. Anything entered after the last backup was made is not in it.
+line: On a counter phone, this opens only for the owner, with the PIN.
+open: BackupActivity
+spoken: Install Roshan Khata on the new phone, open Backup & Restore, tap Restore, and sign in with the same Google account. The app asks Drive which shops it is holding and lists them by name, so you can bring back one or all of them. Anything entered after the last backup was made is not in it. On a counter phone, this opens only for the owner, with the PIN.
+speech: Install Roshan Khata on the new phone, open Backup & Restore, tap Restore, and sign in with the same Google account. The app asks Drive which shops it is holding and lists them by name, so you can bring back one or all of them. Anything entered after the last backup was made is not in it. On a counter phone, this opens only for the owner, with the PIN.
+speechHidden: Install Roshan Khata on the new phone, open Backup & Restore, tap Restore, and sign in with the same Google account. The app asks Drive which shops it is holding and lists them by name, so you can bring back one or all of them. Anything entered after the last backup was made is not in it. On a counter phone, this opens only for the owner, with the PIN.
+ask: Help(key=faq_restore)
+
+=== Help(key=faq_business)
+mood: CALM
+label: I have two shops. Can I keep both in the app?
+line: Yes. Tap your shop name at the top of the home screen, then Add business. Each shop keeps a completely separate khata — separate customers, entries and photos — and each is backed up separately. Tap a name to switch. Long-press for more options — rename or delete.
+line: On a counter phone, this opens only for the owner, with the PIN.
+open: BusinessSwitchActivity
+spoken: Yes. Tap your shop name at the top of the home screen, then Add business. Each shop keeps a completely separate khata — separate customers, entries and photos — and each is backed up separately. Tap a name to switch. Long-press for more options — rename or delete. On a counter phone, this opens only for the owner, with the PIN.
+speech: Yes. Tap your shop name at the top of the home screen, then Add business. Each shop keeps a completely separate khata — separate customers, entries and photos — and each is backed up separately. Tap a name to switch. Long-press for more options — rename or delete. On a counter phone, this opens only for the owner, with the PIN.
+speechHidden: Yes. Tap your shop name at the top of the home screen, then Add business. Each shop keeps a completely separate khata — separate customers, entries and photos — and each is backed up separately. Tap a name to switch. Long-press for more options — rename or delete. On a counter phone, this opens only for the owner, with the PIN.
+ask: Help(key=faq_business)
+
+=== Help(key=faq_snapshot)
+mood: CALM
+label: Something went wrong today. Can I go back to yesterday?
+line: Yes. The app quietly keeps a copy of each shop's khata every day, for the last seven days. Open Backup & Restore → Daily copies and choose a day. Today's khata is kept first, so this can be undone too.
+line: On a counter phone, this opens only for the owner, with the PIN.
+open: SnapshotsActivity
+spoken: Yes. The app quietly keeps a copy of each shop's khata every day, for the last seven days. Open Backup & Restore → Daily copies and choose a day. Today's khata is kept first, so this can be undone too. On a counter phone, this opens only for the owner, with the PIN.
+speech: Yes. The app quietly keeps a copy of each shop's khata every day, for the last seven days. Open Backup & Restore → Daily copies and choose a day. Today's khata is kept first, so this can be undone too. On a counter phone, this opens only for the owner, with the PIN.
+speechHidden: Yes. The app quietly keeps a copy of each shop's khata every day, for the last seven days. Open Backup & Restore → Daily copies and choose a day. Today's khata is kept first, so this can be undone too. On a counter phone, this opens only for the owner, with the PIN.
+ask: Help(key=faq_snapshot)
+
+=== Help(key=faq_lock)
+mood: CALM
+label: How do I stop others seeing my khata?
+line: More → App Lock. It uses the same fingerprint or PIN your phone already uses, so there is no extra password to remember. Your phone must have a screen lock set for this to work.
+spoken: More → App Lock. It uses the same fingerprint or PIN your phone already uses, so there is no extra password to remember. Your phone must have a screen lock set for this to work.
+speech: More → App Lock. It uses the same fingerprint or PIN your phone already uses, so there is no extra password to remember. Your phone must have a screen lock set for this to work.
+speechHidden: More → App Lock. It uses the same fingerprint or PIN your phone already uses, so there is no extra password to remember. Your phone must have a screen lock set for this to work.
+ask: Help(key=faq_lock)
+
+=== Help(key=faq_hide)
+mood: CALM
+label: Can I hide the balance when someone is standing beside me?
+line: Tap the eye next to the balance on the home screen. It hides everywhere until you tap it again.
+spoken: Tap the eye next to the balance on the home screen. It hides everywhere until you tap it again.
+speech: Tap the eye next to the balance on the home screen. It hides everywhere until you tap it again.
+speechHidden: Tap the eye next to the balance on the home screen. It hides everywhere until you tap it again.
+ask: Help(key=faq_hide)
+
+=== Help(key=faq_percent)
+mood: CALM
+label: Can I work out a discount inside the amount box?
+line: Yes. Type the sum straight in — 1200-15% gives 1020, and 500*32% gives 160. It works in every amount field and on the Calculator.
+open: CalculatorActivity
+spoken: Yes. Type the sum straight in — 1200-15% gives 1020, and 500*32% gives 160. It works in every amount field and on the Calculator.
+speech: Yes. Type the sum straight in — 1200-15% gives 1020, and 500*32% gives 160. It works in every amount field and on the Calculator.
+speechHidden: Yes. Type the sum straight in — 1200-15% gives 1020, and 500*32% gives 160. It works in every amount field and on the Calculator.
+ask: Help(key=faq_percent)
+
+=== Help(key=faq_delete)
+mood: CALM
+label: I deleted a customer by mistake.
+line: Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back.
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+open: RecycleBinActivity
+spoken: Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back. On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back. On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back. On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=faq_delete)
+
+=== Help(key=faq_language)
+mood: CALM
+label: Can I change the language later?
+line: More → Language, any time. Your ledger is not affected.
+open: LanguageActivity
+spoken: More → Language, any time. Your ledger is not affected.
+speech: More → Language, any time. Your ledger is not affected.
+speechHidden: More → Language, any time. Your ledger is not affected.
+ask: Help(key=faq_language)
+
+=== Help(key=faq_data)
+mood: CALM
+label: Where is my data kept? Can anyone else see it?
+line: On your phone, and nowhere else unless you back it up — and a backup goes to your own Google Drive, not to us. We never see your customers, their numbers, or what anyone owes.
+spoken: On your phone, and nowhere else unless you back it up — and a backup goes to your own Google Drive, not to us. We never see your customers, their numbers, or what anyone owes.
+speech: On your phone, and nowhere else unless you back it up — and a backup goes to your own Google Drive, not to us. We never see your customers, their numbers, or what anyone owes.
+speechHidden: On your phone, and nowhere else unless you back it up — and a backup goes to your own Google Drive, not to us. We never see your customers, their numbers, or what anyone owes.
+ask: Help(key=faq_data)
+
+=== Help(key=intro_counter)
+mood: CALM
+label: Counter sale
+line: A customer's sale goes into their khata, a walk-in's into the cashbook. Stock comes off either way.
+open: CounterSaleActivity
+spoken: A customer's sale goes into their khata, a walk-in's into the cashbook. Stock comes off either way.
+speech: A customer's sale goes into their khata, a walk-in's into the cashbook. Stock comes off either way.
+speechHidden: A customer's sale goes into their khata, a walk-in's into the cashbook. Stock comes off either way.
+ask: Help(key=intro_counter)
+
+=== Help(key=intro_documents)
+mood: CALM
+label: Documents
+line: A quotation becomes an order, a challan and then an invoice, one tap each. Nothing is typed twice.
+open: InvoicesActivity
+spoken: A quotation becomes an order, a challan and then an invoice, one tap each. Nothing is typed twice.
+speech: A quotation becomes an order, a challan and then an invoice, one tap each. Nothing is typed twice.
+speechHidden: A quotation becomes an order, a challan and then an invoice, one tap each. Nothing is typed twice.
+ask: Help(key=intro_documents)
+
+=== Help(key=intro_cashbook)
+mood: CALM
+label: Cash Book
+line: Every evening, count the drawer and close the day. The app tells you what should be in it.
+open: CashbookActivity
+spoken: Every evening, count the drawer and close the day. The app tells you what should be in it.
+speech: Every evening, count the drawer and close the day. The app tells you what should be in it.
+speechHidden: Every evening, count the drawer and close the day. The app tells you what should be in it.
+ask: Help(key=intro_cashbook)
+
+=== Help(key=intro_cheques)
+mood: CALM
+label: Cheques
+line: A cheque reaches the khata only when it clears. A bounced cheque changes nothing.
+open: ChequesActivity
+spoken: A cheque reaches the khata only when it clears. A bounced cheque changes nothing.
+speech: A cheque reaches the khata only when it clears. A bounced cheque changes nothing.
+speechHidden: A cheque reaches the khata only when it clears. A bounced cheque changes nothing.
+ask: Help(key=intro_cheques)
+
+=== Help(key=intro_customer_qr)
+mood: CALM
+label: Customer QR
+line: Scan a customer's card and their khata opens at once. The code carries no name, number or balance.
+open: KhataActivity
+spoken: Scan a customer's card and their khata opens at once. The code carries no name, number or balance.
+speech: Scan a customer's card and their khata opens at once. The code carries no name, number or balance.
+speechHidden: Scan a customer's card and their khata opens at once. The code carries no name, number or balance.
+ask: Help(key=intro_customer_qr)
+
+=== Help(key=intro_staff)
+mood: CALM
+label: Staff & salary
+line: Salary, advances and attendance in one place. At the counter each person signs in with a PIN, so you know who did what.
+line: On a counter phone, this opens only for the owner, with the PIN.
+open: StaffActivity
+spoken: Salary, advances and attendance in one place. At the counter each person signs in with a PIN, so you know who did what. On a counter phone, this opens only for the owner, with the PIN.
+speech: Salary, advances and attendance in one place. At the counter each person signs in with a PIN, so you know who did what. On a counter phone, this opens only for the owner, with the PIN.
+speechHidden: Salary, advances and attendance in one place. At the counter each person signs in with a PIN, so you know who did what. On a counter phone, this opens only for the owner, with the PIN.
+ask: Help(key=intro_staff)
+
+=== Help(key=intro_plans)
+mood: CALM
+label: Plans
+line: Sell on instalments. The app reminds you on the day each one is due.
+open: PlansActivity
+spoken: Sell on instalments. The app reminds you on the day each one is due.
+speech: Sell on instalments. The app reminds you on the day each one is due.
+speechHidden: Sell on instalments. The app reminds you on the day each one is due.
+ask: Help(key=intro_plans)
+
+=== Help(key=intro_followup)
+mood: CALM
+label: Follow-up
+line: Every day it lists whom to ask for money, oldest first. One tap sends a polite WhatsApp reminder.
+open: FollowUpActivity
+spoken: Every day it lists whom to ask for money, oldest first. One tap sends a polite WhatsApp reminder.
+speech: Every day it lists whom to ask for money, oldest first. One tap sends a polite WhatsApp reminder.
+speechHidden: Every day it lists whom to ask for money, oldest first. One tap sends a polite WhatsApp reminder.
+ask: Help(key=intro_followup)
+
+=== Help(key=intro_backup)
+mood: CALM
+label: Backup
+line: Your khata lives only on this phone. A backup outside the phone keeps it safe if the phone is lost.
+line: On a counter phone, this opens only for the owner, with the PIN.
+open: BackupActivity
+spoken: Your khata lives only on this phone. A backup outside the phone keeps it safe if the phone is lost. On a counter phone, this opens only for the owner, with the PIN.
+speech: Your khata lives only on this phone. A backup outside the phone keeps it safe if the phone is lost. On a counter phone, this opens only for the owner, with the PIN.
+speechHidden: Your khata lives only on this phone. A backup outside the phone keeps it safe if the phone is lost. On a counter phone, this opens only for the owner, with the PIN.
+ask: Help(key=intro_backup)
+
+=== Help(key=intro_orders)
+mood: CALM
+label: Purchase orders
+line: When the goods arrive, the order becomes the supplier's bill and your stock goes up.
+open: OrdersActivity
+spoken: When the goods arrive, the order becomes the supplier's bill and your stock goes up.
+speech: When the goods arrive, the order becomes the supplier's bill and your stock goes up.
+speechHidden: When the goods arrive, the order becomes the supplier's bill and your stock goes up.
+ask: Help(key=intro_orders)
+
+=== Help(key=intro_expiry)
+mood: CALM
+label: Expiring Stock
+line: Goods are sold soonest-expiring first, and you are told 60 days before a batch expires.
+open: ExpiringActivity
+spoken: Goods are sold soonest-expiring first, and you are told 60 days before a batch expires.
+speech: Goods are sold soonest-expiring first, and you are told 60 days before a batch expires.
+speechHidden: Goods are sold soonest-expiring first, and you are told 60 days before a batch expires.
+ask: Help(key=intro_expiry)
+
+=== Help(key=intro_radar)
+mood: CALM
+label: Payment Radar
+line: How each customer usually pays, worked out from your own khata, right where you give credit.
+open: FollowUpActivity
+spoken: How each customer usually pays, worked out from your own khata, right where you give credit.
+speech: How each customer usually pays, worked out from your own khata, right where you give credit.
+speechHidden: How each customer usually pays, worked out from your own khata, right where you give credit.
+ask: Help(key=intro_radar)
+
+=== Help(key=screen_khata)
+mood: CALM
+label: Khata
+line: Your customer ledgers — who owes you, and who you owe.
+open: KhataActivity
+spoken: Your customer ledgers — who owes you, and who you owe.
+speech: Your customer ledgers — who owes you, and who you owe.
+speechHidden: Your customer ledgers — who owes you, and who you owe.
+ask: Help(key=screen_khata)
+
+=== Help(key=screen_bills)
+mood: CALM
+label: Supplier Bills
+line: Record what you buy from suppliers and what you still owe them.
+open: BillsActivity
+spoken: Record what you buy from suppliers and what you still owe them.
+speech: Record what you buy from suppliers and what you still owe them.
+speechHidden: Record what you buy from suppliers and what you still owe them.
+ask: Help(key=screen_bills)
+
+=== Help(key=screen_products)
+mood: CALM
+label: Products & Stock
+line: Stock on hand, batch expiry and the stock register — built from the bills you already write.
+open: ProductsActivity
+spoken: Stock on hand, batch expiry and the stock register — built from the bills you already write.
+speech: Stock on hand, batch expiry and the stock register — built from the bills you already write.
+speechHidden: Stock on hand, batch expiry and the stock register — built from the bills you already write.
+ask: Help(key=screen_products)
+
+=== Help(key=screen_insights)
+mood: CALM
+label: Sale Insights
+line: See what sells, what sits, and where your money is tied up.
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+open: InsightsActivity
+spoken: See what sells, what sits, and where your money is tied up. On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: See what sells, what sits, and where your money is tied up. On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: See what sells, what sits, and where your money is tied up. On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=screen_insights)
+
+=== Help(key=screen_card)
+mood: CALM
+label: Business Card
+line: Make a shareable card for your shop in seconds, in three styles.
+open: BusinessCardActivity
+spoken: Make a shareable card for your shop in seconds, in three styles.
+speech: Make a shareable card for your shop in seconds, in three styles.
+speechHidden: Make a shareable card for your shop in seconds, in three styles.
+ask: Help(key=screen_card)
+
+=== Help(key=screen_calc)
+mood: CALM
+label: Calculator
+line: Quick sums beside your ledger — margins, totals, splits.
+open: CalculatorActivity
+spoken: Quick sums beside your ledger — margins, totals, splits.
+speech: Quick sums beside your ledger — margins, totals, splits.
+speechHidden: Quick sums beside your ledger — margins, totals, splits.
+ask: Help(key=screen_calc)
+
+=== Help(key=screen_zakat)
+mood: CALM
+label: Zakat
+line: A reference aid — not a ruling
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+open: ZakatActivity
+spoken: A reference aid — not a ruling On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: A reference aid — not a ruling On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: A reference aid — not a ruling On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=screen_zakat)
+
+=== Help(key=screen_rates)
+mood: CALM
+label: Price list
+line: Your selling prices as a picture for WhatsApp
+open: RateListActivity
+spoken: Your selling prices as a picture for WhatsApp
+speech: Your selling prices as a picture for WhatsApp
+speechHidden: Your selling prices as a picture for WhatsApp
+ask: Help(key=screen_rates)
+
+=== Help(key=screen_purchase_rates)
+mood: CALM
+label: Purchase rates
+line: What each supplier charged you, product by product
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+open: SupplierRatesActivity
+spoken: What each supplier charged you, product by product On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: What each supplier charged you, product by product On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: What each supplier charged you, product by product On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=screen_purchase_rates)
+
+=== Help(key=screen_cashflow)
+mood: CALM
+label: Cash flow
+line: Money promised to come in, and money due to go out
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+open: CashFlowActivity
+spoken: Money promised to come in, and money due to go out On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: Money promised to come in, and money due to go out On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: Money promised to come in, and money due to go out On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=screen_cashflow)
+
+=== Help(key=screen_sales_report)
+mood: CALM
+label: Sales report
+line: Sales report
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+open: SalesReportActivity
+spoken: Sales report On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: Sales report On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: Sales report On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=screen_sales_report)
+
+=== Help(key=screen_posters)
+mood: CALM
+label: Poster & Status
+line: A picture for WhatsApp Status, with your shop's name on it
+open: PosterActivity
+spoken: A picture for WhatsApp Status, with your shop's name on it
+speech: A picture for WhatsApp Status, with your shop's name on it
+speechHidden: A picture for WhatsApp Status, with your shop's name on it
+ask: Help(key=screen_posters)
+
+=== Help(key=screen_seasons)
+mood: CALM
+label: Seasons
+line: Credit by crop season, newest first
+open: SeasonsActivity
+spoken: Credit by crop season, newest first
+speech: Credit by crop season, newest first
+speechHidden: Credit by crop season, newest first
+ask: Help(key=screen_seasons)
+
+=== Help(key=screen_schemes)
+mood: CALM
+label: Company schemes
+line: Targets, slabs and claims, from your supplier bills
+open: SchemesActivity
+spoken: Targets, slabs and claims, from your supplier bills
+speech: Targets, slabs and claims, from your supplier bills
+speechHidden: Targets, slabs and claims, from your supplier bills
+ask: Help(key=screen_schemes)
+
+=== Help(key=screen_audit)
+mood: CALM
+label: Who did what
+line: Every sale, void, return, price change, sign-in and restore — newest first
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+open: AuditActivity
+spoken: Every sale, void, return, price change, sign-in and restore — newest first On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: Every sale, void, return, price change, sign-in and restore — newest first On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: Every sale, void, return, price change, sign-in and restore — newest first On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=screen_audit)
+
+=== Help(key=screen_lapsed)
+mood: CALM
+label: Stopped coming
+line: Stopped coming
+open: LapsedActivity
+spoken: Stopped coming
+speech: Stopped coming
+speechHidden: Stopped coming
+ask: Help(key=screen_lapsed)
+
+=== Help(key=screen_aging)
+mood: CALM
+label: Dues by age
+line: Dues by age
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+open: AgingActivity
+spoken: Dues by age On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: Dues by age On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: Dues by age On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=screen_aging)
+
+=== Help(key=screen_bin)
+mood: CALM
+label: Bin
+line: Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back.
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+open: RecycleBinActivity
+spoken: Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back. On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back. On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: Recycle Bin, on the home screen. Deleted customers and entries wait there and can be put back. On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=screen_bin)
+
+=== Help(key=screen_duplicates)
+mood: CALM
+label: Duplicate customers
+line: More → Duplicate customers. It groups records that look alike — a similar name or the same phone number. Tap “Review & merge” and pick which record stays. Nothing merges until you confirm. The others move onto this one — their whole ledger, bills, cheques and payment plans go with them. No money is added or removed. Check the name and number both; two different people can share one of the two by chance — then tap “Not a duplicate”. The merged-away record goes to the recycle bin, but empty: its ledger has already moved, so restoring it later brings back the name only, not a second copy of the balance.
+line: On a counter phone, this opens only for the owner or a manager, with the PIN.
+spoken: More → Duplicate customers. It groups records that look alike — a similar name or the same phone number. Tap “Review & merge” and pick which record stays. Nothing merges until you confirm. The others move onto this one — their whole ledger, bills, cheques and payment plans go with them. No money is added or removed. The rest is written on the screen. On a counter phone, this opens only for the owner or a manager, with the PIN.
+speech: More → Duplicate customers. It groups records that look alike — a similar name or the same phone number. Tap “Review & merge” and pick which record stays. Nothing merges until you confirm. The others move onto this one — their whole ledger, bills, cheques and payment plans go with them. No money is added or removed. The rest is written on the screen. On a counter phone, this opens only for the owner or a manager, with the PIN.
+speechHidden: More → Duplicate customers. It groups records that look alike — a similar name or the same phone number. Tap “Review & merge” and pick which record stays. Nothing merges until you confirm. The others move onto this one — their whole ledger, bills, cheques and payment plans go with them. No money is added or removed. The rest is written on the screen. On a counter phone, this opens only for the owner or a manager, with the PIN.
+ask: Help(key=screen_duplicates)
+
+=== Help(key=screen_help)
+mood: CALM
+label: Help & Support
+line: More → Help & Support. It has the common questions, the feature guides, and a button to show the Home tour again. Still stuck? Write to us or report a problem — it opens in your own mail app, so you see exactly what is sent before it goes.
+open: HelpActivity
+spoken: More → Help & Support. It has the common questions, the feature guides, and a button to show the Home tour again. Still stuck? Write to us or report a problem — it opens in your own mail app, so you see exactly what is sent before it goes.
+speech: More → Help & Support. It has the common questions, the feature guides, and a button to show the Home tour again. Still stuck? Write to us or report a problem — it opens in your own mail app, so you see exactly what is sent before it goes.
+speechHidden: More → Help & Support. It has the common questions, the feature guides, and a button to show the Home tour again. Still stuck? Write to us or report a problem — it opens in your own mail app, so you see exactly what is sent before it goes.
+ask: Help(key=screen_help)
+
+=== Help(key=screen_mera_khata)
+mood: CALM
+label: My Khata
+line: Your balance with each shop that sent you its khata link. The shop writes it; Roshan Khata does not check it, and nothing can be changed here.
+open: MeraKhataActivity
+spoken: Your balance with each shop that sent you its khata link. The shop writes it; Roshan Khata does not check it, and nothing can be changed here.
+speech: Your balance with each shop that sent you its khata link. The shop writes it; Roshan Khata does not check it, and nothing can be changed here.
+speechHidden: Your balance with each shop that sent you its khata link. The shop writes it; Roshan Khata does not check it, and nothing can be changed here.
+ask: Help(key=screen_mera_khata)
+
+=== Help(key=screen_payment_voice)
+mood: CALM
+label: Payment voice
+line: More → Payment voice. When money arrives in a wallet or bank app you choose, this phone says it out loud and offers to add it to the customer's khata. Nothing is added until you press Save. To set it up, give notification access and tick only the apps where customers pay you. It reads only those apps, only on this phone; nothing is sent anywhere; SMS are never read.
+line: On a counter phone, this opens only for the owner, with the PIN.
+open: PaymentVoiceActivity
+spoken: More → Payment voice. When money arrives in a wallet or bank app you choose, this phone says it out loud and offers to add it to the customer's khata. Nothing is added until you press Save. To set it up, give notification access and tick only the apps where customers pay you. The rest is written on the screen. On a counter phone, this opens only for the owner, with the PIN.
+speech: More → Payment voice. When money arrives in a wallet or bank app you choose, this phone says it out loud and offers to add it to the customer's khata. Nothing is added until you press Save. To set it up, give notification access and tick only the apps where customers pay you. The rest is written on the screen. On a counter phone, this opens only for the owner, with the PIN.
+speechHidden: More → Payment voice. When money arrives in a wallet or bank app you choose, this phone says it out loud and offers to add it to the customer's khata. Nothing is added until you press Save. To set it up, give notification access and tick only the apps where customers pay you. The rest is written on the screen. On a counter phone, this opens only for the owner, with the PIN.
+ask: Help(key=screen_payment_voice)
+
+=== Help(key=screen_viewer)
+mood: CALM
+label: Helper's phone (view only)
+line: More → Helper's phone (view only). One phone writes the book. Other phones only look. On your phone, tap “Send copy”. Send the file on WhatsApp. On the helper's phone, open this screen and choose “Open a file from the owner”. They can see balances and chase payments, but cannot change anything. Take a fresh copy every morning.
+line: On a counter phone, this opens only for the owner, with the PIN.
+spoken: More → Helper's phone (view only). One phone writes the book. Other phones only look. On your phone, tap “Send copy”. Send the file on WhatsApp. On the helper's phone, open this screen and choose “Open a file from the owner”. They can see balances and chase payments, but cannot change anything. The rest is written on the screen. On a counter phone, this opens only for the owner, with the PIN.
+speech: More → Helper's phone (view only). One phone writes the book. Other phones only look. On your phone, tap “Send copy”. Send the file on WhatsApp. On the helper's phone, open this screen and choose “Open a file from the owner”. They can see balances and chase payments, but cannot change anything. The rest is written on the screen. On a counter phone, this opens only for the owner, with the PIN.
+speechHidden: More → Helper's phone (view only). One phone writes the book. Other phones only look. On your phone, tap “Send copy”. Send the file on WhatsApp. On the helper's phone, open this screen and choose “Open a file from the owner”. They can see balances and chase payments, but cannot change anything. The rest is written on the screen. On a counter phone, this opens only for the owner, with the PIN.
+ask: Help(key=screen_viewer)
+
+=== Help(key=screen_waris)
+mood: CALM
+label: Heir Access
+line: More → Heir Access. Tap “Turn on”. A locked copy of your book will be kept on Innovation 313's relays on the internet. Nobody there can open it: only the phone of an heir you name, and only after the wait. Your PINs are never in it. Then tap “Add an heir” and give them their card. They can only ask. You are told at once and can refuse. Only if you do not refuse within the wait do they get a read-only copy. Whoever holds the card can ask. Give it only to someone you trust.
+line: On a counter phone, this opens only for the owner, with the PIN.
+spoken: More → Heir Access. Tap “Turn on”. A locked copy of your book will be kept on Innovation 313's relays on the internet. Nobody there can open it: only the phone of an heir you name, and only after the wait. Your PINs are never in it. Then tap “Add an heir” and give them their card. They can only ask. The rest is written on the screen. On a counter phone, this opens only for the owner, with the PIN.
+speech: More → Heir Access. Tap “Turn on”. A locked copy of your book will be kept on Innovation 313's relays on the internet. Nobody there can open it: only the phone of an heir you name, and only after the wait. Your PINs are never in it. Then tap “Add an heir” and give them their card. They can only ask. The rest is written on the screen. On a counter phone, this opens only for the owner, with the PIN.
+speechHidden: More → Heir Access. Tap “Turn on”. A locked copy of your book will be kept on Innovation 313's relays on the internet. Nobody there can open it: only the phone of an heir you name, and only after the wait. Your PINs are never in it. Then tap “Add an heir” and give them their card. They can only ask. The rest is written on the screen. On a counter phone, this opens only for the owner, with the PIN.
+ask: Help(key=screen_waris)
+
+=== Help(key=faq_khata_link)
+mood: CALM
+label: Send khata link
+line: On the customer’s page, tap ⋮ and choose “Send khata link”. This customer gets a link where they see their name as written in your book, their total balance and the day of their last entry — nothing else of your book. You can stop the link at any time.
+open: KhataActivity
+spoken: On the customer’s page, tap ⋮ and choose “Send khata link”. This customer gets a link where they see their name as written in your book, their total balance and the day of their last entry — nothing else of your book. You can stop the link at any time.
+speech: On the customer’s page, tap ⋮ and choose “Send khata link”. This customer gets a link where they see their name as written in your book, their total balance and the day of their last entry — nothing else of your book. You can stop the link at any time.
+speechHidden: On the customer’s page, tap ⋮ and choose “Send khata link”. This customer gets a link where they see their name as written in your book, their total balance and the day of their last entry — nothing else of your book. You can stop the link at any time.
+ask: Help(key=faq_khata_link)
+
+=== Help(key=no_such_page)
+mood: CALM
+line: I could not find this in your khata. The nearest questions I can answer are below.
+speech: I could not find this in your khata. The nearest questions I can answer are below.
+speechHidden: I could not find this in your khata. The nearest questions I can answer are below.
+ask: Help(key=no_such_page)
+

@@ -1,0 +1,9 @@
+=== CallMe(name=Ali bhai, save=false)
+mood: CALM
+label: Ali bhai
+line: Shall I call you Ali bhai? Tap Save and I will.
+speech: Ali bhai. Shall I call you Ali bhai? Tap Save and I will.
+speechHidden: Ali bhai. Shall I call you Ali bhai? Tap Save and I will.
+option: CallMe(name=Ali bhai, save=true) = Save
+ask: CallMe(name=Ali bhai, save=false)
+

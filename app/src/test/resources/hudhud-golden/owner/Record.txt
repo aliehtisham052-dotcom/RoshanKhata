@@ -1,0 +1,248 @@
+=== Record(facet=STAFF_PAY, ids=[], window=null)
+mood: CALM
+label: Salary still to pay
+line: No staff yet. Add the people who work at your shop to keep their attendance and salary.
+open: StaffActivity
+speech: Salary still to pay. No staff yet. Add the people who work at your shop to keep their attendance and salary.
+speechHidden: Salary still to pay. No staff yet. Add the people who work at your shop to keep their attendance and salary.
+ask: Record(facet=STAFF_PAY, ids=[], window=null)
+
+=== Record(facet=STAFF_PAY, ids=[1], window=null)
+mood: CARE
+label: Hamid Khan · Salary still to pay · This month
+figure: Rs 27,000
+line: Salary: Rs 30,000 a month
+line: Earned Rs 29,000 · Advance Rs 2,000 · Paid Rs 0
+line: Absent 1 · Half day 0 · Paid leave 0
+line: Still to pay: Rs 27,000
+open: StaffActivity
+money: true
+speech: Hamid Khan Salary still to pay This month: Rs 27,000. Salary: Rs 30,000 a month. Earned Rs 29,000 Advance Rs 2,000 Paid Rs 0. Absent 1 Half day 0 Paid leave 0. Still to pay: Rs 27,000.
+speechHidden: Hamid Khan Salary still to pay This month. Absent 1 Half day 0 Paid leave 0. [an amount left out]
+ask: Record(facet=STAFF_PAY, ids=[1], window=null)
+
+=== Record(facet=STAFF_PAY, ids=[1], window=THIS_MONTH)
+mood: CARE
+label: Hamid Khan · Salary still to pay · This month
+figure: Rs 27,000
+line: Salary: Rs 30,000 a month
+line: Earned Rs 29,000 · Advance Rs 2,000 · Paid Rs 0
+line: Absent 1 · Half day 0 · Paid leave 0
+line: Still to pay: Rs 27,000
+open: StaffActivity
+money: true
+speech: Hamid Khan Salary still to pay This month: Rs 27,000. Salary: Rs 30,000 a month. Earned Rs 29,000 Advance Rs 2,000 Paid Rs 0. Absent 1 Half day 0 Paid leave 0. Still to pay: Rs 27,000.
+speechHidden: Hamid Khan Salary still to pay This month. Absent 1 Half day 0 Paid leave 0. [an amount left out]
+ask: Record(facet=STAFF_PAY, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=STAFF_PAID, ids=[], window=null)
+mood: CALM
+label: Paid to staff · This month
+figure: Rs 2,000
+line: Advance: Rs 2,000
+row: party=0 | Hamid Khan | Rs 2,000 | Advance · Today | open=StaffActivity
+open: StaffActivity
+money: true
+speech: Paid to staff This month: Rs 2,000. Advance: Rs 2,000. Hamid Khan, Rs 2,000, Advance Today.
+speechHidden: Paid to staff This month. Hamid Khan, Advance Today. [an amount left out]
+ask: Record(facet=STAFF_PAID, ids=[], window=null)
+
+=== Record(facet=STAFF_PAID, ids=[1], window=null)
+mood: CALM
+label: Paid to staff · This month
+figure: Rs 2,000
+line: Advance: Rs 2,000
+row: party=0 | Hamid Khan | Rs 2,000 | Advance · Today | open=StaffActivity
+open: StaffActivity
+money: true
+speech: Paid to staff This month: Rs 2,000. Advance: Rs 2,000. Hamid Khan, Rs 2,000, Advance Today.
+speechHidden: Paid to staff This month. Hamid Khan, Advance Today. [an amount left out]
+ask: Record(facet=STAFF_PAID, ids=[1], window=null)
+
+=== Record(facet=STAFF_PAID, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Paid to staff · This month
+figure: Rs 2,000
+line: Advance: Rs 2,000
+row: party=0 | Hamid Khan | Rs 2,000 | Advance · Today | open=StaffActivity
+open: StaffActivity
+money: true
+speech: Paid to staff This month: Rs 2,000. Advance: Rs 2,000. Hamid Khan, Rs 2,000, Advance Today.
+speechHidden: Paid to staff This month. Hamid Khan, Advance Today. [an amount left out]
+ask: Record(facet=STAFF_PAID, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=ATTENDANCE, ids=[], window=null)
+mood: CARE
+label: Attendance · Today
+figure: 1
+line: Absent: Hamid Khan
+line: Present: 0
+open: StaffActivity
+speech: Attendance Today: 1. Absent: Hamid Khan. Present: 0.
+speechHidden: Attendance Today: 1. Absent: Hamid Khan. Present: 0.
+ask: Record(facet=ATTENDANCE, ids=[], window=null)
+
+=== Record(facet=ATTENDANCE, ids=[1], window=null)
+mood: CARE
+label: Attendance · Today
+figure: 1
+line: Absent: Hamid Khan
+line: Present: 0
+open: StaffActivity
+speech: Attendance Today: 1. Absent: Hamid Khan. Present: 0.
+speechHidden: Attendance Today: 1. Absent: Hamid Khan. Present: 0.
+ask: Record(facet=ATTENDANCE, ids=[1], window=null)
+
+=== Record(facet=ATTENDANCE, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Hamid Khan · Attendance · This month
+figure: 1
+row: party=0 | Today | - | Absent | open=StaffActivity
+open: StaffActivity
+speech: Hamid Khan Attendance This month: 1. Today, Absent.
+speechHidden: Hamid Khan Attendance This month: 1. Today, Absent.
+ask: Record(facet=ATTENDANCE, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=STAFF_PERSON, ids=[], window=null)
+mood: CALM
+label: Hamid Khan
+line: Counter login: Cashier
+line: Phone number: 0300 0000002
+line: Monthly salary: Rs 30,000
+line: Added on: <date>
+open: StaffActivity
+money: true
+speech: Hamid Khan. Counter login: Cashier. Phone number: It's on the screen. Monthly salary: Rs 30,000. Added on: <date>
+speechHidden: Hamid Khan. Counter login: Cashier. Phone number: It's on the screen. Added on: <date> [an amount left out]
+ask: Record(facet=STAFF_PERSON, ids=[], window=null)
+secret: 0300 0000002
+
+=== Record(facet=STAFF_PERSON, ids=[1], window=null)
+mood: CALM
+label: Hamid Khan
+line: Counter login: Cashier
+line: Phone number: 0300 0000002
+line: Monthly salary: Rs 30,000
+line: Added on: <date>
+open: StaffActivity
+money: true
+speech: Hamid Khan. Counter login: Cashier. Phone number: It's on the screen. Monthly salary: Rs 30,000. Added on: <date>
+speechHidden: Hamid Khan. Counter login: Cashier. Phone number: It's on the screen. Added on: <date> [an amount left out]
+ask: Record(facet=STAFF_PERSON, ids=[1], window=null)
+secret: 0300 0000002
+
+=== Record(facet=STAFF_PERSON, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Hamid Khan
+line: Counter login: Cashier
+line: Phone number: 0300 0000002
+line: Monthly salary: Rs 30,000
+line: Added on: <date>
+open: StaffActivity
+money: true
+speech: Hamid Khan. Counter login: Cashier. Phone number: It's on the screen. Monthly salary: Rs 30,000. Added on: <date>
+speechHidden: Hamid Khan. Counter login: Cashier. Phone number: It's on the screen. Added on: <date> [an amount left out]
+ask: Record(facet=STAFF_PERSON, ids=[1], window=THIS_MONTH)
+secret: 0300 0000002
+
+=== Record(facet=PLAN, ids=[], window=null)
+mood: CALM
+label: Plans
+line:  has no payment plan.
+open: PlansActivity
+speech: Plans. has no payment plan.
+speechHidden: Plans. has no payment plan.
+ask: Record(facet=PLAN, ids=[], window=null)
+
+=== Record(facet=PLAN, ids=[1], window=null)
+mood: CALM
+label: Ali Raza · Plans
+figure: Rs 10,000
+line: Paid Rs 0 of Rs 10,000
+line: Rs 10,000 left
+line: Each instalment: Rs 2,000
+line: Next: <weekday>
+line: Started: <date>
+line: Instalments paid: 0
+line: Tractor parts
+open: PlansActivity
+money: true
+speech: Ali Raza Plans: Rs 10,000. Paid Rs 0 of Rs 10,000. Rs 10,000 left. Each instalment: Rs 2,000. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
+speechHidden: Ali Raza Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts. [an amount left out]
+ask: Record(facet=PLAN, ids=[1], window=null)
+
+=== Record(facet=PLAN, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Ali Raza · Plans
+figure: Rs 10,000
+line: Paid Rs 0 of Rs 10,000
+line: Rs 10,000 left
+line: Each instalment: Rs 2,000
+line: Next: <weekday>
+line: Started: <date>
+line: Instalments paid: 0
+line: Tractor parts
+open: PlansActivity
+money: true
+speech: Ali Raza Plans: Rs 10,000. Paid Rs 0 of Rs 10,000. Rs 10,000 left. Each instalment: Rs 2,000. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
+speechHidden: Ali Raza Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts. [an amount left out]
+ask: Record(facet=PLAN, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=PLAN_CLOSED, ids=[], window=null)
+mood: CALM
+label: Plans that were closed
+line: No plan has been closed yet.
+open: PlansActivity
+speech: Plans that were closed. No plan has been closed yet.
+speechHidden: Plans that were closed. No plan has been closed yet.
+ask: Record(facet=PLAN_CLOSED, ids=[], window=null)
+
+=== Record(facet=PLAN_CLOSED, ids=[1], window=null)
+mood: CALM
+label: Plans that were closed
+line: No plan has been closed yet.
+open: PlansActivity
+speech: Plans that were closed. No plan has been closed yet.
+speechHidden: Plans that were closed. No plan has been closed yet.
+ask: Record(facet=PLAN_CLOSED, ids=[1], window=null)
+
+=== Record(facet=PLAN_CLOSED, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Plans that were closed · This month
+line: No plan has been closed yet.
+open: PlansActivity
+speech: Plans that were closed This month. No plan has been closed yet.
+speechHidden: Plans that were closed This month. No plan has been closed yet.
+ask: Record(facet=PLAN_CLOSED, ids=[1], window=THIS_MONTH)
+
+=== Record(facet=CHEQUE, ids=[], window=null)
+mood: CALM
+label: Cheques
+line:  has no cheques.
+open: ChequesActivity
+speech: Cheques. has no cheques.
+speechHidden: Cheques. has no cheques.
+ask: Record(facet=CHEQUE, ids=[], window=null)
+
+=== Record(facet=CHEQUE, ids=[1], window=null)
+mood: CALM
+label: Ali Raza · Cheques
+figure: 1
+line: Pending: 1
+row: party=1 | Ali Raza | Rs 2,500 | 000111 · Test Bank · Due <weekday> · Written <date>
+open: ChequesActivity
+speech: Ali Raza Cheques: 1. Pending: 1. Ali Raza, Rs 2,500, 000111 Test Bank Due <weekday> Written <date>
+speechHidden: Ali Raza Cheques: 1. Pending: 1. Ali Raza, 000111 Test Bank Due <weekday> Written <date> [an amount left out]
+ask: Record(facet=CHEQUE, ids=[1], window=null)
+
+=== Record(facet=CHEQUE, ids=[1], window=THIS_MONTH)
+mood: CALM
+label: Ali Raza · Cheques
+figure: 1
+line: Pending: 1
+row: party=1 | Ali Raza | Rs 2,500 | 000111 · Test Bank · Due <weekday> · Written <date>
+open: ChequesActivity
+speech: Ali Raza Cheques: 1. Pending: 1. Ali Raza, Rs 2,500, 000111 Test Bank Due <weekday> Written <date>
+speechHidden: Ali Raza Cheques: 1. Pending: 1. Ali Raza, 000111 Test Bank Due <weekday> Written <date> [an amount left out]
+ask: Record(facet=CHEQUE, ids=[1], window=THIS_MONTH)
+

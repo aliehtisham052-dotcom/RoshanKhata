@@ -1,0 +1,39 @@
+=== WhenPays(ids=[1])
+mood: CARE
+label: Ali Raza
+line: • Often pays late\n• Oldest unpaid amount has waited 75 days\n\nOnly you see this. It is worked out on this phone from your own khata and is never shown to the customer.
+openParty: 1
+spoken: Ali Raza: The reasons are on the screen.
+speech: Ali Raza: The reasons are on the screen.
+speechHidden: Ali Raza: The reasons are on the screen.
+ask: WhenPays(ids=[1])
+
+=== WhenPays(ids=[])
+mood: CALM
+label: Usually pays around now
+line: No customer is in his usual paying days today.
+open: FollowUpActivity
+speech: Usually pays around now. No customer is in his usual paying days today.
+speechHidden: Usually pays around now. No customer is in his usual paying days today.
+ask: WhenPays(ids=[])
+
+=== WhenPays(ids=[3])
+mood: CALM
+label: Tariq Butt
+figure: Rs 164,000
+line: You will give
+line: Payment Radar is for customers only.
+openParty: 3
+money: true
+speech: Tariq Butt: Rs 164,000. You will give. Payment Radar is for customers only.
+speechHidden: Tariq Butt. You will give. Payment Radar is for customers only. [an amount left out]
+ask: WhenPays(ids=[3])
+
+=== WhenPays(ids=[1, 2])
+mood: CALM
+label: Which one do you mean?
+row: party=1 | Ali Raza | Rs 17,000 | You will get
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+ask: WhenPays(ids=[1, 2])
+quiet: true
+

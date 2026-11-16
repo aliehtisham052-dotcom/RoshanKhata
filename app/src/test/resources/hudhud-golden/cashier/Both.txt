@@ -1,0 +1,21 @@
+=== Both(first=Figure(kind=TO_GET), second=Count(thing=CUSTOMERS, window=null))
+mood: CALM
+line: Total I have to get
+line: Only the owner or a manager can see this figure.
+line: Customers: 2
+line: You will get: 2
+open: KhataActivity
+speech: Total I have to get. Only the owner or a manager can see this figure. Customers: 2. You will get: 2.
+speechHidden: Total I have to get. Only the owner or a manager can see this figure. Customers: 2. You will get: 2.
+ask: Both(first=Figure(kind=TO_GET), second=Count(thing=CUSTOMERS, window=null))
+
+=== Both(first=Figure(kind=SALES_TODAY), second=Drawer)
+mood: CALM
+line: Today's sale
+line: Only the owner or a manager can see this figure.
+line: Should be in drawer
+line: Only the owner or a manager can see this figure.
+speech: Today's sale. Only the owner or a manager can see this figure. Should be in drawer. Only the owner or a manager can see this figure.
+speechHidden: Today's sale. Only the owner or a manager can see this figure. Should be in drawer. Only the owner or a manager can see this figure.
+ask: Both(first=Figure(kind=SALES_TODAY), second=Drawer)
+

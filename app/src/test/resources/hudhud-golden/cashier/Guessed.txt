@@ -1,0 +1,18 @@
+=== Guessed(ask=Figure(kind=TO_GET))
+mood: CALM
+label: Total I have to get
+line: Only the owner or a manager can see this figure.
+ask: Figure(kind=TO_GET)
+tookAs: Taken as: Total I have to get
+quiet: true
+
+=== Guessed(ask=Count(thing=CUSTOMERS, window=null))
+mood: CALM
+label: Customers
+figure: 2
+line: You will get: 2
+open: KhataActivity
+ask: Count(thing=CUSTOMERS, window=null)
+tookAs: Taken as: Customers
+quiet: true
+

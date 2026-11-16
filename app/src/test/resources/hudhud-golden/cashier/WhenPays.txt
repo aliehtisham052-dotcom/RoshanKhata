@@ -1,0 +1,32 @@
+=== WhenPays(ids=[1])
+mood: CALM
+label: Payment Radar
+line: Only the owner or a manager can see this figure.
+speech: Payment Radar. Only the owner or a manager can see this figure.
+speechHidden: Payment Radar. Only the owner or a manager can see this figure.
+ask: WhenPays(ids=[1])
+
+=== WhenPays(ids=[])
+mood: CALM
+label: Payment Radar
+line: Only the owner or a manager can see this figure.
+speech: Payment Radar. Only the owner or a manager can see this figure.
+speechHidden: Payment Radar. Only the owner or a manager can see this figure.
+ask: WhenPays(ids=[])
+
+=== WhenPays(ids=[3])
+mood: CALM
+label: Payment Radar
+line: Only the owner or a manager can see this figure.
+speech: Payment Radar. Only the owner or a manager can see this figure.
+speechHidden: Payment Radar. Only the owner or a manager can see this figure.
+ask: WhenPays(ids=[3])
+
+=== WhenPays(ids=[1, 2])
+mood: CALM
+label: Payment Radar
+line: Only the owner or a manager can see this figure.
+speech: Payment Radar. Only the owner or a manager can see this figure.
+speechHidden: Payment Radar. Only the owner or a manager can see this figure.
+ask: WhenPays(ids=[1, 2])
+

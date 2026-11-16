@@ -1,0 +1,20 @@
+=== Now(ask=Count(thing=CUSTOMERS, window=null))
+mood: CALM
+label: Customers
+figure: 2
+line: I can't give this for that span. Here is how it stands today.
+line: You will get: 2
+open: KhataActivity
+speech: Customers: 2. I can't give this for that span. Here is how it stands today. You will get: 2.
+speechHidden: Customers: 2. I can't give this for that span. Here is how it stands today. You will get: 2.
+ask: Now(ask=Count(thing=CUSTOMERS, window=null))
+
+=== Now(ask=Figure(kind=TO_GET))
+mood: CALM
+label: Total I have to get
+line: I can't give this for that span. Here is how it stands today.
+line: Only the owner or a manager can see this figure.
+speech: Total I have to get. I can't give this for that span. Here is how it stands today. Only the owner or a manager can see this figure.
+speechHidden: Total I have to get. I can't give this for that span. Here is how it stands today. Only the owner or a manager can see this figure.
+ask: Now(ask=Figure(kind=TO_GET))
+

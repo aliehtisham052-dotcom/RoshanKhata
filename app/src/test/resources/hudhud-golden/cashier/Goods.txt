@@ -1,0 +1,469 @@
+=== Goods(ids=[1], facet=OVERVIEW, window=null)
+mood: CALM
+label: Urea
+line: Cash price: Rs 4,000 / bag
+line: Credit price: Rs 4,200 / bag
+line: In stock: 47 bag
+open: ProductsActivity
+money: true
+speech: Urea. Cash price: Rs 4,000 / bag. Credit price: Rs 4,200 / bag. In stock: 47 bag.
+speechHidden: Urea. In stock: 47 bag. [an amount left out]
+ask: Goods(ids=[1], facet=OVERVIEW, window=null)
+
+=== Goods(ids=[1], facet=PRICE, window=null)
+mood: CALM
+label: Urea
+figure: Rs 4,000 / bag
+line: Cash price: Rs 4,000 / bag
+line: Credit price: Rs 4,200 / bag
+open: ProductsActivity
+money: true
+speech: Urea: Rs 4,000 / bag. Cash price: Rs 4,000 / bag. Credit price: Rs 4,200 / bag.
+ask: Goods(ids=[1], facet=PRICE, window=null)
+
+=== Goods(ids=[1], facet=STOCK, window=null)
+mood: CALM
+label: Urea
+figure: 47 bag
+line: In stock
+open: ProductsActivity
+speech: Urea: 47 bag. In stock.
+speechHidden: Urea: 47 bag. In stock.
+ask: Goods(ids=[1], facet=STOCK, window=null)
+
+=== Goods(ids=[1], facet=COST, window=null)
+mood: CALM
+label: Urea
+line: Only the owner or a manager can see this figure.
+speech: Urea. Only the owner or a manager can see this figure.
+speechHidden: Urea. Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=COST, window=null)
+
+=== Goods(ids=[1], facet=SUPPLIERS, window=null)
+mood: CALM
+label: Urea
+line: Only the owner or a manager can see this figure.
+speech: Urea. Only the owner or a manager can see this figure.
+speechHidden: Urea. Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=SUPPLIERS, window=null)
+
+=== Goods(ids=[1], facet=LAST_IN, window=null)
+mood: CALM
+label: Urea
+figure: <date>
+line: Last came in
+line: Tariq Butt
+row: party=3 | Tariq Butt | - | <date>
+open: BillsActivity
+speech: Urea: <date>. Last came in. Tariq Butt. Tariq Butt, <date>.
+speechHidden: Urea: <date>. Last came in. Tariq Butt. Tariq Butt, <date>.
+ask: Goods(ids=[1], facet=LAST_IN, window=null)
+
+=== Goods(ids=[1], facet=BUYERS, window=null)
+mood: CALM
+label: Urea
+figure: 2
+line: Customers
+row: party=2 | Bashir Ahmad | Rs 0 | Settled
+row: party=1 | Ali Raza | Rs 0 | Settled
+open: ProductCustomersActivity
+openExtras: productId=1, productName=Urea
+speech: Urea: 2. Customers. Bashir Ahmad, Rs 0, Settled. Ali Raza, Rs 0, Settled.
+speechHidden: Urea: 2. Customers. Bashir Ahmad, Settled. Ali Raza, Settled. [an amount left out]
+ask: Goods(ids=[1], facet=BUYERS, window=null)
+
+=== Goods(ids=[1], facet=SOLD, window=null)
+mood: CALM
+label: Urea · This month
+line: Only the owner or a manager can see this figure.
+speech: Urea This month. Only the owner or a manager can see this figure.
+speechHidden: Urea This month. Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=SOLD, window=null)
+
+=== Goods(ids=[1], facet=COVER, window=null)
+mood: CALM
+label: Urea · How long will it last?
+line: Only the owner or a manager can see this figure.
+speech: Urea How long will it last? Only the owner or a manager can see this figure.
+speechHidden: Urea How long will it last? Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=COVER, window=null)
+
+=== Goods(ids=[1], facet=LABEL, window=null)
+mood: CALM
+label: Urea
+line: Company: Green Field Co.
+open: ProductsActivity
+speech: Urea. Company: Green Field Co.
+speechHidden: Urea. Company: Green Field Co.
+ask: Goods(ids=[1], facet=LABEL, window=null)
+
+=== Goods(ids=[1], facet=BARCODE, window=null)
+mood: CALM
+label: Urea
+figure: 2100000000017
+line: Barcode
+open: ProductsActivity
+speech: Urea: It's on the screen. Barcode.
+speechHidden: Urea: It's on the screen. Barcode.
+ask: Goods(ids=[1], facet=BARCODE, window=null)
+secret: 2100000000017
+
+=== Goods(ids=[1], facet=PACK, window=null)
+mood: CALM
+label: Urea
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Urea. Nothing is filled in for this item yet.
+speechHidden: Urea. Nothing is filled in for this item yet.
+ask: Goods(ids=[1], facet=PACK, window=null)
+
+=== Goods(ids=[1], facet=TAX, window=null)
+mood: CALM
+label: Urea
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Urea. Nothing is filled in for this item yet.
+speechHidden: Urea. Nothing is filled in for this item yet.
+ask: Goods(ids=[1], facet=TAX, window=null)
+
+=== Goods(ids=[1], facet=SHELF, window=null)
+mood: CALM
+label: Urea
+line: Kept at: Shelf A
+open: ProductsActivity
+speech: Urea. Kept at: Shelf A.
+speechHidden: Urea. Kept at: Shelf A.
+ask: Goods(ids=[1], facet=SHELF, window=null)
+
+=== Goods(ids=[1], facet=ADDED, window=null)
+mood: CALM
+label: Urea
+figure: <date>
+line: Added on
+open: ProductsActivity
+speech: Urea: <date>. Added on.
+speechHidden: Urea: <date>. Added on.
+ask: Goods(ids=[1], facet=ADDED, window=null)
+
+=== Goods(ids=[1], facet=BATCHES, window=null)
+mood: CALM
+label: Urea
+figure: 1
+line: Batches in stock
+row: party=0 | U-01 | 47 bag | -
+open: ProductsActivity
+speech: Urea: 1. Batches in stock. U-01, 47 bag.
+speechHidden: Urea: 1. Batches in stock. U-01, 47 bag.
+ask: Goods(ids=[1], facet=BATCHES, window=null)
+secret: U-01
+
+=== Goods(ids=[1], facet=SCHEME, window=null)
+mood: CALM
+label: Urea
+figure: 1
+line: Urea season scheme
+line: Company: Green Field Co.
+line: <date> – <date>
+row: party=0 | Urea season scheme | Running | <date> – <date> | open=SchemesActivity
+open: SchemesActivity
+speech: Urea: 1. Urea season scheme. Company: Green Field Co. <date> – <date>. Urea season scheme, Running, <date> – <date>.
+speechHidden: Urea: 1. Urea season scheme. Company: Green Field Co. <date> – <date>. Urea season scheme, Running, <date> – <date>.
+ask: Goods(ids=[1], facet=SCHEME, window=null)
+
+=== Goods(ids=[1], facet=SOLD, window=TODAY)
+mood: CALM
+label: Urea · Today
+line: Only the owner or a manager can see this figure.
+speech: Urea Today. Only the owner or a manager can see this figure.
+speechHidden: Urea Today. Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=SOLD, window=TODAY)
+
+=== Goods(ids=[1], facet=SOLD, window=THIS_MONTH)
+mood: CALM
+label: Urea · This month
+line: Only the owner or a manager can see this figure.
+speech: Urea This month. Only the owner or a manager can see this figure.
+speechHidden: Urea This month. Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=SOLD, window=THIS_MONTH)
+
+=== Goods(ids=[1], facet=SOLD, window=LAST_6_MONTHS)
+mood: CALM
+label: Urea · Last 6 months
+line: Only the owner or a manager can see this figure.
+speech: Urea Last 6 months. Only the owner or a manager can see this figure.
+speechHidden: Urea Last 6 months. Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=SOLD, window=LAST_6_MONTHS)
+
+=== Goods(ids=[1], facet=BUYERS, window=TODAY)
+mood: CALM
+label: Urea · Today
+figure: 1
+line: Customers
+row: party=2 | Bashir Ahmad | Rs 0 | Settled
+open: ProductCustomersActivity
+openExtras: productId=1, productName=Urea
+speech: Urea Today: 1. Customers. Bashir Ahmad, Rs 0, Settled.
+speechHidden: Urea Today: 1. Customers. Bashir Ahmad, Settled. [an amount left out]
+ask: Goods(ids=[1], facet=BUYERS, window=TODAY)
+
+=== Goods(ids=[1], facet=BUYERS, window=THIS_MONTH)
+mood: CALM
+label: Urea · This month
+figure: 1
+line: Customers
+row: party=2 | Bashir Ahmad | Rs 0 | Settled
+open: ProductCustomersActivity
+openExtras: productId=1, productName=Urea
+speech: Urea This month: 1. Customers. Bashir Ahmad, Rs 0, Settled.
+speechHidden: Urea This month: 1. Customers. Bashir Ahmad, Settled. [an amount left out]
+ask: Goods(ids=[1], facet=BUYERS, window=THIS_MONTH)
+
+=== Goods(ids=[1], facet=BUYERS, window=LAST_6_MONTHS)
+mood: CALM
+label: Urea · Last 6 months
+figure: 2
+line: Customers
+row: party=2 | Bashir Ahmad | Rs 0 | Settled
+row: party=1 | Ali Raza | Rs 0 | Settled
+open: ProductCustomersActivity
+openExtras: productId=1, productName=Urea
+speech: Urea Last 6 months: 2. Customers. Bashir Ahmad, Rs 0, Settled. Ali Raza, Rs 0, Settled.
+speechHidden: Urea Last 6 months: 2. Customers. Bashir Ahmad, Settled. Ali Raza, Settled. [an amount left out]
+ask: Goods(ids=[1], facet=BUYERS, window=LAST_6_MONTHS)
+
+=== Goods(ids=[1], facet=COVER, window=TODAY)
+mood: CALM
+label: Urea · How long will it last?
+line: Only the owner or a manager can see this figure.
+speech: Urea How long will it last? Only the owner or a manager can see this figure.
+speechHidden: Urea How long will it last? Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=COVER, window=TODAY)
+
+=== Goods(ids=[1], facet=COVER, window=THIS_MONTH)
+mood: CALM
+label: Urea · How long will it last?
+line: Only the owner or a manager can see this figure.
+speech: Urea How long will it last? Only the owner or a manager can see this figure.
+speechHidden: Urea How long will it last? Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=COVER, window=THIS_MONTH)
+
+=== Goods(ids=[1], facet=COVER, window=LAST_6_MONTHS)
+mood: CALM
+label: Urea · How long will it last?
+line: Only the owner or a manager can see this figure.
+speech: Urea How long will it last? Only the owner or a manager can see this figure.
+speechHidden: Urea How long will it last? Only the owner or a manager can see this figure.
+ask: Goods(ids=[1], facet=COVER, window=LAST_6_MONTHS)
+
+=== Goods(ids=[3], facet=OVERVIEW, window=null)
+mood: CALM
+label: Paracetamol
+line: Cash price: Rs 50 / packet
+line: In stock: 96 packet
+open: ProductsActivity
+money: true
+speech: Paracetamol. Cash price: Rs 50 / packet. In stock: 96 packet.
+speechHidden: Paracetamol. In stock: 96 packet. [an amount left out]
+ask: Goods(ids=[3], facet=OVERVIEW, window=null)
+
+=== Goods(ids=[3], facet=PRICE, window=null)
+mood: CALM
+label: Paracetamol
+figure: Rs 50 / packet
+line: Cash price: Rs 50 / packet
+open: ProductsActivity
+money: true
+speech: Paracetamol: Rs 50 / packet. Cash price: Rs 50 / packet.
+ask: Goods(ids=[3], facet=PRICE, window=null)
+
+=== Goods(ids=[3], facet=STOCK, window=null)
+mood: CARE
+label: Paracetamol
+figure: 96 packet
+line: In stock
+line: Low stock
+open: ProductsActivity
+speech: Paracetamol: 96 packet. In stock. Low stock.
+speechHidden: Paracetamol: 96 packet. In stock. Low stock.
+ask: Goods(ids=[3], facet=STOCK, window=null)
+
+=== Goods(ids=[3], facet=COST, window=null)
+mood: CALM
+label: Paracetamol
+line: Only the owner or a manager can see this figure.
+speech: Paracetamol. Only the owner or a manager can see this figure.
+speechHidden: Paracetamol. Only the owner or a manager can see this figure.
+ask: Goods(ids=[3], facet=COST, window=null)
+
+=== Goods(ids=[3], facet=SUPPLIERS, window=null)
+mood: CALM
+label: Paracetamol
+line: Only the owner or a manager can see this figure.
+speech: Paracetamol. Only the owner or a manager can see this figure.
+speechHidden: Paracetamol. Only the owner or a manager can see this figure.
+ask: Goods(ids=[3], facet=SUPPLIERS, window=null)
+
+=== Goods(ids=[3], facet=LAST_IN, window=null)
+mood: CALM
+label: Paracetamol
+figure: <date>
+line: Last came in
+line: Tariq Butt
+row: party=3 | Tariq Butt | - | <date>
+open: BillsActivity
+speech: Paracetamol: <date>. Last came in. Tariq Butt. Tariq Butt, <date>.
+speechHidden: Paracetamol: <date>. Last came in. Tariq Butt. Tariq Butt, <date>.
+ask: Goods(ids=[3], facet=LAST_IN, window=null)
+
+=== Goods(ids=[3], facet=BUYERS, window=null)
+mood: CALM
+label: Paracetamol
+line: No customer has bought this item yet.
+speech: Paracetamol. No customer has bought this item yet.
+speechHidden: Paracetamol. No customer has bought this item yet.
+ask: Goods(ids=[3], facet=BUYERS, window=null)
+
+=== Goods(ids=[3], facet=SOLD, window=null)
+mood: CALM
+label: Paracetamol · This month
+line: Only the owner or a manager can see this figure.
+speech: Paracetamol This month. Only the owner or a manager can see this figure.
+speechHidden: Paracetamol This month. Only the owner or a manager can see this figure.
+ask: Goods(ids=[3], facet=SOLD, window=null)
+
+=== Goods(ids=[3], facet=COVER, window=null)
+mood: CALM
+label: Paracetamol · How long will it last?
+line: Only the owner or a manager can see this figure.
+speech: Paracetamol How long will it last? Only the owner or a manager can see this figure.
+speechHidden: Paracetamol How long will it last? Only the owner or a manager can see this figure.
+ask: Goods(ids=[3], facet=COVER, window=null)
+
+=== Goods(ids=[3], facet=LABEL, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=LABEL, window=null)
+
+=== Goods(ids=[3], facet=BARCODE, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=BARCODE, window=null)
+
+=== Goods(ids=[3], facet=PACK, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=PACK, window=null)
+
+=== Goods(ids=[3], facet=TAX, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=TAX, window=null)
+
+=== Goods(ids=[3], facet=SHELF, window=null)
+mood: CALM
+label: Paracetamol
+line: Nothing is filled in for this item yet.
+open: ProductsActivity
+speech: Paracetamol. Nothing is filled in for this item yet.
+speechHidden: Paracetamol. Nothing is filled in for this item yet.
+ask: Goods(ids=[3], facet=SHELF, window=null)
+
+=== Goods(ids=[3], facet=ADDED, window=null)
+mood: CALM
+label: Paracetamol
+figure: <date>
+line: Added on
+open: ProductsActivity
+speech: Paracetamol: <date>. Added on.
+speechHidden: Paracetamol: <date>. Added on.
+ask: Goods(ids=[3], facet=ADDED, window=null)
+
+=== Goods(ids=[3], facet=BATCHES, window=null)
+mood: CALM
+label: Paracetamol
+figure: <date>
+line: Expiry date
+row: party=0 | P-01 | 96 packet | <date>
+open: ProductsActivity
+speech: Paracetamol: <date>. Expiry date. P-01, 96 packet, <date>.
+speechHidden: Paracetamol: <date>. Expiry date. P-01, 96 packet, <date>.
+ask: Goods(ids=[3], facet=BATCHES, window=null)
+secret: P-01
+
+=== Goods(ids=[3], facet=SCHEME, window=null)
+mood: CALM
+label: Paracetamol
+line: No scheme is recorded for this item’s company.
+open: SchemesActivity
+speech: Paracetamol. No scheme is recorded for this item’s company.
+speechHidden: Paracetamol. No scheme is recorded for this item’s company.
+ask: Goods(ids=[3], facet=SCHEME, window=null)
+
+=== Goods(ids=[2], facet=OVERVIEW, window=null)
+mood: CALM
+label: DAP
+line: Cash price: Rs 9,000 / bag
+line: In stock: 9 bag
+open: ProductsActivity
+money: true
+speech: DAP. Cash price: Rs 9,000 / bag. In stock: 9 bag.
+speechHidden: DAP. In stock: 9 bag. [an amount left out]
+ask: Goods(ids=[2], facet=OVERVIEW, window=null)
+
+=== Goods(ids=[2], facet=PRICE, window=null)
+mood: CALM
+label: DAP
+figure: Rs 9,000 / bag
+line: Cash price: Rs 9,000 / bag
+open: ProductsActivity
+money: true
+speech: DAP: Rs 9,000 / bag. Cash price: Rs 9,000 / bag.
+ask: Goods(ids=[2], facet=PRICE, window=null)
+
+=== Goods(ids=[2], facet=COST, window=null)
+mood: CALM
+label: DAP
+line: Only the owner or a manager can see this figure.
+speech: DAP. Only the owner or a manager can see this figure.
+speechHidden: DAP. Only the owner or a manager can see this figure.
+ask: Goods(ids=[2], facet=COST, window=null)
+
+=== Goods(ids=[2], facet=SUPPLIERS, window=null)
+mood: CALM
+label: DAP
+line: Only the owner or a manager can see this figure.
+speech: DAP. Only the owner or a manager can see this figure.
+speechHidden: DAP. Only the owner or a manager can see this figure.
+ask: Goods(ids=[2], facet=SUPPLIERS, window=null)
+
+=== Goods(ids=[1, 2], facet=PRICE, window=null)
+mood: CALM
+label: Which one do you mean?
+row: party=0 | Urea | Rs 4,000 | Green Field Co. | open=ProductsActivity
+row: party=0 | DAP | Rs 9,000 | Kisan Co. | open=ProductsActivity
+ask: Goods(ids=[1, 2], facet=PRICE, window=null)
+quiet: true
+
+=== Goods(ids=[], facet=PRICE, window=null)
+mood: CALM
+line: I could not find this in your khata. The nearest questions I can answer are below.
+speech: I could not find this in your khata. The nearest questions I can answer are below.
+speechHidden: I could not find this in your khata. The nearest questions I can answer are below.
+ask: Goods(ids=[], facet=PRICE, window=null)
+

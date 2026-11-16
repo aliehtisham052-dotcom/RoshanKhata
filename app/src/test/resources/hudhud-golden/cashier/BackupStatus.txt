@@ -1,0 +1,10 @@
+=== BackupStatus
+mood: CARE
+label: Backup
+line: No backup yet
+line: Keep a copy of your books safe
+open: BackupActivity
+speech: Backup. No backup yet. Keep a copy of your books safe.
+speechHidden: Backup. No backup yet. Keep a copy of your books safe.
+ask: BackupStatus
+
