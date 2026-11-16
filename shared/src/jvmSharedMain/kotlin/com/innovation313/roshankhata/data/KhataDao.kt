@@ -2091,6 +2091,25 @@ interface KhataDao {
     suspend fun allStaffForBackup(): List<Staff>
 
     /**
+     * The staff list as the assistant shows it (16 Nov 2026, audit T25): name, role, phone, salary, the day added and
+     * whether still on the list — never the PIN's hash or salt, which [allStaffForBackup] carries for the backup only.
+     * Read only; removed staff included (their names stay on old payments). Columns are named as [StaffCard]'s fields.
+     */
+    @Query("SELECT id, name, phone, monthlySalary, isActive, createdAt, role FROM staff ORDER BY id")
+    suspend fun staffCardsOnce(): List<StaffCard>
+
+    /** One staff row without its PIN keys, for [staffCardsOnce]. */
+    data class StaffCard(
+        val id: Long,
+        val name: String,
+        val phone: String?,
+        val monthlySalary: Double,
+        val isActive: Boolean,
+        val createdAt: Long,
+        val role: String?
+    )
+
+    /**
      * Another staff member, removed ones included, already has [name] (case
      * and edge spaces aside; 23 Oct 2026, the review): shifts, cashier rows
      * and audit rows are kept by name, so two of one name would share a drawer.

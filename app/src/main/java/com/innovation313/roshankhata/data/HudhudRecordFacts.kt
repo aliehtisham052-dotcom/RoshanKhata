@@ -59,7 +59,7 @@ internal object HudhudRecordFacts {
         val label = c.getString(R.string.hudhud_t_salary)
         if (!staff()) return HudhudFacts.ownerExact(c, label)
         val (from, to, days) = monthOf(window)
-        val people = dao.observeStaff().first().filter { it.id in ids }
+        val people = activeStaff(dao).filter { it.id in ids }
         if (people.isEmpty()) return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.staff_none)), open = StaffActivity::class.java)
         val marks = dao.observeAttendanceBetween(from, to).first()
         val pays = dao.observeStaffPaymentsBetween(from, to).first()
@@ -96,7 +96,7 @@ internal object HudhudRecordFacts {
         val title = HudhudFacts.heading(c, R.string.hudhud_t_staff_paid, window ?: VoiceQuestion.Window.THIS_MONTH)
         if (!staff()) return HudhudFacts.ownerExact(c, title)
         val (from, to) = if (window == null) monthOf(null).let { it.first to it.second } else Hudhud.span(window)
-        val names = dao.allStaffForBackup().associate { it.id to it.name }
+        val names = dao.staffCardsOnce().associate { it.id to it.name }
         val pays = dao.observeStaffPaymentsBetween(from, to).first()
             .filter { !it.isDeleted && (ids.isEmpty() || it.staffId in ids) }.sortedByDescending { it.timestamp }
         if (pays.isEmpty()) return Answer(Mood.CALM, label = title, lines = listOf(c.getString(R.string.hudhud_staff_paid_none)), open = StaffActivity::class.java)
@@ -124,7 +124,7 @@ internal object HudhudRecordFacts {
         val title = HudhudFacts.heading(c, R.string.staff_attendance, w)
         if (!staff()) return HudhudFacts.ownerExact(c, title)
         val (from, to) = Hudhud.span(w)
-        val people = dao.observeStaff().first().filter { ids.isEmpty() || it.id in ids }
+        val people = activeStaff(dao).filter { ids.isEmpty() || it.id in ids }
         if (people.isEmpty()) return Answer(Mood.CALM, label = title, lines = listOf(c.getString(R.string.staff_none)), open = StaffActivity::class.java)
         val marks = dao.observeAttendanceBetween(from, to).first().filter { m -> people.any { it.id == m.staffId } }
         val oneDay = w == VoiceQuestion.Window.TODAY || w == VoiceQuestion.Window.YESTERDAY
@@ -164,6 +164,13 @@ internal object HudhudRecordFacts {
         return Answer(Mood.CALM, label = title, figure = rows.size.toString(), rows = rows.take(HudhudFacts.TOP + 1), open = StaffActivity::class.java)
     }
 
+    /**
+     * The staff still on the list, by name — the Staff screen's own list ([KhataDao.observeStaff]: active, ORDER BY name), read
+     * without the PIN's hash and salt ([KhataDao.staffCardsOnce], audit T25).
+     */
+    private suspend fun activeStaff(dao: KhataDao): List<KhataDao.StaffCard> =
+        dao.staffCardsOnce().filter { it.isActive }.sortedBy { it.name }
+
     private fun statusWord(c: Context, status: Int): String = c.getString(when (status) {
         Payroll.ABSENT -> R.string.staff_absent
         Payroll.HALF -> R.string.staff_half
@@ -185,7 +192,7 @@ internal object HudhudRecordFacts {
     suspend fun staffPerson(c: Context, dao: KhataDao, ids: List<Long>): Answer {
         val label = c.getString(R.string.hudhud_t_staff)
         if (!staff()) return HudhudFacts.ownerExact(c, label)
-        val all = dao.allStaffForBackup()
+        val all = dao.staffCardsOnce()
         val list = if (ids.isEmpty()) all.filter { it.isActive } else all.filter { it.id in ids }
         if (list.isEmpty()) return Answer(Mood.CALM, label = label, lines = listOf(c.getString(R.string.staff_none)), open = StaffActivity::class.java)
         if (list.size > 1) {
