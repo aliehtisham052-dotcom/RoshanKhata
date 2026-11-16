@@ -254,10 +254,22 @@ object Hudhud {
          * [Period] or an [OnDays] of the same measure; no third figure is ever worked out when either is unknown.
          */
         data class Compare(val first: Ask, val second: Ask) : Ask()
+
+        /**
+         * "Why" about a figure of the book (16 Nov 2026, audit T8, the owner's H-10): "is mahine sale kam kyun hui", "profit kyun
+         * gira", "why are expenses up". Read by [HudhudWhyAsk] alone, never by the sense. The app answers with facts only: [window]'s
+         * figure beside the span before it ([HudhudWhyAsk.spans]), the signed difference and the parts that moved most — never a
+         * cause the book cannot show. [down]: the way the sentence asked (true: "why did it fall", false: "why did it rise", null:
+         * not said); the card says plainly when the figure went the other way.
+         */
+        data class Why(val of: WhyOf, val window: VoiceQuestion.Window, val down: Boolean? = null) : Ask()
     }
 
     /** What a day or a month named outright is asked of ([Ask.OnDays]). */
     enum class DatedOf { SALES, PROFIT, COLLECTED, ACTIVITY, PAID, TOOK }
+
+    /** What a "why" is asked about ([Ask.Why]): the sales, the profit, the expenses, the money that came in, the customers' credit. */
+    enum class WhyOf { SALES, PROFIT, EXPENSES, COLLECTED, DUES }
 
     /** His little acts. */
     enum class Move { FLY, DANCE, JUMP }
@@ -1646,7 +1658,7 @@ object Hudhud {
         // question (utility or supplier), never settled by the sense, which learnt every "bill" as a count of supplier bills.
         if (isBareBillChoice(ruled, heard)) return ruled
         if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods ||
-            ruled is Ask.CallMe || ruled is Ask.Look
+            ruled is Ask.CallMe || ruled is Ask.Look || ruled is Ask.Why
         ) {
             return ruled
         }
@@ -1855,7 +1867,7 @@ object Hudhud {
         }
         is Ask.OnDays, is Ask.Both, is Ask.Compare,
         Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
-        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic -> null
+        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic, is Ask.Why -> null
     }
 
     /**
@@ -1990,6 +2002,9 @@ object Hudhud {
         // old is the app" holds a "how"). "Ali ki kahani" and "Roshan ka khata kab bana" are never read here: a word of the book
         // or of somebody's name is never a history's.
         HudhudStory.read(heard, language) { w -> knownName(w, names) || knownName(w, goods) }?.let { return Ask.About(storyTopic(it)) }
+        // "Why" about a figure of the book (16 Nov 2026, audit T8): "is mahine sale kam kyun hui", "profit kyun gira". A strict reader
+        // (every word its own, a span or a little word); with a name, a figure or any other word the sentence is read as before.
+        HudhudWhyAsk.read(heard, isName = { w -> knownName(w, names) || knownName(w, goods) }, calling = { it in VOCATIVE_SET })?.let { return it }
         // What a shop says every day (15 Nov 2026, the everyday-phrasing review): who paid and who does not, where the money went,
         // what left the drawer, what sells best. Words alone, only when no name of the book is in the sentence; [decide] keeps it.
         HudhudEveryday.read(heard, VoiceQuestion.windowOf(heard)) { w -> knownName(w, names) || knownName(w, goods) }?.let { return it }
@@ -3750,6 +3765,9 @@ object Hudhud {
 
     /** Whether two words of different scripts, one of them Latin, are one name. */
     private fun bridges(a: Form, b: Form): Boolean = when {
+        // "Why" in any script is never a name (16 Nov 2026, BC-110: Bengali "কেন" was the customer Naeem Khan, so "এই মাসে বিক্রি কম
+        // কেন" — why are sales down this month — and a bare "কেন" answered with his balance).
+        HudhudWhyAsk.isWhyWord(a.norm) || HudhudWhyAsk.isWhyWord(b.norm) -> false
         a.script == Script.ARABIC && b.script == Script.LATIN -> HudhudNameBridge.meetsLetters(a.letters, b.letters)
         a.script == Script.LATIN && b.script == Script.ARABIC -> HudhudNameBridge.meetsLetters(b.letters, a.letters)
         a.script == Script.INDIC && b.script == Script.LATIN -> !ordinaryWord(a) && indicMeets(a.folded, b.folded)
@@ -3767,7 +3785,8 @@ object Hudhud {
      * names, as the soft pass reads them. Not used for Arabic script, whose letters [HudhudNameBridge] meets one for one and
      * whose "علی" is the bank's "on" and the name Ali alike.
      */
-    private fun ordinaryWord(word: Form): Boolean = word.norm !in CALLS_AS_NAMES && HudhudSense.knowsWord(word.norm)
+    private fun ordinaryWord(word: Form): Boolean =
+        word.norm !in CALLS_AS_NAMES && (HudhudSense.knowsWord(word.norm) || HudhudWhyAsk.isWhyWord(word.norm))
 
     /**
      * [bare] is a Hindi or Bengali word as the search folds it — every vowel written but the inherent "a" — and [latin] a name

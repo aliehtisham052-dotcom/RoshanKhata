@@ -4923,6 +4923,37 @@ interface KhataDao {
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 AND NOT (category = 'Return' AND saleId IS NOT NULL) AND timestamp > :from AND timestamp <= :to")
     suspend fun cashbookExpensesBetween(from: Long, to: Long): Double
 
+    // ---------- What moved, for Hudhud's "why" (16 Nov 2026, audit T8; read only) ----------
+    //
+    // Each is the very rule of a figure the screens already show, split by its parts — never a second formula: the sum of the
+    // rows is that figure. HudhudWhy (app) sets two spans side by side and lists the parts that moved most.
+
+    /** [cashbookExpensesBetween] by category: the same rows, (from, to], summed per category. */
+    @Query("SELECT category AS name, COALESCE(SUM(amount), 0) AS total FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 " +
+        "AND NOT (category = 'Return' AND saleId IS NOT NULL) AND timestamp > :from AND timestamp <= :to GROUP BY category")
+    suspend fun cashbookExpensesByCategoryBetween(from: Long, to: Long): List<CustomerStat>
+
+    /**
+     * The khata half of [customerReceivedBetween] per customer: the same rows (a customer's "I got" that is money, not goods, not an
+     * opening balance) in [from, to). The walk-in half is the rest of that figure (the counter's Sale income).
+     */
+    @Query("SELECT p.name AS name, COALESCE(SUM(t.amount), 0) AS total FROM transactions t JOIN parties p ON p.id = t.partyId " +
+        "WHERE t.isGiven = 0 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.entryKind = 'NORMAL' " +
+        "AND NOT EXISTS (SELECT 1 FROM entry_items i WHERE i.entryId = t.id) " +
+        "AND t.timestamp >= :from AND t.timestamp < :to GROUP BY t.partyId")
+    suspend fun customerReceivedByPartyBetween(from: Long, to: Long): List<CustomerStat>
+
+    /**
+     * How much each live customer's balance moved in [from, to): what he took ("I gave") less what came from him ("I got"), every
+     * kind of entry, as his balance reads them. Only customers whose balance moved are returned; the sum is the change in what the
+     * customers owe over those days.
+     */
+    @Query("SELECT p.name AS name, COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE -t.amount END), 0) AS total " +
+        "FROM transactions t JOIN parties p ON p.id = t.partyId " +
+        "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.timestamp >= :from AND t.timestamp < :to " +
+        "GROUP BY t.partyId")
+    suspend fun customerBalanceMovesBetween(from: Long, to: Long): List<CustomerStat>
+
     /** Products that left the shop since [since], over the counter or on the khata. */
     @Query(
         """
