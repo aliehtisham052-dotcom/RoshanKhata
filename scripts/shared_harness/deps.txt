@@ -1,0 +1,14 @@
+# What the shared Hudhud engine needs besides its own Hudhud*.kt files (which run.sh takes by glob), relative to the
+# repository root. A new dependency shows as "unresolved reference" in build/shared-harness/clog.txt: add its file here.
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/VoiceEntry.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/VoiceQuestion.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/VoiceLanguage.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/ui/NameSearch.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Digits.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/DateWindow.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/ShopCountry.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/StrictWords.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/ShopCalendar.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Currency.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/ui/Calc.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/DateWords.kt
