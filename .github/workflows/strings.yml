@@ -41,6 +41,11 @@ on:
       - 'scripts/gen_hudhud_catalog.py'
       # Every column is in the backup and a helper's copy holds the owner's private ones back (check_book_columns.py).
       - 'scripts/check_book_columns.py'
+      # The bug-class register: every class found, its guard and the test that holds it (check_bug_classes.py).
+      - 'docs/bug-classes.tsv'
+      - 'scripts/check_bug_classes.py'
+      # The shared harness's file lists (scripts/shared_harness/run.sh --lists-only).
+      - 'scripts/shared_harness/**'
   pull_request:
     paths:
       - 'app/src/main/res/values*/strings.xml'
@@ -71,6 +76,11 @@ on:
       - 'scripts/gen_viewer_dao.py'
       # Hudhud's catalog: every stored column, screen, tile and More entry has a decision (gen_hudhud_catalog.py --check).
       - 'scripts/gen_hudhud_catalog.py'
+      # The bug-class register: every class found, its guard and the test that holds it (check_bug_classes.py).
+      - 'docs/bug-classes.tsv'
+      - 'scripts/check_bug_classes.py'
+      # The shared harness's file lists (scripts/shared_harness/run.sh --lists-only).
+      - 'scripts/shared_harness/**'
 
 jobs:
   parity:
@@ -115,3 +125,10 @@ jobs:
       # phone or an heir (8 Nov m42, 15 Nov: a sale line's cost). Names only, not a run (lesson 125).
       - name: Every column is backed up and the owner's private columns stay out of a helper's copy
         run: python3 scripts/check_book_columns.py
+      # The owner's rule (16 Nov 2026): every bug class found is kept with its guard and the test that holds it, so the same kind
+      # of mistake is caught next time. Names only, not a run (lesson 125); a class with NONE is the honest backlog, printed here.
+      - name: The bug-class register names guards and tests that exist
+        run: python3 scripts/check_bug_classes.py
+      # The local Gradle-free harness (lesson 93) finds its files by list: a file moved or renamed fails here, not at the next run.
+      - name: The shared harness's file lists are current
+        run: bash scripts/shared_harness/run.sh --lists-only
