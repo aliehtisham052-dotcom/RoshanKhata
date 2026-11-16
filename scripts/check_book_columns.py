@@ -6,7 +6,11 @@ Drift protection, not proof (lesson 125): it reads names, it does not run a back
   1. each @Entity column is written by BackupCodec as put("<name>") (a column the
      backup never names is lost by a restore) -- DERIVED lists what is rebuilt on
      restore instead;
-  2. every column SyncSchema names (localOnly, natural) exists on its table;
+  2. every column SyncSchema names (localOnly, natural, fks) exists on its table,
+     every table a pointer (fks) points at is a synced table with a uid, every
+     Room table with a uid is in SyncSchema, and every "...Id" column of a synced
+     table is a pointer in fks or in NOT_POINTER with its reason (a new pointer
+     column left out of fks would travel as this device's own row number);
   3. each PRIVATE column is written on a line that reads `secrets`, so a helper's
      copy and a Waris snapshot cannot carry it. A new private column goes here.
 """
@@ -34,16 +38,77 @@ for t, e in ents.items():
         if not any(('"%s"' % c['col']) in l or ('"%s"' % c['prop']) in l for l in bc):
             fail.append('backup never names %s.%s' % (t, c['col']))
 
-for m in re.finditer(r'Table\("(\w+)"([^\n]*)\)', sy):
-    t, rest = m.group(1), m.group(2)
+def sync_tables(src):
+    """Each Table(...) entry of SyncSchema.tables, one or several lines, by balanced parentheses."""
+    body = src[src.index('val tables'):]
+    body = body[body.index('listOf(') + len('listOf('):]
+    out, i = [], 0
+    while True:
+        j = body.find('Table(', i)
+        if j < 0:
+            break
+        depth, k = 0, j + len('Table')
+        while True:
+            ch = body[k]
+            depth += ch == '('
+            depth -= ch == ')'
+            k += 1
+            if depth == 0:
+                break
+        out.append(body[j + len('Table('):k - 1])
+        i = k
+    return out
+
+synced = {}
+for entry in sync_tables(sy):
+    m = re.match(r'\s*"(\w+)"', entry)
+    if not m:
+        if entry.strip() != 'SETTINGS':
+            fail.append('SyncSchema entry not understood: Table(%s)' % entry.strip()[:60])
+        continue
+    t = m.group(1)
+    groups = {}
+    for name in ('localOnly', 'natural'):
+        g2 = re.search(name + r'\s*=\s*(?:setOf|listOf)\(([^)]*)\)', entry)
+        groups[name] = re.findall(r'"(\w+)"', g2.group(1)) if g2 else []
+    f2 = re.search(r'fks\s*=\s*mapOf\(([^)]*)\)', entry)
+    groups['fks'] = re.findall(r'"(\w+)"\s*to\s*"(\w+)"', f2.group(1)) if f2 else []
+    synced[t] = groups
+
+ENTITY_COLS = {t: {c['col'] for c in e['cols']} for t, e in ents.items()}
+# (table, column) named ...Id that is NOT a pointer at another row, with the reason.
+NOT_POINTER = {('invoices', 'templateId'): "the invoice design's number, not a row"}
+
+for t, groups in synced.items():
     if t not in ents:
         fail.append('SyncSchema names a table with no entity: ' + t)
         continue
-    cols = {c['col'] for c in ents[t]['cols']}
-    for grp in re.finditer(r'(localOnly|natural)\s*=\s*(?:setOf|listOf)\(([^)]*)\)', rest):
-        for w in re.findall(r'"(\w+)"', grp.group(2)):
+    cols = ENTITY_COLS[t]
+    for name in ('localOnly', 'natural'):
+        for w in groups[name]:
             if w not in cols:
-                fail.append('SyncSchema %s.%s names a column that is not there: %s' % (t, grp.group(1), w))
+                fail.append('SyncSchema %s.%s names a column that is not there: %s' % (t, name, w))
+    for col, target in groups['fks']:
+        if col not in cols:
+            fail.append('SyncSchema %s.fks names a column that is not there: %s' % (t, col))
+        if target not in ents:
+            fail.append('SyncSchema %s.fks %s points at a table with no entity: %s' % (t, col, target))
+        elif target not in synced:
+            fail.append('SyncSchema %s.fks %s points at a table that does not sync: %s' % (t, col, target))
+        elif 'uid' not in ENTITY_COLS[target]:
+            fail.append('SyncSchema %s.fks %s points at a table with no uid: %s' % (t, col, target))
+    pointers = {c for c, _ in groups['fks']}
+    for c in sorted(cols):
+        if (c.endswith('Id') and c not in pointers and (t, c) not in NOT_POINTER
+                and c not in groups['localOnly']):
+            fail.append('%s.%s looks like a pointer but SyncSchema has no fks entry for it '
+                        '(add it to fks, or to NOT_POINTER with the reason)' % (t, c))
+for (t, c) in NOT_POINTER:
+    if c not in ENTITY_COLS.get(t, set()):
+        fail.append('NOT_POINTER lists a column that is gone: %s.%s' % (t, c))
+for t, cols in ENTITY_COLS.items():
+    if 'uid' in cols and t not in synced:
+        fail.append('table %s has a uid but SyncSchema does not list it (it would never sync)' % t)
 
 text = '\n'.join(bc)
 for (t, col), expr in sorted(PRIVATE.items()):
@@ -55,4 +120,5 @@ for (t, col), expr in sorted(PRIVATE.items()):
 
 if fail:
     print('\n'.join(fail)); sys.exit(1)
-print('book columns ok: %d tables, %d private columns held back from a helper copy' % (len(ents), len(PRIVATE)))
+print('book columns ok: %d tables (%d synced, %d pointers), %d private columns held back from a helper copy'
+      % (len(ents), len(synced), sum(len(v['fks']) for v in synced.values()), len(PRIVATE)))
