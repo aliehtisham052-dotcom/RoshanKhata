@@ -23,7 +23,7 @@ class CheckLogTest {
     fun aFieldNeverBreaksTheRow() {
         val (lines, _) = CheckLog.add(emptyList(), "t", "en", "a\tb\nc", "x", "y\r\nz")
         val row = lines.last().split('\t')
-        assertEquals(7, row.size)
+        assertEquals(CheckLog.FIELDS, row.size)
         assertEquals("a b c", row[3])
         assertEquals("y z", row[5])
     }

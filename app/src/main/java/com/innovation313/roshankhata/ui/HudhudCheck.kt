@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.core.content.FileProvider
 import com.innovation313.roshankhata.R
 import com.innovation313.roshankhata.data.AppScope
+import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.Hudhud
 import com.innovation313.roshankhata.data.HudhudBook
 import java.io.File
@@ -28,6 +29,11 @@ import kotlinx.coroutines.launch
  * after the share is handed over (the app that was picked reads it first — Backup.sweepCache's and the Waris card's
  * reason), and, for one a closed app left behind, the next time the list is shared or its settings open. Clear takes
  * every copy with the list.
+ *
+ * Each row says which business it was asked in (16 Nov 2026, audit S-06): the list is one file for every shop on the phone,
+ * so a shop deleted takes its own rows with it ([forgetBusiness], from Businesses.delete), and a shared list says whose book
+ * each answer read. Erase all takes the whole file, the copies and the switch (EraseAll.wipe empties filesDir, cacheDir and
+ * every preferences file). Rows written before have no business and stay until the list is cleared.
  */
 object HudhudCheck {
 
@@ -61,9 +67,21 @@ object HudhudCheck {
     /** Writes one answered question; its row number, for [mark]. Off the screen's thread. */
     @Synchronized
     fun record(context: Context, heard: String, takenAs: String, heading: String, language: String): Int {
-        val (lines, row) = CheckLog.add(read(context), stamp(), language, heard, takenAs, heading)
+        val business = runCatching { Businesses.active(context).id }.getOrNull()
+        val (lines, row) = CheckLog.add(read(context), stamp(), language, heard, takenAs, heading, business)
         write(context, lines)
         return row
+    }
+
+    /** Deletes the rows asked in business [id], and every shared copy (they hold the whole list). Off the main thread. */
+    @Synchronized
+    fun forgetBusiness(context: Context, id: Long) {
+        val lines = read(context)
+        val kept = CheckLog.withoutBusiness(lines, id)
+        if (kept != lines) {
+            if (CheckLog.counts(kept).asked == 0) file(context).delete() else write(context, kept)
+        }
+        sweepCopies(context, keepMs = 0L)
     }
 
     /** The owner's mark on row [row]: right or wrong (a second tap changes it). */
@@ -80,6 +98,8 @@ object HudhudCheck {
     @Synchronized
     fun clear(context: Context) {
         file(context).delete()
+        // A write cut off by a killed process leaves its whole text here.
+        File(context.applicationContext.filesDir, "$FILE.tmp").delete()
         sweepCopies(context, keepMs = 0L)
     }
 
@@ -154,12 +174,15 @@ object HudhudCheck {
 
 /**
  * The check list's own arithmetic, kept apart so a test holds it: a header, then one row per answer —
- * number, time, language, question, taken as, answer, mark ("right", "wrong" or empty). Tabs and line breaks in a
- * field become spaces, so a row is always one line of seven fields.
+ * number, time, language, question, taken as, answer, mark ("right", "wrong" or empty), business (the id of the shop it
+ * was asked in; empty in rows written before 16 Nov 2026). Tabs and line breaks in a field become spaces, so a row is
+ * always one line of eight fields; an older row of seven is read as one with no business.
  */
 object CheckLog {
 
-    const val HEADER = "no\ttime\tlanguage\tquestion\ttaken_as\tanswer\tmark"
+    const val HEADER = "no\ttime\tlanguage\tquestion\ttaken_as\tanswer\tmark\tbusiness"
+    /** Fields in a row: [HEADER]'s. */
+    const val FIELDS = 8
     const val RIGHT = "right"
     const val WRONG = "wrong"
     /** The oldest rows go first past this many, so the file never grows without end. */
@@ -189,13 +212,22 @@ object CheckLog {
 
     fun clean(s: String): String = s.replace(Regex("[\\t\\r\\n]+"), " ").trim()
 
-    private fun rows(lines: List<String>): List<String> = lines.filter { it.isNotBlank() && it != HEADER }
+    /** A header line, this one's or an older list's (seven fields): never counted as a row. */
+    private fun isHeader(l: String): Boolean = l.startsWith("no\t")
 
-    /** [lines] with one row added, and the new row's number (one past the highest so far). */
-    fun add(lines: List<String>, time: String, language: String, heard: String, takenAs: String, answer: String): Pair<List<String>, Int> {
+    private fun rows(lines: List<String>): List<String> = lines.filter { it.isNotBlank() && !isHeader(it) }
+
+    /**
+     * [lines] with one row added, and the new row's number (one past the highest so far). [business]: the shop it was asked
+     * in. An older list's header is written again as this one's.
+     */
+    fun add(
+        lines: List<String>, time: String, language: String, heard: String, takenAs: String, answer: String, business: Long? = null
+    ): Pair<List<String>, Int> {
         val old = rows(lines)
         val next = (old.mapNotNull { it.substringBefore('\t').toIntOrNull() }.maxOrNull() ?: 0) + 1
-        val row = listOf(next.toString(), clean(time), clean(language), clean(heard), clean(takenAs), clean(answer), "")
+        val row = listOf(next.toString(), clean(time), clean(language), clean(heard), clean(takenAs), clean(answer), "",
+            business?.toString().orEmpty())
             .joinToString("\t")
         val kept = (old + row).takeLast(MAX_ROWS)
         return (listOf(HEADER) + kept) to next
@@ -203,13 +235,22 @@ object CheckLog {
 
     /** [lines] with row [row]'s mark set; unchanged when there is no such row. */
     fun mark(lines: List<String>, row: Int, right: Boolean): List<String> = lines.map { l ->
-        if (l == HEADER || l.substringBefore('\t').toIntOrNull() != row) l
+        if (isHeader(l) || l.substringBefore('\t').toIntOrNull() != row) l
         else {
             val f = l.split('\t').toMutableList()
-            while (f.size < 7) f.add("")
+            while (f.size < FIELDS) f.add("")
             f[6] = if (right) RIGHT else WRONG
-            f.take(7).joinToString("\t")
+            f.take(FIELDS).joinToString("\t")
         }
+    }
+
+    /** The shop a row was asked in; null for a row written before rows said it. */
+    fun businessOf(row: String): Long? = row.split('\t').getOrNull(7)?.toLongOrNull()
+
+    /** [lines] without the rows asked in business [id] (rows that name no business stay). */
+    fun withoutBusiness(lines: List<String>, id: Long): List<String> {
+        val kept = rows(lines).filter { businessOf(it) != id }
+        return if (kept.size == rows(lines).size) lines else listOf(HEADER) + kept
     }
 
     fun counts(lines: List<String>): Counts {

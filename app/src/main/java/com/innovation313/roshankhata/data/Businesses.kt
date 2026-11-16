@@ -312,6 +312,8 @@ object Businesses {
         DriveBackup.clearLocalState(context, id)
         BackupReminder.clear(context, id)
         AlertNotes.clear(context, id)
+        // Hudhud's check list: the questions asked in this shop (16 Nov 2026, audit S-06).
+        runCatching { com.innovation313.roshankhata.ui.HudhudCheck.forgetBusiness(context, id) }
         // Its daily copies too (21 Oct 2026): left behind, they were offered as "your copies" of
         // whichever shop came next. Named khata-b<id>-…db (Snapshots.list's rule).
         File(context.filesDir, "snapshots").listFiles { f -> f.name.startsWith("khata-b$id-") }?.forEach { it.delete() }
