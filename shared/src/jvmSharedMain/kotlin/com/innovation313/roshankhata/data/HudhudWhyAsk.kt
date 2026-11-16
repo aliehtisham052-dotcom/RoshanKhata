@@ -196,9 +196,8 @@ object HudhudWhyAsk {
      */
     fun read(heard: String, isName: (String) -> Boolean = { false }, calling: (String) -> Boolean = { false }): Hudhud.Ask.Why? {
         val first = VoiceQuestion.normalise(heard).split(' ').filter { it.isNotEmpty() }
+        // A figure in any script (an amount, a date, a count) is no word of this reader: such a sentence is read as before.
         if (first.isEmpty() || first.size > MAX_WORDS + 4) return null
-        // A figure in any script is an amount, a date or a count: another sentence.
-        if (first.any { w -> w.any { it.isDigit() } }) return null
         var text = " " + first.joinToString(" ") + " "
         for ((from, to) in PHRASES) if (text.contains(from)) text = text.replace(from, to)
         val said = text.trim().split(' ').filter { it.isNotEmpty() }

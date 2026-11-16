@@ -49,6 +49,19 @@ class HudhudEntryDayTest {
         assertNull(VoiceQuestion.entryDay("June Traders ko 500 diye") { it == "june" || it == "traders" })
     }
 
+    @Test fun `a promise is no entry (BC-113)`() {
+        // "Ali kal 500 dega" was an entry of 500 received today: money that has not moved.
+        for ((lang, said) in listOf("ur-Latn" to "Ali kal 500 dega", "ur-Latn" to "Bashir parson 300 denge",
+            "en" to "Ali will pay 500 tomorrow", "hi" to "अली कल 500 देगा")) {
+            val r = read(lang, said)
+            assertFalse("[$lang] $said -> $r", r is Ask.Entry || r is Ask.Entries || (r is Ask.Guessed && r.ask is Ask.Entry))
+        }
+        assertTrue(VoiceQuestion.saysFuture("Ali kal 500 dega"))
+        assertFalse(VoiceQuestion.saysFuture("Ali ko kal 500 diye"))
+        // Money that moved stays an entry.
+        assertTrue(read("ur-Latn", "Ali ne 500 diye") is Ask.Entry)
+    }
+
     // ------------------------------------------------------------------------------------------------ figures and a slash
 
     @Test fun `a day written with a slash or a dash is a day, never the amount`() {

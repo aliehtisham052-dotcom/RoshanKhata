@@ -614,11 +614,18 @@ object VoiceQuestion {
      * the future ([Hudhud.entryTime]).
      */
     fun entryDay(heard: String, isName: (String) -> Boolean = { false }): Dated? {
-        val t = normalise(Digits.toLatin(heard))
-        val future = saysAny(t, FUTURE_WORDS) || t.split(' ').any { w -> w.length >= 3 && FUTURE_ENDS.any { e -> w.endsWith(e) && w != e } }
-        if (future) return null
+        if (saysFuture(heard)) return null
         dateFound(heard, isName)?.dated?.let { d -> return if (d.day == null && d.daysBack == null && d.weekday == null) null else d }
         return if (windowOf(heard) == Window.YESTERDAY) Dated(daysBack = 1) else null
+    }
+
+    /**
+     * Whether the verb of [heard] is in the future ("dega", "denge", "will pay", "देगा", "দেবে", "سوف"): the date reader's own words
+     * ([FUTURE_WORDS], [FUTURE_ENDS]). Such a sentence is a promise, never an entry of money that moved.
+     */
+    fun saysFuture(heard: String): Boolean {
+        val t = normalise(Digits.toLatin(heard))
+        return saysAny(t, FUTURE_WORDS) || t.split(' ').any { w -> w.length >= 3 && FUTURE_ENDS.any { e -> w.endsWith(e) && w != e } }
     }
 
     /** Whether [w] (normalised) is a weekday a "last" may stand before ("jumme" of "pichle jumme"). */

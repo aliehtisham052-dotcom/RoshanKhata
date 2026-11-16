@@ -77,6 +77,20 @@ class HudhudWhyTest {
         assertNull(HudhudWhyAsk.read("sale weather ki wajah se kyun kam hui"))
         assertNull(HudhudWhyAsk.read("Bashir ki sale kyun kam hui", isName = { it == "bashir" }))
         assertEquals(why(WhyOf.SALES), HudhudWhyAsk.read("Hudhud sale kyun kam hui", calling = { it == "hudhud" }))
+        // Two figures with no other word: not one figure, not read (only this guard refuses it, lesson 129).
+        assertNull(HudhudWhyAsk.read("sale munafa kyun kam hua"))
+        // A word that is the reader's own and a name the book holds ("Sabab", a customer): his, not the shop's "why".
+        assertNull(HudhudWhyAsk.read("sabab ki sale kam hui", isName = { it == "sabab" }))
+        assertEquals(why(WhyOf.SALES), HudhudWhyAsk.read("sabab ki sale kam hui"))
+    }
+
+    @Test fun `why in Urdu script meets no Latin name (BC-110)`() {
+        // "کیوں" meets the letters of "Kevin", "وجہ" those of "Wajih": a book with them still reads the shop's "why".
+        val book = names + listOf("Kevin Traders", "Wajih Ahmad").mapIndexed { i, n -> Hudhud.Name(50L + i, n) }
+        fun readIn(said: String) = Hudhud.understand(said, book, HudhudRealPages.forApp("ur"), "ur", goods, null)
+        assertEquals(why(WhyOf.SALES), readIn("اس مہینے سیل کم کیوں ہوئی"))
+        assertEquals(why(WhyOf.SALES), readIn("سیل کم ہونے کی وجہ کیا ہے"))
+        assertFalse(readIn("کیوں") == Ask.Parties(listOf(50L)))
     }
 
     @Test fun `why in Bengali is no customer's name (BC-110)`() {

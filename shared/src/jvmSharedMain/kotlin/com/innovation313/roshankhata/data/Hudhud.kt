@@ -1956,6 +1956,8 @@ object Hudhud {
                 // entry — the sense's label alone never decides which way money went (audit T11). With a person named the form
                 // opens as before and the owner sees the side before Save.
                 if (amount != null && entry.isGiven == null && named.isEmpty()) return null
+                // A promise ("Ali kal 500 dega") is no entry, whoever reads it (BC-113): the rules' reading stands.
+                if (VoiceQuestion.saysFuture(heard)) return null
                 if (amount == null || amount <= 0.0) {
                     if (named.isEmpty()) Ask.NeedName(null) else Ask.Parties(named)
                 } else {
@@ -2060,8 +2062,10 @@ object Hudhud {
         val given = entry.isGiven
         // Two entries joined by "and": each offered on its own, never one wrong entry made of both. Before the single entry, which
         // needs one way for the whole sentence: "gave" and "got" together left it none, and the sentence was read as a person.
-        if (!asking) twoEntries(heard, names, goods, language)?.let { return it }
-        if (!asking && amount != null && amount > 0.0 && given != null) {
+        // A verb in the future ("Ali kal 500 dega", "will pay") is a promise, never money that moved (BC-113): no entry.
+        val promise = VoiceQuestion.saysFuture(heard)
+        if (!asking && !promise) twoEntries(heard, names, goods, language)?.let { return it }
+        if (!asking && !promise && amount != null && amount > 0.0 && given != null) {
             val nameWords = VoiceEntry.nameWords(heard)
             return Ask.Entry(amount, given, partiesOf(names, nameWords), nameWords, entryDayOf(heard, names, goods))
         }
@@ -3677,7 +3681,8 @@ object Hudhud {
     fun entryTime(d: VoiceQuestion.Dated, now: Long = System.currentTimeMillis(), tz: TimeZone = TimeZone.getDefault()): Long? {
         val (from, to) = span(d, now, tz) ?: return null
         val today = span(VoiceQuestion.Window.TODAY, now, tz).first
-        return minOf(from + (now - today), to - 1, now)
+        // Never in the future: the day is today or before ([span] gives no day to come), and the form clamps to now again.
+        return minOf(from + (now - today), to - 1)
     }
 
     private fun entryDayOf(heard: String, names: List<Name>, goods: List<Name>): VoiceQuestion.Dated? =
