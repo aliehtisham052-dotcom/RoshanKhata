@@ -164,6 +164,12 @@ val syncPrintAssets by tasks.registering(Sync::class) {
         into("fonts")
     }
     from(rootProject.file("app/src/main/assets")) { include("roshan_logo.png") }
+    // Hudhud's learnt sense (about 365 KB), the phone's own file: the computer's typed Hudhud reads
+    // /hudhud/sense.bin; without it he reads by his rules alone (16 Nov 2026, audit T23).
+    from(rootProject.file("app/src/main/assets/hudhud")) {
+        include("sense.bin")
+        into("hudhud")
+    }
     into(layout.buildDirectory.dir("printAssets"))
 }
 sourceSets["main"].resources.srcDir(syncPrintAssets)
