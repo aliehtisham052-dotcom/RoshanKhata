@@ -1,0 +1,80 @@
+=== Why(of=SALES, window=TODAY, down=true)
+mood: CALM
+label: Sales: what changed
+line: Only the owner or a manager can see this figure.
+speech: Sales: what changed. Only the owner or a manager can see this figure.
+speechHidden: Sales: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=SALES, window=TODAY, down=true)
+
+=== Why(of=SALES, window=THIS_MONTH, down=null)
+mood: CALM
+label: Sales: what changed
+line: Only the owner or a manager can see this figure.
+speech: Sales: what changed. Only the owner or a manager can see this figure.
+speechHidden: Sales: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=SALES, window=THIS_MONTH, down=null)
+
+=== Why(of=PROFIT, window=TODAY, down=true)
+mood: CALM
+label: Profit: what changed
+line: Only the owner or a manager can see this figure.
+speech: Profit: what changed. Only the owner or a manager can see this figure.
+speechHidden: Profit: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=PROFIT, window=TODAY, down=true)
+
+=== Why(of=PROFIT, window=THIS_MONTH, down=null)
+mood: CALM
+label: Profit: what changed
+line: Only the owner or a manager can see this figure.
+speech: Profit: what changed. Only the owner or a manager can see this figure.
+speechHidden: Profit: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=PROFIT, window=THIS_MONTH, down=null)
+
+=== Why(of=EXPENSES, window=TODAY, down=true)
+mood: CALM
+label: Expenses: what changed
+line: Only the owner or a manager can see this figure.
+speech: Expenses: what changed. Only the owner or a manager can see this figure.
+speechHidden: Expenses: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=EXPENSES, window=TODAY, down=true)
+
+=== Why(of=EXPENSES, window=THIS_MONTH, down=null)
+mood: CALM
+label: Expenses: what changed
+line: Only the owner or a manager can see this figure.
+speech: Expenses: what changed. Only the owner or a manager can see this figure.
+speechHidden: Expenses: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=EXPENSES, window=THIS_MONTH, down=null)
+
+=== Why(of=COLLECTED, window=TODAY, down=true)
+mood: CALM
+label: Money that came in: what changed
+line: Only the owner or a manager can see this figure.
+speech: Money that came in: what changed. Only the owner or a manager can see this figure.
+speechHidden: Money that came in: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=COLLECTED, window=TODAY, down=true)
+
+=== Why(of=COLLECTED, window=THIS_MONTH, down=null)
+mood: CALM
+label: Money that came in: what changed
+line: Only the owner or a manager can see this figure.
+speech: Money that came in: what changed. Only the owner or a manager can see this figure.
+speechHidden: Money that came in: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=COLLECTED, window=THIS_MONTH, down=null)
+
+=== Why(of=DUES, window=TODAY, down=true)
+mood: CALM
+label: Customers' credit: what changed
+line: Only the owner or a manager can see this figure.
+speech: Customers' credit: what changed. Only the owner or a manager can see this figure.
+speechHidden: Customers' credit: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=DUES, window=TODAY, down=true)
+
+=== Why(of=DUES, window=THIS_MONTH, down=null)
+mood: CALM
+label: Customers' credit: what changed
+line: Only the owner or a manager can see this figure.
+speech: Customers' credit: what changed. Only the owner or a manager can see this figure.
+speechHidden: Customers' credit: what changed. Only the owner or a manager can see this figure.
+ask: Why(of=DUES, window=THIS_MONTH, down=null)
+

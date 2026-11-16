@@ -1,4 +1,4 @@
-=== Entry(amount=500.0, isGiven=true, ids=[1], nameWords=[ali])
+=== Entry(amount=500.0, isGiven=true, ids=[1], nameWords=[ali], day=null)
 mood: CALM
 label: Ali Raza
 figure: Rs 500
@@ -10,9 +10,9 @@ openLabel: hudhud_fill_entry
 money: true
 speech: Ali Raza: Rs 500. I Gave. The form opens filled in. Check it and press Save.
 speechHidden: Ali Raza. I Gave. The form opens filled in. Check it and press Save. [an amount left out]
-ask: Entry(amount=500.0, isGiven=true, ids=[1], nameWords=[ali])
+ask: Entry(amount=500.0, isGiven=true, ids=[1], nameWords=[ali], day=null)
 
-=== Entry(amount=500.0, isGiven=false, ids=[], nameWords=[raza])
+=== Entry(amount=500.0, isGiven=false, ids=[], nameWords=[raza], day=null)
 mood: CALM
 label: Rs 500 — which customer?
 line: I Got
@@ -20,16 +20,16 @@ row: party=1 | Ali Raza | Rs 17,000 | You will get | amount=500.0 | got
 row: party=2 | Bashir Ahmad | Rs 3,000 | You will get | amount=500.0 | got
 row: party=3 | Tariq Butt | Rs 164,000 | You will give | amount=500.0 | got
 money: true
-ask: Entry(amount=500.0, isGiven=false, ids=[], nameWords=[raza])
+ask: Entry(amount=500.0, isGiven=false, ids=[], nameWords=[raza], day=null)
 quiet: true
 
-=== Entry(amount=500.0, isGiven=true, ids=[1, 2], nameWords=[a])
+=== Entry(amount=500.0, isGiven=true, ids=[1, 2], nameWords=[a], day=null)
 mood: CALM
 label: Rs 500 — which customer?
 line: I Gave
 row: party=1 | Ali Raza | Rs 17,000 | You will get | amount=500.0 | gave
 row: party=2 | Bashir Ahmad | Rs 3,000 | You will get | amount=500.0 | gave
 money: true
-ask: Entry(amount=500.0, isGiven=true, ids=[1, 2], nameWords=[a])
+ask: Entry(amount=500.0, isGiven=true, ids=[1, 2], nameWords=[a], day=null)
 quiet: true
 

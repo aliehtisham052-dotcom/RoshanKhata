@@ -1,0 +1,12 @@
+=== Entries(entries=[Entry(amount=500.0, isGiven=true, ids=[1], nameWords=[ali], day=null), Entry(amount=300.0, isGiven=false, ids=[2], nameWords=[bashir], day=null)])
+mood: CALM
+label: Entries
+line: Two entries in one sentence. I fill them one at a time: tap each to open its form, check it and save.
+line: I Gave · Rs 500 · Ali Raza
+line: I Got · Rs 300 · Bashir Ahmad
+row: party=1 | Ali Raza | Rs 500 | I Gave | amount=500.0 | gave
+row: party=2 | Bashir Ahmad | Rs 300 | I Got | amount=300.0 | got
+money: true
+ask: Entries(entries=[Entry(amount=500.0, isGiven=true, ids=[1], nameWords=[ali], day=null), Entry(amount=300.0, isGiven=false, ids=[2], nameWords=[bashir], day=null)])
+quiet: true
+

@@ -1,0 +1,176 @@
+=== Why(of=SALES, window=TODAY, down=true)
+mood: CALM
+label: Sales: what changed
+figure: +Rs 13,200
+line: Now (<date>): Rs 13,200
+line: The same days before (<date>): Rs 0
+line: Difference: +Rs 13,200
+line: It did not go down: it went up by Rs 13,200.
+line: What moved most:
+line: Ali Raza: +Rs 9,000 (now Rs 9,000, before Rs 0)
+line: Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0)
+line: Paracetamol (packet): +4 (now 4, before 0)
+line: DAP (bag): +1 (now 1, before 0)
+line: Urea (bag): +1 (now 1, before 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Sales: what changed: +Rs 13,200. Now (<date>): Rs 13,200. The same days before (<date>): Rs 0. Difference: +Rs 13,200. It did not go down: it went up by Rs 13,200. What moved most. Ali Raza: +Rs 9,000 (now Rs 9,000, before Rs 0). Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0). Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales: what changed. What moved most. Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=SALES, window=TODAY, down=true)
+
+=== Why(of=SALES, window=THIS_MONTH, down=null)
+mood: CALM
+label: Sales: what changed
+figure: +Rs 13,200
+line: Now (<date> – <date>): Rs 13,200
+line: The same days before (<date> – <date>): Rs 0
+line: Difference: +Rs 13,200
+line: What moved most:
+line: Ali Raza: +Rs 9,000 (now Rs 9,000, before Rs 0)
+line: Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0)
+line: Paracetamol (packet): +4 (now 4, before 0)
+line: DAP (bag): +1 (now 1, before 0)
+line: Urea (bag): +1 (now 1, before 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Sales: what changed: +Rs 13,200. Now (<date> – <date>): Rs 13,200. The same days before (<date> – <date>): Rs 0. Difference: +Rs 13,200. What moved most. Ali Raza: +Rs 9,000 (now Rs 9,000, before Rs 0). Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0). Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales: what changed. What moved most. Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=SALES, window=THIS_MONTH, down=null)
+
+=== Why(of=PROFIT, window=TODAY, down=true)
+mood: CALM
+label: Profit: what changed
+line: Now (<date>): Rs 1,030
+line: The same days before (<date>): —
+line: One of the two figures is not known, so I give no difference.
+line: Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Profit: what changed. Now (<date>): Rs 1,030. The same days before (<date>): —. One of the two figures is not known, so I give no difference. Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Profit: what changed. The same days before (<date>): —. One of the two figures is not known, so I give no difference. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=PROFIT, window=TODAY, down=true)
+
+=== Why(of=PROFIT, window=THIS_MONTH, down=null)
+mood: CALM
+label: Profit: what changed
+line: Now (<date> – <date>): Rs 1,030
+line: The same days before (<date> – <date>): —
+line: One of the two figures is not known, so I give no difference.
+line: Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Profit: what changed. Now (<date> – <date>): Rs 1,030. The same days before (<date> – <date>): —. One of the two figures is not known, so I give no difference. Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Profit: what changed. The same days before (<date> – <date>): —. One of the two figures is not known, so I give no difference. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=PROFIT, window=THIS_MONTH, down=null)
+
+=== Why(of=EXPENSES, window=TODAY, down=true)
+mood: CARE
+label: Expenses: what changed
+figure: +Rs 2,550
+line: Now (<date>): Rs 2,550
+line: The same days before (<date>): Rs 0
+line: Difference: +Rs 2,550
+line: It did not go down: it went up by Rs 2,550.
+line: What moved most:
+line: Staff: +Rs 2,000 (now Rs 2,000, before Rs 0)
+line: Rent: +Rs 500 (now Rs 500, before Rs 0)
+line: Return: +Rs 50 (now Rs 50, before Rs 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: CashbookActivity
+money: true
+speech: Expenses: what changed: +Rs 2,550. Now (<date>): Rs 2,550. The same days before (<date>): Rs 0. Difference: +Rs 2,550. It did not go down: it went up by Rs 2,550. What moved most. Staff: +Rs 2,000 (now Rs 2,000, before Rs 0). Rent: +Rs 500 (now Rs 500, before Rs 0). Return: +Rs 50 (now Rs 50, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Expenses: what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=EXPENSES, window=TODAY, down=true)
+
+=== Why(of=EXPENSES, window=THIS_MONTH, down=null)
+mood: CARE
+label: Expenses: what changed
+figure: +Rs 2,550
+line: Now (<date> – <date>): Rs 2,550
+line: The same days before (<date> – <date>): Rs 0
+line: Difference: +Rs 2,550
+line: What moved most:
+line: Staff: +Rs 2,000 (now Rs 2,000, before Rs 0)
+line: Rent: +Rs 500 (now Rs 500, before Rs 0)
+line: Return: +Rs 50 (now Rs 50, before Rs 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: CashbookActivity
+money: true
+speech: Expenses: what changed: +Rs 2,550. Now (<date> – <date>): Rs 2,550. The same days before (<date> – <date>): Rs 0. Difference: +Rs 2,550. What moved most. Staff: +Rs 2,000 (now Rs 2,000, before Rs 0). Rent: +Rs 500 (now Rs 500, before Rs 0). Return: +Rs 50 (now Rs 50, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Expenses: what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=EXPENSES, window=THIS_MONTH, down=null)
+
+=== Why(of=COLLECTED, window=TODAY, down=true)
+mood: CALM
+label: Money that came in: what changed
+figure: +Rs 5,200
+line: Now (<date>): Rs 5,200
+line: The same days before (<date>): Rs 0
+line: Difference: +Rs 5,200
+line: It did not go down: it went up by Rs 5,200.
+line: What moved most:
+line: Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0)
+line: Ali Raza: +Rs 1,000 (now Rs 1,000, before Rs 0)
+line: Walk-in customer: +Rs 200 (now Rs 200, before Rs 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Money that came in: what changed: +Rs 5,200. Now (<date>): Rs 5,200. The same days before (<date>): Rs 0. Difference: +Rs 5,200. It did not go down: it went up by Rs 5,200. What moved most. Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0). Ali Raza: +Rs 1,000 (now Rs 1,000, before Rs 0). Walk-in customer: +Rs 200 (now Rs 200, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Money that came in: what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=COLLECTED, window=TODAY, down=true)
+
+=== Why(of=COLLECTED, window=THIS_MONTH, down=null)
+mood: CALM
+label: Money that came in: what changed
+figure: +Rs 5,200
+line: Now (<date> – <date>): Rs 5,200
+line: The same days before (<date> – <date>): Rs 0
+line: Difference: +Rs 5,200
+line: What moved most:
+line: Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0)
+line: Ali Raza: +Rs 1,000 (now Rs 1,000, before Rs 0)
+line: Walk-in customer: +Rs 200 (now Rs 200, before Rs 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Money that came in: what changed: +Rs 5,200. Now (<date> – <date>): Rs 5,200. The same days before (<date> – <date>): Rs 0. Difference: +Rs 5,200. What moved most. Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0). Ali Raza: +Rs 1,000 (now Rs 1,000, before Rs 0). Walk-in customer: +Rs 200 (now Rs 200, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Money that came in: what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=COLLECTED, window=THIS_MONTH, down=null)
+
+=== Why(of=DUES, window=TODAY, down=true)
+mood: CARE
+label: Customers' credit: what changed
+figure: +Rs 8,000
+line: Now (<date>): Rs 8,000
+line: The same days before (<date>): Rs 0
+line: Difference: +Rs 8,000
+line: It did not go down: it went up by Rs 8,000.
+line: What moved most:
+line: Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: AgingActivity
+money: true
+speech: Customers' credit: what changed: +Rs 8,000. Now (<date>): Rs 8,000. The same days before (<date>): Rs 0. Difference: +Rs 8,000. It did not go down: it went up by Rs 8,000. What moved most. Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Customers' credit: what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=DUES, window=TODAY, down=true)
+
+=== Why(of=DUES, window=THIS_MONTH, down=null)
+mood: CARE
+label: Customers' credit: what changed
+figure: +Rs 8,000
+line: Now (<date> – <date>): Rs 8,000
+line: The same days before (<date> – <date>): Rs 0
+line: Difference: +Rs 8,000
+line: What moved most:
+line: Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: AgingActivity
+money: true
+speech: Customers' credit: what changed: +Rs 8,000. Now (<date> – <date>): Rs 8,000. The same days before (<date> – <date>): Rs 0. Difference: +Rs 8,000. What moved most. Ali Raza: +Rs 8,000 (now Rs 8,000, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Customers' credit: what changed. What moved most. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Why(of=DUES, window=THIS_MONTH, down=null)
+
