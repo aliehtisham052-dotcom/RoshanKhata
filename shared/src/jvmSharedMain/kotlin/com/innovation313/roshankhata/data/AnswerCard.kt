@@ -101,8 +101,11 @@ sealed interface OpenWith {
      * ([Hudhud.entryTime], 16 Nov 2026: "Ali ko kal 500 diye"); null opens on now, as before.
      */
     data class EntryForm(val amount: Double, val isGiven: Boolean, val time: Long? = null) : OpenWith
-    /** Who bought a product. */
-    data class ProductBuyers(val productId: Long, val productName: String) : OpenWith
+    /**
+     * Who bought a product: over the days asked, [from, to), when a span was said ("is mahine Urea kis ne li"); both 0 for
+     * none (the screen's own windows).
+     */
+    data class ProductBuyers(val productId: Long, val productName: String, val from: Long = 0L, val to: Long = 0L) : OpenWith
     /** The day book on the day that begins at [day]. */
     data class Day(val day: Long) : OpenWith
 }

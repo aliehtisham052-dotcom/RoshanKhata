@@ -215,6 +215,11 @@ class HudhudPhoneEnv(val context: Context, private val clock: () -> Long = { Sys
                 is OpenWith.ProductBuyers -> {
                     putLong(ProductCustomersActivity.EXTRA_PRODUCT_ID, w.productId)
                     putString(ProductCustomersActivity.EXTRA_PRODUCT_NAME, w.productName)
+                    // The days Hudhud was asked about (17 Nov 2026): the screen opens on them.
+                    if (w.from > 0L && w.to > w.from) {
+                        putLong(ProductCustomersActivity.EXTRA_FROM, w.from)
+                        putLong(ProductCustomersActivity.EXTRA_TO, w.to)
+                    }
                 }
                 is OpenWith.Day -> putLong(DayBookActivity.EXTRA_DAY, w.day)
             }

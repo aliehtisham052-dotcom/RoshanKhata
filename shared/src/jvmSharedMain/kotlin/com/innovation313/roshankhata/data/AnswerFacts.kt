@@ -353,12 +353,20 @@ object AnswerFacts {
                 val (from, to) = if (window == null) 0L to Long.MAX_VALUE else Hudhud.span(window, c.now())
                 val who = dao.customersWhoBought(p.id, from, to)
                 val shown = if (window == null) name else name + " · " + c.getString(AnswerBook.windowWord(window))
-                val extras = OpenWith.ProductBuyers(p.id, p.name)
+                // The screen opens on the same days (17 Nov 2026, audit L020); with no span, or the whole book, on its own windows.
+                val extras = if (window == null || window == VoiceQuestion.Window.ALL_TIME) OpenWith.ProductBuyers(p.id, p.name)
+                else OpenWith.ProductBuyers(p.id, p.name, from, to)
+                // The buyers query carries no balance (it says 0 for everyone): each one's balance is read as Khata adds
+                // it up, or a buyer who owes would be said to be settled.
+                val balances = if (who.isEmpty()) emptyMap() else dao.partiesWithBalanceOnce().associate { it.id to it.balance }
                 if (who.isEmpty()) {
                     AnswerCard(Mood.CALM, label = shown, lines = listOf(c.getString(if (window == null) W.hudhud_buyers_none else W.hudhud_buyers_none_span)))
                 } else {
                     AnswerCard(Mood.CALM, label = shown, figure = n(who.size), lines = listOf(c.getString(W.hudhud_t_customers)),
-                        rows = who.take(TOP).map { Row(it.id, it.name, AnswerBook.money(abs(it.balance)), AnswerBook.side(c, it.balance)) },
+                        rows = who.take(TOP).map { b ->
+                            val balance = balances[b.id] ?: 0.0
+                            Row(b.id, b.name, AnswerBook.money(abs(balance)), AnswerBook.side(c, balance))
+                        },
                         open = ScreenId.PRODUCT_CUSTOMERS, openWith = extras)
                 }
             }

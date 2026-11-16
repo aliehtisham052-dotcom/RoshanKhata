@@ -64,12 +64,12 @@ mood: CALM
 label: Urea
 figure: 2
 line: Customers
-row: party=2 | Bashir Ahmad | Rs 0 | Settled
-row: party=1 | Ali Raza | Rs 0 | Settled
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+row: party=1 | Ali Raza | Rs 17,000 | You will get
 open: ProductCustomersActivity
 openExtras: productId=1, productName=Urea
-speech: Urea: 2. Customers. Bashir Ahmad, Rs 0, Settled. Ali Raza, Rs 0, Settled.
-speechHidden: Urea: 2. Customers. Bashir Ahmad, Settled. Ali Raza, Settled. [an amount left out]
+speech: Urea: 2. Customers. Bashir Ahmad, Rs 3,000, You will get. Ali Raza, Rs 17,000, You will get.
+speechHidden: Urea: 2. Customers. Bashir Ahmad, You will get. Ali Raza, You will get. [an amount left out]
 ask: Goods(ids=[1], facet=BUYERS, window=null)
 
 === Goods(ids=[1], facet=SOLD, window=null)
@@ -199,11 +199,11 @@ mood: CALM
 label: Urea · Today
 figure: 1
 line: Customers
-row: party=2 | Bashir Ahmad | Rs 0 | Settled
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
 open: ProductCustomersActivity
-openExtras: productId=1, productName=Urea
-speech: Urea Today: 1. Customers. Bashir Ahmad, Rs 0, Settled.
-speechHidden: Urea Today: 1. Customers. Bashir Ahmad, Settled. [an amount left out]
+openExtras: fromMillis=<millis>, productId=1, productName=Urea, toMillis=<millis>
+speech: Urea Today: 1. Customers. Bashir Ahmad, Rs 3,000, You will get.
+speechHidden: Urea Today: 1. Customers. Bashir Ahmad, You will get. [an amount left out]
 ask: Goods(ids=[1], facet=BUYERS, window=TODAY)
 
 === Goods(ids=[1], facet=BUYERS, window=THIS_MONTH)
@@ -211,11 +211,11 @@ mood: CALM
 label: Urea · This month
 figure: 1
 line: Customers
-row: party=2 | Bashir Ahmad | Rs 0 | Settled
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
 open: ProductCustomersActivity
-openExtras: productId=1, productName=Urea
-speech: Urea This month: 1. Customers. Bashir Ahmad, Rs 0, Settled.
-speechHidden: Urea This month: 1. Customers. Bashir Ahmad, Settled. [an amount left out]
+openExtras: fromMillis=<millis>, productId=1, productName=Urea, toMillis=<millis>
+speech: Urea This month: 1. Customers. Bashir Ahmad, Rs 3,000, You will get.
+speechHidden: Urea This month: 1. Customers. Bashir Ahmad, You will get. [an amount left out]
 ask: Goods(ids=[1], facet=BUYERS, window=THIS_MONTH)
 
 === Goods(ids=[1], facet=BUYERS, window=LAST_6_MONTHS)
@@ -223,12 +223,12 @@ mood: CALM
 label: Urea · Last 6 months
 figure: 2
 line: Customers
-row: party=2 | Bashir Ahmad | Rs 0 | Settled
-row: party=1 | Ali Raza | Rs 0 | Settled
+row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
+row: party=1 | Ali Raza | Rs 17,000 | You will get
 open: ProductCustomersActivity
-openExtras: productId=1, productName=Urea
-speech: Urea Last 6 months: 2. Customers. Bashir Ahmad, Rs 0, Settled. Ali Raza, Rs 0, Settled.
-speechHidden: Urea Last 6 months: 2. Customers. Bashir Ahmad, Settled. Ali Raza, Settled. [an amount left out]
+openExtras: fromMillis=<millis>, productId=1, productName=Urea, toMillis=<millis>
+speech: Urea Last 6 months: 2. Customers. Bashir Ahmad, Rs 3,000, You will get. Ali Raza, Rs 17,000, You will get.
+speechHidden: Urea Last 6 months: 2. Customers. Bashir Ahmad, You will get. Ali Raza, You will get. [an amount left out]
 ask: Goods(ids=[1], facet=BUYERS, window=LAST_6_MONTHS)
 
 === Goods(ids=[1], facet=COVER, window=TODAY)
