@@ -122,6 +122,18 @@ jobs:
                           print('::error::' + part)
           PY
 
+      # Hudhud's golden answers (HudhudGoldenAnswersTest) as this run got them: the files to read and
+      # check in when the goldens are new or a change to an answer is meant. Uploaded whether the tests
+      # passed or not; nothing when the test did not run.
+      - name: Upload Hudhud golden answers
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: hudhud-golden
+          path: app/build/hudhud-golden/
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Build the dev APK (release code, R8, ARM)
         env:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
