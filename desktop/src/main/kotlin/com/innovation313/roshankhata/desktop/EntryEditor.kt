@@ -35,6 +35,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.LaunchedEffect
 import com.innovation313.roshankhata.data.BatchOption
 import com.innovation313.roshankhata.data.EntryItem
+import com.innovation313.roshankhata.data.EntryKind
+import com.innovation313.roshankhata.data.KhataMoney
 import com.innovation313.roshankhata.data.RateType
 import com.innovation313.roshankhata.data.SeasonBook
 import kotlinx.coroutines.delay
@@ -147,6 +149,13 @@ fun EntryEditor(
     // the drawer learns it left; an edited entry keeps its own.
     var method by remember { mutableStateOf(if (existing == null) (if (isCustomer != isGiven) PaymentMethod.CASH else null) else existing.paymentMethod) }
     var paymentRef by remember { mutableStateOf(existing?.paymentRef.orEmpty()) }
+    // A supplier's "I got" asks "What did you get?" (17 Nov 2026, T43, the phone's form too — KhataMoney): Goods on credit
+    // (chosen to begin with: no way of paying, nothing joins the drawer) or Money he handed back (then how it was paid, Cash
+    // to begin with; written as EntryKind.MONEY, the one mark the drawer counts a supplier's cash by). An edit shows what
+    // the entry is; an opening balance is not asked (the DAO keeps it OPENING).
+    val asksWhatCame = !isGiven && !isCustomer && EntryKind.of(existing?.entryKind) != EntryKind.OPENING
+    var supplierMoney by remember { mutableStateOf(EntryKind.of(existing?.entryKind) == EntryKind.MONEY) }
+    val moneyCame = asksWhatCame && supplierMoney
     var picking by remember { mutableStateOf(false) }
     var pickingTime by remember { mutableStateOf(false) }
     var cashRate by remember { mutableStateOf(existing?.rateType == RateType.CASH) }
@@ -325,9 +334,14 @@ fun EntryEditor(
                 // A loan of money cannot carry a list of goods (the phone's rule).
                 isQarzeHasna = isGiven && qarz && items.isEmpty(),
                 recovery = if (isGiven && doubtful) Recovery.DOUBTFUL else Recovery.CERTAIN,
-                // Goods coming back are not money in any way (the phone's rule): no method.
-                paymentMethod = if (isGiven && isCustomer) base.paymentMethod else if (items.isNotEmpty() || isCustomer == isGiven) null else method,
-                paymentRef = if (isGiven && isCustomer) base.paymentRef else if (items.isNotEmpty() || isCustomer == isGiven) null else PaymentRef.clean(method, paymentRef),
+                // Goods carry no way of paying, and a supplier's "I got" carries one only when it was Money (KhataMoney,
+                // the phone's rule): no method. A customer's sale keeps what it had.
+                paymentMethod = if (isGiven && isCustomer) base.paymentMethod
+                    else if (!KhataMoney.carriesMethod(isGiven, isCustomer, items.isNotEmpty(), moneyCame)) null else method,
+                paymentRef = if (isGiven && isCustomer) base.paymentRef
+                    else if (!KhataMoney.carriesMethod(isGiven, isCustomer, items.isNotEmpty(), moneyCame)) null else PaymentRef.clean(method, paymentRef),
+                // MONEY or NORMAL as the form says; the DAO keeps a stored opening balance (updateEntryWithItems).
+                entryKind = if (KhataMoney.isSupplierMoney(isGiven, isCustomer, items.isNotEmpty(), moneyCame)) EntryKind.MONEY else EntryKind.NORMAL,
                 rateType = kept,
                 billPhotoPath = photoPath
             ),
@@ -521,7 +535,15 @@ fun EntryEditor(
                 }
             }
 
-            if (isCustomer != isGiven && !((isReturn || isGiven) && all.isNotEmpty())) {
+            if (asksWhatCame) {
+                Text(word(W.supplier_got_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                TwoWay(word(W.supplier_got_goods), word(W.supplier_got_money), !supplierMoney) { goodsChosen ->
+                    supplierMoney = !goodsChosen
+                    method = if (goodsChosen) null else (method ?: PaymentMethod.CASH)
+                }
+                Text(word(W.supplier_got_help), color = c.textMuted, fontSize = 12.sp)
+            }
+            if (!(isGiven && isCustomer) && KhataMoney.carriesMethod(isGiven, isCustomer, all.isNotEmpty(), moneyCame)) {
                 // How it was paid: null unless chosen, as on the phone. The day's cash count
                 // (Cashbook, Close the day) counts only khata money marked Cash. Goods coming back were not paid.
                 Text(word(W.payment_method_label), color = c.ink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
