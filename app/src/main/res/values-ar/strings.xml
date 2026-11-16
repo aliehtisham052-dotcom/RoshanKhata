@@ -1141,6 +1141,10 @@
     <string name="hudhud_limit_owner">على هاتف الكاونتر لا يُفتح هذا إلا للمالك برمز PIN الخاص به.</string>
     <string name="hudhud_quiet">الرصيد مخفي في الشاشة الرئيسية، لذا أكتب المبالغ هنا ولا أنطقها.</string>
     <string name="hudhud_no_voice">لا يوجد في هذا الهاتف صوت لهذه اللغة. الإجابة مكتوبة هنا؛ ويمكن تنزيل صوت من إعدادات الصوت.</string>
+    <string name="hudhud_listen_local_switch">الاستماع على هذا الهاتف فقط (لا عبر الإنترنت أبدًا)</string>
+    <string name="hudhud_listen_local_help">عند التشغيل: يحوّل هذا الهاتف وحده كلامك إلى كلمات، ولا تُستخدم أي خدمة عبر الإنترنت أبدًا. عند الإيقاف: قد تساعد خدمة الكلام عبر الإنترنت في الهاتف ما دام الإنترنت موجودًا.</string>
+    <string name="hudhud_listen_local_pack">على هذا الهاتف فقط: نزّل لغتك ليستطيع هُدهُد الاستماع.</string>
+    <string name="hudhud_listen_local_none">على هذا الهاتف فقط: لا يسمع هذا الهاتف هذه اللغة بنفسه. اكتب سؤالك، أو أوقف هذا الإعداد.</string>
     <string name="hudhud_voice_on">صوت هُدهُد يعمل</string>
     <string name="hudhud_voice_off">صوت هُدهُد متوقف</string>
     <string name="hudhud_chip_backup">متى كانت آخر نسخة احتياطية؟</string>

@@ -333,6 +333,28 @@
             android:layout_marginTop="10dp"
             android:visibility="gone" />
 
+        <!-- Only on this phone (16 Nov 2026, audit T14): the words are made out by the phone's own recogniser, never an
+             online one. Off by default. -->
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/swHudLocalEars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minHeight="48dp"
+            android:text="@string/hudhud_listen_local_switch"
+            android:textAlignment="viewStart"
+            android:textColor="@color/ink"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/hudhud_listen_local_help"
+            android:textAlignment="viewStart"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp" />
+
         <!-- The testing tools, folded away (14 Nov 2026): the owner's check of a test build (HudhudCheck) — right or
              wrong under every answer, the counts, the list shared or cleared. Off by default; kept on this phone only. -->
         <LinearLayout

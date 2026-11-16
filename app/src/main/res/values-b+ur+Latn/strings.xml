@@ -1053,6 +1053,10 @@
     <string name="hudhud_limit_owner">Counter wale phone par ye sirf maalik ke PIN se khulta hai.</string>
     <string name="hudhud_quiet">Home par balance chhupa hai, is liye main raqam yahan likhta hoon, bolta nahi.</string>
     <string name="hudhud_no_voice">Is phone mein is zaban ki awaaz nahi. Jawab yahan likha hai; awaaz ki settings se awaaz li ja sakti hai.</string>
+    <string name="hudhud_listen_local_switch">Sirf isi phone par sunein (kabhi online nahi)</string>
+    <string name="hudhud_listen_local_help">On: aap ki baat ko sirf yahi phone alfaaz mein badalta hai, kabhi koi online service nahi. Band: internet ho to phone ki online awaaz ki service madad kar sakti hai.</string>
+    <string name="hudhud_listen_local_pack">Sirf isi phone par: apni zaban download karein to Hudhud sun sakega.</string>
+    <string name="hudhud_listen_local_none">Sirf isi phone par: yeh phone is zaban ko khud nahi sun sakta. Apna sawal likh dein, ya yeh setting band kar dein.</string>
     <string name="hudhud_voice_on">Hudhud ki awaaz chalu hai</string>
     <string name="hudhud_voice_off">Hudhud ki awaaz band hai</string>
     <string name="hudhud_chip_backup">Aakhri backup kab hua?</string>

@@ -1071,6 +1071,10 @@
     <string name="hudhud_limit_owner">Di ponsel kasir, ini hanya terbuka untuk pemilik dengan PIN.</string>
     <string name="hudhud_quiet">Saldo disembunyikan di Beranda, jadi jumlahnya saya tulis di sini tanpa diucapkan.</string>
     <string name="hudhud_no_voice">Ponsel ini tidak punya suara untuk bahasa ini. Jawabannya tertulis di sini; suara bisa diunduh di Pengaturan suara.</string>
+    <string name="hudhud_listen_local_switch">Hanya mendengar di ponsel ini (tidak pernah online)</string>
+    <string name="hudhud_listen_local_help">Aktif: ucapan Anda diubah menjadi kata hanya oleh ponsel ini, tidak pernah oleh layanan online. Nonaktif: layanan ucapan online ponsel boleh membantu selama ada internet.</string>
+    <string name="hudhud_listen_local_pack">Hanya di ponsel ini: unduh bahasa Anda agar Hudhud bisa mendengar.</string>
+    <string name="hudhud_listen_local_none">Hanya di ponsel ini: ponsel ini tidak bisa mendengar bahasa ini sendiri. Ketik pertanyaan Anda, atau matikan pengaturan ini.</string>
     <string name="hudhud_voice_on">Suara Hudhud aktif</string>
     <string name="hudhud_voice_off">Suara Hudhud mati</string>
     <string name="hudhud_chip_backup">Kapan cadangan terakhir?</string>

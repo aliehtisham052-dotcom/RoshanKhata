@@ -24,6 +24,7 @@ object HudhudPrefs {
     private const val KEY_PRIVACY_TOLD = "privacy_told"
     private const val KEY_CHIRPS = "chirps"
     private const val KEY_PRON_WAY = "pron_way_"
+    private const val KEY_LOCAL_EARS = "listen_local_only"
     /** One "slower" or "faster" (14 Nov 2026): a tenth of his pace, kept between 0.6 and 1.5 of the style's own ([HudhudPace]). */
     const val PACE_STEP = HudhudPace.STEP
 
@@ -117,6 +118,17 @@ object HudhudPrefs {
 
     fun setMicDenied(context: Context, denied: Boolean) {
         prefs(context).edit().putBoolean(KEY_MIC_DENIED, denied).apply()
+    }
+
+    /**
+     * "Only listen on this phone (never online)" (16 Nov 2026, audit T14): while on, what the owner says is made into
+     * words only by the phone's own on-device recogniser — never Google's online one, nor the voice-search box that uses
+     * it ([ListenRoute.mayGoOnline]). Off by default, which keeps listening as it was. Kept on this phone only.
+     */
+    fun listenOnPhoneOnly(context: Context): Boolean = prefs(context).getBoolean(KEY_LOCAL_EARS, false)
+
+    fun setListenOnPhoneOnly(context: Context, on: Boolean) {
+        prefs(context).edit().putBoolean(KEY_LOCAL_EARS, on).apply()
     }
 
     /** His greeting is said aloud once a day, the first time his sheet opens. */

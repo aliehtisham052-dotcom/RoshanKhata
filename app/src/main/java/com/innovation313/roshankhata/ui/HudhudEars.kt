@@ -41,6 +41,10 @@ import com.innovation313.roshankhata.data.VoiceLanguage
  *
  * The class needs RECORD_AUDIO (Android's rule for SpeechRecognizer); without it the sheet uses the voice-search box
  * as before. Main thread only; [destroy] when the sheet closes.
+ *
+ * "Only listen on this phone (never online)" (16 Nov 2026, audit T14, [HudhudPrefs.listenOnPhoneOnly], off by default):
+ * while it is on the online recogniser is never created, whatever the network — the words are made out on the phone or
+ * not at all ([ListenRoute]), and [online] answers false so the sheet does not reach for the voice-search box either.
  */
 class HudhudEars(private val context: Context, private val heard: Callbacks) {
 
@@ -120,21 +124,22 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
     }
 
     private fun begin(appTag: String) {
+        // [online] already answers false while the owner keeps listening on this phone: the online recogniser is never
+        // a way here then ([ListenRoute]).
+        val phoneOnly = HudhudPrefs.listenOnPhoneOnly(context)
         val online = online(context)
-        val preferred = VoiceLanguage.preferred(appTag)
-        if (Build.VERSION.SDK_INT >= 33 && offlineCapable(context)) {
-            startChecked(appTag, preferred.firstOrNull(), online)
-            return
-        }
-        if (Build.VERSION.SDK_INT >= 31 && !online && offlineCapable(context)) {
-            val r = runCatching { SpeechRecognizer.createOnDeviceSpeechRecognizer(context) }.getOrNull()
-            if (r != null) {
-                recognizer = r
-                listen(r, intent(preferred.firstOrNull()), onDevice = true)
-                return
+        val tag = VoiceLanguage.preferred(appTag).firstOrNull()
+        when (ListenRoute.first(Build.VERSION.SDK_INT, offlineCapable(context), online, phoneOnly)) {
+            ListenRoute.Way.ASK_PHONE -> if (Build.VERSION.SDK_INT >= 33) startChecked(appTag, tag, online)
+            ListenRoute.Way.ON_PHONE -> {
+                val r = if (Build.VERSION.SDK_INT >= 31) runCatching { SpeechRecognizer.createOnDeviceSpeechRecognizer(context) }.getOrNull() else null
+                if (r != null) {
+                    recognizer = r
+                    listen(r, intent(tag), onDevice = true)
+                } else startOnline(tag, online)
             }
+            ListenRoute.Way.ONLINE, ListenRoute.Way.NOT_HERE -> startOnline(tag, online)
         }
-        startOnline(preferred.firstOrNull(), online)
     }
 
     /** Android 13+: the phone says which languages it has on itself; one it has is heard there, privately. */
@@ -153,26 +158,32 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
                 val installed = exact(appTag, support.installedOnDeviceLanguages)
                 val downloadable = exact(appTag, support.supportedOnDeviceLanguages + support.pendingOnDeviceLanguages)
                 packTag = downloadable ?: installed
-                when {
-                    installed != null -> listen(r, intent(installed), onDevice = true)
-                    online -> { drop(r); startOnline(tag, true) }
-                    downloadable != null -> { drop(r); heard.onTrouble(Trouble.PACK_MISSING) }
-                    else -> { drop(r); heard.onTrouble(Trouble.NOT_OFFLINE_HERE) }
+                when (ListenRoute.afterSupport(installed != null, downloadable != null, online)) {
+                    ListenRoute.Next.LISTEN_HERE -> listen(r, intent(installed ?: tag), onDevice = true)
+                    ListenRoute.Next.GO_ONLINE -> { drop(r); startOnline(tag, true) }
+                    ListenRoute.Next.PACK_MISSING -> { drop(r); heard.onTrouble(Trouble.PACK_MISSING) }
+                    ListenRoute.Next.NOT_HERE -> { drop(r); heard.onTrouble(Trouble.NOT_OFFLINE_HERE) }
                 }
             }
 
             override fun onError(error: Int) {
                 if (recognizer !== r) return
-                // The service cannot say what it has: online it is asked as before; offline it is tried anyway.
-                if (online) { drop(r); startOnline(tag, true) } else listen(r, intent(tag), onDevice = true)
+                // The service cannot say what it has: online it is asked as before; offline (or on this phone only) it
+                // is tried on the phone anyway.
+                if (ListenRoute.supportUnknown(online) == ListenRoute.Next.GO_ONLINE) { drop(r); startOnline(tag, true) }
+                else listen(r, intent(tag), onDevice = true)
             }
         })
     }
 
+    /** The online recogniser; [online] is false while the owner keeps listening on this phone, so it is never made then. */
     private fun startOnline(tag: String?, online: Boolean) {
         if (!online) {
             listening = false
-            heard.onTrouble(if (offlineCapable(context)) Trouble.NOT_OFFLINE_HERE else Trouble.OFFLINE)
+            // On this phone only, with internet or without: "this phone can't hear this language" is the truth, not "no
+            // internet".
+            val phoneOnly = HudhudPrefs.listenOnPhoneOnly(context)
+            heard.onTrouble(if (offlineCapable(context) || phoneOnly) Trouble.NOT_OFFLINE_HERE else Trouble.OFFLINE)
             return
         }
         val r = runCatching { SpeechRecognizer.createSpeechRecognizer(context) }.getOrNull()
@@ -409,8 +420,15 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
         fun offlineCapable(context: Context): Boolean =
             Build.VERSION.SDK_INT >= 31 && runCatching { SpeechRecognizer.isOnDeviceRecognitionAvailable(context) }.getOrDefault(false)
 
+        /**
+         * Whether the online recogniser may be used: a network that reaches the internet ([networkUp]) and the owner has
+         * not asked to listen on this phone only ([HudhudPrefs.listenOnPhoneOnly], audit T14). The sheet asks this
+         * before it opens the voice-search box, so the switch keeps that box closed too.
+         */
+        fun online(context: Context): Boolean = ListenRoute.mayGoOnline(networkUp(context), HudhudPrefs.listenOnPhoneOnly(context))
+
         /** A network that reaches the internet. */
-        fun online(context: Context): Boolean = runCatching {
+        fun networkUp(context: Context): Boolean = runCatching {
             val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return@runCatching false
             caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
@@ -468,4 +486,48 @@ class HudhudEars(private val context: Context, private val heard: Callbacks) {
             }
         }
     }
+}
+
+/**
+ * Where his ears make out the words (16 Nov 2026, audit T14): pure, so a test holds it. [online] here is
+ * [HudhudEars.online] — already false while the owner keeps listening on this phone — so no branch can reach the online
+ * recogniser then; [phoneOnly] also keeps an Android 12 phone with internet on its own recogniser.
+ */
+object ListenRoute {
+
+    /** [HudhudEars.online]'s rule: the online recogniser (or the voice-search box) only with internet and the switch off. */
+    fun mayGoOnline(networkUp: Boolean, phoneOnly: Boolean): Boolean = networkUp && !phoneOnly
+
+    /** The first step. */
+    enum class Way {
+        /** Android 13+ with an on-device recogniser: ask it which languages it has ([afterSupport]). */
+        ASK_PHONE,
+        /** Android 12: listen on the phone (it cannot say beforehand). */
+        ON_PHONE,
+        /** The online recogniser. */
+        ONLINE,
+        /** Neither: the online step, which says why ([HudhudEars.Trouble]) without opening anything. */
+        NOT_HERE
+    }
+
+    fun first(sdk: Int, onDeviceAvailable: Boolean, online: Boolean, phoneOnly: Boolean): Way = when {
+        sdk >= 33 && onDeviceAvailable -> Way.ASK_PHONE
+        sdk >= 31 && onDeviceAvailable && (!online || phoneOnly) -> Way.ON_PHONE
+        // [phoneOnly] here too, whatever [online] a caller passes: this rule alone never says ONLINE on this phone only.
+        online && !phoneOnly -> Way.ONLINE
+        else -> Way.NOT_HERE
+    }
+
+    /** After an Android 13+ phone said which languages it has. */
+    enum class Next { LISTEN_HERE, GO_ONLINE, PACK_MISSING, NOT_HERE }
+
+    fun afterSupport(installed: Boolean, downloadable: Boolean, online: Boolean): Next = when {
+        installed -> Next.LISTEN_HERE
+        online -> Next.GO_ONLINE
+        downloadable -> Next.PACK_MISSING
+        else -> Next.NOT_HERE
+    }
+
+    /** The phone could not say what it has: online it is asked as before, else tried on the phone anyway. */
+    fun supportUnknown(online: Boolean): Next = if (online) Next.GO_ONLINE else Next.LISTEN_HERE
 }

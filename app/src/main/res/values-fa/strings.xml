@@ -1081,6 +1081,10 @@
     <string name="hudhud_limit_owner">روی گوشی کانتر، این فقط با PIN مالک باز می‌شود.</string>
     <string name="hudhud_quiet">مانده در صفحه اصلی پنهان است، پس مبلغ را اینجا می‌نویسم و بلند نمی‌گویم.</string>
     <string name="hudhud_no_voice">این گوشی برای این زبان صدایی ندارد. پاسخ اینجا نوشته شده؛ از تنظیمات صدا می‌توان صدایی گرفت.</string>
+    <string name="hudhud_listen_local_switch">شنیدن فقط روی همین گوشی (هرگز آنلاین نه)</string>
+    <string name="hudhud_listen_local_help">روشن: گفته‌های شما را فقط همین گوشی به کلمه تبدیل می‌کند و هرگز سرویس آنلاینی به کار نمی‌رود. خاموش: تا اینترنت هست، سرویس گفتار آنلاین گوشی می‌تواند کمک کند.</string>
+    <string name="hudhud_listen_local_pack">فقط روی همین گوشی: زبانتان را دانلود کنید تا هدهد بتواند بشنود.</string>
+    <string name="hudhud_listen_local_none">فقط روی همین گوشی: این گوشی این زبان را خودش نمی‌شنود. سؤالتان را بنویسید یا این تنظیم را خاموش کنید.</string>
     <string name="hudhud_voice_on">صدای هدهد روشن است</string>
     <string name="hudhud_voice_off">صدای هدهد خاموش است</string>
     <string name="hudhud_chip_backup">آخرین پشتیبان کی گرفته شد؟</string>

@@ -1093,6 +1093,10 @@
     <string name="hudhud_limit_owner">काउंटर वाले फोन पर यह सिर्फ मालिक के PIN से खुलता है।</string>
     <string name="hudhud_quiet">होम पर बैलेंस छुपा है, इसलिए मैं रकम यहाँ लिखता हूँ, बोलता नहीं।</string>
     <string name="hudhud_no_voice">इस मोबाइल में इस भाषा की आवाज नहीं है। जवाब यहाँ लिखा है; आवाज की सेटिंग से आवाज ली जा सकती है।</string>
+    <string name="hudhud_listen_local_switch">सिर्फ इसी मोबाइल पर सुनें (कभी ऑनलाइन नहीं)</string>
+    <string name="hudhud_listen_local_help">चालू: आपकी बात को सिर्फ यही मोबाइल शब्दों में बदलता है, कभी कोई ऑनलाइन सेवा नहीं। बंद: इंटरनेट हो तो मोबाइल की ऑनलाइन आवाज सेवा मदद कर सकती है।</string>
+    <string name="hudhud_listen_local_pack">सिर्फ इसी मोबाइल पर: अपनी भाषा डाउनलोड करें तो हुदहुद सुन सकेगा।</string>
+    <string name="hudhud_listen_local_none">सिर्फ इसी मोबाइल पर: यह मोबाइल इस भाषा को खुद नहीं सुन सकता। अपना सवाल लिख दें, या यह सेटिंग बंद कर दें।</string>
     <string name="hudhud_voice_on">हुदहुद की आवाज चालू है</string>
     <string name="hudhud_voice_off">हुदहुद की आवाज बंद है</string>
     <string name="hudhud_chip_backup">आखिरी बैकअप कब हुआ?</string>

@@ -1053,6 +1053,10 @@
     <string name="hudhud_limit_owner">کاؤنٹر والے فون پر یہ صرف مالک کے PIN سے کھلتا ہے۔</string>
     <string name="hudhud_quiet">ہوم پر بیلنس چھپا ہے، اس لیے میں رقم یہاں لکھتا ہوں، بولتا نہیں۔</string>
     <string name="hudhud_no_voice">اس فون میں اس زبان کی آواز نہیں۔ جواب یہاں لکھا ہے؛ آواز کی ترتیبات سے آواز لی جا سکتی ہے۔</string>
+    <string name="hudhud_listen_local_switch">صرف اسی فون پر سنیں (کبھی آن لائن نہیں)</string>
+    <string name="hudhud_listen_local_help">آن: آپ کی بات کو صرف یہی فون الفاظ میں بدلتا ہے، کبھی کوئی آن لائن سروس نہیں۔ بند: انٹرنیٹ ہو تو فون کی آن لائن آواز کی سروس مدد کر سکتی ہے۔</string>
+    <string name="hudhud_listen_local_pack">صرف اسی فون پر: اپنی زبان ڈاؤن لوڈ کریں تو ہُدہُد سن سکے گا۔</string>
+    <string name="hudhud_listen_local_none">صرف اسی فون پر: یہ فون اس زبان کو خود نہیں سن سکتا۔ اپنا سوال لکھ دیں، یا یہ ترتیب بند کر دیں۔</string>
     <string name="hudhud_voice_on">ہُدہُد کی آواز چالو ہے</string>
     <string name="hudhud_voice_off">ہُدہُد کی آواز بند ہے</string>
     <string name="hudhud_chip_backup">آخری بیک اپ کب ہوا؟</string>

@@ -1081,6 +1081,10 @@
     <string name="hudhud_limit_owner">ڪائونٽر واري فون تي هي رڳو مالڪ جي PIN سان کلي ٿو.</string>
     <string name="hudhud_quiet">هوم تي بيلنس لڪيل آهي، تنهن ڪري مان رقم هتي لکان ٿو، ٻڌايان نٿو.</string>
     <string name="hudhud_no_voice">هن فون ۾ هن ٻوليءَ جو آواز ناهي. جواب هتي لکيل آهي؛ آواز جي سيٽنگن مان آواز وٺي سگهجي ٿو.</string>
+    <string name="hudhud_listen_local_switch">صرف هن فون تي ٻڌو (ڪڏهن به آن لائن نه)</string>
+    <string name="hudhud_listen_local_help">آن: توهان جي ڳالهه کي صرف هي فون لفظن ۾ بدلائي ٿو، ڪڏهن به ڪا آن لائن سروس نه. بند: انٽرنيٽ هجي ته فون جي آن لائن آواز جي سروس مدد ڪري سگهي ٿي.</string>
+    <string name="hudhud_listen_local_pack">صرف هن فون تي: پنهنجي ٻولي ڊائونلوڊ ڪريو ته هُدهُد ٻڌي سگهندو.</string>
+    <string name="hudhud_listen_local_none">صرف هن فون تي: هي فون هن ٻولي کي پاڻ ٻڌي نٿو سگهي. پنهنجو سوال لکي ڇڏيو، يا هي سيٽنگ بند ڪريو.</string>
     <string name="hudhud_voice_on">هُدهُد جو آواز چالو آهي</string>
     <string name="hudhud_voice_off">هُدهُد جو آواز بند آهي</string>
     <string name="hudhud_chip_backup">آخري بيڪ اپ ڪڏهن ٿيو؟</string>

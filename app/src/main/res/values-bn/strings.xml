@@ -1093,6 +1093,10 @@
     <string name="hudhud_limit_owner">কাউন্টারের ফোনে এটা শুধু মালিকের PIN দিয়ে খোলে।</string>
     <string name="hudhud_quiet">হোমে ব্যালেন্স লুকানো, তাই আমি অঙ্ক এখানে লিখি, জোরে বলি না।</string>
     <string name="hudhud_no_voice">এই ফোনে এই ভাষার কণ্ঠ নেই। উত্তর এখানে লেখা আছে; কণ্ঠের সেটিংস থেকে কণ্ঠ নেওয়া যায়।</string>
+    <string name="hudhud_listen_local_switch">শুধু এই ফোনেই শুনবে (কখনো অনলাইনে নয়)</string>
+    <string name="hudhud_listen_local_help">চালু: আপনার কথা শুধু এই ফোনই শব্দে রূপান্তর করে, কখনো কোনো অনলাইন সেবা নয়। বন্ধ: ইন্টারনেট থাকলে ফোনের অনলাইন কথা চেনার সেবা সাহায্য করতে পারে।</string>
+    <string name="hudhud_listen_local_pack">শুধু এই ফোনে: আপনার ভাষা ডাউনলোড করলে হুদহুদ শুনতে পারবে।</string>
+    <string name="hudhud_listen_local_none">শুধু এই ফোনে: এই ফোন নিজে এই ভাষা শুনতে পারে না। আপনার প্রশ্ন লিখে দিন, অথবা এই সেটিং বন্ধ করুন।</string>
     <string name="hudhud_voice_on">হুদহুদের কণ্ঠ চালু</string>
     <string name="hudhud_voice_off">হুদহুদের কণ্ঠ বন্ধ</string>
     <string name="hudhud_chip_backup">শেষ ব্যাকআপ কবে হয়েছে?</string>

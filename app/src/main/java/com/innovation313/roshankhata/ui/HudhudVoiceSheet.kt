@@ -103,6 +103,7 @@ object HudhudVoiceSheet {
         val btnSample: View = view.findViewById(R.id.btnHudSample)
         val tvListen: TextView = view.findViewById(R.id.tvHudListen)
         val btnListen: MaterialButton = view.findViewById(R.id.btnHudListen)
+        val swLocalEars: CompoundButton = view.findViewById(R.id.swHudLocalEars)
         val rowTools: View = view.findViewById(R.id.rowHudTools)
         val ivToolsChevron: ImageView = view.findViewById(R.id.ivHudToolsChevron)
         val llTools: View = view.findViewById(R.id.llHudTools)
@@ -136,6 +137,7 @@ object HudhudVoiceSheet {
             }
             btnSample.setOnClickListener { sample() }
             startTools()
+            startLocalEars()
             refreshListening()
         }
 
@@ -378,6 +380,16 @@ object HudhudVoiceSheet {
 
         private fun appTag(): String = Locale.getDefault().toLanguageTag()
 
+        /** "Only listen on this phone (never online)" (audit T14, [HudhudPrefs.listenOnPhoneOnly]); the line above follows it. */
+        private fun startLocalEars() {
+            building { swLocalEars.isChecked = HudhudPrefs.listenOnPhoneOnly(ctx) }
+            swLocalEars.setOnCheckedChangeListener { _, on ->
+                if (building) return@setOnCheckedChangeListener
+                HudhudPrefs.setListenOnPhoneOnly(ctx, on)
+                refreshListening()
+            }
+        }
+
         private fun refreshListening() {
             if (!HudhudEars.canHear(ctx)) {
                 tvListen.setText(R.string.vq_no_recognizer)
@@ -388,6 +400,30 @@ object HudhudVoiceSheet {
         }
 
         private fun showListening(status: HudhudEars.Status) {
+            // On this phone only, a phone without the language says so, never "with internet" (audit T14).
+            if (HudhudPrefs.listenOnPhoneOnly(ctx)) {
+                when (status) {
+                    HudhudEars.Status.NEEDS_PACK -> {
+                        tvListen.setText(R.string.hudhud_listen_local_pack)
+                        button(R.string.hudhud_pack_download) {
+                            val asked = ears.downloadPack(appTag())
+                            tvListen.setText(if (asked) R.string.hudhud_pack_started else R.string.hudhud_listen_local_none)
+                            btnListen.visibility = View.GONE
+                        }
+                        return
+                    }
+                    HudhudEars.Status.ONLINE_ONLY -> {
+                        // Android 12 cannot say beforehand: he tries the phone's own recogniser when asked.
+                        tvListen.setText(
+                            if (android.os.Build.VERSION.SDK_INT < 33 && HudhudEars.offlineCapable(ctx)) R.string.hudhud_listen_local_help
+                            else R.string.hudhud_listen_local_none
+                        )
+                        btnListen.visibility = View.GONE
+                        return
+                    }
+                    HudhudEars.Status.NO_MIC, HudhudEars.Status.READY_OFFLINE -> Unit
+                }
+            }
             when (status) {
                 HudhudEars.Status.NO_MIC -> {
                     tvListen.setText(R.string.hudhud_listen_box)

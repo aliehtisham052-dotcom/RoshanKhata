@@ -1095,6 +1095,10 @@
     <string name="hudhud_limit_owner">On a counter phone, this opens only for the owner, with the PIN.</string>
     <string name="hudhud_quiet">Balances are hidden on Home, so I write amounts here and do not say them aloud.</string>
     <string name="hudhud_no_voice">This phone has no voice for this language. The answer is written here; Voice settings can get one.</string>
+    <string name="hudhud_listen_local_switch">Only listen on this phone (never online)</string>
+    <string name="hudhud_listen_local_help">On: what you say is turned into words by this phone alone, never by an online service. Off: the phone\'s online speech service may help while there\'s internet.</string>
+    <string name="hudhud_listen_local_pack">Only on this phone: download your language and he can listen.</string>
+    <string name="hudhud_listen_local_none">Only on this phone: this phone can\'t hear this language by itself. Type your question, or turn this setting off.</string>
     <string name="hudhud_voice_on">Hudhud\'s voice is on</string>
     <string name="hudhud_voice_off">Hudhud\'s voice is off</string>
     <string name="hudhud_chip_backup">When was the last backup?</string>
