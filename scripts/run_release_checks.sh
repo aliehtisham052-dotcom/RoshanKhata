@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Every check of the Strings workflow, in one place, for the release gate (aab.yml) — 17 Nov 2026.
+#
+# aab.yml ran 9 of the Strings workflow's checks: a fault the other 10 catch (a real phone number, a Room alias that is an
+# SQL keyword, a word key that is no resource, a bug class with no test, Hudhud writing to the book…) could reach the Play
+# bundle. The list below is checked against strings.yml's own "run: python3 scripts/…" lines first, so the two cannot drift:
+# a check added there and not here fails here.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+CHECKS=(
+  "check_strings.py"
+  "check_dark_colours.py"
+  "check_dark_pairs.py"
+  "check_pdf_rtl.py"
+  "check_icon_direction.py"
+  "check_icon_fit.py"
+  "gen_desktop_invoice.py --check"
+  "gen_desktop_cards.py --check"
+  "gen_desktop_poster.py --check"
+  "gen_desktop_inspector.py --check"
+  "gen_hudhud_bank.py --check"
+  "check_hudhud_readonly.py"
+  "gen_hudhud_catalog.py --check"
+  "check_book_columns.py"
+  "check_bug_classes.py"
+  "check_invented_numbers.py"
+  "check_room_aliases.py"
+  "hudhud_sets.py --check"
+  "check_word_keys.py"
+)
+
+# The list must be strings.yml's own.
+want=$(grep -oE 'python3 scripts/[a-z_0-9]+\.py( --check)?' .github/workflows/strings.yml | sed 's#python3 scripts/##' | sort -u)
+have=$(printf '%s\n' "${CHECKS[@]}" | sort -u)
+if [ "$want" != "$have" ]; then
+  echo "::error::run_release_checks.sh and strings.yml list different checks:"
+  diff <(echo "$want") <(echo "$have") || true
+  exit 1
+fi
+
+failed=0
+for c in "${CHECKS[@]}"; do
+  # shellcheck disable=SC2086
+  if ! python3 scripts/$c; then echo "::error::release check failed: $c"; failed=1; fi
+done
+bash scripts/shared_harness/run.sh --lists-only || { echo "::error::the shared harness's file lists are stale"; failed=1; }
+exit $failed

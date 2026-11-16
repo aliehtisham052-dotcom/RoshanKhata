@@ -57,18 +57,10 @@ jobs:
       # R37 (23 Oct 2026): the one build that reaches shopkeepers was the only one packaged with no
       # correctness gate. The string checks (seconds, plain Python) and the same tests as build.yml
       # run before the keystore is even decoded; a red one stops the release.
-      - name: Strings and generated copies
+      - name: Strings and generated copies (every Strings check, scripts/run_release_checks.sh)
         run: |
-          python3 scripts/check_strings.py
-          python3 scripts/check_dark_colours.py
-          python3 scripts/check_dark_pairs.py
-          python3 scripts/check_pdf_rtl.py
-          python3 scripts/check_icon_direction.py
-          python3 scripts/gen_desktop_invoice.py --check
-          python3 scripts/gen_desktop_cards.py --check
-          python3 scripts/gen_desktop_poster.py --check
-          # 30 Oct 2026, the review: strings.yml checked the inspector copy, the release gate did not.
-          python3 scripts/gen_desktop_inspector.py --check
+          pip install --quiet pillow
+          bash scripts/run_release_checks.sh
 
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
