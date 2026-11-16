@@ -405,6 +405,14 @@ object DriveBackup {
             if (ViewerMode.isOn(context)) {
                 return@withContext Result.failure(ViewerMode.ReadOnlyPhone())
             }
+            // Locked with the owner's backup password when one is set (17 Nov 2026), here at the one door to Drive,
+            // so the button, the daily run and a shop left are locked alike. A password set and unreadable sends
+            // nothing (BackupPassword.Unavailable), never the book in plain. [file] stays the caller's.
+            val locked = try {
+                Backup.lockedCopy(context, file)
+            } catch (e: Exception) {
+                return@withContext Result.failure(e)
+            }
             try {
                 val drive = driveFor(context, accountName)
 
@@ -433,7 +441,9 @@ object DriveBackup {
                 }
 
                 // appProperties allow 124 bytes of key + value: the name is cut to fit, on a character boundary.
-                val shop = if (businessId == Businesses.active(context).id) BusinessProfile.businessName(context) else null
+                // A locked file's name cannot be read from inside it, so a shop left gives its own name here too.
+                val shop = if (businessId == Businesses.active(context).id) BusinessProfile.businessName(context)
+                    else BusinessProfile.nameOf(context, businessId)
                 val stamp = HashMap<String, String>().apply {
                     put(PROP_DEVICE, mine); put(PROP_DEVICE_NAME, deviceName())
                     shop?.trim()?.takeIf { it.isNotEmpty() }?.let { put(PROP_SHOP, fitProperty(it, 100)) }
@@ -449,7 +459,7 @@ object DriveBackup {
 
                 // Uploaded from the streamed file (P6, 7 Oct), never as one
                 // byte array of the whole book.
-                val content = com.google.api.client.http.FileContent("text/plain", file)
+                val content = com.google.api.client.http.FileContent("text/plain", locked ?: file)
 
                 val saved = if (existingId == null) {
                     // First backup: straightforward create.
@@ -477,6 +487,8 @@ object DriveBackup {
                 // the failure honestly rather than letting the owner believe
                 // they are covered when they are not.
                 Result.failure(e)
+            } finally {
+                locked?.delete()
             }
         }
 
@@ -565,7 +577,8 @@ object DriveBackup {
         val file = Backup.exportToCache(context, dao)
         // Switched while the copy was being written: its profile may be the other shop's. Nothing goes up.
         if (!stillOpen()) { file.delete(); return@withContext AutoResult.Skipped }
-        val signature = contentSignature(file)
+        // The password's mark too (17 Nov 2026): a password set, changed or removed sends the copy again under it.
+        val signature = contentSignature(file) + Backup.passwordMark(context)
         // The text unchanged, but the photos failed last time (8 Nov 2026 review, L10): only the photos go again.
         val textSame = signature == lastSignature(context, businessId)
         if (textSame && !(imagesDirty(context, businessId) && includeImages(context, businessId))) { file.delete(); return@withContext AutoResult.Skipped }
@@ -650,7 +663,7 @@ object DriveBackup {
         try {
             // Opened again (or deleted) while the copy was written: the open shop's run owns it now.
             if (stillLeft() == null) return AutoResult.Skipped
-            val signature = contentSignature(file)
+            val signature = contentSignature(file) + Backup.passwordMark(context)
             if (signature == lastSignature(context, businessId)) return AutoResult.Skipped
             val result = backup(context, account, file, businessId = businessId)
             if (result.isFailure) {

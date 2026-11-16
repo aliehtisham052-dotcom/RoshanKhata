@@ -235,9 +235,9 @@ object Backup {
         return file
     }
 
-    /** [saveToDownloads], from a file — streamed, never held as one string. */
+    /** [saveToDownloads], from a file — streamed, never held as one string. A locked backup says so in its name. */
     fun saveToDownloads(context: Context, source: File): String? {
-        val name = suggestedFileName(context)
+        val name = suggestedFileName(context).let { if (BackupSeal.isSealed(source)) lockedName(it) else it }
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val values = ContentValues().apply {
@@ -273,7 +273,7 @@ object Backup {
     fun writeInternalCopy(context: Context, source: File): File? {
         return try {
             val dir = internalDir(context).apply { mkdirs() }
-            val file = File(dir, suggestedFileName(context))
+            val file = File(dir, suggestedFileName(context).let { if (BackupSeal.isSealed(source)) lockedName(it) else it })
             source.copyTo(file, overwrite = true)
             dir.listFiles()
                 ?.sortedByDescending { it.lastModified() }
@@ -314,8 +314,9 @@ object Backup {
             ?: emptyList()
     }
 
-    /** Read a backup the app saved itself. */
-    fun parseFile(file: File): Pair<ImportResult, ParsedBackup?> = BackupCodec.parseFile(file)
+    /** Read a backup the app saved itself; [passwords] are tried on a locked one ([passwordsToTry]). */
+    fun parseFile(file: File, passwords: List<String> = emptyList()): Pair<ImportResult, ParsedBackup?> =
+        BackupCodec.parseFile(file, passwords)
 
     /**
      * Reads and validates a backup WITHOUT touching the database.
@@ -324,13 +325,13 @@ object Backup {
      * caught before anything is wiped. Wiping first and discovering the file
      * was rubbish afterwards would destroy the owner's books to import nothing.
      */
-    fun parse(context: Context, uri: Uri): Pair<ImportResult, ParsedBackup?> {
+    fun parse(context: Context, uri: Uri, passwords: List<String> = emptyList()): Pair<ImportResult, ParsedBackup?> {
         // Streamed straight off the Uri (P7, 7 Oct): a backup the size of a
         // wholesaler's book is never held as one string.
         return try {
             context.contentResolver.openInputStream(uri)
                 ?.buffered(64 * 1024)
-                ?.use { parseStream(it) }
+                ?.use { parseStream(it, passwords) }
         } catch (e: Exception) {
             null
         } ?: (ImportResult.Failed(ImportResult.Why.UNREADABLE) to null)
@@ -341,7 +342,65 @@ object Backup {
 
     fun parseText(text: String): Pair<ImportResult, ParsedBackup?> = BackupCodec.parseText(text)
 
-    fun parseStream(input: java.io.InputStream): Pair<ImportResult, ParsedBackup?> = BackupCodec.parseStream(input)
+    fun parseStream(input: java.io.InputStream, passwords: List<String> = emptyList()): Pair<ImportResult, ParsedBackup?> =
+        BackupCodec.parseStream(input, passwords)
+
+    // ---------- The backup password (17 Nov 2026, BackupSeal / BackupPassword) ----------
+
+    /**
+     * Where this phone keeps its backup password: its own private preferences, the text wrapped by the Keystore
+     * ([DeviceBackupLock]) — never plain, never in the book, a backup or a sync, and not in Android's own backup
+     * (allowBackup is false). One password for every shop on this phone.
+     */
+    private fun passwordKeep(context: Context): BackupPassword.Keep = object : BackupPassword.Keep {
+        private val prefs = context.applicationContext.getSharedPreferences(PASSWORD_PREFS, Context.MODE_PRIVATE)
+        override fun read(): String? = prefs.getString(PASSWORD_KEY, null)
+        override fun write(value: String?) {
+            val e = prefs.edit()
+            if (value == null) e.remove(PASSWORD_KEY) else e.putString(PASSWORD_KEY, value)
+            // Written now, not later: a backup made the next moment must find it.
+            if (!e.commit()) throw java.io.IOException("backup password not kept")
+        }
+    }
+
+    private const val PASSWORD_PREFS = "backup_password"
+    private const val PASSWORD_KEY = "v"
+
+    /** Where this phone's backup password stands; never throws. */
+    fun passwordState(context: Context): BackupPassword.State = BackupPassword.state(passwordKeep(context), DeviceBackupLock)
+
+    /** Keeps [password] for this phone's backups (the owner's own act, gated and audited by the screen). */
+    fun savePassword(context: Context, password: String): BackupPassword.Saved =
+        BackupPassword.save(passwordKeep(context), DeviceBackupLock, password)
+
+    fun removePassword(context: Context) = BackupPassword.remove(passwordKeep(context))
+
+    /** What to try on a locked backup: the passwords just typed (newest first), then this phone's own. */
+    fun passwordsToTry(context: Context, typed: List<String>): List<String> =
+        (typed.filter { it.isNotBlank() } + listOfNotNull((passwordState(context) as? BackupPassword.State.Set)?.password)).distinct()
+
+    /** The password's mark for "has the Drive copy changed" ([BackupPassword.mark]): "" with none. */
+    fun passwordMark(context: Context): String = BackupPassword.mark(passwordState(context))
+
+    /**
+     * [plain]'s locked copy beside it, for a backup about to leave the phone (Downloads, a share, Drive), or null when
+     * no password is set (then [plain] goes as it always did). Throws [BackupPassword.Unavailable] when a password is
+     * set and cannot be read: the backup is not made rather than made plain. [plain] is left for the caller.
+     */
+    fun lockedCopy(context: Context, plain: File): File? {
+        val password = BackupPassword.forSealing(passwordState(context)) ?: return null
+        val into = File(plain.parentFile, lockedName(plain.name))
+        return try {
+            BackupSeal.sealFile(plain, into, password)
+        } catch (e: Exception) {
+            into.delete()
+            throw e
+        }
+    }
+
+    /** "…_2026-11-17_0930.txt" → "…_2026-11-17_0930_locked.txt": the owner sees which files need the password. */
+    fun lockedName(name: String): String =
+        if (name.endsWith(".txt")) name.removeSuffix(".txt") + "_locked.txt" else name + "_locked"
 
     /**
      * Replaces everything. Only called after the user has confirmed.
