@@ -1684,6 +1684,10 @@
     <string name="edit_pair_both">دونوں بدلیں</string>
 
     <string name="payment_method_label">ادائیگی کیسے ہوئی؟</string>
+    <string name="supplier_got_label">آپ کو کیا ملا؟</string>
+    <string name="supplier_got_goods">مال (ادھار پر)</string>
+    <string name="supplier_got_money">رقم</string>
+    <string name="supplier_got_help">ادھار لیا گیا مال گلے کو نہیں بدلتا۔ سپلائر سے ملی نقد رقم گلے میں گنی جاتی ہے۔</string>
     <string name="payment_method_cash">نقد</string>
     <string name="payment_method_bank">بینک ٹرانسفر</string>
     <string name="payment_method_cheque">چیک</string>

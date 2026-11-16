@@ -1684,6 +1684,10 @@
     <string name="edit_pair_both">Dono badlein</string>
 
     <string name="payment_method_label">Adaigi kaise hui?</string>
+    <string name="supplier_got_label">Aap ko kya mila?</string>
+    <string name="supplier_got_goods">Maal (udhaar par)</string>
+    <string name="supplier_got_money">Raqam</string>
+    <string name="supplier_got_help">Udhaar liya gaya maal galle ko nahi badalta. Supplier se mili naqd raqam galle mein gini jaati hai.</string>
     <string name="payment_method_cash">Naqd</string>
     <string name="payment_method_bank">Bank transfer</string>
     <string name="payment_method_cheque">Cheque</string>

@@ -153,6 +153,8 @@ class PartyDetailActivity : BaseActivity() {
         private const val F_RECOVERY = "recovery"
         private const val F_METHOD = "method"
         private const val F_REF = "payment_ref"
+        /** A supplier's "I got": Money (true) or Goods on credit (false) — T43, 17 Nov 2026. Kept only on a supplier's "I got". */
+        private const val F_SUPPLIER_MONEY = "supplier_money"
         private const val F_QARZ = "qarz"
         private const val F_PAID_NOW = "paid_now"
         private const val F_DETAILS = "details_open"
@@ -1070,6 +1072,9 @@ class PartyDetailActivity : BaseActivity() {
         val btnAddLine: MaterialButton = view.findViewById(R.id.btnAddLine)
         val tvLinesNote: TextView = view.findViewById(R.id.tvLinesNote)
         val paymentSection: View = view.findViewById(R.id.paymentMethodSection)
+        // A supplier's "I got": Goods (on credit) or Money (17 Nov 2026, T43, KhataMoney).
+        val supplierGotSection: View = view.findViewById(R.id.supplierGotSection)
+        val cgSupplierGot: ChipGroup = view.findViewById(R.id.cgSupplierGot)
         val btnRepeatLast: MaterialButton = view.findViewById(R.id.btnRepeatLast)
         val tvLastRate: TextView = view.findViewById(R.id.tvLastRate)
         val cbUpdateRate: MaterialCheckBox = view.findViewById(R.id.cbUpdateRate)
@@ -1136,6 +1141,13 @@ class PartyDetailActivity : BaseActivity() {
         fun isReturn(): Boolean = !isGiven && partyIsCustomer
         /** Money paid TO a supplier (M40, 8 Nov 2026): the one "I gave" that carries a way of paying — cash from the drawer. */
         fun paysSupplier(): Boolean = isGiven && !partyIsCustomer
+        /**
+         * A supplier's "I got" the owner called Money (17 Nov 2026, T43): change or a refund he handed back, not goods on
+         * credit. Only then does it ask how it was paid, and only a cash one joins the drawer (KhataMoney).
+         */
+        fun supplierMoney(): Boolean =
+            !isGiven && !partyIsCustomer && supplierGotSection.visibility == View.VISIBLE &&
+                cgSupplierGot.checkedChipId == R.id.chipGotMoney
 
         /** A list of items is offered on a customer's account, both ways. */
         fun goodsListAllowed(): Boolean = partyIsCustomer
@@ -1777,12 +1789,9 @@ class PartyDetailActivity : BaseActivity() {
             // for a supplier and nothing is ticked, once the party is known.
             if (editing == null) {
                 val prevKnown = onCustomerKnown
+                // A supplier's "I got" is settled below (T43: "What did you get?", Goods to begin with — nothing ticked).
                 val settle: () -> Unit = {
                     if (partyIsCustomer) cgPaymentMethod.check(R.id.chipCash)
-                    else {
-                        cgPaymentMethod.clearCheck()
-                        view.findViewById<View>(R.id.paymentMethodSection).visibility = View.GONE
-                    }
                 }
                 if (customerKnown) settle() else onCustomerKnown = { prevKnown(); settle() }
             }
@@ -1890,6 +1899,41 @@ class PartyDetailActivity : BaseActivity() {
                 }
             }
             if (customerKnown) settleGiven() else onCustomerKnown = { prevKnown(); settleGiven() }
+        }
+
+        // T43 (17 Nov 2026, the owner: many shops write everything on the khata and never open the Cashbook): a supplier's
+        // "I got" asks "What did you get?". Goods (on credit), chosen to begin with, saves no way of paying and nothing
+        // joins the drawer (C2 stays fixed); Money shows "How was it paid?" with Cash to begin with, and the entry is
+        // written as EntryKind.MONEY, the one mark the drawer counts a supplier's cash by (old rows marked Cash by the
+        // pre-8-Nov default carry no such mark). An edit shows what the entry is; an opening balance is not asked.
+        // A wallet's or bank's payment notice opened on a supplier is money.
+        if (!isGiven) {
+            fun showSupplierMoney(money: Boolean) {
+                paymentSection.visibility = if (money) View.VISIBLE else View.GONE
+                if (!money) cgPaymentMethod.clearCheck()
+                else if (cgPaymentMethod.checkedChipId == View.NO_ID) cgPaymentMethod.check(R.id.chipCash)
+                showRefBox()
+            }
+            val prevKnown = onCustomerKnown
+            val settleGot: () -> Unit = {
+                val kept = com.innovation313.roshankhata.data.EntryKind.of(editing?.entry?.entryKind)
+                if (!partyIsCustomer && kept != com.innovation313.roshankhata.data.EntryKind.OPENING) {
+                    val money = restore?.takeIf { it.containsKey(F_SUPPLIER_MONEY) }?.getBoolean(F_SUPPLIER_MONEY)
+                        ?: if (editing != null) kept == com.innovation313.roshankhata.data.EntryKind.MONEY
+                        else prefillMethod != null
+                    supplierGotSection.visibility = View.VISIBLE
+                    // The chip first, then the listener (lesson 4): the listener only follows the chip.
+                    cgSupplierGot.check(if (money) R.id.chipGotMoney else R.id.chipGotGoods)
+                    showSupplierMoney(money)
+                    cgSupplierGot.setOnCheckedStateChangeListener { _, _ -> showSupplierMoney(supplierMoney()) }
+                } else if (!partyIsCustomer) {
+                    // An opening balance owed to a supplier: goods or money, it was no way of paying.
+                    cgPaymentMethod.clearCheck()
+                    paymentSection.visibility = View.GONE
+                    showRefBox()
+                }
+            }
+            if (customerKnown) settleGot() else onCustomerKnown = { prevKnown(); settleGot() }
         }
 
         // ---- A payment a wallet or bank app announced (PaymentVoice): put in, never saved ----
@@ -2129,8 +2173,13 @@ class PartyDetailActivity : BaseActivity() {
                 kept = editing?.entry?.rateType
             )
 
-            val methodApplies = if (isGiven) !partyIsCustomer && items.isEmpty()
-                else partyIsCustomer && !(isReturn() && items.isNotEmpty())
+            // The one rule both forms keep (KhataMoney, T43): goods carry no way of paying; money paid to a supplier,
+            // money from a customer, and money a supplier handed back (Money chosen) do.
+            val methodApplies = com.innovation313.roshankhata.data.KhataMoney.carriesMethod(
+                isGiven, partyIsCustomer, items.isNotEmpty(), supplierMoney())
+            val kind = if (com.innovation313.roshankhata.data.KhataMoney.isSupplierMoney(
+                    isGiven, partyIsCustomer, items.isNotEmpty(), supplierMoney()))
+                com.innovation313.roshankhata.data.EntryKind.MONEY else com.innovation313.roshankhata.data.EntryKind.NORMAL
             val entry = LedgerEntry(
                 partyId = partyId,
                 amount = amount,
@@ -2149,7 +2198,8 @@ class PartyDetailActivity : BaseActivity() {
                 paymentMethod = if (methodApplies) chosenPaymentMethod() else null,
                 // The reference rides with its method and only with one that has one (PaymentRef).
                 paymentRef = if (methodApplies) PaymentRef.clean(chosenPaymentMethod(), etPaymentRef.text.toString()) else null,
-                rateType = rateType
+                rateType = rateType,
+                entryKind = kind
             )
 
             // The goods travel as lines, not on the entry (v20 — see
@@ -2172,7 +2222,9 @@ class PartyDetailActivity : BaseActivity() {
                     timestamp = chosenTime,
                     paymentMethod = entry.paymentMethod,
                     paymentRef = entry.paymentRef,
-                    rateType = rateType
+                    rateType = rateType,
+                    // MONEY or NORMAL as the form says; the DAO keeps a stored opening balance (updateEntryWithItems).
+                    entryKind = kind
                 )
                 val written = AppScope.launch { dao.updateEntryWithItems(updated, items); dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount)) }
                 // Half of a cash sale whose amount changed: ask about the other half (3 Nov 2026 audit, M13).
@@ -2233,6 +2285,7 @@ class PartyDetailActivity : BaseActivity() {
             b.putInt(F_RECOVERY, rgRecovery.checkedRadioButtonId)
             chosenPaymentMethod()?.let { b.putString(F_METHOD, it) }
             b.putString(F_REF, etPaymentRef.text.toString())
+            if (supplierGotSection.visibility == View.VISIBLE) b.putBoolean(F_SUPPLIER_MONEY, supplierMoney())
             b.putBoolean(F_QARZ, cbQarzeHasna.isChecked)
             b.putBoolean(F_PAID_NOW, cbPaidNow.isChecked)
             b.putBoolean(F_DETAILS, view.findViewById<View>(R.id.stepTwo).visibility == View.VISIBLE)
@@ -3862,7 +3915,7 @@ class PartyDetailActivity : BaseActivity() {
     private fun entryFormChanged(now: Bundle, from: Bundle): Boolean {
         val texts = listOf(F_AMOUNT, F_NOTE, F_LINES, F_ITEM, F_QTY, F_UNIT, F_RATE, F_METHOD, F_REF)
         if (texts.any { now.getString(it) != from.getString(it) }) return true
-        val ticks = listOf(F_CASH, F_QARZ, F_PAID_NOW, F_DUE_TOUCHED)
+        val ticks = listOf(F_CASH, F_QARZ, F_PAID_NOW, F_DUE_TOUCHED, F_SUPPLIER_MONEY)
         if (ticks.any { now.getBoolean(it) != from.getBoolean(it) }) return true
         if (now.getLong(F_TIME) != from.getLong(F_TIME)) return true
         if (now.getInt(F_RECOVERY, View.NO_ID) != from.getInt(F_RECOVERY, View.NO_ID)) return true

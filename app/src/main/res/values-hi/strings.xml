@@ -1727,6 +1727,10 @@
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">भुगतान कैसे हुआ?</string>
+    <string name="supplier_got_label">आपको क्या मिला?</string>
+    <string name="supplier_got_goods">माल (उधार पर)</string>
+    <string name="supplier_got_money">पैसे</string>
+    <string name="supplier_got_help">उधार लिया गया माल गल्ले को नहीं बदलता। सप्लायर से मिला नकद गल्ले में गिना जाता है।</string>
     <string name="payment_method_cash">नकद</string>
     <string name="payment_method_bank">बैंक ट्रांसफ़र</string>
     <string name="payment_method_cheque">चेक</string>

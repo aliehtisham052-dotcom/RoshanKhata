@@ -1712,6 +1712,10 @@
     <string name="edit_pair_both">هر دو تغییر کنند</string>
 
     <string name="payment_method_label">پرداخت چگونه انجام شد؟</string>
+    <string name="supplier_got_label">چه دریافت کردید؟</string>
+    <string name="supplier_got_goods">کالا (نسیه)</string>
+    <string name="supplier_got_money">پول</string>
+    <string name="supplier_got_help">کالای نسیه موجودی صندوق را تغییر نمی‌دهد. پول نقدی که تأمین‌کننده به شما داد در صندوق شمرده می‌شود.</string>
     <string name="payment_method_cash">نقدی</string>
     <string name="payment_method_bank">انتقال بانکی</string>
     <string name="payment_method_cheque">چک</string>

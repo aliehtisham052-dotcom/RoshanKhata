@@ -1836,6 +1836,10 @@
     <string name="edit_pair_both">غيّر الاثنين</string>
 
     <string name="payment_method_label">كيف تم الدفع؟</string>
+    <string name="supplier_got_label">ماذا استلمت؟</string>
+    <string name="supplier_got_goods">بضاعة (بالآجل)</string>
+    <string name="supplier_got_money">نقود</string>
+    <string name="supplier_got_help">البضاعة المأخوذة بالآجل لا تغيّر ما في الدرج. النقد الذي أعطاك إياه المورّد يُحسب في الدرج.</string>
     <string name="payment_method_cash">نقدًا</string>
     <string name="payment_method_bank">تحويل بنكي</string>
     <string name="payment_method_cheque">شيك</string>

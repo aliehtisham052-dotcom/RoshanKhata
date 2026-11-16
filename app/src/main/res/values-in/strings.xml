@@ -1689,6 +1689,10 @@
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">Dibayar dengan apa?</string>
+    <string name="supplier_got_label">Apa yang Anda terima?</string>
+    <string name="supplier_got_goods">Barang (utang)</string>
+    <string name="supplier_got_money">Uang</string>
+    <string name="supplier_got_help">Barang yang diambil secara utang tidak mengubah isi laci. Uang tunai dari pemasok dihitung di laci.</string>
     <string name="payment_method_cash">Tunai</string>
     <string name="payment_method_bank">Transfer bank</string>
     <string name="payment_method_cheque">Cek</string>

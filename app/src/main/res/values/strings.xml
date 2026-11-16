@@ -1731,6 +1731,10 @@
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">How was it paid?</string>
+    <string name="supplier_got_label">What did you get?</string>
+    <string name="supplier_got_goods">Goods (on credit)</string>
+    <string name="supplier_got_money">Money</string>
+    <string name="supplier_got_help">Goods taken on credit do not change the cash drawer. Cash the supplier gave you is counted in the drawer.</string>
     <string name="payment_method_cash">Cash</string>
     <string name="payment_method_bank">Bank transfer</string>
     <string name="payment_method_cheque">Cheque</string>

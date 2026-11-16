@@ -1727,6 +1727,10 @@
 
     <!-- How a payment reached the shop. -->
     <string name="payment_method_label">কীভাবে পরিশোধ হয়েছে?</string>
+    <string name="supplier_got_label">আপনি কী পেলেন?</string>
+    <string name="supplier_got_goods">মাল (বাকিতে)</string>
+    <string name="supplier_got_money">টাকা</string>
+    <string name="supplier_got_help">বাকিতে নেওয়া মালে বাক্সের টাকা বদলায় না। সরবরাহকারীর দেওয়া নগদ টাকা বাক্সে গোনা হয়।</string>
     <string name="payment_method_cash">নগদ</string>
     <string name="payment_method_bank">ব্যাংক ট্রান্সফার</string>
     <string name="payment_method_cheque">চেক</string>

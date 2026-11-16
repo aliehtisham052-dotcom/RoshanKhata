@@ -1712,6 +1712,10 @@
     <string name="edit_pair_both">ٻئي بدلايو</string>
 
     <string name="payment_method_label">ادائيگي ڪيئن ٿي؟</string>
+    <string name="supplier_got_label">توهان کي ڇا مليو؟</string>
+    <string name="supplier_got_goods">مال (اڌار تي)</string>
+    <string name="supplier_got_money">رقم</string>
+    <string name="supplier_got_help">اڌار ورتل مال گلي کي نٿو بدلائي. سپلائر کان مليل نقد رقم گلي ۾ ڳڻي ويندي آهي.</string>
     <string name="payment_method_cash">نقد</string>
     <string name="payment_method_bank">بينڪ ٽرانسفر</string>
     <string name="payment_method_cheque">چيڪ</string>

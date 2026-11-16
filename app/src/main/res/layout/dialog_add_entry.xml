@@ -411,6 +411,63 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!--
+          A supplier's "I got" (17 Nov 2026, T43, KhataMoney): goods taken on credit (chosen to begin with, nothing
+          joins the drawer) or money he handed back (then "How was it paid?" below, Cash to begin with). Shown only
+          on a supplier's "I got"; selectionRequired, so one of the two is always the answer.
+        -->
+        <LinearLayout
+            android:id="@+id/supplierGotSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/supplier_got_label"
+                android:textColor="@color/brand_green_text"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgSupplierGot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipGotGoods"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/supplier_got_goods" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipGotMoney"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:textColor="@color/choice_chip_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/supplier_got_money" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/tvSupplierGotHelp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/supplier_got_help"
+                android:textAlignment="viewStart"
+                android:textColor="@color/text_grey"
+                android:textSize="12sp" />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/paymentMethodSection"
             android:layout_width="match_parent"
