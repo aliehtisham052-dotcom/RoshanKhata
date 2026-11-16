@@ -1092,6 +1092,12 @@ object Hudhud {
             has(words(heard).joinToString(" "), OWED_SAID)
         ) return ruled
         if (ruled == Ask.Today && has(words(heard).joinToString(" "), DAY_WENT)) return ruled
+        // Review D (16 Nov 2026): the phrases of three classes the sense was never taught — what the shop owes a supplier, the head count of
+        // staff in Bengali, what is running short in Arabic and Farsi (the sense took the last for the day's summary).
+        val saidAll = words(heard).joinToString(" ")
+        if (ruled == Ask.Figure(VoiceQuestion.Kind.TO_GIVE) && has(saidAll, OWE_SUPPLIER)) return ruled
+        if (ruled == Ask.Count(Thing.STAFF) && has(saidAll, STAFF_HEADCOUNT)) return ruled
+        if (ruled == Ask.Status(StatusOf.LOW_STOCK) && has(saidAll, RUNNING_SHORT)) return ruled
         if (ruled is Ask.Activity && ruled.window != null && creditGivenOver(words(heard).joinToString(" "))) return ruled
         if (ruled is Ask.Returns && has(words(heard).joinToString(" "), CAME_BACK)) return ruled
         // A staff member's pay or attendance, a customer's plan or cheques: only the rules make this ask (the bank has no meaning for it).
@@ -1439,6 +1445,8 @@ object Hudhud {
         val said = words(heard)
         if (said.isEmpty()) return Ask.Unknown
         val joined = said.joinToString(" ")
+        // How much must I pay the supplier (review D, 16 Nov 2026): what the shop owes, never a count of suppliers.
+        if (has(joined, OWE_SUPPLIER)) return Ask.Figure(VoiceQuestion.Kind.TO_GIVE)
         // The app's own history and his own story (14 Nov 2026, the owner: "app kab publish hui", "Hudhud kab add hua", "Hudhud
         // apni aap-beeti sunao"): answered only to a sentence that is nothing but those words, and before the how-to pages ("how
         // old is the app" holds a "how"). "Ali ki kahani" and "Roshan ka khata kab bana" are never read here: a word of the book
@@ -1898,6 +1906,10 @@ object Hudhud {
         fun firm(c: HudhudMind.C) = m.said.indices.any { it !in m.bySound && c in m.at(it) }
         val counting = m.has(HudhudMind.C.HOW_MANY)
         if (has(joined, QARZ)) return Ask.Qarz
+        // A head count in the words Bengali uses for people at work (review D: "কতজন কাজ করে" was the percent help page) and what is
+        // running short in Arabic and Farsi ("ما الذي ينقص", "چه چیزهایی تمام می‌شود": Farsi's was the expiring batches).
+        if (has(joined, STAFF_HEADCOUNT) && !m.any(HudhudMind.C.CUSTOMER, HudhudMind.C.SUPPLIER)) return Ask.Count(Thing.STAFF)
+        if (has(joined, RUNNING_SHORT) && !m.any(HudhudMind.C.CASHBOOK, HudhudMind.C.MONEY, HudhudMind.C.BILL)) return Ask.Status(StatusOf.LOW_STOCK)
         if (has(joined, ZAKAT)) page("screen_zakat")?.let { return it }
         if (has(joined, AUTOMATION)) return Ask.Automations
         if (has(joined, BUSINESSES)) page("faq_business")?.let { return it }
@@ -2117,7 +2129,7 @@ object Hudhud {
     private fun featureNamed(heard: String): Boolean {
         val joined = words(heard).joinToString(" ")
         return listOf(ZAKAT, BUSINESSES, SEASONS, SCHEMES, POSTERS, CARDS, CASH_FLOW, AHEAD, DOCUMENTS, UTILITY, BIN_WORDS, FIX_WORDS,
-            LOCK_WORDS, HIDE_WORDS, ADD_NEW)
+            LOCK_WORDS, HIDE_WORDS, ADD_NEW, STAFF_HEADCOUNT, OWE_SUPPLIER, RUNNING_SHORT)
             .any { has(joined, it) } ||
             (has(joined, BILL_WORDS) && has(joined, MAKE_DOC)) ||
             (has(joined, BILL_WORDS) && has(joined, BILL_EDIT) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE)) ||
@@ -2274,6 +2286,12 @@ object Hudhud {
     private val SELLING = listOf("bik", "bikta", "bikti", "bika", "biki", "bik raha", "bikri", "sale", "sales", "becha",
         "bechi", "sold", "selling", "sell", "بکا", "بکی", "بکتا", "بکتی", "فروخت", "بيع", "مبيعا", "مبيعاً", "فروش", "فروخته",
         "وڪرو", "बिका", "बिकी", "बिकता", "बिक्री", "বিক্রি", "terjual", "laku")
+    private val STAFF_HEADCOUNT = listOf("কতজন কাজ করে", "কতজন কাজ করেন", "কয়জন কাজ করে", "কয়জন কাজ করেন", "কত জন কাজ করে", "কত জন কাজ করেন")
+    /** "How much must I pay the supplier": what the shop owes, not a count of suppliers (the count's "how many" is also "how much" in Arabic and Indonesian). */
+    private val OWE_SUPPLIER = listOf("أدفع للمورد", "ادفع للمورد", "أدفع للموردين", "ادفع للموردين", "أدين للمورد", "علي للمورد", "على للمورد", "للمورد علي",
+        "bayar ke pemasok", "bayar kepada pemasok", "bayar ke supplier", "bayar kepada supplier", "utang ke pemasok", "utang saya ke pemasok", "utang kepada pemasok")
+    private val RUNNING_SHORT = listOf("ما الذي ينقص", "ما الذى ينقص", "ما الذي ينفد", "ما الذي قارب على النفاد", "ما الذي يوشك على النفاد",
+        "چه چیزهایی تمام می‌شود", "چه چیزی تمام می‌شود", "چه چیزهایی تمام می شود", "چه چیزی تمام می شود", "چه چیزهایی کم است", "چه چیزی کم است")
     private val WHOM = listOf("kis ko", "kisko", "kin ko", "kin se", "kis se", "kaun", "kon", "kis", "kin", "who", "whom", "کس کو", "کن کو",
         "کس سے", "کن سے", "کون", "کس", "من", "مين", "کی را", "چه کسی", "किस को", "किसको", "किन को", "कौन", "किस", "কাকে", "কে", "কারা",
         "ڪنهن کي", "ڪير", "siapa", "kepada siapa")

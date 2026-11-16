@@ -4129,6 +4129,28 @@ should not be, find and fix it across the whole app.
   (`Section.SALES`), so the phone and the computer show one picture for one page and `TileIconsTest` still holds each picture worn once;
   `ic_feature_insights` (its old one-colour glyph) is gone, with its line in desktop/build.gradle.kts.
 
+### 16 Nov 2026: Hudhud, review D's last readable classes (phone and shared; CI only, nothing tried on a real phone)
+
+Importance 5 (words only, no figure moves). Rules only; the bank, `sense.bin`, HudhudMind and HudhudSense untouched.
+
+- **76 of review D's 155 not-yet rows already read as meant** (who owes least, who has not paid, the best sellers, who paid today, the staff
+  head count, what supplier money is owed, sales since the morning…): promoted to OK, held exactly by `HudhudReviewSetTest`. Another five
+  were fixed this round and promoted too. The set now holds **1,041** rows; **114 stay MISS/GUESS** on purpose, with the reason below.
+- **Three classes fixed** (`OWE_SUPPLIER`, `STAFF_HEADCOUNT`, `RUNNING_SHORT`, each in `byRules`/`byFeature` and kept in `decide`):
+  Arabic "كم يجب أن أدفع للمورد" and Indonesian "berapa yang harus saya bayar ke pemasok" are what the shop owes (the word for "how
+  many" is also "how much": they were a count of suppliers); Bengali "কতজন কাজ করে" is the staff count (it was the percent help page);
+  Arabic "ما الذي ينقص" and Farsi "چه چیزهایی تمام می‌شود" are the low stock (the sense took the first for the day's summary, the
+  rules the second for the expiring batches). `HudhudReviewDMoreClassesTest` holds them through `understand` with the sense (lesson 145).
+- **Left, with the reason:** Urdu/Hindi/Arabic-script product names for a Latin-saved product ("یوریا کا ریٹ"; the loose route meets
+  ordinary words too, lessons 139-140); Indonesian "siapa yang bayar hari ini" (who pays or who paid today: the word is both, so it
+  stays); spelled-out amounts in hi, bn, ar, fa, sd, in ("Ali Raza ko paanch sau diye": a wrong figure is worse than a miss);
+  "kal" (yesterday or total); Eid/Ramzan as a span the book cannot reach.
+- **Measured here (plain shared Kotlin, lesson 93):** 649 tests in 47 classes, HudhudWordsTest 9, all 14 Strings steps; owner's short
+  lists 153, 1,000 sentences 797, held-out 1,068 of 1,170 (unchanged).
+- **The owner's two lists, 16 Nov:** questions 2101-3100 (features 22-31) and 6101-7100 (features 62-71) arrived as shared chats saved
+  as .mht files; each is exactly 1,000 questions (6101-7100 holds one repeat), none already in master v17. They are mostly "can the app
+  do X" questions, so they measure what the app lacks more than what Hudhud misreads. Kept outside the repository.
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the
