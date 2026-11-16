@@ -467,7 +467,7 @@ private fun AnswerCardView(
             // Read into locals: properties of a class from another module are not smart-cast.
             val rowAsk = r.ask
             val screen = r.open?.let { HudhudDeskEnv.sectionOf(it) }
-            val entry = r.amount?.let { OpenWith.EntryForm(it, r.isGiven) }
+            val entry = r.amount?.let { OpenWith.EntryForm(it, r.isGiven, r.time) }
             val go: (() -> Unit)? = when {
                 rowAsk != null -> { -> onAsk(rowAsk, r.name) }
                 r.partyId > 0 -> { -> onParty(r.partyId, entry) }

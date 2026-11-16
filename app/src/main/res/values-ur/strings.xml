@@ -1436,6 +1436,7 @@
     <string name="voice_problem_title">اندراج نہیں بن سکا</string>
     <string name="voice_no_party">آپ کے کھاتے میں ابھی کوئی گاہک نہیں۔ پہلے ایک گاہک شامل کریں۔</string>
     <string name="voice_no_amount">اس میں رقم نہیں تھی۔ عدد بھی کہیں۔</string>
+    <string name="voice_future_promise">یہ بعد میں دی جانے والی رقم لگتی ہے، آئی ہوئی رقم نہیں۔ وعدے کا دن اس کے صفحے پر لکھیں۔</string>
     <string name="voice_open_entry">اندراج کھولیں</string>
     <string name="voice_which_party">%1$s — کون سا گاہک؟</string>
     <plurals name="delete_parties_title">

@@ -1436,6 +1436,7 @@
     <string name="voice_problem_title">Entry nahi ban saki</string>
     <string name="voice_no_party">Aap ke khate mein abhi koi gahak nahi. Pehle ek gahak shamil karein.</string>
     <string name="voice_no_amount">Is mein raqam nahi thi. Adad bhi kahein.</string>
+    <string name="voice_future_promise">Yeh baad mein di jaane wali raqam lagti hai, aayi hui raqam nahi. Waade ka din us ke page par likhein.</string>
     <string name="voice_open_entry">Indiraaj kholein</string>
     <string name="voice_which_party">%1$s — kaun sa gahak?</string>
     <plurals name="delete_parties_title">

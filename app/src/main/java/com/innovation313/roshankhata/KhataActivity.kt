@@ -1644,6 +1644,12 @@ class KhataActivity : BaseActivity() {
             showSpokenProblem(heard, getString(R.string.voice_no_amount))
             return
         }
+        // A promise is no entry (16 Nov 2026, BC-113 on the Khata microphone too): "Ali kal 500 dega" is money he will pay,
+        // not money that came, and it opened "I got 500" on today's page. Hudhud reads the same sentence by the same rule.
+        if (com.innovation313.roshankhata.data.VoiceQuestion.saysFuture(heard)) {
+            showSpokenProblem(heard, getString(R.string.voice_future_promise))
+            return
+        }
 
         if (party == null) {
             // The figure was heard but the name was not. Offer the list rather

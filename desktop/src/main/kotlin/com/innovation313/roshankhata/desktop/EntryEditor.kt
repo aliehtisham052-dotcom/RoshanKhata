@@ -128,7 +128,9 @@ fun EntryEditor(
     /** The entry's signature as kept on this computer (an edit), or null. */
     signature: java.awt.image.BufferedImage? = null,
     /** A new entry's amount brought from elsewhere (the calculator's "Add to a khata"), or null. */
-    startAmount: Double? = null
+    startAmount: Double? = null,
+    /** A new entry's moment said elsewhere (Hudhud's "kal Ali ko 500 diye"), never later than now; null: now. */
+    startTime: Long? = null
 ) {
     val c = LocalRoshanColors.current
     val words = com.innovation313.roshankhata.words.LocalWords.current
@@ -136,7 +138,7 @@ fun EntryEditor(
     val isSale = isGiven && isCustomer
     val isReturn = !isGiven && isCustomer
     var amountText by remember { mutableStateOf((existing?.amount ?: startAmount)?.let { Calc.trim(it) }.orEmpty()) }
-    var at by remember { mutableStateOf(existing?.timestamp ?: System.currentTimeMillis()) }
+    var at by remember { mutableStateOf(existing?.timestamp ?: startTime?.coerceAtMost(System.currentTimeMillis()) ?: System.currentTimeMillis()) }
     var note by remember { mutableStateOf(existing?.note.orEmpty()) }
     var qarz by remember { mutableStateOf(existing?.isQarzeHasna ?: false) }
     var doubtful by remember { mutableStateOf(existing?.recovery == Recovery.DOUBTFUL) }

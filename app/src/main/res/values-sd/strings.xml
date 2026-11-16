@@ -1464,6 +1464,7 @@
     <string name="voice_problem_title">داخلا نه ٿي سگهي</string>
     <string name="voice_no_party">اوهان جي کاتي ۾ اڃا ڪو گراهڪ ناهي. پهرين هڪ گراهڪ شامل ڪريو.</string>
     <string name="voice_no_amount">ان ۾ ڪا رقم ناهي. انگ به چئو.</string>
+    <string name="voice_future_promise">هي بعد ۾ ڏني ويندڙ رقم لڳي ٿي، آيل رقم نه. واعدي جو ڏينهن هن جي صفحي تي لکو.</string>
     <string name="voice_open_entry">اندراج کوليو</string>
     <string name="voice_which_party">%1$s — ڪهڙو گراهڪ؟</string>
     <plurals name="delete_parties_title">

@@ -1556,6 +1556,7 @@
     <string name="voice_problem_title">تعذر إنشاء القيد</string>
     <string name="voice_no_party">لا يوجد عملاء في دفترك بعد. أضف عميلاً أولاً.</string>
     <string name="voice_no_amount">لا يوجد مبلغ في ذلك. قل الرقم أيضاً.</string>
+    <string name="voice_future_promise">يبدو هذا مبلغًا سيُدفع لاحقًا، لا مبلغًا وصل. سجّل يوم الوعد في صفحته.</string>
     <string name="voice_open_entry">افتح القيد</string>
     <string name="voice_which_party">%1$s — أي عميل؟</string>
     <plurals name="delete_parties_title">

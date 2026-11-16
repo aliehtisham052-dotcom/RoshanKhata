@@ -736,7 +736,9 @@ private fun Book(
     // asked first, then that customer's entry opens filled in with it ([entryAmount]); nothing is saved until he saves.
     var carry by remember { mutableStateOf<Double?>(null) }
     var entryAmount by remember { mutableStateOf<Double?>(null) }
-    LaunchedEffect(entryWay) { if (entryWay == null) entryAmount = null }
+    // The day the sentence said, from Hudhud's card (16 Nov 2026); null: now.
+    var entryTime by remember { mutableStateOf<Long?>(null) }
+    LaunchedEffect(entryWay) { if (entryWay == null) { entryAmount = null; entryTime = null } }
     // Home's "Add bill": Supplier bills opens with a new bill's form.
     var newBill by remember { mutableStateOf(false) }
     // The money totals as dots until the eye opens them, remembered (25 Oct 2026, the audit; the phone's BalancePrivacy).
@@ -1776,7 +1778,7 @@ private fun Book(
             Box(Modifier.fillMaxSize().background(LocalRoshanColors.current.surface)) {
                 EntryEditor(
                     partyId = forParty.id, partyName = forParty.name, isGiven = way,
-                    existing = null, startAmount = entryAmount,
+                    existing = null, startAmount = entryAmount, startTime = entryTime,
                     isCustomer = partyRow?.isCustomer ?: true, dao = dao, promise = partyRow?.harvestPromise,
                     onSave = { d ->
                         scope.launch {
@@ -2478,7 +2480,7 @@ private fun Book(
                     selected = id
                     section = Section.KHATA
                     // "Ali ko 500 diye": his entry opens filled in; nothing is written until the owner saves it there.
-                    if (form != null) { entryAmount = form.amount; entryWay = form.isGiven }
+                    if (form != null) { entryAmount = form.amount; entryTime = form.time; entryWay = form.isGiven }
                 },
                 onAutomations = { showHudhud = false; showAutomations = true },
                 onClose = closeHudhud
