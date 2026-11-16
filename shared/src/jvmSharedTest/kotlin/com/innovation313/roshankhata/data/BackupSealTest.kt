@@ -128,14 +128,20 @@ class BackupSealTest {
         assertTrue("dropped", refused(head + r2 + tail))
         assertTrue("swapped", refused(head + r2 + r1 + tail))
         assertTrue("repeated", refused(head + r1 + r1 + r2 + tail))
+        // Cut after a whole record and that record's flag turned to "last": the file would end cleanly, a part of the
+        // book read as all of it. The flag is in the record's authenticated data, so it does not open.
+        val r1last = r1.copyOf(); r1last[4] = 1
+        assertTrue("a middle record passed off as the last", refused(head + r1last))
         assertArrayEquals(bytes(3 * c + 10), unseal(head + r1 + r2 + tail))
     }
 
     @Test fun `a file that asks too many rounds, or another key maker, is refused before any work`() {
         val sealed = seal(bytes(10))
-        val many = sealed.copyOf()
-        // Iterations sit at bytes 5..8: 0x7FFFFFFF rounds would keep a phone busy for hours.
-        many[5] = 0x7F; many[6] = -1; many[7] = -1; many[8] = -1
+        // Iterations sit at bytes 5..8. One round is below the floor; 0x7FFFFFFF would keep a phone busy for hours.
+        // (Both refused before any key is made; the test uses the cheap one, so a broken guard fails fast.)
+        val one = sealed.copyOf(); one[5] = 0; one[6] = 0; one[7] = 0; one[8] = 1
+        assertTrue(BackupSeal.open(ByteArrayInputStream(one), listOf(pw)) is BackupSeal.Open.Damaged)
+        val many = sealed.copyOf(); many[5] = 0x7F; many[6] = -1; many[7] = -1; many[8] = -1
         assertTrue(BackupSeal.open(ByteArrayInputStream(many), listOf(pw)) is BackupSeal.Open.Damaged)
         val kdf = sealed.copyOf(); kdf[4] = 2
         assertTrue(BackupSeal.open(ByteArrayInputStream(kdf), listOf(pw)) is BackupSeal.Open.Damaged)
