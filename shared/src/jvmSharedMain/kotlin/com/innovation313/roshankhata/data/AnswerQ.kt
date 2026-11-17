@@ -39,7 +39,7 @@ object AnswerQ {
         }
         val g = found.first()
         val window = ask.window
-        val (from, to) = if (window == null) 0L to Long.MAX_VALUE else Hudhud.span(window)
+        val (from, to) = if (window == null) 0L to Long.MAX_VALUE else Hudhud.span(window, c.now())
         val label = p.name + " · " + g.name + (window?.let { " · " + c.getString(AnswerBook.windowWord(it)) } ?: "")
         fun none() = AnswerCard(Mood.CALM, label = label,
             lines = listOf(c.getString(if (window == null) W.hudhud_took_none else W.hudhud_took_none_span,
