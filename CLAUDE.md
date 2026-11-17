@@ -4503,21 +4503,39 @@ broken once more on purpose and failed. Nothing below was compiled here except w
   money row. Nothing is voided by the sync.
 - Tests: ShiftByHandTest, HeldTicketSyncTest, Schema46Test (desktop; CI only), ShiftDrawerTest (shared, run here). Register
   BC-184..188, lesson 155.
-- **The streamed restore (L001), first step only:** `BackupCodec.readPages` reads a backup once, through its lock (the lock
-  handling is now one function, `openPlain`, for `parseStream` too), with the parser's own converters, and hands each table
-  that grows with the shop (parties, entries, goods lines, cashbook, sales, sale lines and payments, audit log, seals) out a
-  page at a time (`Page`, 2,000 rows by default) instead of holding them all; the small part comes back whole
-  (`PagedRead.rest`) with the counts. BackupPagesTest holds its rows equal to `parseFile`'s, plain and locked (BC-189).
-  **Nothing calls it yet.** Still to do, in this order, before a restore stops holding the whole copy: (1) `parseRoot`'s
-  orphan check and the cleared cash-sale pairings on id sets gathered from the pages (Longs, not rows), the list path
-  feeding the same sets so the rule stays one; (2) `RestoreCheck.of` from a summary of the copy (each entry's uid, amount,
-  side, note, time and bin flag; the other tables' uids) instead of `ParsedBackup`'s lists; (3) `restoreAll` written as a
-  wipe and then pages in parent-before-child order inside one transaction, the list path wrapping its lists as single pages
-  so both share the body, `clearDanglingPairs` after the entries, a file without goods lines rebuilt per entry
-  (`EntryItem.fromLegacy`); (4) the callers — the phone's restore and Drive plan, the computer's restore, a live pairing and
-  a phone taking a book (BookMerge may keep the lists: a merge copy is the owner's own); (5) a desktop test restoring one
-  big book both ways and comparing `LiveSync.fingerprint`, and the BigBook heap figure before and after. Each is Room code
-  that could not be compiled where this was written.
+- **The streamed restore (L001), built 17 Nov 2026 (helper V, five commits; CI only).** A backup **file** larger than
+  `BackupCodec.PAGED_RESTORE_BYTES` (32 MiB, both platforms; `pagedFromBytes` is the test's lever) is read a page at a
+  time; **every smaller file and every stream** (a file picked through Android's picker, a Drive or helper stream) is read
+  and restored exactly as before.
+  - **One scan** (`parsePaged`, over `readPages`): the small part and the parties whole, the big tables (entries, goods
+    lines, cashbook, tickets, their lines and payments, audit log, seals) only as `BigKeys` (the ids and pointers, as
+    numbers) and RestoreCheck's marks, and the file's SHA-256 of every byte (`hashedRead`). `parseRoot` judges it on
+    those keys: **one orphan rule and one pairing rule** (`BigKeys.orphans`, `pairKept`) for both paths, the list path
+    feeding the same keys from its lists (BigKeysTest holds them to the old row-by-row formula on random files; six
+    deliberate breakages, all caught).
+  - **RestoreCheck** reads the copy's big tables through `CopyMarks` — the same fields as before, made from the lists for
+    a copy read whole — so a small copy's figures cannot change.
+  - **One restore body:** `restoreAll` keeps its signature and hands its lists as one page each to `restoreAllFrom`, which
+    is its old body with the eight big tables taken through `BigRows` at the same places, in the same order. A paged copy's
+    `PagedRows` reads each table again from the file (one pass per table, `JsonStream.skipValue` past the rest, through
+    the lock), clears pairings by the same rule, rebuilds a pre-goods-lines file's lines per entry; a pass that finds
+    other bytes throws `IOException` inside the transaction, which undoes everything (BC-234).
+  - **Callers:** the restore steps count `entryCount`; a merge reads a paged copy whole (`BackupCodec.listed`, BookMerge
+    keeps its lists); the phone's single-shop Drive restore keeps a paged copy's download until the next download's
+    sweep; the computer leaves a paged phone book in from-phone until the next opening (Replace, Merge and a join as a new
+    business read it again); the computer's daily-copy restore reads a paged copy from its own copy (`ownCopy`), as the
+    copy kept first may rotate the original out.
+  - Tests (desktop, CI only): BackupPagedRestoreTest — one backup read both ways (plain and locked) answers the same, says
+    the same loss, restores to the same `LiveSync.fingerprint` and the same row count in every table; holes refused alike;
+    a pre-goods-lines file; a merge; a changed file restores nothing; the threshold. BackupPagesTest for the reader.
+    **The BigBook heap figure is for CI to print:** BigBookDesktopPerfTest's book is far over 32 MiB, so its "Restore:
+    read a page at a time … heap" line in desktop.yml's annotation is the paged figure (the 3 Nov line, before this, was
+    327 → 215 MB on the runner). Register BC-189, BC-231..234.
+  - **Left, with the reason:** a file the owner picks on the computer from inside the daily-copies folder, restored
+    through Replace, could be the copy the "before-restore" copy rotates out — the restore then fails and changes nothing
+    (only the daily-copy page takes its own copy first); a file opened on the phone through Android's picker is a stream
+    and still read whole; a merge of a big copy still holds it whole, by decision; each pass re-reads the whole file, so a
+    paged restore reads it eight times (time, not memory). Nothing of it was compiled or run where it was written.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 

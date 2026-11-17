@@ -96,7 +96,10 @@ class BigBookDesktopPerfTest {
             assertTrue("the backup did not read back: $result", result is BackupCodec.ImportResult.Ok && data != null)
             t = System.nanoTime()
             BackupCodec.restoreLedger(copy.khataDao(), data!!)
-            report += "Restore: read in $parsed ms (heap $before -> $held MB of ${rt.maxMemory() / 1_048_576}), written in ${since(t)} ms"
+            // Over BackupCodec.PAGED_RESTORE_BYTES the copy is read a page at a time (17 Nov 2026, L001): the heap figure
+            // says which way it was read.
+            val how = if (data.paged != null) "a page at a time" else "whole"
+            report += "Restore: read $how in $parsed ms (heap $before -> $held MB of ${rt.maxMemory() / 1_048_576}), written in ${since(t)} ms"
             t = System.nanoTime()
             val a = LiveSync.fingerprint(db.syncSql())
             val b = LiveSync.fingerprint(copy.syncSql())
