@@ -281,16 +281,7 @@ class StatementPrint(
             g.font = Font(PrintFonts.family, Font.BOLD, 10)
             g.text(Format.signedIfNegative(row.running), xBal, y, end = true)
             y += 12
-            val detail = buildList {
-                add(e.entryNumber)
-                Format.goods(row.e.items)?.let { add(it) }
-                e.note?.takeIf { it.isNotBlank() }?.let { add(it) }
-                // The payment's reference with its way (schema 39), as the phone's statement prints it.
-                if (!e.paymentRef.isNullOrBlank()) PaymentMethod.said(words, e.paymentMethod, e.paymentRef)?.let { add(it) }
-                if (e.isQarzeHasna) add(words.text(W.pdf_stmt_qarze_hasna))
-                // An opening balance brought into the book (schema 45) says so, as the phone's statement does.
-                if (e.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING) add(words.text(W.pdf_stmt_opening))
-            }.joinToString("  ·  ")
+            val detail = rowDetail(words, e, row.e.items)
             g.color = muted
             g.font = Font(PrintFonts.family, Font.PLAIN, 8)
             g.text(detail, xDate, y)
@@ -329,6 +320,28 @@ class StatementPrint(
     }
 
     companion object {
+        /**
+         * A row's second line: number, goods, note, the payment's reference, a loan, an opening balance, and money a
+         * supplier handed back said as money with its way (T43, 17 Nov 2026: it stands in the "I got" column by its side
+         * of the balance and read as goods supplied).
+         */
+        internal fun rowDetail(words: Words, e: com.innovation313.roshankhata.data.LedgerEntry,
+                               items: List<com.innovation313.roshankhata.data.EntryItem>): String = buildList {
+            add(e.entryNumber)
+            Format.goods(items)?.let { add(it) }
+            e.note?.takeIf { it.isNotBlank() }?.let { add(it) }
+            // The payment's reference with its way (schema 39), as the phone's statement prints it.
+            if (!e.paymentRef.isNullOrBlank()) PaymentMethod.said(words, e.paymentMethod, e.paymentRef)?.let { add(it) }
+            if (e.isQarzeHasna) add(words.text(W.pdf_stmt_qarze_hasna))
+            // An opening balance brought into the book (schema 45) says so, as the phone's statement does.
+            if (e.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING) add(words.text(W.pdf_stmt_opening))
+            // Money a supplier handed back (T43): the row says it was money and how it came, as the phone's does.
+            if (e.entryKind == com.innovation313.roshankhata.data.EntryKind.MONEY) {
+                add(words.text(W.supplier_got_money))
+                if (e.paymentRef.isNullOrBlank()) e.paymentMethod?.let { add(PaymentMethod.label(words, it)) }
+            }
+        }.joinToString("  ·  ")
+
         /** A4's height, a row's height, and how far a row's last line runs under its baseline. */
         const val PAGE_H = 842.0
         const val ROW_H = 36.0

@@ -112,4 +112,23 @@ class StatementPrintTest {
             assertTrue("$tag page 1 looks empty ($ink inked points)", ink > 500)
         }
     }
+
+    /** T43, 17 Nov 2026: money a supplier handed back says it was money and how it came; goods and old rows do not. */
+    @Test
+    fun `a supplier's money row says money and its way, goods and old rows do not`() {
+        val w = desktopWords(Locale.ENGLISH)
+        fun e(kind: String, method: String?, ref: String? = null) = LedgerEntry(
+            id = 1, partyId = 7, amount = 500.0, isGiven = false, entryNumber = "RK-000001",
+            timestamp = 1_760_000_000_000L, entryKind = kind, paymentMethod = method, paymentRef = ref
+        )
+        val money = StatementPrint.rowDetail(w, e(com.innovation313.roshankhata.data.EntryKind.MONEY, com.innovation313.roshankhata.data.PaymentMethod.CASH), emptyList())
+        assertTrue(money, money.contains("Money") && money.contains("Cash"))
+        val goods = StatementPrint.rowDetail(w, e(com.innovation313.roshankhata.data.EntryKind.NORMAL, null), emptyList())
+        assertEquals("RK-000001", goods)
+        // the pre-8-Nov default Cash on supplier goods stays unsaid
+        assertEquals("RK-000001", StatementPrint.rowDetail(w, e(com.innovation313.roshankhata.data.EntryKind.NORMAL, com.innovation313.roshankhata.data.PaymentMethod.CASH), emptyList()))
+        // with a reference the way is said once, by the reference
+        val withRef = StatementPrint.rowDetail(w, e(com.innovation313.roshankhata.data.EntryKind.MONEY, com.innovation313.roshankhata.data.PaymentMethod.BANK, "TID 4411"), emptyList())
+        assertEquals(1, Regex("Bank").findAll(withRef).count())
+    }
 }

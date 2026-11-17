@@ -4349,6 +4349,16 @@ merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on A
   resets every transform (BC-074) and `TextFit.stackWhenLarge` moves the figure only above `STACK_SCALE` (BC-065).
   **A new bug class goes in with its test in the same commit; NONE is no longer allowed by habit.**
 
+### 17 Nov 2026: a supplier's "I got" asks Goods or Money (T43, both platforms; CI only)
+
+- `entryKind` has a third value, **`MONEY`** (`KhataMoney`, shared): a supplier's "I got" asks "What did you get? Goods
+  (on credit) / Money"; Goods saves no way of paying (C2 stays), Money asks how it came (Cash first). The drawer
+  (`khataCashBetween`, every drawer figure) counts a cash "I got" from a customer, or from a supplier only when it is
+  `MONEY`, so the old rows with the pre-8-Nov default Cash never start counting. No schema change; an older build
+  reads `MONEY` as NORMAL. The kind chooser cannot make or unmake `MONEY` (`EntryKind.Refusal.MONEY`). Both
+  statements say "Money · Cash" on such a row (`StatementPrint.rowDetail`, PdfExport): it stays in the "I got" column
+  by its side of the balance. Left: Money with an item typed is saved as goods without saying so (low).
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the

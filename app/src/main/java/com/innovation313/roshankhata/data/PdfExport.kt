@@ -548,6 +548,12 @@ object PdfExport {
                 if (e.isQarzeHasna) add(context.getString(R.string.pdf_stmt_qarze_hasna))
                 // An opening balance brought into the book (schema 45) says so: it was owed before, not given that day.
                 if (e.entryKind == com.innovation313.roshankhata.data.EntryKind.OPENING) add(context.getString(R.string.pdf_stmt_opening))
+                // Money a supplier handed back (T43) stands in the "I got" column by its side of the balance; the row says it
+                // was money and how it came, so it never reads as goods supplied (17 Nov 2026).
+                if (e.entryKind == com.innovation313.roshankhata.data.EntryKind.MONEY) {
+                    add(context.getString(R.string.supplier_got_money))
+                    if (e.paymentRef.isNullOrBlank()) e.paymentMethod?.let { add(PaymentMethod.label(AndroidWords(context), it)) }
+                }
             }.joinToString("  ·  ")
 
             // Wrapped, not cut: three items and a long note take up to three lines (L124).
