@@ -435,20 +435,37 @@ object AccessUi {
 
     /** True (on the main thread) when the book has an owner PIN; otherwise asks for one first. */
     fun requireOwnerPin(activity: Activity, then: () -> Unit) {
+        // One question at a time per screen (17 Nov 2026, L025): a fast double tap started two look-ups and showed
+        // "set the owner's PIN" twice. A second call while the first is looking or asking is dropped; the screen is
+        // free again once the PIN was found or the question was answered or closed.
+        if (!askingOwnerPin.add(activity)) return
         val dao = dao(activity)
         AppScope.launch {
-            val owner = withContext(Dispatchers.IO) { Access.ownerPin(dao) }
+            val owner = try {
+                withContext(Dispatchers.IO) { Access.ownerPin(dao) }
+            } catch (e: Throwable) {
+                // Said by AppScope's handler as every failed read is; the screen may ask again.
+                activity.runOnUiThread { askingOwnerPin.remove(activity) }
+                throw e
+            }
             activity.runOnUiThread {
-                if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
-                if (owner != null) then()
+                if (activity.isFinishing || activity.isDestroyed) { askingOwnerPin.remove(activity); return@runOnUiThread }
+                if (owner != null) { askingOwnerPin.remove(activity); then() }
                 else MaterialAlertDialogBuilder(activity).setTitle(R.string.access_owner_pin)
                     .setMessage(R.string.access_owner_pin_needed)
                     .setPositiveButton(R.string.access_owner_pin_set) { _, _ -> newOwnerPin(activity, dao) { then() } }
                     .setNegativeButton(R.string.cancel, null)
+                    .setOnDismissListener { askingOwnerPin.remove(activity) }
                     .show()
             }
         }
     }
+
+    /** Screens whose "owner's PIN?" look-up or question is open now (main thread; weak, a closed screen is forgotten). */
+    private val askingOwnerPin: MutableSet<Activity> = java.util.Collections.newSetFromMap(java.util.WeakHashMap())
+
+    /** True while [requireOwnerPin] is looking or asking on [activity] (tests). */
+    fun isAskingOwnerPin(activity: Activity): Boolean = askingOwnerPin.contains(activity)
 
     /**
      * Counter mode on this phone, from the Staff screen. On: the book must
