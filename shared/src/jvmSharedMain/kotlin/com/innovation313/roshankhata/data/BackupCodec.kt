@@ -301,6 +301,9 @@ object BackupCodec {
      */
     fun parseFile(file: File, passwords: List<String> = emptyList()): Pair<ImportResult, ParsedBackup?> {
         return try {
+            // A file too big to hold whole is read a page at a time (17 Nov 2026, the audit's L001); every other file
+            // is read exactly as it always was.
+            if (file.length() > pagedFromBytes) return parsePaged(file, passwords)
             file.inputStream().buffered(64 * 1024).use { parseStream(it, passwords) }
         } catch (e: Exception) {
             ImportResult.Failed(ImportResult.Why.UNREADABLE) to null
@@ -380,9 +383,10 @@ object BackupCodec {
 
     /**
      * The plain text of a backup handed to [read], through the lock when it has one ([BackupSeal]): [parseStream] and
-     * [readPages] open a file alike. A locked file is read to its very end after [read] said Ok.
+     * [readPages] open a file alike. A locked file is read to its very end after [read] said Ok. Inline, so a restore's
+     * pass may write each page it reads from inside [read] (17 Nov 2026, L001).
      */
-    private fun <T> openPlain(
+    private inline fun <T> openPlain(
         input: java.io.InputStream, passwords: List<String>, read: (java.io.InputStream) -> Pair<ImportResult, T?>
     ): Pair<ImportResult, T?> {
         // A locked backup (17 Nov 2026, [BackupSeal]) is told by its first four bytes; a plain one starts with "{".
@@ -543,6 +547,140 @@ object BackupCodec {
         return count
     }
 
+    // ---------- A big file, restored a page at a time (17 Nov 2026, the audit's L001) ----------
+
+    /**
+     * A backup file larger than this is read a page at a time and restored from its file again ([ParsedBackup.paged]);
+     * every smaller one is read whole into lists, exactly as before. 32 MiB: a few hundred thousand lines, about a sixth
+     * of what held an emulator's 192 MB whole; under it a book fits in memory with room to spare on any phone the app
+     * runs on. The phone and the computer alike (one [parseFile]).
+     */
+    const val PAGED_RESTORE_BYTES: Long = 32L * 1024 * 1024
+
+    /** Where the paged path starts: [PAGED_RESTORE_BYTES]. Lowered only by a test, to send a small book down it. */
+    @Volatile var pagedFromBytes: Long = PAGED_RESTORE_BYTES
+
+    /**
+     * [file] read once, a page at a time: the small part whole, the parties whole (the restore's check and a merge need
+     * them, and they are few), the big tables only as the keys they point by ([BigKeys]) and the marks [RestoreCheck]
+     * compares, with the file's SHA-256 of every byte. The answer is [parseRoot]'s, on the same keys a whole read makes.
+     */
+    private fun parsePaged(file: File, passwords: List<String>): Pair<ImportResult, ParsedBackup?> {
+        val parties = ArrayList<Party>()
+        val keys = BigKeys()
+        val marks = RestoreCheck.CopyMarks.Builder()
+        // A file before goods lines has its lines made from its entries (EntryItem.fromLegacy), as parseRoot makes them.
+        val legacy = ArrayList<EntryItem>()
+        val (read, sha) = hashedRead(file) { input ->
+            readPages(input, passwords) { page ->
+                when (page) {
+                    is Page.Parties -> parties += page.rows
+                    is Page.Entries -> for (e in page.rows) {
+                        keys.entry(e.id, e.partyId, e.productId, e.billItemId)
+                        marks.entry(e)
+                        EntryItem.fromLegacy(e)?.let { legacy += it }
+                    }
+                    is Page.EntryItems -> for (i in page.rows) keys.entryItem(i.entryId, i.productId, i.billItemId)
+                    is Page.Cash -> for (c in page.rows) marks.cash(c)
+                    is Page.Sales -> for (s in page.rows) { keys.sale(s.id); marks.sale(s) }
+                    is Page.SaleItems -> for (l in page.rows) keys.saleLine(l.saleId)
+                    is Page.SalePayments -> for (p in page.rows) keys.saleLine(p.saleId)
+                    is Page.Audit -> Unit
+                    is Page.Seals -> repeat(page.size) { marks.seal() }
+                }
+            }
+        }
+        val (result, pagedRead) = read
+        if (result !is ImportResult.Ok || pagedRead == null) return result to null
+        if (!pagedRead.hadEntryItems) for (i in legacy) keys.entryItem(i.entryId, i.productId, i.billItemId)
+        legacy.clear()
+        val (rootResult, data) = parseRoot(pagedRead.rest, parties, ArrayList(), emptyList(), Streamed(), bigKeys = keys)
+        if (rootResult !is ImportResult.Ok || data == null) return rootResult to null
+        val counts = pagedRead.counts
+        return rootResult.copy(entries = counts["entries"] ?: 0, cash = counts["cashbook"] ?: 0) to data.copy(
+            paged = Paged(file, passwords, sha, counts, pagedRead.hadEntryItems, keys, marks.build())
+        )
+    }
+
+    /**
+     * [read] over [file]'s bytes, with the SHA-256 of every byte of the file: what [read] took and whatever it left
+     * after the end of the book. The stream [read] gets is not closed by it.
+     */
+    private inline fun <T> hashedRead(file: File, read: (java.io.InputStream) -> T): Pair<T, ByteArray> {
+        val digest = java.security.MessageDigest.getInstance("SHA-256")
+        java.security.DigestInputStream(file.inputStream(), digest).use { raw ->
+            val head = java.io.BufferedInputStream(raw, 64 * 1024)
+            val out = read(BackupSeal.notClosing(head))
+            val rest = ByteArray(64 * 1024)
+            while (head.read(rest) >= 0) Unit
+            return out to digest.digest()
+        }
+    }
+
+    /**
+     * Each page of the big table [table] of a paged copy handed to [take] in the file's order: one more pass over the
+     * file, through its lock, every other table passed over. The file must be the very bytes read before
+     * ([Paged.sha256]), else this throws after the pass — inside the restore's transaction, which then undoes all of it.
+     */
+    private suspend fun <T> pagesOf(paged: Paged, table: String, convert: (JSONObject) -> T, take: suspend (List<T>) -> Unit) {
+        val (read, sha) = hashedRead(paged.source) { input ->
+            openPlain(input, paged.passwords) { plain ->
+                openJsonStream(java.io.InputStreamReader(plain, Charsets.UTF_8)).use { r ->
+                    r.beginObject()
+                    while (r.hasNext()) {
+                        if (r.nextName() != table || r.peek() == JsonKind.NULL) { r.skipValue(); continue }
+                        r.beginArray()
+                        var page = ArrayList<T>(256)
+                        while (r.hasNext()) {
+                            page.add(convert(readValue(r) as JSONObject))
+                            if (page.size >= PAGE) { take(page); page = ArrayList(256) }
+                        }
+                        r.endArray()
+                        if (page.isNotEmpty()) take(page)
+                    }
+                    r.endObject()
+                }
+                ImportResult.Ok(parties = 0, entries = 0, cheques = 0, cash = 0) to Unit
+            }
+        }
+        if (read.first !is ImportResult.Ok) throw IllegalStateException("the backup could not be read again: ${read.first}")
+        if (!sha.contentEquals(paged.sha256)) throw IllegalStateException("the backup changed after it was read")
+    }
+
+    /** A paged copy's big tables, read again from its file ([pagesOf]) with the rules [parseRoot] applies to lists. */
+    private class PagedRows(private val p: Paged) : BigRows {
+        override suspend fun entries(take: suspend (List<LedgerEntry>) -> Unit) =
+            BackupCodec.pagesOf(p, "entries", { BackupCodec.jsonToEntry(it) }) { page ->
+                // A pairing whose other half is not in the file is cleared, as parseRoot clears it ([BigKeys.pairKept]).
+                take(page.map { e -> val other = e.pairedEntryId; if (other != null && p.keys.pairKept(other) == null) e.copy(pairedEntryId = null) else e })
+            }
+
+        override suspend fun entryItems(take: suspend (List<EntryItem>) -> Unit) =
+            if (p.hadEntryItems) BackupCodec.pagesOf(p, "entryItems", { BackupCodec.jsonToEntryItem(it) }, take)
+            // A file before goods lines: its lines are made from its entries, as parseRoot makes them.
+            else BackupCodec.pagesOf(p, "entries", { BackupCodec.jsonToEntry(it) }) { page -> page.mapNotNull { EntryItem.fromLegacy(it) }.takeIf { it.isNotEmpty() }?.let { take(it) } }
+
+        override suspend fun cash(take: suspend (List<CashEntry>) -> Unit) = BackupCodec.pagesOf(p, "cashbook", { BackupCodec.jsonToCash(it) }, take)
+        override suspend fun sales(take: suspend (List<Sale>) -> Unit) = BackupCodec.pagesOf(p, "sales", { BackupCodec.jsonToSale(it) }, take)
+        override suspend fun saleItems(take: suspend (List<SaleItem>) -> Unit) = BackupCodec.pagesOf(p, "saleItems", { BackupCodec.jsonToSaleItem(it) }, take)
+        override suspend fun salePayments(take: suspend (List<SalePayment>) -> Unit) = BackupCodec.pagesOf(p, "salePayments", { BackupCodec.jsonToSalePayment(it) }, take)
+        override suspend fun audit(take: suspend (List<AuditLog>) -> Unit) = BackupCodec.pagesOf(p, "auditLog", { BackupCodec.jsonToAudit(it) }, take)
+        override suspend fun seals(take: suspend (List<BookSeal>) -> Unit) = BackupCodec.pagesOf(p, "bookSeals", { BackupCodec.jsonToSeal(it) }, take)
+    }
+
+    /**
+     * The copy with every list filled: itself when it was read whole, else its file read whole now — the same bytes as
+     * before (the SHA-256), or this throws. For what needs every row at once and is not a restore: a merge
+     * ([BookMerge], the owner's own copy, as rare as it is deliberate). Blocking; never on a screen's thread.
+     */
+    fun listed(data: ParsedBackup): ParsedBackup {
+        val p = data.paged ?: return data
+        val (read, sha) = hashedRead(p.source) { parseStream(it, p.passwords) }
+        if (!sha.contentEquals(p.sha256)) throw IllegalStateException("the backup changed after it was read")
+        return read.second?.takeIf { read.first is ImportResult.Ok }
+            ?: throw IllegalStateException("the backup could not be read again: ${read.first}")
+    }
+
     /** An array of objects, each handed to [row] as it is read; a null array is nothing. */
     private fun readRows(r: JsonStream, row: (JSONObject) -> Unit) {
         if (r.peek() == JsonKind.NULL) { r.nextNull(); return }
@@ -594,7 +732,10 @@ object BackupCodec {
         // Mutable: a pairing whose other half is gone is cleared in place (C1, below).
         entries: MutableList<LedgerEntry>,
         entryItems: List<EntryItem>?,
-        streamed: Streamed = Streamed()
+        streamed: Streamed = Streamed(),
+        // A big file read a page at a time brings the keys its pages fed (17 Nov 2026, L001); a file read whole has
+        // them made here from its lists.
+        bigKeys: BigKeys? = null
     ): Pair<ImportResult, ParsedBackup?> {
         return try {
 
@@ -784,7 +925,7 @@ object BackupCodec {
             // cash-sale pairing must lead to an entry that exists.
             // The big tables' pointers as numbers (17 Nov 2026, L001): the same keys a big file read a page at a time
             // keeps ([BigKeys]), so a file is judged alike by either path.
-            val keys = BigKeys().apply {
+            val keys = bigKeys ?: BigKeys().apply {
                 for (e in entries) entry(e.id, e.partyId, e.productId, e.billItemId)
                 for (i in entryItems) entryItem(i.entryId, i.productId, i.billItemId)
                 // A sale line or payment cascades off its sale, as an invoice line does.
@@ -985,7 +1126,18 @@ object BackupCodec {
      * untouched. The shop Profile is the caller's (Backup.restore on the phone).
      */
     suspend fun restoreLedger(dao: KhataDao, data: ParsedBackup, keepAccess: Boolean = true) {
-        dao.restoreAll(
+        // A big copy read a page at a time (17 Nov 2026, L001): the same restore body, its big tables read again from
+        // the file a page at a time. Every other copy: the lists, exactly as before.
+        val paged = data.paged
+        if (paged != null) dao.restoreAllFrom(
+            parties = data.parties, cheques = data.cheques, plans = data.plans, installments = data.installments,
+            bills = data.bills, billItems = data.billItems, products = data.products, invoices = data.invoices,
+            invoiceItems = data.invoiceItems, dismissedDuplicates = data.dismissedDuplicates, dayCloses = data.dayCloses,
+            schemes = data.schemes, staff = data.staff, attendance = data.attendance, staffPayments = data.staffPayments,
+            returns = data.returns, returnItems = data.returnItems, adjustments = data.adjustments, orders = data.orders,
+            orderItems = data.orderItems, settings = data.settings, loyalty = data.loyalty, shifts = data.shifts,
+            big = PagedRows(paged), keepAccess = keepAccess
+        ) else dao.restoreAll(
             keepAccess = keepAccess,
             parties = data.parties,
             entries = data.entries,

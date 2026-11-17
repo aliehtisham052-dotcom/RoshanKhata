@@ -3102,6 +3102,50 @@ interface KhataDao {
          * the other device's book exactly.
          */
         keepAccess: Boolean = true
+    ) = restoreAllFrom(
+        parties = parties, cheques = cheques, plans = plans, installments = installments, bills = bills, billItems = billItems,
+        products = products, invoices = invoices, invoiceItems = invoiceItems, dismissedDuplicates = dismissedDuplicates,
+        dayCloses = dayCloses, schemes = schemes, staff = staff, attendance = attendance, staffPayments = staffPayments,
+        returns = returns, returnItems = returnItems, adjustments = adjustments, orders = orders, orderItems = orderItems,
+        settings = settings, loyalty = loyalty, shifts = shifts,
+        big = BigRows.of(entries, entryItems, cash, sales, saleItems, salePayments, audit, bookSeals),
+        keepAccess = keepAccess
+    )
+
+    /**
+     * [restoreAll]'s body (17 Nov 2026, the audit's L001), with the eight tables that grow with the shop — entries,
+     * goods lines, cashbook, tickets, their lines and payments, the audit log, the seals — taken through [big] a page at
+     * a time, at the very places in the order the lists were: a copy read whole hands each list as one page
+     * ([BigRows.of]), a big copy reads each from its file again ([BackupCodec.restoreLedger]). One transaction: a page
+     * that cannot be read, or a file that changed since it was checked, undoes everything written before it.
+     */
+    @Transaction
+    suspend fun restoreAllFrom(
+        parties: List<Party>,
+        cheques: List<Cheque>,
+        plans: List<PaymentPlan>,
+        installments: List<Installment>,
+        bills: List<SupplierBill>,
+        billItems: List<BillItem>,
+        products: List<Product>,
+        invoices: List<Invoice>,
+        invoiceItems: List<InvoiceItem>,
+        dismissedDuplicates: List<DismissedDuplicate>,
+        dayCloses: List<DayClose>,
+        schemes: List<Scheme>,
+        staff: List<Staff>,
+        attendance: List<StaffAttendance>,
+        staffPayments: List<StaffPayment>,
+        returns: List<SaleReturn>,
+        returnItems: List<SaleReturnItem>,
+        adjustments: List<StockAdjustment>,
+        orders: List<PurchaseOrder>,
+        orderItems: List<PurchaseOrderItem>,
+        settings: List<BookSetting>,
+        loyalty: List<LoyaltyEntry>,
+        shifts: List<Shift>,
+        big: BigRows,
+        keepAccess: Boolean
     ) {
         val access = if (!keepAccess) emptyList() else BookSettings.ACCESS_KEYS.mapNotNull { k -> settingValue(k)?.let { BookSetting(k, it) } }
         wipeSettings()
@@ -3145,11 +3189,11 @@ interface KhataDao {
 
         restoreProducts(products)
         restoreParties(parties)
-        restoreEntries(entries)
+        big.entries { restoreEntries(it) }
         // Parents before children: a line's foreign key needs its entry.
-        restoreEntryItems(entryItems)
+        big.entryItems { restoreEntryItems(it) }
         restoreCheques(cheques)
-        restoreCash(cash)
+        big.cash { restoreCash(it) }
         restorePlans(plans)
         restoreInstallments(installments)
         restoreBills(bills)
@@ -3165,10 +3209,10 @@ interface KhataDao {
         restoreStaff(staff)
         restoreAttendance(attendance)
         restoreStaffPayments(staffPayments)
-        restoreSales(sales)
-        restoreSaleItems(saleItems)
-        restoreSalePayments(salePayments)
-        restoreAudit(audit)
+        big.sales { restoreSales(it) }
+        big.saleItems { restoreSaleItems(it) }
+        big.salePayments { restoreSalePayments(it) }
+        big.audit { restoreAudit(it) }
         restoreReturns(returns)
         restoreReturnItems(returnItems)
         restoreAdjustments(adjustments)
@@ -3190,7 +3234,7 @@ interface KhataDao {
         }
         restoreLoyalty(loyalty)
         restoreShifts(shifts)
-        restoreSeals(bookSeals)
+        big.seals { restoreSeals(it) }
     }
 
 

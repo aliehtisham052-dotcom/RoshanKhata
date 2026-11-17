@@ -26,6 +26,7 @@ actual fun openJsonStream(reader: Reader): JsonStream {
         override fun endArray() = r.endArray()
         override fun hasNext(): Boolean = r.hasNext()
         override fun nextName(): String = r.nextName()
+        override fun skipValue() = r.skipValue()
         override fun nextString(): String = r.nextString()
         override fun nextBoolean(): Boolean = r.nextBoolean()
         override fun nextNull() = r.nextNull()

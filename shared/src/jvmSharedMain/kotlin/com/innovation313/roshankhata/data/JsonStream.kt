@@ -21,6 +21,8 @@ interface JsonStream : Closeable {
     fun nextString(): String
     fun nextBoolean(): Boolean
     fun nextNull()
+    /** The next value, whole (an object or array with everything in it), passed over unread (17 Nov 2026, L001). */
+    fun skipValue()
 }
 
 enum class JsonKind { BEGIN_OBJECT, END_OBJECT, BEGIN_ARRAY, END_ARRAY, NAME, STRING, NUMBER, BOOLEAN, NULL, END_DOCUMENT }

@@ -155,7 +155,9 @@ object BookMerge {
     }
 
     /** What a merge would add, said before anything is written; refuses a copy it cannot merge. */
-    suspend fun plan(dao: KhataDao, there: BackupCodec.ParsedBackup, shopHere: String?): Plan {
+    suspend fun plan(dao: KhataDao, copy: BackupCodec.ParsedBackup, shopHere: String?): Plan {
+        // A merge reads every row of the copy: a big copy read a page at a time is read whole for it (17 Nov 2026, L001).
+        val there = BackupCodec.listed(copy)
         if (there.version < 12) throw Refused(Why.TOO_OLD)
         val h = here(dao)
         val sharedRows = there.entries.count { it.uid in h.entries } + there.cash.count { it.uid in h.cash } + there.sales.count { it.uid in h.sales }
@@ -206,7 +208,8 @@ object BookMerge {
      * The merge itself — call it inside one transaction ([KhataDao.mergeBook]).
      * Returns what was added.
      */
-    suspend fun apply(dao: KhataDao, there: BackupCodec.ParsedBackup, shopHere: String?): Plan {
+    suspend fun apply(dao: KhataDao, copy: BackupCodec.ParsedBackup, shopHere: String?): Plan {
+        val there = BackupCodec.listed(copy)
         val plan = plan(dao, there, shopHere)
         if (plan.none) return plan
         val h = here(dao)
