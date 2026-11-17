@@ -830,8 +830,8 @@ object VoiceQuestion {
     private val WHOSE = listOf("kis", "kis ki", "kaun", "kon", "کس", "کون", "ڪنهن", "ڪير", "किस", "कौन", "who", "whose")
 
     /**
-     * The side is stated by the sentence's whole shape ([owedToMe], [payDue]): Hudhud keeps such a reading against any meaning of
-     * his sense (lesson 148), for no retrain can make it the other side.
+     * The side is stated by the sentence's whole shape ([owedToMe], [payDue]). [classify] reads the side from it and [sideSaid] holds it
+     * against the sense's side readings (lesson 148); Hudhud also reads such a how-much as the total, not the everyday "who owes most".
      */
     fun sideStated(heard: String): Boolean {
         val t = normalise(heard)

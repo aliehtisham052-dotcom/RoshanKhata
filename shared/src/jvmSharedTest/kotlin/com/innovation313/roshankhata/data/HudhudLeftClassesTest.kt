@@ -149,6 +149,13 @@ class HudhudLeftClassesTest {
         assertFalse(VoiceQuestion.sideStated("kis ki adaigi baqi hai"))
     }
 
+    @Test fun `a greeting whose first word is a customer's name is a greeting (salaamHeadRead)`() {
+        // L018's breakage pass: nothing held salaamHeadRead (lesson 141). "اسلام" is also Aslam, said in Urdu letters.
+        val book = names + Hudhud.Name(30, "Aslam Khan")
+        assertEquals(Ask.Salaam, read("ur", "اسلام علیکم", book))
+        assertEquals(Ask.Salaam, read("ur-Latn", "aslam alaikum", book))
+    }
+
     @Test fun `a sentence that is only a name is his account by rule`() {
         check(Ask.Parties(listOf(1)), "ur-Latn", "Ali Raza", "Ali Raza?")
         check(Ask.Parties(listOf(6)), "en", "Kamran Traders")
