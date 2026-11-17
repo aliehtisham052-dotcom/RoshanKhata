@@ -39,6 +39,11 @@ class LiveControlFetchTest {
                 x.responseBody.use { out -> repeat(60) { out.write(' '.code); out.flush(); Thread.sleep(300) } }
             }
         }
+        server.createContext("/stall") { x ->
+            // The headers, then 4 s of silence before the body: inside the 5 s per-read timeout, past a 1 s deadline.
+            x.sendResponseHeaders(200, 2)
+            runCatching { x.responseBody.use { out -> out.write(' '.code); out.flush(); Thread.sleep(4_000); out.write(' '.code) } }
+        }
         server.createContext("/big") { x ->
             val body = ByteArray(LiveControl.MAX_BYTES + 10) { ' '.code.toByte() }
             x.sendResponseHeaders(200, body.size.toLong())
@@ -69,6 +74,15 @@ class LiveControlFetchTest {
         assertNull(LiveControl.fetchFrom("$base/slow", deadlineMs = 1_500L))
         val tookMs = (System.nanoTime() - t0) / 1_000_000
         assertTrue("took $tookMs ms", tookMs < 3_000)
+    }
+
+    @Test
+    fun `a read blocked past the deadline is cut at the deadline, not when the read gives up`() {
+        // Only the caller's own wait can end this one: the loop's own check runs between reads, and the read blocks 4 s.
+        val t0 = System.nanoTime()
+        assertNull(LiveControl.fetchFrom("$base/stall", deadlineMs = 1_000L))
+        val tookMs = (System.nanoTime() - t0) / 1_000_000
+        assertTrue("took $tookMs ms", tookMs < 2_500)
     }
 
     @Test

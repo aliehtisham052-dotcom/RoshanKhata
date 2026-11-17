@@ -292,4 +292,33 @@ class Rfc3161Test {
         assertTrue(said, said.contains("User-Agent: RoshanKhata\r\n"))
         assertFalse(said, said.contains("Dalvik") || said.contains("Java/"))
     }
+
+    @Test
+    fun aReadBlockedPastTheDeadlineIsCutAtTheDeadlineNotWhenTheReadGivesUp() {
+        // Headers and one byte, then 4 s of silence: inside the 5 s read timeout, past the 1 s deadline. Only the
+        // caller's own wait can end it (a disconnect on the caller's thread waited for the read: Rfc3161.cut).
+        val server = ServerSocket(0, 1, InetAddress.getLoopbackAddress())
+        thread(isDaemon = true) {
+            runCatching {
+                server.accept().use { s ->
+                    val input = s.getInputStream()
+                    val got = ByteArrayOutputStream()
+                    while (!got.toString("ISO-8859-1").endsWith("\r\n\r\n")) {
+                        val b = input.read(); if (b < 0) break; got.write(b)
+                    }
+                    val out = s.getOutputStream()
+                    out.write("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n0".toByteArray()); out.flush()
+                    Thread.sleep(4_000)
+                    out.write('0'.code); out.flush()
+                }
+            }
+        }
+        val post = Rfc3161.http(deadlineMs = 1_000, timeoutMs = 5_000)
+        val started = System.nanoTime()
+        val tried = runCatching { post.post("http://127.0.0.1:${server.localPort}/tsr", Rfc3161.request(digest, nonce)) }
+        val took = (System.nanoTime() - started) / 1_000_000
+        server.close()
+        assertTrue("$tried", tried.isFailure)
+        assertTrue("cut after $took ms", took < 2_500)
+    }
 }

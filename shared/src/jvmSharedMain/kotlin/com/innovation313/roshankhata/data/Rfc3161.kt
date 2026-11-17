@@ -482,8 +482,8 @@ object Rfc3161 {
 
     /**
      * The real road: one POST that must be over within [deadlineMs] (connecting and every byte of the answer), each
-     * read within [timeoutMs]. The request runs on a thread of its own; at the deadline its connection is cut — which
-     * ends a read blocked on it — and the caller is told at once, whatever the thread is still doing.
+     * read within [timeoutMs]. The request runs on a thread of its own; at the deadline its connection is cut (on a
+     * thread of its own, [cut]) and the caller is told at once, whatever the request's thread is still doing.
      */
     fun http(deadlineMs: Long = DEADLINE_MS, timeoutMs: Int = TIMEOUT_MS): Http = Http { url, body ->
         val c = URL(url).openConnection() as HttpURLConnection
@@ -503,7 +503,7 @@ object Rfc3161 {
             false
         }
         if (!over) {
-            runCatching { c.disconnect() }
+            cut(c, "rk-tsa-cut")
             throw SocketTimeoutException("no whole answer within $deadlineMs ms")
         }
         failure?.let { throw it }
@@ -511,6 +511,16 @@ object Rfc3161 {
     }
 
     val plain: Http = http()
+
+    /**
+     * Cuts [c] without waiting for it (17 Nov 2026, found by LiveControlFetchTest): the JDK's HttpURLConnection takes
+     * the same lock for disconnect() as for the read blocked on it, so a disconnect() on the caller's thread waited
+     * until that read gave up by itself (its timeout, up to 15 s) — the "whole deadline" held only between reads. It
+     * runs on a daemon thread of its own; the caller is answered at once.
+     */
+    internal fun cut(c: HttpURLConnection, name: String) {
+        Thread({ runCatching { c.disconnect() } }, name).apply { isDaemon = true }.start()
+    }
 
     private fun exchange(c: HttpURLConnection, body: ByteArray, timeoutMs: Int, until: Long): Pair<Int, ByteArray> {
         try {

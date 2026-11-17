@@ -88,8 +88,8 @@ object LiveControl {
 
     /**
      * One GET of [url] that is over within [deadlineMs] — connecting and every byte — or is no answer (null). The
-     * request runs on a thread of its own; at the deadline its connection is cut, which ends a read blocked on it,
-     * and the caller is answered at once (as [Rfc3161.http]). Sends [USER_AGENT]. Never throws.
+     * request runs on a thread of its own; at the deadline its connection is cut on another thread ([Rfc3161.cut]) and
+     * the caller is answered at once (as [Rfc3161.http]). Sends [USER_AGENT]. Never throws.
      */
     internal fun fetchFrom(url: String, deadlineMs: Long = DEADLINE_MS, timeoutMs: Int = TIMEOUT_MS): Pair<Boolean, Boolean>? {
         val c = runCatching { URL(url).openConnection() as HttpURLConnection }.getOrNull() ?: return null
@@ -108,7 +108,8 @@ object LiveControl {
             false
         }
         if (!over) {
-            runCatching { c.disconnect() }
+            // Never on this thread: disconnect() waits for the read it should end (Rfc3161.cut).
+            Rfc3161.cut(c, "rk-live-control-cut")
             return null
         }
         return answer
