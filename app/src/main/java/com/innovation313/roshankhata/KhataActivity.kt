@@ -1634,7 +1634,14 @@ class KhataActivity : BaseActivity() {
         // recognised and the winner is clearly ahead. Anything short of that
         // falls through to the picker below, which is one tap.
         val spokenWords = VoiceEntry.nameWords(heard)
-        val party = NameSearch.confidentMatch(allParties, spokenWords) { it.name }
+        val confident = NameSearch.confidentMatch(allParties, spokenWords) { it.name }
+        // The second step (17 Nov 2026, audit L037): a name saved in Roman letters and said in Urdu, Hindi or Bengali letters
+        // ("بشیر" for "Bashir") is met across scripts by Hudhud's own guarded bridge. One met is the man; several are offered first
+        // in the picker, never guessed.
+        val across = if (confident != null) emptyList() else com.innovation313.roshankhata.data.Hudhud.acrossScriptsOf(
+            heard, allParties.map { com.innovation313.roshankhata.data.Hudhud.Name(it.id, it.name) }
+        ).let { ids -> allParties.filter { it.id in ids } }
+        val party = confident ?: across.singleOrNull()
 
         // A local, for the smart cast: VoiceEntry's result is from the shared module.
         val spokenAmount = parsed.amount
@@ -1656,7 +1663,7 @@ class KhataActivity : BaseActivity() {
             // than the door: a shop with a hundred customers has said the hard
             // part already, and a dead end here would send them back to typing
             // the whole entry.
-            pickPartyForSpoken(heard, spokenAmount, parsed.isGiven ?: true, spokenTime)
+            pickPartyForSpoken(heard, spokenAmount, parsed.isGiven ?: true, spokenTime, first = across)
             return
         }
 
@@ -1774,17 +1781,23 @@ class KhataActivity : BaseActivity() {
      * list, it shows a list without the customer in it and tells the owner
      * something untrue about their own book.
      */
-    private fun pickPartyForSpoken(heard: String, amount: Double, isGiven: Boolean, time: Long? = null) {
+    private fun pickPartyForSpoken(
+        heard: String, amount: Double, isGiven: Boolean, time: Long? = null,
+        /** Names met across scripts (L037): offered first, the rest after them as before. */
+        first: List<PartyWithBalance> = emptyList()
+    ) {
         if (allParties.isEmpty()) {
             showSpokenProblem(heard, getString(R.string.voice_no_party))
             return
         }
 
         val spoken = VoiceEntry.nameWords(heard)
-        val choices = NameSearch.rankSpoken(
+        val ranked = NameSearch.rankSpoken(
             allParties.sortedByDescending { it.lastActivity },
             spoken
         ) { it.name }
+        val firstIds = first.map { it.id }.toSet()
+        val choices = first + ranked.filter { it.id !in firstIds }
 
         // Each name with its phone beneath, so two "Aslam"s can be told apart (10 Oct).
         val cards = choices.map { p ->
