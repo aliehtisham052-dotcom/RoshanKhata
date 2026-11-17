@@ -307,6 +307,10 @@ fun DailyCopiesPane(
                 notice = if (result !is BackupCodec.ImportResult.Ok || data == null) {
                     damagedTitle to damagedBody
                 } else runCatching {
+                    // A big copy read a page at a time is read again from its file when restored (17 Nov 2026, L001),
+                    // and the copy kept just below may rotate this very file out: it is read from its own copy beside
+                    // it, removed when the restore is through (a .tmp left by a failure goes with the day's sweep).
+                    val own = withContext(Dispatchers.IO) { BackupCodec.ownCopy(data, dir) }
                     // Today's book is copied and kept first, so going back can be undone; no copy,
                     // no restore (21 Oct 2026: a failed copy was passed over in silence).
                     DailyCopies.makeToday(dao, settings, dir, label = "before-restore-" + System.currentTimeMillis())
@@ -320,7 +324,8 @@ fun DailyCopiesPane(
                         val door = sync
                         val wasLive = door != null && runCatching { com.innovation313.roshankhata.data.LiveSync.pause(door) }.getOrDefault(false)
                         try {
-                            BackupCodec.restoreLedger(dao, data)
+                            BackupCodec.restoreLedger(dao, own)
+                            if (own !== data) own.paged?.source?.delete()
                         } catch (e: Exception) {
                             if (wasLive && door != null) runCatching { com.innovation313.roshankhata.data.LiveSync.resume(door) }
                             throw e

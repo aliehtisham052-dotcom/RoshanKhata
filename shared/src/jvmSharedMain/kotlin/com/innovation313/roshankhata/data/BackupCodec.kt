@@ -643,8 +643,8 @@ object BackupCodec {
                 ImportResult.Ok(parties = 0, entries = 0, cheques = 0, cash = 0) to Unit
             }
         }
-        if (read.first !is ImportResult.Ok) throw IllegalStateException("the backup could not be read again: ${read.first}")
-        if (!sha.contentEquals(paged.sha256)) throw IllegalStateException("the backup changed after it was read")
+        if (read.first !is ImportResult.Ok) throw java.io.IOException("the backup could not be read again: ${read.first}")
+        if (!sha.contentEquals(paged.sha256)) throw java.io.IOException("the backup changed after it was read")
     }
 
     /** A paged copy's big tables, read again from its file ([pagesOf]) with the rules [parseRoot] applies to lists. */
@@ -676,9 +676,28 @@ object BackupCodec {
     fun listed(data: ParsedBackup): ParsedBackup {
         val p = data.paged ?: return data
         val (read, sha) = hashedRead(p.source) { parseStream(it, p.passwords) }
-        if (!sha.contentEquals(p.sha256)) throw IllegalStateException("the backup changed after it was read")
+        if (!sha.contentEquals(p.sha256)) throw java.io.IOException("the backup changed after it was read")
         return read.second?.takeIf { read.first is ImportResult.Ok }
-            ?: throw IllegalStateException("the backup could not be read again: ${read.first}")
+            ?: throw java.io.IOException("the backup could not be read again: ${read.first}")
+    }
+
+    /**
+     * A paged copy with a file of its own in [dir] (the very bytes, checked): for a restore whose own first step may
+     * remove the file it is about to read again — a daily copy rotated out by the copy kept before it. A copy read whole
+     * is returned as it is. The caller deletes the new file ([Paged.source]) when the restore is through.
+     */
+    fun ownCopy(data: ParsedBackup, dir: File): ParsedBackup {
+        val p = data.paged ?: return data
+        dir.mkdirs()
+        val to = File.createTempFile("rk-restore-", ".tmp", dir)
+        try {
+            val (_, sha) = hashedRead(p.source) { input -> to.outputStream().use { input.copyTo(it) } }
+            if (!sha.contentEquals(p.sha256)) throw java.io.IOException("the backup changed after it was read")
+        } catch (e: Exception) {
+            to.delete()
+            throw e
+        }
+        return data.copy(paged = Paged(to, p.passwords, p.sha256, p.counts, p.hadEntryItems, p.keys, p.marks))
     }
 
     /** An array of objects, each handed to [row] as it is read; a null array is nothing. */

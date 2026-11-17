@@ -65,7 +65,8 @@ class RestoreRun(val labels: List<String>, val details: List<String?>, val sub: 
 /** What a copy holds, as its question counted it: "1240 entries · 86 customers · 12 suppliers" (the phone's line). */
 fun restoreCounts(data: com.innovation313.roshankhata.data.BackupCodec.ParsedBackup, words: com.innovation313.roshankhata.words.Words): String {
     val customers = data.parties.count { it.isCustomer }
-    return restoreCounts(data.entries.size, customers, data.parties.size - customers, words)
+    // entryCount: a big copy read a page at a time holds no entry list (17 Nov 2026, L001).
+    return restoreCounts(data.entryCount, customers, data.parties.size - customers, words)
 }
 
 /** [restoreCounts] from the three figures: the one line the restore and its proof picture both say. */

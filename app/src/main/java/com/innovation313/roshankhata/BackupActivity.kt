@@ -1415,7 +1415,8 @@ class BackupActivity : BaseActivity() {
     /** What a backup holds, as its question counted it: "1240 entries · 86 customers · 12 suppliers". */
     private fun restoreCounts(data: BackupCodec.ParsedBackup): String {
         val customers = data.parties.count { it.isCustomer }
-        return com.innovation313.roshankhata.ui.RestoreSteps.counts(resources, data.entries.size, customers, data.parties.size - customers)
+        // entryCount: a big copy read a page at a time holds no entry list (17 Nov 2026, L001).
+        return com.innovation313.roshankhata.ui.RestoreSteps.counts(resources, data.entryCount, customers, data.parties.size - customers)
     }
 
     /** "Backup of 2 Nov 2026, 9:14 PM": the copy's own time, else Drive's. */
@@ -2126,7 +2127,9 @@ class BackupActivity : BaseActivity() {
             val one = plans.singleOrNull()
             val oneFile = one?.file
             if (one != null && oneFile != null && !one.asNew && one.hereId == Businesses.active(this@BackupActivity).id) {
-                val (result, data) = withContext(Dispatchers.IO) { Backup.parseFile(oneFile, passwords).also { oneFile.delete() } }
+                // A big copy read a page at a time is read again from this file when it is restored (17 Nov 2026, L001):
+                // it stays, and the next Drive download's sweep takes it (an hour old), as one cut short is taken.
+                val (result, data) = withContext(Dispatchers.IO) { Backup.parseFile(oneFile, passwords).also { if (it.second?.paged == null) oneFile.delete() } }
                 handleParseResult(result, data, DriveSource(account, one.biz))
                 return@launch
             }

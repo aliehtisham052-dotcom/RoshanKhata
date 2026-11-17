@@ -117,7 +117,9 @@ object PhoneSync {
      * new, a new business, Cancel) or found unreadable: it is the whole book in plain text with the
      * owner's and staff PIN hashes (R41, 23 Oct 2026). Only a file in this computer's own from-phone
      * folder is ever removed — never a backup the owner chose from disk. The answer was already read
-     * into memory (Picked.Ready.data), so nothing needs the file afterwards.
+     * into memory (Picked.Ready.data), so nothing needs the file afterwards — except a big book read a
+     * page at a time (BackupCodec.ParsedBackup.paged, 17 Nov 2026), which the caller does not hand here:
+     * it is read again from the file, and goes with [clearIncoming] at the next opening.
      */
     fun forgetIncoming(home: File, file: File) {
         runCatching {

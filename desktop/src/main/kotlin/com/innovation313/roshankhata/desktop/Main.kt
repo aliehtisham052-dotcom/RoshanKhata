@@ -1552,7 +1552,9 @@ private fun Book(
         is Picked.Ready -> if (restoreRun == null) {
           // Whatever the answer, a book that came from a phone is not left on disk (R41, 23 Oct 2026);
           // a backup file the owner chose himself is never touched (forgetIncoming checks the folder).
-          val letGo = { PhoneSync.forgetIncoming(home, p.file) }
+          // A big book read a page at a time is read again from this very file when it is restored, merged or joined as a
+          // new business (17 Nov 2026, L001): it stays until the app next opens (clearIncoming), as an unanswered one does.
+          val letGo = { if (p.data.paged == null) PhoneSync.forgetIncoming(home, p.file) }
           // What this restore would take away, in figures, and a tick before Replace (21 Oct 2026).
           val loss = rememberLoss(dao, p.data)
           var agreed by remember(p) { mutableStateOf(false) }
