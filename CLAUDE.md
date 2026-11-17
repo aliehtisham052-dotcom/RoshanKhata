@@ -4435,6 +4435,37 @@ merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on A
 - Strings (nine languages): import_csv_too_big, audit_cheque_edited, cheque_edit_not_pending (Sindhi, Bengali, Farsi and Arabic
   for a native read). L020 (Hudhud's buyers window) was already built (5431270).
 
+### 17 Nov 2026: Windows forms, the bell, the khata link, poster numbers (helper X: L005, L027, L022, L034; CI only)
+
+L006, L007, L012 and L016 of the same list were already done (7c5e78c, c6765af, bafec55, d7d7fe0); the fks check was
+broken once more on purpose and failed. Nothing below was compiled here except where said: CI is the first build.
+
+- **A typed Windows form asks before Esc or the ✕ throws it away (L005, BC-206):** every AppDialog closes through
+  `CloseGuard` (Shell.kt, pure): an untouched form closes at once, a typed one holds the close and asks, "Discard" runs
+  the close it asked about once. Typing is the dialog's `dirty` or what its body reports (`FormTyped`), judged against
+  how the form opened (`rememberOpened`/`typedSince`); a typed form's Esc asks even when the caller passed its own key
+  handler, and DialogFrame's ✕ (and the entry form's own) asks too (`guardedClose`). Wired: entry, invoice/documents (a
+  line typed but not added counts), cheque, plan and its payment, scheme and its claim, purchase order (OrderDraft.snapshot)
+  and receiving goods, add/edit party. **A new form inside a dialog says FormTyped** (or passes dirty). Cancel still closes
+  at once (an explicit word; the phone's FormGuard asks there too — the owner's to decide). DialogCloseGuardTest (run here
+  against a stand-in for Compose's state).
+- **The bell once per change of the book (L027, BC-207):** Main worked LedgerAlerts out on every page switch. Now on
+  `KhataDao.observeBellSources` (a read like observeBatchMoves over every table the bell reads; first answer dropped,
+  800 ms settle), a reload, the day turning and a five-minute tick for live sync's conflicts (not Room's tables).
+  Hudhud reads the same list (`HudhudDeskEnv(bell)`). **A table LedgerAlerts starts to read goes into observeBellSources**
+  (BellSourcesTest writes to each kind and expects a new answer).
+- **The khata link on Windows (L022, BC-208):** the open customer's ⋮ → Send khata link (EXPORT, audited), on the shared
+  CustomerLink (`KhataLinkDesk.kt`): send / send again / stop / take over, the phone's refusal words
+  (`KhataLinkDesk.trouble`). **Deliberately unlike the reminders:** the message is copied and WhatsApp opened by the number
+  alone (wa.me/<number>) — the link carries the page's key, which must not go through an address. Notes in
+  `customer_link.properties` beside app.properties (never in the book); a quiet round every 10 minutes keeps sent pages
+  current. Strings `clink_*_pc` (five, nine languages). Not done: deleting a Windows business does not stop its links
+  (the phone's `Businesses.endSharing`).
+- **Poster numbers in the app's one shape (L034, BC-205):** `PosterContact.shown(number, dialing)` prints the call and
+  WhatsApp numbers as `DuplicateDetector.displayPhone` does ("+92 300 1234567") when that shape is whole, else as typed;
+  `Page(dialing)` from the shop's country on both platforms. Run here against displayPhone's body; three breakages failed.
+  PosterNumberShapeTest (phone, Robolectric), PosterContactDesktopTest.
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the
