@@ -364,6 +364,17 @@ data class EntryWithParty(
     val timestamp: Long
 )
 
+/**
+ * The Khata Report's figures over a whole window (17 Nov 2026, L026): the screen shows the entries a page at a time,
+ * so its counts and totals come from the book, never from the rows it holds.
+ */
+data class RangeTotals(
+    val entryCount: Int,
+    val partyCount: Int,
+    val gaveTotal: Double,
+    val gotTotal: Double
+)
+
 /** Party plus its computed outstanding balance, for list display. */
 data class PartyWithBalance(
     val id: Long,

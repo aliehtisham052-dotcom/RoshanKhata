@@ -1007,6 +1007,39 @@ interface KhataDao {
     )
     suspend fun entriesInRange(from: Long, to: Long): List<EntryWithParty>
 
+    /**
+     * The same window as [entriesInRange], newest first, at most [limit] rows (17 Nov 2026, L026): the phone's Khata
+     * Report reads a page that grows as the owner scrolls ([ListWindow]); "All" read every entry of the book at once.
+     */
+    @Query(
+        """
+        SELECT t.id, t.partyId, p.name AS partyName, t.amount, t.isGiven,
+               t.note, t.entryNumber, t.timestamp
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND p.isDeleted = 0
+          AND t.timestamp BETWEEN :from AND :to
+        ORDER BY t.timestamp DESC, t.id DESC
+        LIMIT :limit
+        """
+    )
+    suspend fun entriesInRangeNewest(from: Long, to: Long, limit: Int): List<EntryWithParty>
+
+    /** [entriesInRange]'s window summed by the book: entries, parties, gave and got (17 Nov 2026, L026). */
+    @Query(
+        """
+        SELECT COUNT(*) AS entryCount,
+               COUNT(DISTINCT t.partyId) AS partyCount,
+               COALESCE(SUM(CASE WHEN t.isGiven = 1 THEN t.amount ELSE 0 END), 0) AS gaveTotal,
+               COALESCE(SUM(CASE WHEN t.isGiven = 0 THEN t.amount ELSE 0 END), 0) AS gotTotal
+        FROM transactions t
+        JOIN parties p ON p.id = t.partyId
+        WHERE t.isDeleted = 0 AND p.isDeleted = 0
+          AND t.timestamp BETWEEN :from AND :to
+        """
+    )
+    suspend fun entriesInRangeTotals(from: Long, to: Long): RangeTotals
+
     // ---------- The day book (3 Nov 2026): one day's money, row by row (DayBook) ----------
 
     /** A day's khata entries, `from <= t < to`, with their party and how the money moved. */

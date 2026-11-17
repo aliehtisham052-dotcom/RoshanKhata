@@ -88,7 +88,17 @@ class LedgerReportActivity : BaseActivity() {
     private var startMs: Long? = null
     private var endMs: Long? = null
 
+    /** The rows on screen: the newest [limit] of the window, read a page at a time (17 Nov 2026, L026). */
     private var entries: List<EntryWithParty> = emptyList()
+
+    /** The window's own figures, from the book (never summed from the page on screen). */
+    private var totals: com.innovation313.roshankhata.data.RangeTotals? = null
+
+    /** How many of the window's newest rows are read; grows by [ListWindow.PAGE] as the owner scrolls near the end. */
+    private var limit = com.innovation313.roshankhata.data.ListWindow.PAGE
+
+    /** Each read gets a number; an older read that finishes late is not drawn over a newer one. */
+    private var reads = 0
 
     private val buttonDateFmt get() = DateWords.formatter("d MMM yyyy")
 
@@ -121,8 +131,18 @@ class LedgerReportActivity : BaseActivity() {
 
         adapter = Adapter()
         val rv: RecyclerView = findViewById(R.id.rvLedgerReport)
-        rv.layoutManager = LinearLayoutManager(this)
+        val lm = LinearLayoutManager(this)
+        rv.layoutManager = lm
         rv.adapter = adapter
+        // "All" listed every entry of the book at once (300,000 in a wholesaler's): the list reads a page more as the
+        // owner nears the end of what it holds, as Cashbook and Documents do (17 Nov 2026, L026).
+        rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy <= 0) return
+                val next = com.innovation313.roshankhata.data.ListWindow.grown(limit, entries.size, lm.findLastVisibleItemPosition())
+                if (next != limit) { limit = next; load(figures = false) }
+            }
+        })
 
         chips = mapOf(
             Period.TODAY to findViewById(R.id.chipLrToday),
@@ -263,6 +283,8 @@ class LedgerReportActivity : BaseActivity() {
             chip.isSelected = on
         }
         tvRange.text = windowLabel()
+        // A new window starts at its first page again.
+        limit = com.innovation313.roshankhata.data.ListWindow.PAGE
         load()
     }
 
@@ -290,39 +312,58 @@ class LedgerReportActivity : BaseActivity() {
         }
     }
 
-    private fun load() {
+    /**
+     * The window's newest [limit] rows and, unless only a page more was asked for, its figures from the book. The
+     * day heading's count is the day's own: the last day of a page that may go on is counted by the book too.
+     */
+    private fun load(figures: Boolean = true) {
         val from = startMs ?: 0L
         val to = endMs ?: Long.MAX_VALUE
+        val asked = limit
+        val read = ++reads
         lifecycleScope.launch {
-            val rows = withContext(Dispatchers.IO) { dao.entriesInRange(from, to) }
-            // Newest first on screen — the owner opens this to see what just
-            // happened. The PDF stays oldest-first, as a printed statement
-            // reads.
-            entries = rows.reversed()
-            render()
+            val (rows, sums, lastDay) = withContext(Dispatchers.IO) {
+                val rows = dao.entriesInRangeNewest(from, to, asked)
+                val sums = if (figures || totals == null) dao.entriesInRangeTotals(from, to) else totals
+                // Newest first, so the page's last day is the one that may run on past it.
+                val lastDay = if (rows.size >= asked) rows.last().timestamp.let { t ->
+                    val start = DayMath.startOfDay(t)
+                    val end = com.innovation313.roshankhata.data.dayAfter(start) - 1
+                    start to dao.entriesInRangeTotals(maxOf(start, from), minOf(end, to)).entryCount
+                } else null
+                Triple(rows, sums, lastDay)
+            }
+            if (read != reads) return@launch
+            // Newest first on screen — the owner opens this to see what just happened. The PDF stays
+            // oldest-first, as a printed statement reads.
+            entries = rows
+            totals = sums
+            render(lastDay)
         }
     }
 
-    private fun render() {
-        adapter.submit(entries)
-        tvEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
+    private fun render(lastDay: Pair<Long, Int>? = null) {
+        adapter.submit(entries, lastDay)
+        val sums = totals
+        val count = sums?.entryCount ?: entries.size
+        tvEmpty.visibility = if (count == 0) View.VISIBLE else View.GONE
 
         // Nothing in the window means nothing to hand anyone — a PDF or CSV
         // of an empty table is a confusing artefact, not a document. The
         // buttons grey out with the list instead of producing one.
-        val has = entries.isNotEmpty()
+        val has = count > 0
         listOf(btnPreview, btnDownload, btnShare).forEach {
             it.isEnabled = has
             it.alpha = if (has) 1f else 0.5f
         }
 
-        val gave = entries.filter { it.isGiven }.sumOf { it.amount }
-        val got = entries.filter { !it.isGiven }.sumOf { it.amount }
+        val gave = sums?.gaveTotal ?: 0.0
+        val got = sums?.gotTotal ?: 0.0
         tvTotalGave.text = Format.money(gave)
         tvTotalGot.text = Format.money(got)
 
-        val parties = entries.map { it.partyId }.distinct().size
-        tvCounts.text = Digits.quantity(resources, R.plurals.pdf_stmt_entries, entries.size, entries.size) +
+        val parties = sums?.partyCount ?: 0
+        tvCounts.text = Digits.quantity(resources, R.plurals.pdf_stmt_entries, count, count) +
             " \u00B7 " + Digits.quantity(resources, R.plurals.customer_count, parties, parties)
 
         // The bar shows each side's share of the window's money; with no
@@ -418,9 +459,12 @@ class LedgerReportActivity : BaseActivity() {
 
     private fun buildCsv(then: (File) -> Unit) {
         Toast.makeText(this, R.string.ledger_report_generating, Toast.LENGTH_SHORT).show()
+        val from = startMs ?: 0L
+        val to = endMs ?: Long.MAX_VALUE
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
-                CsvExport.ledger(this@LedgerReportActivity, entries)
+                // The whole window, newest first as on screen — never only the page the list holds (L026).
+                CsvExport.ledger(this@LedgerReportActivity, dao.entriesInRange(from, to).asReversed())
             }
             if (file == null) {
                 Toast.makeText(this@LedgerReportActivity, R.string.ledger_report_failed, Toast.LENGTH_LONG).show()
@@ -446,10 +490,13 @@ class LedgerReportActivity : BaseActivity() {
         private var builtAt = 0L
         private val words by lazy { AndroidWords(this@LedgerReportActivity) }
 
-        fun submit(list: List<EntryWithParty>) {
+        /** [lastDay]: the page's last day and its whole count, when the window may go on past the page (L026). */
+        fun submit(list: List<EntryWithParty>, lastDay: Pair<Long, Int>? = null) {
             items = list
             days = LongArray(list.size) { dayOf(list[it].timestamp) }
-            perDay = days.toList().groupingBy { it }.eachCount()
+            perDay = days.toList().groupingBy { it }.eachCount().let { counted ->
+                if (lastDay == null) counted else counted + (lastDay.first to maxOf(lastDay.second, counted[lastDay.first] ?: 0))
+            }
             builtAt = System.currentTimeMillis()
             notifyDataSetChanged()
         }
