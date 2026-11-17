@@ -601,7 +601,8 @@ object DriveBackup {
         if (includeImages(context, businessId) && stillOpen()) {
             val zip = BackupImages.pack(context, dao)
             if (stillOpen()) {
-                val zipSig = if (zip != null && zip.exists()) fileSignature(zip) else null
+                // The password's mark too: a password set, changed or removed sends the photos again under it.
+                val zipSig = if (zip != null && zip.exists()) fileSignature(zip) + Backup.passwordMark(context) else null
                 if (zipSig != null && zipSig == lastImagesSignature(context, businessId) && !imagesDirty(context, businessId)) {
                     // the same photos are already on Drive
                 } else {
@@ -679,22 +680,6 @@ object DriveBackup {
         }
     }
 
-    /** Download the backup's text, or null if none exists yet. */
-    suspend fun restore(context: Context, accountName: String): Result<String?> =
-        withContext(Dispatchers.IO) {
-            try {
-                val drive = driveFor(context, accountName)
-                val id = findBackupId(drive, Businesses.active(context).id)
-                    ?: return@withContext Result.success(null)
-
-                val out = ByteArrayOutputStream()
-                drive.files().get(id).executeMediaAndDownloadTo(out)
-                Result.success(out.toString("UTF-8"))
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-
     /**
      * Upload the image archive as the single images file, replacing any
      * previous one — the same safe, one-file, replace-in-place discipline as
@@ -719,6 +704,14 @@ object DriveBackup {
                 return@withContext Result.failure(ViewerMode.ReadOnlyPhone())
             }
             if (zip == null || !zip.exists()) return@withContext Result.success(false)
+            // The photos (bills, cheques, receipts, faces, the shop's signature and stamp) are locked with the backup
+            // password like the book (17 Nov 2026, the review): here, at the archive's one door to Drive. A password set
+            // and unreadable sends nothing, never the photos in plain. [zip] stays the caller's.
+            val locked = try {
+                Backup.lockedCopy(context, zip)
+            } catch (e: Exception) {
+                return@withContext Result.failure(e)
+            }
             try {
                 val drive = driveFor(context, accountName)
                 val existingId = findImagesId(drive, businessId)
@@ -728,7 +721,8 @@ object DriveBackup {
                     if (existingId == null) parents = listOf(APP_DATA_FOLDER)
                 }
                 // From the file, never read whole into memory (8 Nov 2026 review, M89: 800 photos, ~150 MB).
-                val content = com.google.api.client.http.FileContent("application/zip", zip)
+                val content = if (locked != null) com.google.api.client.http.FileContent("application/octet-stream", locked)
+                    else com.google.api.client.http.FileContent("application/zip", zip)
 
                 if (existingId == null) {
                     drive.files().create(metadata, content).setFields("id").execute()
@@ -738,6 +732,8 @@ object DriveBackup {
                 Result.success(true)
             } catch (e: Exception) {
                 Result.failure(e)
+            } finally {
+                locked?.delete()
             }
         }
 
@@ -934,11 +930,18 @@ object DriveBackup {
                 ?: return@withContext Result.success(null)
             val out = ByteArrayOutputStream()
             drive.files().get(file.id).executeMediaAndDownloadTo(out)
-            Result.success(out.toString("UTF-8") to (file.modifiedTime?.value ?: 0L))
+            val bytes = out.toByteArray()
+            // A backup locked with the owner's password (17 Nov 2026) is not text: read as UTF-8 it would only come back
+            // as "unreadable". This phone holds no password to open it, so it is said as what it is.
+            if (BackupSeal.isSealed(bytes)) return@withContext Result.failure(LockedOnDrive())
+            Result.success(String(bytes, Charsets.UTF_8) to (file.modifiedTime?.value ?: 0L))
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
+    /** The owner's Drive backup is locked with his backup password: a read-only phone cannot open it. */
+    class LockedOnDrive : IllegalStateException("the Drive backup is locked with a password")
 
     /**
      * The owner's photo archive for one business, by that business's id — for

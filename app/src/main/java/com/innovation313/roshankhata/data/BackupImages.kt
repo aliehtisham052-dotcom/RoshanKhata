@@ -313,8 +313,14 @@ object BackupImages {
      *
      * @return the number of image files written back.
      */
-    suspend fun restore(context: Context, dao: KhataDao, zipBytes: ByteArray): Int =
-        restore(context, dao, zipBytes.inputStream())
+    suspend fun restore(context: Context, dao: KhataDao, zipBytes: ByteArray, passwords: List<String> = emptyList()): Int =
+        restore(context, dao, zipBytes.inputStream(), passwords)
+
+    /**
+     * The photo archive was locked with the backup password ([BackupSeal], 17 Nov 2026) and none of the passwords
+     * given opens it; [wrong]: some were given. Thrown before any picture is written.
+     */
+    class Locked(val wrong: Boolean) : java.io.IOException("photo archive locked")
 
     /** One unpacked picture's largest size, and all of a helper copy's pictures together (L56). */
     const val MAX_ENTRY = 15L * 1024 * 1024
@@ -337,8 +343,34 @@ object BackupImages {
      * The same, straight from a stream — for a helper's copy, whose photos
      * are read out of the file the owner sent without ever being held in
      * memory whole. Closes [input].
+     *
+     * A locked archive (the Drive photos once a backup password is set, 17 Nov 2026) is opened with [passwords] and
+     * unlocked whole into the cache first, checked to its end, and only then unpacked: a wrong password ([Locked]) or a
+     * damaged file ([BackupSeal.Damaged]) writes no picture at all. A plain archive (every one made before) unpacks as
+     * it always did.
      */
-    suspend fun restore(context: Context, dao: KhataDao, input: InputStream): Int {
+    suspend fun restore(context: Context, dao: KhataDao, input: InputStream, passwords: List<String> = emptyList()): Int {
+        val head = if (input.markSupported()) input else java.io.BufferedInputStream(input, 1 shl 16)
+        if (!BackupSeal.startsSealed(head)) return restoreZip(context, dao, head)
+        val plain = File.createTempFile("rk-photos-", ".zip", context.cacheDir)
+        try {
+            head.use {
+                when (val opened = BackupSeal.open(it, passwords)) {
+                    // Read to its end: a last piece missing, changed or followed by more bytes throws here.
+                    is BackupSeal.Open.Ok -> plain.outputStream().buffered().use { out -> opened.plain.copyTo(out, 1 shl 16) }
+                    BackupSeal.Open.NeedPassword -> throw Locked(wrong = false)
+                    BackupSeal.Open.WrongPassword -> throw Locked(wrong = true)
+                    is BackupSeal.Open.Damaged -> throw BackupSeal.Damaged(opened.why)
+                }
+            }
+            return plain.inputStream().use { restoreZip(context, dao, it) }
+        } finally {
+            plain.delete()
+        }
+    }
+
+    /** A plain zip from [input], unpacked into place ([restore]); closes [input]. */
+    private suspend fun restoreZip(context: Context, dao: KhataDao, input: InputStream): Int {
         var written = 0
         var total = 0L
 

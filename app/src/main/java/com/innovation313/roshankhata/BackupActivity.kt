@@ -1492,7 +1492,8 @@ class BackupActivity : BaseActivity() {
                     when {
                         result.isFailure -> true
                         bytes == null -> { noImages = true; false }
-                        else -> runCatching { BackupImages.restore(appContext, dao, bytes) }.isFailure
+                        // Locked with the backup password like the book: the passwords that opened the book (17 Nov 2026).
+                        else -> runCatching { BackupImages.restore(appContext, dao, bytes, backupPasswords()) }.isFailure
                     }
                 }
                 when {
@@ -2229,7 +2230,7 @@ class BackupActivity : BaseActivity() {
                     // review: a shop given a new number here took another shop's photos). A shop without
                     // one is restored without photos, not failed.
                     DriveBackup.readImagesForBusiness(app, account, p.biz.id).getOrNull()?.let { bytes ->
-                        runCatching { BackupImages.restore(app, liveDao, bytes) }
+                        runCatching { BackupImages.restore(app, liveDao, bytes, passwords) }
                     }
 
                     // This phone now stands on that backup: its next upload continues it. Only when it
