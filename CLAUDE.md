@@ -3051,8 +3051,8 @@ running build's package and SHA-1 for exactly this.
 name, phone, balance as one opening entry each, in one transaction); the phone
 has no such screen yet. Merging duplicate parties is built on both platforms.
 
-Smaller and deferred: cashbook and cheque `createdAt` editing, a WhatsApp
-number on the Help screen.
+Smaller and deferred: a WhatsApp number on the Help screen (a cashbook line's day and time and a pending
+cheque's day are corrected since 17 Nov 2026; Windows' cashbook line edit is still to come).
 
 **Marhala 3, data and backup safety (M3-M9, M85, M86, M89-M92, L10-L14; CI only, nothing deployed):**
 - Kill switch (M3): a process Firebase starts cold reads `live.json` once (`LiveControl.haltedAfterFirstRead`, 5 s + 5 s
@@ -4402,6 +4402,38 @@ merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on A
   against each live TSA and prints every certificate's SHA-256: run it, check against the TSAs' own pages, then pin.
 - `LiveSync.apply` and `snapshot` are gone: every test goes through `applyFrom`. Register BC-200..204. Design notes for L011
   (audit chain across devices) and L039 (fingerprint at a sequence) are in the audit folder, not built.
+
+### 17 Nov 2026: forms that close only once written, the phone's customer import, cashbook edits (helper W: L003, L024, L025, L026, L009, L023; CI only)
+
+- **One Save pattern for money forms** (`FormGuard.onSaveWrite`, `FormGuard.Pending`): the form's checks run on the tap; let
+  through, the write goes to AppScope and the dialog stays (Save takes no second tap, Back/Cancel and the discard question wait)
+  until it returns — written: `onWritten`, then the form closes; failed: "not saved" (AppFailures) and the form stays with what
+  was typed. A `commit` may come later (after a manager's PIN or "proceed anyway?"); one after the form closed does nothing. A
+  `FormDraft` (and the cashbook's own `cashFormWriting`) keeps no text while its row is landing, so a turned screen cannot
+  reopen it. Phone: cashbook money in/out and its edit, Close the day and its correction, cheque, plan and plan payment, staff
+  pay, scheme and claim, edit entry, spray advice (now EDIT_BOOK and ENTRY_EDITED, as Windows), edit bill; a new supplier bill
+  (closed before its supplier questions) reopens with its lines and picture when the write fails. Windows: staff pay and a new
+  plan wait the same way. **A new money form uses `onSaveWrite`, never `onSave` + a write behind it.** Not covered: the add-entry
+  form (its own flow, `saveEntry`), a form turned in the milliseconds of its write whose write then fails. FormSaveWriteTest.
+- **The add-entry form keeps its signature and the two product-offer ticks** across a rebuild: the signature waits in
+  `cache/entry_form_sig_<party>.png` (written when drawn, gone when removed, reset or the form closes) and comes back as a change
+  (`SignatureRow.restoreChanged`); the ticks come back the first time the lookup shows each offer, forgotten once the owner types
+  in the item or rate box. EntryFormSignatureTest.
+- **"Set the owner's PIN" once per tap burst** (`AccessUi.requireOwnerPin` marks the screen while it looks or asks). OwnerPinOnceTest.
+- **The phone's Khata Report reads a page at a time** (`entriesInRangeNewest`, 200 more near the end, `ListWindow`); its counts,
+  totals and share bar are the whole window's from the book (`entriesInRangeTotals`, `RangeTotals`), the page's last day counted
+  by the book; Excel reads the whole window. ReportWindowPageTest.
+- **Import customers on the phone** (Khata → Add party → Import customers; EDIT_BOOK, never on a helper's copy): read up to 16 MB
+  (`import_csv_too_big`), `CsvImport.decode/parse`, a preview (count, get and give apart, skipped, unreadable, the owner's sign,
+  six rows), then `importOpeningBalances` (OPENING entries, IMPORT in Who did what) through `onSaveWrite`. One rule with Windows:
+  `CsvImport.incoming` and `CsvImport.signed`. The preview is not kept across a rotation (the file is picked again). CsvImportTest.
+- **Corrections through gated, audited writes:** `KhataDao.editCashEntryAudited` (amount, category, note, day and time, way,
+  reference; never direction or picture; a ticket's or return's line refused — `CashEdit`; EDIT_BOOK with `allowedBy`;
+  CASH_EDITED) behind the phone's cashbook row → Edit; `KhataDao.editPendingCheque` (only while pending, decided in the DAO;
+  CHEQUE_EDITED, "Cheque corrected") behind both platforms' cheque edit. **Windows has no cashbook line edit yet** (its money
+  form has no day box). EditCashChequeTest.
+- Strings (nine languages): import_csv_too_big, audit_cheque_edited, cheque_edit_not_pending (Sindhi, Bengali, Farsi and Arabic
+  for a native read). L020 (Hudhud's buyers window) was already built (5431270).
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
