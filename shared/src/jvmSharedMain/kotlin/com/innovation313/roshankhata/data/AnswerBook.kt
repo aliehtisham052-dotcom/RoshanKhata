@@ -222,6 +222,9 @@ object AnswerBook {
             // "Why" about a figure of the book (16 Nov 2026, audit T8): facts only, by the figures' own rules.
             is Hudhud.Ask.Why -> AnswerWhy.answer(context, dao, ask)
             is Hudhud.Ask.Entries -> entries(context, ask, parties)
+            // A customer and a product in one question, and talk about past chats (17 Nov 2026, audit L004).
+            is Hudhud.Ask.Took -> AnswerQ.took(context, dao, ask, parties)
+            Hudhud.Ask.NoHistory -> AnswerQ.noHistory(context)
             is Hudhud.Ask.Look -> look(context, ask.request)
             is Hudhud.Ask.LookDone -> lookDone(context, ask.made)
             is Hudhud.Ask.Record -> AnswerRecordFacts.answer(context, dao, ask, parties)

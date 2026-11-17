@@ -303,6 +303,12 @@ internal object HudhudGoldenAsks {
                 Hudhud.Ask.Entry(300.0, false, listOf(ids.bashir), listOf("bashir"))
             )
         )
+        // A customer with a product (17 Nov 2026, audit L004): the last time he took it, over all time and over a span;
+        // two products named offer a choice. Talk about past chats says he keeps none (L019).
+        a += Hudhud.Ask.Took(listOf(ids.bashir), listOf(ids.urea))
+        a += Hudhud.Ask.Took(listOf(ids.bashir), listOf(ids.urea), VoiceQuestion.Window.THIS_MONTH)
+        a += Hudhud.Ask.Took(listOf(ids.bashir), listOf(ids.urea, ids.dap))
+        a += Hudhud.Ask.NoHistory
         return a
     }
 

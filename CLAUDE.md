@@ -4354,6 +4354,18 @@ merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on A
   resets every transform (BC-074) and `TextFit.stackWhenLarge` moves the figure only above `STACK_SCALE` (BC-065).
   **A new bug class goes in with its test in the same commit; NONE is no longer allowed by habit.**
 
+### 17 Nov 2026: Hudhud's left classes (helper Q; phone and shared; CI only)
+
+- `Ask.Took` (a customer with a product: the day he last took it, the rate charged, over a span; `AnswerQ.took`),
+  `Ask.NoHistory` (talk about past chats: he keeps none), festival spans (`framedEvent`), ways of paying
+  (`cameInByWay`), a capability with a page (`capabilityPage`), stated money sides (`owedToMe`, `payDue`,
+  `totalStated`), a bare book name kept from the sense (`nameAlone`), a Stop chip while a long answer is spoken, the
+  Khata microphone meets a name in another script through Hudhud's guarded bridge. `HudhudShortWordSweepTest` says
+  every bank word alone against a book with a name per letter pair: 109 ordinary words in Arabic, Urdu, Hindi and
+  Bengali script still bridge to a name and are frozen in its allow-list (new ones fail). BC-170..179.
+- Floors raised to short 157, thousand 807; held-out 1,077 of 1,170. AnswerQ, the Stop chip and the four new strings
+  are CI's first build; their Sindhi, Bengali, Farsi and Arabic wording is for a native read.
+
 ### 17 Nov 2026: the eleven waiting writes, by the owner's yes (both platforms; CI only)
 
 - A new customer (`insertPartyAudited`), product (`addProduct`, `findOrCreateProduct` when it makes one), supplier
