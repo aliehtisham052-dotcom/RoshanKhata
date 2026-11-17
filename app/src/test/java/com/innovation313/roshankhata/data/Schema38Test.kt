@@ -58,7 +58,7 @@ class Schema38Test {
             assertTrue(hex32.matches(a.allStaffForBackup().single().uid.orEmpty()))
             assertTrue(hex32.matches(a.allAttendanceForBackup().single().uid.orEmpty()))
             assertTrue(hex32.matches(a.allDayClosesForBackup().single().uid.orEmpty()))
-            val indices = again.openHelper.readableDatabase.query("SELECT name FROM sqlite_master WHERE type = 'index' AND name LIKE 'index_%_uid'").use { c ->
+            val indices = again.openHelper.readableDatabase.query("SELECT name FROM sqlite_master WHERE type = 'index' AND name GLOB 'index_*_uid'").use { c ->
                 buildSet { while (c.moveToNext()) add(c.getString(0)) }
             }
             assertEquals(Schema38.newIndices.toSet(), indices)

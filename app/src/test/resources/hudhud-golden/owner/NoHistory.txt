@@ -1,0 +1,7 @@
+=== NoHistory
+mood: CALM
+line: I do not keep past conversations to show. Each question is answered fresh from your book as it stands now.
+speech: I do not keep past conversations to show. Each question is answered fresh from your book as it stands now.
+speechHidden: I do not keep past conversations to show. Each question is answered fresh from your book as it stands now.
+ask: NoHistory
+

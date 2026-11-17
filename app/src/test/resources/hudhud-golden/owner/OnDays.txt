@@ -72,12 +72,13 @@ line: Counter sales: 1
 line: Edited: 1 · Deleted: 0
 line: By: Hamid Khan
 row: party=0 | Day closed | Today <time> | by Owner | open=AuditActivity
+row: party=0 | Supplier bill added | Today <time> | Supplier Bills · by Owner | open=AuditActivity
 row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=AuditActivity
 row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
 open: DayBookActivity
 openExtras: day=<millis>
-speech: What happened <date>. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
-speechHidden: What happened <date>. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+speech: What happened <date>. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
+speechHidden: What happened <date>. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
 ask: OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
 
 === OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])

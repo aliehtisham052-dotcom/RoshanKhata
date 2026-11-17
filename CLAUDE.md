@@ -2987,6 +2987,10 @@ Each of these cost a build or a bug.
     alone would have counted it twice). A row with no writer (the owner's, or older than the column) is nobody's: it
     stays where it was counted before, never guessed into a drawer.
 
+156. **SQL's LIKE is blind to case and its `_` is any letter.** A test listed the uid indexes with `LIKE 'index_%_uid'`;
+    schema 46's `index_sales_heldUid` matched it (Uid = uid, `_` matched anything) and the test failed for a name that
+    was not a uid index at all. A name pattern that must match exactly is a `GLOB` (case-sensitive, `*` and `?`).
+
 ---
 
 ## Working with the owner

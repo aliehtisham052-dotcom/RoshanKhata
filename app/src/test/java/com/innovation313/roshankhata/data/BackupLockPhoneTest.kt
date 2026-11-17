@@ -62,8 +62,10 @@ class BackupLockPhoneTest {
         val locked = BackupSeal.sealFile(plain, File(plain.parentFile, "locked.txt"), "Ali Raza 2026", BackupSeal.MIN_ITERATIONS)
         assertEquals(BackupCodec.ImportResult.Why.LOCKED, (Backup.parseFile(locked).first as BackupCodec.ImportResult.Failed).why)
         assertEquals(BackupCodec.ImportResult.Why.WRONG_PASSWORD, (Backup.parseFile(locked, listOf("Tariq Butt 300")).first as BackupCodec.ImportResult.Failed).why)
-        // The text inside is no whole backup, so it is refused after it opened: the lock was not the reason.
-        val opened = Backup.parseFile(locked, listOf("Ali Raza 2026")).first as BackupCodec.ImportResult.Failed
-        assertTrue(opened.why != BackupCodec.ImportResult.Why.LOCKED && opened.why != BackupCodec.ImportResult.Why.WRONG_PASSWORD)
+        // With the password it opens: the text inside is an empty book, so it reads as Ok — the point is only that it is
+        // no longer locked or a wrong password.
+        val opened = Backup.parseFile(locked, listOf("Ali Raza 2026")).first
+        val why = (opened as? BackupCodec.ImportResult.Failed)?.why
+        assertTrue("opened, got $opened", why != BackupCodec.ImportResult.Why.LOCKED && why != BackupCodec.ImportResult.Why.WRONG_PASSWORD)
     }
 }

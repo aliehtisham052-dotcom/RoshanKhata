@@ -1,0 +1,30 @@
+=== Took(ids=[2], goods=[1], window=null)
+mood: CALM
+label: Bashir Ahmad · Urea
+figure: <date>
+line: Last bought
+line: Price: Rs 4,000 / bag
+openParty: 2
+speech: Bashir Ahmad Urea: <date>. Last bought. Price: Rs 4,000 / bag.
+speechHidden: Bashir Ahmad Urea: <date>. Last bought. [an amount left out]
+ask: Took(ids=[2], goods=[1], window=null)
+
+=== Took(ids=[2], goods=[1], window=THIS_MONTH)
+mood: CALM
+label: Bashir Ahmad · Urea · This month
+figure: <date>
+line: Last bought
+line: Price: Rs 4,000 / bag
+openParty: 2
+speech: Bashir Ahmad Urea This month: <date>. Last bought. Price: Rs 4,000 / bag.
+speechHidden: Bashir Ahmad Urea This month: <date>. Last bought. [an amount left out]
+ask: Took(ids=[2], goods=[1], window=THIS_MONTH)
+
+=== Took(ids=[2], goods=[1, 2], window=null)
+mood: CALM
+label: Which one do you mean?
+row: party=0 | Urea | - | Green Field Co. | ask=Took(ids=[2], goods=[1], window=null)
+row: party=0 | DAP | - | Kisan Co. | ask=Took(ids=[2], goods=[2], window=null)
+ask: Took(ids=[2], goods=[1, 2], window=null)
+quiet: true
+
