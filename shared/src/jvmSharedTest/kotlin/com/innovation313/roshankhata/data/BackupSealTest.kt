@@ -268,6 +268,19 @@ class BackupSealTest {
         assertEquals(null, BackupPassword.forSealing(BackupPassword.State.None))
     }
 
+    @Test fun `a locked file is asked for, asked again, then given up after three typed passwords`() {
+        assertEquals(BackupPassword.Next.ASK, BackupPassword.next(0))
+        assertEquals(BackupPassword.Next.ASK_AGAIN, BackupPassword.next(1))
+        assertEquals(BackupPassword.Next.ASK_AGAIN, BackupPassword.next(BackupPassword.MAX_TRIES - 1))
+        assertEquals(BackupPassword.Next.GIVE_UP, BackupPassword.next(BackupPassword.MAX_TRIES))
+        assertEquals(BackupPassword.Next.GIVE_UP, BackupPassword.next(99))
+        assertEquals(3, BackupPassword.MAX_TRIES)
+        // Whatever is typed, the asking ends: the number of asks before GIVE_UP is the limit itself.
+        var asks = 0
+        while (BackupPassword.next(asks) != BackupPassword.Next.GIVE_UP) asks++
+        assertEquals(BackupPassword.MAX_TRIES, asks)
+    }
+
     @Test fun `a lock that fails to answer while saving is not swallowed`() {
         try { BackupPassword.save(MemoryKeep(), FakeLock(busy = true), "a good password"); fail() } catch (e: Busy) { }
     }

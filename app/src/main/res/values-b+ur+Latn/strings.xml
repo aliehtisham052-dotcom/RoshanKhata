@@ -611,6 +611,7 @@
     <string name="audit_backup_pw_changed">Backup password badla gaya</string>
     <string name="audit_backup_pw_removed">Backup password hataya gaya</string>
     <string name="backup_pw_show">Password dikhayein</string>
+    <string name="backup_pw_give_up">Yeh backup aazmaye gaye passwords se nahi khula. Password check kar ke dobara koshish karein; bhoola hua password wapas nahi mil sakta.</string>
     <string name="save_backup">Backup Mehfooz Karein</string>
 
     <string name="restore_warning_title">Sab kuch badal dein?</string>

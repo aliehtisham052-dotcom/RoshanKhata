@@ -621,6 +621,7 @@
     <string name="audit_backup_pw_changed">Kata sandi cadangan diganti</string>
     <string name="audit_backup_pw_removed">Kata sandi cadangan dihapus</string>
     <string name="backup_pw_show">Tampilkan kata sandi</string>
+    <string name="backup_pw_give_up">Cadangan ini tidak terbuka dengan kata sandi yang dicoba. Periksa kata sandi lalu coba lagi; kata sandi yang terlupa tidak dapat dipulihkan.</string>
     <string name="save_backup">Simpan cadangan</string>
 
     <string name="restore_warning_title">Ganti semuanya?</string>

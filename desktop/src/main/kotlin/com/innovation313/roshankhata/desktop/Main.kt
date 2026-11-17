@@ -567,7 +567,7 @@ private fun reasonOf(failed: BackupCodec.ImportResult.Failed, words: Words): Str
         BackupCodec.ImportResult.Why.TOO_NEW -> words.text(W.backup_err_too_new)
         BackupCodec.ImportResult.Why.INCOMPLETE -> words.text(W.backup_err_incomplete, failed.count)
         BackupCodec.ImportResult.Why.LOCKED -> words.text(W.backup_pw_ask_title)
-        BackupCodec.ImportResult.Why.WRONG_PASSWORD -> words.text(W.backup_pw_wrong)
+        BackupCodec.ImportResult.Why.WRONG_PASSWORD -> words.text(W.backup_pw_give_up)
     }
     return if (failed.detail.isNullOrBlank()) text else "$text\n(${failed.detail})"
 }

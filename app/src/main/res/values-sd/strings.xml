@@ -628,6 +628,7 @@
     <string name="audit_backup_pw_changed">بيڪ اپ پاس ورڊ مٽايو ويو</string>
     <string name="audit_backup_pw_removed">بيڪ اپ پاس ورڊ هٽايو ويو</string>
     <string name="backup_pw_show">پاس ورڊ ڏيکاريو</string>
+    <string name="backup_pw_give_up">هي بيڪ اپ آزمايل پاس ورڊن سان نه کليو. پاس ورڊ چيڪ ڪري ٻيهر ڪوشش ڪريو؛ وساريل پاس ورڊ واپس نٿو ملي سگهي.</string>
     <string name="save_backup">بيڪ اپ محفوظ ڪريو</string>
 
     <string name="restore_warning_title">سڀ ڪجهه مٽايو؟</string>

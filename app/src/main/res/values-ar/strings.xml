@@ -667,6 +667,7 @@
     <string name="audit_backup_pw_changed">تم تغيير كلمة مرور النسخ الاحتياطي</string>
     <string name="audit_backup_pw_removed">تمت إزالة كلمة مرور النسخ الاحتياطي</string>
     <string name="backup_pw_show">إظهار كلمة المرور</string>
+    <string name="backup_pw_give_up">لم تُفتح هذه النسخة الاحتياطية بكلمات المرور التي جُرّبت. تحقق من كلمة المرور وحاول مرة أخرى؛ لا يمكن استعادة كلمة المرور المنسية.</string>
     <string name="save_backup">حفظ النسخة</string>
 
     <string name="restore_warning_title">استبدال كل شيء؟</string>

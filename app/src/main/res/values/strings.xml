@@ -635,6 +635,7 @@
     <string name="audit_backup_pw_changed">Backup password changed</string>
     <string name="audit_backup_pw_removed">Backup password removed</string>
     <string name="backup_pw_show">Show password</string>
+    <string name="backup_pw_give_up">This backup did not open with the passwords tried. Check the password and try again; a forgotten password cannot be recovered.</string>
     <string name="save_backup">Save backup</string>
 
     <string name="restore_warning_title">Replace everything?</string>

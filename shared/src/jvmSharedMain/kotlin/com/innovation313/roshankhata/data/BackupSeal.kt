@@ -446,6 +446,28 @@ object BackupPassword {
     /** A backup that would leave the device was not made: its password is set and cannot be read (see [State.Unreadable]). */
     class Unavailable(why: String) : IllegalStateException("backup password unavailable: $why")
 
+    /**
+     * How many passwords the owner may type for one locked file before he is told it does not open (17 Nov 2026, the
+     * review: a wrong typed password and a wrong kept one asked again and again until Cancel).
+     */
+    const val MAX_TRIES = 3
+
+    /** What a reader does after a locked file did not open, with [tries] passwords already typed for it. */
+    enum class Next {
+        /** Ask for its password (nothing typed yet: no "wrong" said). */
+        ASK,
+        /** Ask again, saying the last one was wrong. */
+        ASK_AGAIN,
+        /** Stop asking and say it did not open ([MAX_TRIES] were tried). */
+        GIVE_UP
+    }
+
+    fun next(tries: Int): Next = when {
+        tries <= 0 -> Next.ASK
+        tries < MAX_TRIES -> Next.ASK_AGAIN
+        else -> Next.GIVE_UP
+    }
+
     /** A mark of the password in use for a "has anything changed" signature: "" with none, so old signatures still match. */
     fun mark(state: State): String = when (state) {
         State.None -> ""

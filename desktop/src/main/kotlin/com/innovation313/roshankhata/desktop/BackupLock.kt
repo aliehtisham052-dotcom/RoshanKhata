@@ -104,16 +104,26 @@ object BackupPasswordPrompt {
 }
 
 /**
- * A backup file read for a restore: a locked one asks its password (this computer's own is tried first) until it opens
- * or the owner cancels; a wrong one asks again, saying so. Nothing is restored from what this returns unless it is Ok.
+ * A backup file read for a restore: a locked one asks its password (this computer's own is tried first); a wrong one
+ * asks again, saying so, at most [BackupPassword.MAX_TRIES] times — then it is WRONG_PASSWORD ("did not open with the
+ * passwords tried") instead of asking until Cancel (the review, 17 Nov 2026). Cancel is LOCKED. Nothing is restored
+ * from what this returns unless it is Ok.
  */
 suspend fun readBackup(file: File, home: File = DesktopDatabase.home()): Pair<BackupCodec.ImportResult, BackupCodec.ParsedBackup?> {
     var typed: String? = null
+    var tries = 0
     while (true) {
         val result = withContext(Dispatchers.IO) { BackupCodec.parseFile(file, DeskBackupPassword.toTry(typed, home)) }
         val why = (result.first as? BackupCodec.ImportResult.Failed)?.why
         if (why != BackupCodec.ImportResult.Why.LOCKED && why != BackupCodec.ImportResult.Why.WRONG_PASSWORD) return result
-        typed = BackupPasswordPrompt.ask(wrong = typed != null) ?: return result
+        when (BackupPassword.next(tries)) {
+            BackupPassword.Next.GIVE_UP -> return BackupCodec.ImportResult.Failed(BackupCodec.ImportResult.Why.WRONG_PASSWORD) to null
+            BackupPassword.Next.ASK, BackupPassword.Next.ASK_AGAIN -> {
+                typed = BackupPasswordPrompt.ask(wrong = tries > 0)
+                    ?: return BackupCodec.ImportResult.Failed(BackupCodec.ImportResult.Why.LOCKED) to null
+                tries++
+            }
+        }
     }
 }
 

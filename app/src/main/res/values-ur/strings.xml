@@ -611,6 +611,7 @@
     <string name="audit_backup_pw_changed">بیک اپ پاس ورڈ بدلا گیا</string>
     <string name="audit_backup_pw_removed">بیک اپ پاس ورڈ ہٹایا گیا</string>
     <string name="backup_pw_show">پاس ورڈ دکھائیں</string>
+    <string name="backup_pw_give_up">یہ بیک اپ آزمائے گئے پاس ورڈز سے نہیں کھلا۔ پاس ورڈ چیک کر کے دوبارہ کوشش کریں؛ بھولا ہوا پاس ورڈ واپس نہیں مل سکتا۔</string>
     <string name="save_backup">بیک اپ محفوظ کریں</string>
 
     <string name="restore_warning_title">سب کچھ بدل دیں؟</string>

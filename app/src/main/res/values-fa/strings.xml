@@ -628,6 +628,7 @@
     <string name="audit_backup_pw_changed">رمز عبور پشتیبان تغییر کرد</string>
     <string name="audit_backup_pw_removed">رمز عبور پشتیبان حذف شد</string>
     <string name="backup_pw_show">نمایش رمز عبور</string>
+    <string name="backup_pw_give_up">این پشتیبان با رمزهای عبوری که امتحان شد باز نشد. رمز عبور را بررسی کنید و دوباره امتحان کنید؛ رمز عبور فراموش‌شده بازیابی نمی‌شود.</string>
     <string name="save_backup">ذخیره پشتیبان</string>
 
     <string name="restore_warning_title">همه‌چیز جایگزین شود؟</string>

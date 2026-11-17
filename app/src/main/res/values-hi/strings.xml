@@ -635,6 +635,7 @@
     <string name="audit_backup_pw_changed">बैकअप पासवर्ड बदला गया</string>
     <string name="audit_backup_pw_removed">बैकअप पासवर्ड हटाया गया</string>
     <string name="backup_pw_show">पासवर्ड दिखाएँ</string>
+    <string name="backup_pw_give_up">यह बैकअप आज़माए गए पासवर्ड से नहीं खुला। पासवर्ड जाँचकर फिर से कोशिश करें; भूला हुआ पासवर्ड वापस नहीं मिल सकता।</string>
     <string name="save_backup">बैकअप सेव करें</string>
 
     <string name="restore_warning_title">सब कुछ बदल दें?</string>

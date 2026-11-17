@@ -455,13 +455,23 @@ class BackupActivity : BaseActivity() {
     /** What to try on a locked backup now: the password typed in this screen, then this phone's own. */
     private fun backupPasswords(): List<String> = Backup.passwordsToTry(applicationContext, typedPasswords.toList())
 
-    /** True when [result] is a locked backup the owner can open by typing its password (then he is asked). */
-    private fun askIfLocked(result: BackupCodec.ImportResult, again: (() -> Unit)?): Boolean {
+    /**
+     * True when [result] is a locked backup the owner is now asked the password of; [tries] passwords were typed for
+     * this file already. After [BackupPassword.MAX_TRIES] it is false and the file's failure is said ("did not open
+     * with the passwords tried") — the asking ends instead of going round until Cancel (the review, 17 Nov 2026).
+     */
+    private fun askIfLocked(result: BackupCodec.ImportResult, tries: Int, again: ((Int) -> Unit)?): Boolean {
         val why = (result as? BackupCodec.ImportResult.Failed)?.why ?: return false
         if (again == null) return false
         if (why != BackupCodec.ImportResult.Why.LOCKED && why != BackupCodec.ImportResult.Why.WRONG_PASSWORD) return false
-        askBackupPassword(wrong = typedPasswords.isNotEmpty() && why == BackupCodec.ImportResult.Why.WRONG_PASSWORD, again = again)
-        return true
+        return askOrGiveUp(tries) { again(tries + 1) }
+    }
+
+    /** Asks the password ([BackupPassword.next]), or says the file did not open once the tries are spent (false then). */
+    private fun askOrGiveUp(tries: Int, again: () -> Unit): Boolean = when (com.innovation313.roshankhata.data.BackupPassword.next(tries)) {
+        com.innovation313.roshankhata.data.BackupPassword.Next.ASK -> { askBackupPassword(wrong = false, again = again); true }
+        com.innovation313.roshankhata.data.BackupPassword.Next.ASK_AGAIN -> { askBackupPassword(wrong = true, again = again); true }
+        com.innovation313.roshankhata.data.BackupPassword.Next.GIVE_UP -> false
     }
 
     private fun setupSeal() {
@@ -1203,7 +1213,7 @@ class BackupActivity : BaseActivity() {
         startActivity(Intent.createChooser(share, getString(R.string.save_backup)))
     }
 
-    private fun beginRestore(uri: Uri) {
+    private fun beginRestore(uri: Uri, tries: Int = 0) {
         Toast.makeText(this, R.string.reading_backup, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
@@ -1221,7 +1231,7 @@ class BackupActivity : BaseActivity() {
             val (result, data) = parsed
 
             // A locked backup asks its password, then the same file is read again (17 Nov 2026).
-            handleParseResult(result, data, again = { beginRestore(uri) })
+            handleParseResult(result, data, tries = tries, again = { n -> beginRestore(uri, n) })
         }
     }
 
@@ -1233,10 +1243,12 @@ class BackupActivity : BaseActivity() {
         result: BackupCodec.ImportResult,
         data: BackupCodec.ParsedBackup?,
         drive: DriveSource? = null,
-        /** Reads the same backup again once its password was typed; null where a backup is never locked. */
-        again: (() -> Unit)? = null
+        /** Passwords already typed for this backup (the asking stops at BackupPassword.MAX_TRIES). */
+        tries: Int = 0,
+        /** Reads the same backup again once its password was typed, with the tries so far; null where a backup is never locked. */
+        again: ((Int) -> Unit)? = null
     ) {
-        if (askIfLocked(result, again)) return
+        if (askIfLocked(result, tries, again)) return
         when (result) {
             is BackupCodec.ImportResult.Failed -> {
                 MaterialAlertDialogBuilder(this)
@@ -1624,14 +1636,14 @@ class BackupActivity : BaseActivity() {
         pickBackupFile.launch(arrayOf("*/*"))
     }
 
-    private fun restoreFromFile(file: File) {
+    private fun restoreFromFile(file: File, tries: Int = 0) {
         Toast.makeText(this, R.string.reading_backup, Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
             val (result, data) = withContext(Dispatchers.IO) {
                 Backup.parseFile(file, backupPasswords())
             }
-            handleParseResult(result, data, again = { restoreFromFile(file) })
+            handleParseResult(result, data, tries = tries, again = { n -> restoreFromFile(file, n) })
         }
     }
 
@@ -2085,7 +2097,7 @@ class BackupActivity : BaseActivity() {
      * Read and weigh the chosen Drive shops, then ask. The open shop alone, replaced in place, takes
      * the single restore's own question (figures, the wrong-shop line, live sync, Merge) and its photos.
      */
-    private fun planDrive(account: String, businesses: List<DriveBackup.DriveBusiness>) {
+    private fun planDrive(account: String, businesses: List<DriveBackup.DriveBusiness>, tries: Int = 0) {
         Toast.makeText(this, R.string.reading_backup, Toast.LENGTH_SHORT).show()
         val labels = businesses.map { biz -> biz.name ?: Digits.string(resources, R.string.business_numbered, biz.id) }
         lifecycleScope.launch {
@@ -2094,9 +2106,17 @@ class BackupActivity : BaseActivity() {
             if (isFinishing || isDestroyed) { plans.forEach { it.file?.delete() }; return@launch }
             // A locked copy among them (17 Nov 2026): its password is asked, then the shops are read again — none is
             // weighed or replaced from a copy that could not be opened.
-            plans.firstOrNull { it.locked }?.let { l ->
+            plans.firstOrNull { it.locked }?.let { _ ->
                 plans.forEach { it.file?.delete() }
-                askBackupPassword(wrong = typedPasswords.isNotEmpty() && l.wrong) { planDrive(account, businesses) }
+                // After the last try the copies are left, and said to be locked: no going round until Cancel.
+                if (!askOrGiveUp(tries) { planDrive(account, businesses, tries + 1) }) {
+                    MaterialAlertDialogBuilder(this@BackupActivity)
+                        .setTitle(R.string.backup_pw_ask_title)
+                        .setMessage(getString(R.string.drive_restore_missed, plans.filter { it.locked }.joinToString("\n") { "• " + it.label }) +
+                            "\n\n" + getString(R.string.backup_pw_give_up))
+                        .setPositiveButton(R.string.ok, null)
+                        .show()
+                }
                 return@launch
             }
             val one = plans.singleOrNull()

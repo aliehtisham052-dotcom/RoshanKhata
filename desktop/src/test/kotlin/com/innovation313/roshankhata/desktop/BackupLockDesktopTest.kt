@@ -8,6 +8,8 @@ import com.innovation313.roshankhata.data.FileShopSettings
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.Party
 import com.innovation313.roshankhata.data.syncSql
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -73,6 +75,55 @@ class BackupLockDesktopTest {
             DeskBackupPassword.file(home).writeText("p1:0011223344556677:AAAA")
             assertTrue(DeskBackupPassword.state(home) is BackupPassword.State.Unreadable)
             try { DeskBackupPassword.forSealing(home); throw AssertionError("sealed with nothing") } catch (e: BackupPassword.Unavailable) { }
+        } finally { home.deleteRecursively() }
+    }
+
+    /** Answers every question the prompt asks with [answer] while [block] runs; how many were asked. */
+    private fun answering(answer: String?, block: suspend () -> Unit): Int = runBlocking {
+        var asks = 0
+        BackupPasswordPrompt.hosts++
+        val answerer = launch {
+            while (true) {
+                val a = BackupPasswordPrompt.asking.value
+                if (a != null && !a.answer.isCompleted) { asks++; a.answer.complete(answer) }
+                delay(5)
+            }
+        }
+        try { block() } finally { answerer.cancel(); BackupPasswordPrompt.hosts-- }
+        asks
+    }
+
+    @Test fun `three wrong passwords end the asking with a clear refusal, a cancel is locked`() {
+        val home = Files.createTempDirectory("rk-lock").toFile()
+        try {
+            val f = home.resolve("locked.txt")
+            BackupSeal.writer(f.outputStream(), pw, BackupSeal.MIN_ITERATIONS).use { it.write("{\"format\": \"RoshanKhata\"}") }
+            var got: BackupCodec.ImportResult? = null
+            val asks = answering("Tariq Butt 300") { got = readBackup(f, home).first }
+            assertEquals(BackupPassword.MAX_TRIES, asks)
+            assertEquals(BackupCodec.ImportResult.Why.WRONG_PASSWORD, (got as BackupCodec.ImportResult.Failed).why)
+            val cancelled = answering(null) { got = readBackup(f, home).first }
+            assertEquals(1, cancelled)
+            assertEquals(BackupCodec.ImportResult.Why.LOCKED, (got as BackupCodec.ImportResult.Failed).why)
+            // The right one, typed after a wrong one, opens it (the text inside is no book: it is refused for that, not locked).
+            var tries = 0
+            BackupPasswordPrompt.hosts++
+            try {
+                runBlocking {
+                    val answerer = launch {
+                        while (true) {
+                            val a = BackupPasswordPrompt.asking.value
+                            if (a != null && !a.answer.isCompleted) { a.answer.complete(if (tries++ == 0) "Tariq Butt 300" else pw) }
+                            delay(5)
+                        }
+                    }
+                    got = readBackup(f, home).first
+                    answerer.cancel()
+                }
+            } finally { BackupPasswordPrompt.hosts-- }
+            assertEquals(2, tries)
+            val why = (got as BackupCodec.ImportResult.Failed).why
+            assertTrue(why != BackupCodec.ImportResult.Why.LOCKED && why != BackupCodec.ImportResult.Why.WRONG_PASSWORD)
         } finally { home.deleteRecursively() }
     }
 
