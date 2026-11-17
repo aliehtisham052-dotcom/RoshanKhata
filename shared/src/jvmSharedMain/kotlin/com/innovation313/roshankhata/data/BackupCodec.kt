@@ -557,6 +557,9 @@ object BackupCodec {
      */
     const val PAGED_RESTORE_BYTES: Long = 32L * 1024 * 1024
 
+    /** No id: a row's id is never this. */
+    private const val NONE = Long.MIN_VALUE
+
     /** Where the paged path starts: [PAGED_RESTORE_BYTES]. Lowered only by a test, to send a small book down it. */
     @Volatile var pagedFromBytes: Long = PAGED_RESTORE_BYTES
 
@@ -569,8 +572,17 @@ object BackupCodec {
         val parties = ArrayList<Party>()
         val keys = BigKeys()
         val marks = RestoreCheck.CopyMarks.Builder()
-        // A file before goods lines has its lines made from its entries (EntryItem.fromLegacy), as parseRoot makes them.
-        val legacy = ArrayList<EntryItem>()
+        // A file before goods lines has its lines made from its entries (EntryItem.fromLegacy), as parseRoot makes them;
+        // whether the file has goods lines is known only at its end, so each such line's three keys wait here as numbers
+        // (entry, product, bill line; NONE for none), never as rows.
+        var legacy = LongArray(3 * 1024)
+        var legacyUsed = 0
+        fun keepLegacy(i: EntryItem) {
+            if (legacyUsed + 3 > legacy.size) legacy = legacy.copyOf(legacy.size * 2)
+            legacy[legacyUsed++] = i.entryId
+            legacy[legacyUsed++] = i.productId ?: NONE
+            legacy[legacyUsed++] = i.billItemId ?: NONE
+        }
         val (read, sha) = hashedRead(file) { input ->
             readPages(input, passwords) { page ->
                 when (page) {
@@ -578,7 +590,7 @@ object BackupCodec {
                     is Page.Entries -> for (e in page.rows) {
                         keys.entry(e.id, e.partyId, e.productId, e.billItemId)
                         marks.entry(e)
-                        EntryItem.fromLegacy(e)?.let { legacy += it }
+                        EntryItem.fromLegacy(e)?.let { keepLegacy(it) }
                     }
                     is Page.EntryItems -> for (i in page.rows) keys.entryItem(i.entryId, i.productId, i.billItemId)
                     is Page.Cash -> for (c in page.rows) marks.cash(c)
@@ -592,8 +604,14 @@ object BackupCodec {
         }
         val (result, pagedRead) = read
         if (result !is ImportResult.Ok || pagedRead == null) return result to null
-        if (!pagedRead.hadEntryItems) for (i in legacy) keys.entryItem(i.entryId, i.productId, i.billItemId)
-        legacy.clear()
+        if (!pagedRead.hadEntryItems) {
+            var k = 0
+            while (k < legacyUsed) {
+                keys.entryItem(legacy[k], legacy[k + 1].takeIf { it != NONE }, legacy[k + 2].takeIf { it != NONE })
+                k += 3
+            }
+        }
+        legacy = LongArray(0)
         val (rootResult, data) = parseRoot(pagedRead.rest, parties, ArrayList(), emptyList(), Streamed(), bigKeys = keys)
         if (rootResult !is ImportResult.Ok || data == null) return rootResult to null
         val counts = pagedRead.counts
