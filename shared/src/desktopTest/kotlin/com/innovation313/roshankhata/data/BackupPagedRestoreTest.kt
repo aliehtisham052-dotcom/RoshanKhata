@@ -99,7 +99,12 @@ class BackupPagedRestoreTest {
             db.syncSql().read { rows("SELECT COUNT(*) FROM `$t`", types = "I").first()[0] as Long }
         }
 
-    private fun restoredBothWays(file: File, passwords: List<String> = emptyList()) = runBlocking {
+    /**
+     * [freshLines]: a file from before goods lines has none, so each restore makes its lines anew (EntryItem.fromLegacy),
+     * each with a new random uid — two restores of that file, even the same way, differ only in those uids. They are set
+     * to the same made-up value in both books (entry and line number) before the fingerprint; every other field still counts.
+     */
+    private fun restoredBothWays(file: File, passwords: List<String> = emptyList(), freshLines: Boolean = false) = runBlocking {
         val (listResult, whole) = read(file, paged = false, passwords = passwords)
         val (pagedResult, paged) = read(file, paged = true, passwords = passwords)
         assertTrue("$listResult", listResult is BackupCodec.ImportResult.Ok)
@@ -130,6 +135,7 @@ class BackupPagedRestoreTest {
         try {
             BackupCodec.restoreLedger(a.khataDao(), whole)
             BackupCodec.restoreLedger(b.khataDao(), paged)
+            if (freshLines) for (book in listOf(a, b)) book.syncSql().write { exec("UPDATE entry_items SET uid = entryId || '-' || lineNo") }
             assertEquals(LiveSync.fingerprint(a.syncSql()), LiveSync.fingerprint(b.syncSql()))
             assertEquals(counts(a), counts(b))
             assertTrue("the book is not empty", counts(b).getValue("transactions") > 20)
@@ -182,7 +188,7 @@ class BackupPagedRestoreTest {
         }
         json.put("version", 19)
         file.writeText(json.toString())
-        restoredBothWays(file)
+        restoredBothWays(file, freshLines = true)
     }
 
     @Test
