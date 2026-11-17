@@ -72,6 +72,12 @@ EXEMPT = {
     "purgeOldEntries": "the bin's own 30-day sweep, run on opening by the app (both platforms), not a person",
     "purgeBinKinds": "the bin's own 30-day sweep of cashbook, cheques and bills (since 17 Nov 2026 the only caller), not a person",
     "purgeOldParties": "the bin's own 30-day sweep, run on opening by the app, not a person",
+    "setCashPhotoPath": "a cashbook row's picture: no money, never synced; the owner decided 17 Nov 2026 that a "
+                        "picture asks no gate",
+    "setChequePhotoPath": "a cheque's picture: the same rule (owner, 17 Nov 2026)",
+    "setPartyPhotoPath": "a customer's face: the same rule (owner, 17 Nov 2026); one column, so no other field of "
+                         "the row is written back from an old copy",
+    "setPartyQrToken": "a customer's card token, made once when the card is first drawn; no money, nobody's word",
     "linkSaleInvoice": "SaleInvoice.of: a posted ticket shown as an A4 invoice; the ticket itself was gated and "
                        "audited by postSale",
 }
@@ -245,17 +251,7 @@ def on_the_path(code, start, pos):
 # on any OTHER uncovered write, on a new bare path of one of these, and on one that became covered and
 # was not taken out -- so gates only ever tighten. A Strings step.
 WAITING = {
-    "addProduct": (2, "a product added from Products or a bill: anyone at the counter, the owner's call"),
-    "findOrCreateProduct": (1, "a product named on an entry: the same question"),
-    "insertParty": (4, "adding a customer: anyone at the counter, the owner's call"),
-    "insertPlan": (1, "a new plan on the phone: Windows asks Gates.edit, the owner's call"),
-    "insertSupplierBill": (1, "a new supplier bill: the owner's call"),
     "linkGoodsToProducts": (1, "the tie button: the owner's call"),
-    "setCashPhotoPath": (1, "a picture on a new cashbook row"),
-    "setChequePhotoPath": (1, "a picture on a new cheque"),
-    "setPlanNextDue": (2, "the plan's next day after a payment"),
-    "updateParty": (3, "a customer's details: the owner's call"),
-    "updateProduct": (1, "a product's price from an entry: the owner's call"),
 }
 
 

@@ -4345,7 +4345,7 @@ merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on A
 ### 17 Nov 2026: the register's last seven untested classes get their tests (CI only)
 
 - **Every bug class in `docs/bug-classes.tsv` now has a test (137 of 137).** `check_dao_gates.py --ratchet` is a Strings
-  step: every DAO write needs a gate or an audit row on its path, except the eleven frozen in `WAITING` for the owner's
+  step: every DAO write needs a gate or an audit row on its path, except those frozen in `WAITING` for the owner's (eleven on 17 Nov morning, one since the owner's yes the same day)
   decision, each at its count of bare call sites; a new ungated write, a new bare path, or a gate taken off (the phone's
   scheme edit, claim and delete were broken on purpose: each failed) fails the build, and a write that became covered
   must leave `WAITING` (BC-194, BC-223). `check_repo_guards.py`: a job that publishes a release holds no secret but
@@ -4353,6 +4353,18 @@ merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on A
   (BC-225) — each rule broken once on purpose. `RowLayoutGuardsTest` (Robolectric, not run here): `RowToScreen.plain`
   resets every transform (BC-074) and `TextFit.stackWhenLarge` moves the figure only above `STACK_SCALE` (BC-065).
   **A new bug class goes in with its test in the same commit; NONE is no longer allowed by habit.**
+
+### 17 Nov 2026: the eleven waiting writes, by the owner's yes (both platforms; CI only)
+
+- A new customer (`insertPartyAudited`), product (`addProduct`, `findOrCreateProduct` when it makes one), supplier
+  bill (`insertSupplierBill`), plan (`insertPlanAudited`) and a plan's next day (`setPlanNextDueAudited`) write a Who
+  did what row with who did it; no PIN (AuditAction PARTY_ADDED, PRODUCT_ADDED, BILL_ADDED, PLAN_ADDED, PLAN_NEXT_DUE,
+  nine languages). The phone asks `AccessUi.edit` for a new plan as Windows does. A rate typed on a sale changes the
+  product's own price only with PRICE_EDIT, and only when it differs, written as PRICE_CHANGED.
+- A customer's face and card token are one-column writes (`setPartyPhotoPath`, `setPartyQrToken`): `updateParty` of a
+  copy read earlier put back a name or limit changed meanwhile (BC-227). Pictures (cashbook, cheque, face) and the
+  token are EXEMPT in check_dao_gates.py. Only the tie button (`linkGoodsToProducts`) still waits. BC-226, BC-227;
+  AuditedAddsTest (desktopTest).
 
 ### 17 Nov 2026: a supplier's "I got" asks Goods or Money (T43, both platforms; CI only)
 

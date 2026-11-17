@@ -3776,6 +3776,11 @@
     <string name="audit_cash_deleted">Baris buku kas dihapus</string>
     <string name="audit_party_deleted">Pelanggan dihapus</string>
     <string name="audit_party_merged">Pelanggan digabung</string>
+    <string name="audit_party_added">Pelanggan ditambahkan</string>
+    <string name="audit_product_added">Produk ditambahkan</string>
+    <string name="audit_bill_added">Tagihan pemasok ditambahkan</string>
+    <string name="audit_plan_next_due">Tanggal cicilan berikutnya diubah</string>
+    <string name="audit_plan_added">Rencana cicilan ditambahkan</string>
     <string name="audit_day_closed">Hari ditutup</string>
     <string name="audit_import">Diimpor</string>
     <string name="audit_bill_deleted">Tagihan dihapus</string>

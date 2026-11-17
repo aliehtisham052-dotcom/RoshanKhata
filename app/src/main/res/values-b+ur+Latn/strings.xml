@@ -3781,6 +3781,11 @@
     <string name="audit_cash_deleted">Cashbook ka indiraaj mitaya</string>
     <string name="audit_party_deleted">Gahak mitaya gaya</string>
     <string name="audit_party_merged">Gahak mila diye gaye</string>
+    <string name="audit_party_added">Gahak shamil kiya gaya</string>
+    <string name="audit_product_added">Product shamil ki gayi</string>
+    <string name="audit_bill_added">Supplier bill shamil kiya gaya</string>
+    <string name="audit_plan_next_due">Qist ki agli tareekh badli gayi</string>
+    <string name="audit_plan_added">Qiston ka plan shamil kiya gaya</string>
     <string name="audit_day_closed">Din band kiya gaya</string>
     <string name="audit_import">Import</string>
     <string name="audit_bill_deleted">Bill mitaya gaya</string>

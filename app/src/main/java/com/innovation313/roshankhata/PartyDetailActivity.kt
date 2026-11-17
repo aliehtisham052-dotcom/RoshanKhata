@@ -2101,11 +2101,20 @@ class PartyDetailActivity : BaseActivity() {
                             productId = dao.findOrCreateProduct(d.itemName.orEmpty(), defaultUnit = d.unit).id
                         }
                         val rate = d.rate
-                        if (isSale() && productId != null && rate != null && rate > 0.0 && !d.isBonus) {
+                        // A product's own price changes only for whoever may change prices (PRICE_EDIT, 17 Nov 2026, the
+                        // owner's yes): a cashier's rate stays this entry's alone; a change is written in Who did what.
+                        if (isSale() && productId != null && rate != null && rate > 0.0 && !d.isBonus &&
+                            com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.PRICE_EDIT)) {
                             dao.productById(productId)?.let { p ->
-                                dao.updateProduct(
-                                    if (type == RateType.CASH) p.copy(salePrice = rate) else p.copy(creditPrice = rate)
-                                )
+                                val was = if (type == RateType.CASH) p.salePrice else p.creditPrice
+                                if (was != rate) {
+                                    dao.updateProduct(
+                                        if (type == RateType.CASH) p.copy(salePrice = rate) else p.copy(creditPrice = rate)
+                                    )
+                                    dao.log(com.innovation313.roshankhata.data.AuditAction.PRICE_CHANGED,
+                                        com.innovation313.roshankhata.data.Access.userName, "products", p.id,
+                                        "${p.name}: ${was?.let { Format.plain(it) } ?: "-"} > ${Format.plain(rate)}")
+                                }
                             }
                         }
                         all[idx] = d.copy(productId = productId, updateProductRate = false, addToProducts = false)
@@ -3261,9 +3270,7 @@ class PartyDetailActivity : BaseActivity() {
             // be recovered by repeating the action, since the camera moment
             // has passed.
             AppScope.launch {
-                dao.getParty(partyId)?.let { p ->
-                    dao.updateParty(p.copy(photoPath = path))
-                }
+                dao.setPartyPhotoPath(partyId, path)
             }
 
             refreshAvatar()
@@ -3975,7 +3982,7 @@ class PartyDetailActivity : BaseActivity() {
                 // and forgotten, so the QR is only ever built from a token
                 // that is genuinely saved.
                 AppScope.launch {
-                    dao.updateParty(party.copy(qrToken = fresh))
+                    dao.setPartyQrToken(party.id, fresh)
                 }.join()
                 fresh
             }

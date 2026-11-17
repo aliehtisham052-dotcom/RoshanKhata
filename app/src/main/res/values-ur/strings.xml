@@ -3781,6 +3781,11 @@
     <string name="audit_cash_deleted">کیش بک کا اندراج مٹایا</string>
     <string name="audit_party_deleted">گاہک مٹایا گیا</string>
     <string name="audit_party_merged">گاہک ملا دیے گئے</string>
+    <string name="audit_party_added">گاہک شامل کیا گیا</string>
+    <string name="audit_product_added">پروڈکٹ شامل کی گئی</string>
+    <string name="audit_bill_added">سپلائر بل شامل کیا گیا</string>
+    <string name="audit_plan_next_due">قسط کی اگلی تاریخ بدلی گئی</string>
+    <string name="audit_plan_added">قسطوں کا پلان شامل کیا گیا</string>
     <string name="audit_day_closed">دن بند کیا گیا</string>
     <string name="audit_import">امپورٹ</string>
     <string name="audit_bill_deleted">بل مٹایا گیا</string>

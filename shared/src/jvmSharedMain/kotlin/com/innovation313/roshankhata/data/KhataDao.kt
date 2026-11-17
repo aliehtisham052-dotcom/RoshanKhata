@@ -16,6 +16,18 @@ interface KhataDao {
     @Insert
     suspend fun insertParty(party: Party): Long
 
+    /**
+     * A customer or supplier added from a screen, with its row in Who did what in one transaction (17 Nov 2026, the
+     * owner's yes: anyone at the counter may add one, without a PIN, and the log says who did). Restores, merges and
+     * imports keep [insertParty]: they write their own row.
+     */
+    @Transaction
+    suspend fun insertPartyAudited(party: Party): Long {
+        val id = insertParty(party)
+        log(AuditAction.PARTY_ADDED, Access.userName, "parties", id, null)
+        return id
+    }
+
     @Update
     suspend fun updateParty(party: Party)
 
@@ -1323,6 +1335,14 @@ interface KhataDao {
     @Insert
     suspend fun insertPlan(plan: PaymentPlan): Long
 
+    /** A new plan from a screen, written in Who did what with who made it (17 Nov 2026, the owner's yes). */
+    @Transaction
+    suspend fun insertPlanAudited(plan: PaymentPlan): Long {
+        val id = insertPlan(plan)
+        log(AuditAction.PLAN_ADDED, Access.userName, "payment_plans", id, null)
+        return id
+    }
+
     @Update
     suspend fun updatePlan(plan: PaymentPlan)
 
@@ -1432,6 +1452,13 @@ interface KhataDao {
     /** A plan's next payment day changed by the owner, or cleared with null (21 Oct 2026). */
     @Query("UPDATE payment_plans SET nextDueDate = :due WHERE id = :id")
     suspend fun setPlanNextDue(id: Long, due: Long?)
+
+    /** The plan's next day changed from a screen, written in Who did what (17 Nov 2026, the owner: no PIN, a line). */
+    @Transaction
+    suspend fun setPlanNextDueAudited(id: Long, due: Long?) {
+        setPlanNextDue(id, due)
+        log(AuditAction.PLAN_NEXT_DUE, Access.userName, "payment_plans", id, due?.toString())
+    }
 
     /**
      * An instalment received: the khata "I got", the plan's line and, when it is paid up, the plan closed, in one
@@ -2581,7 +2608,11 @@ interface KhataDao {
             category = category,
             defaultUnit = defaultUnit
         )
-        return fresh.copy(id = insertProduct(fresh))
+        val id = insertProduct(fresh)
+        // A product made by naming it on an entry or a bill is written in Who did what (17 Nov 2026, the owner's yes:
+        // anyone at the counter may add one, and the log says who did).
+        log(AuditAction.PRODUCT_ADDED, Access.userName, "products", id, fresh.name)
+        return fresh.copy(id = id)
     }
 
     /**
@@ -2613,9 +2644,12 @@ interface KhataDao {
         if (existing != null) {
             updateProduct(row.copy(id = existing.id, uid = existing.uid, createdAt = existing.createdAt,
                 category = row.category ?: existing.category, note = row.note ?: existing.note))
+            log(AuditAction.PRODUCT_ADDED, Access.userName, "products", existing.id, row.name)
             return ProductAdd.Added(existing.id)
         }
-        return ProductAdd.Added(insertProduct(row.copy(id = 0)))
+        val id = insertProduct(row.copy(id = 0))
+        log(AuditAction.PRODUCT_ADDED, Access.userName, "products", id, row.name)
+        return ProductAdd.Added(id)
     }
 
     // Backup coverage for products. A restore that dropped this table would
@@ -3681,6 +3715,8 @@ interface KhataDao {
             setPairedEntry(ledgerId, payId)
         }
         val billId = insertBill(bill.copy(ledgerEntryId = ledgerId))
+        // Every supplier bill, from the form, a received order or the computer, is written in Who did what (17 Nov 2026).
+        log(AuditAction.BILL_ADDED, Access.userName, "supplier_bills", billId, bill.billNumber)
         return items.map { item ->
             // The product the line already names comes first (23 Oct 2026, the review: a purchase order's line
             // for a product renamed since was received into a new product under the old name).
@@ -3740,6 +3776,18 @@ interface KhataDao {
 
     @Query("UPDATE cheques SET photoPath = :path WHERE id = :id")
     suspend fun setChequePhotoPath(id: Long, path: String?)
+
+    /**
+     * A customer's face or card QR token, and nothing else of the row. Both were `updateParty(copy(...))` of a row
+     * read earlier, which wrote back every other field as it was then: a name, phone or limit changed meanwhile (on
+     * this screen's other dialog, or by live sync) was lost. A picture or a token is no money and no one's word, so
+     * neither asks a gate (check_dao_gates.py EXEMPT, the owner's decision of 17 Nov 2026).
+     */
+    @Query("UPDATE parties SET photoPath = :path WHERE id = :id")
+    suspend fun setPartyPhotoPath(id: Long, path: String?)
+
+    @Query("UPDATE parties SET qrToken = :token WHERE id = :id")
+    suspend fun setPartyQrToken(id: Long, token: String)
 
     @Query("UPDATE supplier_bills SET photoPath = NULL WHERE id = :id")
     suspend fun clearSupplierBillPhoto(id: Long)

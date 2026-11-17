@@ -230,7 +230,9 @@ class PlansActivity : BaseActivity() {
                         nextDueDate = nextDue,
                         note = etNote.text.toString().trim().ifEmpty { null }
                     )
-                    AppScope.launch { dao.insertPlan(plan) }
+                    // A new plan asks whoever may change the book, as Windows' does (17 Nov 2026, the owner's yes); a
+                    // cashier is asked a manager's PIN and the plan is written once it is given.
+                    com.innovation313.roshankhata.ui.AccessUi.edit(this@PlansActivity, dao) { AppScope.launch { dao.insertPlanAudited(plan) } }
                     true
                 }
                 // Back, a tap beside it or Cancel threw a typed plan away in silence (5 Nov 2026, the supplier
@@ -264,7 +266,7 @@ class PlansActivity : BaseActivity() {
                 askNextDue(plan.id, plan.partyName, plan.nextDueDate ?: PlanSchedule.suggestNext(null))
             })
             if (plan.nextDueDate != null) add(ChoiceSheet.Option(getString(R.string.plan_next_clear)) to {
-                AppScope.launch { dao.setPlanNextDue(plan.id, null) }
+                AppScope.launch { dao.setPlanNextDueAudited(plan.id, null) }
                 Unit
             })
             add(ChoiceSheet.done(getString(R.string.close_plan)) to { closePlan(plan) })
@@ -291,7 +293,7 @@ class PlansActivity : BaseActivity() {
                     set(Calendar.MILLISECOND, 0)
                 }.timeInMillis
                 AppScope.launch {
-                    dao.setPlanNextDue(planId, picked)
+                    dao.setPlanNextDueAudited(planId, picked)
                     withContext(Dispatchers.Main) {
                         if (!isFinishing && !isDestroyed) Toast.makeText(
                             this@PlansActivity, getString(R.string.plan_next_saved, Format.dateOnly(picked)), Toast.LENGTH_SHORT

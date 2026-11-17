@@ -500,6 +500,13 @@ object AuditAction {
     /** Customers merged into one (3 Nov 2026 audit, L14): money moved between accounts, with nothing written down. */
     const val PARTY_MERGED = "party_merged"
     const val PARTY_TYPE_CHANGED = "party_type_changed"
+    /** Added from a screen, without a PIN, with who did it (17 Nov 2026, the owner's yes). */
+    const val PARTY_ADDED = "party_added"
+    const val PRODUCT_ADDED = "product_added"
+    const val BILL_ADDED = "bill_added"
+    const val PLAN_ADDED = "plan_added"
+    /** A plan's next payment day changed or cleared; detail the day's millis or nothing. */
+    const val PLAN_NEXT_DUE = "plan_next_due"
     const val CHEQUE_DELETED = "cheque_deleted"
     /**
      * A cheque settled by hand (17 Nov 2026, BC-220): refTable "cheques", refId the cheque, detail its amount

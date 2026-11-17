@@ -229,6 +229,11 @@ fun auditActionName(words: Words, a: AuditLog, names: AuditNames = AuditNames.No
     }
     AuditAction.PARTY_DELETED -> words.text(W.audit_party_deleted)
     AuditAction.PARTY_MERGED -> words.text(W.audit_party_merged)
+    AuditAction.PARTY_ADDED -> words.text(W.audit_party_added)
+    AuditAction.PRODUCT_ADDED -> words.text(W.audit_product_added)
+    AuditAction.BILL_ADDED -> words.text(W.audit_bill_added)
+    AuditAction.PLAN_NEXT_DUE -> words.text(W.audit_plan_next_due)
+    AuditAction.PLAN_ADDED -> words.text(W.audit_plan_added)
     AuditAction.PARTY_TYPE_CHANGED -> words.text(W.audit_party_type)
     AuditAction.CHEQUE_DELETED -> words.text(W.audit_cheque_deleted)
     AuditAction.CHEQUE_CLEARED -> words.text(W.audit_cheque_cleared)

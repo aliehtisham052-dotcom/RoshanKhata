@@ -3829,6 +3829,11 @@
     <string name="audit_cash_deleted">कैशबुक की एंट्री मिटाई</string>
     <string name="audit_party_deleted">ग्राहक मिटाया गया</string>
     <string name="audit_party_merged">ग्राहक मिला दिए गए</string>
+    <string name="audit_party_added">ग्राहक जोड़ा गया</string>
+    <string name="audit_product_added">प्रोडक्ट जोड़ा गया</string>
+    <string name="audit_bill_added">सप्लायर बिल जोड़ा गया</string>
+    <string name="audit_plan_next_due">किस्त की अगली तारीख़ बदली गई</string>
+    <string name="audit_plan_added">किस्तों का प्लान जोड़ा गया</string>
     <string name="audit_day_closed">दिन बंद किया गया</string>
     <string name="audit_import">आयात</string>
     <string name="audit_bill_deleted">बिल मिटाया गया</string>

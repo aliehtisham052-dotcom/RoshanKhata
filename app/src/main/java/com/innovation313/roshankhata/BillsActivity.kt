@@ -903,7 +903,7 @@ class BillsActivity : BaseActivity() {
             // meantime (a second tap), otherwise add it as a supplier.
             val partyId = supplierId
                 ?: dao.findPartyByName(newSupplierName.orEmpty())?.id
-                ?: dao.insertParty(Party(name = newSupplierName.orEmpty().trim(), isCustomer = false))
+                ?: dao.insertPartyAudited(Party(name = newSupplierName.orEmpty().trim(), isCustomer = false))
 
             // ONE ledger entry, and only when the stock was taken on credit.
             //

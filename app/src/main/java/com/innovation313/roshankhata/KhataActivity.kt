@@ -675,7 +675,7 @@ class KhataActivity : BaseActivity() {
                         // is the one line that must not be cancellable by a
                         // quick Back press right after Save.
                         AppScope.launch {
-                            dao.insertParty(
+                            dao.insertPartyAudited(
                                 Party(
                                     name = name,
                                     phone = phone,
@@ -694,7 +694,7 @@ class KhataActivity : BaseActivity() {
                             lifecycleScope.launch { openParty(existing.toRow()) }
                         } else {
                             AppScope.launch {
-                                dao.insertParty(
+                                dao.insertPartyAudited(
                                     Party(
                                     name = name,
                                     phone = phone,

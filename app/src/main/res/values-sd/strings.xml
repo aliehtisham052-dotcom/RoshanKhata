@@ -3809,6 +3809,11 @@
     <string name="audit_cash_deleted">ڪيش بڪ جي داخلا ميٽي</string>
     <string name="audit_party_deleted">گراهڪ ميٽيو ويو</string>
     <string name="audit_party_merged">گراهڪ گڏ ڪيا ويا</string>
+    <string name="audit_party_added">گراهڪ شامل ڪيو ويو</string>
+    <string name="audit_product_added">پراڊڪٽ شامل ڪئي وئي</string>
+    <string name="audit_bill_added">سپلائر بل شامل ڪيو ويو</string>
+    <string name="audit_plan_next_due">قسط جي ايندڙ تاريخ بدلائي وئي</string>
+    <string name="audit_plan_added">قسطن جو پلان شامل ڪيو ويو</string>
     <string name="audit_day_closed">ڏينهن بند ڪيو ويو</string>
     <string name="audit_import">امپورٽ</string>
     <string name="audit_bill_deleted">بل ميٽيو ويو</string>

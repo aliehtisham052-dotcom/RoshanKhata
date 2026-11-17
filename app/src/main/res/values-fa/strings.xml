@@ -3809,6 +3809,11 @@
     <string name="audit_cash_deleted">ردیف دفتر نقدی حذف شد</string>
     <string name="audit_party_deleted">مشتری حذف شد</string>
     <string name="audit_party_merged">مشتری‌ها ادغام شدند</string>
+    <string name="audit_party_added">مشتری اضافه شد</string>
+    <string name="audit_product_added">محصول اضافه شد</string>
+    <string name="audit_bill_added">فاکتور تأمین‌کننده اضافه شد</string>
+    <string name="audit_plan_next_due">تاریخ قسط بعدی تغییر کرد</string>
+    <string name="audit_plan_added">برنامه اقساط اضافه شد</string>
     <string name="audit_day_closed">روز بسته شد</string>
     <string name="audit_import">ورودی</string>
     <string name="audit_bill_deleted">فاکتور حذف شد</string>

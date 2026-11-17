@@ -3993,6 +3993,11 @@
     <string name="audit_cash_deleted">تم حذف قيد من دفتر النقد</string>
     <string name="audit_party_deleted">تم حذف عميل</string>
     <string name="audit_party_merged">تم دمج عملاء</string>
+    <string name="audit_party_added">تمت إضافة عميل</string>
+    <string name="audit_product_added">تمت إضافة منتج</string>
+    <string name="audit_bill_added">تمت إضافة فاتورة مورد</string>
+    <string name="audit_plan_next_due">تم تغيير موعد القسط التالي</string>
+    <string name="audit_plan_added">تمت إضافة خطة أقساط</string>
     <string name="audit_day_closed">تم إغلاق اليوم</string>
     <string name="audit_import">استيراد</string>
     <string name="audit_bill_deleted">تم حذف فاتورة</string>

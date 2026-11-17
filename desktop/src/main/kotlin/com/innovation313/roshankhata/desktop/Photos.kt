@@ -68,7 +68,7 @@ object Photos {
             if (to.exists() && !to.delete()) return
             if (from.renameTo(to)) {
                 synchronized(cache) { cache.keys.removeAll { it.startsWith(to.path) || it.startsWith(from.path) } }
-                dao.updateParty(keep.copy(photoPath = to.absolutePath))
+                dao.setPartyPhotoPath(keep.id, to.absolutePath)
                 return
             }
         }

@@ -325,7 +325,7 @@ fun CustomerQrDialog(dao: KhataDao, partyId: Long, name: String, onClose: () -> 
         withContext(Dispatchers.IO) {
             runCatching {
                 val p = dao.getParty(partyId) ?: error("party $partyId")
-                val token = p.qrToken ?: QrTag.newToken().also { fresh -> dao.updateParty(p.copy(qrToken = fresh)) }
+                val token = p.qrToken ?: QrTag.newToken().also { fresh -> dao.setPartyQrToken(p.id, fresh) }
                 PhoneSync.qr(QrTag.payload(token), 520)
             }
         }.onSuccess { picture = it }.onFailure { said = failText(words, it) to true }

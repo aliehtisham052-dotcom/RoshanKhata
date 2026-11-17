@@ -2277,7 +2277,7 @@ private fun Book(
                     onSave = { p ->
                         scope.launch {
                             val id = withContext(Dispatchers.IO) {
-                                if (existing == null) dao.insertParty(p) else { dao.updateParty(p); p.id }
+                                if (existing == null) dao.insertPartyAudited(p) else { dao.updateParty(p); p.id }
                             }
                             addParty = false; editingParty = null
                             reload++

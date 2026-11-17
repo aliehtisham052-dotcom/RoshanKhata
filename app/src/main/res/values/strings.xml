@@ -3993,6 +3993,11 @@
     <string name="audit_cash_deleted">Cashbook row deleted</string>
     <string name="audit_party_deleted">Customer deleted</string>
     <string name="audit_party_merged">Customers merged</string>
+    <string name="audit_party_added">Customer added</string>
+    <string name="audit_product_added">Product added</string>
+    <string name="audit_bill_added">Supplier bill added</string>
+    <string name="audit_plan_next_due">Plan\'s next day changed</string>
+    <string name="audit_plan_added">Payment plan added</string>
     <string name="audit_day_closed">Day closed</string>
     <string name="audit_import">Imported</string>
     <string name="audit_bill_deleted">Bill deleted</string>

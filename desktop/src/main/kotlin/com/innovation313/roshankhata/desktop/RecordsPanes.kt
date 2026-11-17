@@ -1042,7 +1042,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
     }
     if (adding) PlanAddDialog(parties, onSave = { plan ->
         adding = false
-        scope.launch { withContext(Dispatchers.IO) { dao.insertPlan(plan) } }
+        scope.launch { withContext(Dispatchers.IO) { dao.insertPlanAudited(plan) } }
     }, onCancel = { adding = false })
     // Marking a plan complete changes what is written, so it asks the owner's rule and then the owner (Marhala
     // 4, the audit: neither was asked).
@@ -1183,7 +1183,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
 suspend fun saveBill(dao: KhataDao, b: NewBill, words: Words) {
     val partyId = b.supplierId
         ?: dao.findPartyByName(b.newSupplierName.orEmpty())?.id
-        ?: dao.insertParty(Party(name = b.newSupplierName.orEmpty().trim(), phone = null, isCustomer = false))
+        ?: dao.insertPartyAudited(Party(name = b.newSupplierName.orEmpty().trim(), phone = null, isCustomer = false))
     dao.insertSupplierBill(
         entry = if (b.paidCash) null else LedgerEntry(
             partyId = partyId,
