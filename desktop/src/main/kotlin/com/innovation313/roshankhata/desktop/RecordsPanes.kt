@@ -1112,7 +1112,10 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
                 if (p.paidSoFar + a < p.totalAmount) dating = p to com.innovation313.roshankhata.data.PlanSchedule.suggestNext(p.nextDueDate)
             }
         }
-        AppDialog(onCloseRequest = { paying = null }, title = word(W.record_payment_title), state = rememberDialogState(width = fitW(480.dp), height = fitH(440.dp))) {
+        // Esc and the ✕ ask first once the amount or the note differs from how the form opened (L005): it opens on the
+        // plan's instalment, which is the app's, not typing.
+        val openedAmount = remember(p.id) { amountText }
+        AppDialog(onCloseRequest = { paying = null }, dirty = { amountText != openedAmount || note.isNotEmpty() }, title = word(W.record_payment_title), state = rememberDialogState(width = fitW(480.dp), height = fitH(440.dp))) {
             DialogFrame(word(W.record_payment_title), subtitle = Format.name(p.partyName), onClose = { paying = null }, footer = {
                 FluentButton(word(W.cancel), { paying = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(if (over) W.proceed_anyway else W.save), { pay() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = amount != null)
@@ -1343,7 +1346,9 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
     }
     // In the app's frame with Save in its foot (Marhala 4, the audit); the party is picked as on every form,
     // his balance with its side's words (it was a bare figure, which way it ran unsaid).
-    AppDialog(onCloseRequest = onCancel, title = word(W.add_plan), state = rememberDialogState(width = fitW(560.dp), height = fitH(700.dp))) {
+    // Esc and the ✕ ask first once anything is chosen or typed (L005): the form opens empty.
+    AppDialog(onCloseRequest = onCancel, dirty = { partyId != null || total.isNotEmpty() || each.isNotEmpty() || due != null || note.isNotEmpty() },
+        title = word(W.add_plan), state = rememberDialogState(width = fitW(560.dp), height = fitH(700.dp))) {
         DialogFrame(word(W.add_plan), onClose = onCancel, footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } }, footer = {
             FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")

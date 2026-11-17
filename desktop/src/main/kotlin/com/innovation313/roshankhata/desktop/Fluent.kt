@@ -484,7 +484,9 @@ fun DialogFrame(
                 Text(title, color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 subtitle?.let { Text(it, color = c.inkSoft, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             }
-            Box(Modifier.size(32.dp).clip(Look.ctl).press(Look.ctl, onClick = onClose), contentAlignment = Alignment.Center) { Glyph("ic_close", c.inkSoft, 14) }
+            // The frame's ✕ asks first when the form holds typing, as Esc does (L005): it named the close, not the question.
+            val closeAsked = guardedClose(onClose)
+            Box(Modifier.size(32.dp).clip(Look.ctl).press(Look.ctl, onClick = closeAsked), contentAlignment = Alignment.Center) { Glyph("ic_close", c.inkSoft, 14) }
         }
         Column(
             Modifier.weight(1f).fillMaxWidth().then(if (scroll) Modifier.verticalScroll(rememberScrollState()) else Modifier)

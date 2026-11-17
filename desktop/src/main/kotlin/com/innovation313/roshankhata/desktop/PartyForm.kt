@@ -60,6 +60,10 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
         book.filter { it.id != existing?.id }.map { DuplicateDetector.Candidate(it.id, it.name, it.phone, it.isCustomer, it.balance) }
     }
     val similar = DuplicateDetector.matchExisting(name.trim(), phone.trim().ifEmpty { null }, others)
+    // In a dialog, Esc and the ✕ ask first once anything differs from how the form opened (17 Nov 2026, audit L005).
+    fun formNow(): List<Any?> = listOf(name, phone, father, village, customer, limit, note, photo, photoVersion)
+    val opened = rememberOpened(formNow())
+    FormTyped { typedSince(opened, formNow()) }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         // Inside a dialog its head says it (one title, Marhala 2).

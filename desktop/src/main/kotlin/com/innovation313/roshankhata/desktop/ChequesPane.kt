@@ -472,6 +472,11 @@ private fun ChequeEditor(
     val needAmount = word(W.enter_valid_amount)
     val needDate = word(W.pick_date_first)
 
+    // Esc and the ✕ ask first once anything differs from how the form opened (17 Nov 2026, audit L005); the party search
+    // box is a way to choose, not something kept.
+    fun formNow(): List<Any?> = listOf(partyId, received, amountText, number, bank, note, due, photo)
+    val opened = rememberOpened(formNow())
+    FormTyped { typedSince(opened, formNow()) }
     // The cheque's rule is said whole in the form (25 Oct 2026, the audit: as the subtitle it was cut to one line).
     DialogFrame(
         word(if (existing == null) W.add_cheque else W.edit_cheque), existing?.let { Format.name(it.partyName) },

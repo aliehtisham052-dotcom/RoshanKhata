@@ -197,7 +197,10 @@ private fun OrderDialog(dao: KhataDao, draft: OrderDraft, suppliers: List<PartyW
     val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf("") }
     val title = word(if (draft.existing == null) W.po_new else W.edit)
-    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(760.dp))) {
+    // Esc and the ✕ ask first once the order differs from how it opened (17 Nov 2026, audit L005): a low-stock draft
+    // opens with its lines, which are the app's, not typing. OrderDraft.snapshot is the phone's own record of a draft.
+    val opened = remember(draft) { draft.snapshot() }
+    AppDialog(onCloseRequest = onClose, dirty = { draft.snapshot() != opened }, title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(760.dp))) {
         DialogFrame(title, onClose = onClose, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {
@@ -252,7 +255,11 @@ private fun ReceiveDialog(dao: KhataDao, o: PurchaseOrderWithLines, words: Words
     var billNumber by remember { mutableStateOf("") }
     val total = got.sumOf { (Calc.evalAmount(it.qty) ?: 0.0) * (Calc.evalAmount(it.rate) ?: 0.0) }
     val title = word(W.po_receive)
-    AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(640.dp))) {
+    // What arrived is typed here (quantities, rates, batches, expiry, the bill's number): Esc and the ✕ ask first once any
+    // of it differs from how the form opened (L005).
+    fun formNow(): List<Any?> = listOf(billNumber) + got.map { listOf(it.qty, it.rate, it.batch, it.expiry) }
+    val opened = remember { formNow() }
+    AppDialog(onCloseRequest = onClose, dirty = { formNow() != opened }, title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(640.dp))) {
         DialogFrame(title, subtitle = o.order.orderNumber, onClose = onClose, footer = {
             FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {

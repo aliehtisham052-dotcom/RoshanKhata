@@ -127,7 +127,7 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
             }
         }
         val title = word(W.scheme_mark_claimed)
-        AppDialog(onCloseRequest = close, title = title, state = rememberDialogState(width = fitW(460.dp), height = fitH(300.dp))) {
+        AppDialog(onCloseRequest = close, dirty = { amount.isNotEmpty() }, title = title, state = rememberDialogState(width = fitW(460.dp), height = fitH(300.dp))) {
             DialogFrame(title, subtitle = s.name, onClose = close, footer = {
                 FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.save), save, kind = ButtonKind.ACCENT, enabled = value != null)
@@ -263,6 +263,10 @@ private fun SchemeForm(title: String, existing: Scheme?, suppliers: List<Party>,
         }
     }
 
+    // Esc and the ✕ ask first once anything differs from how the form opened (17 Nov 2026, audit L005).
+    fun formNow(): List<Any?> = listOf(name, partyId, company, start, end, byQty, unit, kind, targets.value, rewards.value, note)
+    val opened = rememberOpened(formNow())
+    FormTyped { typedSince(opened, formNow()) }
     // In the app's frame (Marhala 4): boxes with their labels above, the supplier and the days as choice boxes,
     // what is wrong said beside Save, where it is seen without scrolling.
     DialogFrame(title, onClose = onCancel, footerStart = {

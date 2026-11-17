@@ -277,6 +277,13 @@ fun InvoiceForm(
         }
     }
 
+    // Esc and the ✕ ask first once anything differs from how the form opened, a line typed but not added too (17 Nov 2026,
+    // audit L005). A form started from a sale opens with its lines: only a change of them counts.
+    fun formNow(): List<Any?> = listOf(
+        customer, phone, date, lines, discountInMoney, discount, tax, chargeLabel, charge, received, note, due, templateId
+    )
+    val opened = rememberOpened(formNow())
+    FormTyped { typedSince(opened, formNow()) || lineBusy }
     DialogFrame(
         title = existing?.let { word(W.edit) + "  ·  " + it.invoiceNumber }
             ?: if (docKind == com.innovation313.roshankhata.data.DocKind.INVOICE) word(W.add_invoice) else docKindWord(docKind),

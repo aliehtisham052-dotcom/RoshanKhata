@@ -375,6 +375,16 @@ fun EntryEditor(
     // Its head stays on top (the owner's mockup, Marhala 2): which way on its tint, the party under it, the ✕ —
     // the dialog's one title, so the dialog draws none of its own.
     OwnDialogHead()
+    // Esc and the ✕ ask first once anything differs from how the form opened, the half-written item in the boxes too
+    // (17 Nov 2026, audit L005; the phone's FormGuard). The Rate box's offered price and the unit the product filled in are
+    // the app's, not typing: only a rate the owner typed counts.
+    fun formNow(): List<Any?> = listOf(
+        amount, at, note, qarz, doubtful, method, paymentRef, supplierMoney, cashRate, paidNow, due,
+        goods.lines.toList(), photoPath, photoSource, sigChanged
+    )
+    val opened = rememberOpened(formNow())
+    FormTyped { typedSince(opened, formNow()) || name.isNotBlank() || qty.isNotBlank() || rateTyped }
+    val closeAsked = guardedClose(onCancel)
     Column(Modifier.fillMaxSize()) {
         Row(
             Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 14.dp, bottom = 10.dp),
@@ -388,7 +398,7 @@ fun EntryEditor(
                 Text(word(if (isGiven) W.you_gave else W.you_got), color = c.ink, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
                 Text(Format.name(partyName), color = c.inkSoft, fontSize = 13.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
             }
-            Box(Modifier.size(32.dp).clip(Look.ctl).press(Look.ctl, onClick = onCancel), contentAlignment = Alignment.Center) {
+            Box(Modifier.size(32.dp).clip(Look.ctl).press(Look.ctl, onClick = closeAsked), contentAlignment = Alignment.Center) {
                 Glyph("ic_close", c.inkSoft, 14)
             }
         }

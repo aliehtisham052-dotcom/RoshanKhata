@@ -397,7 +397,80 @@ object OpenDialogs {
 }
 
 /** What a dialog's body tells its frame: it draws its own head (a DialogFrame, or a form with its own). */
-class DialogChrome { var ownHead by mutableStateOf(false) }
+class DialogChrome {
+    var ownHead by mutableStateOf(false)
+    /** Every close of this dialog — Esc, the ✕ of the dialog or of its own head, Back — goes through it (L005). */
+    val guard = CloseGuard()
+}
+
+/**
+ * Whether a dialog's close throws typing away (17 Nov 2026, audit L005; the phone's FormGuard): the dialog's own
+ * [dirty] (AppDialog's argument) or what its body says it holds ([FormTyped]: a form deep inside, such as the entry or
+ * the invoice form, whose boxes the dialog cannot see). An untouched form closes at once; a typed one asks first, and
+ * the close it asked about — the dialog's, or the one its body's own ✕ named — runs only on "Discard". Pure, so
+ * DialogCloseGuardTest holds it without a window.
+ */
+class CloseGuard {
+    var dirty: () -> Boolean = { false }
+    var typed: () -> Boolean = { false }
+    /** The close waiting for the owner's answer; the question shows while it is set. */
+    var pending by mutableStateOf<(() -> Unit)?>(null)
+        private set
+
+    fun anyTyped(): Boolean = dirty() || typed()
+
+    /** [close] at once when nothing is typed; else held and asked about. */
+    fun request(close: () -> Unit) {
+        if (anyTyped()) pending = close else close()
+    }
+
+    /** "Discard": the close that was asked about, once. */
+    fun confirm() {
+        val close = pending ?: return
+        pending = null
+        close()
+    }
+
+    /** "Keep editing": nothing is closed. */
+    fun dismiss() { pending = null }
+
+    /**
+     * Whether Esc goes through this guard before a dialog's own key handler: a caller that passed `escCloses(close)` would
+     * otherwise close a typed form without asking (the handler names the close, not the question).
+     */
+    fun escTakesFirst(): Boolean = anyTyped()
+}
+
+/**
+ * Said by a form inside a dialog whose typing the dialog cannot see (L005): [typed] is read with the dialog's own `dirty`
+ * whenever the dialog is asked to close. Judged against how the form opened ([typedSince]). Outside a dialog nothing.
+ */
+@Composable
+fun FormTyped(typed: () -> Boolean) {
+    val chrome = LocalDialogChrome.current ?: return
+    val latest = androidx.compose.runtime.rememberUpdatedState(typed)
+    androidx.compose.runtime.DisposableEffect(chrome) {
+        chrome.guard.typed = { latest.value() }
+        onDispose { chrome.guard.typed = { false } }
+    }
+}
+
+/**
+ * A close the body names itself (its own ✕ or Cancel), through the dialog's question: [close] at once when nothing is
+ * typed, else after "Discard". Outside a dialog, [close] as it is.
+ */
+@Composable
+fun guardedClose(close: () -> Unit): () -> Unit {
+    val chrome = LocalDialogChrome.current ?: return close
+    return { chrome.guard.request(close) }
+}
+
+/** How a form opened, to judge it against: the values as they were on its first drawing (see [typedSince]). */
+@Composable
+fun rememberOpened(now: List<Any?>): List<Any?> = remember { now }
+
+/** Whether a form differs from how it opened ([rememberOpened]): any value changed, in the same order. */
+fun typedSince(opened: List<Any?>, now: List<Any?>): Boolean = opened != now
 
 val LocalDialogChrome = androidx.compose.runtime.staticCompositionLocalOf<DialogChrome?> { null }
 
@@ -439,12 +512,20 @@ fun AppDialog(
     content: @Composable () -> Unit
 ) {
     val chrome = remember { DialogChrome() }
-    val asking = remember { androidx.compose.runtime.mutableStateOf(false) }
-    val closeRequest: () -> Unit = { if (dirty()) asking.value = true else onCloseRequest() }
-    val keys = onPreviewKeyEvent ?: escCloses(closeRequest)
-    if (asking.value) AskDialog(
+    val guard = chrome.guard
+    // The dialog's own test of its typing, the newest each drawing; the body's comes through FormTyped (L005).
+    guard.dirty = dirty
+    val closeRequest: () -> Unit = { guard.request(onCloseRequest) }
+    val own = onPreviewKeyEvent
+    // A typed form's Esc asks first even when the caller passed its own key handler (most pass escCloses(close), which
+    // named the close and not the question: 17 Nov 2026, L005); an untouched one keeps the caller's handler.
+    val keys: (androidx.compose.ui.input.key.KeyEvent) -> Boolean = if (own == null) escCloses(closeRequest) else { e ->
+        val esc = e.type == androidx.compose.ui.input.key.KeyEventType.KeyDown && e.key == androidx.compose.ui.input.key.Key.Escape
+        if (esc && guard.escTakesFirst()) escCloses(closeRequest)(e) else own(e)
+    }
+    if (guard.pending != null) AskDialog(
         title = word(W.form_discard_title), text = word(W.form_discard_msg), confirm = word(W.bp_leave_discard),
-        onConfirm = { asking.value = false; onCloseRequest() }, onDismiss = { asking.value = false }, danger = true
+        onConfirm = { guard.confirm() }, onDismiss = { guard.dismiss() }, danger = true
     )
     androidx.compose.runtime.DisposableEffect(Unit) { OpenDialogs.opened(); onDispose { OpenDialogs.closed() } }
     androidx.compose.ui.window.Dialog(
