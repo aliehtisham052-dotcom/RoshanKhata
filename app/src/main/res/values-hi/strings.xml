@@ -1117,6 +1117,10 @@
     <string name="hudhud_replay">फिर से सुनें</string>
     <string name="hudhud_unknown">यह आपके खाते में नहीं मिला। इसके सबसे करीब के सवाल, जिनका जवाब दे सकता हूँ, नीचे हैं।</string>
     <string name="hudhud_off_topic">मैं सिर्फ़ आपकी दुकान के खाते और इस ऐप में मदद करता हूँ, इसलिए इसका जवाब नहीं दे सकता।</string>
+    <string name="hudhud_took_none">खाते में %1$s के साथ %2$s का कोई लेन-देन नहीं है।</string>
+    <string name="hudhud_took_none_span">इस अवधि में खाते में %1$s के साथ %2$s का कोई लेन-देन नहीं है।</string>
+    <string name="hudhud_l_took_last">आखिरी बार लिया</string>
+    <string name="hudhud_no_history">मैं पिछली बातचीत सँभालकर नहीं दिखाता। हर सवाल का जवाब आपके खाते से अभी नए सिरे से देता हूँ।</string>
     <string name="hudhud_sum_here">हिसाब लगाने के लिए कैलकुलेटर एक टैप पर है।</string>
     <string name="hudhud_why_title_sales">बिक्री: क्या बदला</string>
     <string name="hudhud_why_title_profit">मुनाफा: क्या बदला</string>

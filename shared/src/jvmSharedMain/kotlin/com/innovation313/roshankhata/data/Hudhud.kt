@@ -276,6 +276,20 @@ object Hudhud {
          * not said); the card says plainly when the figure went the other way.
          */
         data class Why(val of: WhyOf, val window: VoiceQuestion.Window, val down: Boolean? = null) : Ask()
+
+        /**
+         * What a named customer or supplier took of a named product (17 Nov 2026, audit L004): "Ali Raza ne Urea kab liya", "when
+         * did Ali Raza buy Urea", "Ali Raza ne is mahine kitni Urea li". It was his account, or (by the sense) the day he may pay.
+         * Only the rules make it ([tookOf]); answered by AnswerQ.took: the day he last took it and the rate he was charged, or a
+         * supplier's last bill line of it. [window]: the days asked, none for the whole book.
+         */
+        data class Took(val ids: List<Long>, val goods: List<Long>, val window: VoiceQuestion.Window? = null) : Ask()
+
+        /**
+         * Past talks asked for (17 Nov 2026, audit L019): "pichli chat dikhao", "hamari purani baatein", "chat history". He shows no
+         * past conversations; the card says so (AnswerQ.noHistory), where the day's activity was told before.
+         */
+        object NoHistory : Ask()
     }
 
     /** What a day or a month named outright is asked of ([Ask.OnDays]). */
@@ -456,7 +470,7 @@ object Hudhud {
     ): Ask {
         val whole = understandRead(clean, n, topics, language, g, before, st)
         val read = compareOf(clean, n, g) ?: bothOf(clean, whole, n, topics, language, g, before, st) ?: whole
-        return offTopic(heard, whatIf(heard, read))
+        return offTopic(heard, whatIf(heard, read, topics))
     }
 
     // ------------------------------------------------------------------------------- a name made of the words of a question
@@ -837,17 +851,25 @@ object Hudhud {
      * in Urdu, Roman Urdu, Hindi, Bengali, Sindhi or Farsi (or English "if"/"what if") and runs to six words or more: Arabic's "لو"
      * (please) and Indonesian's "kalau" (how about…) are everyday asks, and a real ask starts with what it asks.
      */
-    private fun whatIf(heard: String, ask: Ask): Ask {
+    private fun whatIf(heard: String, ask: Ask, topics: List<Topic>): Ask {
+        val w = words(heard)
+        val joined = w.joinToString(" ")
+        // "Kya app mein zakat ka hisaab ho sakta hai", "can the app make posters", "kya aap visiting card bana sakte ho" (17 Nov 2026,
+        // L019, the owner's lists 2101-3100 and 6101-7100): a question about what the app can do that names one of its features is
+        // answered with that feature's page, which says what it does and opens it; it was "I cannot answer this yet" or the list of
+        // what he can tell. Only a page this book offers; a feature the app does not have stays unknown.
+        val asksAbility = ask == Ask.Abilities || ask == Ask.Unknown || (ask is Ask.Guessed && ask.ask == Ask.Abilities)
+        if (asksAbility && w.size >= 4 && (appCan(w, joined) || ask == Ask.Abilities)) capabilityPage(joined, topics)?.let { return Ask.Help(it) }
         if (ask is Ask.Help || ask == Ask.Unknown || ask is Ask.Chat || ask is Ask.Voice || (ask is Ask.About && ask.topic != AboutTopic.PRIVACY) || ask is Ask.Look ||
-            ask is Ask.CallMe || ask is Ask.Abilities || ask is Ask.DidYouMean || ask is Ask.Entry || ask is Ask.Entries
+            ask is Ask.CallMe || ask is Ask.Abilities || ask is Ask.DidYouMean || ask is Ask.Entry || ask is Ask.Entries || ask == Ask.NoHistory
         ) return ask
         if (partyOf(ask) != null || goodsOf(ask) != null) return ask
-        val w = words(heard)
         if (w.size < 6) return ask
         val first = if (w[0] == "what" && w[1] == "if") "if" else w[0]
         // "Can the delivery record be exported to Excel?", "is there an option for leave?": a question about what the app has, not
-        // about the book — only the passive and the "is there" forms (Urdu, Roman Urdu, Hindi); "can you tell me" asks him and is kept.
-        if (first in ASKS_IF && has(w.joinToString(" "), APP_CAN)) return Ask.Unknown
+        // about the book — only the passive and the "is there" forms (Urdu, Roman Urdu, Hindi, and English's "can the app"); "can you
+        // tell me" asks him and is kept. A feature it names with a page is that page (above, and here for a reading of the book).
+        if (appCan(w, joined)) return capabilityPage(joined, topics)?.let { Ask.Help(it) } ?: Ask.Unknown
         if (first !in IF_WORDS) return ask
         // "If it is possible, tell me today's sales": a polite way to ask, not a hypothetical.
         if (has(w.take(5).joinToString(" "), IF_POLITE)) return ask
@@ -863,6 +885,72 @@ object Hudhud {
         "जा सकता", "जा सकती", "जा सकते", "हो सकता", "हो सकती", "हो सकते", "मौजूद है", "मौजूद हैं", "विकल्प")
 
     private val IF_WORDS = setOf("if", "اگر", "agar", "agr", "अगर", "यदि", "যদি", "اگه", "جيڪڏهن", "جيكڏهن").map { norm(it) }.toSet()
+
+    /** A question about what the app has: "kya … ho sakta hai / mojood hai" (Urdu, Roman Urdu, Hindi), "can the app …", "is there an option …". */
+    private fun appCan(w: List<String>, joined: String): Boolean =
+        (w[0] in ASKS_IF && has(joined, APP_CAN)) || (w[0] in EN_CAN && has(joined, EN_APP_CAN))
+
+    private val EN_CAN = setOf("can", "does", "is", "are", "will", "could")
+    private val EN_APP_CAN = listOf("the app", "this app", "an option", "a feature", "option to", "feature to", "possible to")
+
+    /**
+     * The page of the feature a question about the app names (17 Nov 2026, L019): the how-to's own thing first ([howToPage]), then
+     * the features named by their own word ([byFeature]'s lists). Null when it names none, or none this book offers. A card beside
+     * a way of paying is a payment's ([cameInByWay]), never the business card.
+     */
+    internal fun capabilityPage(joined: String, topics: List<Topic>): String? {
+        howToPage(joined, topics)?.let { return it }
+        val key = when {
+            has(joined, ZAKAT) -> "screen_zakat"
+            has(joined, SEASONS) -> "screen_seasons"
+            has(joined, SCHEMES) -> "screen_schemes"
+            has(joined, POSTERS) -> "screen_posters"
+            has(joined, CARDS) && !cameInByWay(joined) -> "screen_card"
+            has(joined, CASH_FLOW) -> "screen_cashflow"
+            has(joined, LAPSED) -> "screen_lapsed"
+            has(joined, BIN_WORDS) -> "screen_bin"
+            has(joined, BUSINESSES) -> "faq_business"
+            else -> null
+        } ?: return null
+        return key.takeIf { k -> topics.any { it.key == k } }
+    }
+
+    /**
+     * Past talks asked for (17 Nov 2026, L019, the owner's lists: "pichli chat dikhao", "chat history", "hamari purani baatein" were the
+     * day's activity): a word of talk with a word of the past or of a record. "Pichli baat phir se batao" asks him to repeat and is
+     * not here (a single "baat" is no chat); a sentence with a name of the book is that person's.
+     */
+    internal fun pastTalk(joined: String): Boolean = has(joined, CHAT_WORDS) && has(joined, PAST_TALK)
+
+    private val CHAT_WORDS = listOf("chat", "chats", "baat cheet", "baatcheet", "baat chit", "baatein", "baaten", "batein", "guftagu",
+        "conversation", "conversations", "talks", "بات چیت", "باتیں", "گفتگو", "چیٹ", "चैट", "बातचीत", "बातें", "চ্যাট", "কথোপকথন",
+        "المحادثة", "المحادثات", "الدردشة", "محادثة", "گفتگوها", "چت", "obrolan", "percakapan")
+    private val PAST_TALK = listOf("history", "pichli", "pichhli", "pichle", "purani", "puraani", "previous", "past", "old", "earlier",
+        "record", "saved", "save", "yaad", "پچھلی", "پچھلے", "پرانی", "سابقہ", "ریکارڈ", "محفوظ", "पिछली", "पिछले", "पुरानी", "रिकॉर्ड",
+        "আগের", "পুরনো", "পুরানো", "السابقة", "القديمة", "سجل", "قبلی", "قدیمی", "تاریخچه", "sebelumnya", "lama", "riwayat")
+
+    /**
+     * Money that came in by its ways (17 Nov 2026, L004: "cash aur card se kitna aaya" opened the business card's page, "cash aur bank se
+     * kitna aaya" the cashbook): a way of paying, a "by" and a word of money that came. "Card" is also the shop's business card: beside a
+     * way of paying it is a payment's. The answer is the money that came in, which its card tells way by way ([Ask.Collected]).
+     */
+    internal fun cameInByWay(joined: String): Boolean =
+        has(joined, PAY_WAYS) && has(joined, BY_WAY) && has(joined, CAME_BY_WAY) && !has(joined, PAID_OUT)
+
+    private val PAY_WAYS = listOf("cash", "naqd", "naqad", "card", "cards", "debit card", "credit card", "online", "bank", "bank transfer",
+        "wallet", "jazzcash", "jazz cash", "easypaisa", "easy paisa", "upi", "نقد", "کیش", "کارڈ", "آن لائن", "آنلائن", "بینک", "والٹ",
+        "जैज़कैश", "कैश", "नकद", "कार्ड", "ऑनलाइन", "बैंक", "tunai", "kartu", "transfer")
+    private val BY_WAY = listOf("se", "by", "via", "through", "سے", "से", "lewat", "melalui", "pakai")
+    private val CAME_BY_WAY = listOf("aaya", "aaye", "aayi", "aai", "aya", "aye", "mila", "mile", "mili", "came", "came in", "received", "got",
+        "آیا", "آئے", "آئی", "ملا", "ملے", "ملی", "आया", "आए", "आई", "मिला", "मिले", "मिली", "masuk", "diterima")
+
+    /** Indonesian's word for the app's supplier bills (its Bills tile says "Tagihan") with "biggest" (17 Nov 2026, L004). */
+    internal fun biggestTagihan(joined: String): Boolean =
+        has(joined, listOf("tagihan")) && has(joined, listOf("terbesar", "paling besar", "terbanyak", "paling banyak"))
+
+    /** Showing papers: "aaj ke sab bill dikhao", "show today's bills" (17 Nov 2026, L004). */
+    private val SHOW_WORDS = listOf("dikhao", "dikha do", "dikhado", "dikhaiye", "dikhayen", "dikhana", "show", "list", "دکھاؤ", "دکھا دو",
+        "دکھائیں", "दिखाओ", "दिखा दो", "दिखाइए", "দেখাও", "দেখান", "tampilkan", "اعرض", "نشان بده")
 
     private fun understandRead(
         heard: String, names: List<Name>, topics: List<Topic>, language: String?,
@@ -1071,6 +1159,24 @@ object Hudhud {
         return null
     }
 
+    /**
+     * A customer (or a supplier) and a product named in one question (17 Nov 2026, audit L004): what he took of it ([Ask.Took]). The
+     * product is looked for only among the words that are not his name, so "Urea Traders" stays the man; money said ("Urea ke paise kab
+     * dega", "payment") is his payment, two questions joined by "and" are read apart ([bothOf]), and a sentence that names no product
+     * is read as before.
+     */
+    private fun tookOf(
+        said: List<String>, m: HudhudMind.Read, named: List<Long>, names: List<Name>, goods: List<Name>, topics: List<Topic>,
+        window: VoiceQuestion.Window?
+    ): Ask? {
+        if (goods.isEmpty() || m.any(HudhudMind.C.PAYMENT, HudhudMind.C.MONEY) || said.any { it in AND_WORDS }) return null
+        val his = names.filter { it.id in named }.flatMap { words(it.name) }.map { NameSearch.fold(it) }.toSet()
+        val rest = said.filter { NameSearch.fold(it) !in his }
+        if (rest.isEmpty()) return null
+        val product = whoIsNamed(rest, goods, topics, m, window)
+        return if (product.isEmpty()) null else Ask.Took(named, product, window)
+    }
+
     // -- The staff: away, here, paid, who they are (words in the nine languages; Sindhi, Bengali and Farsi wanting a native read).
     private val ABSENT_WORDS = listOf("absent", "absentee", "absentees", "absence", "not present", "did not come", "didn't come", "not come",
         "ghair hazir", "ghair haazir", "gair hazir", "gair haazir", "ghairhazir", "hazir nahi", "haazir nahi", "nahi aaya", "nahi aya",
@@ -1213,7 +1319,7 @@ object Hudhud {
      * answer 2 MB at a time, running the query again for each).
      */
     private fun longOk(a: Ask): Boolean =
-        a is Ask.Period || a is Ask.Moved || a is Ask.TopGoods || (a is Ask.Goods && (a.facet == GoodsFacet.SOLD || a.facet == GoodsFacet.BUYERS)) ||
+        a is Ask.Period || a is Ask.Moved || a is Ask.TopGoods || a is Ask.Took || (a is Ask.Goods && (a.facet == GoodsFacet.SOLD || a.facet == GoodsFacet.BUYERS)) ||
             (a is Ask.Figure && spanMatters(a)) // the sales and profit figures: Period, over any span
 
     /** What a count counts over a span of days; the people, the products and the staff are the same over any span. */
@@ -1224,7 +1330,7 @@ object Hudhud {
         is Ask.Figure -> a.kind == VoiceQuestion.Kind.SALES_TODAY || a.kind == VoiceQuestion.Kind.SALES_MONTH ||
             a.kind == VoiceQuestion.Kind.PROFIT_MONTH
         is Ask.Period, is Ask.Moved, is Ask.Deliveries, is Ask.Activity, is Ask.Collected, is Ask.Cashbook, is Ask.Returns,
-        is Ask.TopGoods -> true
+        is Ask.TopGoods, is Ask.Took -> true
         // The counter's books by the day (15 Nov 2026): the last bill, the last count and the last close name no span.
         is Ask.Counter -> a.facet != CounterFacet.LAST_TICKET && a.facet != CounterFacet.LAST_COUNT
         is Ask.Count -> a.thing in COUNTED_OVER_A_SPAN
@@ -1246,6 +1352,7 @@ object Hudhud {
         is Ask.TopGoods -> a.window
         is Ask.Counter -> a.window
         is Ask.Goods -> a.window
+        is Ask.Took -> a.window
         else -> null
     }
 
@@ -1264,6 +1371,7 @@ object Hudhud {
         is Ask.TopGoods -> a.copy(window = w)
         is Ask.Counter -> a.copy(window = w)
         is Ask.Goods -> a.copy(window = w)
+        is Ask.Took -> a.copy(window = w)
         else -> a
     }
 
@@ -1473,6 +1581,7 @@ object Hudhud {
         is Ask.Moved -> a.ids
         is Ask.WhenPays -> a.ids
         is Ask.Entry -> a.ids
+        is Ask.Took -> a.ids
         else -> emptyList()
     }
 
@@ -1536,6 +1645,19 @@ object Hudhud {
         return words(heard).all { it in QUIET_SET || it in VOCATIVE_SET || NameSearch.fold(it) in own }
     }
 
+    /**
+     * A sentence that is his name and nothing else — no little word, which may carry the ask (Urdu "رقم" is an amount, Arabic's a
+     * number): only the words of his name, in its own letters or in another script's ("علی رضا" for "Ali Raza", met on the letters
+     * as the search meets it), and a calling ("Ali bhai"). Kept his account by rule ([decide]).
+     */
+    private fun nameAlone(heard: String, names: List<Name>, id: Long): Boolean {
+        val name = names.firstOrNull { it.id == id } ?: return false
+        val own = words(name.name).map { w -> NameSearch.fold(w) }.toSet()
+        val parts = partsOf(name.name)
+        val said = words(heard)
+        return said.isNotEmpty() && said.all { it in VOCATIVE_SET || NameSearch.fold(it) in own || bridgedLatin(saidForms(it), parts) != null }
+    }
+
     private val SIDES = setOf(VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.TO_GIVE)
     private val SIDE_LABELS = setOf("to_get", "to_give")
     /** The sense's labels that read money as the shop's to get (16 Nov 2026, audit T10). */
@@ -1553,6 +1675,9 @@ object Hudhud {
         if (isNoteAsk(ruled)) return ruled
         // A product's own record, a paper's fields (15 Nov 2026): only the rules read them, the sense learnt no meaning for them.
         if (ruled is Ask.Paper || (ruled is Ask.Goods && ruled.facet in RECORD_FACETS)) return ruled
+        // A customer and a product in one question, past talks asked for (17 Nov 2026, L004 / L019): only the rules read them; the
+        // sense, which learnt a named man's "kab" as the day he may pay, turned "Ali Raza ne Urea kab liya" into his Radar days.
+        if (ruled is Ask.Took || ruled == Ask.NoHistory) return ruled
         // His first day, his last entry, how many entries he has (15 Nov 2026): the bank has no meaning for them either.
         if (rulesOwnFacet(ruled, heard, names, goods, language)) return ruled
         // A span said on purpose, carried on or said alone (15 Nov 2026): the rules' reading, never the sense's.
@@ -1580,6 +1705,10 @@ object Hudhud {
         // opposite way at 0.95. A side the sentence says outright is never turned by the sense; a bare word of debt still may be.
         if (ruled is Ask.Figure && ruled.kind in SIDES && (top.label in SIDE_LABELS || top.label in RECEIVABLE_LABELS) &&
             (ruled.kind == VoiceQuestion.Kind.TO_GIVE) == (top.label in RECEIVABLE_LABELS) && VoiceQuestion.sideSaid(heard)) return ruled
+        // The side said by its whole shape (17 Nov 2026, the lead's retrain check): "log mujhe kitna denge" (to me, in the future: the shop
+        // gets), "kul adaigi kitni baqi hai" (the shop's payment still to make). A retrained sense took them for money in or the other
+        // side; any meaning of the sense gives way here, for the sentence states it.
+        if (ruled is Ask.Figure && ruled.kind in SIDES && VoiceQuestion.sideStated(heard)) return ruled
         // "Ali Raza last month", "Ali Raza pichle saal" (15 Nov 2026): the "last" is the span's. The rules read a named person with
         // nothing else asked (his account, or the one fact his words give), and the sense, which learnt "last" as his last
         // payment from sentences with no span in them, was sure of that at 0.95. Only that reading is turned back: a span's word
@@ -1605,6 +1734,9 @@ object Hudhud {
             val carried = before != null && namedBy(before).any { it in who } && !namedAtAll(heard, names, who)
             val sure = carried || namedSurely(heard, names, who)
             return when {
+                // A sentence that is nothing but his name is his account, by rule (17 Nov 2026, the lead's retrain check: a retrained
+                // sense turned "Ali Raza" and "علی رضا" into his details at 0.95). Before the sense's sharpening of a facet.
+                who.size == 1 && nameAlone(heard, names, who.first()) -> ruled
                 personal(top.label) && p >= refine -> theirs()?.takeIf { it !is Ask.NeedName } ?: ruled
                 who.size == 1 && onlyNames(heard, names, who.first()) -> ruled
                 top.label in TALK && p >= SENSE_CERTAIN -> theirs() ?: ruled
@@ -1670,6 +1802,13 @@ object Hudhud {
         // A bare "bill" with no supplier or purchase word (15 Nov 2026, the owner's list): which bill is said by the rules' own
         // question (utility or supplier), never settled by the sense, which learnt every "bill" as a count of supplier bills.
         if (isBareBillChoice(ruled, heard)) return ruled
+        // The rules' own readings of 17 Nov 2026 (L004), each from words the bank never taught: money in by its ways, Indonesian's biggest
+        // "tagihan", bare bills shown (invoices first). The sense took them for the business card, money in, a count of supplier bills.
+        if (ruled is Ask.Collected && cameInByWay(saidAll)) return ruled
+        if (ruled == Ask.Status(StatusOf.BILLS) && biggestTagihan(saidAll)) return ruled
+        if (ruled is Ask.DidYouMean && ruled.options.firstOrNull() is Ask.Count && (ruled.options.first() as Ask.Count).thing == Thing.INVOICES &&
+            has(saidAll, SHOW_WORDS)
+        ) return ruled
         if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods ||
             ruled is Ask.CallMe || ruled is Ask.Look || ruled is Ask.Why || ruled is Ask.Entries
         ) {
@@ -1880,7 +2019,8 @@ object Hudhud {
         }
         is Ask.OnDays, is Ask.Both, is Ask.Compare,
         Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
-        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic, is Ask.Why, is Ask.Entries -> null
+        Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic, is Ask.Why, is Ask.Entries,
+        is Ask.Took, Ask.NoHistory -> null
     }
 
     /**
@@ -2018,12 +2158,18 @@ object Hudhud {
         // old is the app" holds a "how"). "Ali ki kahani" and "Roshan ka khata kab bana" are never read here: a word of the book
         // or of somebody's name is never a history's.
         HudhudStory.read(heard, language) { w -> knownName(w, names) || knownName(w, goods) }?.let { return Ask.About(storyTopic(it)) }
+        // Past talks asked for (17 Nov 2026, L019): he shows none, and says so, where the day's activity was told before.
+        if (pastTalk(joined) && said.none { knownName(it, names) || knownName(it, goods) }) return Ask.NoHistory
         // "Why" about a figure of the book (16 Nov 2026, audit T8): "is mahine sale kam kyun hui", "profit kyun gira". A strict reader
         // (every word its own, a span or a little word); with a name, a figure or any other word the sentence is read as before.
         HudhudWhyAsk.read(heard, isName = { w -> knownName(w, names) || knownName(w, goods) }, calling = { it in VOCATIVE_SET })?.let { return it }
         // What a shop says every day (15 Nov 2026, the everyday-phrasing review): who paid and who does not, where the money went,
         // what left the drawer, what sells best. Words alone, only when no name of the book is in the sentence; [decide] keeps it.
-        HudhudEveryday.read(heard, VoiceQuestion.windowOf(heard)) { w -> knownName(w, names) || knownName(w, goods) }?.let { return it }
+        // A total stated by the sentence's shape ("مردم در کل چقدر به من می‌دهند": how much in all will people give me) is that total,
+        // not the everyday "who owes most" its words also hold (17 Nov 2026, the lead's retrain check; [VoiceQuestion.sideStated]).
+        if (!totalStated(heard, joined)) {
+            HudhudEveryday.read(heard, VoiceQuestion.windowOf(heard)) { w -> knownName(w, names) || knownName(w, goods) }?.let { return it }
+        }
         val how = has(joined, HOW)
         if (how) (howToPage(joined, topics) ?: helpOf(said, topics))?.let { return Ask.Help(it) }
         // A delete said as an order (15 Nov 2026, review O): "Ali Raza ka khata delete kar do" showed his balance, as if done. He
@@ -2124,6 +2270,7 @@ object Hudhud {
             facetOf(mind).let { it != null && (it != Facet.DETAILS || mind.any(HudhudMind.C.FATHER, HudhudMind.C.VILLAGE, HudhudMind.C.ADDRESS)) }
         ) return Ask.NeedName(facetOf(mind))
         if (named.isNotEmpty()) {
+            tookOf(said, mind, named, names, goods, topics, window)?.let { return it }
             if (willPay) return Ask.WhenPays(named)
             // "How much did Bashir pay last month": the "last" is the span's, not his last payment (the same words in English).
             // A span he cannot give is the span's too ("2 din pehle", "the last fiscal year", "pehle 6 mahine"): its words hold
@@ -2497,6 +2644,9 @@ object Hudhud {
             page("screen_schemes")?.let { return it }
         }
         if (has(joined, POSTERS)) page("screen_posters")?.let { return it }
+        // Money that came in by its ways, and Indonesian's biggest "tagihan" (17 Nov 2026, L004): before the business card's page.
+        if (cameInByWay(joined)) return Ask.Collected(window)
+        if (biggestTagihan(joined)) return Ask.Status(StatusOf.BILLS)
         if (has(joined, CARDS)) {
             page(if (m.has(HudhudMind.C.CUSTOMER)) "intro_customer_qr" else "screen_card")?.let { return it }
         }
@@ -2541,6 +2691,10 @@ object Hudhud {
         if (billWord && !m.any(HudhudMind.C.SUPPLIER, HudhudMind.C.CAME) && !has(joined, SUPPLIER_SIDE_WORDS) && !has(joined, PURCHASE_SIDE)) {
             when {
                 has(joined, BILL_EDIT) || m.has(HudhudMind.C.CUSTOMER) -> page("intro_documents")?.let { return it }
+                // Shown (17 Nov 2026, L004, the owner's K0652 "Aaj ke sab bill dikhao" meant his customers' bills): the invoices of
+                // the days asked, with the supplier bills of the same days offered beside them.
+                has(joined, SHOW_WORDS) && !has(joined, BILL_DUE) ->
+                    return Ask.DidYouMean(listOf(Ask.Count(Thing.INVOICES, window), Ask.Count(Thing.BILLS, window)))
                 has(joined, BILL_DUE) -> {
                     val cashbook = page("intro_cashbook")
                     if (cashbook != null) return Ask.DidYouMean(listOf(cashbook, Ask.Status(StatusOf.BILLS)))
@@ -3052,6 +3206,9 @@ object Hudhud {
 
     /** Today's date, the day or the time: "aaj kya tareekh hai", "aaj kaunsa din hai", "kitne baje hain". */
     private fun clock(m: HudhudMind.Read): Boolean {
+        // Attendance is no date (17 Nov 2026, L004): Hindi "हाजरी" sounds like "हिजरी" (the Islamic date) to the concept words, and
+        // "आज की हाज़री" was told the date. The staff reader reads it ([recordOf]).
+        if (has(m.said.joinToString(" "), ATTENDANCE_NOUNS)) return false
         val days = setOf(HudhudMind.C.DAY, HudhudMind.C.THIS)
         if (m.has(HudhudMind.C.DATE) && m.onlyOf(
                 setOf(HudhudMind.C.DATE, HudhudMind.C.WHAT, HudhudMind.C.WHICH, HudhudMind.C.HOW_MANY, HudhudMind.C.TELL,
@@ -3104,6 +3261,9 @@ object Hudhud {
             sold -> GoodsFacet.SOLD
             m.any(HudhudMind.C.CHEAP, HudhudMind.C.DEAR, HudhudMind.C.SUPPLIER, HudhudMind.C.FROM_WHOM) -> GoodsFacet.SUPPLIERS
             m.has(HudhudMind.C.CAME) && m.any(HudhudMind.C.LAST, HudhudMind.C.WHEN, HudhudMind.C.DATE) -> GoodsFacet.LAST_IN
+            // How long since it came ("Urea aaye kitne din ho gaye", "how many days since Urea came"; 17 Nov 2026, L004): the last
+            // delivery, whose day the card gives. It was the product's overview.
+            cameAgo(m.said.joinToString(" "), m) -> GoodsFacet.LAST_IN
             buyers -> GoodsFacet.BUYERS
             m.has(HudhudMind.C.COST) || (m.has(HudhudMind.C.BOUGHT) && m.has(HudhudMind.C.HOW_MANY) && !m.has(HudhudMind.C.WHO)) -> GoodsFacet.COST
             m.has(HudhudMind.C.WHO) && m.has(HudhudMind.C.BOUGHT) -> GoodsFacet.BUYERS
@@ -3117,6 +3277,24 @@ object Hudhud {
         else window ?: if (figure == VoiceQuestion.Kind.SALES_TODAY) VoiceQuestion.Window.TODAY else VoiceQuestion.Window.THIS_MONTH
         return Ask.Goods(ids, facet, w)
     }
+
+    /** A how-much with its side stated ([VoiceQuestion.sideStated]) and no "who": the shop's total to get or to give. */
+    private fun totalStated(heard: String, joined: String): Boolean =
+        VoiceQuestion.sideStated(heard) && has(joined, HOW_MUCH_SAID) && !has(joined, WHO_SAID)
+
+    private val HOW_MUCH_SAID = listOf("kitna", "kitni", "kitne", "how much", "in total", "کتنا", "کتنی", "کتنے", "कितना", "कितनी", "कितने",
+        "چقدر", "در کل", "berapa", "كم", "কত", "ڪيترو", "ڪيتري")
+    private val WHO_SAID = listOf("kaun", "kon", "kis", "who", "whom", "کون", "کس", "कौन", "किस", "কে", "কারা", "ڪير", "ڪنهن", "چه کسی", "کیست",
+        "siapa", "من هو", "من الذي")
+
+    /** How long since something came: a word of coming beside a word of time gone by ([ELAPSED]). */
+    internal fun cameAgo(joined: String, m: HudhudMind.Read): Boolean =
+        (m.has(HudhudMind.C.CAME) || has(joined, CAME_ALREADY)) && has(joined, ELAPSED)
+
+    private val ELAPSED = listOf("kitne din ho gaye", "kitne din ho gae", "kitne din hogaye", "kitne din hue", "kitne din huay", "kitne din se",
+        "kitna arsa", "kitna waqt ho gaya", "kitna time ho gaya", "how many days since", "how long since", "how long ago", "days ago",
+        "کتنے دن ہو گئے", "کتنے دن ہوگئے", "کتنے دن ہوئے", "کتنا عرصہ", "کتنا وقت ہو گیا", "कितने दिन हो गए", "कितने दिन हुए",
+        "कितना समय हो गया")
 
     /**
      * The rest of the book, when nobody and no product is named: the shop's profile, goods that came in, how many of
@@ -3411,6 +3589,7 @@ object Hudhud {
         is Ask.Moved -> a.ids
         is Ask.Entry -> a.ids
         is Ask.OnDays -> a.ids
+        is Ask.Took -> a.ids
         else -> null
     }?.takeIf { it.isNotEmpty() }
 
@@ -3764,6 +3943,22 @@ object Hudhud {
      * A name is met by as many of its words as the sentence has, and only the names met most are offered, at most five — a choice,
      * as [nearBest] gives one; none when more would be.
      */
+    /**
+     * The book's names a spoken sentence meets across scripts (17 Nov 2026, audit L037): the Khata microphone's own search
+     * (NameSearch) folds both sides and missed "بشیر" or "बशीर" for a customer saved as "Bashir". The same words [namedIn] gives the
+     * bridge — no little word, question word, word of a concept or calling, no short ordinary word ([shortOrdinaryPrefix]) — and the
+     * same bridge ([acrossScripts]). One id is the man; several are a choice, never a guess; none when nothing was met.
+     */
+    fun acrossScriptsOf(heard: String, names: List<Name>): List<Long> {
+        if (names.isEmpty()) return emptyList()
+        val n = asRead(names)
+        val left = words(heard).filter { w ->
+            w.length >= 3 && w.any { it.isLetter() } && w !in STOP_SET && w !in INTENT_SET && !HudhudMind.isHardWord(w) &&
+                !HudhudMind.isSoftWord(w) && w !in QUIET_SET && w !in VOCATIVE_SET && !shortOrdinaryPrefix(w, n)
+        }
+        return if (left.isEmpty()) emptyList() else acrossScripts(n, left)
+    }
+
     private fun acrossScripts(names: List<Name>, words: List<String>): List<Long> {
         // A Bengali word is read both ways, with its case ending and without ("বশীর" is Bashir; "আলীর" is Ali's): it counts once.
         val said = words.map { saidForms(it) }

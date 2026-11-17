@@ -1105,6 +1105,10 @@
     <string name="hudhud_replay">ٻيهر ٻڌو</string>
     <string name="hudhud_unknown">هي توهان جي کاتي ۾ نه مليو. ان جي ويجهو سوال، جن جو جواب ڏئي سگهان ٿو، هيٺ آهن.</string>
     <string name="hudhud_off_topic">مان رڳو توهان جي دڪان جي کاتي ۽ هن ايپ ۾ مدد ڪريان ٿو، تنهنڪري ان جو جواب نٿو ڏئي سگهان.</string>
+    <string name="hudhud_took_none">کاتي ۾ %1$s سان %2$s جي ڪا ڏي وٺ ناهي.</string>
+    <string name="hudhud_took_none_span">هن عرصي ۾ کاتي ۾ %1$s سان %2$s جي ڪا ڏي وٺ ناهي.</string>
+    <string name="hudhud_l_took_last">آخري ڀيرو ورتو</string>
+    <string name="hudhud_no_history">مان پوئين ڳالهه ٻولهه سانڍي نه ڏيکاريان. هر سوال جو جواب توهان جي کاتي مان هاڻي نئين سر ڏيان ٿو.</string>
     <string name="hudhud_sum_here">حساب لاءِ ڪيلڪيوليٽر هڪ ٽيپ تي آهي.</string>
     <string name="hudhud_why_title_sales">وڪرو: ڇا بدليو</string>
     <string name="hudhud_why_title_profit">منافعو: ڇا بدليو</string>

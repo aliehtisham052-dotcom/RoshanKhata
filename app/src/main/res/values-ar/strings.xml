@@ -1165,6 +1165,10 @@
     <string name="hudhud_replay">استمع مرة أخرى</string>
     <string name="hudhud_unknown">لم أجد هذا في دفترك. أقرب الأسئلة التي أستطيع الإجابة عنها في الأسفل.</string>
     <string name="hudhud_off_topic">أساعد فقط في دفتر متجرك وفي هذا التطبيق، لذلك لا أستطيع الإجابة عن هذا.</string>
+    <string name="hudhud_took_none">لا يوجد في الدفتر أي تعامل في %2$s مع %1$s.</string>
+    <string name="hudhud_took_none_span">لا يوجد في الدفتر أي تعامل في %2$s مع %1$s في هذه الفترة.</string>
+    <string name="hudhud_l_took_last">آخر شراء</string>
+    <string name="hudhud_no_history">لا أحتفظ بالمحادثات السابقة لعرضها. أجيب عن كل سؤال من دفترك كما هو الآن.</string>
     <string name="hudhud_sum_here">للحساب، الآلة الحاسبة على بُعد لمسة واحدة.</string>
     <string name="hudhud_why_title_sales">المبيعات: ما الذي تغيّر</string>
     <string name="hudhud_why_title_profit">الربح: ما الذي تغيّر</string>

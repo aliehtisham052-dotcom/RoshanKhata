@@ -1077,6 +1077,10 @@
     <string name="hudhud_replay">دوبارہ سنیں</string>
     <string name="hudhud_unknown">یہ آپ کے کھاتے میں نہیں ملا۔ اس کے قریب ترین سوال، جن کا جواب دے سکتا ہوں، نیچے ہیں۔</string>
     <string name="hudhud_off_topic">میں صرف آپ کی دکان کے کھاتے اور اس ایپ میں مدد کرتا ہوں، اس لیے اس کا جواب نہیں دے سکتا۔</string>
+    <string name="hudhud_took_none">کھاتے میں %1$s کے ساتھ %2$s کا کوئی لین دین نہیں۔</string>
+    <string name="hudhud_took_none_span">اس مدت میں کھاتے میں %1$s کے ساتھ %2$s کا کوئی لین دین نہیں۔</string>
+    <string name="hudhud_l_took_last">آخری بار لیا</string>
+    <string name="hudhud_no_history">میں پچھلی بات چیت سنبھال کر نہیں دکھاتا۔ ہر سوال کا جواب آپ کے کھاتے سے ابھی نئے سرے سے دیتا ہوں۔</string>
     <string name="hudhud_sum_here">حساب لگانے کے لیے کیلکولیٹر ایک ٹیپ پر ہے۔</string>
     <string name="hudhud_why_title_sales">سیل: کیا بدلا</string>
     <string name="hudhud_why_title_profit">منافع: کیا بدلا</string>

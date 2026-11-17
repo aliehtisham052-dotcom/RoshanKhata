@@ -1105,6 +1105,10 @@
     <string name="hudhud_replay">دوباره بشنوید</string>
     <string name="hudhud_unknown">این را در دفترتان پیدا نکردم. نزدیک‌ترین پرسش‌هایی که می‌توانم پاسخ دهم در پایین است.</string>
     <string name="hudhud_off_topic">من فقط در دفتر مغازه‌تان و همین برنامه کمک می‌کنم، برای همین نمی‌توانم به این پاسخ دهم.</string>
+    <string name="hudhud_took_none">در دفتر هیچ معامله‌ای از %2$s با %1$s نیست.</string>
+    <string name="hudhud_took_none_span">در این بازه در دفتر هیچ معامله‌ای از %2$s با %1$s نیست.</string>
+    <string name="hudhud_l_took_last">آخرین خرید</string>
+    <string name="hudhud_no_history">گفتگوهای قبلی را برای نشان دادن نگه نمی‌دارم. هر سؤال را از دفتر شما همان‌طور که اکنون هست پاسخ می‌دهم.</string>
     <string name="hudhud_sum_here">برای حساب کردن، ماشین‌حساب با یک لمس باز می‌شود.</string>
     <string name="hudhud_why_title_sales">فروش: چه تغییری کرد</string>
     <string name="hudhud_why_title_profit">سود: چه تغییری کرد</string>

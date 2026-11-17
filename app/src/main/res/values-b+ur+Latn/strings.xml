@@ -1077,6 +1077,10 @@
     <string name="hudhud_replay">Dobara sunein</string>
     <string name="hudhud_unknown">Yeh aap ke khate mein nahi mila. Is ke qareeb tareen sawal, jin ka jawab de sakta hoon, neeche hain.</string>
     <string name="hudhud_off_topic">Main sirf aap ki dukaan ke khate aur is app mein madad karta hoon, is liye is ka jawab nahi de sakta.</string>
+    <string name="hudhud_took_none">Khate mein %1$s ke saath %2$s ka koi len den nahi.</string>
+    <string name="hudhud_took_none_span">Is muddat mein khate mein %1$s ke saath %2$s ka koi len den nahi.</string>
+    <string name="hudhud_l_took_last">Aakhri baar liya</string>
+    <string name="hudhud_no_history">Main pichli baat cheet sambhal kar nahi dikhata. Har sawal ka jawab aap ke khate se abhi naye sire se deta hoon.</string>
     <string name="hudhud_sum_here">Hisaab lagane ke liye calculator ek tap par hai.</string>
     <string name="hudhud_why_title_sales">Sale: kya badla</string>
     <string name="hudhud_why_title_profit">Munafa: kya badla</string>

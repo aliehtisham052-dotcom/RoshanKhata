@@ -1095,6 +1095,10 @@
     <string name="hudhud_replay">Dengar lagi</string>
     <string name="hudhud_unknown">Ini tidak saya temukan di buku Anda. Pertanyaan terdekat yang bisa saya jawab ada di bawah.</string>
     <string name="hudhud_off_topic">Saya hanya membantu buku toko Anda dan aplikasi ini, jadi saya tidak bisa menjawab ini.</string>
+    <string name="hudhud_took_none">Tidak ada transaksi %2$s dengan %1$s di buku.</string>
+    <string name="hudhud_took_none_span">Tidak ada transaksi %2$s dengan %1$s di buku pada periode ini.</string>
+    <string name="hudhud_l_took_last">Terakhir dibeli</string>
+    <string name="hudhud_no_history">Saya tidak menyimpan percakapan sebelumnya untuk ditampilkan. Setiap pertanyaan saya jawab dari buku Anda sebagaimana adanya sekarang.</string>
     <string name="hudhud_sum_here">Untuk berhitung, kalkulator tinggal satu ketukan.</string>
     <string name="hudhud_why_title_sales">Penjualan: apa yang berubah</string>
     <string name="hudhud_why_title_profit">Laba: apa yang berubah</string>

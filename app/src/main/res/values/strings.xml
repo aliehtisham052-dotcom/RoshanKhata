@@ -1119,6 +1119,10 @@
     <string name="hudhud_replay">Hear again</string>
     <string name="hudhud_unknown">I could not find this in your khata. The nearest questions I can answer are below.</string>
     <string name="hudhud_off_topic">I help only with your shop\'s book and this app, so I cannot answer this.</string>
+    <string name="hudhud_took_none">The book has no %2$s with %1$s.</string>
+    <string name="hudhud_took_none_span">The book has no %2$s with %1$s in this time.</string>
+    <string name="hudhud_l_took_last">Last bought</string>
+    <string name="hudhud_no_history">I do not keep past conversations to show. Each question is answered fresh from your book as it stands now.</string>
     <string name="hudhud_sum_here">For sums, the calculator is one tap away.</string>
     <string name="hudhud_why_title_sales">Sales: what changed</string>
     <string name="hudhud_why_title_profit">Profit: what changed</string>

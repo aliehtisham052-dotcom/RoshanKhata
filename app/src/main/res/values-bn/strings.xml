@@ -1117,6 +1117,10 @@
     <string name="hudhud_replay">আবার শুনুন</string>
     <string name="hudhud_unknown">এটি আপনার খাতায় পাইনি। কাছাকাছি যে প্রশ্নগুলোর উত্তর দিতে পারি, নিচে আছে।</string>
     <string name="hudhud_off_topic">আমি শুধু আপনার দোকানের খাতা আর এই অ্যাপে সাহায্য করি, তাই এর উত্তর দিতে পারছি না।</string>
+    <string name="hudhud_took_none">খাতায় %1$s-এর সাথে %2$s-এর কোনো লেনদেন নেই।</string>
+    <string name="hudhud_took_none_span">এই সময়ে খাতায় %1$s-এর সাথে %2$s-এর কোনো লেনদেন নেই।</string>
+    <string name="hudhud_l_took_last">শেষবার কিনেছেন</string>
+    <string name="hudhud_no_history">আমি আগের কথোপকথন জমিয়ে দেখাই না। প্রতিটি প্রশ্নের উত্তর আপনার খাতা থেকে এখনকার অবস্থায় নতুন করে দিই।</string>
     <string name="hudhud_sum_here">হিসাবের জন্য ক্যালকুলেটর এক ট্যাপেই খোলে।</string>
     <string name="hudhud_why_title_sales">বিক্রি: কী বদলেছে</string>
     <string name="hudhud_why_title_profit">লাভ: কী বদলেছে</string>

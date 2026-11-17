@@ -161,7 +161,41 @@ object VoiceQuestion {
     private val WEEKDAYS = listOf("jumma", "jumme", "jume", "jummah", "juma", "friday", "somwar", "itwar", "monday", "sunday", "جمعہ", "جمعے", "इतवार",
         "جمعه", "الجمعة")
 
+    // A festival framed as a span by the words beside it (17 Nov 2026, L004: "Eid se ab tak ki sale" was the whole book, "Eid par kitni
+    // sale hui" and "Christmas ki sale" this month's figure). Side by side only, so "Eid Muhammad se ab tak kitna mila" stays a man
+    // called Eid; "Ramzan" and "Muharram" are left to the frames above ("Ramzan se ab tak kitna mila" asks a man called Ramzan).
+    private val EID = listOf("eid", "عید", "ईद", "ঈদ")
+    private val FESTIVALS = listOf("christmas", "کرسمس", "क्रिसमस", "diwali", "دیوالی", "दिवाली", "दीवाली", "holi", "होली", "lebaran",
+        "idul fitri", "idul adha", "chand raat", "chaand raat", "چاند رات", "bakra eid", "bakri eid", "bakrid", "बकरीद", "eid ul fitr",
+        "eid ul adha", "eid ul azha", "عید الفطر", "عید الاضحی", "عید الاضحیٰ")
+    private val SPAN_AFTER = listOf("se ab tak", "se abhi tak", "se aaj tak", "se lekar", "tak", "par", "pe", "ke mauqe par", "ke moqe par",
+        "ke mauke par", "سے اب تک", "سے ابھی تک", "سے آج تک", "تک", "پر", "کے موقع پر", "से अब तक", "से अभी तक", "से आज तक", "तक", "पर",
+        "पे", "के मौके पर", "থেকে")
+    private val FESTIVAL_AFTER = SPAN_AFTER + listOf("ki", "ka", "کی", "کا", "की", "का")
+    private val SPAN_BEFORE = listOf("on", "since", "till", "until", "from", "منذ", "از", "sejak", "sampai", "hingga")
+
+    /** Whether [t] (normalised) holds a festival with a span's word right beside it ([EID], [FESTIVALS]). */
+    internal fun framedEvent(t: String): Boolean {
+        val toks = t.split(' ')
+        val before = SPAN_BEFORE.map { normalise(it) }.toSet()
+        fun runAt(i: Int, phrase: List<String>) = i + phrase.size <= toks.size && phrase.indices.all { toks[i + it] == phrase[it] }
+        fun framed(events: List<String>, after: List<String>): Boolean {
+            val afters = after.map { normalise(it).split(' ') }
+            for (e in events) {
+                val ev = normalise(e).split(' ')
+                for (i in 0..toks.size - ev.size) {
+                    if (!runAt(i, ev)) continue
+                    if (i > 0 && toks[i - 1] in before) return true
+                    if (afters.any { runAt(i + ev.size, it) }) return true
+                }
+            }
+            return false
+        }
+        return framed(EID, SPAN_AFTER) || framed(FESTIVALS, FESTIVAL_AFTER)
+    }
+
     private fun isEventSpan(t: String): Boolean {
+        if (framedEvent(t)) return true
         if (saysAny(t, EVENTS) && saysAny(t, EVENT_FRAME)) return true
         // "Pichle jumme se ab tak": since a weekday, which is none of the spans.
         return saysAny(t, WEEKDAYS) && saysAny(t, LAST) && saysAny(t, SINCE)
@@ -252,7 +286,9 @@ object VoiceQuestion {
         "payable", "payables", "ada karna", "ادا کرنا", "अदा करना",
         // 16 Nov 2026 (audit T11, the held-out set read these the opposite way): Farsi "the money I must give", Hindi's
         // accountant's word for payables.
-        "باید بدم", "باید بدهم", "باید بپردازم", "باید بدیم", "باید بدهیم", "باید بپردازیم", "देनदारी")
+        "باید بدم", "باید بدهم", "باید بپردازم", "باید بدیم", "باید بدهیم", "باید بپردازیم", "देनदारी",
+        // 17 Nov 2026 (the lead's retrain check): the feminine of "dena" ("kis ki raqam deni hai" is whom the shop pays).
+        "deni", "دینی", "देनी")
     private val TO_GET = listOf("lena", "lene", "to get", "receive", "collect", "piutang", "tagih", "لینا", "لینے", "وٺڻا",
         "وٺڻو", "لي عند", "طلبکار", "دریافت", "लेना", "लेने", "পাওনা", "পেতে",
         // 12 Nov 2026 (Hudhud), from the app's own chips: Arabic "what is mine", Indonesian "what must be received".
@@ -639,6 +675,8 @@ object VoiceQuestion {
     private fun spans(heard: String): Spans {
         val t = normalise(heard)
         if (t.isEmpty()) return NO_SPAN
+        // A festival framed as a span first: "Eid se aaj tak" holds "aaj tak" and is still no span he tells (17 Nov 2026).
+        if (framedEvent(t)) return NOT_OURS
         // The whole book first: "aaj tak" holds the word "aaj" and is not today.
         if (saysAny(t, EVER)) return Spans(Window.ALL_TIME, false)
         if (isEventSpan(t)) return NOT_OURS
@@ -746,6 +784,10 @@ object VoiceQuestion {
             // Which way the money is owed, by who gives (14 Nov 2026, the owner's sentences): "kis kis ne mera paisa dena
             // hai" says "dena" but somebody else gives — the shop's to get; "mera qarz", "supplier ka baqaya" are what the
             // shop owes — its to give.
+            // Said by its whole shape (17 Nov 2026): somebody will give "to me" ("log mujhe kitna denge"), the shop's own payment still
+            // to make ("kul adaigi kitni baqi hai"). Before the words of giving, which "denge" and "adaigi" are not.
+            owedToMe(t) -> Kind.TO_GET
+            payDue(t) -> Kind.TO_GIVE
             saysAny(t, TO_GIVE) -> if (owedToTheShop(t)) Kind.TO_GET else Kind.TO_GIVE
             saysAny(t, TO_GET) || saysAny(t, DEBT) -> if (owedByTheShop(t)) Kind.TO_GIVE else Kind.TO_GET
             else -> null
@@ -756,11 +798,49 @@ object VoiceQuestion {
      * Somebody else is the one who gives: "kis ne dena hai", "logon ne dene hain", "who owes me", and a name before "ne"
      * ("Zaid ne dene hain": Zaid gives, the shop gets).
      */
-    private fun owedToTheShop(t: String): Boolean = saysAny(t, OTHERS_GIVE) || otherDoer(t)
+    private fun owedToTheShop(t: String): Boolean = saysAny(t, OTHERS_GIVE) || otherDoer(t) || owedToMe(t)
+
+    /**
+     * Somebody will give the money to the shop (17 Nov 2026): "to me" beside a giving verb in the future — "log mujhe kitna denge",
+     * "लोग मुझे कुल कितना देंगे", "how much will people pay me", "berapa yang akan dibayar orang ke saya", "مردم چقدر به من می‌دهند".
+     * The future is needed: "mujhe kitna dena hai" is what the shop has to give.
+     */
+    internal fun owedToMe(t: String): Boolean =
+        (saysAny(t, TO_ME) && saysAny(t, WILL_GIVE)) || saysAny(t, OWED_TO_ME) ||
+            (saysAny(t, listOf("pay me", "pay us", "give me money")) && saysAny(t, listOf("will")))
+
+    private val TO_ME = listOf("mujhe", "mujhay", "mjhe", "mujhko", "hamein", "hamen", "humein", "humen", "hume", "مجھے", "ہمیں", "আমাকে", "আমাদের", "मुझे",
+        "हमें", "मुझको", "مون کي", "اسان کي", "ke saya", "kepada saya", "ke kami", "kepada kami", "به من", "به ما")
+    private val WILL_GIVE = listOf("denge", "dega", "degi", "dengay", "dein ge", "dain ge", "de ga", "de gi", "dein gi", "دیں گے", "دینگے",
+        "دے گا", "دیگا", "دے گی", "دیگی", "देंगे", "देगा", "देगी", "দেবে", "দেবেন", "দিবে", "ڏيندا", "ڏيندو", "ڏيندي", "akan dibayar", "akan membayar",
+        "akan bayar", "akan diberikan", "می‌دهند", "میدهند", "می دهند", "می‌دهد", "میدهد", "می دهد")
+    private val OWED_TO_ME = listOf("আমাকে দেবে", "আমাকে দেবেন", "আমাকে দিবে", "আমাকে কত দেবে", "سيدفع لي", "سيدفعون لي", "يدفعون لي",
+        "سيعطونني", "يعطونني")
+
+    /**
+     * The shop's own payment still to make (17 Nov 2026): a word of paying out ("adaigi", the shop's paying) beside a word of what is
+     * left ("baqi", Sindhi "رهيل"), with nobody asked about — "kul adaigi kitni baqi hai", "ڪل ادائيگي ڪيتري رهيل آهي". "Kis ki
+     * adaigi baqi hai" asks who has not paid, and is not here.
+     */
+    internal fun payDue(t: String): Boolean =
+        saysAny(t, ADAIGI) && saysAny(t, STILL_LEFT) && !saysAny(t, WHOSE) && !saysAny(t, OTHERS_GIVE) && !otherDoer(t)
+
+    private val ADAIGI = listOf("adaigi", "adaygi", "adaigiyan", "ادائیگی", "ادائیگیاں", "ادائيگي", "ادائيگيون", "अदायगी")
+    private val STILL_LEFT = listOf("baqi", "baaqi", "baki", "bakaya", "reh gayi", "rehti", "باقی", "بقایا", "رهيل", "بچيل", "बाकी", "बकाया")
+    private val WHOSE = listOf("kis", "kis ki", "kaun", "kon", "کس", "کون", "ڪنهن", "ڪير", "किस", "कौन", "who", "whose")
+
+    /**
+     * The side is stated by the sentence's whole shape ([owedToMe], [payDue]): Hudhud keeps such a reading against any meaning of
+     * his sense (lesson 148), for no retrain can make it the other side.
+     */
+    fun sideStated(heard: String): Boolean {
+        val t = normalise(heard)
+        return t.isNotEmpty() && (owedToMe(t) || payDue(t))
+    }
 
     /** Money is the shop's to get: its debtors' words, "lena", or somebody else who has to give. */
     private fun owedToUs(t: String): Boolean =
-        saysAny(t, DEBT) || saysAny(t, TO_GET) || (saysAny(t, TO_GIVE) && owedToTheShop(t))
+        saysAny(t, DEBT) || saysAny(t, TO_GET) || (saysAny(t, TO_GIVE) && owedToTheShop(t)) || owedToMe(t)
 
     /** A supplier's side with nobody else giving and nothing to take: what is owed there is the shop's to pay. */
     private fun supplierOwed(t: String): Boolean =
@@ -796,7 +876,7 @@ object VoiceQuestion {
      */
     fun sideSaid(heard: String): Boolean {
         val t = normalise(heard)
-        return saysAny(t, TO_GIVE) || saysAny(t, TO_GET) || saysAny(t, MY_DEBT) || owedToTheShop(t)
+        return saysAny(t, TO_GIVE) || saysAny(t, TO_GET) || saysAny(t, MY_DEBT) || owedToTheShop(t) || payDue(t)
     }
 
     /** [otherDoer] for a sentence as it was said (Hudhud keeps a figure the rules read from it; see his `decide`). */
