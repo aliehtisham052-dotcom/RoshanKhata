@@ -128,7 +128,9 @@ fun CustomerPane(
      * The owner's private note (schema 43), or null: only that there is one shows, as a chip; its words open on a
      * click, as the Radar's reasons do — the customer may be looking at the screen across the counter.
      */
-    note: String? = null
+    note: String? = null,
+    /** ⋮ → Send khata link (17 Nov 2026, audit L022; the phone's menu, after Customer QR); null shows no row. */
+    onKhataLink: (() -> Unit)? = null
 ) {
     val c = LocalRoshanColors.current
     val shape = RoundedCornerShape(16.dp)
@@ -224,6 +226,9 @@ fun CustomerPane(
                     // The phone's customer menu, in its order (Edit and Statement have their own buttons here).
                     DropdownMenu(open, onDismissRequest = { open = false }, containerColor = Look.layer) {
                         DropdownMenuItem(text = { Text(word(W.customer_qr), color = c.ink, fontSize = 14.sp) }, onClick = { open = false; onQr() })
+                        if (onKhataLink != null) {
+                            DropdownMenuItem(text = { Text(word(W.clink_menu), color = c.ink, fontSize = 14.sp) }, onClick = { open = false; onKhataLink() })
+                        }
                         if (promiseInMenu) {
                             DropdownMenuItem(text = { Text(word(W.harvest_promise_menu), color = c.ink, fontSize = 14.sp) }, onClick = { open = false; onPromise() })
                         }

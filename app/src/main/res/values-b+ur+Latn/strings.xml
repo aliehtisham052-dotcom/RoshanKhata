@@ -4306,6 +4306,11 @@
     <string name="clink_take_over">Is phone se bhejein</string>
     <string name="clink_stopped_now">Link band kar diya. Ab ye nahi khulega.</string>
     <string name="clink_stopped_waiting">Link is phone par band kar diya. Server ne abhi ise nahi hataya; agli baar bhejte waqt dobara koshish hogi.</string>
+    <string name="clink_other_copy_pc">Is kitaab ke link kisi aur device (kisi phone, ya kitaab ki purani copy) se bheje gaye thay. Ab is computer se bhejein? Phir yahi computer balance taaza rakhega.</string>
+    <string name="clink_take_over_pc">Is computer se bhejein</string>
+    <string name="clink_stopped_waiting_pc">Link is computer par band kar diya. Server ne abhi ise nahi hataya; agli baar bhejte waqt dobara koshish hogi.</string>
+    <string name="clink_copied_pc">Link paigham ke saath copy ho gaya. WhatsApp is gahak ki chat par khulta hai: wahan paste kar ke bhejein. Link browser ke address mein nahi daala jaata, is liye koi website ise nahi dekhti.</string>
+    <string name="clink_copied_no_phone_pc">Link paigham ke saath copy ho gaya. Is gahak ka number nahi hai: ise khud us ki chat mein paste karein.</string>
     <string name="clink_busy">Khata link ka server abhi masroof hai. Kuch der baad dobara koshish karein.</string>
     <string name="clink_try_again">Dobara koshish karein</string>
     <string name="clink_off">Is version mein khata link maujood nahi.</string>

@@ -4354,6 +4354,11 @@
     <string name="clink_take_over">এই ফোন থেকে পাঠান</string>
     <string name="clink_stopped_now">লিংক বন্ধ করা হয়েছে। এটি আর খুলবে না।</string>
     <string name="clink_stopped_waiting">এই ফোনে লিংক বন্ধ করা হয়েছে। সার্ভার এখনও এটি সরায়নি; পরের বার পাঠানোর সময় আবার চেষ্টা হবে।</string>
+    <string name="clink_other_copy_pc">এই খাতার লিংক অন্য ডিভাইস (কোনো ফোন, বা খাতার পুরোনো কপি) থেকে পাঠানো হয়েছিল। এখন এই কম্পিউটার থেকে পাঠাবেন? তখন এই কম্পিউটারই ব্যালেন্স হালনাগাদ রাখবে।</string>
+    <string name="clink_take_over_pc">এই কম্পিউটার থেকে পাঠান</string>
+    <string name="clink_stopped_waiting_pc">এই কম্পিউটারে লিংক বন্ধ করা হয়েছে। সার্ভার এখনও এটি সরায়নি; পরের বার পাঠানোর সময় আবার চেষ্টা হবে।</string>
+    <string name="clink_copied_pc">বার্তাসহ লিংক কপি হয়েছে। WhatsApp এই গ্রাহকের চ্যাটে খোলে: সেখানে পেস্ট করে পাঠান। লিংকটি ব্রাউজারের ঠিকানায় দেওয়া হয় না, তাই কোনো ওয়েবসাইট এটি দেখে না।</string>
+    <string name="clink_copied_no_phone_pc">বার্তাসহ লিংক কপি হয়েছে। এই গ্রাহকের নম্বর নেই: নিজে এটি তাঁর চ্যাটে পেস্ট করুন।</string>
     <string name="clink_busy">খাতার লিংকের সার্ভার এখন ব্যস্ত। একটু পরে আবার চেষ্টা করুন।</string>
     <string name="clink_try_again">আবার চেষ্টা করুন</string>
     <string name="clink_off">এই সংস্করণে খাতার লিংক নেই।</string>

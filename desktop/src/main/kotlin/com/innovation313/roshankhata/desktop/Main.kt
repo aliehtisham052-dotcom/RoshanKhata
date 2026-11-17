@@ -825,6 +825,7 @@ private fun Book(
     // the day it has), its QR card, and several of its entries chosen to delete — cleared when another opens.
     var promising by remember { mutableStateOf<Pair<PartyWithBalance, Long?>?>(null) }
     var qrFor by remember { mutableStateOf<PartyWithBalance?>(null) }
+    var linkFor by remember { mutableStateOf<PartyWithBalance?>(null) }
     var pickingEntries by remember(selected) { mutableStateOf(false) }
     var pickedEntries by remember(selected) { mutableStateOf(emptySet<Long>()) }
     var deletingEntries by remember { mutableStateOf<List<Long>?>(null) }
@@ -889,6 +890,19 @@ private fun Book(
     var bookTick by remember { mutableIntStateOf(0) }
     LaunchedEffect(dao) {
         dao.observeBellSources().drop(1).collectLatest { kotlinx.coroutines.delay(800); bookTick++ }
+    }
+    // The customers' khata pages kept up to date while the window is open (17 Nov 2026, audit L022; the phone's
+    // CustomerLinkSync.soon): a quiet round every ten minutes, which sends only pages that changed and nothing at all on a
+    // computer that never sent a link. Notes outside the book (customer_link.properties).
+    LaunchedEffect(activeBusiness) {
+        val place = KhataLinkDesk.place(home)
+        val bookScope = businesses.dbFile(activeBusiness).absolutePath
+        while (true) {
+            kotlinx.coroutines.delay(KhataLinkDesk.GAP_MS)
+            if (KhataLinkDesk.used(place)) withContext(Dispatchers.IO) {
+                KhataLinkDesk.flush(dao, db, place, bookScope, KhataLinkDesk.look(settings, appPrefs.language()))
+            }
+        }
     }
     var slowTick by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
@@ -1445,6 +1459,9 @@ private fun Book(
                                     onPromise = { promising = party to facts.promiseAt },
                                     promiseInMenu = LocalTrade.current.seasons,
                                     onQr = { qrFor = party },
+                                    // A customer's page put on the shop's hosting is an export of the book: a cashier waits for a
+                                    // manager's PIN, as on the phone (17 Nov 2026, audit L022).
+                                    onKhataLink = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) { linkFor = party } },
                                     pick = if (!pickingEntries) null else EntryPick(
                                         pickedEntries,
                                         onToggle = { id -> pickedEntries = if (id in pickedEntries) pickedEntries - id else pickedEntries + id },
@@ -1480,6 +1497,10 @@ private fun Book(
                             }, onDismiss = { promising = null })
                         }
                         qrFor?.let { p -> CustomerQrDialog(dao, p.id, p.name) { qrFor = null } }
+                        linkFor?.let { p ->
+                            KhataLinkDialog(p, db, dao, settings, home, businesses.dbFile(activeBusiness).absolutePath,
+                                appPrefs.language(), scope) { linkFor = null }
+                        }
                         // Several entries to the bin, named with their count (the phone's question). Entries a bill,
                         // a plan, a cheque, a counter ticket or a return wrote stay, and are said.
                         deletingEntries?.let { ids ->

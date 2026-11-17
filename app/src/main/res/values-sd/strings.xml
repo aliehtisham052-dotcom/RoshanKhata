@@ -4334,6 +4334,11 @@
     <string name="clink_take_over">هن فون تان موڪليو</string>
     <string name="clink_stopped_now">لنڪ بند ڪئي وئي. هاڻي اها نه کلندي.</string>
     <string name="clink_stopped_waiting">لنڪ هن فون تي بند ڪئي وئي. سرور اڃا ان کي نه هٽايو آهي؛ ايندڙ ڀيري موڪلڻ وقت ٻيهر ڪوشش ٿيندي.</string>
+    <string name="clink_other_copy_pc">هن ڪتاب جون لنڪون ڪنهن ٻئي ڊوائيس (ڪنهن فون، يا ڪتاب جي پراڻي ڪاپي) تان موڪليون ويون هيون. هاڻي هن ڪمپيوٽر تان موڪليو؟ پوءِ اهو ئي ڪمپيوٽر بيلنس تازو رکندو.</string>
+    <string name="clink_take_over_pc">هن ڪمپيوٽر تان موڪليو</string>
+    <string name="clink_stopped_waiting_pc">لنڪ هن ڪمپيوٽر تي بند ڪئي وئي. سرور اڃا ان کي نه هٽايو آهي؛ ايندڙ ڀيري موڪلڻ وقت ٻيهر ڪوشش ٿيندي.</string>
+    <string name="clink_copied_pc">لنڪ پيغام سان گڏ ڪاپي ٿي وئي. واٽس ايپ هن گراهڪ جي چيٽ تي کلي ٿو: اتي پيسٽ ڪري موڪليو. لنڪ برائوزر جي پتي ۾ نه وجهي ويندي آهي، تنهن ڪري ڪا ويب سائيٽ ان کي نه ٿي ڏسي.</string>
+    <string name="clink_copied_no_phone_pc">لنڪ پيغام سان گڏ ڪاپي ٿي وئي. هن گراهڪ جو نمبر ناهي: ان کي پاڻ سندس چيٽ ۾ پيسٽ ڪريو.</string>
     <string name="clink_busy">کاتي جي لنڪ جو سرور هن وقت مصروف آهي. ٿوري دير کان پوءِ ٻيهر ڪوشش ڪريو.</string>
     <string name="clink_try_again">ٻيهر ڪوشش ڪريو</string>
     <string name="clink_off">هن ورزن ۾ کاتي جا لنڪ موجود ناهن.</string>

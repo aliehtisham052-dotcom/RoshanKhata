@@ -4586,6 +4586,11 @@
     <string name="clink_take_over">الإرسال من هذا الهاتف</string>
     <string name="clink_stopped_now">أُوقف الرابط. لم يعد يُفتح.</string>
     <string name="clink_stopped_waiting">أُوقف الرابط على هذا الهاتف. لم يُزله الخادم بعد؛ ستُعاد المحاولة مع الإرسال التالي.</string>
+    <string name="clink_other_copy_pc">أُرسلت روابط هذا الدفتر من جهاز آخر (هاتف، أو نسخة أقدم من الدفتر). هل تريد الإرسال من هذا الحاسوب الآن؟ عندها سيُبقي هذا الحاسوب الأرصدة محدّثة.</string>
+    <string name="clink_take_over_pc">الإرسال من هذا الحاسوب</string>
+    <string name="clink_stopped_waiting_pc">أُوقف الرابط على هذا الحاسوب. لم يُزله الخادم بعد؛ ستُعاد المحاولة مع الإرسال التالي.</string>
+    <string name="clink_copied_pc">نُسخ الرابط مع رسالته. يُفتح واتساب على محادثة هذا العميل: الصقه هناك وأرسله. لا يوضع الرابط في عنوان المتصفح، فلا يراه أي موقع.</string>
+    <string name="clink_copied_no_phone_pc">نُسخ الرابط مع رسالته. لا رقم لهذا العميل: الصقه بنفسك في محادثته.</string>
     <string name="clink_busy">خادم روابط الحساب مشغول الآن. حاول مرة أخرى لاحقًا.</string>
     <string name="clink_try_again">حاول مرة أخرى</string>
     <string name="clink_off">روابط الحساب غير متاحة في هذا الإصدار.</string>

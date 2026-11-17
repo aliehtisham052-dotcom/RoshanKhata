@@ -4306,6 +4306,11 @@
     <string name="clink_take_over">اس فون سے بھیجیں</string>
     <string name="clink_stopped_now">لنک بند کر دیا۔ اب یہ نہیں کھلے گا۔</string>
     <string name="clink_stopped_waiting">لنک اس فون پر بند کر دیا۔ سرور نے ابھی اسے نہیں ہٹایا؛ اگلی بار بھیجتے وقت دوبارہ کوشش ہوگی۔</string>
+    <string name="clink_other_copy_pc">اس کتاب کے لنک کسی اور آلے (کسی فون، یا کتاب کی پرانی کاپی) سے بھیجے گئے تھے۔ اب اس کمپیوٹر سے بھیجیں؟ پھر یہی کمپیوٹر بیلنس تازہ رکھے گا۔</string>
+    <string name="clink_take_over_pc">اس کمپیوٹر سے بھیجیں</string>
+    <string name="clink_stopped_waiting_pc">لنک اس کمپیوٹر پر بند کر دیا۔ سرور نے ابھی اسے نہیں ہٹایا؛ اگلی بار بھیجتے وقت دوبارہ کوشش ہوگی۔</string>
+    <string name="clink_copied_pc">لنک پیغام کے ساتھ کاپی ہو گیا۔ واٹس ایپ اس گاہک کی چیٹ پر کھلتا ہے: وہاں پیسٹ کر کے بھیجیں۔ لنک براؤزر کے پتے میں نہیں ڈالا جاتا، اس لیے کوئی ویب سائٹ اسے نہیں دیکھتی۔</string>
+    <string name="clink_copied_no_phone_pc">لنک پیغام کے ساتھ کاپی ہو گیا۔ اس گاہک کا نمبر نہیں ہے: اسے خود اس کی چیٹ میں پیسٹ کریں۔</string>
     <string name="clink_busy">کھاتہ لنک کا سرور ابھی مصروف ہے۔ کچھ دیر بعد دوبارہ کوشش کریں۔</string>
     <string name="clink_try_again">دوبارہ کوشش کریں</string>
     <string name="clink_off">اس ورژن میں کھاتہ لنک دستیاب نہیں۔</string>

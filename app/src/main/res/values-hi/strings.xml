@@ -4354,6 +4354,11 @@
     <string name="clink_take_over">इस फ़ोन से भेजें</string>
     <string name="clink_stopped_now">लिंक बंद कर दिया। अब यह नहीं खुलेगा।</string>
     <string name="clink_stopped_waiting">लिंक इस फ़ोन पर बंद कर दिया। सर्वर ने अभी इसे नहीं हटाया; अगली बार भेजते समय फिर कोशिश होगी।</string>
+    <string name="clink_other_copy_pc">इस किताब के लिंक किसी और डिवाइस (किसी फ़ोन, या किताब की पुरानी कॉपी) से भेजे गए थे। अब इस कंप्यूटर से भेजें? फिर यही कंप्यूटर बैलेंस ताज़ा रखेगा।</string>
+    <string name="clink_take_over_pc">इस कंप्यूटर से भेजें</string>
+    <string name="clink_stopped_waiting_pc">लिंक इस कंप्यूटर पर बंद कर दिया। सर्वर ने अभी इसे नहीं हटाया; अगली बार भेजते समय फिर कोशिश होगी।</string>
+    <string name="clink_copied_pc">लिंक संदेश के साथ कॉपी हो गया। WhatsApp इस ग्राहक की चैट पर खुलता है: वहाँ पेस्ट करके भेजें। लिंक ब्राउज़र के पते में नहीं डाला जाता, इसलिए कोई वेबसाइट उसे नहीं देखती।</string>
+    <string name="clink_copied_no_phone_pc">लिंक संदेश के साथ कॉपी हो गया। इस ग्राहक का नंबर नहीं है: इसे खुद उनकी चैट में पेस्ट करें।</string>
     <string name="clink_busy">खाता लिंक का सर्वर अभी व्यस्त है। थोड़ी देर बाद फिर कोशिश करें।</string>
     <string name="clink_try_again">फिर कोशिश करें</string>
     <string name="clink_off">इस वर्शन में खाता लिंक उपलब्ध नहीं है।</string>

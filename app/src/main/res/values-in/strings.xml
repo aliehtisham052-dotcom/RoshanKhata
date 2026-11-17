@@ -4284,6 +4284,11 @@
     <string name="clink_take_over">Kirim dari ponsel ini</string>
     <string name="clink_stopped_now">Tautan dihentikan. Tautan tidak bisa dibuka lagi.</string>
     <string name="clink_stopped_waiting">Tautan dihentikan di ponsel ini. Server belum menghapusnya; akan dicoba lagi pada pengiriman berikutnya.</string>
+    <string name="clink_other_copy_pc">Tautan buku ini dikirim dari perangkat lain (sebuah ponsel, atau salinan buku yang lebih lama). Kirim dari komputer ini sekarang? Komputer ini lalu yang menjaga saldo tetap terbaru.</string>
+    <string name="clink_take_over_pc">Kirim dari komputer ini</string>
+    <string name="clink_stopped_waiting_pc">Tautan dihentikan di komputer ini. Server belum menghapusnya; akan dicoba lagi pada pengiriman berikutnya.</string>
+    <string name="clink_copied_pc">Tautan disalin bersama pesannya. WhatsApp terbuka di obrolan pelanggan ini: tempelkan di sana lalu kirim. Tautan tidak dimasukkan ke alamat browser, jadi tidak ada situs yang melihatnya.</string>
+    <string name="clink_copied_no_phone_pc">Tautan disalin bersama pesannya. Pelanggan ini tidak punya nomor: tempelkan sendiri ke obrolannya.</string>
     <string name="clink_busy">Server tautan buku sedang sibuk. Coba lagi nanti.</string>
     <string name="clink_try_again">Coba lagi</string>
     <string name="clink_off">Tautan buku tidak tersedia di versi ini.</string>

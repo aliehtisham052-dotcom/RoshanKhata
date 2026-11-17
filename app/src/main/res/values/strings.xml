@@ -4519,6 +4519,11 @@
     <string name="clink_take_over">Send from this phone</string>
     <string name="clink_stopped_now">Link stopped. It no longer opens.</string>
     <string name="clink_stopped_waiting">Link stopped on this phone. The server has not taken it down yet; it is tried again with the next send.</string>
+    <string name="clink_other_copy_pc">This book’s links were sent from another device (a phone, or an older copy of the book). Send from this computer now? This computer will then keep the balances up to date.</string>
+    <string name="clink_take_over_pc">Send from this computer</string>
+    <string name="clink_stopped_waiting_pc">Link stopped on this computer. The server has not taken it down yet; it is tried again with the next send.</string>
+    <string name="clink_copied_pc">The link is copied, with its message. WhatsApp opens on this customer’s chat: paste it there and send. The link is not put in the browser’s address, so no website sees it.</string>
+    <string name="clink_copied_no_phone_pc">The link is copied, with its message. This customer has no number: paste it into their chat yourself.</string>
     <string name="clink_busy">The khata link server is busy right now. Try again later.</string>
     <string name="clink_try_again">Try again</string>
     <string name="clink_off">Khata links are not available in this build.</string>
