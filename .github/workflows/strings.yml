@@ -48,6 +48,10 @@ on:
       - 'scripts/check_invented_numbers.py'
       - 'scripts/check_word_keys.py'
       - 'scripts/check_room_aliases.py'
+      # Gates only tighten; release jobs hold no secrets; nothing ignored is tracked; CSV reads are decoded (BC-192..195, 223, 225).
+      - 'scripts/check_dao_gates.py'
+      - 'scripts/check_repo_guards.py'
+      - '.github/workflows/**'
       # Hudhud's sentence sets: one JSONL view and a quality gate (hudhud_sets.py --check, T27).
       - 'scripts/hudhud_sets.py'
       - 'scripts/hudhud_sets_overlap.tsv'
@@ -94,6 +98,10 @@ on:
       - 'scripts/check_invented_numbers.py'
       - 'scripts/check_word_keys.py'
       - 'scripts/check_room_aliases.py'
+      # Gates only tighten; release jobs hold no secrets; nothing ignored is tracked; CSV reads are decoded (BC-192..195, 223, 225).
+      - 'scripts/check_dao_gates.py'
+      - 'scripts/check_repo_guards.py'
+      - '.github/workflows/**'
       # Hudhud's sentence sets: one JSONL view and a quality gate (hudhud_sets.py --check, T27).
       - 'scripts/hudhud_sets.py'
       - 'scripts/hudhud_sets_overlap.tsv'
@@ -166,6 +174,14 @@ jobs:
       # BC-105: a word key the shared code names must be a resource, or the phone's WordIds fails to compile on CI.
       - name: Every word key the shared code names is a resource
         run: python3 scripts/check_word_keys.py
+      # BC-194, BC-223: every DAO write has a gate or an audit row on its path, except the writes frozen in WAITING for the
+      # owner's decision; a new ungated write, a new bare path or a gate taken off a scheme's edit, claim or delete fails.
+      - name: No DAO write loses its gate (the ratchet)
+        run: python3 scripts/check_dao_gates.py --ratchet
+      # BC-192, BC-195, BC-225: a release is published from a job without the signing/Firebase secrets, no file git ignores
+      # is still tracked, and every CSV import reads its text through CsvImport.decode (Excel's encodings).
+      - name: Release jobs hold no secrets, nothing ignored is tracked, CSV reads are decoded
+        run: python3 scripts/check_repo_guards.py
       # The local Gradle-free harness (lesson 93) finds its files by list: a file moved or renamed fails here, not at the next run.
       - name: The shared harness's file lists are current
         run: bash scripts/shared_harness/run.sh --lists-only

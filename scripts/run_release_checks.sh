@@ -28,10 +28,12 @@ CHECKS=(
   "check_room_aliases.py"
   "hudhud_sets.py --check"
   "check_word_keys.py"
+  "check_dao_gates.py --ratchet"
+  "check_repo_guards.py"
 )
 
 # The list must be strings.yml's own.
-want=$(grep -oE 'python3 scripts/[a-z_0-9]+\.py( --check)?' .github/workflows/strings.yml | sed 's#python3 scripts/##' | sort -u)
+want=$(grep -oE 'python3 scripts/[a-z_0-9]+\.py( --[a-z]+)?' .github/workflows/strings.yml | sed 's#python3 scripts/##' | sort -u)
 have=$(printf '%s\n' "${CHECKS[@]}" | sort -u)
 if [ "$want" != "$have" ]; then
   echo "::error::run_release_checks.sh and strings.yml list different checks:"

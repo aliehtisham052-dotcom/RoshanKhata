@@ -239,6 +239,26 @@ def on_the_path(code, start, pos):
     return before, code[pos:e]
 
 
+# The ratchet (BC-194, BC-223; 17 Nov 2026): the writes that still have a bare path, each frozen at its
+# count of bare call sites. They wait for the owner's decision (who may add a customer, product, bill or
+# plan; whether a photo or the plan's next day needs a gate), so they are not exempted. `--ratchet` fails
+# on any OTHER uncovered write, on a new bare path of one of these, and on one that became covered and
+# was not taken out -- so gates only ever tighten. A Strings step.
+WAITING = {
+    "addProduct": (2, "a product added from Products or a bill: anyone at the counter, the owner's call"),
+    "findOrCreateProduct": (1, "a product named on an entry: the same question"),
+    "insertParty": (4, "adding a customer: anyone at the counter, the owner's call"),
+    "insertPlan": (1, "a new plan on the phone: Windows asks Gates.edit, the owner's call"),
+    "insertSupplierBill": (1, "a new supplier bill: the owner's call"),
+    "linkGoodsToProducts": (1, "the tie button: the owner's call"),
+    "setCashPhotoPath": (1, "a picture on a new cashbook row"),
+    "setChequePhotoPath": (1, "a picture on a new cheque"),
+    "setPlanNextDue": (2, "the plan's next day after a payment"),
+    "updateParty": (3, "a customer's details: the owner's call"),
+    "updateProduct": (1, "a product's price from an entry: the owner's call"),
+}
+
+
 def main():
     writes = ro.dao_writes()
     in_dao, _ = dao_covered(writes)
@@ -406,6 +426,26 @@ def main():
     print("dao gates: %d writes — %s" % (len(writes), ", ".join("%s %d" % kv for kv in sorted(counts.items()))))
     if "--check" in sys.argv and (counts.get("UNCOVERED") or stale):
         sys.exit(1)
+    if "--ratchet" in sys.argv:
+        bad = list(stale)
+        for w, (v, sites) in sorted(report.items()):
+            bare = sum(1 for _, g, a, _ in sites if not (g or a))
+            if v != "UNCOVERED":
+                if w in WAITING:
+                    bad.append("%s is covered now: take it out of WAITING so it cannot slip back" % w)
+                continue
+            if w not in WAITING:
+                bad.append("%s writes with no gate and no audit row on %d path(s): gate it, audit it, or "
+                           "ask the owner and add it to WAITING with the reason" % (w, bare))
+            elif bare > WAITING[w][0]:
+                bad.append("%s has %d bare call(s), WAITING allows %d: a new ungated path" % (w, bare, WAITING[w][0]))
+        for w in sorted(set(WAITING) - set(report)):
+            bad.append("WAITING lists a write that is gone: " + w)
+        for b in bad:
+            print("RATCHET: " + b)
+        if bad:
+            sys.exit(1)
+        print("dao gates ratchet: no new ungated write (%d wait for the owner's decision)" % len(WAITING))
 
 
 if __name__ == "__main__":

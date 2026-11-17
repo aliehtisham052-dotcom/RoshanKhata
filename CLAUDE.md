@@ -4337,6 +4337,18 @@ merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on A
   words; 6 held-out and 254 owner/review sentences that are also train sentences (frozen, removed at the next retrain);
   `gen_hudhud_bank.key()` drops Indic vowel signs (at the next retrain); aab.yml runs only 5 of the Strings checks.
 
+### 17 Nov 2026: the register's last seven untested classes get their tests (CI only)
+
+- **Every bug class in `docs/bug-classes.tsv` now has a test (137 of 137).** `check_dao_gates.py --ratchet` is a Strings
+  step: every DAO write needs a gate or an audit row on its path, except the eleven frozen in `WAITING` for the owner's
+  decision, each at its count of bare call sites; a new ungated write, a new bare path, or a gate taken off (the phone's
+  scheme edit, claim and delete were broken on purpose: each failed) fails the build, and a write that became covered
+  must leave `WAITING` (BC-194, BC-223). `check_repo_guards.py`: a job that publishes a release holds no secret but
+  GITHUB_TOKEN (BC-192), no ignored file is tracked (BC-195), every CSV import reads through `CsvImport.decode`
+  (BC-225) — each rule broken once on purpose. `RowLayoutGuardsTest` (Robolectric, not run here): `RowToScreen.plain`
+  resets every transform (BC-074) and `TextFit.stackWhenLarge` moves the figure only above `STACK_SCALE` (BC-065).
+  **A new bug class goes in with its test in the same commit; NONE is no longer allowed by habit.**
+
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
 - **Waiting for his yes (nothing is built unasked):** a review pass by a stronger model before the final APK; parallel helpers; the
