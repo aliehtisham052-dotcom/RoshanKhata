@@ -31,6 +31,9 @@ class SignatureRow(
     var changed: Boolean = false
         private set
 
+    /** Told whenever the owner draws or removes the signature (the form keeps a copy for a rebuilt screen, L024). */
+    var onChanged: ((Bitmap?) -> Unit)? = null
+
     private val status = row.findViewById<TextView>(R.id.tvSigRowStatus)
     private val thumb = row.findViewById<ImageView>(R.id.ivSigRowThumb)
     private val action = row.findViewById<MaterialButton>(R.id.btnSigRowAction)
@@ -42,6 +45,7 @@ class SignatureRow(
                 current = bmp
                 changed = true
                 paint()
+                onChanged?.invoke(bmp)
             }
         }
         row.setOnClickListener(open)
@@ -50,6 +54,7 @@ class SignatureRow(
             current = null
             changed = true
             paint()
+            onChanged?.invoke(null)
         }
         paint()
     }
@@ -61,11 +66,22 @@ class SignatureRow(
         paint()
     }
 
+    /**
+     * The signature as a rebuilt screen's form had it (17 Nov 2026, L024): a new one drawn, or the entry's own removed
+     * ([bitmap] null). Marked changed, so the form still asks before throwing it away and Save files it.
+     */
+    fun restoreChanged(bitmap: Bitmap?) {
+        current = bitmap
+        changed = true
+        paint()
+    }
+
     /** Back to "not signed" for the next entry on the same form. */
     fun reset() {
         current = null
         changed = false
         paint()
+        onChanged?.invoke(null)
     }
 
     private fun paint() {

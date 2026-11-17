@@ -160,6 +160,12 @@ class PartyDetailActivity : BaseActivity() {
         private const val F_DETAILS = "details_open"
         private const val F_DUE = "due"
         private const val F_DUE_TOUCHED = "due_touched"
+        /** The signature drawn on the form (17 Nov 2026, L024): changed, and the file its picture waits in (none: removed). */
+        private const val F_SIG_CHANGED = "sig_changed"
+        private const val F_SIG_FILE = "sig_file"
+        /** The two product offers' ticks for the item in the boxes (17 Nov 2026, L024). */
+        private const val F_TICK_RATE = "tick_update_rate"
+        private const val F_TICK_ADD = "tick_add_product"
         /** The form as it opened (5 Nov 2026), kept with it so a form put back after a rebuild still knows what was typed. */
         private const val F_BASELINE = "baseline"
 
@@ -992,6 +998,13 @@ class PartyDetailActivity : BaseActivity() {
                 sigRow.showExisting(old)
             }
         }
+        // The signature drawn on the form waits in a file of the screen's own while the form is open (17 Nov 2026,
+        // L024): a picture is too big for the saved state, and a rebuilt screen's form lost it. Gone with the form.
+        val sigFile = java.io.File(cacheDir, "entry_form_sig_$partyId.png")
+        sigRow.onChanged = { bmp ->
+            if (bmp == null) sigFile.delete()
+            else runCatching { sigFile.outputStream().use { bmp.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) } }
+        }
 
         val etItemName: AutoCompleteTextView = view.findViewById(R.id.etItemName)
         // The trade's own words in the hints (9 Oct): a dairy reads
@@ -1079,6 +1092,10 @@ class PartyDetailActivity : BaseActivity() {
         val tvLastRate: TextView = view.findViewById(R.id.tvLastRate)
         val cbUpdateRate: MaterialCheckBox = view.findViewById(R.id.cbUpdateRate)
         val cbAddProduct: MaterialCheckBox = view.findViewById(R.id.cbAddProduct)
+        // The two offers' ticks a rebuilt screen's form had for the item in the boxes (17 Nov 2026, L024): put back
+        // the first time the lookup shows each offer again, and forgotten once the owner changes the item or its rate.
+        var pendingRateTick = false
+        var pendingAddTick = false
         val btnSupplierBill: MaterialButton = view.findViewById(R.id.btnSupplierBill)
         val btnScanBill: MaterialButton = view.findViewById(R.id.btnScanBill)
 
@@ -1355,6 +1372,7 @@ class PartyDetailActivity : BaseActivity() {
                     Format.money(typedRate)
                 )
                 cbUpdateRate.visibility = View.VISIBLE
+                if (pendingRateTick) { cbUpdateRate.isChecked = true; pendingRateTick = false }
             } else {
                 cbUpdateRate.isChecked = false
                 cbUpdateRate.visibility = View.GONE
@@ -1365,6 +1383,7 @@ class PartyDetailActivity : BaseActivity() {
             if (goodsListAllowed() && product == null && typedName.isNotEmpty()) {
                 cbAddProduct.text = getString(R.string.add_to_products, typedName)
                 cbAddProduct.visibility = View.VISIBLE
+                if (pendingAddTick) { cbAddProduct.isChecked = true; pendingAddTick = false }
             } else {
                 cbAddProduct.isChecked = false
                 cbAddProduct.visibility = View.GONE
@@ -1994,7 +2013,8 @@ class PartyDetailActivity : BaseActivity() {
         // list is replaced right after; the amount's two flags before its figure, so the items do not
         // take it over; the Rate box last, with the figure the app itself had put there, so a rate
         // the owner typed stays his. Not put back: the signature drawn on the form (a picture, not
-        // state) and the two product offers' ticks (shown again, unticked, by the lookup).
+        // state) and the two product offers' ticks (shown again, unticked, by the lookup). Both are kept since
+        // 17 Nov 2026 (L024): the signature from its file, the ticks once the lookup shows their offers.
         if (restore != null) {
             cgRateType.check(if (restore.getBoolean(F_CASH)) R.id.chipRateCash else R.id.chipRateCredit)
             lines.clear()
@@ -2023,6 +2043,20 @@ class PartyDetailActivity : BaseActivity() {
             pendingBatchId = restore.getLong(F_BATCH, 0L).takeIf { it > 0L }
             autoRate = if (restore.containsKey(F_AUTO_RATE)) restore.getDouble(F_AUTO_RATE) else null
             etRate.setText(restore.getString(F_RATE).orEmpty())
+            // After the boxes are filled, so only the owner's own typing from here on forgets them.
+            pendingRateTick = restore.getBoolean(F_TICK_RATE)
+            pendingAddTick = restore.getBoolean(F_TICK_ADD)
+            val forgetTicks = object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun afterTextChanged(s: android.text.Editable?) { pendingRateTick = false; pendingAddTick = false }
+            }
+            etItemName.addTextChangedListener(forgetTicks)
+            etRate.addTextChangedListener(forgetTicks)
+            if (restore.getBoolean(F_SIG_CHANGED)) {
+                val kept = restore.getString(F_SIG_FILE)?.let { java.io.File(it) }?.takeIf { it.exists() }
+                sigRow.restoreChanged(kept?.let { android.graphics.BitmapFactory.decodeFile(it.path) })
+            }
             chosenTime = restore.getLong(F_TIME, chosenTime)
             attachDate()
             renderLines()
@@ -2300,6 +2334,12 @@ class PartyDetailActivity : BaseActivity() {
             b.putBoolean(F_DETAILS, view.findViewById<View>(R.id.stepTwo).visibility == View.VISIBLE)
             b.putBoolean(F_DUE_TOUCHED, entryDueTouched)
             entryDue?.let { b.putLong(F_DUE, it) }
+            if (sigRow.changed) {
+                b.putBoolean(F_SIG_CHANGED, true)
+                if (sigRow.current != null && sigFile.exists()) b.putString(F_SIG_FILE, sigFile.path)
+            }
+            b.putBoolean(F_TICK_RATE, cbUpdateRate.visibility == View.VISIBLE && cbUpdateRate.isChecked || pendingRateTick)
+            b.putBoolean(F_TICK_ADD, cbAddProduct.visibility == View.VISIBLE && cbAddProduct.isChecked || pendingAddTick)
             // The opened form travels with it: put back after a rebuild, it still asks before throwing away
             // what was typed before the rebuild.
             formBaseline?.let { b.putBundle(F_BASELINE, it) }
@@ -2310,6 +2350,8 @@ class PartyDetailActivity : BaseActivity() {
         // A scan that comes back after the form is gone has nowhere to go.
         dialog.setOnDismissListener {
             if (entryFormState === snapshot) entryFormState = null
+            // The signature's waiting copy goes with a closed form; a rebuilt screen reads it first (L024).
+            if (!isChangingConfigurations) sigFile.delete()
             onScanUsed = null
             onPaymentScanUsed = null
             // Closed by the owner (not with the screen, which lets go of it first in onDestroy): a photo
