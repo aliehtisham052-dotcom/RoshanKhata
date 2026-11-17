@@ -508,6 +508,8 @@ object AuditAction {
     /** A plan's next payment day changed or cleared; detail the day's millis or nothing. */
     const val PLAN_NEXT_DUE = "plan_next_due"
     const val CHEQUE_DELETED = "cheque_deleted"
+    /** A pending cheque corrected ([KhataDao.editPendingCheque], 17 Nov 2026): refId the cheque, detail its amount. */
+    const val CHEQUE_EDITED = "cheque_edited"
     /**
      * A cheque settled by hand (17 Nov 2026, BC-220): refTable "cheques", refId the cheque, detail its amount
      * ([auditAmount]). Written by [KhataDao.clearCheque] and [KhataDao.settleCheque] in their own transaction, so every

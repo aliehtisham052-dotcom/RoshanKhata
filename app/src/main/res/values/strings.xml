@@ -492,6 +492,7 @@
     <string name="edit_cheque">Edit cheque</string>
     <string name="cheque_reopen">Move back to Pending</string>
     <string name="cheque_reopened">Cheque is pending again</string>
+    <string name="cheque_edit_not_pending">Not saved: this cheque is no longer pending. It was cleared, bounced or cancelled meanwhile.</string>
     <string name="mark_cleared">Mark as Cleared</string>
     <string name="mark_bounced">Mark as Bounced</string>
     <string name="mark_cancelled">Mark as Cancelled</string>
@@ -4535,6 +4536,7 @@
     <string name="audit_cheque_bounced">Cheque bounced</string>
     <string name="audit_cheque_cancelled">Cheque cancelled</string>
     <string name="audit_cheque_reopened">Cheque back to pending</string>
+    <string name="audit_cheque_edited">Cheque corrected</string>
     <string name="cheque_delete_confirm">Delete this cheque? It leaves the list. A payment it already posted stays in the khata.</string>
     <string name="audit_party_type">Customer/supplier type changed</string>
     <string name="audit_bin_restored">Restored from the bin</string>

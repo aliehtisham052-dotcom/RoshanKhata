@@ -530,6 +530,7 @@
     <string name="edit_cheque">تعديل الشيك</string>
     <string name="cheque_reopen">إعادته إلى قيد الانتظار</string>
     <string name="cheque_reopened">الشيك قيد الانتظار مرة أخرى</string>
+    <string name="cheque_edit_not_pending">لم يُحفظ: هذا الشيك لم يعد قيد الانتظار. فقد صُرف أو ارتدّ أو أُلغي في هذه الأثناء.</string>
     <string name="mark_cleared">تعليم كمصروف</string>
     <string name="mark_bounced">تعليم كمرتجع</string>
     <string name="mark_cancelled">تعليم كملغى</string>
@@ -4602,6 +4603,7 @@
     <string name="audit_cheque_bounced">عُلّم الشيك كمرتجع</string>
     <string name="audit_cheque_cancelled">عُلّم الشيك كملغى</string>
     <string name="audit_cheque_reopened">الشيك قيد الانتظار مرة أخرى</string>
+    <string name="audit_cheque_edited">تم تصحيح الشيك</string>
     <string name="cheque_delete_confirm">هل تحذف هذا الشيك؟ سيختفي من القائمة، وتبقى الدفعة التي سجّلها من قبل في الدفتر.</string>
     <string name="audit_party_type">تغيير نوع العميل/المورّد</string>
     <string name="audit_bin_restored">تمت الاستعادة من السلة</string>

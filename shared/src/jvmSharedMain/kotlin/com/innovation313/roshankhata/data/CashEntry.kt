@@ -85,3 +85,11 @@ object CashCategory {
     /** A walk-in's refund over the counter (POS Phase 3). */
     const val RETURN = "Return"
 }
+
+/** Why a cashbook line's correction was not written ([KhataDao.editCashEntryAudited], 17 Nov 2026). */
+enum class CashEdit {
+    /** Binned or gone meanwhile. */
+    GONE,
+    /** A counter ticket or a return wrote it: changed from there. */
+    LINKED
+}

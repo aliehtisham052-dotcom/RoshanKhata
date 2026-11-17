@@ -108,7 +108,8 @@ fun auditDetail(a: AuditLog, staff: List<com.innovation313.roshankhata.data.Staf
         AuditAction.CASH_ADDED, AuditAction.CASH_EDITED, AuditAction.CASH_DELETED ->
             AuditNames.amount(detail)?.let { Format.moneyLtr(it) } ?: detail
         // "Cheque cleared · <customer> · Rs 5,000" (17 Nov 2026): the amount stored as "5,000.00", the party looked up.
-        AuditAction.CHEQUE_CLEARED, AuditAction.CHEQUE_BOUNCED, AuditAction.CHEQUE_CANCELLED, AuditAction.CHEQUE_REOPENED ->
+        AuditAction.CHEQUE_CLEARED, AuditAction.CHEQUE_BOUNCED, AuditAction.CHEQUE_CANCELLED, AuditAction.CHEQUE_REOPENED,
+        AuditAction.CHEQUE_EDITED ->
             listOfNotNull(names.chequeParty[a.refId], AuditNames.amount(detail)?.let { Format.moneyLtr(it) } ?: detail).joinToString(" \u00b7 ")
         // A product spreadsheet: "3 added, 2 updated" in the reader's words (stored as "3 2"); a customers' file keeps its count.
         AuditAction.IMPORT -> if (a.refTable == com.innovation313.roshankhata.data.ProductImportNote.TABLE)
@@ -236,6 +237,7 @@ fun auditActionName(words: Words, a: AuditLog, names: AuditNames = AuditNames.No
     AuditAction.PLAN_ADDED -> words.text(W.audit_plan_added)
     AuditAction.PARTY_TYPE_CHANGED -> words.text(W.audit_party_type)
     AuditAction.CHEQUE_DELETED -> words.text(W.audit_cheque_deleted)
+    AuditAction.CHEQUE_EDITED -> words.text(W.audit_cheque_edited)
     AuditAction.CHEQUE_CLEARED -> words.text(W.audit_cheque_cleared)
     AuditAction.CHEQUE_BOUNCED -> words.text(W.audit_cheque_bounced)
     AuditAction.CHEQUE_CANCELLED -> words.text(W.audit_cheque_cancelled)
@@ -277,7 +279,8 @@ class AuditNames(
     companion object {
         val None = AuditNames(emptyMap(), emptyMap(), emptyMap())
 
-        private val CHEQUE_SETTLED = setOf(AuditAction.CHEQUE_CLEARED, AuditAction.CHEQUE_BOUNCED, AuditAction.CHEQUE_CANCELLED, AuditAction.CHEQUE_REOPENED)
+        private val CHEQUE_SETTLED = setOf(AuditAction.CHEQUE_CLEARED, AuditAction.CHEQUE_BOUNCED, AuditAction.CHEQUE_CANCELLED, AuditAction.CHEQUE_REOPENED,
+            AuditAction.CHEQUE_EDITED)
 
         /** "1,250.00" (what [com.innovation313.roshankhata.data.auditAmount] writes) as a number. */
         fun amount(text: String): Double? = text.trim().replace(",", "").toDoubleOrNull()
@@ -295,7 +298,7 @@ class AuditNames(
                             if (id !in party) dao.getPartyName(id)?.let { party[id] = it }
                         a.refTable == "transactions" && (a.action == AuditAction.ENTRY_ADDED || a.action == AuditAction.ENTRY_KIND_CHANGED) ->
                             if (id !in entryParty) dao.getEntry(id)?.let { e -> dao.getPartyName(e.partyId)?.let { entryParty[id] = it } }
-                        a.refTable == "cashbook" && (a.action == AuditAction.CASH_ADDED || a.action == AuditAction.CASH_DELETED) ->
+                        a.refTable == "cashbook" && (a.action == AuditAction.CASH_ADDED || a.action == AuditAction.CASH_EDITED || a.action == AuditAction.CASH_DELETED) ->
                             if (id !in cash) dao.cashIsIncome(id)?.let { cash[id] = it }
                         a.refTable == "cheques" && a.action in CHEQUE_SETTLED ->
                             if (id !in cheque) dao.getCheque(id)?.let { q -> dao.getPartyName(q.partyId)?.let { cheque[id] = it } }

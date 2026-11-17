@@ -485,6 +485,7 @@
     <string name="edit_cheque">ویرایش چک</string>
     <string name="cheque_reopen">بازگرداندن به در انتظار</string>
     <string name="cheque_reopened">چک دوباره در انتظار است</string>
+    <string name="cheque_edit_not_pending">ذخیره نشد: این چک دیگر در انتظار نیست. در این فاصله وصول، برگشت یا لغو شده است.</string>
     <string name="mark_cleared">علامت «وصول‌شده»</string>
     <string name="mark_bounced">علامت «برگشتی»</string>
     <string name="mark_cancelled">علامت «باطل‌شده»</string>
@@ -4350,6 +4351,7 @@
     <string name="audit_cheque_bounced">چک برگشتی علامت خورد</string>
     <string name="audit_cheque_cancelled">چک باطل‌شده علامت خورد</string>
     <string name="audit_cheque_reopened">چک دوباره در انتظار</string>
+    <string name="audit_cheque_edited">چک اصلاح شد</string>
     <string name="cheque_delete_confirm">این چک حذف شود؟ از فهرست برداشته می‌شود. پرداختی که پیش‌تر از آن ثبت شده در دفتر می‌ماند.</string>
     <string name="audit_party_type">نوع مشتری/تأمین‌کننده تغییر کرد</string>
     <string name="audit_bin_restored">از سطل بازگردانی شد</string>

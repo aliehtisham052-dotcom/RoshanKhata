@@ -492,6 +492,7 @@
     <string name="edit_cheque">चेक बदलें</string>
     <string name="cheque_reopen">वापस बाकी में डालें</string>
     <string name="cheque_reopened">चेक फिर बाकी में है</string>
+    <string name="cheque_edit_not_pending">सहेजा नहीं गया: यह चेक अब बाकी नहीं है। इस बीच यह क्लियर, बाउंस या रद्द हो चुका है।</string>
     <string name="mark_cleared">क्लियर चिह्नित करें</string>
     <string name="mark_bounced">बाउंस चिह्नित करें</string>
     <string name="mark_cancelled">रद्द चिह्नित करें</string>
@@ -4370,6 +4371,7 @@
     <string name="audit_cheque_bounced">चेक बाउंस चिह्नित</string>
     <string name="audit_cheque_cancelled">चेक रद्द चिह्नित</string>
     <string name="audit_cheque_reopened">चेक फिर बाकी में</string>
+    <string name="audit_cheque_edited">चेक सुधारा गया</string>
     <string name="cheque_delete_confirm">यह चेक हटाएँ? यह सूची से हट जाएगा। इससे पहले दर्ज हुआ भुगतान खाते में रहेगा।</string>
     <string name="audit_party_type">ग्राहक/सप्लायर का प्रकार बदला गया</string>
     <string name="audit_bin_restored">बिन से वापस लाया गया</string>

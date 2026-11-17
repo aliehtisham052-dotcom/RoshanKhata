@@ -474,6 +474,7 @@
     <string name="edit_cheque">Cheque edit karein</string>
     <string name="cheque_reopen">Wapas Pending karein</string>
     <string name="cheque_reopened">Cheque dobara pending hai</string>
+    <string name="cheque_edit_not_pending">Mehfooz nahi hua: yeh cheque ab pending nahi. Is dauran yeh clear, bounce ya cancel ho chuka hai.</string>
     <string name="mark_cleared">Clear Nishan Zad Karein</string>
     <string name="mark_bounced">Bounce Nishan Zad Karein</string>
     <string name="mark_cancelled">Mansookh Nishan Zad Karein</string>
@@ -4322,6 +4323,7 @@
     <string name="audit_cheque_bounced">Cheque bounce nishan zad hua</string>
     <string name="audit_cheque_cancelled">Cheque mansookh nishan zad hua</string>
     <string name="audit_cheque_reopened">Cheque dobara pending</string>
+    <string name="audit_cheque_edited">Cheque durust kiya gaya</string>
     <string name="cheque_delete_confirm">Yeh cheque delete karein? Yeh list se hat jayega. Isse pehle se darj adaigi khate mein rahegi.</string>
     <string name="audit_party_type">Customer/supplier ki qism badli gayi</string>
     <string name="audit_bin_restored">Bin se bahal kiya gaya</string>

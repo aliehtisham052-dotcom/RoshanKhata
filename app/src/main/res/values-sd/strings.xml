@@ -485,6 +485,7 @@
     <string name="edit_cheque">چيڪ ۾ ترميم ڪريو</string>
     <string name="cheque_reopen">واپس زير التوا ڪريو</string>
     <string name="cheque_reopened">چيڪ ٻيهر زير التوا آهي</string>
+    <string name="cheque_edit_not_pending">محفوظ نه ٿيو: هي چيڪ هاڻي زير التوا ناهي. ان وچ ۾ اهو ڪليئر، باؤنس يا منسوخ ٿي چڪو آهي.</string>
     <string name="mark_cleared">ڪليئر نشان لڳايو</string>
     <string name="mark_bounced">بائونس نشان لڳايو</string>
     <string name="mark_cancelled">منسوخ نشان لڳايو</string>
@@ -4350,6 +4351,7 @@
     <string name="audit_cheque_bounced">چيڪ بائونس نشان لڳو</string>
     <string name="audit_cheque_cancelled">چيڪ منسوخ نشان لڳو</string>
     <string name="audit_cheque_reopened">چيڪ ٻيهر زير التوا</string>
+    <string name="audit_cheque_edited">چيڪ درست ڪيو ويو</string>
     <string name="cheque_delete_confirm">هي چيڪ ڊليٽ ڪريون؟ اهو فهرست مان هٽي ويندو. ان مان اڳ ۾ درج ٿيل ادائيگي کاتي ۾ رهندي.</string>
     <string name="audit_party_type">گراهڪ/سپلائر جي قسم تبديل ٿي</string>
     <string name="audit_bin_restored">ٽوڪري مان بحال ڪيو ويو</string>

@@ -172,7 +172,8 @@ class ChequesActivity : BaseActivity() {
      * delete the cheque and write it again. The fields are identical either
      * way, so the same dialog does both — [existing] null means a new cheque.
      */
-    private fun showChequeDialog(existing: ChequeWithParty? = null, restore: com.innovation313.roshankhata.ui.FormDraft.Saved? = null) {
+    /** [allowedBy]: the manager whose PIN let a cashier correct [existing] (the DAO checks it, L023). */
+    private fun showChequeDialog(existing: ChequeWithParty? = null, restore: com.innovation313.roshankhata.ui.FormDraft.Saved? = null, allowedBy: String? = null) {
         if (parties.isEmpty()) {
             Toast.makeText(this, R.string.select_party_first, Toast.LENGTH_LONG).show()
             return
@@ -335,6 +336,7 @@ class ChequesActivity : BaseActivity() {
                     val photo = if (existing == null) pendingPhoto else null
 
                     // On AppScope through the form's Save: a quick Back press right after Save cannot cancel it.
+                    var editRefused = false
                     commit(com.innovation313.roshankhata.ui.FormGuard.Pending({
                         if (existing == null) {
                             dao.insertCheque(
@@ -350,25 +352,19 @@ class ChequesActivity : BaseActivity() {
                                 )
                             )
                         } else {
-                            // copy() off the stored row, so status, settledAt,
-                            // ledgerEntryId and createdAt survive untouched. Only
-                            // what the dialog shows is what the dialog may change.
-                            dao.getCheque(existing.id)?.let { stored ->
-                                dao.updateCheque(
-                                    stored.copy(
-                                        partyId = party.id,
-                                        amount = amount,
-                                        isReceived = received,
-                                        chequeNumber = number,
-                                        bankName = bank,
-                                        dueDate = due,
-                                        note = note
-                                    )
-                                )
-                            }
+                            // Only while it is still pending, decided in the DAO with the gate and its row in Who did
+                            // what (17 Nov 2026, L023, lesson 52); status, settledAt, its entry and createdAt stay.
+                            editRefused = !dao.editPendingCheque(
+                                Cheque(id = existing.id, partyId = party.id, amount = amount, isReceived = received,
+                                    chequeNumber = number, bankName = bank, dueDate = due, note = note),
+                                allowedBy
+                            )
                         }
                     }) {
                         if (existing == null) { written = true; if (pendingPhoto == photo) pendingPhoto = null }
+                        if (editRefused && !isFinishing && !isDestroyed) {
+                            Toast.makeText(this@ChequesActivity, R.string.cheque_edit_not_pending, Toast.LENGTH_LONG).show()
+                        }
                     })
                 }
                 // Back, a tap beside it or Cancel threw a typed cheque (or a correction) away in silence (5 Nov 2026,
@@ -439,7 +435,12 @@ class ChequesActivity : BaseActivity() {
         // apart would leave the cheque saying one thing and the khata another.
         val options = ArrayList<Pair<ChoiceSheet.Option, () -> Unit>>()
         if (!readOnly) {
-            options += ChoiceSheet.edit(getString(R.string.edit_cheque)) to { com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { showChequeDialog(cheque) } }
+            options += ChoiceSheet.edit(getString(R.string.edit_cheque)) to {
+                com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK,
+                    com.innovation313.roshankhata.ui.AccessUi.what(this, com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK)) { by ->
+                    showChequeDialog(cheque, allowedBy = by)
+                }
+            }
             options += ChoiceSheet.done(getString(R.string.mark_cleared)) to { confirmCleared(cheque) }
             options += ChoiceSheet.Option(getString(R.string.mark_bounced), icon = R.drawable.ic_close,
                 iconTint = R.color.bal_owed_to_me, tile = R.color.summary_get_bg) to { confirmBounced(cheque) }

@@ -478,6 +478,7 @@
     <string name="edit_cheque">Ubah cek</string>
     <string name="cheque_reopen">Kembalikan ke Menunggu</string>
     <string name="cheque_reopened">Cek kembali berstatus menunggu</string>
+    <string name="cheque_edit_not_pending">Tidak disimpan: cek ini sudah tidak menunggu lagi. Cek ini sudah cair, ditolak, atau dibatalkan sementara itu.</string>
     <string name="mark_cleared">Tandai Cair</string>
     <string name="mark_bounced">Tandai Ditolak</string>
     <string name="mark_cancelled">Tandai Dibatalkan</string>
@@ -4300,6 +4301,7 @@
     <string name="audit_cheque_bounced">Cek ditandai ditolak</string>
     <string name="audit_cheque_cancelled">Cek ditandai dibatalkan</string>
     <string name="audit_cheque_reopened">Cek kembali menunggu</string>
+    <string name="audit_cheque_edited">Cek dikoreksi</string>
     <string name="cheque_delete_confirm">Hapus cek ini? Cek hilang dari daftar. Pembayaran yang sudah dicatat darinya tetap ada di buku.</string>
     <string name="audit_party_type">Jenis pelanggan/pemasok diubah</string>
     <string name="audit_bin_restored">Dipulihkan dari tempat sampah</string>

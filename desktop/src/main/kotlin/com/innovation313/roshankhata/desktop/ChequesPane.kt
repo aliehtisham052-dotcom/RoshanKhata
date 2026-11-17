@@ -104,6 +104,8 @@ fun ChequesPane(
     }
     val cheques by remember { dao.observeCheques() }.collectAsState(emptyList())
     var form by remember { mutableStateOf<ChequeForm?>(null) }
+    // A correction of a cheque another device settled meanwhile is not written; said (17 Nov 2026, L023).
+    var editRefused by remember { mutableStateOf(false) }
     var acting by remember { mutableStateOf<ChequeWithParty?>(null) }
     var clearing by remember { mutableStateOf<ChequeWithParty?>(null) }
     var deleting by remember { mutableStateOf<ChequeWithParty?>(null) }
@@ -207,7 +209,7 @@ fun ChequesPane(
                     }
                     if (pending) {
                         // Edit only while pending: once cleared, the amount is also a ledger entry.
-                        Action(word(W.edit_cheque), c.ink) { Gates.edit { form = ChequeForm(ch) } }
+                        Action(word(W.edit_cheque), c.ink) { Gates.needBy(com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK) { by -> form = ChequeForm(ch, by) } }
                         Action(word(W.mark_cleared), c.iOwe) { clearing = ch }
                         Action(word(W.mark_bounced), c.owedToMe) { bouncing = ch }
                         Action(word(W.mark_cancelled), c.ink) { settle(ch, ChequeStatus.CANCELLED) }
@@ -281,21 +283,9 @@ fun ChequesPane(
                                     // The cheque's picture is copied in only now, with the cheque (a form left leaves nothing).
                                     dao.insertCheque(cheque.copy(photoPath = photo?.let { Photos.keep(home, it) }))
                                 } else {
-                                    // copy() off the stored row: status, settledAt, ledgerEntryId and
-                                    // createdAt survive; only what the form shows may change.
-                                    dao.getCheque(old.id)?.let { stored ->
-                                        dao.updateCheque(
-                                            stored.copy(
-                                                partyId = cheque.partyId,
-                                                amount = cheque.amount,
-                                                isReceived = cheque.isReceived,
-                                                chequeNumber = cheque.chequeNumber,
-                                                bankName = cheque.bankName,
-                                                dueDate = cheque.dueDate,
-                                                note = cheque.note
-                                            )
-                                        )
-                                    }
+                                    // Only while it is still pending, decided in the DAO with the gate and its row in
+                                    // Who did what (17 Nov 2026, L023): status, settledAt, its entry and createdAt stay.
+                                    if (!dao.editPendingCheque(cheque.copy(id = old.id), f.by)) editRefused = true
                                 }
                             }
                             form = null
@@ -314,6 +304,7 @@ fun ChequesPane(
         )
     }
     photoProblem?.let { TellDialog(word(W.cheque_photo), it, onClose = { photoProblem = null }) }
+    if (editRefused) TellDialog(word(W.edit_cheque), word(W.cheque_edit_not_pending), onClose = { editRefused = false })
 }
 
 @Composable
@@ -326,7 +317,8 @@ private fun ActionRow(text: String, color: Color, onClick: () -> Unit) {
 }
 
 /** The form's subject: a new cheque (null) or one being edited. */
-private class ChequeForm(val existing: ChequeWithParty?)
+/** [by]: who let a cashier correct [existing] (a manager's PIN), checked again by the DAO (L023). */
+private class ChequeForm(val existing: ChequeWithParty?, val by: String? = null)
 
 /** A cheque said in one line under a dialog's title: its number, bank, amount and day. */
 private fun chequeLine(ch: ChequeWithParty): String = listOfNotNull(

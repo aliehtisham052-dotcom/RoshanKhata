@@ -545,7 +545,12 @@ class CashbookActivity : BaseActivity() {
         }
     }
 
-    private fun showAddDialog(isIncome: Boolean, restore: List<String>? = null) {
+    /**
+     * Money in or out; with [editing], that line corrected (17 Nov 2026, audit L023: no form could change a written
+     * line, not even its day) — its amount, category, note, day and time, way and reference, never which way it went
+     * nor its picture (the row's own menu). [allowedBy] is the manager whose PIN let a cashier do it; the DAO checks it.
+     */
+    private fun showAddDialog(isIncome: Boolean, restore: List<String>? = null, editing: CashEntry? = null, allowedBy: String? = null) {
         val view = layoutInflater.inflate(R.layout.dialog_add_cash, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
         val etAmount: EditText = view.findViewById(R.id.etCashAmount)
@@ -563,14 +568,23 @@ class CashbookActivity : BaseActivity() {
             chip.text = PaymentMethod.labelOf(this, key)
             chipKeys[chip.id] = key
             cgMethod.addView(chip)
-            if (key == PaymentMethod.CASH) cgMethod.check(chip.id)
+            if (key == (editing?.paymentMethod ?: if (editing == null) PaymentMethod.CASH else null)) cgMethod.check(chip.id)
         }
         fun chosenMethod(): String? = chipKeys[cgMethod.checkedChipId]
         restore?.let { t ->
             listOf(etAmount, etCategory, etNote, etRef).forEachIndexed { i, box -> t.getOrNull(i)?.let { box.setText(it) } }
         }
-        cashFormIncome = isIncome
-        cashFormTexts = { listOf(etAmount, etCategory, etNote, etRef).map { it.text.toString() } }
+        editing?.let { e ->
+            etAmount.setText(Format.plain(e.amount))
+            etCategory.setText(cashCategoryWord(e.category))
+            etNote.setText(e.note.orEmpty())
+            etRef.setText(e.paymentRef.orEmpty())
+        }
+        // A new line is kept for a rebuilt screen; a correction is not (reopened as new it would write a second line).
+        if (editing == null) {
+            cashFormIncome = isIncome
+            cashFormTexts = { listOf(etAmount, etCategory, etNote, etRef).map { it.text.toString() } }
+        }
         fun showRefBox() {
             etRef.visibility = if (PaymentRef.applies(chosenMethod())) View.VISIBLE else View.GONE
             view.findViewById<View>(R.id.tvCashRefLabel).visibility = etRef.visibility
@@ -606,7 +620,7 @@ class CashbookActivity : BaseActivity() {
 
         // When the cash actually moved. Defaults to now, which is right most of
         // the time, but the day's takings are often written up at closing.
-        var chosenTime = System.currentTimeMillis()
+        var chosenTime = editing?.timestamp ?: System.currentTimeMillis()
         DateTimeField.attach(
             activity = this,
             button = view.findViewById(R.id.btnCashDate),
@@ -615,6 +629,8 @@ class CashbookActivity : BaseActivity() {
 
         // The receipt's picture (schema 43): one taken while the screen was rebuilt waits here for this form.
         val btnPhoto: com.google.android.material.button.MaterialButton = view.findViewById(R.id.btnCashPhoto)
+        // A written line's picture is changed from its own menu, never from its correction.
+        if (editing != null) btnPhoto.visibility = View.GONE
         photoButton = btnPhoto
         btnPhoto.setText(if (pendingPhoto != null) R.string.photo_attached else R.string.attach_photo)
         btnPhoto.setOnClickListener {
@@ -635,13 +651,18 @@ class CashbookActivity : BaseActivity() {
         var written = false
         // The time the form opened with, to tell a day the owner picked from the one it started on.
         val openedTime = chosenTime
+        // The boxes and way as the form opened (a correction opens on the line's own), to tell a change from a look.
+        val openedTexts = listOf(etAmount, etCategory, etNote, etRef).map { it.text.toString() }
+        val openedMethod = chosenMethod()
 
         MaterialAlertDialogBuilder(this)
-            .setTitle(if (isIncome) R.string.cash_income else R.string.cash_expense)
+            .setTitle(getString(if (isIncome) R.string.cash_income else R.string.cash_expense).let { t ->
+                if (editing != null) getString(R.string.edit) + " \u00b7 " + t else t
+            })
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
             .setOnDismissListener {
-                if (!isChangingConfigurations) { cashFormIncome = null; cashFormTexts = null }
+                if (!isChangingConfigurations && editing == null) { cashFormIncome = null; cashFormTexts = null }
                 photoButton = null
                 // A dismiss for the camera's sake never happens (the form stays behind it); a closed form's picture goes.
                 if (!written && !isChangingConfigurations) { com.innovation313.roshankhata.data.BillPhoto.delete(pendingPhoto); pendingPhoto = null }
@@ -675,6 +696,27 @@ class CashbookActivity : BaseActivity() {
                     // progress, so a quick Back press right after could cancel the
                     // write before it landed, taking the typed amount, category,
                     // note and date with it.
+                    // A correction (L023): its own write, checked again in the DAO with the gate and its row in Who did what.
+                    if (editing != null) {
+                        val corrected = editing.copy(
+                            amount = amount,
+                            // The counter's own words are kept as stored, never as the language's word for them.
+                            category = if (category == cashCategoryWord(editing.category)) editing.category else category,
+                            note = etNote.text.toString().trim().ifEmpty { null },
+                            timestamp = chosenTime,
+                            paymentMethod = chosenMethod(),
+                            paymentRef = PaymentRef.clean(chosenMethod(), etRef.text.toString())
+                        )
+                        var refused: com.innovation313.roshankhata.data.CashEdit? = null
+                        commit(com.innovation313.roshankhata.ui.FormGuard.Pending({ refused = dao.editCashEntryAudited(corrected, allowedBy) }) {
+                            if (!isFinishing && !isDestroyed) Toast.makeText(this@CashbookActivity, when (refused) {
+                                null -> R.string.saved
+                                com.innovation313.roshankhata.data.CashEdit.LINKED -> R.string.entry_linked_sale
+                                com.innovation313.roshankhata.data.CashEdit.GONE -> R.string.save_failed_not_saved
+                            }, Toast.LENGTH_SHORT).show()
+                        })
+                        return@onSaveWrite
+                    }
                     // The picture goes with the row; the form lets go of it once the row is written, before the
                     // dialog's dismiss runs (a failed write keeps it with the form).
                     val photo = pendingPhoto
@@ -701,9 +743,8 @@ class CashbookActivity : BaseActivity() {
                     activity = this@CashbookActivity,
                     dialog = form,
                     typed = {
-                        etAmount.text.isNotBlank() || etCategory.text.isNotBlank() || etNote.text.isNotBlank() ||
-                            etRef.text.isNotBlank() || chosenMethod() != PaymentMethod.CASH ||
-                            chosenTime != openedTime || pendingPhoto != null
+                        listOf(etAmount, etCategory, etNote, etRef).map { it.text.toString() } != openedTexts ||
+                            chosenMethod() != openedMethod || chosenTime != openedTime || (editing == null && pendingPhoto != null)
                     },
                     onDiscard = {
                         // The picture taken for this form goes with it, as the bill form's kept photo does.
@@ -763,6 +804,7 @@ class CashbookActivity : BaseActivity() {
             if (photo != null) actions += ChoiceSheet.stop(getString(R.string.remove_photo)) to {
                 com.innovation313.roshankhata.ui.AccessUi.edit(this, dao) { removeRowPhoto(entry.id) }
             }
+            actions += ChoiceSheet.edit(getString(R.string.edit)) to { editLine(entry) }
             actions += ChoiceSheet.delete(getString(R.string.delete)) to { confirmDelete(entry) }
         }
         if (actions.isEmpty()) return
@@ -786,6 +828,29 @@ class CashbookActivity : BaseActivity() {
         com.innovation313.roshankhata.data.CashCategory.SALE -> getString(R.string.cash_category_sale)
         com.innovation313.roshankhata.data.CashCategory.RETURN -> getString(R.string.cash_category_return)
         else -> category
+    }
+
+    /**
+     * A written line corrected (17 Nov 2026, audit L023): a line a counter ticket or a return wrote is changed from
+     * there, as its delete says; anyone else asks whoever may change the book (EDIT_BOOK, a manager's PIN for a cashier).
+     */
+    private fun editLine(entry: CashEntry) {
+        lifecycleScope.launch {
+            val owner = withContext(Dispatchers.IO) { runCatching { dao.cashOwner(entry.id) }.getOrNull() }
+            if (isFinishing || isDestroyed) return@launch
+            if (owner != null) {
+                MaterialAlertDialogBuilder(this@CashbookActivity)
+                    .setTitle(R.string.entry_linked_title)
+                    .setMessage(if (owner == "return") R.string.entry_linked_return else R.string.entry_linked_sale)
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+                return@launch
+            }
+            val p = com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK
+            com.innovation313.roshankhata.ui.AccessUi.allowed(this@CashbookActivity, dao, p, com.innovation313.roshankhata.ui.AccessUi.what(this@CashbookActivity, p)) { by ->
+                showAddDialog(entry.isIncome, editing = entry, allowedBy = by)
+            }
+        }
     }
 
     private fun confirmDelete(entry: CashEntry) {

@@ -1482,6 +1482,69 @@ interface KhataDao {
         return true
     }
 
+    @Query("SELECT * FROM cashbook WHERE id = :id")
+    suspend fun cashEntryById(id: Long): CashEntry?
+
+    /** A cashbook line's own fields, only while it is in the book (17 Nov 2026, L023): called by [editCashEntryAudited]. */
+    @Query(
+        """
+        UPDATE cashbook SET amount = :amount, category = :category, note = :note, timestamp = :timestamp,
+               paymentMethod = :paymentMethod, paymentRef = :paymentRef
+        WHERE id = :id AND isDeleted = 0
+        """
+    )
+    suspend fun setCashEntryFields(
+        id: Long, amount: Double, category: String, note: String?, timestamp: Long, paymentMethod: String?, paymentRef: String?
+    ): Int
+
+    /**
+     * A cashbook line the owner wrote, corrected (17 Nov 2026, audit L023: neither platform could change one, not even its
+     * day): amount, category, note, day and time, how it was paid and its reference. Never which way it went (a wrong
+     * way is a delete and a new line), never its picture (the row's own menu), never a line a counter ticket or a return
+     * wrote ([cashOwner]: changed from there, as the delete refuses). Whoever may change the book (EDIT_BOOK, a
+     * cashier with a manager's [allowedBy]) — checked here, not only on the screen — and the change is written in Who
+     * did what (CASH_EDITED) in the same transaction. Returns null when written, else why not.
+     */
+    @Transaction
+    suspend fun editCashEntryAudited(edited: CashEntry, allowedBy: String? = null): CashEdit? {
+        Access.requireAllowed(Access.Permission.EDIT_BOOK, allowedBy)
+        requireBookAmount(edited.amount)
+        val stored = cashEntryById(edited.id)
+        if (stored == null || stored.isDeleted) return CashEdit.GONE
+        if (cashOwner(stored.id) != null) return CashEdit.LINKED
+        setCashEntryFields(stored.id, edited.amount, edited.category, edited.note, edited.timestamp, edited.paymentMethod, edited.paymentRef)
+        log(AuditAction.CASH_EDITED, Access.userName, "cashbook", stored.id, auditAmount(edited.amount))
+        return null
+    }
+
+    /**
+     * A pending cheque corrected (17 Nov 2026, audit L023): the party, amount, way, number, bank, the day written on it
+     * and the note — only while it is pending and in the book, decided here (lesson 52), never by the screen alone: a
+     * stale form could otherwise move the day of a cheque the other device had already cleared. Status, settledAt, its
+     * khata entry, createdAt, uid and picture stay as stored. EDIT_BOOK (a cashier with a manager's [allowedBy]) and a
+     * CHEQUE_EDITED row in Who did what, in one transaction. False when nothing was written.
+     */
+    @Transaction
+    suspend fun editPendingCheque(edited: Cheque, allowedBy: String? = null): Boolean {
+        Access.requireAllowed(Access.Permission.EDIT_BOOK, allowedBy)
+        requireBookAmount(edited.amount)
+        val stored = getCheque(edited.id) ?: return false
+        if (stored.isDeleted || stored.status != ChequeStatus.PENDING) return false
+        updateCheque(
+            stored.copy(
+                partyId = edited.partyId,
+                amount = edited.amount,
+                isReceived = edited.isReceived,
+                chequeNumber = edited.chequeNumber,
+                bankName = edited.bankName,
+                dueDate = edited.dueDate,
+                note = edited.note
+            )
+        )
+        log(AuditAction.CHEQUE_EDITED, Access.userName, "cheques", stored.id, auditAmount(edited.amount))
+        return true
+    }
+
     /** A plan's next payment day changed by the owner, or cleared with null (21 Oct 2026). */
     @Query("UPDATE payment_plans SET nextDueDate = :due WHERE id = :id")
     suspend fun setPlanNextDue(id: Long, due: Long?)
