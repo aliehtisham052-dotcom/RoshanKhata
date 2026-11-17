@@ -105,7 +105,8 @@ class BackupLockDesktopTest {
             val cancelled = answering(null) { got = readBackup(f, home).first }
             assertEquals(1, cancelled)
             assertEquals(BackupCodec.ImportResult.Why.LOCKED, (got as BackupCodec.ImportResult.Failed).why)
-            // The right one, typed after a wrong one, opens it (the text inside is no book: it is refused for that, not locked).
+            // The right one, typed after a wrong one, opens it: the text inside is an empty book, so it reads as Ok — the point
+            // is only that it is neither locked nor a wrong password any more.
             var tries = 0
             BackupPasswordPrompt.hosts++
             try {
@@ -122,8 +123,8 @@ class BackupLockDesktopTest {
                 }
             } finally { BackupPasswordPrompt.hosts-- }
             assertEquals(2, tries)
-            val why = (got as BackupCodec.ImportResult.Failed).why
-            assertTrue(why != BackupCodec.ImportResult.Why.LOCKED && why != BackupCodec.ImportResult.Why.WRONG_PASSWORD)
+            val why = (got as? BackupCodec.ImportResult.Failed)?.why
+            assertTrue("opened, got $got", why != BackupCodec.ImportResult.Why.LOCKED && why != BackupCodec.ImportResult.Why.WRONG_PASSWORD)
         } finally { home.deleteRecursively() }
     }
 
