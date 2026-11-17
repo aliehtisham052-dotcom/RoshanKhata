@@ -3323,6 +3323,7 @@
     <string name="import_csv_go">انهن کي آڻيو</string>
     <string name="import_csv_done">گراهڪ شامل ٿيا: %1$d</string>
     <string name="import_csv_empty">هن فائل مان ڪو به گراهڪ پڙهي نه سگهيو. ان ۾ گهٽ ۾ گهٽ نالن جو هڪ ڪالم هجڻ گهرجي.</string>
+    <string name="import_csv_too_big">هيءَ فائل فون تي پڙهڻ لاءِ تمام وڏي آهي (16 MB کان وڌيڪ). ان کي ننڍين فائلن ۾ ورهايو، يا ڪمپيوٽر تي امپورٽ ڪريو.</string>
 
     <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
     <string name="wifi_send_title">ڪمپيوٽر ڏانهن موڪليو (وائي فائي)</string>

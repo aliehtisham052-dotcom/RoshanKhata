@@ -149,4 +149,23 @@ class CsvImportTest {
         assertEquals(text, CsvImport.decode(byteArrayOf(0xFF.toByte(), 0xFE.toByte()) + text.toByteArray(Charsets.UTF_16LE)))
         assertEquals(text, CsvImport.decode(text.toByteArray(java.nio.charset.Charset.forName("windows-1252"))))
     }
+
+    /** One rule for what comes in, the phone's import and the computer's (17 Nov 2026, L009). Made-up names and numbers. */
+    @Test
+    fun `rows already in the book or twice in the file come in once, and the sign is the owner's choice`() {
+        val book = listOf(PartyWithBalance(1, "Test Customer A", "0300 1234567", true, null, 500.0))
+        val rows = listOf(
+            CsvImport.Row("test customer  a", "+92 300 1234567", 200.0),   // in the book: same name, same number
+            CsvImport.Row("Test Customer B", null, -75.5),
+            CsvImport.Row("TEST CUSTOMER B", null, 10.0),                // twice in the file
+            CsvImport.Row("Test Customer A", "0300 0000001", 40.0),      // same name, another number: a new person
+            CsvImport.Row("Test Customer C", "0300 7654321", 0.0, unreadable = true)
+        )
+        val inc = CsvImport.incoming(rows, book)
+        assertEquals(listOf("Test Customer B", "Test Customer A", "Test Customer C"), inc.fresh.map { it.name })
+        assertEquals(2, inc.skipped)
+        assertEquals(listOf(-75.5, 40.0, 0.0), CsvImport.signed(inc.fresh, positiveOwesMe = true).map { it.balance })
+        assertEquals(listOf(75.5, -40.0), CsvImport.signed(inc.fresh, positiveOwesMe = false).map { it.balance }.take(2))
+        assertTrue(CsvImport.signed(inc.fresh, positiveOwesMe = false).last().unreadable)
+    }
 }

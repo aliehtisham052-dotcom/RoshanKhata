@@ -3291,6 +3291,7 @@
     <string name="import_csv_go">Masukkan mereka</string>
     <string name="import_csv_done">Pelanggan ditambahkan: %1$d</string>
     <string name="import_csv_empty">Tidak ada pelanggan yang dapat dibaca dari file ini. File perlu setidaknya satu kolom nama.</string>
+    <string name="import_csv_too_big">File ini terlalu besar untuk dibaca di ponsel (lebih dari 16 MB). Bagi menjadi file yang lebih kecil, atau impor di komputer.</string>
 
     <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
     <string name="wifi_send_title">Kirim ke komputer (WiFi)</string>

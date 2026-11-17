@@ -3503,6 +3503,7 @@
     <string name="import_csv_go">أضفهم</string>
     <string name="import_csv_done">تمت إضافة العملاء: %1$d</string>
     <string name="import_csv_empty">تعذّر قراءة أي عميل من هذا الملف. يجب أن يحتوي على عمود للأسماء على الأقل.</string>
+    <string name="import_csv_too_big">هذا الملف أكبر من أن يُقرأ على الهاتف (أكثر من 16 MB). قسّمه إلى ملفات أصغر، أو استورده على الحاسوب.</string>
 
     <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
     <string name="wifi_send_title">أرسل إلى الحاسوب (واي فاي)</string>

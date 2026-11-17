@@ -3295,6 +3295,7 @@
     <string name="import_csv_go">انہیں لے آئیں</string>
     <string name="import_csv_done">گاہک شامل ہوئے: %1$d</string>
     <string name="import_csv_empty">اس فائل سے کوئی گاہک نہیں پڑھا جا سکا۔ اس میں کم از کم ناموں کا ایک کالم ہونا چاہیے۔</string>
+    <string name="import_csv_too_big">یہ فائل فون پر پڑھنے کے لیے بہت بڑی ہے (16 MB سے زیادہ)۔ اسے چھوٹی فائلوں میں بانٹ لیں، یا کمپیوٹر پر امپورٹ کریں۔</string>
 
     <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
     <string name="wifi_send_title">کمپیوٹر کو بھیجیں (وائی فائی)</string>

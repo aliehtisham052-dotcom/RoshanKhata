@@ -60,6 +60,8 @@ import com.innovation313.roshankhata.data.Digits
 class KhataActivity : BaseActivity() {
 
     companion object {
+        /** The most of a customers' CSV the phone reads (17 Nov 2026, L009); past it the file is refused, never cut. */
+        private const val CSV_MAX_BYTES = 16 * 1024 * 1024
         /** How long after coming back the list's first update is still "the customer just written to moving". */
         private const val RETURN_WINDOW_MS = 3000L
         /** How long after the list's first rows the day's safety copy starts ([startDailyCopy]). */
@@ -556,15 +558,176 @@ class KhataActivity : BaseActivity() {
     private fun showAddPartyChoice() {
         val options = listOf(
             ChoiceSheet.buyers(getString(R.string.import_contacts)),
-            ChoiceSheet.edit(getString(R.string.add_manually))
+            ChoiceSheet.edit(getString(R.string.add_manually)),
+            // Customers and their balances from another khata app's CSV (17 Nov 2026, L009): the computer had it alone.
+            ChoiceSheet.file(getString(R.string.import_csv))
         )
 
         ChoiceSheet.show(this, getString(R.string.add_party), options) { which ->
             when (which) {
                 0 -> startActivity(Intent(this, ImportContactsActivity::class.java))
                 1 -> showAddPartyDialog()
+                2 -> importCustomers()
             }
         }
+    }
+
+    /** The file is read only after the gate, and nothing is written before the owner's "Bring them in". */
+    private val pickCustomersCsv = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.OpenDocument()
+    ) { uri: android.net.Uri? -> if (uri != null) readCustomersCsv(uri) }
+
+    /**
+     * Customers from another app's CSV, as the computer brings them in (17 Nov 2026, audit L009): name, phone and
+     * balance become one customer each with one opening entry (EntryKind.OPENING: owed, never a sale on the import
+     * day), all in one transaction ([KhataDao.importOpeningBalances], which writes the import in Who did what).
+     * Bringing balances in changes the book: whoever may change it, a cashier with a manager's PIN (EDIT_BOOK), as
+     * the computer's Gates.need does. Never on a helper's read-only copy.
+     */
+    private fun importCustomers() {
+        if (com.innovation313.roshankhata.data.ViewerMode.isOn(this)) return
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao, com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK) { importCustomers() }) return
+        pickCustomersCsv.launch(arrayOf("text/*", "text/csv", "text/comma-separated-values", "application/csv",
+            "application/vnd.ms-excel", "application/octet-stream", "*/*"))
+    }
+
+    private sealed class CsvRead {
+        class Rows(val incoming: com.innovation313.roshankhata.data.CsvImport.Incoming) : CsvRead()
+        object Empty : CsvRead()
+        object TooBig : CsvRead()
+    }
+
+    private fun readCustomersCsv(uri: android.net.Uri) {
+        lifecycleScope.launch {
+            val read = withContext(Dispatchers.IO) {
+                runCatching {
+                    // Read up to the cap and no further: a phone's memory is not the computer's (16 MB of names and
+                    // figures is far past any shop's list).
+                    val bytes = contentResolver.openInputStream(uri)!!.use { input ->
+                        val out = java.io.ByteArrayOutputStream()
+                        val buf = ByteArray(64 * 1024)
+                        while (true) {
+                            val n = input.read(buf)
+                            if (n < 0) break
+                            out.write(buf, 0, n)
+                            if (out.size() > CSV_MAX_BYTES) return@runCatching CsvRead.TooBig
+                        }
+                        out.toByteArray()
+                    }
+                    // Read as the computer reads it (UTF-16 by its mark, UTF-8, else Windows-1252: BC-225).
+                    val rows = com.innovation313.roshankhata.data.CsvImport.parse(com.innovation313.roshankhata.data.CsvImport.decode(bytes))
+                    if (rows.isEmpty()) CsvRead.Empty
+                    else CsvRead.Rows(com.innovation313.roshankhata.data.CsvImport.incoming(rows, dao.observePartiesWithBalance().first()))
+                }.getOrDefault(CsvRead.Empty)
+            }
+            if (isFinishing || isDestroyed) return@launch
+            when (read) {
+                is CsvRead.Rows -> showCsvPreview(read.incoming)
+                else -> MaterialAlertDialogBuilder(this@KhataActivity)
+                    .setTitle(R.string.import_csv)
+                    .setMessage(if (read is CsvRead.TooBig) R.string.import_csv_too_big else R.string.import_csv_empty)
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+            }
+        }
+    }
+
+    /**
+     * Before anything is written (the computer's ImportPreviewDialog): how many come in, what is to get and to give —
+     * two figures, never one net — those already in the book left as they are, balances that could not be read, the
+     * file's sign chosen by the owner (it flips what is shown at once), and the first rows with their side in words.
+     */
+    private fun showCsvPreview(incoming: com.innovation313.roshankhata.data.CsvImport.Incoming) {
+        val fresh = incoming.fresh
+        val dp = resources.displayMetrics.density
+        fun ink(id: Int) = androidx.core.content.ContextCompat.getColor(this, id)
+        fun line(size: Float = 14f, colour: Int = R.color.ink, bold: Boolean = false) = TextView(this).apply {
+            textSize = size
+            setTextColor(ink(colour))
+            textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+            if (bold) setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setPadding(0, (3 * dp).toInt(), 0, (3 * dp).toInt())
+        }
+        val body = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            val side = (22 * dp).toInt()
+            setPadding(side, (8 * dp).toInt(), side, (8 * dp).toInt())
+        }
+        val tvCount = line(15f, bold = true)
+        val tvGet = line(14f, R.color.green_got_text, bold = true)
+        val tvGive = line(14f, R.color.red_gave_text, bold = true)
+        body.addView(tvCount); body.addView(tvGet); body.addView(tvGive)
+        if (incoming.skipped > 0) body.addView(line(13f, R.color.text_muted).apply {
+            text = Digits.string(resources, R.string.import_csv_skipped, incoming.skipped)
+        })
+        // Balances not read as figures come in at 0: said before anything is written (3 Nov 2026 audit, M40).
+        fresh.count { it.unreadable }.takeIf { it > 0 }?.let { n ->
+            body.addView(line(13f, R.color.red_gave_text, bold = true).apply { text = Digits.string(resources, R.string.import_csv_unreadable, n) })
+        }
+        body.addView(line(14f).apply { text = getString(R.string.import_csv_sign); setPadding(0, (10 * dp).toInt(), 0, 0) })
+        val rbOwesMe = RadioButton(this).apply { id = View.generateViewId(); text = getString(R.string.import_csv_owes_me); isChecked = true }
+        val rbIOwe = RadioButton(this).apply { id = View.generateViewId(); text = getString(R.string.import_csv_i_owe) }
+        val group = RadioGroup(this).apply { orientation = android.widget.LinearLayout.VERTICAL; addView(rbOwesMe); addView(rbIOwe) }
+        body.addView(group)
+        body.addView(View(this).apply { setBackgroundColor(ink(R.color.page_line)) },
+            android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, dp.toInt().coerceAtLeast(1)).apply {
+                topMargin = (8 * dp).toInt(); bottomMargin = (4 * dp).toInt()
+            })
+        val rowsBox = android.widget.LinearLayout(this).apply { orientation = android.widget.LinearLayout.VERTICAL }
+        body.addView(rowsBox)
+
+        fun show(rows: List<com.innovation313.roshankhata.data.CsvImport.Row>) {
+            tvCount.text = Digits.quantity(resources, R.plurals.customer_count, rows.size, rows.size)
+            tvGet.text = getString(R.string.you_will_get) + "  " + Format.moneyLtr(rows.filter { it.balance > 0 }.sumOf { it.balance })
+            tvGive.text = getString(R.string.you_will_give) + "  " + Format.moneyLtr(rows.filter { it.balance < 0 }.sumOf { -it.balance })
+            rowsBox.removeAllViews()
+            rows.take(6).forEach { r ->
+                // The name on its own line above the figure: a long name beside a figure on a 360 dp phone at 150% text
+                // gets a few letters' width (lessons 58, 61).
+                rowsBox.addView(line(14f).apply { text = Format.name(r.name) })
+                val owed = com.innovation313.roshankhata.data.Money.isPositive(r.balance)
+                val owing = com.innovation313.roshankhata.data.Money.isNegative(r.balance)
+                rowsBox.addView(line(13f, if (owed) R.color.green_got_text else if (owing) R.color.red_gave_text else R.color.text_muted).apply {
+                    text = listOfNotNull(
+                        r.phone?.let { Format.ltr(it) },
+                        Format.moneyLtr(kotlin.math.abs(r.balance)) + " \u00B7 " +
+                            getString(if (owed) R.string.you_will_get else if (owing) R.string.you_will_give else R.string.settled)
+                    ).joinToString("  \u00B7  ")
+                })
+            }
+            if (rows.size > 6) rowsBox.addView(line(14f, R.color.text_muted).apply { text = "\u2026" })
+        }
+        val signed = { com.innovation313.roshankhata.data.CsvImport.signed(fresh, rbOwesMe.isChecked) }
+        show(signed())
+        group.setOnCheckedChangeListener { _, _ -> show(signed()) }
+
+        val scroll = android.widget.ScrollView(this).apply { addView(body) }
+        com.innovation313.roshankhata.ui.TextFit.relax(scroll)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.import_csv)
+            .setView(scroll)
+            .setNegativeButton(R.string.cancel, null)
+            // Wired after show(): the dialog closes once the customers are in the book; a write that fails keeps it.
+            .setPositiveButton(R.string.import_csv_go, null)
+            .show().also { form ->
+                form.setCanceledOnTouchOutside(false)
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(form) { commit ->
+                    // Every row already in the book: nothing to bring in, and no empty import in Who did what. Said, not a
+                    // greyed button (lesson 10).
+                    if (fresh.isEmpty()) {
+                        Toast.makeText(this, Digits.string(resources, R.string.import_csv_skipped, incoming.skipped), Toast.LENGTH_LONG).show()
+                        return@onSaveWrite
+                    }
+                    val rows = signed()
+                    val note = getString(R.string.pdf_stmt_opening)
+                    var added = 0
+                    commit(com.innovation313.roshankhata.ui.FormGuard.Pending({ added = dao.importOpeningBalances(rows, note) }) {
+                        if (!isFinishing && !isDestroyed) {
+                            Toast.makeText(this, Digits.string(resources, R.string.import_csv_done, added), Toast.LENGTH_LONG).show()
+                        }
+                    })
+                }
+            }
     }
 
     private fun showAddPartyDialog() {

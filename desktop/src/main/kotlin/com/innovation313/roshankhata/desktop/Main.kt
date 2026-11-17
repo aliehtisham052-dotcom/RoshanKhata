@@ -1368,14 +1368,10 @@ private fun Book(
                                         if (rows.isEmpty()) {
                                             told = words.text(W.import_csv) to words.text(W.import_csv_empty)
                                         } else {
-                                            // Already in the book, or twice in the file: brought in once, never doubled.
-                                            val seen = parties.toMutableList()
-                                            val fresh = rows.filter { r ->
-                                                !com.innovation313.roshankhata.data.CsvImport.alreadyIn(r, seen).also { dup ->
-                                                    if (!dup) seen += PartyWithBalance(0, r.name, r.phone, true, null, 0.0)
-                                                }
-                                            }
-                                            importing = fresh to (rows.size - fresh.size)
+                                            // Already in the book, or twice in the file: brought in once, never doubled
+                                            // (one rule with the phone's import since 17 Nov 2026, CsvImport.incoming).
+                                            val inc = com.innovation313.roshankhata.data.CsvImport.incoming(rows, parties)
+                                            importing = inc.fresh to inc.skipped
                                         }
                                     } } },
                                         onChoose = { selecting = true; chosenIds = emptySet() }

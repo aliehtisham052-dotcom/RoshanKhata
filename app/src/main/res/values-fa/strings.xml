@@ -3323,6 +3323,7 @@
     <string name="import_csv_go">اضافه‌شان کن</string>
     <string name="import_csv_done">مشتریان اضافه شدند: %1$d</string>
     <string name="import_csv_empty">هیچ مشتری‌ای از این فایل خوانده نشد. فایل باید دست‌کم یک ستون نام داشته باشد.</string>
+    <string name="import_csv_too_big">این فایل برای خواندن روی گوشی خیلی بزرگ است (بیش از 16 MB). آن را به فایل‌های کوچک‌تر تقسیم کنید، یا روی رایانه وارد کنید.</string>
 
     <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
     <string name="wifi_send_title">ارسال به رایانه (وای‌فای)</string>

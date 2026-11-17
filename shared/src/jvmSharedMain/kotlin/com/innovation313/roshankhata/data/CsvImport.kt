@@ -225,6 +225,25 @@ object CsvImport {
         return rows
     }
 
+    /** What a file brings in: [fresh] rows, and how many were [skipped] as already in the book or twice in the file. */
+    data class Incoming(val fresh: List<Row>, val skipped: Int)
+
+    /**
+     * The rows that are new (17 Nov 2026, one rule for the phone's import and the computer's): one already in the book
+     * ([alreadyIn]), or a second time in the file, is brought in once, never doubled.
+     */
+    fun incoming(rows: List<Row>, existing: List<PartyWithBalance>): Incoming {
+        val seen = existing.toMutableList()
+        val fresh = rows.filter { r ->
+            !alreadyIn(r, seen).also { dup -> if (!dup) seen += PartyWithBalance(0, r.name, r.phone, true, null, 0.0) }
+        }
+        return Incoming(fresh, rows.size - fresh.size)
+    }
+
+    /** The rows as the book reads them, after the owner said what a positive figure in the file means. */
+    fun signed(rows: List<Row>, positiveOwesMe: Boolean): List<Row> =
+        if (positiveOwesMe) rows else rows.map { it.copy(balance = -it.balance) }
+
     /** Same person already in the book: same name (any case, any spacing) and, when both have one, the same number. */
     fun alreadyIn(row: Row, existing: List<PartyWithBalance>): Boolean {
         val key = row.name.lowercase().replace(Regex("\\s+"), " ")

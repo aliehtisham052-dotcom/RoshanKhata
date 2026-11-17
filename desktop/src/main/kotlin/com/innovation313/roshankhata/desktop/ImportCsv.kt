@@ -41,7 +41,7 @@ fun ImportPreviewDialog(
 ) {
     val c = LocalRoshanColors.current
     var owesMe by remember { mutableStateOf(true) }
-    val rows = if (owesMe) fresh else fresh.map { it.copy(balance = -it.balance) }
+    val rows = CsvImport.signed(fresh, owesMe)
     val title = word(W.import_csv)
     // In the app's frame (Marhala 4): the figures and the sign's choice first, Import the one accent button.
     AppDialog(onCloseRequest = onCancel, title = title, state = rememberDialogState(width = fitW(560.dp), height = fitH(600.dp))) {

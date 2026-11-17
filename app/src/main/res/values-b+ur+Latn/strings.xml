@@ -3295,6 +3295,7 @@
     <string name="import_csv_go">Inhein le aayein</string>
     <string name="import_csv_done">Customers shamil huay: %1$d</string>
     <string name="import_csv_empty">Is file se koi customer nahi parha ja saka. Is mein kam az kam naamon ka ek column hona chahiye.</string>
+    <string name="import_csv_too_big">Yeh file phone par parhne ke liye bohat bari hai (16 MB se zyada). Isay chhoti files mein baant lein, ya computer par import karein.</string>
 
     <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
     <string name="wifi_send_title">Computer ko bhejein (WiFi)</string>

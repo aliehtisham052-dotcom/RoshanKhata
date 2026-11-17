@@ -3343,6 +3343,7 @@
     <string name="import_csv_go">उन्हें ले आएँ</string>
     <string name="import_csv_done">ग्राहक जोड़े गए: %1$d</string>
     <string name="import_csv_empty">इस फ़ाइल से कोई ग्राहक नहीं पढ़ा जा सका। इसमें कम से कम नामों का एक कॉलम होना चाहिए।</string>
+    <string name="import_csv_too_big">यह फ़ाइल फ़ोन पर पढ़ने के लिए बहुत बड़ी है (16 MB से ज़्यादा)। इसे छोटी फ़ाइलों में बाँट लें, या कंप्यूटर पर इम्पोर्ट करें।</string>
 
     <!-- Phone to computer over WiFi (20 Oct); the computer's posters. -->
     <string name="wifi_send_title">कंप्यूटर को भेजें (वाई-फ़ाई)</string>
