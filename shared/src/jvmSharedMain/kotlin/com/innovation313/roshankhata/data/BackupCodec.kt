@@ -782,17 +782,24 @@ object BackupCodec {
             // A goods line must belong to an entry in this same file, and may
             // only point at products and batches the file also carries. A
             // cash-sale pairing must lead to an entry that exists.
-            val entryIds = entries.map { it.id }.toSet()
+            // The big tables' pointers as numbers (17 Nov 2026, L001): the same keys a big file read a page at a time
+            // keeps ([BigKeys]), so a file is judged alike by either path.
+            val keys = BigKeys().apply {
+                for (e in entries) entry(e.id, e.partyId, e.productId, e.billItemId)
+                for (i in entryItems) entryItem(i.entryId, i.productId, i.billItemId)
+                // A sale line or payment cascades off its sale, as an invoice line does.
+                for (s in sales) sale(s.id)
+                for (l in saleItems) saleLine(l.saleId)
+                for (p in salePayments) saleLine(p.saleId)
+            }
             // A cash-sale pairing whose other half the bin purged for good (3 Nov 2026 audit, C1). The link is
             // a note between two rows, not a foreign key: the survivor stands on its own. Counted as a hole, it
             // made every copy of such a book refuse to restore — Drive, the daily copies, a phone's pairing — so
-            // it is cleared here instead, which also rescues the copies already made.
+            // it is cleared here instead, which also rescues the copies already made ([BigKeys.pairKept]).
             for (i in entries.indices) {
                 val other = entries[i].pairedEntryId
-                if (other != null && other !in entryIds) entries[i] = entries[i].copy(pairedEntryId = null)
+                if (other != null && keys.pairKept(other) == null) entries[i] = entries[i].copy(pairedEntryId = null)
             }
-            // A sale line or payment cascades off its sale, as an invoice line does.
-            val saleIds = sales.map { it.id }.toSet()
             val returnIds = returns.map { it.id }.toSet()
             val orderIds = orders.map { it.id }.toSet()
             val orphans =
@@ -802,14 +809,10 @@ object BackupCodec {
                 adjustments.count { it.productId !in productIds } +
                 adjustments.count { it.billItemId != null && it.billItemId !in billItemIds } +
                 returnItems.count { it.returnId !in returnIds } +
-                saleItems.count { it.saleId !in saleIds } +
-                salePayments.count { it.saleId !in saleIds } + entries.count { it.productId != null && it.productId !in productIds } +
-                entryItems.count { it.entryId !in entryIds } +
-                entryItems.count { it.productId != null && it.productId !in productIds } +
-                entryItems.count { it.billItemId != null && it.billItemId !in billItemIds } +
-                entries.count { it.billItemId != null && it.billItemId !in billItemIds } +
+                // The big tables: entries' party, product and bill line; goods lines' entry, product and bill line; a
+                // ticket's lines and payments ([BigKeys.orphans] — one rule with a file read a page at a time).
+                keys.orphans(partyIds, productIds, billItemIds) +
                 billItems.count { it.productId != null && it.productId !in productIds } +
-                entries.count { it.partyId !in partyIds } +
                 cheques.count { it.partyId !in partyIds } +
                 plans.count { it.partyId !in partyIds } +
                 installments.count { it.planId !in planIds } +
