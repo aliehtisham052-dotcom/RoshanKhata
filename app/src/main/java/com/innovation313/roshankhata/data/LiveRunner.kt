@@ -200,7 +200,7 @@ object LiveRunner {
         }
     }
 
-    /** Whether rounds are running (the app is on screen); a wake-up then does nothing ([PushWake.roundNow]). */
+    /** Whether rounds are running (the app is on screen); a wake-up then leaves the open shop to them and wakes only the shops that are not open ([PushWake.roundNow], [WakeRoute]). */
     val running: Boolean get() = job?.isActive == true
 
     @Synchronized

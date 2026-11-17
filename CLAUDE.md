@@ -393,7 +393,8 @@ of it was tried on two real devices yet — CI only.
   safety:** Firebase Installations sends Google an installation ID, the app's
   version and device basics — declare "Device or other IDs" (app
   functionality), not shared; the privacy policy says so (section 17).
-  Not tried on a real phone yet. Only the open business's book is woken.
+  Not tried on a real phone yet. Since 17 Nov 2026 a wake-up also runs rounds for up to 3 shops that are not open
+  and have the relay on (`WakeRoute`, `PushWake.eachOther`, one shop at a time).
 - **Three relays (22 Oct 2026, the owner's plan: never rely on one):**
   Cloudflare (`cloud/worker`), Supabase (`supabase/functions/daakiya`, project
   `tcztkeyliletxshhkhnz`, Deno + Postgres in schema `rk_relay` with RLS on and
@@ -415,9 +416,8 @@ of it was tried on two real devices yet — CI only.
   Functions read-write on that one project, expires 21 Oct 2027). Upstash was
   dropped (22 Oct): a phone could only use it with its master key or another
   server to mint per-book keys, so it could never be an independent road.
-- Not yet: the audit chain stays per device; the wake-up for a business that
-  is not the open one; the wake-up through Supabase or the hosting (only
-  Cloudflare sends FCM).
+- Not yet: the audit chain stays per device; the wake-up through Supabase or the hosting (only
+  Cloudflare sends FCM). The wake-up for a shop that is not open was built 17 Nov 2026 (`WakeRoute`).
 
 ### The review (22 Oct 2026, kmp-desktop-15 — the owner: "critical analysis karo, drawbacks fix karo")
 
@@ -2974,6 +2974,11 @@ Each of these cost a build or a bug.
     uncommitted edits to the same file (16 Nov 2026); they were found missing and written again. Commit (or copy the file
     aside) before breaking anything, and let `mutate.sh` put the file back.
 
+154. **`HttpURLConnection.disconnect()` from another thread waits for the read it should end.** A server that sent its
+    headers and then stayed silent held the kill-switch read 4 s past a 1 s deadline, and the seal's 45 s deadline held only
+    between reads (17 Nov 2026, found by a test written to kill a surviving breakage). A whole deadline cuts the connection on
+    a daemon thread of its own (`Rfc3161.cut`) and the caller stops waiting; a test with a stalling server holds it.
+
 ---
 
 ## Working with the owner
@@ -4358,6 +4363,21 @@ merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on A
   reads `MONEY` as NORMAL. The kind chooser cannot make or unmake `MONEY` (`EntryKind.Refusal.MONEY`). Both
   statements say "Money · Cash" on such a row (`StatementPrint.rowDetail`, PdfExport): it stays in the "I got" column
   by its side of the balance. Left: Money with an item typed is saved as goods without saying so (low).
+
+### 17 Nov 2026: sync, wake-up and the seal (helper T: L010, L013, L014, L029; CI only)
+
+- **Wake-up for shops that are not open** (`WakeRoute`, shared, pure; `PushWake.roundNow`/`takeCarried`): a message that
+  names its book wakes that shop only; an unnamed one wakes the open shop, then up to 3 shops that are not open with the
+  relay on, each through `openOther` under a Mutex, never NumberMark from another shop, nothing on a helper's phone. The
+  Worker does not yet put the book id ("k") in its FCM messages: that is a Worker deploy, the owner's word.
+- **Whole deadlines** (`LiveControl.fetchFrom`: 8 s, User-Agent "RoshanKhata", 16 KB cap, one read at a time;
+  `Rfc3161.cut` disconnects off the caller's thread — lesson 154).
+- **The seal's CA chain** (`Rfc3161.chain`, the JDK's PKIX at the token's genTime; `pinned` trusts a root only by a SHA-256
+  written in the code): `BookSeals.ROOT_PINS` is EMPTY on purpose — no root fingerprint could be confirmed from two
+  sources here — so the screens still say "answers received". `.github/workflows/tsa-check.yml` (manual) stamps once
+  against each live TSA and prints every certificate's SHA-256: run it, check against the TSAs' own pages, then pin.
+- `LiveSync.apply` and `snapshot` are gone: every test goes through `applyFrom`. Register BC-200..204. Design notes for L011
+  (audit chain across devices) and L039 (fingerprint at a sequence) are in the audit folder, not built.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 
