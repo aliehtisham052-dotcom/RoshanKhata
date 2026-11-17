@@ -114,7 +114,10 @@ class SecurityReviewTest {
         dao.editSupplierBill(bill.copy(totalAmount = 9500.0), "Engro")
         dao.saveBillLine(bill.id, BillItem(billId = bill.id, productName = "DAP", quantity = 1.0, unit = "bag", rate = 500.0))
         dao.deleteSupplierBill(bill.id)
-        val rows = dao.auditInOrder().filter { it.refTable == "supplier_bills" }
+        // The bill's own adding is written too (17 Nov 2026, the owner's yes), by whoever was signed in then (the owner).
+        val all = dao.auditInOrder().filter { it.refTable == "supplier_bills" }
+        assertEquals(AuditAction.BILL_ADDED, all.first().action)
+        val rows = all.drop(1)
         assertEquals(listOf(AuditAction.BILL_EDITED, AuditAction.BILL_EDITED, AuditAction.BILL_DELETED), rows.map { it.action })
         assertTrue(rows.all { it.user == "Asad" && it.refId == bill.id })
         assertEquals("9500.00", rows[0].detail)
