@@ -236,4 +236,30 @@ class HudhudPanelTest {
         assertEquals(0, env.usageCount(Hudhud.Thing.CUSTOMERS, from, to))
         assertEquals(counts.since(), env.usageSince())
     }
+
+    /**
+     * Audit L027 (17 Nov 2026): Hudhud reads the bell's list the window already worked out, sync rows included, rather than
+     * reading the whole book again; until the window has one he works it out himself.
+     */
+    @Test
+    fun `Hudhud reads the window's bell when it has one`() = runBlocking {
+        val db = DesktopDatabase.open(dir.resolve("khata.db"))
+        try {
+            val dao = db.khataDao()
+            val shown = listOf(com.innovation313.roshankhata.data.LedgerAlerts.Alert(
+                com.innovation313.roshankhata.data.LedgerAlerts.Kind.SYNC, "Two changes disagree", ""))
+            val withBell = HudhudDeskEnv(
+                desktopWords(Locale.US), Locale.US, FileShopSettings(File(dir, "shop.properties")),
+                AppPrefs(File(dir, "app.properties")), 1L, ReminderStore(File(dir, "reminders_b1.properties")), null,
+                bell = { shown }
+            )
+            val rows = withBell.alerts(dao)
+            assertEquals(listOf("Two changes disagree"), rows.map { it.title })
+            assertEquals(com.innovation313.roshankhata.data.AnswerAlert.Kind.SYNC, rows.single().kind)
+            // No list yet: worked out from the book itself, which has no sync row (only the window adds those).
+            assertTrue(env().alerts(dao).none { it.kind == com.innovation313.roshankhata.data.AnswerAlert.Kind.SYNC })
+        } finally {
+            db.close()
+        }
+    }
 }

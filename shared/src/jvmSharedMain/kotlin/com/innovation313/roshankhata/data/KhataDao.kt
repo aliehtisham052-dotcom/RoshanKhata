@@ -5487,6 +5487,22 @@ interface KhataDao {
     )
     fun observeBatchMoves(): Flow<Long>
 
+    /**
+     * Changes whenever a table the bell reads is written (17 Nov 2026, audit L027): the computer's bell
+     * ([LedgerAlerts.compute]) is worked out again on this, not on every page the owner opens. Like
+     * [observeBatchMoves], the figure means nothing; Room runs it again whenever one of its tables is written.
+     * A table LedgerAlerts starts to read goes in here (BellSourcesTest names them).
+     */
+    @Query(
+        "SELECT (SELECT COUNT(*) FROM parties) + (SELECT COUNT(*) FROM transactions) + (SELECT COUNT(*) FROM entry_items) + " +
+            "(SELECT COUNT(*) FROM cheques) + (SELECT COUNT(*) FROM payment_plans) + (SELECT COUNT(*) FROM installments) + " +
+            "(SELECT COUNT(*) FROM supplier_bills) + (SELECT COUNT(*) FROM bill_items) + (SELECT COUNT(*) FROM products) + " +
+            "(SELECT COUNT(*) FROM stock_adjustments) + (SELECT COUNT(*) FROM sales) + (SELECT COUNT(*) FROM sale_items) + " +
+            "(SELECT COUNT(*) FROM sale_returns) + (SELECT COUNT(*) FROM sale_return_items) + (SELECT COUNT(*) FROM day_close) + " +
+            "(SELECT COUNT(*) FROM cashbook) + (SELECT COUNT(*) FROM purchase_orders) + (SELECT COUNT(*) FROM purchase_order_items)"
+    )
+    fun observeBellSources(): Flow<Long>
+
     /** Every rate a product was bought at, newest first, with its unit ([Cost.lastInOwnUnit]). */
     @Query(
         "SELECT i.quantity AS qty, i.unit AS unit, i.rate AS rate FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +

@@ -92,6 +92,7 @@ import androidx.compose.ui.focus.focusRequester
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import com.innovation313.roshankhata.data.LiveSync
 import com.innovation313.roshankhata.data.dayAfter
@@ -560,6 +561,9 @@ private suspend fun restore(
 /** App Lock returns after this long with no key or click (15 minutes, a shop's quiet spell). */
 private const val APP_LOCK_IDLE_MS = 15 * 60_000L
 
+/** How often the bell reads live sync's conflicts again with nothing else changed (they are not Room's tables): 5 minutes. */
+private const val BELL_QUIET_MS = 5 * 60_000L
+
 private fun reasonOf(failed: BackupCodec.ImportResult.Failed, words: Words): String {
     val text = when (failed.why) {
         BackupCodec.ImportResult.Why.UNREADABLE -> words.text(W.backup_err_unreadable)
@@ -740,6 +744,8 @@ private fun Book(
     var deletingMany by remember { mutableStateOf(false) }
     // The bell's list (LedgerAlerts, the phone's own rules) and its window.
     var alerts by remember { mutableStateOf<List<com.innovation313.roshankhata.data.LedgerAlerts.Alert>>(emptyList()) }
+    // The list above has been worked out at least once for this book (Hudhud reads it instead of working it out again).
+    var alertsReady by remember { mutableStateOf(false) }
     var showAlerts by remember { mutableStateOf(false) }
     // Hudhud's panel (16 Nov 2026, audit T23): the phone's assistant, typed, on the shared answers.
     var showHudhud by remember { mutableStateOf(false) }
@@ -875,7 +881,20 @@ private fun Book(
             if (today != seen) { seen = today; dayTick++ }
         }
     }
-    LaunchedEffect(reload, section, dayTick) {
+    // The bell is worked out once per change of the book, not on every page the owner opens (17 Nov 2026, audit L027:
+    // a dozen reads of the whole book ran on each click of the rail). [bookTick] moves when a table the bell reads is
+    // written (KhataDao.observeBellSources, settled for 800 ms so a sale's many rows are one change); live sync's
+    // conflicts live outside Room's tables, so a quiet [slowTick] reads them again every five minutes. Home, the bell,
+    // the tray's daily notice and Hudhud all read this one list.
+    var bookTick by remember { mutableIntStateOf(0) }
+    LaunchedEffect(dao) {
+        dao.observeBellSources().drop(1).collectLatest { kotlinx.coroutines.delay(800); bookTick++ }
+    }
+    var slowTick by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        while (true) { kotlinx.coroutines.delay(BELL_QUIET_MS); slowTick++ }
+    }
+    LaunchedEffect(dao, reload, dayTick, bookTick, slowTick) {
         alerts = withContext(Dispatchers.IO) {
             runCatching {
                 val conflicts = runCatching { LiveSync.moneyConflicts(db.syncSql()) }.getOrDefault(0)
@@ -883,6 +902,7 @@ private fun Book(
                 com.innovation313.roshankhata.data.LedgerAlerts.compute(words, dao, { Format.money(it) }, conflicts, syncOff)
             }.getOrDefault(emptyList())
         }
+        alertsReady = true
     }
     // The last real backup (25 Oct 2026, the audit): a "Back up now" file, or a copy in the outside folder
     // (a USB stick, Google Drive for Desktop). The daily copies on this computer's own disk are written on
@@ -2502,7 +2522,8 @@ private fun Book(
     if (showHudhud) {
         val closeHudhud = { showHudhud = false }
         val hudhudEnv = remember(activeBusiness, words) {
-            HudhudDeskEnv(words, Locale.getDefault(), settings, appPrefs, activeBusiness, reminders, DeskUsage.counts)
+            HudhudDeskEnv(words, Locale.getDefault(), settings, appPrefs, activeBusiness, reminders, DeskUsage.counts,
+                bell = { if (alertsReady) alerts else null })
         }
         AppDialog(
             onCloseRequest = closeHudhud,

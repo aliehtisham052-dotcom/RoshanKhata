@@ -101,7 +101,13 @@ class HudhudDeskEnv(
     private val business: Long,
     private val reminders: ReminderStore,
     /** This computer's own counts of app opens and calculator sums (null: none kept, as in a test that names none). */
-    private val usage: UsageCounts? = null
+    private val usage: UsageCounts? = null,
+    /**
+     * The bell's rows the window already worked out (17 Nov 2026, audit L027): Hudhud reads the same list the bell shows,
+     * live sync's rows included, instead of reading the whole book again; null until the window has one (then, and in a
+     * test that names none, he works it out himself).
+     */
+    private val bell: () -> List<LedgerAlerts.Alert>? = { null }
 ) : AnswerEnv {
 
     /**
@@ -196,7 +202,7 @@ class HudhudDeskEnv(
 
     /** The bell's rows by the shared rule (LedgerAlerts), as the computer's bell lists them. */
     override suspend fun alerts(dao: KhataDao): List<AnswerAlert> =
-        LedgerAlerts.compute(words, dao, { Format.money(it) }).map { AnswerAlert(kindOf(it.kind), it.title) }
+        (bell() ?: LedgerAlerts.compute(words, dao, { Format.money(it) })).map { AnswerAlert(kindOf(it.kind), it.title) }
 
     override fun remindedToday(now: Long): Set<Long> = reminders.openedToday(now)
     override suspend fun radarShopDays(dao: KhataDao): Int? = RadarDesk.shopDays(dao)
