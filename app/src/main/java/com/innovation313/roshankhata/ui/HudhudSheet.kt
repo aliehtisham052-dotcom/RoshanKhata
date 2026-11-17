@@ -204,6 +204,8 @@ object HudhudSheet {
         var listenLauncher: ActivityResultLauncher<Intent>? = null
         var speakJob: Job? = null
         var voiceJob: Job? = null
+        /** The Stop chip in front of the chips while a long answer is spoken ([showStopChip]); null when none is shown. */
+        var stopChip: View? = null
         /**
          * His acts, in the open sky at the top of the sheet and nowhere else (14 Nov 2026, the owner: he never leaves the
          * sheet): off in the pose the stage shows, back in the one it shows then, on a perch.
@@ -1038,6 +1040,8 @@ object HudhudSheet {
                 a.mood == HudhudBook.Mood.GOOD -> HudhudChirp.Kind.GLAD
                 else -> HudhudChirp.Kind.HOOP
             }
+            // A long answer (his story is eleven parts) gets a Stop chip while it is spoken (17 Nov 2026, audit L036).
+            if (a.reverent || text.length >= STOP_CHIP_CHARS) showStopChip(a) else hideStopChip()
             voice.speak(text, plan, chirp = call, listener = object : HudhudVoice.Listener {
                 override fun onStart() {
                     if (closed) return
@@ -1050,15 +1054,57 @@ object HudhudSheet {
                 override fun onWord() {}
 
                 override fun onDone() {
-                    if (!closed) settle(a.mood)
+                    if (closed) return
+                    hideStopChip()
+                    settle(a.mood)
                 }
 
                 override fun onFailed() {
                     if (closed) return
+                    hideStopChip()
                     note(R.string.hudhud_voice_failed)
                     settle(a.mood)
                 }
             })
+        }
+
+        /**
+         * Stop, in front of the chips while a long answer is spoken (17 Nov 2026, audit L036: his story ran to its end with no way to
+         * stop it but the speaker switch or a word). A tap ends the speaking and the conversation's listening after it; the card stays.
+         */
+        private fun showStopChip(a: HudhudBook.Answer) {
+            hideStopChip()
+            val density = ctx.resources.displayMetrics.density
+            val chip = TextView(ctx).apply {
+                text = ctx.getString(R.string.followup_queue_stop)
+                textSize = 14f
+                maxLines = 1
+                gravity = Gravity.CENTER
+                minHeight = (40 * density).toInt()
+                setPaddingRelative((14 * density).toInt(), (6 * density).toInt(), (14 * density).toInt(), (6 * density).toInt())
+                setTextColor(ContextCompat.getColor(ctx, R.color.brand_green_text))
+                background = ContextCompat.getDrawable(ctx, R.drawable.bg_hudhud_chip)
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    endConversation()
+                    speakJob?.cancel()
+                    voiceJob?.cancel()
+                    voice.stop()
+                    hideStopChip()
+                    if (!closed && last === a) settle(a.mood)
+                }
+            }
+            chips.addView(chip, 0, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { marginEnd = (8 * density).toInt() })
+            (chips.parent as? android.widget.HorizontalScrollView)?.scrollTo(0, 0)
+            stopChip = chip
+        }
+
+        private fun hideStopChip() {
+            stopChip?.let { (it.parent as? ViewGroup)?.removeView(it) }
+            stopChip = null
         }
 
         /**
@@ -1164,6 +1210,12 @@ object HudhudSheet {
                     setOnClickListener { chip(words, ask) }
                 }
                 chips.addView(chip, LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { marginEnd = (8 * density).toInt() })
+            }
+            // A Stop chip still wanted while he speaks stays in front of the new set (L036).
+            stopChip?.let { stop ->
+                if (stop.parent == null) chips.addView(stop, 0, LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { marginEnd = (8 * density).toInt() })
             }
@@ -1391,6 +1443,9 @@ object HudhudSheet {
     private enum class Action { MIC, SEND, STOP }
     /** A breath after his voice has gone quiet before he listens again, so the microphone does not hear his last words. */
     private const val LISTEN_AGAIN_MS = 450L
+
+    /** An answer spoken at this many letters or more gets a Stop chip while it is said (L036). */
+    private const val STOP_CHIP_CHARS = 200
 
     /** A breath after his "I am listening" call before the microphone opens. */
     private const val READY_GAP_MS = 60L
