@@ -23,6 +23,14 @@ actual object KeyVault {
      * file; it does not keep it from this user's own programs (8 Nov review m29).
      */
     private val ENTROPY = "roshan-khata-sync-key-v1".toByteArray(Charsets.US_ASCII)
+
+    /**
+     * The description DPAPI keeps beside every blob this lock seals: the sync key, and since 17 Nov 2026 the backup
+     * password too, so it names neither (the review: the password's blob said "sync key"). Only a description — DPAPI
+     * opens a blob without it, so blobs sealed under the old words still open. [ENTROPY] keeps its old words: it is
+     * part of every blob's key, and new words would leave every key sealed before unreadable.
+     */
+    internal const val DESCRIPTION = "Roshan Khata protected data"
     private const val CRYPTPROTECT_UI_FORBIDDEN = 0x1
 
     @Structure.FieldOrder("cbData", "pbData")
@@ -76,7 +84,7 @@ actual object KeyVault {
         if (!windows) return null
         return withLock {
             val out = DataBlob()
-            if (!crypt32.CryptProtectData(DataBlob.of(plain), WString("Roshan Khata sync key"), DataBlob.of(ENTROPY), null, null, CRYPTPROTECT_UI_FORBIDDEN, out)) {
+            if (!crypt32.CryptProtectData(DataBlob.of(plain), WString(DESCRIPTION), DataBlob.of(ENTROPY), null, null, CRYPTPROTECT_UI_FORBIDDEN, out)) {
                 throw KeyLockUnavailable("dpapi: CryptProtectData refused")
             }
             out.read()
