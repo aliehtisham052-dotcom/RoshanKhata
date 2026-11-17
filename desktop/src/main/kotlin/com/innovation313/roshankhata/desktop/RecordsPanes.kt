@@ -1040,9 +1040,12 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
             scope.launch { withContext(Dispatchers.IO) { dao.setPlanNextDue(p.id, day) } }
         }, onDismiss = { dating = null }, title = word(W.plan_next_ask, Format.name(p.partyName)))
     }
-    if (adding) PlanAddDialog(parties, onSave = { plan ->
-        adding = false
-        scope.launch { withContext(Dispatchers.IO) { dao.insertPlanAudited(plan) } }
+    // The form closes once the plan is in the book; a write that fails keeps it, saying so (17 Nov 2026, L003).
+    if (adding) PlanAddDialog(parties, onSave = { plan, failed ->
+        scope.launch {
+            val written = withContext(Dispatchers.IO) { runCatching { dao.insertPlanAudited(plan) } }
+            if (written.isSuccess) adding = false else failed()
+        }
     }, onCancel = { adding = false })
     // Marking a plan complete changes what is written, so it asks the owner's rule and then the owner (Marhala
     // 4, the audit: neither was asked).
@@ -1306,7 +1309,7 @@ private fun ProductBuyers(dao: KhataDao, words: Words, product: com.innovation31
 
 /** A new plan: who (from the book), the total to clear, each instalment, the next date, a note. Adds nothing to the balance. */
 @Composable
-private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovation313.roshankhata.data.PaymentPlan) -> Unit, onCancel: () -> Unit) {
+private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovation313.roshankhata.data.PaymentPlan, failed: () -> Unit) -> Unit, onCancel: () -> Unit) {
     val c = LocalRoshanColors.current
     var partyId by remember { mutableStateOf<Long?>(null) }
     var total by remember { mutableStateOf("") }
@@ -1317,19 +1320,25 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
     var problem by remember { mutableStateOf<String?>(null) }
     val needParty = word(W.select_party_first)
     val needAmount = word(W.enter_valid_amount)
+    val notSaved = word(W.save_failed_not_saved)
+    var saving by remember { mutableStateOf(false) }
     fun save() {
+        if (saving) return
         val pid = partyId
         val t = com.innovation313.roshankhata.ui.Calc.evalAmount(total)
         when {
             pid == null -> problem = needParty
             t == null -> problem = needAmount
-            else -> onSave(
-                com.innovation313.roshankhata.data.PaymentPlan(
-                    partyId = pid, totalAmount = t,
-                    installmentAmount = com.innovation313.roshankhata.ui.Calc.evalAmount(each),
-                    nextDueDate = due, note = note.trim().ifEmpty { null }
-                )
-            )
+            else -> {
+                saving = true
+                onSave(
+                    com.innovation313.roshankhata.data.PaymentPlan(
+                        partyId = pid, totalAmount = t,
+                        installmentAmount = com.innovation313.roshankhata.ui.Calc.evalAmount(each),
+                        nextDueDate = due, note = note.trim().ifEmpty { null }
+                    )
+                ) { saving = false; problem = notSaved }
+            }
         }
     }
     // In the app's frame with Save in its foot (Marhala 4, the audit); the party is picked as on every form,

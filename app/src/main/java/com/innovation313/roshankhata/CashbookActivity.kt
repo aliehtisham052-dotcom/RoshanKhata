@@ -93,16 +93,19 @@ class CashbookActivity : BaseActivity() {
 
     private var cashFormIncome: Boolean? = null
     private var cashFormTexts: (() -> List<String>)? = null
+    /** The money form's Save is being written (17 Nov 2026, L003): a screen turned now does not reopen it. */
+    private var cashFormWriting = false
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         closeDraft.save(outState)
-        cashFormIncome?.let { inc ->
+        // A form whose row is being written is not kept: the row lands with its picture (17 Nov 2026, L003).
+        if (!cashFormWriting) cashFormIncome?.let { inc ->
             outState.putBoolean(STATE_FORM_INCOME, inc)
             cashFormTexts?.let { outState.putStringArrayList(STATE_FORM_TEXTS, ArrayList(it())) }
         }
         photoFlow.saveState(outState, STATE_PHOTO_CAMERA)
-        pendingPhoto?.let { outState.putString(STATE_PHOTO_PENDING, it) }
+        if (!cashFormWriting) pendingPhoto?.let { outState.putString(STATE_PHOTO_PENDING, it) }
         photoForRow?.let { outState.putLong(STATE_PHOTO_ROW, it) }
     }
 
@@ -222,23 +225,24 @@ class CashbookActivity : BaseActivity() {
             .setPositiveButton(R.string.save, null)
             .show().also { dialog ->
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
-                dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
+                // "Corrected" is said once the figure is in the book, not before (17 Nov 2026, L003).
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(dialog) { commit ->
                     val figure = com.innovation313.roshankhata.data.Digits.parse(etCount.text)
                     if (figure == null) {
                         Toast.makeText(this, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
                         etCount.requestFocus()
-                        return@setOnClickListener
+                        return@onSaveWrite
                     }
                     val why = etWhy.text.toString().trim()
                     if (why.isEmpty()) {
                         Toast.makeText(this, R.string.dayclose_correct_need_reason, Toast.LENGTH_LONG).show()
                         etWhy.requestFocus()
-                        return@setOnClickListener
+                        return@onSaveWrite
                     }
                     val note = listOfNotNull(why, c.note?.takeIf { it.isNotBlank() }).joinToString(" \u00b7 ")
-                    AppScope.launch { dao.saveDayClose(c.copy(counted = LineMath.round(figure), note = note)) }
-                    Toast.makeText(this, R.string.dayclose_correct_saved, Toast.LENGTH_LONG).show()
-                    dialog.dismiss()
+                    commit(com.innovation313.roshankhata.ui.FormGuard.Pending({ dao.saveDayClose(c.copy(counted = LineMath.round(figure), note = note)) }) {
+                        if (!isFinishing && !isDestroyed) Toast.makeText(this, R.string.dayclose_correct_saved, Toast.LENGTH_LONG).show()
+                    })
                 }
                 com.innovation313.roshankhata.ui.FormGuard.guard(
                     activity = this,
@@ -384,12 +388,13 @@ class CashbookActivity : BaseActivity() {
                     // The pad types into the box with the focus: the count, once the opening is the last count's
                     // figure; the opening first only when there was no count to start from.
                     if (last != null) etCounted.requestFocus() else etOpening.requestFocus()
-                    dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)?.setOnClickListener {
+                    // Closed once the count is in the book (17 Nov 2026, L003): a failed write keeps both figures.
+                    com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(dialog, closeDraft) { commit ->
                         val counted = com.innovation313.roshankhata.ui.CalcPad.figure(etCounted.text)
                         if (counted == null) {
                             Toast.makeText(this@CashbookActivity, R.string.dayclose_need_count, Toast.LENGTH_SHORT).show()
                             etCounted.requestFocus()
-                            return@setOnClickListener
+                            return@onSaveWrite
                         }
                         // A drawer that does not match the books needs its reason written down (POS Phase 4):
                         // a figure with no story is one nobody can answer for next week.
@@ -400,7 +405,7 @@ class CashbookActivity : BaseActivity() {
                             // The box it wants sits below the whole pad: brought on screen and given the focus.
                             etNote.requestFocus()
                             (view as? android.widget.ScrollView)?.let { sv -> sv.post { sv.smoothScrollTo(0, etNote.top) } }
-                            return@setOnClickListener
+                            return@onSaveWrite
                         }
                         val close = DayClose(
                             // The working day: a drawer counted after midnight is the evening before's (23 Oct 2026).
@@ -412,8 +417,7 @@ class CashbookActivity : BaseActivity() {
                             note = etNote.text.toString().trim().ifEmpty { null },
                             closedAt = now
                         )
-                        AppScope.launch { dao.saveDayClose(close) }
-                        dialog.dismiss()
+                        commit(com.innovation313.roshankhata.ui.FormGuard.Pending({ dao.saveDayClose(close) }))
                     }
                     // Back, a tap beside it or Cancel threw a counted drawer away in silence (5 Nov 2026, the supplier
                     // bill's flaw): a count, a note or a changed opening asks first; an untouched form closes at once.
@@ -650,19 +654,20 @@ class CashbookActivity : BaseActivity() {
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
                 // Cursor in the first empty box; the amount keeps the app's pad (8 Nov 2026, focus rule).
                 com.innovation313.roshankhata.ui.FormFocus.focusFirstEmpty(listOf(etAmount, etCategory, etNote), true, form.window)
-                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                // The form closes once the row is in the book (17 Nov 2026, L003): a write that fails keeps it open.
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(form, busy = { cashFormWriting = it }) { commit ->
                     val amount = Calc.evalAmount(etAmount.text.toString())
                     if (amount == null) {
                         Toast.makeText(this@CashbookActivity, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                         etAmount.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
 
                     val category = etCategory.text.toString().trim()
                     if (category.isEmpty()) {
                         Toast.makeText(this@CashbookActivity, R.string.enter_category, Toast.LENGTH_SHORT).show()
                         etCategory.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
 
                     // AppScope, not lifecycleScope — see AppScope's own comment.
@@ -670,10 +675,9 @@ class CashbookActivity : BaseActivity() {
                     // progress, so a quick Back press right after could cancel the
                     // write before it landed, taking the typed amount, category,
                     // note and date with it.
-                    // The picture goes with the row; the form lets go of it before the dialog's dismiss runs.
+                    // The picture goes with the row; the form lets go of it once the row is written, before the
+                    // dialog's dismiss runs (a failed write keeps it with the form).
                     val photo = pendingPhoto
-                    written = true
-                    pendingPhoto = null
                     // What the form says at Save, read here on the main thread rather than inside the write.
                     val entry = CashEntry(
                         amount = amount,
@@ -685,8 +689,10 @@ class CashbookActivity : BaseActivity() {
                         paymentRef = PaymentRef.clean(chosenMethod(), etRef.text.toString()),
                         photoPath = photo
                     )
-                    AppScope.launch { dao.insertCashEntryAudited(entry) }
-                    true
+                    commit(com.innovation313.roshankhata.ui.FormGuard.Pending({ dao.insertCashEntryAudited(entry) }) {
+                        written = true
+                        if (pendingPhoto == photo) pendingPhoto = null
+                    })
                 }
                 // Back, a tap beside it or Cancel threw a typed amount (and the receipt's picture) away in silence
                 // (5 Nov 2026, the supplier bill's flaw): the form opens blank, on Cash and now, and anything changed

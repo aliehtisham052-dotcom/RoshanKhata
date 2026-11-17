@@ -201,21 +201,21 @@ class PlansActivity : BaseActivity() {
             .show().also { form ->
                 com.innovation313.roshankhata.ui.CalcPad.dock(form, view, view.findViewById(R.id.planKeypad))
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
-                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(form, planDraft) { commit ->
                     val party = parties.firstOrNull {
                         it.name.equals(etParty.text.toString().trim(), ignoreCase = true)
                     }
                     if (party == null) {
                         Toast.makeText(this@PlansActivity, R.string.select_party_first, Toast.LENGTH_LONG).show()
                         etParty.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
 
                     val total = Calc.evalAmount(etTotal.text.toString())
                     if (total == null || total <= 0.0) {
                         Toast.makeText(this@PlansActivity, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                         etTotal.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
 
                     // AppScope, not lifecycleScope — a quick Back press right
@@ -232,8 +232,10 @@ class PlansActivity : BaseActivity() {
                     )
                     // A new plan asks whoever may change the book, as Windows' does (17 Nov 2026, the owner's yes); a
                     // cashier is asked a manager's PIN and the plan is written once it is given.
-                    com.innovation313.roshankhata.ui.AccessUi.edit(this@PlansActivity, dao) { AppScope.launch { dao.insertPlanAudited(plan) } }
-                    true
+                    // Closed once the plan is in the book (17 Nov 2026, L003): a failed write keeps the form as typed.
+                    com.innovation313.roshankhata.ui.AccessUi.edit(this@PlansActivity, dao) {
+                        commit(com.innovation313.roshankhata.ui.FormGuard.Pending({ dao.insertPlanAudited(plan) }))
+                    }
                 }
                 // Back, a tap beside it or Cancel threw a typed plan away in silence (5 Nov 2026, the supplier
                 // bill's flaw). The form opens blank: a customer, a figure, a day or a note asks first.
@@ -374,12 +376,12 @@ class PlansActivity : BaseActivity() {
             .show().also { form ->
                 com.innovation313.roshankhata.ui.CalcPad.fullScreen(form, view)
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
-                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(form, planDraft) { commit ->
                     val amount = Calc.evalAmount(etAmount.text.toString())
                     if (amount == null) {
                         Toast.makeText(this@PlansActivity, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                         etAmount.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
 
                     // Overpaying is allowed — people do hand over a round figure —
@@ -396,16 +398,13 @@ class PlansActivity : BaseActivity() {
                             )
                             .setNegativeButton(R.string.cancel, null)
                             .setPositiveButton(R.string.proceed_anyway) { _, _ ->
-                                if (form.isShowing) {
-                                    recordPayment(plan, amount, etNote.text.toString().trim())
-                                    form.dismiss()
-                                }
+                                commit(paymentWrite(plan, amount, etNote.text.toString().trim()))
                             }
                             .show()
-                        return@onSave false
+                        return@onSaveWrite
                     }
-                    recordPayment(plan, amount, etNote.text.toString().trim())
-                    true
+                    // Closed once the payment is in the book (17 Nov 2026, L003): a failed write keeps it typed.
+                    commit(paymentWrite(plan, amount, etNote.text.toString().trim()))
                 }
                 // Back, a tap beside it or Cancel threw a typed payment away in silence (5 Nov 2026, the supplier
                 // bill's flaw): a changed amount or a note asks first; the form as it opened closes at once.
@@ -432,14 +431,16 @@ class PlansActivity : BaseActivity() {
      * if this Activity is still the one on screen. The payment is recorded
      * either way; the toast is a courtesy, not a condition of saving.
      */
-    private fun recordPayment(plan: PlanProgress, amount: Double, note: String) {
+    /**
+     * The payment's write, handed to the form's Save ([FormGuard.onSaveWrite], 17 Nov 2026): the form closes once it is
+     * in the book. The entry, the instalment and the plan's closing are ONE transaction (21 Oct 2026, the critical
+     * review): written one after another, a failure half way left a payment in the khata with no instalment, or an
+     * instalment that closed nothing. Money coming IN from the customer: it reduces what they owe; once the agreed
+     * total is met the plan closes rather than staying open with a full progress bar.
+     */
+    private fun paymentWrite(plan: PlanProgress, amount: Double, note: String): com.innovation313.roshankhata.ui.FormGuard.Pending {
         val noteText = note.ifEmpty { getString(R.string.plan_note_prefix) }
-        AppScope.launch {
-            // The entry, the instalment and the plan's closing in ONE transaction (21 Oct 2026, the
-            // critical review): written one after another, a failure half way left a payment in the
-            // khata with no instalment, or an instalment that closed nothing. The computer's own call.
-            // Money coming IN from the customer: it reduces what they owe; once the agreed total is
-            // met the plan closes rather than staying open with a full progress bar.
+        return com.innovation313.roshankhata.ui.FormGuard.Pending({
             dao.recordPlanPayment(
                 planId = plan.id,
                 partyId = plan.partyId,
@@ -448,20 +449,12 @@ class PlansActivity : BaseActivity() {
                 entryNote = noteText,
                 note = note.ifEmpty { null }
             )
-            // Still open: the next payment day is asked, the suggestion already chosen (21 Oct 2026:
-            // the day never moved on, and a plan paid on time read as late for ever).
-            if (plan.paidSoFar + amount < plan.totalAmount) withContext(Dispatchers.Main) {
-                if (!isFinishing && !isDestroyed) askNextDue(plan.id, plan.partyName, PlanSchedule.suggestNext(plan.nextDueDate))
-            }
-
-            withContext(Dispatchers.Main) {
-                if (!isFinishing && !isDestroyed) {
-                    Toast.makeText(
-                        this@PlansActivity,
-                        R.string.payment_recorded,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        }) {
+            if (!isFinishing && !isDestroyed) {
+                // Still open: the next payment day is asked, the suggestion already chosen (21 Oct 2026: the day
+                // never moved on, and a plan paid on time read as late for ever).
+                if (plan.paidSoFar + amount < plan.totalAmount) askNextDue(plan.id, plan.partyName, PlanSchedule.suggestNext(plan.nextDueDate))
+                Toast.makeText(this, R.string.payment_recorded, Toast.LENGTH_SHORT).show()
             }
         }
     }

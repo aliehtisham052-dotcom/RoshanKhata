@@ -197,15 +197,15 @@ class SchemesActivity : BaseActivity() {
             .show().also { form ->
                 com.innovation313.roshankhata.ui.CalcPad.dock(form, body, pad)
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
-                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                // Closed once the claim is in the book (17 Nov 2026, L003): a failed write keeps the figure.
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(form) { commit ->
                     val amount = com.innovation313.roshankhata.ui.CalcPad.figure(et.text)
                     if (amount == null || amount < 0) {
                         Toast.makeText(this@SchemesActivity, R.string.scheme_claim_hint, Toast.LENGTH_SHORT).show()
                         et.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
-                    AppScope.launch { dao.setSchemeClaim(s.id, amount, System.currentTimeMillis()) }
-                    true
+                    commit(com.innovation313.roshankhata.ui.FormGuard.Pending({ dao.setSchemeClaim(s.id, amount, System.currentTimeMillis()) }))
                 }
                 // Back, a tap beside it or Cancel threw a typed claim away in silence (5 Nov 2026, the supplier
                 // bill's flaw). The box opens blank: a figure in it asks first.
@@ -324,7 +324,8 @@ class SchemesActivity : BaseActivity() {
                 .setPositiveButton(R.string.save, null)
                 .show().also { form ->
                     com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
-                    com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                    // Closed once the scheme is in the book (17 Nov 2026, L003): a failed write keeps every box.
+                    com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(form) { commit ->
                         val name = etName.text.toString().trim()
                         val slabs = targets.indices.mapNotNull { i ->
                             val t = Digits.parse(targets[i].text.toString())
@@ -335,18 +336,15 @@ class SchemesActivity : BaseActivity() {
                             name.isEmpty() -> {
                                 Toast.makeText(this@SchemesActivity, R.string.scheme_need_name, Toast.LENGTH_SHORT).show()
                                 etName.requestFocus()
-                                false
                             }
                             slabs.isEmpty() -> {
                                 Toast.makeText(this@SchemesActivity, R.string.scheme_need_slab, Toast.LENGTH_SHORT).show()
                                 // The first slab's box that is missing: its target, else its reward.
                                 val firstTarget = Digits.parse(targets[0].text.toString())
                                 (if (firstTarget == null || firstTarget <= 0) targets[0] else rewards[0]).requestFocus()
-                                false
                             }
                             end < start -> {
                                 Toast.makeText(this@SchemesActivity, R.string.scheme_bad_dates, Toast.LENGTH_SHORT).show()
-                                false
                             }
                             else -> {
                                 val byQty = rgMeasure.checkedRadioButtonId == R.id.rbQty
@@ -372,8 +370,7 @@ class SchemesActivity : BaseActivity() {
                                     note = etNote.text.toString().trim().ifEmpty { null },
                                     createdAt = existing?.createdAt ?: System.currentTimeMillis()
                                 )
-                                AppScope.launch { dao.saveScheme(scheme) }
-                                true
+                                commit(com.innovation313.roshankhata.ui.FormGuard.Pending({ dao.saveScheme(scheme) }))
                             }
                         }
                     }

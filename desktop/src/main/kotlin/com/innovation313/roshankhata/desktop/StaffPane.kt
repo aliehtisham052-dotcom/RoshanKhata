@@ -226,6 +226,8 @@ fun StaffPane(dao: KhataDao) {
         var amount by remember(person, kind) { mutableStateOf("") }
         var note by remember(person, kind) { mutableStateOf("") }
         var bad by remember(person, kind) { mutableStateOf(false) }
+        var paying by remember(person, kind) { mutableStateOf(false) }
+        var failed by remember(person, kind) { mutableStateOf(false) }
         val close = { handing = null }
         val title = word(if (kind == Payroll.ADVANCE) W.staff_advance else W.staff_pay)
         AppDialog(onCloseRequest = close, dirty = { amount.isNotEmpty() || note.isNotEmpty() }, title = title,
@@ -235,13 +237,16 @@ fun StaffPane(dao: KhataDao) {
                 FluentButton(word(W.save), {
                     val v = Calc.evalAmount(amount)
                     if (v == null) bad = true
-                    else {
+                    else if (!paying) {
+                        // Closed once the payment is in the book; a write that fails keeps it, saying so (17 Nov 2026, L003).
+                        paying = true
                         scope.launch {
-                            withContext(Dispatchers.IO) {
-                                dao.insertStaffPayment(StaffPayment(staffId = person.id, amount = v, kind = kind, note = note.trim().ifEmpty { null }))
+                            val written = withContext(Dispatchers.IO) {
+                                runCatching { dao.insertStaffPayment(StaffPayment(staffId = person.id, amount = v, kind = kind, note = note.trim().ifEmpty { null })) }
                             }
+                            paying = false
+                            if (written.isSuccess) close() else failed = true
                         }
-                        close()
                     }
                 }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
             }) {
@@ -249,6 +254,7 @@ fun StaffPane(dao: KhataDao) {
                     Outlined(amount, { amount = it; bad = false }, label = { Text(word(W.staff_amount)) }, singleLine = true, modifier = Modifier.fillMaxWidth(), calc = com.innovation313.roshankhata.screens.CalcKind.MONEY)
                     FluentField(note, { note = it }, Modifier.fillMaxWidth(), label = word(W.staff_note))
                     if (bad) Text(word(W.staff_invalid), color = c.owedToMe, fontSize = 13.sp)
+                    if (failed) Text(word(W.save_failed_not_saved), color = c.owedToMe, fontSize = 13.sp)
                 }
             }
         }

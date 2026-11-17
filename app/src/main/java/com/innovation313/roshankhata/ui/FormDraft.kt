@@ -15,6 +15,12 @@ class FormDraft(private val tag: String) {
     /** A form that was open when the screen was saved. */
     class Saved(val which: Int, val arg: Long, val texts: List<String>?)
 
+    /**
+     * True while the form's Save is being written ([FormGuard.onSaveWrite], 17 Nov 2026): a screen turned in that
+     * moment does not keep the text, so the rebuilt screen does not reopen a form whose row is landing.
+     */
+    var writing = false
+
     private var which = -1
     private var arg: () -> Long = { 0L }
     private var reader: (() -> List<String>)? = null
@@ -32,7 +38,7 @@ class FormDraft(private val tag: String) {
     }
 
     fun save(out: Bundle) {
-        if (which < 0) return
+        if (which < 0 || writing) return
         out.putInt("${tag}_which", which)
         out.putLong("${tag}_arg", arg())
         reader?.let { out.putStringArrayList("${tag}_texts", ArrayList(it())) }

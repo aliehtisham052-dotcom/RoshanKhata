@@ -229,27 +229,23 @@ class StaffActivity : BaseActivity() {
             .show().also { dialog ->
                 com.innovation313.roshankhata.ui.CalcPad.dock(dialog, form, form.getTag(R.id.calc_pad_view) as View)
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
-                com.innovation313.roshankhata.ui.FormGuard.onSave(dialog) {
+                // Closed once the payment is in the book (17 Nov 2026, L003): a failed write keeps it typed.
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(dialog, staffDraft) { commit ->
                     val v = com.innovation313.roshankhata.ui.Calc.evalAmount(amount.text.toString())
                     if (v == null || v <= 0) {
                         Toast.makeText(this@StaffActivity, R.string.staff_invalid, Toast.LENGTH_LONG).show()
                         amount.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
                     val payment = StaffPayment(staffId = person.id, amount = v, kind = kind,
                         note = note.text.toString().trim().ifEmpty { null })
-                    // AppScope, not the screen's own scope (5 Nov 2026), as every other money write: Back right after
-                    // Save closes the screen and cancelled a write still on its way. A failed write is said by AppScope's
-                    // handler ("not saved"); the card is shown only while there is still a screen to show it on.
-                    AppScope.launch {
-                        dao.insertStaffPayment(payment)
-                        withContext(Dispatchers.Main) {
-                            if (!isFinishing && !isDestroyed) {
-                                com.innovation313.roshankhata.ui.SavedCard.show(this@StaffActivity, getString(R.string.saved))
-                            }
+                    // On AppScope through the form's Save (5 Nov 2026; 17 Nov 2026, L003): Back right after Save cannot
+                    // cancel it, a failure says "not saved" and keeps the form; the card shows only while there is a screen.
+                    commit(com.innovation313.roshankhata.ui.FormGuard.Pending({ dao.insertStaffPayment(payment) }) {
+                        if (!isFinishing && !isDestroyed) {
+                            com.innovation313.roshankhata.ui.SavedCard.show(this@StaffActivity, getString(R.string.saved))
                         }
-                    }
-                    true
+                    })
                 }
                 // Back, a tap beside it or Cancel threw a typed payment away in silence (5 Nov 2026, the supplier
                 // bill's flaw). The form opens blank: an amount or a note asks first.

@@ -225,6 +225,10 @@ class EntryDetailActivity : BaseActivity() {
     }
 
     private fun editAdvice(item: EntryItem) {
+        // Advice changes what a written sale says: whoever may change the book, and a row in Who did what, as the
+        // computer's receipt asks (8 Nov 2026, L34; the phone wrote it with neither — 17 Nov 2026).
+        val dao = KhataDatabase.get(this).khataDao()
+        if (!com.innovation313.roshankhata.ui.AccessUi.may(this, dao) { editAdvice(item) }) return
         val view = layoutInflater.inflate(R.layout.dialog_line_advice, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view) // the three boxes' hints wrap at large text (31 Oct 2026)
         val etCrop = view.findViewById<EditText>(R.id.etAdviceCrop).apply { setText(item.crop) }
@@ -237,17 +241,19 @@ class EntryDetailActivity : BaseActivity() {
             .setTitle(getString(R.string.advice_title, item.itemName.orEmpty()))
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.save) { _, _ ->
-                AppScope.launch {
-                    KhataDatabase.get(this@EntryDetailActivity).khataDao()
-                        .setLineAdvice(item.id, typed(etCrop), typed(etPest), typed(etDose))
-                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                        if (!isFinishing && !isDestroyed) load()
-                    }
-                }
-            }
+            // Closed once the advice is in the book (17 Nov 2026, L003): a failed write keeps the three boxes.
+            .setPositiveButton(R.string.save, null)
             .show().also { form ->
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(form) { commit ->
+                    val crop = typed(etCrop); val pest = typed(etPest); val dose = typed(etDose)
+                    commit(com.innovation313.roshankhata.ui.FormGuard.Pending({
+                        dao.setLineAdvice(item.id, crop, pest, dose)
+                        dao.audit(AuditActs.ENTRY_EDITED, "transactions", item.entryId, "advice")
+                    }) {
+                        if (!isFinishing && !isDestroyed) load()
+                    })
+                }
                 // Back, a tap beside it or Cancel threw typed advice away in silence (5 Nov 2026, the supplier bill's
                 // flaw): a change in any of the three boxes asks first; advice only looked at closes at once.
                 com.innovation313.roshankhata.ui.FormGuard.guard(
@@ -683,12 +689,13 @@ class EntryDetailActivity : BaseActivity() {
             .show().also { form ->
                 com.innovation313.roshankhata.ui.CalcPad.dock(form, view, pad)
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
-                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                // Closed once the correction is in the book (17 Nov 2026, L003): a failed write keeps it typed.
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(form, editDraft) { commit ->
                     val amount = Calc.evalAmount(etAmount.text.toString())
                     if (amount == null) {
                         Toast.makeText(this@EntryDetailActivity, R.string.invalid_amount, Toast.LENGTH_SHORT).show()
                         etAmount.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
                     // Only money, note and date live on the entry. The legacy goods
                     // columns are carried through untouched (copy keeps them) —
@@ -721,48 +728,45 @@ class EntryDetailActivity : BaseActivity() {
                             )
                         )
                     }
-                    // AppScope, not lifecycleScope — see AppScope's own comment.
-                    // This dialog closes the instant Save is tapped, while the
-                    // write is still in flight; a quick Back press right after
-                    // must not be able to cancel a correction any more than it
-                    // could a new entry.
+                    // On AppScope through the form's Save (17 Nov 2026, L003): a quick Back press right after cannot
+                    // cancel a correction, and the form closes only once it is written.
                     val sigChanged = sigRow.changed
                     val sig = sigRow.current
-                    AppScope.launch {
+                    var savedItems: List<EntryItem> = newItems
+                    var pair: com.innovation313.roshankhata.data.LedgerEntry? = null
+                    commit(com.innovation313.roshankhata.ui.FormGuard.Pending({
                         dao.updateEntryWithItems(updated, newItems)
                         dao.audit(AuditActs.ENTRY_EDITED, "transactions", updated.id, auditAmount(updated.amount))
                         if (sigChanged) runCatching {
                             if (sig != null) com.innovation313.roshankhata.data.EntrySignature.save(applicationContext, updated.id, sig)
                             else com.innovation313.roshankhata.data.EntrySignature.delete(applicationContext, updated.id)
                         }
-                        val savedItems = dao.itemsOfEntry(updated.id)
+                        savedItems = dao.itemsOfEntry(updated.id)
                         // Half of a cash sale whose amount changed: its other half is asked about (3 Nov 2026 audit, M13).
-                        val pair = if (e.pairedEntryId == null || !com.innovation313.roshankhata.data.Money.isNotZero(amount - e.amount)) null
+                        pair = if (e.pairedEntryId == null || !com.innovation313.roshankhata.data.Money.isNotZero(amount - e.amount)) null
                             else runCatching { dao.pairToFollow(e, e.amount) }.getOrNull()
-                        withContext(Dispatchers.Main) {
-                            if (!isFinishing && !isDestroyed) {
-                                entry = updated
-                                items = savedItems
-                                render(updated)
-                                if (sigChanged) showSignature()
-                                Toast.makeText(this@EntryDetailActivity, R.string.saved, Toast.LENGTH_SHORT)
+                    }) {
+                        if (!isFinishing && !isDestroyed) {
+                            entry = updated
+                            items = savedItems
+                            render(updated)
+                            if (sigChanged) showSignature()
+                            Toast.makeText(this@EntryDetailActivity, R.string.saved, Toast.LENGTH_SHORT)
+                                .show()
+                            pair?.let { other ->
+                                AlertDialog.Builder(this@EntryDetailActivity)
+                                    .setTitle(R.string.edit_pair_title)
+                                    .setMessage(getString(R.string.edit_pair_message, other.entryNumber,
+                                        com.innovation313.roshankhata.ui.Format.money(e.amount),
+                                        com.innovation313.roshankhata.ui.Format.money(amount)))
+                                    .setPositiveButton(R.string.edit_pair_both) { _, _ ->
+                                        AppScope.launch { dao.setPairAmount(other.id, e.id, amount) }
+                                    }
+                                    .setNegativeButton(R.string.delete_pair_one, null)
                                     .show()
-                                if (pair != null) {
-                                    AlertDialog.Builder(this@EntryDetailActivity)
-                                        .setTitle(R.string.edit_pair_title)
-                                        .setMessage(getString(R.string.edit_pair_message, pair.entryNumber,
-                                            com.innovation313.roshankhata.ui.Format.money(e.amount),
-                                            com.innovation313.roshankhata.ui.Format.money(amount)))
-                                        .setPositiveButton(R.string.edit_pair_both) { _, _ ->
-                                            AppScope.launch { dao.setPairAmount(pair.id, e.id, amount) }
-                                        }
-                                        .setNegativeButton(R.string.delete_pair_one, null)
-                                        .show()
-                                }
                             }
                         }
-                    }
-                    true
+                    })
                 }
                 // Back, a tap beside it or Cancel threw a correction away in silence (5 Nov 2026, the supplier bill's
                 // flaw): a changed box, day, batch or signature asks first; an edit only looked at closes at once.

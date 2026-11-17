@@ -831,11 +831,11 @@ class BillsActivity : BaseActivity() {
                 .setOnCancelListener { startNewBill(restore = draft) }
                 .apply {
                     if (similar != null) setNeutralButton(getString(R.string.bill_use_existing, similar.name)) { _, _ ->
-                        dispatchSaveBill(similar.id, null, billNumber, total, billDate, dueDate, paidWith, note)
+                        dispatchSaveBill(similar.id, null, billNumber, total, billDate, dueDate, paidWith, note, draft)
                     }
                 }
                 .setPositiveButton(R.string.bill_new_supplier_yes) { _, _ ->
-                    dispatchSaveBill(null, supplierName, billNumber, total, billDate, dueDate, paidWith, note)
+                    dispatchSaveBill(null, supplierName, billNumber, total, billDate, dueDate, paidWith, note, draft)
                 }
                 .show()
             return
@@ -856,13 +856,13 @@ class BillsActivity : BaseActivity() {
                 .setNegativeButton(R.string.cancel) { _, _ -> startNewBill(restore = draft) }
                 .setOnCancelListener { startNewBill(restore = draft) }
                 .setPositiveButton(R.string.proceed_anyway) { _, _ ->
-                    dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidWith, note)
+                    dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidWith, note, draft)
                 }
                 .show()
             return
         }
 
-        dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidWith, note)
+        dispatchSaveBill(supplier.id, null, billNumber, total, billDate, dueDate, paidWith, note, draft)
     }
 
     /**
@@ -878,7 +878,8 @@ class BillsActivity : BaseActivity() {
         billDate: Long,
         dueDate: Long?,
         paidWith: String?,
-        note: String?
+        note: String?,
+        draft: BillDraft
     ) {
         // The three writes below run on AppScope, not lifecycleScope — a
         // bill is money (the ledger entry), paperwork (the bill row), and
@@ -899,6 +900,10 @@ class BillsActivity : BaseActivity() {
         val supplierLabel = newSupplierName ?: parties.firstOrNull { it.id == supplierId }?.name
 
         AppScope.launch {
+          // A write that fails (storage full, a refusal in the DAO) reopens the form as it was typed, its lines and
+          // picture with it (17 Nov 2026, L003): the bill's form had already closed, and "not saved" left nothing.
+          var billWritten = false
+          try {
             // A new supplier: reuse one of the same name if it appeared in the
             // meantime (a second tap), otherwise add it as a supplier.
             val partyId = supplierId
@@ -955,6 +960,7 @@ class BillsActivity : BaseActivity() {
                 items = itemsForThisBill,
                 paidBy = paidWith?.takeIf { it != PaymentMethod.CASH }
             )
+            billWritten = true
 
             // The toast touches a screen the owner may already have left, so
             // it hops back to the main thread and is shown only if this
@@ -990,6 +996,20 @@ class BillsActivity : BaseActivity() {
                     offerLabelDetails(createdProducts.distinctBy { it.id }, guesses)
                 }
             }
+          } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+          } catch (e: Throwable) {
+            com.innovation313.roshankhata.data.AppFailures.report(e)
+            // A failure after the bill is in the book (the courtesy below it) is said, never a second form to save it again.
+            if (!billWritten) withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) {
+                    // Nothing of this bill was written (one transaction); the form comes back with its lines and picture.
+                    if (pendingItems.isEmpty()) pendingItems.addAll(itemsForThisBill)
+                    if (scanKeptPhoto == null) scanKeptPhoto = photoForThisBill
+                    startNewBill(restore = draft)
+                }
+            }
+          }
         }
     }
 
@@ -1240,22 +1260,26 @@ class BillsActivity : BaseActivity() {
             .setTitle(R.string.edit_bill)
             .setView(view)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.save) { _, _ ->
-                val total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString())
-                if (total == null || total <= 0.0) {
-                    Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                saveEditedBill(
-                    existing = existing,
-                    billNumber = etNumber.text.toString().trim().ifEmpty { null },
-                    total = total,
-                    billDate = billDate,
-                    dueDate = dueDate,
-                    note = etNote.text.toString().trim().ifEmpty { null }
-                )
-            }
+            // Save is wired after show() (17 Nov 2026, L003): the corrected bill closes once it is in the book, and a
+            // total the form refused, or a write that failed, keeps everything typed.
+            .setPositiveButton(R.string.save, null)
             .show().also { editForm ->
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(editForm) { commit ->
+                    val total = com.innovation313.roshankhata.ui.Calc.evalAmount(etTotal.text.toString())
+                    if (total == null || total <= 0.0) {
+                        Toast.makeText(this, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
+                        etTotal.requestFocus()
+                        return@onSaveWrite
+                    }
+                    commit(editedBillWrite(
+                        existing = existing,
+                        billNumber = etNumber.text.toString().trim().ifEmpty { null },
+                        total = total,
+                        billDate = billDate,
+                        dueDate = dueDate,
+                        note = etNote.text.toString().trim().ifEmpty { null }
+                    ))
+                }
                 com.innovation313.roshankhata.ui.CalcPad.dock(editForm, view, view.findViewById(R.id.billKeypad))
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(editForm)
                 com.innovation313.roshankhata.ui.FormFocus.chain(listOf(etNumber, etTotal, etNote))
@@ -1273,18 +1297,19 @@ class BillsActivity : BaseActivity() {
     }
 
     /**
-     * Runs on AppScope — a quick Back press right after Save must not be able
-     * to cancel this partway through. See AppScope's own comment.
+     * The corrected bill's write, handed to the form's Save ([FormGuard.onSaveWrite], 17 Nov 2026): it runs on
+     * AppScope — a quick Back press right after Save cannot cancel it partway — and the form closes once it is in.
      */
-    private fun saveEditedBill(
+    private fun editedBillWrite(
         existing: SupplierBill,
         billNumber: String?,
         total: Double,
         billDate: Long,
         dueDate: Long?,
         note: String?
-    ) {
-        AppScope.launch {
+    ): com.innovation313.roshankhata.ui.FormGuard.Pending {
+        val entryNote = billNumber?.let { getString(R.string.bill_entry_note, it) } ?: note
+        return com.innovation313.roshankhata.ui.FormGuard.Pending({
             // The bill and its khata entry in ONE transaction (21 Oct 2026, the critical review), the
             // computer's own call: THE LEDGER IS THE MONEY, and a failure between the two writes left
             // the bill and the khata saying different amounts. The entry's note is rebuilt as it was
@@ -1297,14 +1322,11 @@ class BillsActivity : BaseActivity() {
                     dueDate = dueDate,
                     note = note
                 ),
-                billNumber?.let { getString(R.string.bill_entry_note, it) } ?: note
+                entryNote
             )
-
-            withContext(Dispatchers.Main) {
-                if (!isFinishing && !isDestroyed) {
-                    Toast.makeText(this@BillsActivity, R.string.bill_updated, Toast.LENGTH_SHORT)
-                        .show()
-                }
+        }) {
+            if (!isFinishing && !isDestroyed) {
+                Toast.makeText(this@BillsActivity, R.string.bill_updated, Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -87,7 +87,8 @@ class ChequesActivity : BaseActivity() {
         super.onSaveInstanceState(outState)
         chequeDraft.save(outState)
         photoFlow.saveState(outState, STATE_PHOTO_CAMERA)
-        pendingPhoto?.let { outState.putString(STATE_PHOTO_PENDING, it) }
+        // A new cheque being written keeps no picture for a rebuilt screen: it lands with its row (17 Nov 2026, L003).
+        if (!chequeDraft.writing) pendingPhoto?.let { outState.putString(STATE_PHOTO_PENDING, it) }
         photoForCheque?.let { outState.putLong(STATE_PHOTO_CHEQUE, it) }
     }
 
@@ -301,27 +302,28 @@ class ChequesActivity : BaseActivity() {
                 com.innovation313.roshankhata.ui.KeyboardFollow.dialog(form)
                 // Cursor in the first empty box (8 Nov 2026, focus rule); the amount keeps the pad.
                 com.innovation313.roshankhata.ui.FormFocus.focusFirstEmpty(listOf(etParty, etAmount, etNumber, etBank, etNote), true, form.window)
-                com.innovation313.roshankhata.ui.FormGuard.onSave(form) {
+                // Closed once the cheque is in the book (17 Nov 2026, L003): a failed write keeps it typed, picture and all.
+                com.innovation313.roshankhata.ui.FormGuard.onSaveWrite(form, chequeDraft) { commit ->
                     val partyName = etParty.text.toString().trim()
                     val party = parties.firstOrNull { it.name.equals(partyName, ignoreCase = true) }
 
                     if (party == null) {
                         Toast.makeText(this@ChequesActivity, R.string.select_party_first, Toast.LENGTH_LONG).show()
                         etParty.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
 
                     val amount = Calc.evalAmount(etAmount.text.toString())
                     if (amount == null) {
                         Toast.makeText(this@ChequesActivity, R.string.enter_valid_amount, Toast.LENGTH_SHORT).show()
                         etAmount.requestFocus()
-                        return@onSave false
+                        return@onSaveWrite
                     }
 
                     val due = dueDate
                     if (due == null) {
                         Toast.makeText(this@ChequesActivity, R.string.pick_date_first, Toast.LENGTH_LONG).show()
-                        return@onSave false
+                        return@onSaveWrite
                     }
 
                     val number = etNumber.text.toString().trim().ifEmpty { null }
@@ -329,15 +331,11 @@ class ChequesActivity : BaseActivity() {
                     val note = etNote.text.toString().trim().ifEmpty { null }
                     // Read here on the main thread, as the form stands at Save, not inside the write.
                     val received = rbReceived.isChecked
-                    // A new cheque's picture goes with it; the form lets go of it before the dismiss runs.
+                    // A new cheque's picture goes with it; the form lets go of it once written, before the dismiss runs.
                     val photo = if (existing == null) pendingPhoto else null
-                    if (existing == null) { written = true; pendingPhoto = null }
 
-                    // AppScope, not lifecycleScope — see AppScope's own comment.
-                    // This dialog is already gone by the time the write finishes;
-                    // a quick Back press right after Save must not be able to
-                    // cancel a cheque that looked saved.
-                    AppScope.launch {
+                    // On AppScope through the form's Save: a quick Back press right after Save cannot cancel it.
+                    commit(com.innovation313.roshankhata.ui.FormGuard.Pending({
                         if (existing == null) {
                             dao.insertCheque(
                                 Cheque(
@@ -369,8 +367,9 @@ class ChequesActivity : BaseActivity() {
                                 )
                             }
                         }
-                    }
-                    true
+                    }) {
+                        if (existing == null) { written = true; if (pendingPhoto == photo) pendingPhoto = null }
+                    })
                 }
                 // Back, a tap beside it or Cancel threw a typed cheque (or a correction) away in silence (5 Nov 2026,
                 // the supplier bill's flaw): any box, the way, the day or a new cheque's waiting picture asks first.
