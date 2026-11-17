@@ -55,6 +55,49 @@ object RestoreCheck {
         val none: Boolean get() = !unknown && total == 0
     }
 
+    /** One entry of the copy as [of] compares it (17 Nov 2026, L001): what it says, never its goods. */
+    data class EntryMark(
+        val uid: String?, val partyId: Long, val amount: Double, val isGiven: Boolean, val timestamp: Long,
+        val note: String?, val isDeleted: Boolean
+    )
+
+    /** One cashbook row of the copy as [of] compares it. */
+    data class CashMark(val uid: String?, val amount: Double, val isIncome: Boolean, val timestamp: Long, val category: String, val isDeleted: Boolean)
+
+    /** One counter ticket of the copy as [of] compares it. */
+    data class SaleMark(val uid: String?, val saleNumber: String, val status: String, val isDeleted: Boolean, val timestamp: Long)
+
+    /**
+     * What [of] reads of the copy's big tables (17 Nov 2026, the audit's L001): a copy read whole has its rows, a big
+     * one read a page at a time ([BackupCodec.ParsedBackup.paged]) keeps only these marks of them — the same fields
+     * the comparison has always read, so both say the same figures. The small tables are read from the copy as before.
+     */
+    class CopyMarks(val entries: List<EntryMark>, val cash: List<CashMark>, val sales: List<SaleMark>, val seals: Int) {
+        /** Built a row at a time, in the file's order, by the paged read. */
+        class Builder {
+            private val entries = ArrayList<EntryMark>()
+            private val cash = ArrayList<CashMark>()
+            private val sales = ArrayList<SaleMark>()
+            private var seals = 0
+            fun entry(e: LedgerEntry) { entries += CopyMarks.markOf(e) }
+            fun cash(c: CashEntry) { cash += CopyMarks.markOf(c) }
+            fun sale(s: Sale) { sales += CopyMarks.markOf(s) }
+            fun seal() { seals++ }
+            fun build() = CopyMarks(entries, cash, sales, seals)
+        }
+
+        companion object {
+            fun markOf(e: LedgerEntry) = EntryMark(e.uid, e.partyId, e.amount, e.isGiven, e.timestamp, e.note, e.isDeleted)
+            fun markOf(c: CashEntry) = CashMark(c.uid, c.amount, c.isIncome, c.timestamp, c.category, c.isDeleted)
+            fun markOf(s: Sale) = SaleMark(s.uid, s.saleNumber, s.status, s.isDeleted, s.timestamp)
+
+            /** The copy's marks: its paged read's, else made from its lists. */
+            fun of(there: BackupCodec.ParsedBackup): CopyMarks = there.paged?.marks ?: CopyMarks(
+                there.entries.map { markOf(it) }, there.cash.map { markOf(it) }, there.sales.map { markOf(it) }, there.bookSeals.size
+            )
+        }
+    }
+
     /** What is said when the count could not be made. */
     val UNKNOWN = Loss(0, 0, 0, 0, 0, 0, 0, 0, 0, null, null, unknown = true)
 
@@ -65,6 +108,9 @@ object RestoreCheck {
 
     suspend fun of(dao: KhataDao, there: BackupCodec.ParsedBackup): Loss {
         val byUid = there.version >= 12
+        // The copy's big tables as marks (17 Nov 2026, L001): its rows' own fields for a copy read whole, the marks a big
+        // copy kept for a copy read a page at a time — the comparisons below read only these.
+        val marks = CopyMarks.of(there)
 
         // Parties here, paged as a backup reads them.
         val partiesHere = ArrayList<Party>()
@@ -78,12 +124,14 @@ object RestoreCheck {
         val nameHere = partiesHere.associate { it.id to nameKey(it.name) }
         val nameThere = there.parties.associate { it.id to nameKey(it.name) }
 
-        fun entryKey(e: LedgerEntry, names: Map<Long, String>): String =
-            if (byUid && e.uid != null) e.uid
-            else "${names[e.partyId]}|${money(e.amount)}|${e.isGiven}|${e.timestamp}"
+        fun keyOf(uid: String?, partyId: Long, amount: Double, isGiven: Boolean, timestamp: Long, names: Map<Long, String>): String =
+            if (byUid && uid != null) uid
+            else "${names[partyId]}|${money(amount)}|${isGiven}|${timestamp}"
+        fun entryKey(e: LedgerEntry, names: Map<Long, String>): String = keyOf(e.uid, e.partyId, e.amount, e.isGiven, e.timestamp, names)
+        fun markKey(e: EntryMark, names: Map<Long, String>): String = keyOf(e.uid, e.partyId, e.amount, e.isGiven, e.timestamp, names)
 
-        val thereEntries = HashMap<String, LedgerEntry>(there.entries.size * 2)
-        for (e in there.entries) thereEntries[entryKey(e, nameThere)] = e
+        val thereEntries = HashMap<String, EntryMark>(marks.entries.size * 2)
+        for (e in marks.entries) thereEntries[markKey(e, nameThere)] = e
 
         var lostEntries = 0
         var changed = 0
@@ -109,13 +157,13 @@ object RestoreCheck {
             after = page.last().id
         }
 
-        val cashKeys = there.cash.map { c -> if (byUid && c.uid != null) c.uid else "${money(c.amount)}|${c.isIncome}|${c.timestamp}|${c.category}" }.toHashSet()
+        val cashKeys = marks.cash.map { c -> if (byUid && c.uid != null) c.uid else "${money(c.amount)}|${c.isIncome}|${c.timestamp}|${c.category}" }.toHashSet()
         val cashHere = dao.allCashForBackup().filter { !it.isDeleted }
         val lostCash = cashHere.count { c -> (if (byUid && c.uid != null) c.uid else "${money(c.amount)}|${c.isIncome}|${c.timestamp}|${c.category}") !in cashKeys }
         cashHere.maxOfOrNull { it.timestamp }?.let { if (newestHere == null || it > newestHere!!) newestHere = it }
 
         val salesHere = dao.allSalesForBackup().filter { !it.isDeleted && it.status != SaleStatus.HELD }
-        val saleKeys = there.sales.map { s -> if (byUid && s.uid != null) s.uid else s.saleNumber }.toHashSet()
+        val saleKeys = marks.sales.map { s -> if (byUid && s.uid != null) s.uid else s.saleNumber }.toHashSet()
         val lostSales = salesHere.count { s -> (if (byUid && s.uid != null) s.uid else s.saleNumber) !in saleKeys }
         salesHere.maxOfOrNull { it.timestamp }?.let { if (newestHere == null || it > newestHere!!) newestHere = it }
 
@@ -153,12 +201,12 @@ object RestoreCheck {
             others += missing(dao.allPlansForBackup(), there.plans, { it.uid }, { !it.isDeleted })
             others += missing(dao.allStaffForBackup(), there.staff, { it.uid }, { true })
             others += missing(dao.allSchemesForBackup(), there.schemes, { it.uid }, { !it.isDeleted })
-            others += maxOf(0, dao.allSealsForBackup().size - there.bookSeals.size)
+            others += maxOf(0, dao.allSealsForBackup().size - marks.seals)
             val settingsThere = there.settings.map { it.key }.toHashSet()
             others += dao.allSettingsForBackup().count { st ->
                 st.key !in settingsThere && st.key !in BookSettings.ACCESS_KEYS && !Waris.isSecret(st.key) && !st.value.isNullOrEmpty()
             }
-            val salesThere = there.sales.filter { it.uid != null }.associateBy { it.uid!! }
+            val salesThere = marks.sales.filter { it.uid != null }.associateBy { it.uid!! }
             others += salesHere.count { s -> s.uid?.let { salesThere[it] }?.let { t -> t.status != s.status } == true }
             val returnsThere = there.returns.filter { it.uid != null }.associateBy { it.uid!! }
             others += dao.allReturnsForBackup().count { r -> !r.isDeleted && r.uid?.let { returnsThere[it] }?.let { t -> t.status != r.status } == true }
@@ -170,9 +218,9 @@ object RestoreCheck {
         val lostParties = partiesHere.count { !it.isDeleted && nameKey(it.name) !in partyNamesThere }
 
         val newestThere = listOfNotNull(
-            there.entries.filter { !it.isDeleted }.maxOfOrNull { it.timestamp },
-            there.cash.filter { !it.isDeleted }.maxOfOrNull { it.timestamp },
-            there.sales.filter { !it.isDeleted }.maxOfOrNull { it.timestamp }
+            marks.entries.filter { !it.isDeleted }.maxOfOrNull { it.timestamp },
+            marks.cash.filter { !it.isDeleted }.maxOfOrNull { it.timestamp },
+            marks.sales.filter { !it.isDeleted }.maxOfOrNull { it.timestamp }
         ).maxOrNull()
 
         return Loss(

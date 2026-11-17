@@ -916,7 +916,34 @@ object BackupCodec {
          */
         val version: Int = FORMAT_VERSION,
         /** When the copy was written (every backup carries it); null for a file that does not say. */
-        val exportedAt: Long? = null
+        val exportedAt: Long? = null,
+        /**
+         * A copy too big to hold whole (17 Nov 2026, the audit's L001): its big tables were read a page at a time and
+         * let go, and are read again from [Paged.source] when the copy is restored ([restoreLedger]). Null — the lists
+         * above hold everything — for every copy read whole, which is every copy not read from a file over
+         * [pagedFromBytes]. When set, [entries], [cash], [entryItems], [sales], [saleItems], [salePayments], [audit] and
+         * [bookSeals] are empty: ask [entryCount], [RestoreCheck.CopyMarks.of] or [listed], never those lists.
+         */
+        val paged: Paged? = null
+    ) {
+        /** How many khata entries the copy holds, whichever way it was read. */
+        val entryCount: Int get() = paged?.keys?.entries ?: entries.size
+    }
+
+    /**
+     * What a copy read a page at a time keeps instead of its big tables' rows ([ParsedBackup.paged]): the file and the
+     * passwords that open it, the file's SHA-256 as it was read (a restore that finds other bytes stops and changes
+     * nothing), how many rows each big table had, whether the file had goods lines, the keys its rows point by
+     * ([BigKeys]) and the marks [RestoreCheck] compares.
+     */
+    class Paged(
+        val source: File,
+        val passwords: List<String>,
+        val sha256: ByteArray,
+        val counts: Map<String, Int>,
+        val hadEntryItems: Boolean,
+        val keys: BigKeys,
+        val marks: RestoreCheck.CopyMarks
     )
 
     /**
