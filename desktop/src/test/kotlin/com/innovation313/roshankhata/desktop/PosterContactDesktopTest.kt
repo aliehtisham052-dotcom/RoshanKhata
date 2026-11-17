@@ -186,4 +186,31 @@ class PosterContactDesktopTest {
         assertEquals(-1, firstDifferentRow(none, plain))
         assertFalse(PosterContact.kept(typed).isNotEmpty())
     }
+
+    /**
+     * Audit L034 (17 Nov 2026): a number is printed in the app's one shape (`DuplicateDetector.displayPhone`), the shop's
+     * calling code and ten digits as 3 + 7, so three ways of typing one number print alike and the call and WhatsApp
+     * numbers match; a number that shape cannot make whole is printed as typed. Made-up numbers only.
+     */
+    @Test
+    fun `a poster's numbers are printed in the app's one shape, or as typed`() {
+        for (typed in listOf("0300-1234567", "03001234567", "+923001234567", "0092 300 1234567", " 0300 1234567 ")) {
+            assertEquals(typed, "+92 300 1234567", PosterContact.shown(typed, "92"))
+        }
+        // Another country's number, a landline with its area code, no calling code, too few digits: as typed.
+        assertEquals("+44 20 7946 0000", PosterContact.shown("+44 20 7946 0000", "92"))
+        assertEquals("(042) 111-222-333", PosterContact.shown("(042) 111-222-333", "92"))
+        assertEquals("0300 1234567", PosterContact.shown("0300 1234567", ""))
+        assertEquals("12345", PosterContact.shown("12345", "92"))
+        // Digits of another script are read; the shape carries no direction mark (the poster draws it alone).
+        assertEquals("+92 300 1234567", PosterContact.shown("\u06F0\u06F3\u06F0\u06F0 \u06F1\u06F2\u06F3\u06F4\u06F5\u06F6\u06F7", "92"))
+        val c = PosterContact.of("0300-1234567", onWhatsapp = false, whatsappNumber = "03007654321", dialing = "92")
+        assertEquals(listOf("+92 300 1234567", "+92 300 7654321"), c.items.map { it.number })
+        // One number typed two ways is still one number, on WhatsApp, in the one shape.
+        val same = PosterContact.of("0300-1234567", onWhatsapp = false, whatsappNumber = "+923001234567", dialing = "92")
+        assertEquals(listOf("+92 300 1234567"), same.items.map { it.number })
+        assertTrue(same.chatMark)
+        // Without a calling code nothing changes (what the older tests above draw).
+        assertEquals(listOf("0300-1234567"), PosterContact.of("0300-1234567", false, "").items.map { it.number })
+    }
 }

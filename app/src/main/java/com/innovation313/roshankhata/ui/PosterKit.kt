@@ -72,11 +72,13 @@ object PosterKit {
         /** The shop's email, when the owner shows it (12 Oct). */
         val email: String? = null,
         /** The phone number is on WhatsApp too: the call button carries a chat mark. */
-        val whatsapp: Boolean = false
+        val whatsapp: Boolean = false,
+        /** The shop's calling code (ShopCountry.dialing): the numbers print in the app's one shape (PosterContact.shown). */
+        val dialing: String = ""
     ) {
         val urdu = urduScript(locale)
         /** The numbers this poster shows: the call number and, when the owner gave one, a WhatsApp number of its own. */
-        val contact: PosterContact.Contact = PosterContact.of(phone, whatsapp, fields.whatsappNumber)
+        val contact: PosterContact.Contact = PosterContact.of(phone, whatsapp, fields.whatsappNumber, dialing)
         /** Draw the hero here, or its flat stand-in, unless the live 3D view covers the place. */
         fun drawHero(rect: RectF, flat: (Canvas) -> Unit) {
             when {

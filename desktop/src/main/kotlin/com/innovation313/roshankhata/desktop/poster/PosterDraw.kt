@@ -45,7 +45,7 @@ object PosterDraw {
             context, canvas, context.locale, context.rtl, input.title, input.message,
             input.shopName.ifBlank { " " }, input.phone, input.address, input.logo, input.mark,
             hero = null, heroOverlay = false, fields = input.fields, photo = input.photo, animated = false,
-            email = input.email, whatsapp = input.whatsapp
+            email = input.email, whatsapp = input.whatsapp, dialing = context.settings.country().dialing
         )
         PosterDesigns.draw(input.occasion, page)
         return canvas.picture(WIDTH, HEIGHT)

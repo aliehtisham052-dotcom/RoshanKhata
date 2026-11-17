@@ -66,7 +66,8 @@ object PosterImage {
             context, Canvas(bmp), locale, rtl, input.title, input.message,
             input.shopName.ifBlank { " " }, input.phone, input.address, input.logo, input.mark,
             input.hero, input.heroOverlay, input.fields, input.photo, input.animated,
-            input.email, input.whatsapp
+            input.email, input.whatsapp,
+            dialing = com.innovation313.roshankhata.data.BusinessProfile.country(context).dialing
         )
         val o = PosterDesigns.draw(input.occasion, page)
         return bmp to Fit(o.titleSize, o.titleLines, o.messageSize, o.messageLines, o.motion)

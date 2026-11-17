@@ -46,13 +46,36 @@ object PosterContact {
      *  - A different number: the call number (if shown) and the WhatsApp one, no chat mark on the call number, which
      *    is not the WhatsApp one. A WhatsApp number can stand alone when the call number is not shown.
      */
-    fun of(phone: String?, onWhatsapp: Boolean, whatsappNumber: String): Contact {
+    fun of(phone: String?, onWhatsapp: Boolean, whatsappNumber: String, dialing: String = ""): Contact {
         val call = phone?.trim()?.takeIf { it.isNotEmpty() }
         val wa = whatsappNumber.trim().takeIf { it.isNotEmpty() }
-        val callItem = call?.let { Item(Kind.CALL, it) }
+        val callItem = call?.let { Item(Kind.CALL, shown(it, dialing)) }
         if (wa == null) return Contact(listOfNotNull(callItem), chatMark = call != null && onWhatsapp)
-        if (call != null && same(call, wa)) return Contact(listOf(Item(Kind.CALL, call)), chatMark = true)
-        return Contact(listOfNotNull(callItem, Item(Kind.WHATSAPP, wa)), chatMark = false)
+        if (call != null && same(call, wa)) return Contact(listOf(Item(Kind.CALL, shown(call, dialing))), chatMark = true)
+        return Contact(listOfNotNull(callItem, Item(Kind.WHATSAPP, shown(wa, dialing))), chatMark = false)
+    }
+
+    /** Direction marks a screen's text carries around a number; a poster draws the number by itself. */
+    private const val BIDI_MARKS = "\u200E\u200F\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069"
+
+    /** The one shape that is whole: the calling code, then ten digits as 3 + 7. */
+    private val WHOLE = Regex("\\+\\d{1,4} \\d{3} \\d{7}")
+
+    /**
+     * A number as the poster prints it (17 Nov 2026, audit L034): in the shape the app gives a number on every other
+     * screen (`DuplicateDetector.displayPhone`: the shop's calling code [dialing], ten digits as 3 + 7), so
+     * "0300-1234567", "03001234567" and "+923001234567" print alike as "+92 300 1234567", and the call and the WhatsApp
+     * numbers read the same way. Only when that shape is whole: with no calling code, or a number that is not ten digits
+     * after it (a landline with its area code, another country's number, a short one), the number is printed as it was
+     * typed, as before — never "+92 42111222333".
+     */
+    fun shown(number: String, dialing: String): String {
+        val typed = number.trim()
+        val n = clean(typed)
+        if (dialing.isEmpty() || !usable(n)) return typed
+        // Named in full: the generator rewrites a ui import into the computer's poster package.
+        val shaped = com.innovation313.roshankhata.ui.DuplicateDetector.displayPhone(n, dialing).filterNot { it in BIDI_MARKS }
+        return if (WHOLE.matches(shaped)) shaped else typed
     }
 
     /** A digit of any script as 0-9, or null for anything that is not a decimal digit. */
