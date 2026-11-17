@@ -598,6 +598,7 @@
     <string name="backup_pw_too_long">Password mein zyada se zyada 128 huroof ho sakte hain.</string>
     <string name="backup_pw_warning">Agar aap yeh password bhool gaye to is se lock kiye gaye backup kabhi nahi khul sakein ge, hum se bhi nahi. Isay likh kar kisi mehfooz jagah rakhein. Pehle banay backup waise hi rahein ge.</string>
     <string name="backup_pw_agree">Main samajhta hoon: bhoola hua password wapas nahi mil sakta.</string>
+    <string name="backup_pw_helper_note">Jo helper phone aap ka Google Drive backup parhta hai, wo use load nahi kar sake ga. Is ke bajaye unhein More → %1$s se aaj ki copy bhejein.</string>
     <string name="backup_pw_remove_body">Ab se banne wale backup lock nahi hon ge. Jo backup pehle lock ho chuke hain unhein kholne ke liye yahi password chahiye ho ga.</string>
     <string name="backup_pw_saved">Password lag gaya. Ab se backup lock hon ge.</string>
     <string name="backup_pw_removed">Password hata diya gaya. Ab se backup lock nahi hon ge.</string>
@@ -2285,6 +2286,7 @@
     <string name="viewer_loading">Malik ka khata load ho raha hai…</string>
     <string name="viewer_loaded">Malik ka khata load ho gaya. Ab ye phone sirf dekhne wala hai.</string>
     <string name="viewer_load_failed">Malik ka khata load nahi ho saka. File ya internet check karke dobara koshish karein.</string>
+    <string name="viewer_drive_locked">Malik ka Google Drive backup password se lock hai, is liye yahan nahi parha ja sakta. Malik se kahein ke More → %1$s se aaj ki copy bhejein.</string>
     <string name="viewer_rejected">Ye file istemal nahi ho sakti. %1$s</string>
     <string name="viewer_no_backup">Is Google Drive par koi backup nahi mila. Malik se kahein pehle backup karein.</string>
     <string name="viewer_pick_business">Kaun si dukaan?</string>

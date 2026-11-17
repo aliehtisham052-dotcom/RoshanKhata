@@ -622,6 +622,7 @@
     <string name="backup_pw_too_long">पासवर्ड में ज़्यादा से ज़्यादा 128 अक्षर हो सकते हैं।</string>
     <string name="backup_pw_warning">अगर आप यह पासवर्ड भूल गए, तो इससे लॉक किए गए बैकअप कभी नहीं खुल सकेंगे, हमसे भी नहीं। इसे लिखकर किसी सुरक्षित जगह रखें। पहले बने बैकअप वैसे ही रहेंगे।</string>
     <string name="backup_pw_agree">मैं समझता हूँ: भूला हुआ पासवर्ड वापस नहीं मिल सकता।</string>
+    <string name="backup_pw_helper_note">जो हेल्पर फ़ोन आपका Google Drive बैकअप पढ़ता है, वह उसे लोड नहीं कर पाएगा। इसके बजाय उन्हें More → %1$s से आज की कॉपी भेजें।</string>
     <string name="backup_pw_remove_body">अब से बनने वाले बैकअप लॉक नहीं होंगे। जो बैकअप पहले से लॉक हैं, उन्हें खोलने के लिए यही पासवर्ड चाहिए होगा।</string>
     <string name="backup_pw_saved">पासवर्ड लग गया। अब से बैकअप लॉक होंगे।</string>
     <string name="backup_pw_removed">पासवर्ड हटा दिया गया। अब से बैकअप लॉक नहीं होंगे।</string>
@@ -2333,6 +2334,7 @@
     <string name="viewer_loading">मालिक का खाता लोड हो रहा है…</string>
     <string name="viewer_loaded">मालिक का खाता लोड हो गया। यह फ़ोन अब सिर्फ़ देखने वाला है।</string>
     <string name="viewer_load_failed">मालिक का खाता लोड नहीं हो सका। फ़ाइल या इंटरनेट देखकर दोबारा कोशिश करें।</string>
+    <string name="viewer_drive_locked">मालिक का Google Drive बैकअप पासवर्ड से लॉक है, इसलिए यहाँ पढ़ा नहीं जा सकता। मालिक से कहें कि More → %1$s से आज की कॉपी भेजें।</string>
     <string name="viewer_rejected">यह फ़ाइल इस्तेमाल नहीं हो सकती। %1$s</string>
     <string name="viewer_no_backup">इस Google Drive में कोई बैकअप नहीं मिला। मालिक से कहें कि पहले बैकअप ले।</string>
     <string name="viewer_pick_business">कौन-सी दुकान?</string>

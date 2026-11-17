@@ -598,6 +598,7 @@
     <string name="backup_pw_too_long">پاس ورڈ میں زیادہ سے زیادہ 128 حروف ہو سکتے ہیں۔</string>
     <string name="backup_pw_warning">اگر آپ یہ پاس ورڈ بھول گئے تو اس سے لاک کیے گئے بیک اپ کبھی نہیں کھل سکیں گے، ہم سے بھی نہیں۔ اسے لکھ کر کسی محفوظ جگہ رکھیں۔ پہلے بنے بیک اپ ویسے ہی رہیں گے۔</string>
     <string name="backup_pw_agree">میں سمجھتا ہوں: بھولا ہوا پاس ورڈ واپس نہیں مل سکتا۔</string>
+    <string name="backup_pw_helper_note">جو ہیلپر فون آپ کا گوگل ڈرائیو بیک اپ پڑھتا ہے، وہ اسے لوڈ نہیں کر سکے گا۔ اس کے بجائے انہیں More → %1$s سے آج کی کاپی بھیجیں۔</string>
     <string name="backup_pw_remove_body">اب سے بننے والے بیک اپ لاک نہیں ہوں گے۔ جو بیک اپ پہلے لاک ہو چکے ہیں انہیں کھولنے کے لیے یہی پاس ورڈ چاہیے ہوگا۔</string>
     <string name="backup_pw_saved">پاس ورڈ لگ گیا۔ اب سے بیک اپ لاک ہوں گے۔</string>
     <string name="backup_pw_removed">پاس ورڈ ہٹا دیا گیا۔ اب سے بیک اپ لاک نہیں ہوں گے۔</string>
@@ -2285,6 +2286,7 @@
     <string name="viewer_loading">مالک کا کھاتہ لوڈ ہو رہا ہے…</string>
     <string name="viewer_loaded">مالک کا کھاتہ لوڈ ہو گیا۔ اب یہ فون صرف دیکھنے والا ہے۔</string>
     <string name="viewer_load_failed">مالک کا کھاتہ لوڈ نہیں ہو سکا۔ فائل یا انٹرنیٹ چیک کر کے دوبارہ کوشش کریں۔</string>
+    <string name="viewer_drive_locked">مالک کا گوگل ڈرائیو بیک اپ پاس ورڈ سے لاک ہے، اس لیے یہاں نہیں پڑھا جا سکتا۔ مالک سے کہیں کہ More → %1$s سے آج کی کاپی بھیجیں۔</string>
     <string name="viewer_rejected">یہ فائل استعمال نہیں ہو سکتی۔ %1$s</string>
     <string name="viewer_no_backup">اس گوگل ڈرائیو پر کوئی بیک اپ نہیں ملا۔ مالک سے کہیں پہلے بیک اپ کریں۔</string>
     <string name="viewer_pick_business">کون سی دکان؟</string>

@@ -622,6 +622,7 @@
     <string name="backup_pw_too_long">The password can have at most 128 characters.</string>
     <string name="backup_pw_warning">If you forget this password, the backups locked with it can never be opened, not even by us. Write it down and keep it somewhere safe. Backups made before stay as they were.</string>
     <string name="backup_pw_agree">I understand: a forgotten password cannot be recovered.</string>
+    <string name="backup_pw_helper_note">A helper\'s phone that reads your Google Drive backup will stop loading it. Send them today\'s copy instead, from More → %1$s.</string>
     <string name="backup_pw_remove_body">Backups made from now on will not be locked. Backups already locked still need this password to open.</string>
     <string name="backup_pw_saved">Password set. Backups from now on are locked.</string>
     <string name="backup_pw_removed">Password removed. Backups from now on are not locked.</string>
@@ -2338,6 +2339,7 @@
     <string name="viewer_loading">Loading the owner\'s book…</string>
     <string name="viewer_loaded">Owner\'s book loaded. This phone is now read-only.</string>
     <string name="viewer_load_failed">Could not load the owner\'s book. Check the file or the internet and try again.</string>
+    <string name="viewer_drive_locked">The owner\'s Google Drive backup is locked with a password, so it cannot be read here. Ask the owner to send today\'s copy from More → %1$s.</string>
     <string name="viewer_rejected">This file cannot be used. %1$s</string>
     <string name="viewer_no_backup">No backup found on this Google Drive. Ask the owner to back up first.</string>
     <string name="viewer_pick_business">Which shop?</string>

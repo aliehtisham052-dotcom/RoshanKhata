@@ -334,7 +334,10 @@ class BackupActivity : BaseActivity() {
         val agree = android.widget.CheckBox(this).apply { setText(R.string.backup_pw_agree) }
         val body = com.innovation313.roshankhata.ui.FormBox.column(
             this, first, again, showToggle(first, again), note(R.string.backup_pw_rule), error,
-            note(R.string.backup_pw_warning, bold = true), agree
+            note(R.string.backup_pw_warning, bold = true),
+            // A helper's phone reading the owner's Drive cannot open a locked backup: said before the password is set (17 Nov 2026).
+            note(R.string.backup_pw_rule).apply { text = getString(R.string.backup_pw_helper_note, getString(R.string.viewer_menu)) },
+            agree
         )
         val scroll = android.widget.ScrollView(this).apply { addView(body) }
         com.innovation313.roshankhata.ui.TextFit.relax(scroll)

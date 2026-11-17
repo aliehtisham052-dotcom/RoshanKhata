@@ -615,6 +615,7 @@
     <string name="backup_pw_too_long">پاس ورڊ ۾ وڌ ۾ وڌ 128 اکر ٿي سگهن ٿا.</string>
     <string name="backup_pw_warning">جيڪڏهن توهان هي پاس ورڊ وساري ڇڏيو ته ان سان لاڪ ٿيل بيڪ اپ ڪڏهن به کلي نه سگهندا، اسان کان به نه. ان کي لکي ڪنهن محفوظ جاءِ تي رکو. اڳ ٺهيل بيڪ اپ جيئن آهن تيئن رهندا.</string>
     <string name="backup_pw_agree">مان سمجهان ٿو: وساريل پاس ورڊ واپس نٿو ملي سگهي.</string>
+    <string name="backup_pw_helper_note">جيڪو مددگار فون توهان جو گوگل ڊرائيو بيڪ اپ پڙهي ٿو، اهو ان کي لوڊ نه ڪري سگهندو. ان بدران کين More → %1$s مان اڄ جي ڪاپي موڪليو.</string>
     <string name="backup_pw_remove_body">هاڻي کان ٺهندڙ بيڪ اپ لاڪ نه هوندا. جيڪي بيڪ اپ اڳ ۾ لاڪ ٿيل آهن، انهن کي کولڻ لاءِ اهو ئي پاس ورڊ گهربو.</string>
     <string name="backup_pw_saved">پاس ورڊ لڳي ويو. هاڻي کان بيڪ اپ لاڪ ٿيندا.</string>
     <string name="backup_pw_removed">پاس ورڊ هٽايو ويو. هاڻي کان بيڪ اپ لاڪ نه ٿيندا.</string>
@@ -2313,6 +2314,7 @@
     <string name="viewer_loading">مالڪ جو کاتو لوڊ ٿي رهيو آهي…</string>
     <string name="viewer_loaded">مالڪ جو کاتو لوڊ ٿي ويو. هاڻي هي فون رڳو ڏسڻ وارو آهي.</string>
     <string name="viewer_load_failed">مالڪ جو کاتو لوڊ نه ٿي سگهيو. فائل يا انٽرنيٽ چيڪ ڪري ٻيهر ڪوشش ڪريو.</string>
+    <string name="viewer_drive_locked">مالڪ جو گوگل ڊرائيو بيڪ اپ پاسورڊ سان لاڪ آهي، تنهنڪري هتي پڙهي نٿو سگهجي. مالڪ کي چئو ته More → %1$s مان اڄ جي ڪاپي موڪلي.</string>
     <string name="viewer_rejected">هي فائل استعمال نه ٿي سگهندي. %1$s</string>
     <string name="viewer_no_backup">هن گوگل ڊرائيو تي ڪو بيڪ اپ نه مليو. مالڪ کي چئو ته پهريان بيڪ اپ ڪري.</string>
     <string name="viewer_pick_business">ڪهڙو دڪان؟</string>

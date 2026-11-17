@@ -622,6 +622,7 @@
     <string name="backup_pw_too_long">পাসওয়ার্ডে সর্বোচ্চ 128টি অক্ষর থাকতে পারে।</string>
     <string name="backup_pw_warning">এই পাসওয়ার্ড ভুলে গেলে এটি দিয়ে লক করা ব্যাকআপ আর কখনো খোলা যাবে না, আমরাও খুলতে পারব না। এটি লিখে কোনো নিরাপদ জায়গায় রাখুন। আগে তৈরি ব্যাকআপ যেমন ছিল তেমনই থাকবে।</string>
     <string name="backup_pw_agree">আমি বুঝেছি: ভুলে যাওয়া পাসওয়ার্ড ফিরে পাওয়া যায় না।</string>
+    <string name="backup_pw_helper_note">যে সহকারীর ফোন আপনার Google Drive ব্যাকআপ পড়ে, সেটি আর তা লোড করতে পারবে না। তার বদলে More → %1$s থেকে আজকের কপি পাঠান।</string>
     <string name="backup_pw_remove_body">এখন থেকে তৈরি ব্যাকআপ লক করা থাকবে না। আগে থেকে লক করা ব্যাকআপ খুলতে এই পাসওয়ার্ডই লাগবে।</string>
     <string name="backup_pw_saved">পাসওয়ার্ড সেট হয়েছে। এখন থেকে ব্যাকআপ লক করা থাকবে।</string>
     <string name="backup_pw_removed">পাসওয়ার্ড সরানো হয়েছে। এখন থেকে ব্যাকআপ লক করা থাকবে না।</string>
@@ -2333,6 +2334,7 @@
     <string name="viewer_loading">মালিকের খাতা লোড হচ্ছে…</string>
     <string name="viewer_loaded">মালিকের খাতা লোড হয়েছে। এই ফোন এখন শুধু দেখার জন্য।</string>
     <string name="viewer_load_failed">মালিকের খাতা লোড করা যায়নি। ফাইল বা ইন্টারনেট দেখে আবার চেষ্টা করুন।</string>
+    <string name="viewer_drive_locked">মালিকের Google Drive ব্যাকআপ পাসওয়ার্ড দিয়ে লক করা, তাই এখানে পড়া যাচ্ছে না। মালিককে More → %1$s থেকে আজকের কপি পাঠাতে বলুন।</string>
     <string name="viewer_rejected">এই ফাইল ব্যবহার করা যাবে না। %1$s</string>
     <string name="viewer_no_backup">এই Google Drive-এ কোনো ব্যাকআপ পাওয়া যায়নি। মালিককে আগে ব্যাকআপ নিতে বলুন।</string>
     <string name="viewer_pick_business">কোন দোকান?</string>

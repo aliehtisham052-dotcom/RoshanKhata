@@ -615,6 +615,7 @@
     <string name="backup_pw_too_long">رمز عبور حداکثر می‌تواند 128 نویسه داشته باشد.</string>
     <string name="backup_pw_warning">اگر این رمز عبور را فراموش کنید، پشتیبان‌هایی که با آن قفل شده‌اند هرگز باز نمی‌شوند، حتی از طرف ما. آن را بنویسید و در جای امنی نگه دارید. پشتیبان‌های قبلی همان‌طور که بودند می‌مانند.</string>
     <string name="backup_pw_agree">می‌دانم که رمز عبور فراموش‌شده بازیابی نمی‌شود.</string>
+    <string name="backup_pw_helper_note">گوشی دستیاری که پشتیبان گوگل درایو شما را می‌خواند دیگر آن را بارگیری نمی‌کند. به جای آن نسخهٔ امروز را از More → %1$s برایش بفرستید.</string>
     <string name="backup_pw_remove_body">پشتیبان‌هایی که از این به بعد ساخته می‌شوند قفل نخواهند بود. پشتیبان‌هایی که قبلاً قفل شده‌اند برای باز شدن همین رمز عبور را لازم دارند.</string>
     <string name="backup_pw_saved">رمز عبور تعیین شد. پشتیبان‌ها از این به بعد قفل می‌شوند.</string>
     <string name="backup_pw_removed">رمز عبور حذف شد. پشتیبان‌ها از این به بعد قفل نمی‌شوند.</string>
@@ -2313,6 +2314,7 @@
     <string name="viewer_loading">در حال بارگیری دفتر مالک…</string>
     <string name="viewer_loaded">دفتر مالک بارگیری شد. این گوشی اکنون فقط‌مشاهده است.</string>
     <string name="viewer_load_failed">دفتر مالک بارگیری نشد. فایل یا اینترنت را بررسی و دوباره تلاش کنید.</string>
+    <string name="viewer_drive_locked">پشتیبان گوگل درایو مالک با رمز قفل است و اینجا خوانده نمی‌شود. از مالک بخواهید نسخهٔ امروز را از More → %1$s بفرستد.</string>
     <string name="viewer_rejected">این فایل قابل استفاده نیست. %1$s</string>
     <string name="viewer_no_backup">هیچ پشتیبانی در این Google Drive پیدا نشد. از مالک بخواهید اول پشتیبان بگیرد.</string>
     <string name="viewer_pick_business">کدام فروشگاه؟</string>

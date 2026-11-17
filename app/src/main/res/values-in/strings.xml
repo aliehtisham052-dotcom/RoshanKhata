@@ -608,6 +608,7 @@
     <string name="backup_pw_too_long">Kata sandi paling banyak 128 karakter.</string>
     <string name="backup_pw_warning">Jika Anda lupa kata sandi ini, cadangan yang dikunci dengannya tidak akan pernah bisa dibuka, bahkan oleh kami. Tulis dan simpan di tempat yang aman. Cadangan yang dibuat sebelumnya tetap seperti semula.</string>
     <string name="backup_pw_agree">Saya mengerti: kata sandi yang terlupa tidak dapat dipulihkan.</string>
+    <string name="backup_pw_helper_note">Ponsel pembantu yang membaca cadangan Google Drive Anda tidak akan bisa memuatnya lagi. Kirimkan salinan hari ini dari More → %1$s sebagai gantinya.</string>
     <string name="backup_pw_remove_body">Cadangan yang dibuat mulai sekarang tidak akan dikunci. Cadangan yang sudah dikunci tetap memerlukan kata sandi ini untuk dibuka.</string>
     <string name="backup_pw_saved">Kata sandi dipasang. Cadangan mulai sekarang dikunci.</string>
     <string name="backup_pw_removed">Kata sandi dihapus. Cadangan mulai sekarang tidak dikunci.</string>
@@ -2284,6 +2285,7 @@
     <string name="viewer_loading">Memuat buku pemilik…</string>
     <string name="viewer_loaded">Buku pemilik dimuat. Ponsel ini sekarang hanya-lihat.</string>
     <string name="viewer_load_failed">Buku pemilik tidak dapat dimuat. Periksa berkas atau internet dan coba lagi.</string>
+    <string name="viewer_drive_locked">Cadangan Google Drive milik pemilik dikunci dengan kata sandi, jadi tidak bisa dibaca di sini. Minta pemilik mengirim salinan hari ini dari More → %1$s.</string>
     <string name="viewer_rejected">Berkas ini tidak dapat digunakan. %1$s</string>
     <string name="viewer_no_backup">Tidak ada cadangan di Google Drive ini. Minta pemilik mencadangkan dulu.</string>
     <string name="viewer_pick_business">Toko yang mana?</string>

@@ -654,6 +654,7 @@
     <string name="backup_pw_too_long">لا يمكن أن تزيد كلمة المرور على 128 حرفًا.</string>
     <string name="backup_pw_warning">إذا نسيت كلمة المرور هذه فلن يمكن فتح النسخ الاحتياطية المقفلة بها أبدًا، ولا حتى من جهتنا. اكتبها واحفظها في مكان آمن. تبقى النسخ التي صُنعت من قبل كما هي.</string>
     <string name="backup_pw_agree">أفهم أن كلمة المرور المنسية لا يمكن استعادتها.</string>
+    <string name="backup_pw_helper_note">هاتف المساعد الذي يقرأ نسختك الاحتياطية على Google Drive لن يتمكن من تحميلها. أرسل له نسخة اليوم بدلًا من ذلك من More → %1$s.</string>
     <string name="backup_pw_remove_body">النسخ الاحتياطية التي تُصنع من الآن لن تكون مقفلة. النسخ المقفلة من قبل ستحتاج إلى كلمة المرور هذه لفتحها.</string>
     <string name="backup_pw_saved">تم تعيين كلمة المرور. النسخ الاحتياطية من الآن مقفلة.</string>
     <string name="backup_pw_removed">تمت إزالة كلمة المرور. النسخ الاحتياطية من الآن غير مقفلة.</string>
@@ -2481,6 +2482,7 @@
     <string name="viewer_loading">جارٍ تحميل دفتر المالك…</string>
     <string name="viewer_loaded">تم تحميل دفتر المالك. هذا الهاتف الآن للعرض فقط.</string>
     <string name="viewer_load_failed">تعذر تحميل دفتر المالك. تحقق من الملف أو الإنترنت وحاول ثانية.</string>
+    <string name="viewer_drive_locked">نسخة المالك الاحتياطية على Google Drive مقفلة بكلمة مرور، فلا يمكن قراءتها هنا. اطلب من المالك إرسال نسخة اليوم من More → %1$s.</string>
     <string name="viewer_rejected">لا يمكن استخدام هذا الملف. %1$s</string>
     <string name="viewer_no_backup">لا توجد نسخة احتياطية على Google Drive هذا. اطلب من المالك أن يأخذ نسخة أولًا.</string>
     <string name="viewer_pick_business">أي متجر؟</string>

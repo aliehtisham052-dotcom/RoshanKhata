@@ -304,6 +304,16 @@ class ViewerActivity : BaseActivity() {
         lifecycleScope.launch {
             val read = DriveBackup.readForBusiness(this@ViewerActivity, account, businessId)
             val pair = read.getOrNull()
+            if (read.exceptionOrNull() is DriveBackup.LockedOnDrive) {
+                // The owner set a backup password (T1): say so and where the helper's copy comes from, not "load failed".
+                setBusy(false)
+                MaterialAlertDialogBuilder(this@ViewerActivity)
+                    .setTitle(R.string.backup_pw_ask_title)
+                    .setMessage(getString(R.string.viewer_drive_locked, getString(R.string.viewer_menu)))
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+                return@launch
+            }
             if (read.isFailure || pair == null) {
                 setBusy(false)
                 Toast.makeText(
