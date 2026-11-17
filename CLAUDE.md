@@ -4499,6 +4499,21 @@ broken once more on purpose and failed. Nothing below was compiled here except w
   money row. Nothing is voided by the sync.
 - Tests: ShiftByHandTest, HeldTicketSyncTest, Schema46Test (desktop; CI only), ShiftDrawerTest (shared, run here). Register
   BC-184..188, lesson 155.
+- **The streamed restore (L001), first step only:** `BackupCodec.readPages` reads a backup once, through its lock (the lock
+  handling is now one function, `openPlain`, for `parseStream` too), with the parser's own converters, and hands each table
+  that grows with the shop (parties, entries, goods lines, cashbook, sales, sale lines and payments, audit log, seals) out a
+  page at a time (`Page`, 2,000 rows by default) instead of holding them all; the small part comes back whole
+  (`PagedRead.rest`) with the counts. BackupPagesTest holds its rows equal to `parseFile`'s, plain and locked (BC-189).
+  **Nothing calls it yet.** Still to do, in this order, before a restore stops holding the whole copy: (1) `parseRoot`'s
+  orphan check and the cleared cash-sale pairings on id sets gathered from the pages (Longs, not rows), the list path
+  feeding the same sets so the rule stays one; (2) `RestoreCheck.of` from a summary of the copy (each entry's uid, amount,
+  side, note, time and bin flag; the other tables' uids) instead of `ParsedBackup`'s lists; (3) `restoreAll` written as a
+  wipe and then pages in parent-before-child order inside one transaction, the list path wrapping its lists as single pages
+  so both share the body, `clearDanglingPairs` after the entries, a file without goods lines rebuilt per entry
+  (`EntryItem.fromLegacy`); (4) the callers — the phone's restore and Drive plan, the computer's restore, a live pairing and
+  a phone taking a book (BookMerge may keep the lists: a merge copy is the owner's own); (5) a desktop test restoring one
+  big book both ways and comparing `LiveSync.fingerprint`, and the BigBook heap figure before and after. Each is Room code
+  that could not be compiled where this was written.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 

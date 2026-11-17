@@ -375,7 +375,16 @@ object BackupCodec {
      * same code that has always read it, so nothing about what a backup
      * means has changed. The row converters are the old ones.
      */
-    fun parseStream(input: java.io.InputStream, passwords: List<String> = emptyList()): Pair<ImportResult, ParsedBackup?> {
+    fun parseStream(input: java.io.InputStream, passwords: List<String> = emptyList()): Pair<ImportResult, ParsedBackup?> =
+        openPlain(input, passwords, ::parsePlain)
+
+    /**
+     * The plain text of a backup handed to [read], through the lock when it has one ([BackupSeal]): [parseStream] and
+     * [readPages] open a file alike. A locked file is read to its very end after [read] said Ok.
+     */
+    private fun <T> openPlain(
+        input: java.io.InputStream, passwords: List<String>, read: (java.io.InputStream) -> Pair<ImportResult, T?>
+    ): Pair<ImportResult, T?> {
         // A locked backup (17 Nov 2026, [BackupSeal]) is told by its first four bytes; a plain one starts with "{".
         val head = if (input.markSupported()) input else java.io.BufferedInputStream(input, 64 * 1024)
         val sealed = try {
@@ -383,11 +392,11 @@ object BackupCodec {
         } catch (e: Exception) {
             return ImportResult.Failed(ImportResult.Why.UNREADABLE, detail = e.message) to null
         }
-        if (!sealed) return parsePlain(head)
+        if (!sealed) return read(head)
         return when (val opened = BackupSeal.open(head, passwords)) {
             is BackupSeal.Open.Ok -> {
                 // The reader closes what it reads at its end; the lock's stream stays open for [BackupSeal.finish].
-                val parsed = parsePlain(BackupSeal.notClosing(opened.plain))
+                val parsed = read(BackupSeal.notClosing(opened.plain))
                 if (parsed.first !is ImportResult.Ok) parsed
                 else try {
                     // To its very end: a last record missing, changed or followed by more bytes is a damaged file,
@@ -416,6 +425,7 @@ object BackupCodec {
             openJsonStream(java.io.InputStreamReader(input, Charsets.UTF_8)).use { r ->
                 r.beginObject()
                 while (r.hasNext()) {
+                    // A table added here is added to [readPlainPages] too (BackupPagesTest holds the two alike).
                     when (val key = r.nextName()) {
                         "parties" -> readRows(r) { parties += jsonToParty(it) }
                         "entries" -> readRows(r) { entries += jsonToEntry(it) }
@@ -436,6 +446,101 @@ object BackupCodec {
         } catch (e: Exception) {
             ImportResult.Failed(ImportResult.Why.UNREADABLE, detail = e.message) to null
         }
+    }
+
+    // ---------- The big tables a page at a time (17 Nov 2026, the audit's L001: the first step) ----------
+    //
+    // A restore today holds every row of the copy at once (ParsedBackup's lists: 141 of the emulator's 192 MB for a
+    // 197 MB file). [readPages] is the reader a page-at-a-time restore will stand on: one pass over the file, through the
+    // lock, the same converters as [parsePlain], each table that grows with the shop handed out [pageRows] rows at a time
+    // and let go. NOTHING CALLS IT YET — what remains before a restore can use it: the orphan check and the cleared
+    // cash-sale pairings on id sets instead of lists ([parseRoot]), RestoreCheck from a summary of the copy, restoreAll
+    // written a page at a time in one transaction, and every caller (the phone's and the computer's restores, Drive,
+    // a live pairing, BookMerge). See the 17 Nov 2026 note in CLAUDE.md.
+
+    /** One page of one of the tables that grow with the shop, in the file's order ([readPages]). */
+    sealed class Page {
+        abstract val size: Int
+        data class Parties(val rows: List<Party>) : Page() { override val size: Int get() = rows.size }
+        data class Entries(val rows: List<LedgerEntry>) : Page() { override val size: Int get() = rows.size }
+        data class EntryItems(val rows: List<EntryItem>) : Page() { override val size: Int get() = rows.size }
+        data class Cash(val rows: List<CashEntry>) : Page() { override val size: Int get() = rows.size }
+        data class Sales(val rows: List<Sale>) : Page() { override val size: Int get() = rows.size }
+        data class SaleItems(val rows: List<SaleItem>) : Page() { override val size: Int get() = rows.size }
+        data class SalePayments(val rows: List<SalePayment>) : Page() { override val size: Int get() = rows.size }
+        data class Audit(val rows: List<AuditLog>) : Page() { override val size: Int get() = rows.size }
+        data class Seals(val rows: List<BookSeal>) : Page() { override val size: Int get() = rows.size }
+    }
+
+    /**
+     * What [readPages] kept besides the pages: the file's small part as [parsePlain] keeps it (to be read by the same
+     * code), how many rows each big table had (by its key in the file), and whether the file had goods lines at all (a
+     * file before them has none: its lines are rebuilt from the entries by [EntryItem.fromLegacy], as [parseRoot] does).
+     */
+    class PagedRead(val rest: JSONObject, val counts: Map<String, Int>, val hadEntryItems: Boolean)
+
+    /**
+     * The backup in [input] with its big tables handed to [onPage] a page at a time. Pages come before the file is known
+     * to be whole: they count only once the answer is Ok (a damaged or locked-and-cut file says so at its end), so a
+     * restore that writes them must do so inside the transaction that this answer ends. The answer's Ok counts parties,
+     * entries and cashbook rows; every big table's count is in [PagedRead.counts]. The orphan check and the cleared
+     * pairings [parseRoot] does are not done here (they need the whole file's ids).
+     */
+    fun readPages(
+        input: java.io.InputStream, passwords: List<String> = emptyList(), pageRows: Int = PAGE, onPage: (Page) -> Unit
+    ): Pair<ImportResult, PagedRead?> {
+        require(pageRows > 0) { "a page holds at least one row" }
+        return openPlain(input, passwords) { readPlainPages(it, pageRows, onPage) }
+    }
+
+    private fun readPlainPages(input: java.io.InputStream, pageRows: Int, onPage: (Page) -> Unit): Pair<ImportResult, PagedRead?> {
+        return try {
+            val rest = JSONObject()
+            val counts = LinkedHashMap<String, Int>()
+            var hadEntryItems = false
+            openJsonStream(java.io.InputStreamReader(input, Charsets.UTF_8)).use { r ->
+                r.beginObject()
+                while (r.hasNext()) {
+                    // The same tables [parsePlain] reads row by row, and nothing else.
+                    when (val key = r.nextName()) {
+                        "parties" -> counts[key] = paged(r, pageRows, ::jsonToParty) { onPage(Page.Parties(it)) }
+                        "entries" -> counts[key] = paged(r, pageRows, ::jsonToEntry) { onPage(Page.Entries(it)) }
+                        "entryItems" -> { hadEntryItems = true; counts[key] = paged(r, pageRows, ::jsonToEntryItem) { onPage(Page.EntryItems(it)) } }
+                        "cashbook" -> counts[key] = paged(r, pageRows, ::jsonToCash) { onPage(Page.Cash(it)) }
+                        "sales" -> counts[key] = paged(r, pageRows, ::jsonToSale) { onPage(Page.Sales(it)) }
+                        "saleItems" -> counts[key] = paged(r, pageRows, ::jsonToSaleItem) { onPage(Page.SaleItems(it)) }
+                        "salePayments" -> counts[key] = paged(r, pageRows, ::jsonToSalePayment) { onPage(Page.SalePayments(it)) }
+                        "auditLog" -> counts[key] = paged(r, pageRows, ::jsonToAudit) { onPage(Page.Audit(it)) }
+                        "bookSeals" -> counts[key] = paged(r, pageRows, ::jsonToSeal) { onPage(Page.Seals(it)) }
+                        else -> rest.put(key, readValue(r))
+                    }
+                }
+                r.endObject()
+            }
+            // [parseRoot]'s first two checks, on the small part.
+            when {
+                rest.optString("format") != "RoshanKhata" -> ImportResult.Failed(ImportResult.Why.NOT_OURS) to null
+                rest.optInt("version", -1) > FORMAT_VERSION -> ImportResult.Failed(ImportResult.Why.TOO_NEW) to null
+                else -> ImportResult.Ok(
+                    parties = counts["parties"] ?: 0, entries = counts["entries"] ?: 0, cheques = 0, cash = counts["cashbook"] ?: 0
+                ) to PagedRead(rest, counts, hadEntryItems)
+            }
+        } catch (e: Exception) {
+            ImportResult.Failed(ImportResult.Why.UNREADABLE, detail = e.message) to null
+        }
+    }
+
+    /** An array of rows read [pageRows] at a time, each page handed to [emit] and let go; returns how many rows. */
+    private fun <T> paged(r: JsonStream, pageRows: Int, convert: (JSONObject) -> T, emit: (List<T>) -> Unit): Int {
+        var count = 0
+        var page = ArrayList<T>(minOf(pageRows, 256))
+        readRows(r) { o ->
+            page.add(convert(o))
+            count++
+            if (page.size >= pageRows) { emit(page); page = ArrayList(minOf(pageRows, 256)) }
+        }
+        if (page.isNotEmpty()) emit(page)
+        return count
     }
 
     /** An array of objects, each handed to [row] as it is read; a null array is nothing. */
