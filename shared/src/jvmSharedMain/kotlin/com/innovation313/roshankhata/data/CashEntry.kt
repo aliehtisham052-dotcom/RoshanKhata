@@ -68,7 +68,16 @@ data class CashEntry(
      * deposit slip. A bill photo's rules ([Schema43]): a file in the app's own bills folder on this device, never
      * in a live sync, never on a statement or a share. Null on every row written before, and where none was taken.
      */
-    val photoPath: String? = null
+    val photoPath: String? = null,
+
+    /**
+     * Who wrote this row (schema 46, 17 Nov 2026, the audit's L108): the name signed in at the counter
+     * ([Access.userName]), as [LedgerEntry.createdBy] — null for the owner, and on every row written before, which
+     * nothing can attribute. Filled where a row is written ([KhataDao.insertCashEntryAudited], the counter's own rows
+     * from their ticket); a restore, a merge and a live sync keep what the row says. What a cashier's shift drawer
+     * reads ([ShiftMath.byHand]). Free text, as on an entry: a name should outlive the person leaving the shop.
+     */
+    val createdBy: String? = null
 )
 
 /** A row's id and its photo's path, for the pictures a backup packs and a restore re-points (schema 43). */

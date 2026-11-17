@@ -4,7 +4,7 @@ table	audit_log	class=AuditLog;file=shared/src/jvmSharedMain/kotlin/com/innovati
 table	bill_items	class=BillItem;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/SupplierBill.kt;columns=12	-	
 table	book_seals	class=BookSeal;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/BookSeals.kt;columns=10	-	
 table	book_settings	class=BookSetting;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/BookSettings.kt;columns=2	-	
-table	cashbook	class=CashEntry;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/CashEntry.kt;columns=13	-	
+table	cashbook	class=CashEntry;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/CashEntry.kt;columns=14	-	
 table	cheques	class=Cheque;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Cheque.kt;columns=16	-	
 table	day_close	class=DayClose;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/DayClose.kt;columns=9	-	
 table	dismissed_duplicates	class=DismissedDuplicate;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/DismissedDuplicate.kt;columns=2	-	
@@ -22,7 +22,7 @@ table	sale_items	class=SaleItem;file=shared/src/jvmSharedMain/kotlin/com/innovat
 table	sale_payments	class=SalePayment;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Sale.kt;columns=8	-	
 table	sale_return_items	class=SaleReturnItem;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/SaleReturn.kt;columns=12	-	
 table	sale_returns	class=SaleReturn;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/SaleReturn.kt;columns=21	-	
-table	sales	class=Sale;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Sale.kt;columns=22	-	
+table	sales	class=Sale;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Sale.kt;columns=23	-	
 table	schemes	class=Scheme;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Scheme.kt;columns=21	-	
 table	shifts	class=Shift;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Shift.kt;columns=10	-	
 table	staff	class=Staff;file=shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Staff.kt;columns=10	-	
@@ -65,6 +65,7 @@ column	book_settings.key	String	WITHHELD	why=the book's own settings: PIN hashes
 column	book_settings.value	String?	WITHHELD	why=the book's own settings: PIN hashes, access keys and relay passes live here
 column	cashbook.amount	Double	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	cashbook.category	String	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	cashbook.createdBy	String?	GAP	why=who wrote a cashbook row (schema 46) is read only by a shift's drawer (ShiftMath.byHand), no question asks who typed money in or out yet, and an answer would need the REPORTS gate a khata entry's writer has
 column	cashbook.deletedAt	Long?	STRUCT	pattern
 column	cashbook.id	Long	STRUCT	pattern
 column	cashbook.isDeleted	Boolean	STRUCT	pattern
@@ -301,6 +302,7 @@ column	sales.customerName	String?	READ	reader=AnswerFacts.count;gate=NONE;screen
 column	sales.deletedAt	Long?	STRUCT	pattern
 column	sales.discountAmount	Double	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.byCashier+AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sales.grandTotal	Double	READ	reader=AnswerFacts.count;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
+column	sales.heldUid	String?	STRUCT	why=the held ticket a sale came from (schema 46), the counter's own guard against one parked ticket rung up twice (KhataDao.heldStillOpen, the sync's counter checks), not a fact to tell
 column	sales.id	Long	STRUCT	pattern
 column	sales.invoiceId	Long?	STRUCT	pattern
 column	sales.isDeleted	Boolean	STRUCT	pattern

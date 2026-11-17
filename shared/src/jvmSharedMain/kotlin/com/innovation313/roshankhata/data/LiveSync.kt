@@ -905,6 +905,20 @@ object LiveSync {
                 part, "T"
             )
             for (r in over) if (noteCounter("sale_items", r[0] as String, "returned more than was sold", p.device, now, cache)) found++
+            // One held ticket rung up on two devices before either heard of the other (17 Nov 2026, the audit's L002):
+            // every done sale of one held name ([Sale.heldUid]) after the first is noted — the first by uid, so both
+            // devices note the very same rows. Nothing is voided here: money was taken at both counters.
+            val roots = rows(
+                "SELECT DISTINCT s.heldUid FROM sales s WHERE s.id IN ($ids) AND s.heldUid IS NOT NULL AND s.status = 'done' AND s.isDeleted = 0",
+                part, "T"
+            )
+            for (root in roots) {
+                val twins = rows(
+                    "SELECT uid FROM sales WHERE heldUid = ? AND status = 'done' AND isDeleted = 0 AND uid IS NOT NULL ORDER BY uid",
+                    listOf(root[0] as String), "T"
+                )
+                for (r in twins.drop(1)) if (noteCounter("sales", r[0] as String, "one held ticket rung up on two devices", p.device, now, cache)) found++
+            }
         }
         return found
     }

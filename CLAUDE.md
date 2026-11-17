@@ -22,8 +22,8 @@ No account, no server, no ads. Everything stays on the phone.
 - About 3,531 string lines (3,525 translatable keys checked by `scripts/check_strings.py`) and 75 plurals in
   values/strings.xml (counted 14 Nov 2026; earlier counts are in git) × 9 locales — English, Urdu, Roman Urdu (`b+ur+Latn`), Sindhi,
   Arabic, Farsi, Hindi, Bengali, Indonesian (`in`)
-- Room database, version 45 (45: transactions.entryKind and products.otherNames, 16 Nov 2026; 44: book_seals, 5 Nov 2026; 43: a party's private note, a cashbook row's and a cheque's picture path, 4 Nov 2026; 42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
-  backup format 20 (entry kind and a product's other names, 16 Nov 2026; 19 the seals, 5 Nov 2026; 18 the note and the two picture paths, 4 Nov 2026; 17 documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
+- Room database, version 46 (46: cashbook.createdBy and sales.heldUid with its index, 17 Nov 2026; 45: transactions.entryKind and products.otherNames, 16 Nov 2026; 44: book_seals, 5 Nov 2026; 43: a party's private note, a cashbook row's and a cheque's picture path, 4 Nov 2026; 42: one covering index in place of another, 3 Nov 2026; 41: indexes only, 30 Oct 2026; schema JSON checked in up to 31; CI writes the rest);
+  backup format 21 (the cashbook's writer and a sale's held ticket, 17 Nov 2026; 20 entry kind and a product's other names, 16 Nov 2026; 19 the seals, 5 Nov 2026; 18 the note and the two picture paths, 4 Nov 2026; 17 documents, 29 Oct 2026; 16 the payment reference; 15 the bill photo path)
 - CI builds the **dev** APK on every push to `main` and publishes it to the
   rolling `latest` release: the release code with R8 and resource shrinking,
   ARM only, package `.dev` ("Roshan Khata TEST"). The on-device workflow
@@ -2979,6 +2979,14 @@ Each of these cost a build or a bug.
     between reads (17 Nov 2026, found by a test written to kill a surviving breakage). A whole deadline cuts the connection on
     a daemon thread of its own (`Rfc3161.cut`) and the caller stops waiting; a test with a stalling server holds it.
 
+155. **A figure counted by who wrote a row needs the writer on every row, kept by every edit, and the rows another rule
+    counts left out by their link.** A shift's drawer counted only its person's tickets (17 Nov 2026, L108): cashbook rows
+    had no writer, and a khata entry's writer was set by the forms, not the door. The writer is now filled at the one
+    insert door (`EntryWriter` in `insertEntryNumbered`, `insertCashEntryAudited`), kept by `updateEntryWithItems`, and
+    the counter's rows are left out by what points at them (a ticketless return's refund has no saleId — "saleId is null"
+    alone would have counted it twice). A row with no writer (the owner's, or older than the column) is nobody's: it
+    stays where it was counted before, never guessed into a drawer.
+
 ---
 
 ## Working with the owner
@@ -4465,6 +4473,32 @@ broken once more on purpose and failed. Nothing below was compiled here except w
   WhatsApp numbers as `DuplicateDetector.displayPhone` does ("+92 300 1234567") when that shape is whole, else as typed;
   `Page(dialing)` from the shop's country on both platforms. Run here against displayPhone's body; three breakages failed.
   PosterNumberShapeTest (phone, Robolectric), PosterContactDesktopTest.
+
+### 17 Nov 2026: schema 46 — the shift drawer by hand, one held ticket rung up once (helper V: L108, L002; CI only)
+
+- **Schema 46, backup 21** (`Schema46`, both migrations, `SchemaRewind.undo46`, Schema46Test; Schema45Test now rewinds 46
+  too): `cashbook.createdBy` (who wrote a row, as `transactions.createdBy`: the name signed in, null for the owner and on
+  older rows) and `sales.heldUid` (indexed: the uid of the held ticket a sale was rung up or parked again from — the first
+  of its line). Both travel in live sync (read from the table) and in the backup (a helper's copy too). **Live sync needs
+  both devices at 46.**
+- **The shift drawer (L108):** `ShiftMath.drawer` (`ShiftDrawer`) is the float + the person's counter cash − their counter
+  refunds + the khata and cashbook cash they moved by hand (`KhataDao.khataCashBy`, `cashbookCashBy`: the drawer's own cash
+  rules; never a ticket's or a return's rows, left out by `saleId` and by the return that points at them). The close and the
+  shared `ShiftScreen` read the same drawer; the screen shows "Cash in / Cash out (khata + cashbook)" for a named person's
+  shift. By person, not device (one open shift a person). **The owner's shift counts nothing by hand**: his rows and every
+  row older than its writer column carry no name, so they stay in no shift, as before. The writer is filled at the doors
+  (`EntryWriter.of` in `insertEntryNumbered`: a ticket's own rows keep the ticket's writer; `insertCashEntryAudited`; the
+  counter's cashbook rows from their ticket or return) and kept by an edit (`updateEntryWithItems`). Not counted (no writer
+  column): supplier bills paid in cash and staff pay (`DrawerFigures.otherOut`); `shift_float_help` still says "cash sales
+  and cash refunds" in nine languages.
+- **One held ticket, rung up once (L002):** `postSale` reads the held ticket through `heldStillOpen` — still on the hook
+  and no done sale anywhere carries its name (`doneSaleFromHeld`) — else `CounterRefused.HELD_GONE`; `holdSale(dropId)`
+  keeps the name and refuses when that ticket was rung up (a dropped one may be parked again). Two devices that rang it up
+  before either heard of the other both keep their sale (money was taken at both counters); `LiveSync`'s counter checks note
+  every sale of one held name after the first by uid — the same row on both devices — as a "both" conflict for the bell's
+  money row. Nothing is voided by the sync.
+- Tests: ShiftByHandTest, HeldTicketSyncTest, Schema46Test (desktop; CI only), ShiftDrawerTest (shared, run here). Register
+  BC-184..188, lesson 155.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 

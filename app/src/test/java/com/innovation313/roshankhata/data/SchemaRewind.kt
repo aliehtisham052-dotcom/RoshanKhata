@@ -52,8 +52,23 @@ object SchemaRewind {
         indices.filter { idx -> columns.none { idx.contains("`$it`") } }.forEach { raw.execSQL(it) }
     }
 
-    /** Undo version 45: an entry's kind on transactions and a product's other names (16 Nov 2026). */
+    /** Undo version 46: who wrote a cashbook row, and a sale's held ticket with its index (17 Nov 2026). */
+    fun undo46(raw: SQLiteDatabase) {
+        raw.execSQL("PRAGMA foreign_keys = OFF")
+        raw.execSQL("PRAGMA legacy_alter_table = ON")
+        for (idx in Schema46.newIndices) raw.execSQL("DROP INDEX IF EXISTS `$idx`")
+        for ((table, cols) in Schema46.newColumns) stripColumns(raw, table, cols)
+        for ((table, cols) in Schema46.newColumns) {
+            val now = raw.rawQuery("PRAGMA table_info($table)", null).use { c ->
+                buildList { while (c.moveToNext()) add(c.getString(c.getColumnIndexOrThrow("name"))) }
+            }
+            assertTrue("rewind left ${cols.filter { it in now }} on $table", cols.none { it in now })
+        }
+    }
+
+    /** Undo version 45: an entry's kind on transactions and a product's other names (16 Nov 2026). Undoes 46 first. */
     fun undo45(raw: SQLiteDatabase) {
+        undo46(raw)
         raw.execSQL("PRAGMA foreign_keys = OFF")
         raw.execSQL("PRAGMA legacy_alter_table = ON")
         for ((table, cols) in Schema45.newColumns) stripColumns(raw, table, cols)

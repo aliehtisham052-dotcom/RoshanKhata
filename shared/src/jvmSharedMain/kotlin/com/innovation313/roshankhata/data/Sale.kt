@@ -36,7 +36,7 @@ import java.math.RoundingMode
  */
 @Entity(
     tableName = "sales",
-    indices = [Index("partyId"), Index("timestamp"), Index("status"), Index("uid")]
+    indices = [Index("partyId"), Index("timestamp"), Index("status"), Index("uid"), Index("heldUid")]
 )
 data class Sale(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -98,7 +98,16 @@ data class Sale(
      * to say what would be lost, and what a merge matches rows by. Null only
      * for a moment on a row restored from an old file; restoreAll fills it.
      */
-    val uid: String? = Uid.next()
+    val uid: String? = Uid.next(),
+
+    /**
+     * The held ticket this one came from (schema 46, 17 Nov 2026, the audit's L002): the uid of the first held row of its
+     * line — a ticket parked, resumed and parked again keeps the first one's — so every device knows one held ticket by
+     * one name. Set only by [KhataDao.postSale] and [KhataDao.holdSale]; null on a ticket rung up fresh, on a parked
+     * ticket that was never resumed, and on every sale written before. A held uid already on a done sale is a ticket
+     * already rung up ([CounterRefused.Why.HELD_GONE]); two done sales with one are a conflict for the owner.
+     */
+    val heldUid: String? = null
 ) {
     /** What went to the customer's account. Zero for a walk-in by construction. */
     val creditAmount: Double get() = LineMath.round(grandTotal - paidTotal)

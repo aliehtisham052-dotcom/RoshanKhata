@@ -36,13 +36,45 @@ data class Shift(
  * A shift's drawer (21 Oct 2026): what it should hold when it is closed —
  * the float it was opened with, plus the cash taken on that person's own
  * counter sales, less the cash they handed back on returns, between the
- * shift's opening and [until]. Cash only: a bank transfer or a cheque never
- * reaches the drawer. Summed from the tickets, never stored until the close.
+ * shift's opening and [until] — and, since 17 Nov 2026 (L108), plus and less
+ * the cash they moved by hand in the khata and the cashbook ([byHand]). Cash
+ * only: a bank transfer or a cheque never reaches the drawer. Summed from the
+ * rows, never stored until the close.
  */
 object ShiftMath {
 
     suspend fun expected(dao: KhataDao, shift: Shift, until: Long = System.currentTimeMillis()): Double =
-        LineMath.round(shift.openingFloat + taken(dao, shift, until) - back(dao, shift, until))
+        expectedOf(drawer(dao, shift, until))
+
+    /** What the drawer should hold, from its parts, to the shop's coin. */
+    fun expectedOf(d: ShiftDrawer): Double = LineMath.round(d.sum)
+
+    /**
+     * Every part of the drawer until [until] ([ShiftDrawer]): the one call the close and both platforms' shift screen
+     * make, so the figure the screen shows is the figure the close keeps.
+     */
+    suspend fun drawer(dao: KhataDao, shift: Shift, until: Long = System.currentTimeMillis()): ShiftDrawer {
+        val (handIn, handOut) = byHand(dao, shift, until)
+        return ShiftDrawer(shift.openingFloat, taken(dao, shift, until), back(dao, shift, until), handIn, handOut)
+    }
+
+    /**
+     * The cash the shift's person moved by hand between its opening and [until] (17 Nov 2026, the audit's L108): khata
+     * entries and cashbook rows they wrote in cash, in and out (the drawer's own rules, [KhataDao.khataCashBy] and
+     * [KhataDao.cashbookCashBy]); never a counter ticket's or return's rows, which [taken] and [back] count. By person, not
+     * by device: a person has one shift open at a time ([KhataDao.openShift]), and a cashbook row carries no device letter.
+     *
+     * The owner's shift (user null) gets (0, 0): the owner's rows carry no name, and neither does any row written before
+     * names were kept (cashbook rows before schema 46, khata entries before 8 Nov 2026), so a row with no name is counted
+     * in no shift — exactly as no khata or cashbook row was before this.
+     */
+    suspend fun byHand(dao: KhataDao, shift: Shift, until: Long): Pair<Double, Double> {
+        val user = shift.user?.takeIf { it.isNotBlank() } ?: return 0.0 to 0.0
+        val from = shift.openedAt
+        val handIn = dao.khataCashBy(user, given = false, from = from, to = until) + dao.cashbookCashBy(user, income = true, from = from, to = until)
+        val handOut = dao.khataCashBy(user, given = true, from = from, to = until) + dao.cashbookCashBy(user, income = false, from = from, to = until)
+        return handIn to handOut
+    }
 
     /**
      * Which device's tickets a shift's drawer holds (23 Oct 2026, the review): the letter of the device

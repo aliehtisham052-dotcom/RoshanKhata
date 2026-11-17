@@ -58,7 +58,11 @@ object BackupCodec {
      * sale, [EntryKind]) and a product's other names (otherNames). Neither is a
      * secret, so a helper's copy carries both. A file before 20 restores every
      * entry as NORMAL and every product with no other names: nothing then said
-     * which entry was an opening balance.
+     * which entry was an opening balance; 21 (17 Nov 2026, schema 46) who
+     * wrote a cashbook row (createdBy) and the held ticket a counter sale was
+     * rung up from (heldUid, a uid). Neither is a secret (an entry's writer
+     * already travels in a helper's copy); a file before 21 restores both as
+     * null — nobody then wrote them down.
      *
      * The bump matters in one direction only: a file written today, opened by
      * an older release, is refused with "update the app first" rather than
@@ -67,7 +71,7 @@ object BackupCodec {
      * Reading OLD files is unaffected — every array is read optionally, so a
      * version-4 or -5 file still restores cleanly.
      */
-    const val FORMAT_VERSION = 20
+    const val FORMAT_VERSION = 21
 
     /** Rows per page while streaming the big tables. */
     private const val PAGE = 2_000
@@ -1106,6 +1110,8 @@ object BackupCodec {
         put("uid", c.uid ?: JSONObject.NULL)
         // Format 18 (schema 43): where the receipt's picture is kept.
         put("photoPath", c.photoPath ?: JSONObject.NULL)
+        // Format 21 (schema 46): who wrote it, null for the owner.
+        put("createdBy", c.createdBy ?: JSONObject.NULL)
     }
 
     private fun jsonToCash(o: JSONObject) = CashEntry(
@@ -1124,7 +1130,9 @@ object BackupCodec {
         saleId = o.optNullableLong("saleId"),
         uid = o.uid(),
         // Absent before format 18.
-        photoPath = o.optNullableString("photoPath")?.takeIf { it.isNotBlank() }
+        photoPath = o.optNullableString("photoPath")?.takeIf { it.isNotBlank() },
+        // Absent before format 21; a blank name is no name (JSON's "null" string never becomes one — see createdBy on entries).
+        createdBy = o.optNullableString("createdBy")?.takeIf { it.isNotBlank() }
     )
 
 
@@ -1507,6 +1515,8 @@ object BackupCodec {
         put("voidReason", s.voidReason ?: JSONObject.NULL); put("voidedAt", s.voidedAt ?: JSONObject.NULL)
         put("isDeleted", s.isDeleted); put("deletedAt", s.deletedAt ?: JSONObject.NULL)
         put("uid", s.uid ?: JSONObject.NULL)
+        // Format 21 (schema 46): the held ticket it was rung up from.
+        put("heldUid", s.heldUid ?: JSONObject.NULL)
     }
 
     private fun jsonToSale(o: JSONObject) = Sale(
@@ -1520,7 +1530,9 @@ object BackupCodec {
         ledgerEntryId = o.optNullableLong("ledgerEntryId"), invoiceId = o.optNullableLong("invoiceId"),
         createdBy = o.optNullableString("createdBy"), voidReason = o.optNullableString("voidReason"),
         voidedAt = o.optNullableLong("voidedAt"), isDeleted = o.optBoolean("isDeleted", false),
-        deletedAt = o.optNullableLong("deletedAt"), uid = o.uid()
+        deletedAt = o.optNullableLong("deletedAt"), uid = o.uid(),
+        // Absent before format 21.
+        heldUid = o.optNullableString("heldUid")?.takeIf { it.isNotBlank() }
     )
 
     // [secrets] false (a helper's copy, a Waris snapshot): the line's cost stays out, as the product's cost price does (m42).

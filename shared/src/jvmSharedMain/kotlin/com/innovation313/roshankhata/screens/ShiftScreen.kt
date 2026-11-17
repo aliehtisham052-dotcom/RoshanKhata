@@ -37,6 +37,7 @@ import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LineMath
 import com.innovation313.roshankhata.data.Shift
+import com.innovation313.roshankhata.data.ShiftDrawer
 import com.innovation313.roshankhata.data.ShiftMath
 import com.innovation313.roshankhata.ui.Calc
 import com.innovation313.roshankhata.ui.Format
@@ -77,12 +78,14 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
     // The live figures of the shift being closed: summed from the tickets each time the screen looks.
     var taken by remember { mutableStateOf(0.0) }
     var back by remember { mutableStateOf(0.0) }
+    // The cash the person moved by hand in the khata and the cashbook (17 Nov 2026, L108; 0 on the owner's shift).
+    var handIn by remember { mutableStateOf(0.0) }
+    var handOut by remember { mutableStateOf(0.0) }
     LaunchedEffect(closing?.id, open.size, recent.size) {
         val s = closing ?: return@LaunchedEffect
         withContext(Dispatchers.IO) {
-            val now = System.currentTimeMillis()
-            taken = com.innovation313.roshankhata.data.ShiftMath.taken(dao, s, now)
-            back = com.innovation313.roshankhata.data.ShiftMath.back(dao, s, now)
+            val d = ShiftMath.drawer(dao, s, System.currentTimeMillis())
+            taken = d.taken; back = d.back; handIn = d.handIn; handOut = d.handOut
         }
     }
     fun who(user: String?) = user?.let { Format.name(it) } ?: words.text(W.access_owner)
@@ -118,11 +121,17 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
                     colors = ButtonDefaults.buttonColors(containerColor = c.brandGreen)
                 ) { Text(word(W.shift_open), color = Color.White, fontWeight = FontWeight.Bold) }
             } else {
-                val expected = LineMath.round(closing.openingFloat + taken - back)
+                // The close's own rule ([ShiftMath.expectedOf]): the figure shown is the figure kept.
+                val expected = ShiftMath.expectedOf(ShiftDrawer(closing.openingFloat, taken, back, handIn, handOut))
                 Text(words.text(W.shift_opened_at, Format.dateTime(closing.openedAt)), color = c.textMuted, fontSize = 13.sp)
                 Figure(word(W.dc_opening), Format.money(closing.openingFloat))
                 Figure(word(W.shift_cash_sales), Format.money(taken))
                 Figure(word(W.shift_cash_refunds), if (back > 0.0) "−" + Format.money(back) else Format.money(0.0))
+                // A named person's cash by hand; the owner's shift has none to show (his rows carry no name).
+                if (closing.user != null) {
+                    Figure(word(W.z_cash_in), Format.money(handIn))
+                    Figure(word(W.z_cash_out), if (handOut > 0.0) "−" + Format.money(handOut) else Format.money(0.0))
+                }
                 HorizontalDivider(color = c.pageBg)
                 Figure(word(W.z_expected), Format.money(expected), bold = true)
                 CalcField(countedText, { countedText = it }, Modifier.fillMaxWidth(), label = word(W.dc_counted))

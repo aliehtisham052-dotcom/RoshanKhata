@@ -41,9 +41,12 @@ class Schema45Test {
                 dao.insertProduct(Product(name = "Urea", nameKey = ProductName.key("Urea"), normalisedName = ProductName.normalised("Urea"), salePrice = 4_500.0))
             } finally { first.close() }
 
-            // Back to 44: the two columns 45 added taken out, the version written back.
+            // Back to 44: the two columns 45 added taken out — and what every later version added (46: Schema46Test) — the
+            // version written back.
             BundledSQLiteDriver().open(file.absolutePath).let { c ->
                 try {
+                    for (idx in Schema46.newIndices) c.execSQL("DROP INDEX IF EXISTS `$idx`")
+                    for ((table, cols) in Schema46.newColumns) for (col in cols) c.execSQL("ALTER TABLE $table DROP COLUMN $col")
                     c.execSQL("ALTER TABLE transactions DROP COLUMN entryKind")
                     c.execSQL("ALTER TABLE products DROP COLUMN otherNames")
                     c.execSQL("PRAGMA user_version = 44")
@@ -72,7 +75,7 @@ class Schema45Test {
                 try {
                     val st = c.prepare("PRAGMA user_version")
                     try { st.step(); assertEquals(KHATA_DB_VERSION.toLong(), st.getLong(0)) } finally { st.close() }
-                    assertEquals(45, KHATA_DB_VERSION)
+                    assertTrue(KHATA_DB_VERSION >= 45)
                     for ((table, cols) in Schema45.newColumns) assertTrue(table, c.columns(table).containsAll(cols))
                 } finally { c.close() }
             }

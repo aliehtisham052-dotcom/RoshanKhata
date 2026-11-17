@@ -813,6 +813,13 @@ val MIGRATION_44_45 = object : Migration(44, 45) {
     }
 }
 
+/** v46 (17 Nov 2026): who wrote a cashbook row, and the held ticket a sale came from — the shared [Schema46] list. */
+val MIGRATION_45_46 = object : Migration(45, 46) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        for (sql in Schema46.statements) db.execSQL(sql)
+    }
+}
+
 /** Every migration, in order. Register all of them or Room will not find the path. */
 val ALL_MIGRATIONS = arrayOf(
     MIGRATION_1_2,
@@ -858,5 +865,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_41_42,
     MIGRATION_42_43,
     MIGRATION_43_44,
-    MIGRATION_44_45
+    MIGRATION_44_45,
+    MIGRATION_45_46
 )

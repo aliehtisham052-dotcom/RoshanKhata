@@ -1214,7 +1214,8 @@ interface KhataDao {
     @Transaction
     suspend fun insertCashEntryAudited(entry: CashEntry): Long {
         requireBookAmount(entry.amount)
-        val id = insertCashEntry(entry)
+        // Who wrote it (schema 46, L108): the name signed in, null for the owner — what a shift's drawer reads.
+        val id = insertCashEntry(entry.copy(createdBy = entry.createdBy ?: Access.userName))
         log(AuditAction.CASH_ADDED, Access.userName, "cashbook", id, auditAmount(entry.amount))
         return id
     }
@@ -3396,7 +3397,7 @@ interface KhataDao {
         // And past the highest ever purged (23 Oct 2026, the review: the bin emptied of the newest entries
         // gave their RK- numbers out again — numbers already printed or sent on a receipt).
         val next = maxOf(totalEntryCount(), highestEntryNumber(), settingValue(BookSettings.ENTRY_NUMBER_HIGH)?.toIntOrNull() ?: 0)
-        return insertEntry(entry.copy(entryNumber = EntryNumber.next(next)))
+        return insertEntry(entry.copy(entryNumber = EntryNumber.next(next), createdBy = EntryWriter.of(entry.createdBy, entry.saleId, Access.userName)))
     }
 
     /**
@@ -3472,7 +3473,9 @@ interface KhataDao {
                 else -> EntryKind.NORMAL
             }
         }
-        updateEntry(entry.copy(entryKind = kind))
+        // Who wrote it stays who wrote it (17 Nov 2026, L108): a form that builds a new LedgerEntry would read null, and a
+        // cashier's shift drawer counts the entries by their writer ([ShiftMath.byHand]).
+        updateEntry(entry.copy(entryKind = kind, createdBy = if (stored != null) stored.createdBy else entry.createdBy))
         deleteItemsOfEntry(entry.id)
         if (items.isNotEmpty()) {
             insertEntryItems(items.mapIndexed { i, item -> item.copy(id = 0, entryId = entry.id, lineNo = i) })
@@ -4322,11 +4325,11 @@ interface KhataDao {
             throw CounterRefused(CounterRefused.Why.CUSTOMER_BINNED, "sale refused: the customer is in the recycle bin")
         // The held ticket it came off must still be on the hook (23 Oct 2026, the review): two counters (or the
         // phone and the computer) that both resumed one parked ticket each rang it up — charged twice, stock out twice.
-        heldId?.let { h ->
-            val held = getSale(h)
-            if (held == null || held.status != SaleStatus.HELD || held.isDeleted)
-                throw CounterRefused(CounterRefused.Why.HELD_GONE, "sale refused: the held ticket was already rung up or dropped")
-        }
+        // And never twice from one held ticket (17 Nov 2026, the audit's L002): the sale carries the held ticket's name
+        // ([Sale.heldUid], the first of its line), so a sale another device made from it is seen here even when that
+        // device's drop has not arrived yet; one both devices made before either heard of the other is a conflict for the
+        // owner once they meet ([LiveSync]'s counter checks).
+        val heldFrom: String? = heldId?.let { h -> heldStillOpen(h, "sale refused") }
         SaleMath.check(lines, payments, totals.grandTotal, hasParty)?.let {
             throw SaleMath.Refused(it)
         }
@@ -4343,7 +4346,7 @@ interface KhataDao {
                 taxAmount = totals.tax, roundOff = totals.roundOff,
                 grandTotal = totals.grandTotal, paidTotal = paid,
                 ledgerEntryId = null, voidReason = null, voidedAt = null,
-                isDeleted = false, deletedAt = null
+                isDeleted = false, deletedAt = null, heldUid = heldFrom
             )
         )
         // Each line keeps its own tax (schema 36), worked out once, as the totals were;
@@ -4396,7 +4399,8 @@ interface KhataDao {
                         amount = LineMath.round(p.amount), isIncome = true, category = CashCategory.SALE,
                         note = p.reference?.takeIf { it.isNotBlank() } ?: number,
                         paymentRef = p.reference?.trim()?.takeIf { it.isNotEmpty() },
-                        timestamp = sale.timestamp + i, paymentMethod = p.method, saleId = saleId
+                        timestamp = sale.timestamp + i, paymentMethod = p.method, saleId = saleId,
+                        createdBy = sale.createdBy
                     )
                 )
                 gotIds += null
@@ -4521,6 +4525,16 @@ interface KhataDao {
      */
     @Transaction
     suspend fun holdSale(sale: Sale, items: List<SaleItem>, dropId: Long? = null): Long {
+        // Parked again from a held ticket (17 Nov 2026, L002): it keeps that ticket's name, so a sale of either is a sale
+        // of both; refused when that ticket was rung up, here or on another device (a dropped one may be parked again).
+        val heldFrom: String? = dropId?.let { d ->
+            getSale(d)?.takeIf { it.status == SaleStatus.HELD }?.let { old ->
+                val root = old.heldUid ?: old.uid
+                if (root != null && doneSaleFromHeld(root) != null)
+                    throw CounterRefused(CounterRefused.Why.HELD_GONE, "hold refused: the held ticket was already rung up")
+                root
+            }
+        }
         val lines = items.filter { !it.isDeleted && it.itemName.isNotBlank() }
         val totals = SaleMath.totals(lines, sale.discountAmount, sale.taxPercent)
         val id = insertSale(
@@ -4528,7 +4542,7 @@ interface KhataDao {
                 id = 0, saleNumber = "", status = SaleStatus.HELD,
                 subtotal = totals.subtotal, discountAmount = totals.discount, taxAmount = totals.tax,
                 roundOff = 0.0, grandTotal = totals.grandTotal, paidTotal = 0.0,
-                ledgerEntryId = null, isDeleted = false, deletedAt = null
+                ledgerEntryId = null, isDeleted = false, deletedAt = null, heldUid = heldFrom
             )
         )
         insertSaleItems(lines.mapIndexed { i, l -> l.copy(id = 0, saleId = id, lineNo = i, isDeleted = false) })
@@ -4536,6 +4550,25 @@ interface KhataDao {
         if (dropId != null && dropId != id) dropHeldSale(dropId)
         return id
     }
+
+    /**
+     * The held ticket [heldId] as a sale may still be rung up from it: on the hook here, and not rung up on any device
+     * this book has heard from. Returns its name ([Sale.heldUid] of its line, else its own uid); throws
+     * [CounterRefused.Why.HELD_GONE] otherwise. Read inside the caller's transaction.
+     */
+    suspend fun heldStillOpen(heldId: Long, refused: String): String? {
+        val held = getSale(heldId)
+        if (held == null || held.status != SaleStatus.HELD || held.isDeleted)
+            throw CounterRefused(CounterRefused.Why.HELD_GONE, "$refused: the held ticket was already rung up or dropped")
+        val root = held.heldUid ?: held.uid
+        if (root != null && doneSaleFromHeld(root) != null)
+            throw CounterRefused(CounterRefused.Why.HELD_GONE, "$refused: the held ticket was already rung up on another device")
+        return root
+    }
+
+    /** A done, live sale rung up from the held ticket named [heldUid] (schema 46), if any. */
+    @Query("SELECT id FROM sales WHERE heldUid = :heldUid AND status = 'done' AND isDeleted = 0 LIMIT 1")
+    suspend fun doneSaleFromHeld(heldUid: String): Long?
 
     /** A held ticket taken off the hook (rung up, or dropped): it leaves the list for good. */
     @Query("UPDATE sales SET isDeleted = 1, deletedAt = :now WHERE id = :id AND status = 'held'")
@@ -4821,7 +4854,8 @@ interface KhataDao {
             refundCashId = insertCashEntry(
                 CashEntry(
                     amount = refund, isIncome = false, category = CashCategory.RETURN, note = number,
-                    timestamp = ret.timestamp, paymentMethod = ret.refundMethod, saleId = ret.saleId
+                    timestamp = ret.timestamp, paymentMethod = ret.refundMethod, saleId = ret.saleId,
+                    createdBy = ret.createdBy
                 )
             )
         }
@@ -5589,6 +5623,35 @@ interface KhataDao {
         "AND (:mark = '' OR returnNumber LIKE '%' || :mark OR returnNumber NOT LIKE '%-%-%')"
     )
     suspend fun cashRefundedBy(user: String?, from: Long, to: Long, mark: String = ""): Double
+
+    /**
+     * Khata cash [user] moved by hand in [from, to) (17 Nov 2026, the audit's L108): entries he wrote, marked Cash, by
+     * the drawer's own rule ([khataCashBetween]: money IN only from a customer, or a supplier's MONEY) — [given] true for
+     * cash paid out. Never the counter's rows: a ticket's payments carry its saleId, and a return's rows (a return need
+     * not have a ticket) are named by the return itself; both are in [cashTakenBy] and [cashRefundedBy] already. A row
+     * with no writer is nobody's: [ShiftMath.byHand] never asks for one.
+     */
+    @Query(
+        "SELECT COALESCE(SUM(t.amount), 0) FROM transactions t WHERE t.isDeleted = 0 AND t.isGiven = :given AND t.paymentMethod = 'cash' " +
+        "AND (:given = 1 OR t.entryKind = 'MONEY' OR t.partyId IN (SELECT id FROM parties WHERE isCustomer = 1)) " +
+        "AND t.createdBy = :user AND t.saleId IS NULL " +
+        "AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.refundEntryId = t.id OR r.ledgerEntryId = t.id) " +
+        "AND t.timestamp >= :from AND t.timestamp < :to"
+    )
+    suspend fun khataCashBy(user: String, given: Boolean, from: Long, to: Long): Double
+
+    /**
+     * Cashbook cash [user] moved by hand in [from, to) (L108): rows he wrote, by the drawer's own rule
+     * ([cashbookCashBetween]: no method, or Cash) — [income] false for money out. Never the counter's rows (a walk-in's
+     * payment carries its saleId, a walk-in refund is named by its return).
+     */
+    @Query(
+        "SELECT COALESCE(SUM(c.amount), 0) FROM cashbook c WHERE c.isDeleted = 0 AND c.isIncome = :income " +
+        "AND (c.paymentMethod IS NULL OR c.paymentMethod = 'cash') AND c.createdBy = :user AND c.saleId IS NULL " +
+        "AND NOT EXISTS (SELECT 1 FROM sale_returns r WHERE r.refundCashId = c.id) " +
+        "AND c.timestamp >= :from AND c.timestamp < :to"
+    )
+    suspend fun cashbookCashBy(user: String, income: Boolean, from: Long, to: Long): Double
 
     /**
      * What [user] rang up on the counter in [from, to): the done tickets they wrote, by their grand totals, and how many
