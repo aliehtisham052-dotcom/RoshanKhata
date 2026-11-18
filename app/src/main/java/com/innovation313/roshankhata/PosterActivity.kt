@@ -620,9 +620,12 @@ class PosterActivity : BaseActivity() {
                         fields = fields, whatsapp = fields.onWhatsapp))
                     Bitmap.createScaledBitmap(full, w, h, true).also { full.recycle() }
                 }
-                // The new picture goes up before the old one is let go.
+                // The old picture is never recycled, only let go to the collector: a design page still
+                // being drawn shows it as its placeholder (PageAdapter), and a recycled bitmap a view
+                // still draws ends the app (Play, 4 Nov 2026, Android 16: Canvas: trying to use a
+                // recycled bitmap; BC-235).
                 designRow.findViewWithTag<View>(o.key)?.findViewById<ImageView>(R.id.designThumb)?.setImageBitmap(small)
-                thumbs.put(o, small)?.recycle()
+                thumbs.put(o, small)
             }
         }
     }
@@ -1120,7 +1123,8 @@ class PosterActivity : BaseActivity() {
             MaterialAlertDialogBuilder(this@PosterActivity)
                 .setView(iv)
                 .setPositiveButton(R.string.close, null)
-                .setOnDismissListener { bmp.recycle() }
+                // Not recycled on dismiss: the dialog is still drawn while it fades out (BC-235).
+                .setOnDismissListener { iv.setImageDrawable(null) }
                 .show()
         }
     }
@@ -1479,11 +1483,11 @@ class PosterActivity : BaseActivity() {
         renderJob = lifecycleScope.launch {
             delay(wait)
             val (bmp, fit) = withContext(Dispatchers.Default) { PosterImage.draw(ctx, inp) }
-            val old = shown
+            // The old picture is let go to the collector, never recycled: the frame being drawn may
+            // still hold it (BC-235).
             preview.setImageBitmap(bmp)
             motionView.show(fit.motion)
             shown = bmp
-            old?.recycle()
             liveDrawn = true
             maybeShowLive()
         }
@@ -1670,11 +1674,10 @@ class PosterActivity : BaseActivity() {
         stage = null
         thumbsJob?.cancel()
         super.onDestroy()
+        // Every picture a view was given is let go to the collector, never recycled (BC-235).
         preview.setImageDrawable(null)
-        shown?.recycle()
         shown = null
         for (i in 0 until designRow.childCount) designRow.getChildAt(i).findViewById<ImageView>(R.id.designThumb)?.setImageDrawable(null)
-        thumbs.values.forEach { it.recycle() }
         thumbs.clear()
         photo = null
     }

@@ -2991,6 +2991,14 @@ Each of these cost a build or a bug.
     schema 46's `index_sales_heldUid` matched it (Uid = uid, `_` matched anything) and the test failed for a name that
     was not a uid index at all. A name pattern that must match exactly is a `GLOB` (case-sensitive, `*` and `?`).
 
+157. **A bitmap a view was given is never recycled by hand.** The poster's design pager showed a thumbnail as a
+     page's placeholder; drawing the thumbnails again recycled the old one while that page still showed it, and the
+     next frame ended the app ("Canvas: trying to use a recycled bitmap": Play's crash of 4 Nov 2026 on Android 16,
+     the first in production). Android frees a bitmap's pixels with the bitmap since Android 8; `recycle()` is only
+     for a bitmap no view, row, page or fading dialog was ever handed. `check_repo_guards.py`'s
+     `shown_bitmaps_never_recycled` holds it by name (an alias such as `old = shown` is not followed, so write the
+     rule beside such a place too).
+
 ---
 
 ## Working with the owner
