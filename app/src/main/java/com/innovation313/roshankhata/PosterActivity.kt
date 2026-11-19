@@ -49,6 +49,7 @@ import com.innovation313.roshankhata.ui.PosterDesigns
 import com.innovation313.roshankhata.ui.PosterImage
 import com.innovation313.roshankhata.ui.PosterKit
 import com.innovation313.roshankhata.ui.PosterMotionView
+import com.innovation313.roshankhata.ui.PosterPageKeep
 import com.innovation313.roshankhata.ui.PosterVideo
 import com.innovation313.roshankhata.ui.PosterWords
 import com.innovation313.roshankhata.ui.ScreenInsets
@@ -130,8 +131,12 @@ class PosterActivity : BaseActivity() {
     private lateinit var pager: androidx.viewpager2.widget.ViewPager2
     private lateinit var stageBox: FrameLayout
     private val pageAdapter = PageAdapter()
-    /** Finished pages at the stage's size, a few at a time (each ~2 MB). */
-    private val pages = object : android.util.LruCache<PosterOccasion, Bitmap>(5) {}
+    /**
+     * Finished pages at the stage's size, a few at a time (each a few MB): the chosen design's and its nearest
+     * ([PosterPageKeep]: kept by how lately each was asked for, the page on show was the first pushed out).
+     * A page let go is never recycled: its view may still be drawing it (BC-235).
+     */
+    private val pages = mutableMapOf<PosterOccasion, Bitmap>()
     private val pageJobs = mutableMapOf<PosterOccasion, Job>()
     /** The live poster as it last looked, standing in for its page while it slides away. */
     private var leaving: Pair<PosterOccasion, Bitmap>? = null
@@ -583,28 +588,23 @@ class PosterActivity : BaseActivity() {
 
     /** A finished still of one design at the stage's size, drawn once and kept for a while. */
     private fun requestPage(o: PosterOccasion) {
-        if (!loaded || pageW <= 0 || pages.get(o) != null || pageJobs[o]?.isActive == true) return
+        if (!loaded || pageW <= 0 || pages[o] != null || pageJobs[o]?.isActive == true) return
         val ctx = posterContext()
         val w = pageW
         val h = pageH
         val inp = pageInput(ctx, o)
-        val me = System.identityHashCode(this)
-        android.util.Log.d("Poster3D", "page: $me ${o.key} asked ${w}x$h")
         pageJobs[o] = lifecycleScope.launch {
-            var end = "cut off"
-            try {
-                val hero = heroShot(o)
-                val bmp = withContext(Dispatchers.Default) {
-                    val (full, _) = PosterImage.draw(ctx, if (hero != null) inp.copy(hero = hero) else inp)
-                    Bitmap.createScaledBitmap(full, w, h, true).also { if (it !== full) full.recycle() }
-                }
-                if (w != pageW || h != pageH) { end = "other size now ${pageW}x$pageH"; bmp.recycle(); return@launch }
-                pages.put(o, bmp)
-                end = "kept"
-                notifyPage(PosterOccasion.values().indexOf(o))
-            } finally {
-                android.util.Log.d("Poster3D", "page: $me ${o.key} ${w}x$h $end")
+            val hero = heroShot(o)
+            val bmp = withContext(Dispatchers.Default) {
+                val (full, _) = PosterImage.draw(ctx, if (hero != null) inp.copy(hero = hero) else inp)
+                Bitmap.createScaledBitmap(full, w, h, true).also { if (it !== full) full.recycle() }
             }
+            if (w != pageW || h != pageH) { bmp.recycle(); return@launch }
+            pages[o] = bmp
+            // The farthest pages from the chosen design make room; the chosen design's own never goes.
+            val all = PosterOccasion.values()
+            for (i in PosterPageKeep.letGo(pages.keys.map { all.indexOf(it) }, all.indexOf(occasion))) pages.remove(all[i])
+            notifyPage(all.indexOf(o))
         }
     }
 
@@ -631,10 +631,9 @@ class PosterActivity : BaseActivity() {
 
     /** Every page is drawn again: the language, name, logo or a choice changed. */
     private fun refreshPages() {
-        android.util.Log.d("Poster3D", "page: ${System.identityHashCode(this)} all again, ${pageJobs.size} asked, ${pages.size()} kept")
         pageJobs.values.forEach { it.cancel() }
         pageJobs.clear()
-        pages.evictAll()
+        pages.clear()
         pager.post { pageAdapter.notifyDataSetChanged() }
     }
 
@@ -671,7 +670,7 @@ class PosterActivity : BaseActivity() {
         override fun onBindViewHolder(holder: Holder, position: Int) {
             val o = PosterOccasion.values()[position]
             val shot = leaving?.takeIf { it.first == o }?.second
-            val page = pages.get(o)
+            val page = pages[o]
             holder.image.setImageBitmap(shot ?: page ?: thumbs[o])
             holder.image.contentDescription = if (o == PosterOccasion.CUSTOM) getString(R.string.poster_custom) else designName(o)
             if (page == null) requestPage(o)
@@ -1731,7 +1730,7 @@ class PosterActivity : BaseActivity() {
      */
     @androidx.annotation.VisibleForTesting
     internal fun proof(): Proof {
-        val page = pages.get(occasion)
+        val page = pages[occasion]
         val flat = if (pageW > 0 && pageH > 0) {
             val (full, _) = PosterImage.draw(posterContext(), pageInput(posterContext(), occasion))
             Bitmap.createScaledBitmap(full, pageW, pageH, true)

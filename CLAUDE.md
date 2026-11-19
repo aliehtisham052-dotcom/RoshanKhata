@@ -3028,6 +3028,15 @@ Each of these cost a build or a bug.
      eye. Every place that shows a design now takes `pageInput` and `heroShot`; a layer that comes up over another
      waits for its content's first real frame (`HeroStage.liveFrameUp`), never for a guessed number of frames.
 
+162. **What a cache lets go is decided by what is on show, not by what was asked for last.** The poster's pages sat
+     in an LruCache of 5; the pager binds the chosen design, two either side and sometimes one more, and the chosen
+     page, drawn first, was the least lately asked for: the sixth page pushed out the one on show, and nothing asked
+     for it again. `PosterPageKeep` keeps by nearness to the chosen design, whose own page never goes. Found only
+     because the proof WAITED for the page and said what it was waiting for (`Proof.state`): a test that only looks
+     at a screenshot would have passed, the live layer covered the hole. When a proof times out, make it say the
+     screen's state before guessing: a guess was wrong here before the state (a finished job, no page) and the log
+     (five pages asked on every opening, the cache's whole room) pointed at the cache.
+
 ---
 
 ## Working with the owner
@@ -4655,6 +4664,11 @@ Importance 6. Phone only: the computer draws the heroes flat everywhere, so it s
 - **No blink:** the live layer is laid out unseen (alpha 0) and shown once `HeroStage.liveFrameUp` (a frame at the
   view's present size), or after 1.5 s; the page under it is already the same picture. `liveUp` / `revealing` replace
   reading the frame's visibility.
+- **Two older faults the Urdu proof found (BC-239, lesson 162):** the chosen design's page was pushed out of memory
+  by its neighbours (`PosterPageKeep` now keeps by nearness, room for 7); and `hideLive` forgot the poster was drawn
+  whenever the pages moved, so a slide begun and let go left the live poster off the stage until something drew it
+  again: only a change of design forgets it now. Both made a design show a blown-up small picture or its page in the
+  live poster's place.
 - **Kept fresh:** words typed, a tick, the shop's name or a changed profile (`profileNow`) mark the pages stale; the
   small pictures are drawn again with them on Design. The seal's key carries the logo's look (`markOf`), so another
   logo is another seal.
@@ -4662,6 +4676,7 @@ Importance 6. Phone only: the computer draws the heroes flat everywhere, so it s
   edge); `check_repo_guards.py::left_margins_name_their_side` (broken once on purpose);
   `PosterScreenProofTest.a_design_is_one_picture_in_its_place_in_urdu_too` (English and Urdu, four designs: the hero's
   view on its rectangle, the page not the flat drawing, the small picture nearer the page than the flat one; its
-  screenshots go to the poster-proof release).
+  screenshots go to the poster-proof release; measured on CI: page against flat 19 to 33 of 255, small picture against
+  page 2.6 to 3.6); PosterPageKeepTest (pure, run here).
 - **Not done:** the live clock's second hand still differs from its page by what the clock has ticked; a real phone.
 

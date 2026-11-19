@@ -21,7 +21,6 @@ echo "::notice title=device log::$(grep -vE 'ActivityManager' /tmp/probe_logcat.
 r=$(find app/build/outputs/androidTest-results -name '*.xml' 2>/dev/null | head -1)
 [ -n "$r" ] && echo "::notice title=test failure::$(grep -A25 '<failure' "$r" | head -40 | enc)"
 echo "::notice title=one picture::$(grep -E 'Poster3D.*one picture' /tmp/probe_logcat.txt | sed 's/^.*Poster3D([ 0-9]*): //' | enc)"
-echo "::notice title=pages::$(grep -E 'Poster3D.*(page: |one picture)' /tmp/probe_logcat.txt | sed 's/^\(.\{18\}\).*Poster3D([ 0-9]*): /\1 /' | grep -B110 'one picture: NEVER' | head -130 | enc)"
 echo "::notice title=picture::$(grep -E 'Poster3D.*(grid|solid|look:)' /tmp/probe_logcat.txt | sed 's/^.*Poster3D([ 0-9]*): //' | enc)"
 echo "::notice title=device crashes::$(grep -E 'FATAL|AndroidRuntime|Poster3D|SIG|abort|DEBUG|libc|Filament' /tmp/probe_logcat.txt | tail -40 | enc)"
 exit $code
