@@ -149,7 +149,11 @@ enum class Hero(
         motions = listOf(
             Motion("mosque", Motion.Kind.SWAY, Motion.Axis.Y, amount = 12f, period = 10f, rest = 8f)
         )
-    )
+    );
+
+    /** A clock: its live picture changes with the phone's time, so a kept picture of it grows old. */
+    val tellsTime: Boolean
+        get() = motions.any { it.kind == Motion.Kind.HOUR || it.kind == Motion.Kind.MINUTE || it.kind == Motion.Kind.SECOND }
 }
 
 private val FRAMED_EYE = floatArrayOf(0f, 0f, 6f)

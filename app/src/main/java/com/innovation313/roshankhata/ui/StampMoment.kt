@@ -57,11 +57,10 @@ object StampMoment {
         if (side < (24 * d).toInt()) return
         val picture = sealPicture(activity, side, mark) ?: return
 
+        // By the page's own left, whichever way the app reads (PlaceAt): hung from the start, the stamp landed
+        // beside its seal in an Urdu window.
         fun FrameLayout.place(v: View, size: Int) =
-            addView(v, FrameLayout.LayoutParams(size, size).apply {
-                leftMargin = (cx - size / 2f).toInt()
-                topMargin = (cy - size / 2f).toInt()
-            })
+            addView(v, PlaceAt.params((cx - size / 2f).toInt(), (cy - size / 2f).toInt(), size, size))
 
         // Over the page, transparent: it takes the taps (a tap ends the moment) and holds the page still meanwhile.
         val stage = FrameLayout(activity).apply {

@@ -95,11 +95,18 @@ class HeroStage(
         }
     }
     private val faceTextures = mutableListOf<Texture>()
-    private val motion = try {
-        Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f
-    } catch (e: Exception) {
-        true
-    }
+    private val motion = moves(context)
+
+    /**
+     * True once a frame has gone to the live view at the size it now has. The poster screen shows its live layer
+     * only then: shown sooner, the layer stood a moment with a hole where the hero is, or with the last design's
+     * hero still in the view (the owner, 19 Nov 2026: "first one thing shows, then it blinks into another").
+     */
+    var liveFrameUp = false
+        private set
+
+    /** Told on the main thread each time [liveFrameUp] turns true: after [attach], a new surface, a new size. */
+    var onLiveFrame: (() -> Unit)? = null
 
     private var uiHelper: UiHelper? = null
     private var swapChain: SwapChain? = null
@@ -257,6 +264,10 @@ class HeroStage(
                 renderer.render(view)
                 renderer.endFrame()
                 dirty = false
+                if (!liveFrameUp) {
+                    liveFrameUp = true
+                    onLiveFrame?.invoke()
+                }
             }
         }
     }
@@ -264,6 +275,7 @@ class HeroStage(
     /** Show the hero live on [target], which must sit over the poster with a clear background. */
     fun attach(target: TextureView) {
         detach()
+        liveFrameUp = false
         target.isOpaque = false
         val helper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
         helper.setOpaque(false)
@@ -272,6 +284,7 @@ class HeroStage(
                 swapChain?.let { engine.destroySwapChain(it) }
                 swapChain = engine.createSwapChain(surface, helper.swapChainFlags)
                 dirty = true
+                liveFrameUp = false
             }
 
             override fun onDetachedFromSurface() {
@@ -286,6 +299,7 @@ class HeroStage(
                 // Filament's UiHelper says 0 x 0 when it attaches to a TextureView whose surface already exists
                 // (onStart after a share, a design swiped to on the same view): the view's own size is then the truth.
                 val (w, h) = LiveSize.pick(width, height, target.width, target.height)
+                if (w != liveW || h != liveH) liveFrameUp = false
                 liveW = w
                 liveH = h
                 project(w, h)
@@ -300,6 +314,7 @@ class HeroStage(
     }
 
     fun detach() {
+        liveFrameUp = false
         running = false
         choreographer.removeFrameCallback(frame)
         uiHelper?.detach()
@@ -318,6 +333,24 @@ class HeroStage(
      * (ui/PosterVideo.kt).
      */
     suspend fun frameAt(w: Int, h: Int, t: Float, clockMillis: Long): Bitmap = capture(w, h, t, live = true, clockMillis = clockMillis)
+
+    /**
+     * The hero as its live view first shows it, [w]×[h] with a clear background: the moving pose at its start and
+     * a clock at the phone's time, or the resting pose on a phone whose animations are off (the live view then
+     * rests too). The poster screen's pages and small pictures are drawn with this, so a design is one picture
+     * wherever it shows.
+     */
+    suspend fun asLive(w: Int, h: Int): Bitmap =
+        if (motion) frameAt(w, h, 0f, System.currentTimeMillis()) else still(w, h)
+
+    companion object {
+        /** Whether the heroes move on this phone: nothing does with the phone's animations off. */
+        fun moves(context: Context): Boolean = try {
+            Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f
+        } catch (e: Exception) {
+            true
+        }
+    }
 
     private suspend fun capture(w: Int, h: Int, t: Float, live: Boolean, clockMillis: Long?): Bitmap = suspendCancellableCoroutine { cont ->
         if (!live) Log.d(TAG, "still: swapchain ${w}x$h")

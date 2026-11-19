@@ -43,6 +43,7 @@ import com.innovation313.roshankhata.data.PosterOccasion
 import com.innovation313.roshankhata.data.TradeVocab
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.LocaleRefresh
+import com.innovation313.roshankhata.ui.PlaceAt
 import com.innovation313.roshankhata.ui.PosterContact
 import com.innovation313.roshankhata.ui.PosterDesigns
 import com.innovation313.roshankhata.ui.PosterImage
@@ -62,6 +63,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
@@ -136,6 +139,11 @@ class PosterActivity : BaseActivity() {
     private var pageH = 0
     /** The live picture for the chosen design is drawn, and the pages are at rest: the live layer may show. */
     private var liveDrawn = false
+    /** The live layer is on the stage and seen. */
+    private var liveUp = false
+    /** The live layer is laid out unseen while its 3D hero draws its first frame; [revealTurn] names this wait. */
+    private var revealing = false
+    private var revealTurn = 0
     private var pagerIdle = true
     /** Something on every page changed (the name, a choice) since the pages were drawn. */
     private var pagesDirty = false
@@ -156,6 +164,22 @@ class PosterActivity : BaseActivity() {
     /** Where the picture on show has its hero: the design may move or grow it with what the foot shows (PosterBody). */
     private var heroPlace: android.graphics.RectF? = null
     private var isStarted = false
+    /** The logo and the owner's photo are read: pictures drawn before that would be drawn twice. */
+    private var loaded = false
+    /** What the logo looks like, for the seal's key: another logo is another seal. */
+    private var logoMark = "-"
+    /** What of the shop's profile the pictures show, as last drawn (onResume draws again only when it changed). */
+    private var profileMark = ""
+
+    /** A design's 3D hero as a picture, and when it was taken (a clock's grows old). Never recycled: views show them. */
+    private class Shot(val picture: Bitmap, val at: Long)
+    private val heroShots = object : LinkedHashMap<String, Shot>() {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Shot>?) = size > 16
+    }
+    /** One 3D stage at a time is built for a picture. */
+    private val shotLock = Mutex()
+    /** The GPU would not give a hero's picture: the designs are drawn flat while this screen is open, and nothing waits again. */
+    private var shotsOff = false
 
     private var occasion = PosterOccasion.NEW_STOCK
     private var lang = "ur"
@@ -210,6 +234,8 @@ class PosterActivity : BaseActivity() {
         btnStepNext = findViewById(R.id.btnStepNext)
         pager = findViewById(R.id.designPager)
         stageBox = findViewById(R.id.previewStage)
+        // Off the stage until its picture is drawn and its hero has a frame (maybeShowLive).
+        frame.visibility = View.INVISIBLE
         frame.post { placeHero() }
         // Whenever the poster's size changes (a step, the fit to the screen), the 3D
         // view is laid over the hero's place again, at the size the poster really has.
@@ -245,10 +271,12 @@ class PosterActivity : BaseActivity() {
         buildSendAs()
 
         etTitle.doAfterTextChanged {
-            if (!filling) { save(KEY_TITLE, it?.toString(), occasion.titleIn(posterContext(), tradeKey())); render() }
+            if (!filling) { save(KEY_TITLE, it?.toString(), occasion.titleIn(posterContext(), tradeKey())); pagesDirty = true; render() }
             if (!it.isNullOrBlank()) findViewById<TextInputLayout>(R.id.tilTitle).error = null
         }
-        etMessage.doAfterTextChanged { if (!filling) { save(KEY_MSG, it?.toString(), occasion.messageIn(posterContext(), tradeKey())); render() } }
+        etMessage.doAfterTextChanged {
+            if (!filling) { save(KEY_MSG, it?.toString(), occasion.messageIn(posterContext(), tradeKey())); pagesDirty = true; render() }
+        }
         buildShopName()
         buildSteps()
         findViewById<View>(R.id.btnTitleOriginal).setOnClickListener {
@@ -270,9 +298,12 @@ class PosterActivity : BaseActivity() {
         lifecycleScope.launch {
             logo = withContext(Dispatchers.IO) { BusinessProfile.loadLogo(this@PosterActivity) }
             photo = withContext(Dispatchers.IO) { loadPhoto() }
+            withContext(Dispatchers.IO) { sweepShots() }
+            logoMark = markOf(logo)
+            profileMark = profileNow()
+            loaded = true
             updateHero()
-            render()
-            renderThumbs()
+            refreshPictures()
         }
     }
 
@@ -283,9 +314,15 @@ class PosterActivity : BaseActivity() {
         if (shown != null) {
             lifecycleScope.launch {
                 logo = withContext(Dispatchers.IO) { BusinessProfile.loadLogo(this@PosterActivity) }
+                logoMark = markOf(logo)
                 buildShowGrid()
                 updateHero()
-                render()
+                // The pages and the small pictures show the profile too: drawn again only when it changed.
+                val now = profileNow()
+                if (now != profileMark) {
+                    profileMark = now
+                    if (step == 1) refreshPictures() else pagesDirty = true
+                }
             }
         }
     }
@@ -375,7 +412,7 @@ class PosterActivity : BaseActivity() {
         buildStockFields()
         updateHero()
         fill()
-        renderThumbs()
+        refreshPictures()
     }
 
     // ------------------------------------------------------------------ designs
@@ -439,15 +476,26 @@ class PosterActivity : BaseActivity() {
 
     /** Take the live layer off the stage; the leaving design's page shows it as it last looked. */
     private fun hideLive() {
-        if (frame.visibility == View.VISIBLE) {
+        if (liveUp) {
             snapshotLive()?.let { shot ->
+                // A page that still shows an older one goes back to its own picture.
+                leaving?.first?.takeIf { it != occasion }?.let { notifyPage(PosterOccasion.values().indexOf(it)) }
                 // Not recycled: a page may still be showing the last one; it is let go to the collector.
                 leaving = occasion to shot
                 notifyPage(PosterOccasion.values().indexOf(occasion))
             }
         }
+        cancelReveal()
+        liveUp = false
+        frame.animate().cancel()
         frame.visibility = View.INVISIBLE
         liveDrawn = false
+    }
+
+    /** A wait for the hero's first frame is over: the design or its hero changed under it. */
+    private fun cancelReveal() {
+        revealing = false
+        revealTurn++
     }
 
     /** The live poster now, hero and all, at the stage's size. */
@@ -465,22 +513,44 @@ class PosterActivity : BaseActivity() {
         return out
     }
 
-    /** Show the live layer once its picture is drawn and, on Design, the pages are at rest on it. */
+    /**
+     * Show the live layer once its picture is drawn, on Design the pages are at rest on it, and its 3D hero has
+     * drawn a frame at the size it now has. Until then the layer is laid out and drawn unseen (alpha 0), which is
+     * what gives the 3D view its surface; the page under it already shows the same picture, hero and all
+     * ([heroShot]), so the layer coming up changes nothing the eye can see. Shown on a guess of "two frames on",
+     * the layer stood for a moment with a hole where the hero is, or with the last design's hero.
+     */
     private fun maybeShowLive() {
-        if (!liveDrawn) return
+        if (!liveDrawn || liveUp || revealing) return
         if (step == 1 && (!pagerIdle || pager.currentItem != PosterOccasion.values().indexOf(occasion))) return
-        if (frame.visibility == View.VISIBLE) return
-        // Two frames on, so a new 3D hero has drawn into its view before it is seen.
+        revealing = true
+        val turn = ++revealTurn
+        frame.animate().cancel()
+        frame.alpha = 0f
+        frame.visibility = View.VISIBLE
+        val up = Runnable {
+            if (turn != revealTurn || !revealing) return@Runnable
+            revealing = false
+            liveUp = true
+            frame.animate().alpha(1f).setDuration(120).withEndAction {
+                val gone = leaving?.first ?: return@withEndAction
+                leaving = null
+                notifyPage(PosterOccasion.values().indexOf(gone))
+            }.start()
+        }
+        // Two frames on: the poster has its size and the 3D view has been told of it.
         frame.postOnAnimation {
             frame.postOnAnimation {
-                if (!liveDrawn) return@postOnAnimation
-                frame.alpha = 0f
-                frame.visibility = View.VISIBLE
-                frame.animate().alpha(1f).setDuration(120).withEndAction {
-                    val gone = leaving?.first ?: return@withEndAction
-                    leaving = null
-                    notifyPage(PosterOccasion.values().indexOf(gone))
-                }.start()
+                if (turn != revealTurn) return@postOnAnimation
+                val st = stage
+                if (st == null || st.liveFrameUp) {
+                    up.run()
+                } else {
+                    // The hero's frame is in its view one screen frame after the stage drew it.
+                    st.onLiveFrame = { frame.postOnAnimation { frame.postOnAnimation(up) } }
+                    // A GPU that never draws must not keep the poster off the stage.
+                    frame.postDelayed(up, HERO_WAIT_MS)
+                }
             }
         }
     }
@@ -505,14 +575,15 @@ class PosterActivity : BaseActivity() {
 
     /** A finished still of one design at the stage's size, drawn once and kept for a while. */
     private fun requestPage(o: PosterOccasion) {
-        if (pageW <= 0 || pages.get(o) != null || pageJobs[o]?.isActive == true) return
+        if (!loaded || pageW <= 0 || pages.get(o) != null || pageJobs[o]?.isActive == true) return
         val ctx = posterContext()
         val w = pageW
         val h = pageH
         val inp = pageInput(ctx, o)
         pageJobs[o] = lifecycleScope.launch {
+            val hero = heroShot(o)
             val bmp = withContext(Dispatchers.Default) {
-                val (full, _) = PosterImage.draw(ctx, inp)
+                val (full, _) = PosterImage.draw(ctx, if (hero != null) inp.copy(hero = hero) else inp)
                 Bitmap.createScaledBitmap(full, w, h, true).also { if (it !== full) full.recycle() }
             }
             if (w != pageW || h != pageH) { bmp.recycle(); return@launch }
@@ -521,18 +592,24 @@ class PosterActivity : BaseActivity() {
         }
     }
 
-    /** What a page shows: the owner's own wording on the chosen design, each design's own on the rest. */
+    /**
+     * What a design's page and small picture show: exactly what its live poster will show once it is chosen: the
+     * owner's own wording where he changed it, the design's own where he did not, the shop's lines as ticked, his
+     * photo on New stock. (The rest of the pages once showed each design's own words whatever the owner had
+     * written, so a design changed as it was chosen.) The 3D hero is added by the caller ([heroShot]).
+     */
     private fun pageInput(ctx: Context, o: PosterOccasion): PosterImage.Input =
         if (o == occasion) input(animated = false, placeholder = true).copy(heroOverlay = false)
         else PosterImage.Input(o,
-            if (o.hasWords) o.titleIn(ctx, tradeKey()) else ctx.getString(R.string.poster_custom_title_hint),
-            if (o.hasWords) o.messageIn(ctx, tradeKey()) else ctx.getString(R.string.poster_custom_msg_hint),
+            words(KEY_TITLE, o, ctx).trim().ifEmpty { if (o == PosterOccasion.CUSTOM) ctx.getString(R.string.poster_custom_title_hint) else "" },
+            words(KEY_MSG, o, ctx).trim().ifEmpty { if (o == PosterOccasion.CUSTOM) ctx.getString(R.string.poster_custom_msg_hint) else "" },
             nameShown(),
             if (fields.showPhone) BusinessProfile.businessPhone(this)?.trim() else null,
             if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
             if (fields.showLogo) logo else null,
             if (fields.showMark && Branding.ON_POSTERS_AND_CARDS) ctx.getString(R.string.made_with_app) else null,
             fields = fields,
+            photo = if (usingPhoto(o)) photo else null,
             email = if (fields.showEmail) BusinessProfile.businessEmail(this)?.trim() else null,
             whatsapp = fields.onWhatsapp)
 
@@ -542,6 +619,12 @@ class PosterActivity : BaseActivity() {
         pageJobs.clear()
         pages.evictAll()
         pager.post { pageAdapter.notifyDataSetChanged() }
+    }
+
+    /** The pages and the small pictures are one picture of each design: both are drawn again together. */
+    private fun refreshPictures() {
+        refreshPages()
+        renderThumbs()
     }
 
     /**
@@ -602,24 +685,27 @@ class PosterActivity : BaseActivity() {
         chooseDesign(all[(all.indexOf(occasion) + by + all.size) % all.size])
     }
 
-    /** Small pictures of every design, drawn as the real poster (flat heroes), in the poster's language. */
+    /**
+     * Small pictures of every design: the design's own page ([pageInput]) made small, with the same 3D hero
+     * ([heroShot]). They were drawn with the flat stand-in while the big picture showed the 3D hero, so one design
+     * was two pictures on one screen (the owner, 19 Nov 2026). A design with a 3D hero gets its small picture once
+     * the hero's is taken (kept on the phone after the first time), never the flat one first; the chosen design
+     * comes first.
+     */
     private fun renderThumbs() {
         thumbsJob?.cancel()
-        refreshPages()
+        if (!loaded) return
         val ctx = posterContext()
         val w = (88 * resources.displayMetrics.density).toInt().coerceAtLeast(60)
         val h = w * PosterImage.HEIGHT / PosterImage.WIDTH
-        val name = nameShown()
-        val phone = BusinessProfile.businessPhone(this)?.trim()
-        val lg = logo
-        val trade = tradeKey()
+        // The chosen design first, then those with no 3D hero (drawn at once), then the rest as their heroes come.
+        val order = listOf(occasion) + PosterOccasion.values().filter { it != occasion }.sortedBy { PosterDesigns.hero(it) != null }
         thumbsJob = lifecycleScope.launch {
-            for (o in PosterOccasion.values()) {
+            for (o in order) {
+                val inp = pageInput(ctx, o)
+                val hero = heroShot(o)
                 val small = withContext(Dispatchers.Default) {
-                    val title = if (o.hasWords) o.titleIn(ctx, trade) else ctx.getString(R.string.poster_custom)
-                    val message = if (o.hasWords) o.messageIn(ctx, trade) else ""
-                    val (full, _) = PosterImage.draw(ctx, PosterImage.Input(o, title, message, name, phone, null, lg, null,
-                        fields = fields, whatsapp = fields.onWhatsapp))
+                    val (full, _) = PosterImage.draw(ctx, if (hero != null) inp.copy(hero = hero) else inp)
                     Bitmap.createScaledBitmap(full, w, h, true).also { full.recycle() }
                 }
                 // The old picture is never recycled, only let go to the collector: a design page still
@@ -998,7 +1084,13 @@ class PosterActivity : BaseActivity() {
             if (pager.currentItem != i) pager.setCurrentItem(i, false)
         } else {
             frame.setOnClickListener { showFull() }
-            if (liveDrawn) { frame.visibility = View.VISIBLE; frame.alpha = 1f }
+            if (liveDrawn) {
+                cancelReveal()
+                frame.animate().cancel()
+                frame.visibility = View.VISIBLE
+                frame.alpha = 1f
+                liveUp = true
+            }
         }
         previewHost.background = if (step == 2) getDrawable(R.drawable.bg_profile_card) else null
         val pad = if (step == 2) dp(10) else 0
@@ -1014,9 +1106,12 @@ class PosterActivity : BaseActivity() {
 
     private fun setPageSize(heightPx: Int) {
         val pw = heightPx * 9 / 16
-        if (pw != pageW || heightPx != pageH || (step == 1 && pagesDirty)) {
+        val stale = step == 1 && pagesDirty
+        if (pw != pageW || heightPx != pageH || stale) {
             pageW = pw; pageH = heightPx; pagesDirty = false
             refreshPages()
+            // What changed on the other steps (a tick, the words, the name) shows in the small pictures too.
+            if (stale) renderThumbs()
         }
     }
 
@@ -1358,18 +1453,23 @@ class PosterActivity : BaseActivity() {
 
     // ------------------------------------------------------------------ wording
 
-    private fun key(kind: String) = "${kind}${occasion.key}_${lang}_$shopKey"
+    private fun key(kind: String, o: PosterOccasion = occasion) = "${kind}${o.key}_${lang}_$shopKey"
     /** Before the poster had its own language (11 Oct) the wording was kept per design only. */
-    private fun oldKey(kind: String) = "${kind}${occasion.key}_$shopKey"
+    private fun oldKey(kind: String, o: PosterOccasion = occasion) = "${kind}${o.key}_$shopKey"
+
+    /** A design's heading ([KEY_TITLE]) or line ([KEY_MSG]): the owner's if he changed it, else the design's own in the poster's language. */
+    private fun words(kind: String, o: PosterOccasion, ctx: Context): String {
+        val stored = prefs.getString(key(kind, o), null)
+            ?: if (lang == defaultLanguage()) prefs.getString(oldKey(kind, o), null) else null
+        return stored ?: if (kind == KEY_TITLE) o.titleIn(ctx, tradeKey()) else o.messageIn(ctx, tradeKey())
+    }
 
     /** The owner's wording if he changed it, else the design's own in the poster's language. */
     private fun fill() {
         filling = true
         val ctx = posterContext()
-        val appLang = lang == defaultLanguage()
-        fun stored(kind: String) = prefs.getString(key(kind), null) ?: if (appLang) prefs.getString(oldKey(kind), null) else null
-        etTitle.setText(stored(KEY_TITLE) ?: occasion.titleIn(ctx, tradeKey()))
-        etMessage.setText(stored(KEY_MSG) ?: occasion.messageIn(ctx, tradeKey()))
+        etTitle.setText(words(KEY_TITLE, occasion, ctx))
+        etMessage.setText(words(KEY_MSG, occasion, ctx))
         val rtl = PosterKit.urduScript(Locale.forLanguageTag(lang)) || Locale.forLanguageTag(lang).language in listOf("ar", "fa", "sd")
         val dir = if (rtl) View.TEXT_DIRECTION_RTL else View.TEXT_DIRECTION_LTR
         etTitle.textDirection = dir
@@ -1392,7 +1492,7 @@ class PosterActivity : BaseActivity() {
     /** In a preview a shop with no name yet shows where its name will stand; a poster is never sent without one. */
     private fun nameShown(): String = shopName().ifBlank { posterContext().getString(R.string.shop_name_field) }
 
-    private fun usingPhoto() = occasion == PosterOccasion.NEW_STOCK && fields.usePhoto && photo != null
+    private fun usingPhoto(o: PosterOccasion = occasion) = o == PosterOccasion.NEW_STOCK && fields.usePhoto && photo != null
 
     /** [animated]: the moving layer (preview, video) draws the confetti, flag and fireworks; a still picture has them drawn in. */
     private fun input(animated: Boolean = true, placeholder: Boolean = true) = PosterImage.Input(
@@ -1419,15 +1519,48 @@ class PosterActivity : BaseActivity() {
 
     // ------------------------------------------------------------------ 3D hero
 
-    /** Lay the 3D view over the hero's place on the picture, at the frame's scale. */
+    /**
+     * Lay the 3D view over the hero's place on the picture, at the frame's scale. By the picture's own left
+     * ([PlaceAt]): hung from the frame's start, the view stood its own left margin too far to the right in an Urdu
+     * window: the clock, the mosque and the crate beside their place (the owner's phone, 19 Nov 2026).
+     */
     private fun placeHero() {
         val s = frame.width / PosterImage.WIDTH.toFloat()
         if (s <= 0f) return
         val hero = stageHero ?: return
         val r = heroPlace ?: hero.rect
-        heroView.layoutParams = FrameLayout.LayoutParams((r.width() * s).toInt(), (r.height() * s).toInt()).apply {
-            leftMargin = (r.left * s).toInt()
-            topMargin = (r.top * s).toInt()
+        heroView.layoutParams = PlaceAt.params((r.left * s).toInt(), (r.top * s).toInt(), (r.width() * s).toInt(), (r.height() * s).toInt())
+    }
+
+    /**
+     * A design's 3D hero and what its look depends on (the key); null where the design is drawn flat: no hero of
+     * its own, a phone without 3D, New stock with the owner's photo. The seal carries the shop's name and logo,
+     * the coin the percent in the poster's language, the crate the trade's emblem.
+     */
+    private fun heroOf(o: PosterOccasion): Pair<Hero, String>? {
+        val hero = PosterDesigns.hero(o) ?: return null
+        if (usingPhoto(o) || !Studio.available(this)) return null
+        val key = when (hero) {
+            Hero.THANKS -> "${hero.name}|${shopName()}|${if (fields.showLogo) logoMark else "-"}"
+            Hero.OFFER -> "${hero.name}|${fields.offerPercent}|$lang"
+            Hero.CRATE -> "${hero.name}|${tradeKey()}"
+            else -> hero.name
+        }
+        return hero to key
+    }
+
+    /** A stage for [hero] wearing what this shop's poster puts on it. */
+    private fun newStage(hero: Hero): HeroStage {
+        val face = when {
+            hero.face == null -> null
+            hero == Hero.OFFER -> CoinFace.draw(posterContext(), fields.offerPercent)
+            hero == Hero.CRATE -> CrateFace.draw(tradeKey())
+            else -> SealFace.draw(this, shopName(), if (fields.showLogo) logo else null)
+        }
+        return try {
+            HeroStage(this, hero, face = face)
+        } finally {
+            face?.recycle()
         }
     }
 
@@ -1438,33 +1571,21 @@ class PosterActivity : BaseActivity() {
      * logo, or the name in the poster's language).
      */
     private fun updateHero() {
-        val hero = PosterDesigns.hero(occasion)?.takeIf { !usingPhoto() && Studio.available(this) }
-        val markLogo = if (fields.showLogo) logo else null
-        val wantKey = hero?.let {
-            when (it) {
-                Hero.THANKS -> "${it.name}|${shopName()}|${markLogo != null}"
-                Hero.OFFER -> "${it.name}|${fields.offerPercent}|$lang"
-                Hero.CRATE -> "${it.name}|${tradeKey()}"
-                else -> it.name
-            }
-        }
+        val want = heroOf(occasion)
+        val hero = want?.first
+        val wantKey = want?.second
         if (stage != null && stageKey != wantKey) {
             stage?.destroy()
             stage = null
             stageHero = null
             stageKey = null
             heroPlace = null
+            // A wait for the old hero's frame would never end: the new one is waited for afresh.
+            if (revealing) cancelReveal()
         }
         if (hero != null && stage == null) {
             stage = try {
-                val face = when {
-                    hero.face == null -> null
-                    hero == Hero.OFFER -> CoinFace.draw(posterContext(), fields.offerPercent)
-                    hero == Hero.CRATE -> CrateFace.draw(tradeKey())
-                    else -> SealFace.draw(this, shopName(), markLogo)
-                }
-                HeroStage(this, hero, face = face).also {
-                    face?.recycle()
+                newStage(hero).also {
                     stageHero = hero
                     stageKey = wantKey
                     if (isStarted) it.attach(heroView)
@@ -1478,6 +1599,131 @@ class PosterActivity : BaseActivity() {
         render()
     }
 
+    // ------------------------------------------------------------------ the hero as a picture
+
+    /**
+     * The design's 3D hero as its live view first shows it, for the design's page and its small picture, so that a
+     * design is ONE picture wherever the screen shows it. Before, the pages and the small pictures were drawn with
+     * the flat stand-in and only the live layer had the 3D hero: the strip showed one mosque and the big picture
+     * another, and choosing a design showed the flat one first and then changed to the 3D one (the owner, 19 Nov
+     * 2026).
+     *
+     * Taken once on a stage of its own (never the live one, which a change of design may end under it), one at a
+     * time, and kept in the app's cache folder for the next time the screen opens. A clock's picture changes with
+     * the hour, so it is not kept on disk and is taken again after [CLOCK_SHOT_MS]. Null where the design is flat
+     * on this phone, or the GPU would not give the picture: the flat hero is drawn then, as before.
+     * Never recycled: pages and small pictures are drawn from it (BC-235).
+     */
+    private suspend fun heroShot(o: PosterOccasion): Bitmap? {
+        val (hero, key) = heroOf(o) ?: return null
+        val moving = HeroStage.moves(this)
+        val clock = hero.tellsTime && moving
+        fun kept(): Bitmap? = heroShots[key]
+            ?.takeIf { !clock || android.os.SystemClock.elapsedRealtime() - it.at < CLOCK_SHOT_MS }?.picture
+        val have = kept()
+        if (have != null) return have
+        if (shotsOff) return null
+        return shotLock.withLock {
+            val since = kept()
+            if (since != null) return@withLock since
+            if (shotsOff) return@withLock null
+            val scale = shotScale()
+            val w = (hero.rect.width() * scale).toInt().coerceAtLeast(2)
+            val h = (hero.rect.height() * scale).toInt().coerceAtLeast(2)
+            val file = if (clock) null else shotFile(key, moving, w, h)
+            var picture: Bitmap? = file?.let { f ->
+                withContext(Dispatchers.IO) { try { if (f.exists()) BitmapFactory.decodeFile(f.path) else null } catch (e: Exception) { null } }
+            }
+            if (picture == null) {
+                var temp: HeroStage? = null
+                picture = try {
+                    val made = newStage(hero)
+                    temp = made
+                    made.asLive(w, h)
+                } catch (e: kotlinx.coroutines.CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    // One refusal may have cost the GPU's whole wait: the rest are not asked, so no design waits for it.
+                    android.util.Log.w("Poster3D", "No picture of ${hero.name}; the designs are drawn flat", e)
+                    shotsOff = true
+                    null
+                } finally {
+                    temp?.destroy()
+                }
+                val taken = picture
+                if (taken != null && file != null) withContext(Dispatchers.IO) {
+                    try {
+                        FileOutputStream(file).use { taken.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                    } catch (e: Exception) {
+                        file.delete()
+                    }
+                    Unit
+                }
+            }
+            picture?.also { heroShots[key] = Shot(it, android.os.SystemClock.elapsedRealtime()) }
+        }
+    }
+
+    /** The size a hero's picture is taken at: the largest the Design step shows the poster (460 dp tall). */
+    private fun shotScale(): Float = (dp(460) * 9f / 16f / PosterImage.WIDTH).coerceIn(0.35f, 1f)
+
+    private fun shotDir() = File(cacheDir, "posters/hero")
+
+    /** Where a hero's picture is kept: by this build (a new build may draw it differently), its key and its size. */
+    private fun shotFile(key: String, moving: Boolean, w: Int, h: Int): File {
+        val id = java.security.MessageDigest.getInstance("SHA-1").digest("$key|$moving|${w}x$h".toByteArray())
+            .joinToString("") { Integer.toHexString((it.toInt() and 0xff) + 0x100).substring(1) }.take(24)
+        return File(shotDir().apply { mkdirs() }, "v${BuildConfig.VERSION_CODE}_$id.png")
+    }
+
+    /** Pictures an older build kept are let go, and all but the newest [SHOTS_KEPT] of this one's. */
+    private fun sweepShots() {
+        try {
+            val all = shotDir().listFiles() ?: return
+            val (mine, old) = all.partition { it.name.startsWith("v${BuildConfig.VERSION_CODE}_") }
+            old.forEach { it.delete() }
+            mine.sortedByDescending { it.lastModified() }.drop(SHOTS_KEPT).forEach { it.delete() }
+        } catch (e: Exception) {
+            // The cache is a convenience: the pictures are taken again.
+        }
+    }
+
+    /** A logo by its look (its size and 64 of its pixels): another logo is another seal, here and in the kept pictures. */
+    private fun markOf(b: Bitmap?): String {
+        if (b == null || b.isRecycled || b.width < 1 || b.height < 1) return "-"
+        var h = 17
+        try {
+            for (i in 0 until 8) for (j in 0 until 8) {
+                h = h * 31 + b.getPixel((b.width * (2 * i + 1) / 16).coerceAtMost(b.width - 1), (b.height * (2 * j + 1) / 16).coerceAtMost(b.height - 1))
+            }
+        } catch (e: Exception) {
+            // A bitmap kept on the GPU gives no pixels: its size alone names it.
+        }
+        return "${b.width}x${b.height}:$h"
+    }
+
+    /** What of the shop's profile a poster shows, as one text: a change of it means the pictures are drawn again. */
+    private fun profileNow(): String = listOf(
+        BusinessProfile.businessName(this), BusinessProfile.businessNameUrdu(this), BusinessProfile.businessPhone(this),
+        BusinessProfile.businessAddress(this), BusinessProfile.businessEmail(this), logoMark
+    ).joinToString("\u0001") { it.orEmpty() }
+
+    /**
+     * For the on-device proof (PosterScreenProofTest): the chosen design's page and small picture as the screen now
+     * holds them, the same poster drawn with the FLAT hero at the page's size, and where the hero is on the picture.
+     */
+    @androidx.annotation.VisibleForTesting
+    internal fun proof(): Proof {
+        val page = pages.get(occasion)
+        val flat = if (pageW > 0 && pageH > 0) {
+            val (full, _) = PosterImage.draw(posterContext(), pageInput(posterContext(), occasion))
+            Bitmap.createScaledBitmap(full, pageW, pageH, true)
+        } else null
+        return Proof(page, thumbs[occasion], flat, heroPlace ?: stageHero?.rect, liveUp)
+    }
+
+    internal class Proof(val page: Bitmap?, val thumb: Bitmap?, val flat: Bitmap?, val hero: android.graphics.RectF?, val liveUp: Boolean)
+
     // ------------------------------------------------------------------ picture
 
     /** Redraw after the owner stops typing; the old picture is let go only once the new one is up. */
@@ -1486,7 +1732,7 @@ class PosterActivity : BaseActivity() {
         val inp = input()
         val ctx = posterContext()
         // While the owner types, wait for a pause; a new design is drawn at once.
-        val wait = if (frame.visibility == View.VISIBLE) 150L else 0L
+        val wait = if (liveUp) 150L else 0L
         renderJob = lifecycleScope.launch {
             delay(wait)
             val (bmp, fit) = withContext(Dispatchers.Default) { PosterImage.draw(ctx, inp) }
@@ -1699,6 +1945,12 @@ class PosterActivity : BaseActivity() {
         private const val KEY_VIDEO = "as_video"
         /** Long enough for every motion to show (the slowest sway is 11 s; most loop in 3-8). */
         const val VIDEO_SECONDS = 8f
+        /** How long the live layer waits for its 3D hero's first frame before it shows without it. */
+        private const val HERO_WAIT_MS = 1500L
+        /** A clock's picture is taken again once it is this old: the hour hand has not moved to the eye. */
+        private const val CLOCK_SHOT_MS = 5 * 60_000L
+        /** Hero pictures kept on the phone: 8 heroes, the coin at a few percents, the seal after a few names. */
+        private const val SHOTS_KEPT = 40
         private val OFFER_STEPS = listOf(5, 10, 15, 20, 25, 30, 40, 50)
         private val OFFER_DAYS = listOf(1, 2, 3, 5, 7, 10, 15)
 

@@ -3013,6 +3013,21 @@ Each of these cost a build or a bug.
      dispatches`) shows the real Filament render and the video's frames (ffmpeg is here). The 3D gold was tuned that
      way in three runs, each looked at and measured (19 Nov 2026): a look is never tuned blind when CI can draw it.
 
+160. **A view laid over a picture is hung from LEFT by name, and a screen is looked at the way the owner reads it.**
+     A FrameLayout hangs a child with no gravity from its START: in an Urdu, Sindhi, Arabic or Farsi window that is
+     the right edge, and `leftMargin` is then never read. The posters' live 3D hero stood its own left margin to the
+     right of its place on the owner's Urdu phone (19 Nov 2026: the clock 88 px off on a 500 px poster), and the
+     statement's stamp was placed the same way. Every proof until then drew the poster's PICTURE (`PosterImage.draw`)
+     or an English screen; none went through the screen's own live layer in Urdu. `PlaceAt.params` names the side, a
+     repo guard refuses a `leftMargin` anywhere else, and the screen proof now runs in Urdu and measures the view.
+     (Lesson 110 was the same class for a view moved with `setX`.)
+
+161. **One thing on a screen is drawn from one source.** The poster's design was drawn three ways: the page, the
+     small picture and the live layer each built their own input, and only the live one had the 3D hero and the
+     owner's words, so the strip showed one mosque and the big picture another and a chosen design changed under the
+     eye. Every place that shows a design now takes `pageInput` and `heroShot`; a layer that comes up over another
+     waits for its content's first real frame (`HeroStage.liveFrameUp`), never for a guessed number of frames.
+
 ---
 
 ## Working with the owner
@@ -4620,3 +4635,33 @@ shop shows no number and no address on the poster. Importance 6 (what customers 
 - **To say plainly at the end of the round:** the Sindhi, Bengali and Farsi wording, and the faith and story texts (a qualified Hanafi
   scholar — not a mufti's work here), are not native or scholar reads yet; nothing was tried on a real phone; the final APK is one,
   after every fix.
+
+### 19 Nov 2026 (night): the poster screen in Urdu: the hero in its place, one picture of a design (phone; CI only, nothing tried on a real phone)
+
+The owner's photos of the final APK: the clock, the mosque and the crate stood to the right of their place, the small
+picture showed another drawing than the big one, and a chosen design showed one picture and then "blinked" into another.
+Importance 6. Phone only: the computer draws the heroes flat everywhere, so it shows one picture already.
+
+- **The hero's place (BC-237, lesson 160):** `PosterActivity.placeHero` and `StampMoment` place their views through
+  `PlaceAt.params` (LEFT | TOP). The fault was older than the 19 Nov poster work: it showed on any hero narrower than
+  the poster, in any right-to-left app language, since the 3D heroes came.
+- **One picture (BC-238, lesson 161):** `heroShot(o)` takes each design's 3D hero once on a stage of its own
+  (`HeroStage.asLive`: the pose the live view starts in, a clock at the phone's time; the resting pose with animations
+  off), one at a time, and keeps it in `cacheDir/posters/hero` by build, key and size (40 at most; a clock's is never
+  kept on disk and is taken again after 5 minutes). Pages and small pictures are both `pageInput` + that picture;
+  `pageInput` gives every design the owner's own stored words and, on New stock, his photo. A design with a 3D hero
+  gets its small picture when the hero's is ready, never the flat one first. If the GPU refuses one picture the designs
+  are drawn flat while the screen is open (`shotsOff`).
+- **No blink:** the live layer is laid out unseen (alpha 0) and shown once `HeroStage.liveFrameUp` (a frame at the
+  view's present size), or after 1.5 s; the page under it is already the same picture. `liveUp` / `revealing` replace
+  reading the frame's visibility.
+- **Kept fresh:** words typed, a tick, the shop's name or a changed profile (`profileNow`) mark the pages stale; the
+  small pictures are drawn again with them on Design. The seal's key carries the logo's look (`markOf`), so another
+  logo is another seal.
+- **Tests:** PlaceAtTest (Robolectric: both directions, and the class itself: a bare left margin lands at the right
+  edge); `check_repo_guards.py::left_margins_name_their_side` (broken once on purpose);
+  `PosterScreenProofTest.a_design_is_one_picture_in_its_place_in_urdu_too` (English and Urdu, four designs: the hero's
+  view on its rectangle, the page not the flat drawing, the small picture nearer the page than the flat one; its
+  screenshots go to the poster-proof release).
+- **Not done:** the live clock's second hand still differs from its page by what the clock has ticked; a real phone.
+

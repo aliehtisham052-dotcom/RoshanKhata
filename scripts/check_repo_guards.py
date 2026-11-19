@@ -13,6 +13,12 @@
       view still draws ends the app ("Canvas: trying to use a recycled bitmap", Play, 4 Nov 2026,
       the poster's design pager). Let it go to the collector. By name only: an alias (old = shown)
       is not followed, so the rule is also written beside each such place.
+  left_margins_name_their_side (BC-237): a view laid over a picture by the picture's own left is
+      placed through ui/PlaceAt.params, which hangs it from LEFT | TOP. A FrameLayout hangs a child
+      with no gravity from its START, the right edge in an Urdu, Sindhi, Arabic or Farsi window, and
+      then never reads leftMargin: the posters' live 3D hero stood beside its place on the owner's
+      Urdu phone (19 Nov 2026). No other file of the app sets leftMargin (or rightMargin) in code;
+      a start or end margin, which turns with the language on purpose, is not a left margin.
   csv_reads_are_decoded (BC-225): every CsvImport.parse / ProductCsv.parse in the app and the
       computer reads text that CsvImport.decode made from the file's bytes (UTF-16 by its mark,
       UTF-8, else Windows-1252: Excel's "CSV (Comma delimited)"), never readText() or a reader
@@ -106,15 +112,38 @@ def shown_bitmaps_never_recycled(root=ROOT):
     return faults
 
 
+SIDE_MARGIN = re.compile(r"\b(leftMargin|rightMargin)\s*=[^=]")
+PLACE_AT = "app/src/main/java/com/innovation313/roshankhata/ui/PlaceAt.kt"
+
+
+def left_margins_name_their_side(root=ROOT):
+    faults = []
+    for p in sorted((root / "app/src/main").rglob("*.kt")):
+        rel = str(p.relative_to(root))
+        if rel == PLACE_AT:
+            continue
+        for i, l in enumerate(p.read_text().splitlines()):
+            code = l.split("//")[0]
+            if code.lstrip().startswith("*"):
+                continue
+            m = SIDE_MARGIN.search(code)
+            if m:
+                faults.append("%s:%d sets %s in code: place the view with PlaceAt.params (hung from LEFT | TOP), "
+                              "or it stands beside its place in a right-to-left window" % (rel, i + 1, m.group(1)))
+    if not (root / PLACE_AT).exists() or "Gravity.LEFT" not in (root / PLACE_AT).read_text():
+        faults.append("%s must hang its view from Gravity.LEFT" % PLACE_AT)
+    return faults
+
+
 def main():
     faults = (publish_jobs_hold_no_secrets() + no_tracked_ignored_files() + csv_reads_are_decoded()
-              + shown_bitmaps_never_recycled())
+              + shown_bitmaps_never_recycled() + left_margins_name_their_side())
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
     print("repo guards: release jobs hold no secrets, nothing ignored is tracked, every CSV read is decoded, "
-          "no bitmap a view was given is recycled")
+          "no bitmap a view was given is recycled, every left margin names its side")
 
 
 if __name__ == "__main__":
