@@ -287,69 +287,89 @@ object PosterDesigns {
         vignette.shader = RadialGradient(540f, 770f, 1250f, intArrayOf(0x00000000, 0x00000000, 0xB3000000.toInt()),
             floatArrayOf(0f, 0.35f, 1f), Shader.TileMode.CLAMP)
         c.drawRect(0f, 0f, W, H, vignette)
+        // What the foot does not need, the sign and the panel take (PosterBody, 19 Nov 2026): with no number and no
+        // address the lowest third of the wall was bare.
+        val why = PosterWords.closedRows(page.context, page.fields)
+        val urgent = page.fields.urgentPhone && page.contact.any
+        val foot = PosterBody.foot(urgent, PosterKit.addressLines(page), page.mark != null, 1536f, 1790f)
+        val body = PosterBody.closed(if (urgent) foot.pillTop - 106f else foot.limit, why.size, sorry = true)
+        val hung = PosterKit.rect(body.sign)
         // The red light the sign throws on the wall.
-        PosterKit.halo(c, 540f, 590f, 620f, 0x3DFF4D5E)
+        PosterKit.halo(c, 540f, hung.centerY() - 1f, 620f * body.scale, 0x3DFF4D5E)
         PosterKit.header(page, top = 60f, sealSize = 96f, centred = true, nameColour = 0xFFF2EDE8.toInt(),
             inner = 0xFF3A2A28.toInt(), innerDark = 0xFF140E0E.toInt())
-        // The neon sign, hung on two short posts.
-        val sign = RectF(126f, 276f, W - 126f, 906f)
-        val post = Paint().apply { color = 0xFF555555.toInt() }
-        c.drawRect(180f, 258f, 189f, 288f, post); c.drawRect(W - 189f, 258f, W - 180f, 288f, post)
-        val tubeGlow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.STROKE; strokeWidth = 30f; color = 0x99FF4D5E.toInt()
-            maskFilter = com.innovation313.roshankhata.desktop.gfx.BlurMaskFilter(34f, com.innovation313.roshankhata.desktop.gfx.BlurMaskFilter.Blur.NORMAL)
-        }
-        c.drawRoundRect(sign, 90f, 90f, tubeGlow)
-        val inside = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x33FF4D5E }
-        c.drawRoundRect(sign, 90f, 90f, inside)
-        val tube = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 12f; color = NEON }
-        c.drawRoundRect(sign, 90f, 90f, tube)
-        tube.strokeWidth = 4f; tube.color = 0xFFFFC2C8.toInt()
-        c.drawRoundRect(sign, 90f, 90f, tube)
-        // The word in light: a red halo under a near-white core.
-        val word = str(page, R.string.poster_neon_closed)
-        val wp = if (PosterKit.hasArabic(word)) PosterKit.greetingPaint(page.context, word, 300f, 0xFFFFE3E6.toInt(), page.locale, page.urdu)
-            else com.innovation313.roshankhata.desktop.gfx.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-                typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
-                textSize = 170f; color = 0xFFFFE3E6.toInt(); letterSpacing = if (PosterKit.canTrack(word)) 0.12f else 0f
+        // The neon sign, hung on two short posts: drawn as designed, set where the plan hangs it.
+        val sign = PosterKit.rect(PosterBody.SIGN)
+        var tp: com.innovation313.roshankhata.desktop.gfx.TextPaint? = null
+        var tl: com.innovation313.roshankhata.desktop.gfx.StaticLayout? = null
+        PosterKit.within(c, sign, hung) {
+            val post = Paint().apply { color = 0xFF555555.toInt() }
+            c.drawRect(180f, 258f, 189f, 288f, post); c.drawRect(W - 189f, 258f, W - 180f, 288f, post)
+            val tubeGlow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                style = Paint.Style.STROKE; strokeWidth = 30f; color = 0x99FF4D5E.toInt()
+                maskFilter = com.innovation313.roshankhata.desktop.gfx.BlurMaskFilter(34f, com.innovation313.roshankhata.desktop.gfx.BlurMaskFilter.Blur.NORMAL)
             }
-        wp.textAlign = Paint.Align.CENTER
-        PosterKit.fitWidth(wp, word, sign.width() - 120f, 60f)
-        val wordY = if (PosterKit.hasArabic(word)) 548f else 560f
-        val halo = com.innovation313.roshankhata.desktop.gfx.TextPaint(wp).apply {
-            color = NEON; maskFilter = com.innovation313.roshankhata.desktop.gfx.BlurMaskFilter(26f, com.innovation313.roshankhata.desktop.gfx.BlurMaskFilter.Blur.NORMAL)
+            c.drawRoundRect(sign, 90f, 90f, tubeGlow)
+            val inside = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x33FF4D5E }
+            c.drawRoundRect(sign, 90f, 90f, inside)
+            val tube = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 12f; color = NEON }
+            c.drawRoundRect(sign, 90f, 90f, tube)
+            tube.strokeWidth = 4f; tube.color = 0xFFFFC2C8.toInt()
+            c.drawRoundRect(sign, 90f, 90f, tube)
+            // The word in light: a red halo under a near-white core.
+            val word = str(page, R.string.poster_neon_closed)
+            val wp = if (PosterKit.hasArabic(word)) PosterKit.greetingPaint(page.context, word, 300f, 0xFFFFE3E6.toInt(), page.locale, page.urdu)
+                else com.innovation313.roshankhata.desktop.gfx.TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                    typeface = Typeface.create(InvoiceFonts.sora(page.context), Typeface.BOLD)
+                    textSize = 170f; color = 0xFFFFE3E6.toInt(); letterSpacing = if (PosterKit.canTrack(word)) 0.12f else 0f
+                }
+            wp.textAlign = Paint.Align.CENTER
+            PosterKit.fitWidth(wp, word, sign.width() - 120f, 60f)
+            val wordY = if (PosterKit.hasArabic(word)) 548f else 560f
+            val halo = com.innovation313.roshankhata.desktop.gfx.TextPaint(wp).apply {
+                color = NEON; maskFilter = com.innovation313.roshankhata.desktop.gfx.BlurMaskFilter(26f, com.innovation313.roshankhata.desktop.gfx.BlurMaskFilter.Blur.NORMAL)
+            }
+            PosterKit.inkLine(c, word, halo, W / 2, wordY)
+            PosterKit.inkLine(c, word, wp, W / 2, wordY)
+            // The owner's big line under it, in warm light.
+            val title = page.title.ifBlank { " " }
+            val titlePaint = PosterKit.textPaint(page.context, title, if (page.urdu) 72f else 66f, 0xFFF7D58A.toInt(), true, page.locale, page.urdu)
+            titlePaint.setShadowLayer(18f, 0f, 0f, 0xCCF3A623.toInt())
+            val titleLayout = PosterKit.fitBlock(title, titlePaint, (sign.width() - 110f).toInt(), page.rtl, 2, 40f, 1.0f)
+            PosterKit.put(c, titleLayout, sign.left + 55f, 790f - titleLayout.height / 2f)
+            tp = titlePaint; tl = titleLayout
         }
-        PosterKit.inkLine(c, word, halo, W / 2, wordY)
-        PosterKit.inkLine(c, word, wp, W / 2, wordY)
-        // The owner's big line under it, in warm light.
-        val title = page.title.ifBlank { " " }
-        val tp = PosterKit.textPaint(page.context, title, if (page.urdu) 72f else 66f, 0xFFF7D58A.toInt(), true, page.locale, page.urdu)
-        tp.setShadowLayer(18f, 0f, 0f, 0xCCF3A623.toInt())
-        val tl = PosterKit.fitBlock(title, tp, (sign.width() - 110f).toInt(), page.rtl, 2, 40f, 1.0f)
-        PosterKit.put(c, tl, sign.left + 55f, 790f - tl.height / 2f)
-        val why = PosterWords.closedRows(page.context, page.fields)
-        val panel = if (why.isEmpty()) RectF(78f, 1008f, W - 78f, 1360f)
-            else RectF(78f, 1040f, W - 78f, 1040f + PosterKit.rowsHeight(why.size, false))
+        val panel = RectF(78f, body.panelTop, W - 78f, body.panelTop + body.panelHeight)
         PosterKit.glass(c, panel, fill = 0x14FFFFFF, edge = 0x33FFFFFF)
         // Why, and when it opens again, if the owner said; else his own line.
         val msg = if (why.isEmpty()) PosterKit.message(page, page.message, panel.centerY(), 0xFFF2EDE8.toInt(), if (page.urdu) 48f else 46f,
             lines = 3, width = (panel.width() - 108f).toInt()) else null
         val rowSize = PosterKit.rows(page, panel, why, label = 0xB3F2EDE8.toInt(), value = 0xFFF2EDE8.toInt(),
             rule = 0x1AFFFFFF)
-        val urgent = page.fields.urgentPhone && page.contact.any
+        if (body.sorryCy > 0f) {
+            // Room to spare under the panel: the line a closed shop owes its customers.
+            val sorry = str(page, R.string.poster_closed_sorry)
+            val sp = PosterKit.textPaint(page.context, sorry, if (page.urdu) 44f else 40f, 0xB3F2EDE8.toInt(), false, page.locale, page.urdu)
+            sp.textAlign = Paint.Align.CENTER
+            PosterKit.fitWidth(sp, sorry, 760f, 28f)
+            PosterKit.inkLine(c, sorry, sp, W / 2, body.sorryCy)
+            val half = sp.measureText(sorry) / 2f
+            val rule = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x40F2EDE8; strokeWidth = 3f; strokeCap = Paint.Cap.ROUND }
+            c.drawLine(W / 2 - half - 96f, body.sorryCy, W / 2 - half - 28f, body.sorryCy, rule)
+            c.drawLine(W / 2 + half + 28f, body.sorryCy, W / 2 + half + 96f, body.sorryCy, rule)
+        }
         if (urgent) {
             // "Call" only when there is a number to call; a WhatsApp number alone is asked for by message.
             val call = str(page, if (page.contact.has(PosterContact.Kind.CALL)) R.string.poster_call_urgent else R.string.poster_call_urgent_wa)
             val cp = PosterKit.textPaint(page.context, call, if (page.urdu) 38f else 36f, 0xB3F2EDE8.toInt(), false, page.locale, page.urdu)
             cp.textAlign = Paint.Align.CENTER
-            PosterKit.inkLine(c, call, cp, W / 2, 1470f)
+            PosterKit.inkLine(c, call, cp, W / 2, foot.pillTop - 66f)
         }
-        if (urgent) PosterKit.phonePill(page, RectF(102f, 1536f, W - 102f, 1716f), disc = 0xFF2A2120.toInt(), discDark = 0xFF120D0C.toInt())
-        PosterKit.address(page, 1790f, colour = 0xB3F2EDE8.toInt())
+        if (urgent) PosterKit.phonePill(page, RectF(102f, foot.pillTop, W - 102f, foot.pillTop + 180f), disc = 0xFF2A2120.toInt(), discDark = 0xFF120D0C.toInt())
+        PosterKit.address(page, foot.addressCy, colour = 0xB3F2EDE8.toInt())
         PosterKit.mark(page, 0x59F2EDE8)
-        val fit = PosterKit.Out(tp.textSize, tl.lineCount, msg?.paint?.textSize ?: rowSize, msg?.lineCount ?: why.size,
-            PosterMotion.Spec(neon = PosterMotion.Neon(sign, 90f, NEON)))
-        return fit
+        return PosterKit.Out(tp?.textSize ?: 0f, tl?.lineCount ?: 1, msg?.paint?.textSize ?: rowSize, msg?.lineCount ?: why.size,
+            PosterMotion.Spec(neon = PosterMotion.Neon(hung, 90f * body.scale, NEON)))
     }
 
     // ---------------------------------------------------------------- Hours
@@ -360,20 +380,23 @@ object PosterDesigns {
         // the Friday prayer break, the weekly holiday. The panel is as tall as they need,
         // centred in the space under the headline. Worked out first: the background's specks keep clear of it.
         val rows = PosterWords.hoursRows(page.context, page.fields)
-        val panelH = PosterKit.rowsHeight(rows.size, false).coerceAtMost(540f)
-        val panel = RectF(72f, 1191f - panelH / 2, W - 72f, 1191f + panelH / 2)
+        // What the foot does not need, the clock and the rows take (PosterBody, 19 Nov 2026).
+        val foot = PosterBody.foot(page.contact.any, PosterKit.addressLines(page), page.mark != null, 1494f, 1734f)
+        val body = PosterBody.hours(foot.slack, rows.size)
+        val clock = PosterKit.rect(body.clock)
+        val panel = RectF(72f, body.panelTop, W - 72f, body.panelTop + body.panelHeight)
         PosterNewStock.drawBackground(c, spotlight = false, keepClear = panel)
-        PosterKit.halo(c, 540f, 426f, 380f, 0x4DF3CF6A)
+        PosterKit.halo(c, 540f, clock.centerY(), 380f * body.scale, 0x4DF3CF6A)
         PosterKit.header(page, top = 54f, sealSize = 90f, centred = true)
-        page.drawHero(Hero.HOURS.rect) { fc -> PosterFlat.clock(fc, 540f, 426f, 240f) }
-        val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 120f else 112f, 64f, 812f, greeting = false)
+        page.drawHero(clock, Hero.HOURS.rect) { fc -> PosterFlat.clock(fc, 540f, 426f, 240f) }
+        val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 120f else 112f, 64f, body.headCy, greeting = false)
         PosterKit.glass(c, panel)
         val msgSize = PosterKit.rows(page, panel, rows)
-        PosterKit.phonePill(page, RectF(102f, 1494f, W - 102f, 1662f), size = 64f)
-        PosterKit.address(page, 1734f)
+        PosterKit.phonePill(page, RectF(102f, foot.pillTop, W - 102f, foot.pillTop + 168f), size = 64f)
+        PosterKit.address(page, foot.addressCy)
         PosterKit.mark(page)
         return PosterKit.Out(head.first.textSize, head.second.layout?.lineCount ?: 1, msgSize, rows.size,
-            PosterMotion.Spec(glint = head.second))
+            PosterMotion.Spec(glint = head.second), hero = clock)
     }
 
     // ---------------------------------------------------------------- Thank you
@@ -454,7 +477,39 @@ object PosterDesigns {
         // The heading is the shop's name alone (12 Oct, the owner: never a list of products).
         PosterKit.header(page, top = 66f, sealSize = 120f,
             inner = 0xFF2A4FC8.toInt(), innerDark = 0xFF0B1638.toInt())
-        val panel = RectF(66f, 372f, W - 66f, 1404f)
+        // The panel is as tall as its words ask and stands in the room the foot leaves (PosterBody, 19 Nov 2026): it was
+        // one fixed box, bare under a short line and far above an empty foot. So the words are set first.
+        val foot = PosterBody.foot(page.contact.any, PosterKit.addressLines(page), page.mark != null,
+            PosterBody.CUSTOM_PILL_TOP, PosterBody.CUSTOM_ADDRESS_CY)
+        val most = foot.limit - PosterBody.CUSTOM_TOP - PosterBody.CUSTOM_HEAD - PosterBody.CUSTOM_FOOT
+        val align = Layout.Alignment.ALIGN_NORMAL
+        val inner = (W - 132f - 120f).toInt()
+        val title = page.title.ifBlank { " " }
+        val tp = PosterKit.textPaint(page.context, title, if (page.urdu) 112f else 100f, 0xFFFFFFFF.toInt(), true, page.locale, page.urdu)
+        if (!page.urdu && !PosterKit.hasArabic(title)) tp.typeface = Typeface.create(InvoiceFonts.playfairDisplay(page.context), Typeface.BOLD)
+        tp.setShadowLayer(24f, 0f, 10f, 0x66000000)
+        val titleMost = minOf(560f, 0.62f * most)
+        var tl = PosterKit.block(title, tp, inner, page.rtl, if (page.urdu) 1.0f else 1.05f, align)
+        while ((tl.lineCount > 4 || tl.height > titleMost) && tp.textSize > 54f) {
+            tp.textSize -= 4f
+            tl = PosterKit.block(title, tp, inner, page.rtl, if (page.urdu) 1.0f else 1.05f, align)
+        }
+        tl = PosterKit.balanced(tl, title, tp, page.rtl, if (page.urdu) 1.0f else 1.05f, align)
+        var mp: com.innovation313.roshankhata.desktop.gfx.TextPaint? = null
+        var msgLayout: com.innovation313.roshankhata.desktop.gfx.StaticLayout? = null
+        if (page.message.isNotBlank()) {
+            val p = PosterKit.textPaint(page.context, page.message, if (page.urdu) 46f else 44f, 0xE6FFFFFF.toInt(), false, page.locale, page.urdu)
+            val room = most - tl.height - 70f
+            var ml = PosterKit.block(page.message, p, inner, page.rtl, if (page.urdu) 1.0f else 1.15f, align)
+            while (ml.height > room && p.textSize > 28f) {
+                p.textSize -= 2f
+                ml = PosterKit.block(page.message, p, inner, page.rtl, if (page.urdu) 1.0f else 1.15f, align)
+            }
+            mp = p; msgLayout = ml
+        }
+        val words = tl.height + 30f + (msgLayout?.let { 40f + it.height } ?: 9f)
+        val body = PosterBody.custom(foot.limit, words)
+        val panel = RectF(66f, body.panelTop, W - 66f, body.panelBottom)
         PosterKit.glass(c, panel, radius = 84f, fill = 0x29FFFFFF, edge = 0x40FFFFFF)
         // The "announcement" tag at the panel's top, reading side's end.
         val tag = str(page, R.string.poster_kicker_custom)
@@ -469,50 +524,34 @@ object PosterDesigns {
         tgp.textAlign = Paint.Align.CENTER
         PosterKit.inkLine(c, tag, tgp, tagR.centerX(), tagR.centerY())
         // The big line, white, set from the reading side.
-        val align = Layout.Alignment.ALIGN_NORMAL
-        val inner = (panel.width() - 120f).toInt()
-        val title = page.title.ifBlank { " " }
-        val tp = PosterKit.textPaint(page.context, title, if (page.urdu) 112f else 100f, 0xFFFFFFFF.toInt(), true, page.locale, page.urdu)
-        if (!page.urdu && !PosterKit.hasArabic(title)) tp.typeface = Typeface.create(InvoiceFonts.playfairDisplay(page.context), Typeface.BOLD)
-        tp.setShadowLayer(24f, 0f, 10f, 0x66000000)
-        var tl = PosterKit.block(title, tp, inner, page.rtl, if (page.urdu) 1.0f else 1.05f, align)
-        while ((tl.lineCount > 4 || tl.height > 560) && tp.textSize > 54f) {
-            tp.textSize -= 4f
-            tl = PosterKit.block(title, tp, inner, page.rtl, if (page.urdu) 1.0f else 1.05f, align)
-        }
-        val titleTop = panel.top + 170f
-        PosterKit.put(c, tl, panel.left + 60f, titleTop)
+        val titleTop = body.wordsTop
+        PosterKit.put(c, tl, if (page.rtl) panel.right - 60f - tl.width else panel.left + 60f, titleTop)
         val underY = titleTop + tl.height + 30f
         val under = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 9f; color = GOLD; strokeCap = Paint.Cap.ROUND }
         if (page.rtl) c.drawLine(panel.right - 60f - 150f, underY, panel.right - 60f, underY, under)
         else c.drawLine(panel.left + 60f, underY, panel.left + 210f, underY, under)
-        var msgLayout: com.innovation313.roshankhata.desktop.gfx.StaticLayout? = null
-        if (page.message.isNotBlank()) {
-            val mp = PosterKit.textPaint(page.context, page.message, if (page.urdu) 46f else 44f, 0xE6FFFFFF.toInt(), false, page.locale, page.urdu)
-            val room = panel.bottom - 50f - (underY + 40f)
-            var ml = PosterKit.block(page.message, mp, inner, page.rtl, if (page.urdu) 1.0f else 1.15f, align)
-            while (ml.height > room && mp.textSize > 28f) {
-                mp.textSize -= 2f
-                ml = PosterKit.block(page.message, mp, inner, page.rtl, if (page.urdu) 1.0f else 1.15f, align)
-            }
-            PosterKit.put(c, ml, panel.left + 60f, underY + 40f)
-            msgLayout = ml
-        }
-        val pill = RectF(102f, 1446f, W - 102f, 1614f)
+        msgLayout?.let { PosterKit.put(c, it, panel.left + 60f, underY + 40f) }
+        val pill = RectF(102f, foot.pillTop, W - 102f, foot.pillTop + 168f)
         PosterKit.phonePill(page, pill, disc = 0xFF16244F.toInt(), discDark = 0xFF0B1220.toInt(), size = 64f)
-        PosterKit.address(page, 1690f, colour = 0xD9FFFFFF.toInt())
+        PosterKit.address(page, foot.addressCy, colour = 0xD9FFFFFF.toInt())
         PosterKit.mark(page, 0x59FFFFFF)
-        return PosterKit.Out(tp.textSize, tl.lineCount, msgLayout?.paint?.textSize ?: 0f, msgLayout?.lineCount ?: 0,
+        return PosterKit.Out(tp.textSize, tl.lineCount, mp?.textSize ?: 0f, msgLayout?.lineCount ?: 0,
             PosterMotion.Spec(aurora = PosterMotion.Aurora(intArrayOf(0xFF5B83FF.toInt(), 0xFFF3CF6A.toInt(), 0xFF7A5BFF.toInt()),
-                listOf(panel, pill))))
+                if (page.contact.any) listOf(panel, pill) else listOf(panel))))
     }
 
     // ---------------------------------------------------------------- Offer
 
     private fun offer(page: Page): PosterKit.Out {
         val c = page.c
+        // What the foot does not need, the coin and the gaps take (PosterBody, 19 Nov 2026); the light and the rays
+        // come from the coin wherever it stands.
+        val foot = PosterBody.foot(page.contact.any, PosterKit.addressLines(page), page.mark != null, 1530f, 1784f)
+        val body = PosterBody.offer(foot.slack, page.fields.offerDays > 0)
+        val coin = PosterKit.rect(body.coin)
+        val sun = coin.centerY()
         val bg = Paint()
-        bg.shader = RadialGradient(540f, 790f, 1350f, intArrayOf(0xFFC62A2E.toInt(), 0xFF8E1B1B.toInt(), 0xFF4A0A0D.toInt()),
+        bg.shader = RadialGradient(540f, sun, 1350f, intArrayOf(0xFFC62A2E.toInt(), 0xFF8E1B1B.toInt(), 0xFF4A0A0D.toInt()),
             floatArrayOf(0f, 0.45f, 1f), Shader.TileMode.CLAMP)
         c.drawRect(0f, 0f, W, H, bg)
         // A sunburst from the coin.
@@ -521,24 +560,24 @@ object PosterDesigns {
             val a0 = Math.toRadians(k * 15.0)
             val a1 = Math.toRadians(k * 15.0 + 7.0)
             val p = Path().apply {
-                moveTo(540f, 790f)
-                lineTo(540f + 1600f * kotlin.math.cos(a0).toFloat(), 790f + 1600f * kotlin.math.sin(a0).toFloat())
-                lineTo(540f + 1600f * kotlin.math.cos(a1).toFloat(), 790f + 1600f * kotlin.math.sin(a1).toFloat())
+                moveTo(540f, sun)
+                lineTo(540f + 1600f * kotlin.math.cos(a0).toFloat(), sun + 1600f * kotlin.math.sin(a0).toFloat())
+                lineTo(540f + 1600f * kotlin.math.cos(a1).toFloat(), sun + 1600f * kotlin.math.sin(a1).toFloat())
                 close()
             }
             c.drawPath(p, ray)
         }
-        PosterKit.halo(c, 540f, 790f, 470f, 0x66FFD27A)
+        PosterKit.halo(c, 540f, sun, 470f * body.scale, 0x66FFD27A)
         PosterKit.header(page, top = 60f, sealSize = 120f, nameColour = 0xFFFFF4E0.toInt(),
             inner = 0xFF9E1F23.toInt(), innerDark = 0xFF4A0A0D.toInt())
-        val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 150f else 120f, 64f, 345f)
-        page.drawHero(Hero.OFFER.rect) { fc -> PosterFlat.coin(page.context, fc, 540f, 790f, 300f, page.fields.offerPercent) }
+        val head = PosterKit.foilHeadline(page, page.title, if (page.urdu) 150f else 120f, 64f, body.headCy)
+        page.drawHero(coin, Hero.OFFER.rect) { fc -> PosterFlat.coin(page.context, fc, 540f, 790f, 300f, page.fields.offerPercent) }
         // What is on offer, big and white under the coin, in the room left above
         // the days tag (Nastaliq stands taller than Latin: measured, not assumed).
         val on = page.message
         var msgSize = 0f
-        val tagTop = 1406f
-        val room = RectF(90f, 1170f, W - 90f, if (page.fields.offerDays > 0) tagTop - 20f else 1500f)
+        val tagTop = body.tagTop
+        val room = RectF(90f, body.roomTop, W - 90f, body.roomBottom)
         if (on.isNotBlank()) {
             val mp = PosterKit.textPaint(page.context, on, if (page.urdu) 84f else 70f, 0xFFFFFFFF.toInt(), true, page.locale, page.urdu)
             mp.setShadowLayer(18f, 0f, 8f, 0x66000000)
@@ -563,8 +602,8 @@ object PosterDesigns {
             c.drawRoundRect(tag, 42f, 42f, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 3f; color = 0xB3F3CF6A.toInt() })
             PosterKit.inkLine(c, days, dp, 540f, tag.centerY())
         }
-        PosterKit.phonePill(page, RectF(102f, 1530f, W - 102f, 1700f), disc = 0xFF9E1F23.toInt(), discDark = 0xFF4A0A0D.toInt())
-        PosterKit.address(page, 1784f, colour = 0xD9FFF4E0.toInt())
+        PosterKit.phonePill(page, RectF(102f, foot.pillTop, W - 102f, foot.pillTop + 170f), disc = 0xFF9E1F23.toInt(), discDark = 0xFF4A0A0D.toInt())
+        PosterKit.address(page, foot.addressCy, colour = 0xD9FFF4E0.toInt())
         PosterKit.mark(page, 0x66FFF4E0)
         if (!page.animated) {
             // The still picture's confetti, at rest.
@@ -575,7 +614,7 @@ object PosterDesigns {
             }
         }
         return PosterKit.Out(head.first.textSize, head.second.layout?.lineCount ?: 1, msgSize, if (on.isBlank()) 0 else 1,
-            PosterMotion.Spec(glint = head.second, confetti = true))
+            PosterMotion.Spec(glint = head.second, confetti = true), hero = coin)
     }
 
     // ---------------------------------------------------------------- Jumu'ah

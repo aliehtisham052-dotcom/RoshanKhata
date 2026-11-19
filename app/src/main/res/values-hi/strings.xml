@@ -3120,6 +3120,7 @@
     <string name="poster_neon_closed">बंद</string>
     <string name="poster_call_urgent">ज़रूरी काम के लिए कॉल करें</string>
     <string name="poster_call_urgent_wa">ज़रूरी काम के लिए व्हाट्सऐप पर मैसेज करें</string>
+    <string name="poster_closed_sorry">असुविधा के लिए खेद है</string>
     <string name="poster_kicker_custom">घोषणा</string>
     <string name="poster_every_day">रोज़ाना</string>
     <string name="poster_day_range">%1$s से %2$s</string>

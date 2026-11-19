@@ -3070,6 +3070,7 @@
     <string name="poster_neon_closed">TUTUP</string>
     <string name="poster_call_urgent">Untuk keperluan mendesak, hubungi</string>
     <string name="poster_call_urgent_wa">Untuk keperluan mendesak, kirim pesan WhatsApp</string>
+    <string name="poster_closed_sorry">Mohon maaf atas ketidaknyamanannya</string>
     <string name="poster_kicker_custom">PENGUMUMAN</string>
     <string name="poster_every_day">Setiap hari</string>
     <string name="poster_day_range">%1$s – %2$s</string>

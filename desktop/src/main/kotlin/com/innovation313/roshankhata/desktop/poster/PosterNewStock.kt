@@ -39,7 +39,7 @@ object PosterNewStock {
     private const val GOLD = 0xFFF3CF6A.toInt()
 
     /** The emerald studio; [spotlight] adds the cone of light from above. */
-    fun drawBackground(c: Canvas, spotlight: Boolean = true, keepClear: RectF? = null) {
+    fun drawBackground(c: Canvas, spotlight: Boolean = true, keepClear: RectF? = null, hero: RectF = HERO) {
         val bg = Paint()
         bg.shader = LinearGradient(0f, 0f, 0f, 1920f,
             intArrayOf(0xFF071A12.toInt(), 0xFF0A2A1C.toInt(), 0xFF040C08.toInt()),
@@ -59,16 +59,21 @@ object PosterNewStock {
         }
         if (!spotlight) return
         // The spotlight: a soft cone from the top centre down to the plinth.
-        val cone = Path().apply { moveTo(470f, -30f); lineTo(610f, -30f); lineTo(900f, 1380f); lineTo(180f, 1380f); close() }
+        // The light follows the hero (PosterBody may have moved or grown it): the pool lies where the plinth
+        // stands in it, 540 of its 670 down, and the cone ends a little under the pool.
+        val k = hero.height() / HERO.height()
+        val poolY = hero.top + 540f * k
+        val end = poolY + 280f * k
+        val cone = Path().apply { moveTo(470f, -30f); lineTo(610f, -30f); lineTo(540f + 360f * k, end); lineTo(540f - 360f * k, end); close() }
         val beam = Paint(Paint.ANTI_ALIAS_FLAG)
-        beam.shader = LinearGradient(0f, 0f, 0f, 1380f,
+        beam.shader = LinearGradient(0f, 0f, 0f, end,
             intArrayOf(0x38FFF0C8, 0x0DFFF0C8, 0x00FFF0C8), floatArrayOf(0f, 0.7f, 1f), Shader.TileMode.CLAMP)
         beam.maskFilter = BlurMaskFilter(18f, BlurMaskFilter.Blur.NORMAL)
         c.drawPath(cone, beam)
         // The plinth's pool of light, under where the hero stands.
         val pool = Paint(Paint.ANTI_ALIAS_FLAG)
-        pool.shader = RadialGradient(540f, 1100f, 340f, 0x59F3CF6A, 0x00F3CF6A, Shader.TileMode.CLAMP)
-        c.save(); c.scale(1f, 0.25f, 540f, 1100f); c.drawCircle(540f, 1100f, 340f, pool); c.restore()
+        pool.shader = RadialGradient(540f, poolY, 340f * k, 0x59F3CF6A, 0x00F3CF6A, Shader.TileMode.CLAMP)
+        c.save(); c.scale(1f, 0.25f, 540f, poolY); c.drawCircle(540f, poolY, 340f * k, pool); c.restore()
     }
 
     private val DUST = listOf(Triple(192f, 630f, 4.8f), Triple(900f, 570f, 3.9f), Triple(288f, 900f, 3.3f),
@@ -80,25 +85,31 @@ object PosterNewStock {
         val urdu = page.urdu
         // The shop's trade words the corner label and the line under the headline (NewStockWords, 13 Nov 2026).
         val trade = TradeVocab.key(context)
-        drawBackground(c)
+        // The foot first: what it does not need, the body takes (PosterBody, 19 Nov 2026). A poster with no number
+        // and no address had its lowest quarter empty.
+        val foot = PosterBody.foot(page.contact.any, PosterKit.addressLines(page), page.mark != null, 1530f, 1770f)
+        val body = PosterBody.newStock(foot.slack)
+        val heroRect = PosterKit.rect(body.hero)
+        drawBackground(c, hero = heroRect)
 
         // The heading is the shop's name alone (12 Oct, the owner: never a list of products).
         PosterKit.header(page, top = 66f, sealSize = 138f)
 
-        PosterKit.kicker(page, NewStockWords.kicker(context, trade), 300f, GOLD, size = 33f)
+        PosterKit.kicker(page, NewStockWords.kicker(context, trade), body.kickerCy, GOLD, size = 33f)
 
         // Headline in gold foil.
-        val head = PosterKit.foilHeadline(page, page.title, if (urdu) 138f else 126f, 72f, 470f, greeting = false)
+        val head = PosterKit.foilHeadline(page, page.title, if (urdu) 138f else 126f, 72f, body.headCy, greeting = false)
 
         // The hero: the owner's own photo of the stock if he gave one, else the
         // 3D crate if the phone could render it, else a flat one.
         val photo = page.photo
-        if (photo != null) photoCard(c, photo) else page.drawHero(HERO) { flatCrate(it, trade) }
+        if (photo != null) PosterKit.within(c, HERO, heroRect) { photoCard(c, photo) }
+        else page.drawHero(heroRect, HERO) { flatCrate(it, trade) }
 
         // What arrived, on a strip of glass: the owner's list, or his trade's usual three.
         val list = page.fields.items.ifEmpty { TradeVocab.items(context).take(3) }
         val items = list.joinToString("   ◆   ")
-        val strip = RectF(66f, 1230f, W - 66f, 1374f)
+        val strip = RectF(66f, body.stripTop, W - 66f, body.stripTop + 144f)
         PosterKit.glass(c, strip, radius = 72f, fill = 0x12FFFFFF)
         val ip = PosterKit.textPaint(context, items, if (urdu) 42f else 39f, Color.WHITE, urdu, page.locale, urdu)
         ip.textAlign = Paint.Align.CENTER
@@ -107,14 +118,14 @@ object PosterNewStock {
 
         // The owner's line under it.
         val msg = page.message.ifBlank { NewStockWords.message(context, trade) }
-        val ml = PosterKit.message(page, msg, 1460f, 0xDDF6EBD0.toInt(), if (urdu) 45f else 46f, lines = 2, italicLatin = true, floor = 34f)
+        val ml = PosterKit.message(page, msg, body.messageCy, 0xDDF6EBD0.toInt(), if (urdu) 45f else 46f, lines = 2, italicLatin = true, floor = 34f)
 
-        PosterKit.phonePill(page, RectF(102f, 1530f, W - 102f, 1710f))
-        PosterKit.address(page, 1770f)
+        PosterKit.phonePill(page, RectF(102f, foot.pillTop, W - 102f, foot.pillTop + 180f))
+        PosterKit.address(page, foot.addressCy)
         PosterKit.mark(page)
         return PosterKit.Out(head.first.textSize, head.second.layout?.lineCount ?: 1, ml?.paint?.textSize ?: 0f, ml?.lineCount ?: 0,
             PosterMotion.Spec(glint = head.second,
-                stars = DUST.map { PosterMotion.Star(it.first, it.second, it.third) }))
+                stars = DUST.map { PosterMotion.Star(it.first, it.second, it.third) }), hero = heroRect)
     }
 
     /**

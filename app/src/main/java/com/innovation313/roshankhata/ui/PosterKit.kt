@@ -79,14 +79,30 @@ object PosterKit {
         val urdu = urduScript(locale)
         /** The numbers this poster shows: the call number and, when the owner gave one, a WhatsApp number of its own. */
         val contact: PosterContact.Contact = PosterContact.of(phone, whatsapp, fields.whatsappNumber, dialing)
-        /** Draw the hero here, or its flat stand-in, unless the live 3D view covers the place. */
-        fun drawHero(rect: RectF, flat: (Canvas) -> Unit) {
+        /**
+         * Draw the hero in [rect], or its flat stand-in, unless the live 3D view covers the place. The flat one is
+         * drawn in the numbers of [from], the place its design first gave it: a hero moved or grown by [PosterBody]
+         * is the same drawing carried to its new place.
+         */
+        fun drawHero(rect: RectF, from: RectF = rect, flat: (Canvas) -> Unit) {
             when {
                 hero != null -> c.drawBitmap(hero, null, rect, Paint(Paint.FILTER_BITMAP_FLAG))
-                !heroOverlay -> flat(c)
+                !heroOverlay -> within(c, from, rect) { flat(c) }
             }
         }
     }
+
+    /** Draw what was laid out for [from] so that it lands in [to]. */
+    fun within(c: Canvas, from: RectF, to: RectF, draw: () -> Unit) {
+        c.save()
+        c.translate(to.left, to.top)
+        c.scale(to.width() / from.width(), to.height() / from.height())
+        c.translate(-from.left, -from.top)
+        draw()
+        c.restore()
+    }
+
+    fun rect(b: PosterBody.Box) = RectF(b.left, b.top, b.right, b.bottom)
 
     /** How the words fitted, and what the live preview animates on top (see PosterMotion). */
     data class Out(
@@ -94,7 +110,9 @@ object PosterKit {
         val titleLines: Int,
         val messageSize: Float,
         val messageLines: Int,
-        val motion: PosterMotion.Spec = PosterMotion.Spec()
+        val motion: PosterMotion.Spec = PosterMotion.Spec(),
+        /** Where this picture has its 3D hero (PosterBody may have moved or grown it); null: the design's own place. */
+        val hero: RectF? = null
     )
 
     /** True when the poster's words are Urdu in Arabic script (not Roman Urdu). */
@@ -112,7 +130,9 @@ object PosterKit {
     fun initials(name: String): String {
         val words = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
         if (words.isEmpty()) return "★"
-        if (hasArabic(words[0])) return words[0].take(4)
+        // Arabic script has no capitals to stand for a name: the first word whole (the seal shrinks it to fit).
+        // It was cut at four letters, which is no word: "النور" stood on the seal as "النو" (19 Nov 2026).
+        if (hasArabic(words[0])) return if (words[0].length <= 9) words[0] else words[0].take(1)
         return words.take(2).joinToString("") { it.take(1).uppercase(Locale.ROOT) }
     }
 
@@ -182,6 +202,25 @@ object PosterKit {
             .setIncludePad(false)
             .setLineSpacing(0f, spacing)
             .build()
+
+    /**
+     * [made], set again in the narrowest box that keeps its number of lines, so a heading of two lines does not end
+     * in one orphan word ("our shop is now at its new" / "place"). The layout is [StaticLayout.width] wide: the caller
+     * puts it against the reading side's edge (or in the middle) of the room it had.
+     */
+    fun balanced(made: StaticLayout, text: String, p: TextPaint, rtl: Boolean, spacing: Float,
+                 align: Layout.Alignment): StaticLayout {
+        if (made.lineCount < 2) return made
+        var best = made
+        var w = made.width
+        while (w > made.width * 0.55f) {
+            w -= max(8, made.width / 40)
+            val l = block(text, p, w, rtl, spacing, align)
+            if (l.lineCount != made.lineCount) break
+            best = l
+        }
+        return best
+    }
 
     /** A wrapped block shrunk until it is at most [maxLines] lines (or reaches [floor]). */
     fun fitBlock(text: String, p: TextPaint, width: Int, rtl: Boolean, maxLines: Int, floor: Float,

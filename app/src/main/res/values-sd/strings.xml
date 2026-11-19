@@ -3100,6 +3100,7 @@
     <string name="poster_neon_closed">بند</string>
     <string name="poster_call_urgent">ضروري ڪم لاءِ ڪال ڪريو</string>
     <string name="poster_call_urgent_wa">ضروري ڪم لاءِ واٽس ايپ تي پيغام موڪليو</string>
+    <string name="poster_closed_sorry">تڪليف لاءِ معذرت</string>
     <string name="poster_kicker_custom">اعلان</string>
     <string name="poster_every_day">روزانو</string>
     <string name="poster_day_range">%1$s کان %2$s</string>

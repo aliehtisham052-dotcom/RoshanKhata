@@ -3100,6 +3100,7 @@
     <string name="poster_neon_closed">تعطیل</string>
     <string name="poster_call_urgent">برای کار ضروری تماس بگیرید</string>
     <string name="poster_call_urgent_wa">برای کار ضروری در واتس‌اپ پیام دهید</string>
+    <string name="poster_closed_sorry">از زحمت پیش‌آمده پوزش می‌خواهیم</string>
     <string name="poster_kicker_custom">اطلاعیه</string>
     <string name="poster_every_day">هر روز</string>
     <string name="poster_day_range">%1$s تا %2$s</string>

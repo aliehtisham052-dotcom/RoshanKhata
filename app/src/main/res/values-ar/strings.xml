@@ -3272,6 +3272,7 @@
     <string name="poster_neon_closed">مغلق</string>
     <string name="poster_call_urgent">للأمور العاجلة اتصل</string>
     <string name="poster_call_urgent_wa">للأمور العاجلة راسلنا على واتساب</string>
+    <string name="poster_closed_sorry">نعتذر عن الإزعاج</string>
     <string name="poster_kicker_custom">إعلان</string>
     <string name="poster_every_day">كل يوم</string>
     <string name="poster_day_range">%1$s – %2$s</string>

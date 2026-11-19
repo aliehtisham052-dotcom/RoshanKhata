@@ -153,6 +153,8 @@ class PosterActivity : BaseActivity() {
     /** What [stage] was built for, to know when it must be rebuilt (another hero, or the seal's mark changed). */
     private var stageKey: String? = null
     private var stageHero: Hero? = null
+    /** Where the picture on show has its hero: the design may move or grow it with what the foot shows (PosterBody). */
+    private var heroPlace: android.graphics.RectF? = null
     private var isStarted = false
 
     private var occasion = PosterOccasion.NEW_STOCK
@@ -525,7 +527,7 @@ class PosterActivity : BaseActivity() {
         else PosterImage.Input(o,
             if (o.hasWords) o.titleIn(ctx, tradeKey()) else ctx.getString(R.string.poster_custom_title_hint),
             if (o.hasWords) o.messageIn(ctx, tradeKey()) else ctx.getString(R.string.poster_custom_msg_hint),
-            shopName(),
+            nameShown(),
             if (fields.showPhone) BusinessProfile.businessPhone(this)?.trim() else null,
             if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
             if (fields.showLogo) logo else null,
@@ -607,7 +609,7 @@ class PosterActivity : BaseActivity() {
         val ctx = posterContext()
         val w = (88 * resources.displayMetrics.density).toInt().coerceAtLeast(60)
         val h = w * PosterImage.HEIGHT / PosterImage.WIDTH
-        val name = shopName()
+        val name = nameShown()
         val phone = BusinessProfile.businessPhone(this)?.trim()
         val lg = logo
         val trade = tradeKey()
@@ -1387,6 +1389,9 @@ class PosterActivity : BaseActivity() {
     /** The shop's name as this poster prints it: in Urdu script on an Urdu poster, if the owner gave one. */
     private fun shopName(): String = BusinessProfile.nameFor(this, posterUrdu())?.trim().orEmpty()
 
+    /** In a preview a shop with no name yet shows where its name will stand; a poster is never sent without one. */
+    private fun nameShown(): String = shopName().ifBlank { posterContext().getString(R.string.shop_name_field) }
+
     private fun usingPhoto() = occasion == PosterOccasion.NEW_STOCK && fields.usePhoto && photo != null
 
     /** [animated]: the moving layer (preview, video) draws the confetti, flag and fireworks; a still picture has them drawn in. */
@@ -1399,7 +1404,7 @@ class PosterActivity : BaseActivity() {
         message = etMessage.text?.toString()?.trim().orEmpty().ifEmpty {
             if (placeholder && occasion == PosterOccasion.CUSTOM) posterContext().getString(R.string.poster_custom_msg_hint) else ""
         },
-        shopName = shopName(),
+        shopName = if (placeholder) nameShown() else shopName(),
         phone = if (fields.showPhone) BusinessProfile.businessPhone(this)?.trim() else null,
         address = if (fields.showAddress) BusinessProfile.businessAddress(this)?.trim() else null,
         logo = if (fields.showLogo) logo else null,
@@ -1418,7 +1423,8 @@ class PosterActivity : BaseActivity() {
     private fun placeHero() {
         val s = frame.width / PosterImage.WIDTH.toFloat()
         if (s <= 0f) return
-        val r = (stageHero ?: return).rect
+        val hero = stageHero ?: return
+        val r = heroPlace ?: hero.rect
         heroView.layoutParams = FrameLayout.LayoutParams((r.width() * s).toInt(), (r.height() * s).toInt()).apply {
             leftMargin = (r.left * s).toInt()
             topMargin = (r.top * s).toInt()
@@ -1447,6 +1453,7 @@ class PosterActivity : BaseActivity() {
             stage = null
             stageHero = null
             stageKey = null
+            heroPlace = null
         }
         if (hero != null && stage == null) {
             stage = try {
@@ -1487,6 +1494,7 @@ class PosterActivity : BaseActivity() {
             // still hold it (BC-235).
             preview.setImageBitmap(bmp)
             motionView.show(fit.motion)
+            if (fit.hero != heroPlace) { heroPlace = fit.hero; placeHero() }
             shown = bmp
             liveDrawn = true
             maybeShowLive()
@@ -1550,7 +1558,7 @@ class PosterActivity : BaseActivity() {
     private suspend fun stillPicture(ctx: Context): Bitmap? {
         val hero = stage?.let { st ->
             try {
-                val r = stageHero!!.rect
+                val r = heroPlace ?: stageHero!!.rect
                 st.still(r.width().toInt(), r.height().toInt())
             } catch (e: Exception) {
                 null
@@ -1605,7 +1613,7 @@ class PosterActivity : BaseActivity() {
                 // Caught here: an encoder that refuses must not take the screen down
                 // (an exception in a launched job would); the picture is sent instead.
                 try {
-                    PosterVideo.make(base, stage, stageHero?.rect, fit.motion, VIDEO_SECONDS, out) { p ->
+                    PosterVideo.make(base, stage, fit.hero ?: stageHero?.rect, fit.motion, VIDEO_SECONDS, out) { p ->
                         bar.setProgressCompat(p, true)
                         text.text = com.innovation313.roshankhata.data.Digits.string(resources, R.string.poster_making_video, p)
                     }

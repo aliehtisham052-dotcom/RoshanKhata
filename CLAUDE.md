@@ -2999,6 +2999,13 @@ Each of these cost a build or a bug.
      `shown_bitmaps_never_recycled` holds it by name (an alias such as `old = shown` is not followed, so write the
      rule beside such a place too).
 
+158. **A layout made for a full page is checked with every part taken away.** Five poster designs were set at fixed
+     heights for a foot with a call button and an address; a shop that shows neither got the same body in the same
+     place and the lowest quarter to a third of the picture empty (the owner's photos, 19 Nov 2026) — and the 13 Nov
+     round had proved only that a FULL foot does not overlap. What is optional says how much room it does not need
+     (`PosterBody.foot`), the body takes it (the hero grows a little, the gaps open), and the test draws every state:
+     nothing, name only, number only, everything. A design is looked at in its emptiest state first.
+
 ---
 
 ## Working with the owner
@@ -4544,6 +4551,43 @@ broken once more on purpose and failed. Nothing below was compiled here except w
     (only the daily-copy page takes its own copy first); a file opened on the phone through Android's picker is a stream
     and still read whole; a merge of a big copy still holds it whole, by decision; each pass re-reads the whole file, so a
     paged restore reads it eight times (time, not memory). Nothing of it was compiled or run where it was written.
+
+### 19 Nov 2026: posters fill their picture whatever the foot shows (phone and Windows; CI only, nothing tried on a real phone)
+
+The owner's photos: New stock, Offer, Hours (and Closed, Custom) with the lowest third of the picture empty, because his
+shop shows no number and no address on the poster. Importance 6 (what customers see on WhatsApp; no figure moves).
+
+- **The class (lesson 158, BC-236):** the five designs that end in the gold call button were laid out at fixed heights
+  for a full foot. **`PosterBody`** (pure, `ui/`, copied to Windows by `gen_desktop_poster.py`): `foot(pill, addressLines,
+  mark, pillTop, addressCy)` gives where the button stands (56 lower with no address under it), the lowest the body may
+  reach (`limit`: above the button, above a lone address, else `FLOOR` 1790 / `FLOOR_MARK` 1770) and `slack`, the room
+  the foot does not need. `newStock`, `hours`, `offer`, `closed` and `custom` hand that room to the body: the hero grows
+  a little (never past the picture's sides, shape kept), the rest opens the gaps. **With the button AND an address
+  shown, slack is 0 and New stock, Hours, Offer and Closed (owner's own line) are exactly the old designs.**
+- **Closed:** the sign, its word and the owner's line are drawn as designed and set where the plan hangs them
+  (`PosterKit.within(c, from, to)`); the neon motion gets the real rectangle. With room to spare under the panel it
+  says **"Sorry for the inconvenience"** (`poster_closed_sorry`, nine languages — **Sindhi, Bengali, Farsi and Arabic
+  wording is for a native read**), never when the foot is full.
+- **Custom (the shop's own announcement) is a new layout in every state:** the glass panel is as tall as its words ask
+  plus 38% of what is over, standing a little above the middle of its room (it was one fixed box 372–1404, bare under
+  a short line); the button stands at 1500 and the address at 1744 (were 1446 and 1690). A heading of two or more
+  lines is set in the narrowest box that keeps its line count (`PosterKit.balanced`), so it never ends in one orphan
+  word. The aurora keeps clear of the button only when there is one.
+- **The 3D hero follows the picture:** `PosterKit.Out.hero` / `PosterImage.Fit.hero` say where a design put its hero
+  (null: `Hero.rect`); `PosterActivity` lays the live view there (`heroPlace`), renders the still at that size and hands
+  the video the same rectangle (`fit.hero ?: stageHero?.rect`). `drawHero(rect, from)` draws the flat stand-in in its
+  design's own numbers, carried to the new place. Aspect is always kept, so the camera's projection is unchanged.
+- **Also:** an Arabic-script shop name's seal shows its first word whole up to 9 letters (it was cut at 4: "النور" read
+  "النو"); a preview with no shop name yet shows "Shop name" where the name will stand (`nameShown`; a poster is still
+  never sent without a name).
+- **Tests:** `PosterBodyTest` (17, pure; run here with Gradle's compiler: a full foot is the old numbers, every foot
+  state keeps order, stays inside the picture and leaves at most 150 px bare above its limit; 14 deliberate breakages,
+  all caught after one test was added), `PosterBodyDesktopTest` (the five designs USE the plan: the body moves when
+  the foot empties, the button sinks with no address; its thresholds were measured with the harness first). All eleven
+  designs were drawn in Urdu and English in four states (nothing, name, number, everything) and looked at.
+- **Not done / not seen:** Android's own text engine and a real phone; `PosterActivity`, `PosterImage` and the on-device
+  tests are CI's first build; the three-step screen (Design, Writing, Send) itself was not changed; Thank-you with no
+  name and no contact keeps a little spare room under its seal.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
 

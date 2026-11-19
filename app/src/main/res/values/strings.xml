@@ -3284,6 +3284,7 @@
     <string name="poster_neon_closed">CLOSED</string>
     <string name="poster_call_urgent">For urgent work, call</string>
     <string name="poster_call_urgent_wa">For urgent work, message on WhatsApp</string>
+    <string name="poster_closed_sorry">Sorry for the inconvenience</string>
     <string name="poster_kicker_custom">ANNOUNCEMENT</string>
     <string name="poster_every_day">Every day</string>
     <string name="poster_day_range">%1$s – %2$s</string>

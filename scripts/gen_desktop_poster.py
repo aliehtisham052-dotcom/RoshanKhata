@@ -32,7 +32,7 @@ GFX_PKG = "com.innovation313.roshankhata.desktop.gfx"
 INV_PKG = "com.innovation313.roshankhata.desktop.invoice"
 
 FILES = [
-    "ui/PosterKit.kt", "ui/PosterFoot.kt", "ui/PosterDesigns.kt", "ui/PosterFlat.kt", "ui/PosterGlyphs.kt",
+    "ui/PosterKit.kt", "ui/PosterFoot.kt", "ui/PosterBody.kt", "ui/PosterDesigns.kt", "ui/PosterFlat.kt", "ui/PosterGlyphs.kt",
     "ui/PosterNewStock.kt", "ui/PosterEmblems.kt", "ui/PosterContact.kt", "ui/PosterWords.kt", "ui/PosterMotion.kt",
     "ui/poster3d/Hero.kt", "ui/poster3d/CoinFace.kt", "ui/poster3d/SealFace.kt",
     "data/Poster.kt", "data/PosterFields.kt",

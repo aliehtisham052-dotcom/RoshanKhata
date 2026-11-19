@@ -54,7 +54,12 @@ object PosterImage {
         val titleLines: Int,
         val messageSize: Float,
         val messageLines: Int,
-        val motion: PosterMotion.Spec = PosterMotion.Spec()
+        val motion: PosterMotion.Spec = PosterMotion.Spec(),
+        /**
+         * Where this picture has its 3D hero, when the design moved or grew it (PosterBody); null: the hero's own
+         * [com.innovation313.roshankhata.poster3d.Hero.rect].
+         */
+        val hero: android.graphics.RectF? = null
     )
 
     /** Draw the poster. Returns the bitmap (caller recycles) and how the text fitted. */
@@ -70,6 +75,6 @@ object PosterImage {
             dialing = com.innovation313.roshankhata.data.BusinessProfile.country(context).dialing
         )
         val o = PosterDesigns.draw(input.occasion, page)
-        return bmp to Fit(o.titleSize, o.titleLines, o.messageSize, o.messageLines, o.motion)
+        return bmp to Fit(o.titleSize, o.titleLines, o.messageSize, o.messageLines, o.motion, o.hero)
     }
 }

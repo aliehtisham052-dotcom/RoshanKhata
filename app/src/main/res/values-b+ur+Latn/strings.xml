@@ -3072,6 +3072,7 @@
     <string name="poster_neon_closed">BAND</string>
     <string name="poster_call_urgent">Zaroori kaam ke liye call karein</string>
     <string name="poster_call_urgent_wa">Zaroori kaam ke liye WhatsApp par message karein</string>
+    <string name="poster_closed_sorry">Zehmat ke liye maazrat</string>
     <string name="poster_kicker_custom">ELAAN</string>
     <string name="poster_every_day">Rozana</string>
     <string name="poster_day_range">%1$s se %2$s</string>

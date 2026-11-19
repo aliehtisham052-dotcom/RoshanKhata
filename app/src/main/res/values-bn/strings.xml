@@ -3120,6 +3120,7 @@
     <string name="poster_neon_closed">বন্ধ</string>
     <string name="poster_call_urgent">জরুরি কাজে কল করুন</string>
     <string name="poster_call_urgent_wa">জরুরি কাজে হোয়াটসঅ্যাপে মেসেজ করুন</string>
+    <string name="poster_closed_sorry">অসুবিধার জন্য দুঃখিত</string>
     <string name="poster_kicker_custom">ঘোষণা</string>
     <string name="poster_every_day">প্রতিদিন</string>
     <string name="poster_day_range">%1$s – %2$s</string>

@@ -3072,6 +3072,7 @@
     <string name="poster_neon_closed">بند</string>
     <string name="poster_call_urgent">ضروری کام کے لیے کال کریں</string>
     <string name="poster_call_urgent_wa">ضروری کام کے لیے واٹس ایپ پر پیغام بھیجیں</string>
+    <string name="poster_closed_sorry">زحمت کے لیے معذرت</string>
     <string name="poster_kicker_custom">اعلان</string>
     <string name="poster_every_day">روزانہ</string>
     <string name="poster_day_range">%1$s تا %2$s</string>

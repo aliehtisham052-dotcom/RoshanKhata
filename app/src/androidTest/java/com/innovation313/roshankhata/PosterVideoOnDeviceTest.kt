@@ -64,7 +64,7 @@ class PosterVideoOnDeviceTest {
             ))
             val out = File(app.cacheDir, "test_${o.key}.mp4")
             val started = System.currentTimeMillis()
-            runBlocking { withTimeout(240_000L) { PosterVideo.make(base, stage, hero?.rect, fit.motion, 2f, out) } }
+            runBlocking { withTimeout(240_000L) { PosterVideo.make(base, stage, fit.hero ?: hero?.rect, fit.motion, 2f, out) } }
             Log.i("PosterVideo", "${o.key}: ${out.length()} bytes in ${System.currentTimeMillis() - started} ms (3D: ${stage != null})")
             base.recycle()
             stage?.let { s -> InstrumentationRegistry.getInstrumentation().runOnMainSync { s.destroy() } }
