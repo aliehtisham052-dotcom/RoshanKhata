@@ -29,8 +29,22 @@ jobs:
         with:
           cache-disabled: true
           gradle-version: 8.14.3
+      # As instrumented.yml compiles the on-device tests (the emulator step builds the debug APK itself), with the
+      # compiler's own words as annotations: the run of 19 Nov 2026 failed here and said nothing but "exit code 1".
       - name: Compile
-        run: gradle assembleDebug assembleDebugAndroidTest --no-daemon
+        run: |
+          set +e
+          gradle assembleDebugAndroidTest --no-daemon --stacktrace 2>&1 | tee /tmp/compile_output.txt
+          exit ${PIPESTATUS[0]}
+      - name: Publish compile errors
+        if: failure()
+        run: |
+          if [ ! -f /tmp/compile_output.txt ]; then exit 0; fi
+          errs=$(grep -iE "^e: |error:|Unresolved reference|Could not (find|resolve)" /tmp/compile_output.txt | head -40 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          [ -n "$errs" ] && echo "::error title=Compiler errors::$errs"
+          why=$(grep -A12 "What went wrong" /tmp/compile_output.txt | grep -v "^--$" | head -14 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+          [ -n "$why" ] && echo "::error title=What went wrong::$why"
+          true
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
