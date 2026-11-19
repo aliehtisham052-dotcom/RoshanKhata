@@ -588,15 +588,23 @@ class PosterActivity : BaseActivity() {
         val w = pageW
         val h = pageH
         val inp = pageInput(ctx, o)
+        val me = System.identityHashCode(this)
+        android.util.Log.d("Poster3D", "page: $me ${o.key} asked ${w}x$h")
         pageJobs[o] = lifecycleScope.launch {
-            val hero = heroShot(o)
-            val bmp = withContext(Dispatchers.Default) {
-                val (full, _) = PosterImage.draw(ctx, if (hero != null) inp.copy(hero = hero) else inp)
-                Bitmap.createScaledBitmap(full, w, h, true).also { if (it !== full) full.recycle() }
+            var end = "cut off"
+            try {
+                val hero = heroShot(o)
+                val bmp = withContext(Dispatchers.Default) {
+                    val (full, _) = PosterImage.draw(ctx, if (hero != null) inp.copy(hero = hero) else inp)
+                    Bitmap.createScaledBitmap(full, w, h, true).also { if (it !== full) full.recycle() }
+                }
+                if (w != pageW || h != pageH) { end = "other size now ${pageW}x$pageH"; bmp.recycle(); return@launch }
+                pages.put(o, bmp)
+                end = "kept"
+                notifyPage(PosterOccasion.values().indexOf(o))
+            } finally {
+                android.util.Log.d("Poster3D", "page: $me ${o.key} ${w}x$h $end")
             }
-            if (w != pageW || h != pageH) { bmp.recycle(); return@launch }
-            pages.put(o, bmp)
-            notifyPage(PosterOccasion.values().indexOf(o))
         }
     }
 
@@ -623,6 +631,7 @@ class PosterActivity : BaseActivity() {
 
     /** Every page is drawn again: the language, name, logo or a choice changed. */
     private fun refreshPages() {
+        android.util.Log.d("Poster3D", "page: ${System.identityHashCode(this)} all again, ${pageJobs.size} asked, ${pages.size()} kept")
         pageJobs.values.forEach { it.cancel() }
         pageJobs.clear()
         pages.evictAll()

@@ -204,6 +204,7 @@ class PosterScreenProofTest {
                         }
                         SystemClock.sleep(1500)
                         save("screen_one_picture_${key}_$tag.png")
+                        if (proof == null) android.util.Log.i("Poster3D", "one picture: NEVER $key/$tag $last")
                         val p = proof
                             ?: throw AssertionError("$key/$tag: the live poster, its page and its small picture never all came: $last")
                         android.util.Log.i("Poster3D", "one picture: $key/$tag came: $last")
