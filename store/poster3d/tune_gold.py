@@ -6,8 +6,10 @@ and on a phone the gold read as dark bronze with a thin bright rim, not as gold.
 
 Two changes, written into the .glb files' own materials (glTF core fields, no code in the app):
   * roughness at least GOLD_ROUGH: a satin finish spreads the softbox and the strip lights over the surface;
-  * an emissive base of GOLD_LIFT x the material's own colour: the warm light a real room would bounce back, so
-    no part of the gold falls to black. For scale: the lantern glass glows at 0.6 (make_heroes.GLOW_STRENGTH).
+  * an emissive base of GOLD_LIFT x the material's own colour, deepened towards amber (GOLD_TINT): the warm light
+    a real room would bounce back, so no part of the gold falls to black. For scale: the lantern glass glows at 0.6
+    (make_heroes.GLOW_STRENGTH), and 0.14 of the plain colour (the first try, 19 Nov 2026) was far too much: the
+    renderer's tone curve washed it to a flat pale beige. Judge it on CI's pictures (the Poster proof workflow).
 
 make_heroes.py and make_models.py give the same values to a newly built model (their mat()), so running this on
 their output changes nothing. Idempotent.
@@ -22,7 +24,8 @@ import sys
 
 GOLD_NAMES = ("gold", "rim")
 GOLD_ROUGH = 0.26
-GOLD_LIFT = 0.14
+GOLD_LIFT = 0.045
+GOLD_TINT = (1.0, 0.82, 0.51)
 
 
 def tune(path):
@@ -38,7 +41,7 @@ def tune(path):
         pbr = m.setdefault("pbrMetallicRoughness", {})
         base = pbr.get("baseColorFactor", [1.0, 1.0, 1.0, 1.0])[:3]
         rough = max(pbr.get("roughnessFactor", 1.0), GOLD_ROUGH)
-        lift = [round(c * GOLD_LIFT, 4) for c in base]
+        lift = [round(c * t * GOLD_LIFT, 4) for c, t in zip(base, GOLD_TINT)]
         if pbr.get("roughnessFactor") != rough or m.get("emissiveFactor") != lift:
             pbr["roughnessFactor"] = rough
             m["emissiveFactor"] = lift
