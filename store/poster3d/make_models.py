@@ -14,6 +14,8 @@ from PIL import Image, ImageDraw, ImageFilter
 from trimesh.visual.material import PBRMaterial
 from trimesh.visual import TextureVisuals
 
+import tune_gold
+
 OUT = sys.argv[1]
 GOLD = (255, 205, 110)
 
@@ -128,6 +130,7 @@ def main():
     scene.add_geometry(plinth, node_name="podium", geom_name="plinth")
     scene.add_geometry(rim, node_name="podium_rim", geom_name="rim", parent_node_name="podium")
     scene.export(OUT)
+    tune_gold.tune(OUT)  # satin gold with a warm base tone: see tune_gold.py
     print(OUT)
 
 

@@ -28,6 +28,8 @@ from shapely.geometry import Point, Polygon
 from trimesh.visual import TextureVisuals
 from trimesh.visual.material import PBRMaterial
 
+import tune_gold
+
 OUT = sys.argv[1]
 GOLD = (255, 205, 110)
 GOLD_PALE = (255, 226, 160)
@@ -472,6 +474,7 @@ def main():
         path = os.path.join(OUT, name + ".glb")
         build().export(path)
         glow(path)
+        tune_gold.tune(path)  # satin gold with a warm base tone: see tune_gold.py
         print(path, os.path.getsize(path))
 
 
