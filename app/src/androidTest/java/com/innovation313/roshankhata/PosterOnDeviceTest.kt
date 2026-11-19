@@ -112,6 +112,41 @@ class PosterOnDeviceTest {
         }
     }
 
+    /**
+     * A shop that shows no number and no address (19 Nov 2026, the owner's photos): the five designs that end in the
+     * call button bring their body down into the room (PosterBody) instead of leaving the lowest third bare. Drawn by
+     * Android's own text engine here, and saved to be looked at; the arithmetic is PosterBodyTest's.
+     */
+    @Test
+    fun a_poster_with_nothing_at_its_foot_fills_its_picture() {
+        val designs = listOf(PosterOccasion.NEW_STOCK, PosterOccasion.HOURS, PosterOccasion.OFFER, PosterOccasion.CLOSED, PosterOccasion.CUSTOM)
+        for (tag in listOf("en", "ur")) {
+            val ctx = inLanguage(tag)
+            for (o in designs) {
+                fun draw(phone: String?, address: String?) = PosterImage.draw(ctx, PosterImage.Input(
+                    occasion = o,
+                    title = if (o == PosterOccasion.CUSTOM) ctx.getString(R.string.poster_custom_title_hint) else ctx.getString(o.title),
+                    message = if (o == PosterOccasion.CUSTOM) ctx.getString(R.string.poster_custom_msg_hint) else ctx.getString(o.message),
+                    shopName = if (tag == "ur") "علی ٹریڈرز" else "Ali Traders", phone = phone, address = address,
+                    logo = null, mark = null
+                ))
+                val (full, _) = draw("0300 0000000", "Main Bazaar")
+                val (bare, fit) = draw(null, null)
+                assertTrue("$tag/${o.key}: big line squeezed (${fit.titleSize})", fit.titleSize > 56f)
+                // Above the foot the old designs were the very same picture whatever the foot held.
+                val w = PosterImage.WIDTH
+                val a = IntArray(w * 1200); val b = IntArray(w * 1200)
+                full.getPixels(a, 0, w, 0, 200, w, 1200)
+                bare.getPixels(b, 0, w, 0, 200, w, 1200)
+                var moved = 0
+                for (i in a.indices) if (a[i] != b[i]) moved++
+                assertTrue("$tag/${o.key}: the body stood still over an empty foot ($moved pixels differ)", moved > 20_000)
+                save("poster_bare_${o.key}_$tag.png", bare)
+                full.recycle(); bare.recycle()
+            }
+        }
+    }
+
     @Test
     fun the_owners_own_long_words_still_draw() {
         val ctx = inLanguage("ur")

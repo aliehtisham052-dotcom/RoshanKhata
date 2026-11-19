@@ -141,6 +141,22 @@ class Poster3dOnDeviceTest {
                 assertTrue("$tag/${occasion.key}: headline at the floor (${fit.titleSize})", fit.titleSize > 56f)
                 save("poster3d_${occasion.key}_$tag.png", bmp)
                 bmp.recycle()
+                // With nothing at its foot a design may move and grow its hero (PosterBody, 19 Nov 2026): the picture
+                // says where, the hero keeps its shape and stays on the picture.
+                val (bare, bareFit) = PosterImage.draw(ctx, PosterImage.Input(
+                    occasion = occasion, title = ctx.getString(occasion.title),
+                    message = ctx.getString(occasion.message),
+                    shopName = if (tag == "ur") "علی ٹریڈرز" else "Ali Traders",
+                    phone = null, address = null, logo = null, mark = null, hero = heroPic
+                ))
+                bareFit.hero?.let { place ->
+                    assertEquals("$tag/${occasion.key}: the hero lost its shape", r.width() / r.height(), place.width() / place.height(), 0.005f)
+                    assertTrue("$tag/${occasion.key}: the hero left the picture ($place)",
+                        place.left >= 0f && place.top >= 0f && place.right <= PosterImage.WIDTH && place.bottom <= PosterImage.HEIGHT)
+                    assertTrue("$tag/${occasion.key}: the hero shrank", place.height() >= r.height() - 0.5f)
+                    save("poster3d_bare_${occasion.key}_$tag.png", bare)
+                }
+                bare.recycle()
                 if (heroPic !== still) heroPic.recycle()
             }
             still.recycle()

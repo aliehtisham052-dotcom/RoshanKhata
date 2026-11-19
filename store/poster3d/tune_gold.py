@@ -9,7 +9,9 @@ Two changes, written into the .glb files' own materials (glTF core fields, no co
   * an emissive base of GOLD_LIFT x the material's own colour, deepened towards amber (GOLD_TINT): the warm light
     a real room would bounce back, so no part of the gold falls to black. For scale: the lantern glass glows at 0.6
     (make_heroes.GLOW_STRENGTH), and 0.14 of the plain colour (the first try, 19 Nov 2026) was far too much: the
-    renderer's tone curve washed it to a flat pale beige. Judge it on CI's pictures (the Poster proof workflow).
+    renderer's tone curve washed it to a flat pale beige; 0.045 read as antique gold (a crescent's median colour
+    123,105,64 against 52,41,23 before). Judge it on CI's pictures (the Poster proof workflow), never by eye of
+    the numbers.
 
 make_heroes.py and make_models.py give the same values to a newly built model (their mat()), so running this on
 their output changes nothing. Idempotent.
@@ -24,8 +26,8 @@ import sys
 
 GOLD_NAMES = ("gold", "rim")
 GOLD_ROUGH = 0.26
-GOLD_LIFT = 0.045
-GOLD_TINT = (1.0, 0.82, 0.51)
+GOLD_LIFT = 0.06
+GOLD_TINT = (1.0, 0.80, 0.32)
 
 
 def tune(path):

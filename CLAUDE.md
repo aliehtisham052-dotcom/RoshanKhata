@@ -3006,6 +3006,13 @@ Each of these cost a build or a bug.
      (`PosterBody.foot`), the body takes it (the hero grows a little, the gaps open), and the test draws every state:
      nothing, name only, number only, everything. A design is looked at in its emptiest state first.
 
+159. **CI's pictures can be read from here: through the release-asset REST call.** `gh release download` is refused
+     (it speaks GraphQL), and a run's artifacts live on a host this session may not reach, but a release asset comes
+     back with `gh api -H "Accept: application/octet-stream" repos/<owner>/<repo>/releases/assets/<id>` (ids from
+     `releases/tags/<tag>`). So the Poster proof workflow (run by hand: `actions/workflows/poster3d-probe.yml/
+     dispatches`) shows the real Filament render and the video's frames (ffmpeg is here). The 3D gold was tuned that
+     way in three runs, each looked at and measured (19 Nov 2026): a look is never tuned blind when CI can draw it.
+
 ---
 
 ## Working with the owner
@@ -4585,8 +4592,16 @@ shop shows no number and no address on the poster. Importance 6 (what customers 
   all caught after one test was added), `PosterBodyDesktopTest` (the five designs USE the plan: the body moves when
   the foot empties, the button sinks with no address; its thresholds were measured with the harness first). All eleven
   designs were drawn in Urdu and English in four states (nothing, name, number, everything) and looked at.
-- **Not done / not seen:** Android's own text engine and a real phone; `PosterActivity`, `PosterImage` and the on-device
-  tests are CI's first build; the three-step screen (Design, Writing, Send) itself was not changed; Thank-you with no
+- **The 3D gold** (`store/poster3d/tune_gold.py`, run on `assets/poster3d/*.glb`; the two model makers call it after
+  export): the heroes' gold was a near mirror (roughness 0.12-0.22) in a dark studio, so a crescent's or a dome's face
+  showed the dim wall behind the camera — dark bronze with a thin bright rim on CI's renders. Every gold material now
+  has roughness at least 0.26 and an emissive base of 0.06 x its own colour deepened towards amber (glTF core fields,
+  no app code). Tuned on CI's own pictures in three runs (lesson 159).
+- **On-device proofs added:** `PosterOnDeviceTest.a_poster_with_nothing_at_its_foot_fills_its_picture` (the five
+  designs with no number and no address, Android's own text engine, saved as `poster_bare_*`), and
+  `Poster3dOnDeviceTest` draws each hero's poster with a bare foot too (`poster3d_bare_*`: the hero keeps its shape,
+  stays on the picture, never shrinks). `poster3d-probe.yml` now compiles as instrumented.yml does and says its errors.
+- **Not done / not seen:** a real phone; the three-step screen (Design, Writing, Send) itself was not changed; Thank-you with no
   name and no contact keeps a little spare room under its seal.
 
 ### Open at the 14 Nov 2026 evening handover (the owner moved the work to a new chat; the owner's list is the source)
