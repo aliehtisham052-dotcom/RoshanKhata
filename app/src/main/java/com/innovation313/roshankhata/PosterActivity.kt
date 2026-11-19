@@ -145,6 +145,8 @@ class PosterActivity : BaseActivity() {
     private var revealing = false
     private var revealTurn = 0
     private var pagerIdle = true
+    /** How often the pages left their rest (for the on-device proof's message). */
+    private var pagerMoves = 0
     /** Something on every page changed (the name, a choice) since the pages were drawn. */
     private var pagesDirty = false
     /** True while the language switch is being set in code, so it is not taken as the owner's choice. */
@@ -463,6 +465,8 @@ class PosterActivity : BaseActivity() {
     private fun chooseDesign(o: PosterOccasion, fromPager: Boolean = false) {
         if (o == occasion) return
         if (step == 1) hideLive()
+        // The new design's picture is not drawn yet; only a change of design says so (see hideLive).
+        liveDrawn = false
         occasion = o
         prefs.edit().putString(KEY_OCCASION, o.key).apply()
         markDesign()
@@ -489,7 +493,11 @@ class PosterActivity : BaseActivity() {
         liveUp = false
         frame.animate().cancel()
         frame.visibility = View.INVISIBLE
-        liveDrawn = false
+        // liveDrawn is NOT forgotten here. The pages also move without a change of design (a slide begun and let
+        // go, the pages settling again when the poster's size is fitted to the screen): the picture is still the
+        // chosen design's, and the layer comes back when the pages rest. Forgotten here, as it was until 19 Nov
+        // 2026, the layer never came back until something drew the poster again and the page stood in for it:
+        // with a flat page, one more way a design showed two pictures.
     }
 
     /** A wait for the hero's first frame is over: the design or its hero changed under it. */
@@ -564,7 +572,7 @@ class PosterActivity : BaseActivity() {
         pager.registerOnPageChangeCallback(object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
                 pagerIdle = state == androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE
-                if (!pagerIdle) hideLive() else maybeShowLive()
+                if (!pagerIdle) { pagerMoves++; hideLive() } else maybeShowLive()
             }
 
             override fun onPageSelected(position: Int) {
@@ -1719,10 +1727,17 @@ class PosterActivity : BaseActivity() {
             val (full, _) = PosterImage.draw(posterContext(), pageInput(posterContext(), occasion))
             Bitmap.createScaledBitmap(full, pageW, pageH, true)
         } else null
-        return Proof(page, thumbs[occasion], flat, heroPlace ?: stageHero?.rect, liveUp)
+        val state = "liveUp=$liveUp liveDrawn=$liveDrawn revealing=$revealing pagerIdle=$pagerIdle item=${pager.currentItem} " +
+            "stage=${stage != null} heroFrame=${stage?.liveFrameUp} shotsOff=$shotsOff page=${page != null} " +
+            "pageJob=${pageJobs[occasion]?.isActive} thumb=${thumbs[occasion] != null} size=${pageW}x$pageH pagerMoves=$pagerMoves"
+        return Proof(page, thumbs[occasion], flat, heroPlace ?: stageHero?.rect, liveUp, state)
     }
 
-    internal class Proof(val page: Bitmap?, val thumb: Bitmap?, val flat: Bitmap?, val hero: android.graphics.RectF?, val liveUp: Boolean)
+    internal class Proof(
+        val page: Bitmap?, val thumb: Bitmap?, val flat: Bitmap?, val hero: android.graphics.RectF?, val liveUp: Boolean,
+        /** What the screen was waiting for, for the proof's message when something never comes. */
+        val state: String
+    )
 
     // ------------------------------------------------------------------ picture
 

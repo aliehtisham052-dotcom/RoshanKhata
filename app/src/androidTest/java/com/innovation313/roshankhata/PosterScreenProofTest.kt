@@ -179,6 +179,7 @@ class PosterScreenProofTest {
                     app.getSharedPreferences("poster", Context.MODE_PRIVATE).edit().putString("occasion", key).commit()
                     ActivityScenario.launch(PosterActivity::class.java).use { scenario ->
                         var proof: PosterActivity.Proof? = null
+                        var last = "the screen never answered"
                         var threeD = false
                         var rtl = false
                         var frameW = 0
@@ -189,6 +190,7 @@ class PosterScreenProofTest {
                             SystemClock.sleep(1000)
                             scenario.onActivity { a ->
                                 val p = a.proof()
+                                last = p.state
                                 if (p.liveUp && p.page != null && p.thumb != null) {
                                     val frame = a.findViewById<View>(R.id.posterFrame)
                                     val hero = a.findViewById<View>(R.id.heroView)
@@ -203,7 +205,8 @@ class PosterScreenProofTest {
                         SystemClock.sleep(1500)
                         save("screen_one_picture_${key}_$tag.png")
                         val p = proof
-                            ?: throw AssertionError("$key/$tag: the live poster, its page and its small picture never all came")
+                            ?: throw AssertionError("$key/$tag: the live poster, its page and its small picture never all came: $last")
+                        android.util.Log.i("Poster3D", "one picture: $key/$tag came: $last")
                         if (tag == "ur") assertTrue("$key/$tag: the screen does not read right to left, so this proves nothing", rtl)
                         if (!threeD) return@use
                         val r = p.hero ?: throw AssertionError("$key/$tag: no place for the hero")
