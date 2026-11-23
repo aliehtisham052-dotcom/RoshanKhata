@@ -10,8 +10,11 @@ behaviour (lesson 125: drift protection, not proof). It fails when
   - a guard's file does not exist or does not contain its symbol as a word;
   - a test's file does not exist, or it does not declare the class named after "::" (a script check is named by its
     path alone, e.g. scripts/check_strings.py);
-
-and passes with NONE in the tests column, printing how many classes have no test yet: that is the honest backlog.
+  - a Kotlin test file named for a class has no test that runs (every @Test also @Ignore'd);
+  - a fixed class has NONE in its tests column. Until 23 Nov 2026 NONE passed as the honest backlog; the last such
+    class (BC-168) got its test that day, and from then on a class goes in with its test in the same commit (the
+    owner's rule of 16 Nov 2026). Only a row whose class starts "OPEN FAULT:" (found, not yet fixed) may say NONE, and
+    every run prints those ids.
 
     python3 scripts/check_bug_classes.py
 """
@@ -42,6 +45,19 @@ def declares(path: pathlib.Path, name: str) -> bool:
         return False
     return re.search(r"^\s*(?:internal\s+|private\s+|abstract\s+|open\s+)*(?:class|object)\s+" + re.escape(name) + r"\b",
                      text, re.M) is not None
+
+
+def runs_a_test(path: pathlib.Path) -> bool:
+    """A Kotlin test file has at least one @Test that is not @Ignore'd (a whole class @Ignore'd runs none)."""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return False
+    if re.search(r"@Ignore\b[^\n]*\n(?:\s*@[^\n]*\n)*\s*(?:internal\s+|open\s+)*class\s", text):
+        return False
+    tests = len(re.findall(r"@Test\b", text))
+    ignored = len(re.findall(r"@Ignore\b", text))
+    return tests > ignored
 
 
 def check(rows):
@@ -80,6 +96,9 @@ def check(rows):
                     failures.append(f"{where}: guard symbol {symbol} is not in {path}")
         if r["tests"] == "NONE":
             no_test.append(r["id"])
+            if not r["class"].startswith("OPEN FAULT:"):
+                failures.append(f"{where}: no test (NONE): a fixed class goes in with the test that holds it "
+                                f"(an open fault's class starts 'OPEN FAULT:')")
         elif r["tests"]:
             for t in (x.strip() for x in r["tests"].split(";")):
                 path, _, name = t.partition("::")
@@ -88,6 +107,8 @@ def check(rows):
                     failures.append(f"{where}: test file {path} does not exist")
                 elif name and not declares(p, name):
                     failures.append(f"{where}: {path} declares no class {name}")
+                elif name and p.suffix == ".kt" and not runs_a_test(p):
+                    failures.append(f"{where}: {path} runs no test (every @Test is @Ignore'd)")
                 elif not name and p.suffix not in (".py", ".sh"):
                     failures.append(f"{where}: {path} needs ::ClassName (only a script is named by its path alone)")
     return failures, no_test, len(seen)
@@ -107,8 +128,8 @@ def main() -> int:
         print("\n".join(failures))
         print(f"bug-class register: {len(failures)} problem(s)")
         return 1
-    print(f"bug-class register OK: {count} classes, {count - len(no_test)} with a test, {len(no_test)} with NONE "
-          f"(the backlog: {', '.join(no_test) if no_test else 'none'})")
+    print(f"bug-class register OK: {count} classes, {count - len(no_test)} with their test, "
+          f"{len(no_test)} open fault(s){': ' + ', '.join(no_test) if no_test else ''}")
     return 0
 
 

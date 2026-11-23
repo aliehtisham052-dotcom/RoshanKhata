@@ -304,25 +304,30 @@ class ViewerActivity : BaseActivity() {
         lifecycleScope.launch {
             val read = DriveBackup.readForBusiness(this@ViewerActivity, account, businessId)
             val pair = read.getOrNull()
-            if (read.exceptionOrNull() is DriveBackup.LockedOnDrive) {
-                // The owner set a backup password (T1): say so and where the helper's copy comes from, not "load failed".
-                setBusy(false)
-                MaterialAlertDialogBuilder(this@ViewerActivity)
-                    .setTitle(R.string.backup_pw_ask_title)
-                    .setMessage(getString(R.string.viewer_drive_locked, getString(R.string.viewer_menu)))
-                    .setPositiveButton(R.string.ok, null)
-                    .show()
-                return@launch
+            when (DriveBackup.helperReadOf(read)) {
+                DriveBackup.HelperRead.LOCKED -> {
+                    // The owner set a backup password (T1, BC-168): LockedOnDrive is said as what it is, and where the
+                    // helper's copy comes from — never "load failed".
+                    setBusy(false)
+                    MaterialAlertDialogBuilder(this@ViewerActivity)
+                        .setTitle(R.string.backup_pw_ask_title)
+                        .setMessage(getString(R.string.viewer_drive_locked, getString(R.string.viewer_menu)))
+                        .setPositiveButton(R.string.ok, null)
+                        .show()
+                    return@launch
+                }
+                DriveBackup.HelperRead.FAILED, DriveBackup.HelperRead.NONE -> {
+                    setBusy(false)
+                    Toast.makeText(
+                        this@ViewerActivity,
+                        if (read.isFailure) R.string.viewer_load_failed else R.string.viewer_no_backup,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@launch
+                }
+                DriveBackup.HelperRead.READ -> Unit
             }
-            if (read.isFailure || pair == null) {
-                setBusy(false)
-                Toast.makeText(
-                    this@ViewerActivity,
-                    if (read.isFailure) R.string.viewer_load_failed else R.string.viewer_no_backup,
-                    Toast.LENGTH_LONG
-                ).show()
-                return@launch
-            }
+            if (pair == null) return@launch
             // The owner's photos, when his Drive backup carries them (his own
             // "include images" switch). None there, or a failed download, is
             // not a failed load: the book still opens, without pictures.

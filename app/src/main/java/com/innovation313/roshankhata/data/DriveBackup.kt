@@ -930,18 +930,37 @@ object DriveBackup {
                 ?: return@withContext Result.success(null)
             val out = ByteArrayOutputStream()
             drive.files().get(file.id).executeMediaAndDownloadTo(out)
-            val bytes = out.toByteArray()
-            // A backup locked with the owner's password (17 Nov 2026) is not text: read as UTF-8 it would only come back
-            // as "unreadable". This phone holds no password to open it, so it is said as what it is.
-            if (BackupSeal.isSealed(bytes)) return@withContext Result.failure(LockedOnDrive())
-            Result.success(String(bytes, Charsets.UTF_8) to (file.modifiedTime?.value ?: 0L))
+            helperCopy(out.toByteArray(), file.modifiedTime?.value ?: 0L)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
+    /**
+     * What a read-only phone makes of the bytes of the owner's Drive backup. A backup locked with the owner's password
+     * (17 Nov 2026) is not text: read as UTF-8 it would only come back as "unreadable". This phone holds no password to
+     * open it, so it is [LockedOnDrive], never text (BC-167, BC-168).
+     */
+    fun helperCopy(bytes: ByteArray, modified: Long): Result<Pair<String, Long>> =
+        if (BackupSeal.isSealed(bytes)) Result.failure(LockedOnDrive())
+        else Result.success(String(bytes, Charsets.UTF_8) to modified)
+
     /** The owner's Drive backup is locked with his backup password: a read-only phone cannot open it. */
     class LockedOnDrive : IllegalStateException("the Drive backup is locked with a password")
+
+    /** What a read-only phone says of one Drive read: locked, failed, no backup, or a copy to load. */
+    enum class HelperRead { LOCKED, FAILED, NONE, READ }
+
+    /**
+     * The read-only phone's one rule for a Drive read (BC-168): a backup the owner locked is said as locked — the
+     * helper's copy then comes from a file the owner sends — never as the generic "load failed".
+     */
+    fun helperReadOf(read: Result<Pair<String, Long>?>): HelperRead = when {
+        read.exceptionOrNull() is LockedOnDrive -> HelperRead.LOCKED
+        read.isFailure -> HelperRead.FAILED
+        read.getOrNull() == null -> HelperRead.NONE
+        else -> HelperRead.READ
+    }
 
     /**
      * The owner's photo archive for one business, by that business's id — for

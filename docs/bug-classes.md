@@ -16,7 +16,7 @@ One line per new class, **in the same commit as the fix and its test**. A tab be
 | `class` | The class in one line, as the owner would see it — not the one sentence or screen that showed it. |
 | `root_cause` | Why it happened, in one line. |
 | `guard` | `path::symbol` for the code that keeps it out (the symbol must be a word in that file); several joined by ` ; `; a script is named by its path alone; `NONE` when nothing in the code guards it yet. |
-| `tests` | `path::ClassName` for each test that fails when the class comes back, joined by ` ; `; a script check by its path alone (`scripts/check_strings.py`); `NONE` when no test holds it yet. |
+| `tests` | `path::ClassName` for each test that fails when the class comes back, joined by ` ; `; a script check by its path alone (`scripts/check_strings.py`). `NONE` only on an `OPEN FAULT:` row. |
 | `lesson` | The CLAUDE.md lesson number(s), or `-`. |
 | `found` | `YYYY-MM-DD`, or `<=YYYY-MM-DD` when only "on or before" is on record. |
 
@@ -28,10 +28,12 @@ BC-077	hudhud	A bare "bill" read as a supplier bill count	The sense had learnt e
 
 Rules:
 
-- **Never invent a test.** If nothing holds the class yet, write `NONE`: those rows are the honest backlog, and the check
-  prints their ids every run.
+- **Never invent a test, and never leave a fixed class without one.** Since 23 Nov 2026 the check fails a fixed class
+  whose tests column says `NONE` (the last one, BC-168, got its test that day); it also fails a Kotlin test file whose
+  every `@Test` is `@Ignore`'d. A class that cannot be held by a unit test is held by a check script or an on-device
+  test, named here like any other.
 - A test named here must really fail when the class comes back: break the guard once on purpose (lessons 100, 126) before
   writing its name.
-- An open fault found but not yet fixed is a row too, its class starting `OPEN FAULT:`, its tests `NONE` until the fix
-  lands with its test.
+- An open fault found but not yet fixed (waiting for the owner, a device or a native speaker) is a row too, its class
+  starting `OPEN FAULT:`, its tests `NONE` until the fix lands with its test; the check prints those ids every run.
 - Run `python3 scripts/check_bug_classes.py` before the push.
