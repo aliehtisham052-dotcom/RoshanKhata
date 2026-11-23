@@ -3039,6 +3039,14 @@ Each of these cost a build or a bug.
 
 ---
 
+163. **A learnt reading is held by its rules, or it is held by one shuffle.** Learning Hudhud's sense again from the very
+     same bank with another seed (314, 315 for the app's 313) moved the owner's short list by up to 10 of 200, changed 18-28
+     rows of each review set and failed about 25 guard tests — a money side and an order to a machine among them (23 Nov 2026,
+     BC-240). Every floor was measured at one shuffle. What must never move (which way money is owed, a write ordered of the
+     machine) is said by the rules, and HudhudSeedSafeTest learns five other senses to prove it; everything else is expected to
+     move at a retrain and is re-checked then, row by row. Before any retrain: measure two other seeds first, so the change
+     the data makes is not mistaken for the change the shuffle makes.
+
 ## Working with the owner
 
 - **Reply in Roman Urdu** unless English is asked for.
@@ -4679,4 +4687,30 @@ Importance 6. Phone only: the computer draws the heroes flat everywhere, so it s
   screenshots go to the poster-proof release; measured on CI: page against flat 19 to 33 of 255, small picture against
   page 2.6 to 3.6); PosterPageKeepTest (pure, run here).
 - **Not done:** the live clock's second hand still differs from its page by what the clock has ticked; a real phone.
+
+### 23 Nov 2026: the training handover's and the register's last items (kmp-desktop-16; CI only, nothing tried on a real phone)
+
+The owner: complete what is left of the training handover and the bug register, report, then start the next process.
+Importance 6-10 by item. Plain shared Kotlin was compiled and run here (lesson 93): 788 shared tests, all 21 release checks.
+
+- **The register is complete and strict:** BC-168 got its test (`DriveBackup.helperCopy`/`helperReadOf`, HelperDriveLockedTest);
+  `check_bug_classes.py` now fails a fixed class whose tests say NONE (only an `OPEN FAULT:` row may) and a Kotlin test file
+  whose every `@Test` is `@Ignore`'d. 202 classes, 202 with their test.
+- **Hudhud's money side and machine orders no longer hang on one shuffle (BC-240, lesson 163):** `VoiceQuestion.othersHoldMine`
+  ("logon ke paas mere paise" is the shop's to get), `Hudhud.sideShaped` (a side said by the whole shape beats the privacy page),
+  Bengali/Hindi accountant words in `OWED_SAID`, Arabic "أستلمه" a word of getting, `MACHINE_ORDER` (an order to the machine
+  never opens a write; book names stood aside). `HudhudSense.train(lines, seed)` (the app's stays `SEED` 313).
+  HudhudSeedSafeTest learns five other senses. Six breakages: four killed, two redundant guards removed. No figure moved at the
+  app's sense: owner short 157, 1,000 sentences 807, held-out 1,077 of 1,170, review sets 0 changed.
+- **The owed retrain (audit L017) waits for the next training step, by measurement:** the Indic-safe sentence key (it dropped
+  Devanagari and Bengali vowel signs: 43 sentences wrongly left out) and leaving the 6 held-out copies out of the bank were tried
+  and work, but any retrain moves about 25 guard readings (lesson 163); it is done once, with the new data and a stable recipe,
+  not twice. The recipe: in gen_hudhud_bank.py keep marks in U+0900-U+09FF when comparing, leave a first-round copy of a held-out
+  sentence out of the bank, then learn again and re-check every floor; the 23 Nov handover has the measured figures. Owner and review sets stay regression floors that share sentences with the bank (Phase
+  9: only the sealed set is said as accuracy).
+- **Cashbook money form (audit L160, BC-241):** a rebuilt screen keeps the way paid and the day picked
+  (`CashbookActivity.keptForm`, CashFormKeepTest).
+- **Checked and closed, no change needed:** L006 (aab.yml runs run_release_checks.sh since 17 Nov), L021 (Windows Hudhud opens
+  on the card's window: `DeskStart`, and keeps its own counts), L161 ("Imran ka phone number" with no Imran asks whose: right),
+  L162 ("Ali Raza se kitna milega" is his balance: right), T19 (Gemma's prohibited-use page read: audit phase_t19).
 

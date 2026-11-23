@@ -573,6 +573,10 @@ class CashbookActivity : BaseActivity() {
         fun chosenMethod(): String? = chipKeys[cgMethod.checkedChipId]
         restore?.let { t ->
             listOf(etAmount, etCategory, etNote, etRef).forEachIndexed { i, box -> t.getOrNull(i)?.let { box.setText(it) } }
+            // The way it was paid, kept with the boxes (23 Nov 2026, audit L160: a turned screen put Cash back).
+            keptMethod(t)?.let { key ->
+                chipKeys.entries.firstOrNull { it.value == key }?.let { cgMethod.check(it.key) }
+            }
         }
         editing?.let { e ->
             etAmount.setText(Format.plain(e.amount))
@@ -620,7 +624,11 @@ class CashbookActivity : BaseActivity() {
 
         // When the cash actually moved. Defaults to now, which is right most of
         // the time, but the day's takings are often written up at closing.
-        var chosenTime = editing?.timestamp ?: System.currentTimeMillis()
+        // The day and time picked, kept with the boxes (23 Nov 2026, audit L160: a turned screen put now back).
+        var chosenTime = editing?.timestamp ?: keptTime(restore) ?: System.currentTimeMillis()
+        if (editing == null) {
+            cashFormTexts = { keptForm(listOf(etAmount, etCategory, etNote, etRef).map { it.text.toString() }, chosenMethod(), chosenTime) }
+        }
         DateTimeField.attach(
             activity = this,
             button = view.findViewById(R.id.btnCashDate),
@@ -895,5 +903,18 @@ class CashbookActivity : BaseActivity() {
         private const val STATE_PHOTO_ROW = "photo_row"
         private const val STATE_FORM_INCOME = "form_income"
         private const val STATE_FORM_TEXTS = "form_texts"
+
+        /**
+         * The money form as a rebuilt screen keeps it (23 Nov 2026, audit L160, BC-241): its four boxes (amount, category,
+         * note, reference), then the way it was paid and the day and time picked — a turned screen put Cash and now back.
+         */
+        internal fun keptForm(boxes: List<String>, method: String?, time: Long): List<String> =
+            boxes + listOf(method.orEmpty(), time.toString())
+
+        /** The way paid a kept form says, or null (none, or a form kept by an older build: four boxes only). */
+        internal fun keptMethod(texts: List<String>?): String? = texts?.getOrNull(4)?.takeIf { it.isNotEmpty() }
+
+        /** The day and time a kept form says, or null. */
+        internal fun keptTime(texts: List<String>?): Long? = texts?.getOrNull(5)?.toLongOrNull()
     }
 }
