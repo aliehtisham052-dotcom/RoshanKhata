@@ -57,6 +57,9 @@ object HudhudSense {
     internal const val MIN_DF = 3
     /** How many times the bank is read while learning. */
     internal const val EPOCHS = 12
+
+    /** The shuffle the app's sense is learnt with (lesson 106: the same on every computer). */
+    internal const val SEED = 313L
     /** How sharply the scores are made shares (a softmax's temperature): low, so a clear meaning stands out. */
     internal const val TEMPERATURE = 0.1
 
@@ -161,8 +164,12 @@ object HudhudSense {
      * averaging the weights over every step keeps one late example from tipping them). A fixed order and a fixed
      * shuffle, so the same bank always learns the same weights, on any computer. The weights are then made whole numbers
      * (a sixteen-bit share of the largest), as the phone keeps them.
+     *
+     * [seed] is the shuffle's: the app's sense is learnt with [SEED] alone. Another seed is only for tests that check a reading
+     * does not hang on one shuffle (23 Nov 2026, BC-240: with the same bank, seeds 314 and 315 read two money sentences on
+     * the other side and an order to a machine as an entry).
      */
-    internal fun train(lines: List<String>): Model {
+    internal fun train(lines: List<String>, seed: Long = SEED): Model {
         val labelIds = LinkedHashMap<String, Int>()
         val rows = ArrayList<Pair<Int, List<String>>>()
         for (line in lines) {
@@ -189,7 +196,7 @@ object HudhudSense {
             Example(label, own, FloatArray(own.size) { (raw[it] / norm).toFloat() })
         }
         val labels = labelIds.size
-        val w = learn(examples, labels, features.size)
+        val w = learn(examples, labels, features.size, seed)
         // Sixteen-bit whole numbers, a share of the largest weight; noughts are not kept.
         var largest = 0f
         for (v in w) largest = maxOf(largest, abs(v))
@@ -211,12 +218,12 @@ object HudhudSense {
         return Model(labelIds.keys.toList(), features, df, n, scale, start, pl.toByteArray(), pw.toShortArray())
     }
 
-    private fun learn(examples: List<Example>, labels: Int, features: Int): FloatArray {
+    private fun learn(examples: List<Example>, labels: Int, features: Int, seed: Long): FloatArray {
         val w = FloatArray(features * labels)
         val sum = FloatArray(features * labels)
         if (examples.isEmpty() || labels == 0) return w
         val order = examples.indices.toMutableList()
-        val random = java.util.Random(313)
+        val random = java.util.Random(seed)
         var step = 1f
         repeat(EPOCHS) {
             java.util.Collections.shuffle(order, random)

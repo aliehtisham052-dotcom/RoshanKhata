@@ -297,6 +297,8 @@ object VoiceQuestion {
         // Arabic's "on the customers". Money still to come ("paise kitne aane hain") is HudhudEveryday's: it needs its guards.
         "receivable", "receivables", "wusool karna", "wasool karna", "wasool karne", "wusool karne", "وصول کرنا", "वसूल करना",
         "পাব", "পাবো", "على الزبائن", "على العملاء",
+        // 23 Nov 2026 (BC-240): Arabic "what I must receive" ("ما يجب أن أستلمه من العملاء"); only the app's shuffle of the sense read it.
+        "أستلمه", "أستلم", "استلمه",
         // 16 Nov 2026 (audit T11): Hindi's receivables; Indonesian "to be billed" (tagih alone was there, not its forms).
         "लेनदारी", "ditagih", "menagih")
 
@@ -808,6 +810,26 @@ object VoiceQuestion {
     internal fun owedToMe(t: String): Boolean =
         (saysAny(t, TO_ME) && saysAny(t, WILL_GIVE)) || saysAny(t, OWED_TO_ME) ||
             (saysAny(t, listOf("pay me", "pay us", "give me money")) && saysAny(t, listOf("will")))
+            || othersHoldMine(t)
+
+    /**
+     * My money held by others (23 Nov 2026, BC-240): "logon ke paas mere kitne paise hain", "mera kitna paisa logon ke paas phansa hua
+     * hai", "لوگوں کے پاس میرے کتنے پیسے ہیں" — what the shop is owed, said by who holds it. Until then only Hudhud's learnt sense
+     * placed it, and another shuffle of the same bank read two such sentences as what the shop owes. The money must be "mine" and the
+     * holder somebody else; "mere paas logon ke paise" (theirs with me) is the shop's own debt ([MY_DEBT]) and is never this.
+     */
+    private fun othersHoldMine(t: String): Boolean =
+        saysAny(t, OTHERS_HOLD) && saysAny(t, MINE) && saysAny(t, MONEY_WORDS) && !saysAny(t, MY_DEBT)
+
+    private val OTHERS_HOLD = listOf(
+        "logon ke paas", "logo ke paas", "logon ke pas", "logon par", "logo par", "logon pe", "logo pe", "logon ki taraf",
+        "customers ke paas", "customer ke paas", "gahakon ke paas", "grahakon ke paas", "bazaar mein", "bazar mein", "baazar mein",
+        "market mein", "market me",
+        "لوگوں کے پاس", "لوگوں پر", "لوگوں کی طرف", "گاہکوں کے پاس", "بازار میں", "مارکیٹ میں",
+        "लोगों के पास", "लोगों पर", "लोगों की तरफ", "ग्राहकों के पास", "बाजार में", "बाज़ार में", "मार्केट में"
+    )
+    private val MINE = listOf("mera", "mere", "meri", "میرا", "میرے", "میری", "मेरा", "मेरे", "मेरी")
+    private val MONEY_WORDS = listOf("paisa", "paise", "pese", "paisay", "raqam", "rakam", "پیسہ", "پیسے", "رقم", "पैसा", "पैसे", "रकम", "रक़म")
 
     private val TO_ME = listOf("mujhe", "mujhay", "mjhe", "mujhko", "hamein", "hamen", "humein", "humen", "hume", "مجھے", "ہمیں", "আমাকে", "আমাদের", "मुझे",
         "हमें", "मुझको", "مون کي", "اسان کي", "ke saya", "kepada saya", "ke kami", "kepada kami", "به من", "به ما")

@@ -18,35 +18,43 @@ class HudhudMoneySideTest {
     private val GET = VoiceQuestion.Kind.TO_GET
     private val GIVE = VoiceQuestion.Kind.TO_GIVE
 
-    private val pairs = listOf(
-        Triple("en", "how much total is still to come from customers", GET),
-        Triple("en", "money to get total", GET),
-        Triple("en", "how much I owe to suppliers in total", GIVE),
-        Triple("en", "my debt total how much buddy", GIVE),
-        Triple("ur", "مارکیٹ میں میرا کتنا پیسہ پھنسا ہے", GET),
-        Triple("ur", "میرے اوپر کتنا قرضہ ہے", GIVE),
-        Triple("ur-Latn", "market mein mera kitna paisa phansa hai", GET),
-        Triple("ur-Latn", "mere upar kitna qarza hai", GIVE),
-        Triple("hi", "मार्केट में मेरा कितना पैसा फंसा है", GET),
-        Triple("hi", "ज़रा बताओ टोटल लेनदारी कितनी है", GET),
-        Triple("hi", "मेरे ऊपर कितना कर्ज़ा है", GIVE),
-        Triple("hi", "ज़रा बताओ कुल देनदारी कितनी है", GIVE),
-        Triple("bn", "টোটাল পাওনা", GET),
-        Triple("bn", "সাপ্লায়ারদের মোট কত দিতে হবে", GIVE),
-        Triple("ar", "مجموع ما يجب أن أستلمه من العملاء", GET),
-        Triple("ar", "كل اللي عليا للموردين كام", GIVE),
-        Triple("ar", "كم باقي علينا ندفع", GIVE),
-        Triple("fa", "مردم چقدر به من بدهکارند", GET),
-        Triple("fa", "کل بدهی مشتریان به مغازه", GET),
-        Triple("fa", "مغازه چقدر بدهی داره", GIVE),
-        Triple("fa", "کل پولی که باید بدم چقدره", GIVE),
-        Triple("sd", "ادا سڀني گراهڪن کان ڪيترا وٺڻا آهن", GET),
-        Triple("sd", "سپلائرن کي ڪيترا ڏيڻا آهن", GIVE),
-        Triple("in", "total yang harus diterima", GET),
-        Triple("in", "berapa total yang harus ditagih dari pelanggan", GET),
-        Triple("in", "total utang saya ke pemasok berapa", GIVE),
-        Triple("in", "utang aku totalnya berapa ya", GIVE)
-    )
+    private val pairs get() = PAIRS
+
+    companion object {
+        private val GET = VoiceQuestion.Kind.TO_GET
+        private val GIVE = VoiceQuestion.Kind.TO_GIVE
+
+        /** Every pair: language, sentence, the side it says. HudhudSeedSafeTest reads them under other shuffles too. */
+        internal val PAIRS = listOf(
+            Triple("en", "how much total is still to come from customers", GET),
+            Triple("en", "money to get total", GET),
+            Triple("en", "how much I owe to suppliers in total", GIVE),
+            Triple("en", "my debt total how much buddy", GIVE),
+            Triple("ur", "مارکیٹ میں میرا کتنا پیسہ پھنسا ہے", GET),
+            Triple("ur", "میرے اوپر کتنا قرضہ ہے", GIVE),
+            Triple("ur-Latn", "market mein mera kitna paisa phansa hai", GET),
+            Triple("ur-Latn", "mere upar kitna qarza hai", GIVE),
+            Triple("hi", "मार्केट में मेरा कितना पैसा फंसा है", GET),
+            Triple("hi", "ज़रा बताओ टोटल लेनदारी कितनी है", GET),
+            Triple("hi", "मेरे ऊपर कितना कर्ज़ा है", GIVE),
+            Triple("hi", "ज़रा बताओ कुल देनदारी कितनी है", GIVE),
+            Triple("bn", "টোটাল পাওনা", GET),
+            Triple("bn", "সাপ্লায়ারদের মোট কত দিতে হবে", GIVE),
+            Triple("ar", "مجموع ما يجب أن أستلمه من العملاء", GET),
+            Triple("ar", "كل اللي عليا للموردين كام", GIVE),
+            Triple("ar", "كم باقي علينا ندفع", GIVE),
+            Triple("fa", "مردم چقدر به من بدهکارند", GET),
+            Triple("fa", "کل بدهی مشتریان به مغازه", GET),
+            Triple("fa", "مغازه چقدر بدهی داره", GIVE),
+            Triple("fa", "کل پولی که باید بدم چقدره", GIVE),
+            Triple("sd", "ادا سڀني گراهڪن کان ڪيترا وٺڻا آهن", GET),
+            Triple("sd", "سپلائرن کي ڪيترا ڏيڻا آهن", GIVE),
+            Triple("in", "total yang harus diterima", GET),
+            Triple("in", "berapa total yang harus ditagih dari pelanggan", GET),
+            Triple("in", "total utang saya ke pemasok berapa", GIVE),
+            Triple("in", "utang aku totalnya berapa ya", GIVE)
+        )
+    }
 
     @Test fun `every side is read as its own side`() {
         val wrong = pairs.mapNotNull { (lang, said, side) ->
