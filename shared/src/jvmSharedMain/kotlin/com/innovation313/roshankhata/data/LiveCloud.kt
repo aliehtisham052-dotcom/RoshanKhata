@@ -227,6 +227,15 @@ object LiveCloud {
             // A phone this device sent the book to, saying yes through the relay (it serves no WiFi round to say it).
             if (!LiveCrew.confirmFromRelay(sql, dev, msg.optString("name").takeIf { it.isNotBlank() }, msg.optString("pair"))) return false
         }
+        val parcel = LiveSync.Parcel.of(msg.getJSONObject("parcel"))
+        // Another version of the app (24 Nov 2026): nothing of its message is taken — its changes, the devices it
+        // announces, what it says it has heard or never got — and the round says why instead of "Live". Its own
+        // pointers and this device's are not moved, so it is sent again, once, when both run the same version.
+        LiveSync.skewOf(parcel)?.let { why ->
+            LiveSync.noteSkew(sql, parcel, why, now)
+            lastRefusal = why
+            return false
+        }
         // L4 (8 Nov 2026): the sender's announced devices (LiveCrew) are taken only from a device that is a member
         // of this book, so a removed device's message cannot add ghost peers.
         msg.optJSONObject("joins")?.let { LiveCrew.takeJoins(sql, id.device, it) }
@@ -234,7 +243,6 @@ object LiveCloud {
         // A peer back after STALE_MS of silence (resends stopped waiting for it): what it lacks goes at the next round.
         val back = LiveSync.state(sql).peers.firstOrNull { it.device == dev }?.seen?.let { now - it >= STALE_MS } == true
         val theirAck = msg.optJSONObject("acks")?.optLong(id.device, -1L)?.takeIf { it >= 0 }
-        val parcel = LiveSync.Parcel.of(msg.getJSONObject("parcel"))
         // Written, and the pointers moved, in one transaction with the WiFi rounds' (LiveSync.applyFrom).
         // A gap: what came before is on its way again (the sender resends what is not acknowledged).
         // The other device's "need" (it never got lines after it) moves this one's pointer back, as a WiFi
@@ -639,7 +647,7 @@ object LiveCloud {
                     is Result.Done -> mine = r
                     Result.Off, Result.NotPaired -> return r
                     // The book's state, not the relay's: another relay would say the same.
-                    is Result.Refused -> if (r.why == LiveRound.LOST || r.why.startsWith("schema")) return r else if (failed == null) failed = r
+                    is Result.Refused -> if (r.why == LiveRound.LOST || LiveSync.needsUpdate(r.why)) return r else if (failed == null) failed = r
                     // A relay answering 503 is that relay halted or overloaded, never everyone stopped (the kill switch
                     // was read above): passed over like one not reached.
                     Result.Halted -> if (failed == null) failed = Result.Unreachable

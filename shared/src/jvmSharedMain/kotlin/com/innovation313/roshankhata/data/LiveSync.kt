@@ -655,6 +655,18 @@ object LiveSync {
 
         companion object {
             fun of(o: JSONObject): Parcel {
+                val protocol = o.optInt("p", -1)
+                val schema = o.optInt("schema", -1)
+                // A parcel of another protocol or schema is read only as far as its head (SyncSkewTest, 24 Nov 2026): its
+                // changes may be shaped in any way this version does not know, and reading them threw — a relay parcel
+                // that threw was passed over unnoticed, the cursor moved and the screen said "Live". [skewOf] says why
+                // it is refused instead.
+                if (protocol != PROTOCOL || schema != KHATA_DB_VERSION) {
+                    return Parcel(
+                        book = o.optString("book"), device = o.optString("dev"), from = o.optLong("from"), to = o.optLong("to"),
+                        changes = emptyList(), more = o.optBoolean("more", false), schema = schema, protocol = protocol
+                    )
+                }
                 val arr = o.getJSONArray("c")
                 val changes = (0 until arr.length()).map { i ->
                     val c = arr.getJSONObject(i)
@@ -662,7 +674,7 @@ object LiveSync {
                 }
                 return Parcel(
                     book = o.getString("book"), device = o.getString("dev"), from = o.getLong("from"), to = o.getLong("to"),
-                    changes = changes, more = o.optBoolean("more", false), schema = o.getInt("schema"), protocol = o.getInt("p")
+                    changes = changes, more = o.optBoolean("more", false), schema = schema, protocol = protocol
                 )
             }
         }
@@ -777,6 +789,49 @@ object LiveSync {
         Parcel(id.first, id.second, after, to, changes, lines.size == page)
     }
 
+    /**
+     * Why [p] cannot be written by this version, or null when it can: another parcel protocol or another database
+     * schema ("protocol 2", "schema 45" — the sender's own numbers). Two devices must run the same schema to sync
+     * (lesson 20: a pushed schema version is frozen), so both refuse each other until both are updated.
+     */
+    fun skewOf(p: Parcel): String? = when {
+        p.protocol != PROTOCOL -> "protocol ${p.protocol}"
+        p.schema != KHATA_DB_VERSION -> "schema ${p.schema}"
+        else -> null
+    }
+
+    /** True for a refusal [skewOf] words: the other device runs another version, so updating is what mends it. */
+    fun needsUpdate(why: String?): Boolean = why != null && (why.startsWith("schema") || why.startsWith("protocol"))
+
+    /**
+     * What a refusal of [why] says when it is told to the sender: this device's own number, not the sender's own back to
+     * it ("schema 46" from a computer on 46 to a phone on 45 — the phone's screen names the other device's version).
+     */
+    fun oursFor(why: String): String = if (why.startsWith("protocol")) "protocol $PROTOCOL" else "schema $KHATA_DB_VERSION"
+
+    private const val SKEW = "live_skew:"
+
+    /**
+     * A refused parcel is remembered per device ("live_skew:<device>" = "<why>|<seen at>") so a screen can say that
+     * this peer needs an update, instead of "never heard" (a refused parcel does not count as hearing the peer: its
+     * pointers and [Peer.seen] stay as they were, so nothing is resent to it in a loop). Only a device this book
+     * knows is noted — a stranger with the book's key writes nothing. Cleared by the next parcel that is taken.
+     */
+    internal suspend fun noteSkew(sql: SyncSql, p: Parcel, why: String, now: Long) {
+        sql.write {
+            if (!hasTables() || meta("book") != p.book) return@write
+            if (rows("SELECT 1 FROM sync_peers WHERE device = ?", listOf(p.device), "I").isEmpty()) return@write
+            setMeta(SKEW + p.device, "$why|$now")
+        }
+    }
+
+    /** The devices whose last parcel this version refused, with the reason ("schema 45"): they need an update, or this one does. */
+    suspend fun skewed(sql: SyncSql): Map<String, String> = sql.read {
+        if (!hasTables()) return@read emptyMap()
+        rows("SELECT k, v FROM sync_meta WHERE k LIKE 'live\\_skew:%' ESCAPE '\\'", types = "TT")
+            .associate { (it[0] as String).removePrefix(SKEW) to (it[1] as String? ?: "").substringBefore('|') }
+    }
+
     /** How a parcel went in. */
     sealed interface Applied {
         /** Written: [rows] changes landed; this device has now read the sender's log up to [to]. */
@@ -800,8 +855,7 @@ object LiveSync {
         sql: SyncSql, p: Parcel, theirAck: Long?, now: Long = System.currentTimeMillis(),
         name: String? = null, host: String? = null, port: Int? = null
     ): Applied {
-        if (p.protocol != PROTOCOL) return Applied.Refused("protocol ${p.protocol}")
-        if (p.schema != KHATA_DB_VERSION) return Applied.Refused("schema ${p.schema}")
+        skewOf(p)?.let { why -> noteSkew(sql, p, why, now); return Applied.Refused(why) }
         val result = sql.write {
             val peer = rows("SELECT sent, recv FROM sync_peers WHERE device = ?", listOf(p.device), "II").firstOrNull()
                 ?: return@write Applied.Refused("unknown device")
@@ -814,6 +868,8 @@ object LiveSync {
                 p.to <= recv -> Applied.Done(0, 0, recv)
                 else -> applyIn(p, recv, ack, now)
             }
+            // This device speaks this version's words again: a note that it did not is cleared (see [skewed]).
+            setMeta(SKEW + p.device, null)
             val newRecv = if (r is Applied.Done) maxOf(recv, r.to) else recv
             val newSent = maxOf(sent, minOf(ack, logCounter()))
             exec("UPDATE sync_peers SET recv = ?, sent = ?, seen = ? WHERE device = ?", listOf(newRecv, newSent, now, p.device))
@@ -1063,7 +1119,10 @@ object LiveSync {
     private suspend fun SyncTx.applyOne(
         c: Change, from: String, mine: String, sentToThem: Long, now: Long, cache: MutableMap<String, List<Col>>
     ): One {
-        val t = SyncSchema.table(c.table) ?: return One.Skipped
+        // A table this version does not sync (another version of the app names one more): kept aside as a held change,
+        // tried again each parcel and, after a day, listed in sync_conflict for the owner — never dropped in silence
+        // while the pointer moves on past it (SyncSkewTest, 24 Nov 2026).
+        val t = SyncSchema.table(c.table) ?: return One.Unwritable
         if (t.keyed) return applySetting(c, from, mine, sentToThem, now)
         val n = t.name
         var localId = idOf(n, c.uid)
@@ -1082,6 +1141,10 @@ object LiveSync {
             return One.Skipped
         }
         val cols = columns(n, cache).filter { it.name != "id" && it.name != "uid" && it.name !in t.localOnly && row.has(it.name) }
+        // Fields this book has no column for (the sender's version has more of the table): the rest is written, and the
+        // difference is kept for the owner once the row is in (below), not dropped without a word.
+        val haveCols = columns(n, cache).map { it.name }.toSet()
+        val unknownCols = row.keys().asSequence().filter { it !in haveCols }.sorted().toList()
         val values = ArrayList<Any?>(cols.size)
         val pending = ArrayList<Triple<String, String, String>>()
         for (col in cols) {
@@ -1161,6 +1224,7 @@ object LiveSync {
         for ((col, target, tuid) in pending) {
             exec("INSERT OR REPLACE INTO sync_pending (tbl, uid, col, target, tuid) VALUES (?, ?, ?, ?, ?)", listOf(n, localUid, col, target, tuid))
         }
+        if (unknownCols.isNotEmpty()) noteCounter(n, localUid, "the other version has more fields than this one: " + unknownCols.joinToString(", "), from, now, cache)
         return One.Wrote(conflict)
     }
 

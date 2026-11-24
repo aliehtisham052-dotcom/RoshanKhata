@@ -77,6 +77,9 @@ object LiveWire {
     const val OK: Int = 1
     const val BAD: Int = 2
 
+    /** A round's refusal when the other device does not speak this version's wire (24 Nov 2026): both must be updated. */
+    const val WIRE_OTHER = "protocol wire"
+
     /** Pairing since 23 Oct 2026 ([SealedChunks]); "RKA1", one sealed frame, is refused without being read. */
     private val PAIR = "RKA2".toByteArray(Charsets.US_ASCII)
     private val LIVE = "RKL1".toByteArray(Charsets.US_ASCII)
@@ -229,10 +232,18 @@ object LiveWire {
          */
         val marks: List<String>? = null,
         /** On the receiving side: the book as it arrived, on the disk ([serve]); [backup] is then empty. */
-        val file: java.io.File? = null
+        val file: java.io.File? = null,
+        /**
+         * The database schema the sender runs, as its offer says (24 Nov 2026); null from a build that did not say. Two
+         * devices on another schema cannot sync ([LiveSync.skewOf]), so such a pairing is refused at the door, before a book is
+         * replaced for a sync that could never run.
+         */
+        val schema: Int? = null
     ) {
-        fun withCode(c: String?) = Offer(book, key, device, name, seq, backup, mark, pair, c, peers, marks, file)
-        fun withFile(f: java.io.File?) = Offer(book, key, device, name, seq, backup, mark, pair, code, peers, marks, f)
+        fun withCode(c: String?) = Offer(book, key, device, name, seq, backup, mark, pair, c, peers, marks, file, schema)
+        fun withFile(f: java.io.File?) = Offer(book, key, device, name, seq, backup, mark, pair, code, peers, marks, f, schema)
+        /** False for an offer that says it comes from another schema than this build's. */
+        val sameSchema: Boolean get() = schema == null || schema == KHATA_DB_VERSION
     }
 
     /**
@@ -254,6 +265,7 @@ object LiveWire {
     fun offerHead(o: Offer): ByteArray {
         val head = JSONObject().apply {
             put("book", o.book); put("key", o.key); put("dev", o.device); put("name", o.name); put("seq", o.seq)
+            put("schema", KHATA_DB_VERSION)
             if (o.mark != null) put("mark", o.mark)
             if (o.pair != null) put("pair", o.pair)
             if (o.peers != null && o.peers.length() > 0) put("peers", o.peers)
@@ -266,7 +278,7 @@ object LiveWire {
         val nl = bytes.indexOf('\n'.code.toByte())
         require(nl > 0)
         decodeHead(bytes.copyOfRange(0, nl))!!.let { h ->
-            Offer(h.book, h.key, h.device, h.name, h.seq, bytes.copyOfRange(nl + 1, bytes.size), h.mark, h.pair, null, h.peers, h.marks)
+            Offer(h.book, h.key, h.device, h.name, h.seq, bytes.copyOfRange(nl + 1, bytes.size), h.mark, h.pair, null, h.peers, h.marks, null, h.schema)
         }
     }.getOrNull()
 
@@ -282,7 +294,9 @@ object LiveWire {
             o.optString("pair").takeIf { it.length in 8..64 && it.all { c -> c in '0'..'9' || c in 'a'..'f' } },
             null,
             o.optJSONObject("peers"),
-            marks
+            marks,
+            null,
+            if (o.has("schema")) o.optInt("schema", -1) else null
         )
     }.getOrNull()
 
@@ -366,6 +380,8 @@ object LiveWire {
                     val head = r.next(SealedChunks.MAX_HEAD)?.let { b -> decodeHead(b) }
                     val pair = head?.pair
                     if (head == null || pair == null || r.done) return Given.Refused
+                    // A device on another schema cannot sync with this one: its book is not taken (the giver is told BAD).
+                    if (!head.sameSchema) { out.write(BAD); out.flush(); return Given.Refused }
                     if (!r.readTo(file, MAX_BYTES.toLong())) return Given.Refused
                     val offer = head.withFile(file).withCode(pairCode(invite.secret, pair))
                     kept = try { accept(offer) } catch (e: Exception) { false }
@@ -402,7 +418,16 @@ object LiveWire {
                 val out = DataOutputStream(s.getOutputStream().buffered())
                 out.write(LIVE); out.writeInt(sealed.size); out.write(sealed); out.flush()
                 val input = DataInputStream(s.getInputStream().buffered())
-                val n = try { input.readInt() } catch (e: IOException) { return Answer.NotHere }
+                // The first byte of a length is 0 or 1 (a round is at most 16 MiB); the computer's one-byte [BAD] is what a
+                // wire it does not speak is answered with (an unknown frame name): said, not read as "not keeping this book".
+                val first = try { input.read() } catch (e: IOException) { return Answer.NotHere }
+                if (first == BAD) return Answer.Got(JSONObject().put("refused", WIRE_OTHER), host)
+                if (first < 0) return Answer.NotHere
+                val n = try {
+                    val rest = ByteArray(3)
+                    input.readFully(rest)
+                    (first shl 24) or ((rest[0].toInt() and 0xFF) shl 16) or ((rest[1].toInt() and 0xFF) shl 8) or (rest[2].toInt() and 0xFF)
+                } catch (e: IOException) { return Answer.NotHere }
                 if (n <= 0 || n > MAX_ROUND_BYTES) return Answer.NotHere
                 val bytes = try { readUpTo(input, n) } catch (e: IOException) { return Answer.NotHere }
                 val plain = open(keyHex, bytes, Road.REPLY) ?: return Answer.NotHere
@@ -480,6 +505,9 @@ object LiveWire {
                     val r = SealedChunks.Reader(input, WifiSync.chunkKey(secret), PAIR)
                     val head = r.next(SealedChunks.MAX_HEAD)?.let { b -> decodeHead(b) }
                     if (head == null) { refuse(it, out); return@use }
+                    // A phone on another schema cannot sync with this book however it is paired (LiveSync.skewOf): refused
+                    // here, before its book is read or the owner is asked to replace anything.
+                    if (!head.sameSchema) { refuse(it, out); return@use }
                     // The sender holds the code's secret: its book is read now, a record at a time, onto the disk.
                     it.soTimeout = 60_000
                     val f = java.io.File.createTempFile("rk-pair-", ".part", spool?.apply { mkdirs() })

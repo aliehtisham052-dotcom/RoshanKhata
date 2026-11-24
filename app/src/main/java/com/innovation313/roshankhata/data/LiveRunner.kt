@@ -315,7 +315,7 @@ object LiveRunner {
                         state.value = Status.Rejoin
                         return ROUND_MS * 3
                     }
-                    state.value = if (why.startsWith("schema")) Status.UpdateNeeded(why) else Status.Failed(why)
+                    state.value = if (LiveSync.needsUpdate(why)) Status.UpdateNeeded(why) else Status.Failed(why)
                     return 60_000L
                 }
                 LiveSync.noteMark(sql, marks(app))
@@ -450,7 +450,7 @@ object LiveRunner {
             } else if (side) {
                 relayMisses = minOf(relayMisses + 1, 6)
                 Long.MAX_VALUE
-            } else if (r is LiveCloud.Result.Refused && r.why.startsWith("schema")) {
+            } else if (r is LiveCloud.Result.Refused && LiveSync.needsUpdate(r.why)) {
                 state.value = Status.UpdateNeeded(r.why)
                 60_000L
             } else {

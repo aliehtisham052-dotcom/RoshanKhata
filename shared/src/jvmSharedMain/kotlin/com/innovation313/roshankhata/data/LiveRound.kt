@@ -227,6 +227,12 @@ object LiveRound {
         if (want != got) return null
         val theirAck = request.getLong("ack")
         val parcel = LiveSync.Parcel.of(request.getJSONObject("parcel"))
+        // Another version of the app (24 Nov 2026): nothing of its words is taken — not its changes, nor the devices it
+        // announces or what it says it has heard — and it is told this device's own version, so its screen names it.
+        LiveSync.skewOf(parcel)?.let { why ->
+            LiveSync.noteSkew(sql, parcel, why, now)
+            return JSONObject().apply { put("dev", id.device); put("name", id.name); put("refused", LiveSync.oursFor(why)) }
+        }
         // The book's other devices, as the phone knows them, before its changes are written (LiveCrew).
         request.optJSONObject("joins")?.let { LiveCrew.takeJoins(sql, id.device, it) }
         request.optJSONArray("knows")?.let { a -> LiveCrew.heard(sql, dev, (0 until a.length()).map { a.optString(it) }) }
@@ -263,6 +269,14 @@ object LiveRound {
         val me = LiveSync.identity(sql)?.device
         if (me == null || dev == me) return Took(false, 0, null, "echo")
         val name = reply.optString("name").takeIf { it.isNotBlank() }
+        // A reply of another version of the app (24 Nov 2026): a pairing is not said yes to, nor the devices it announces
+        // taken, by a computer this phone cannot talk to; its own numbers are what the screen names.
+        reply.optJSONObject("parcel")?.let { LiveSync.Parcel.of(it) }?.let { theirs ->
+            LiveSync.skewOf(theirs)?.let { why ->
+                LiveSync.noteSkew(sql, theirs, why, now)
+                return Took(false, 0, null, why)
+            }
+        }
         val pending = pending(sql)
         val asked = request.optString("pair").takeIf { it.isNotBlank() }
         val joined = pending != null && asked != null && pending.pair == asked
