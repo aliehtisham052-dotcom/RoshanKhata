@@ -51,7 +51,8 @@ RUNTIME="$(jar 'kotlin-stdlib-[0-9]*.jar'):$(jar 'kotlinx-coroutines-core-jvm-*.
 exec 9>"$LOCK"
 flock 9
 mkdir -p "$WORK"
-rm -rf "$WORK/classes" "$WORK/gen"
+# A compile that fails must not leave the last run's verdict to be read as this one's (24 Nov 2026, BC-273).
+rm -rf "$WORK/classes" "$WORK/gen" "$WORK/tout.txt"
 python3 "$HERE/gen_w.py" "$WORK/gen/W.kt" || exit 2
 java -Xmx3g -cp "$COMPILER" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -no-stdlib -cp "$RUNTIME" -d "$WORK/classes" \
   $engine "$HERE"/stubs/*.kt "$WORK/gen/W.kt" $tests "$@" > "$WORK/clog.txt" 2>&1 || {

@@ -86,7 +86,8 @@ data class ZReport(
             // notice and Sale Insights count them. The day report said only the counter's tickets.
             val salesTotal = LineMath.round(dao.salesTotalBetween(from, to))
             // The day's returns come off the profit as the sales report takes them (22 Oct 2026, the review).
-            val returned = dao.returnedLinesBetween(from, to)
+            // Each returned line reversed at what its sold line was counted (BC-262): one figure with the sales report.
+            val returned = ReturnedLines.spread(dao, dao.returnedLinesBetween(from, to))
             val returnedMargin = returned.sumOf { it.revenue - (it.cost ?: 0.0) }
             val returnsTotal = LineMath.round(doneReturns.sumOf { it.total })
             // The day's close, if one was made for this window's day.

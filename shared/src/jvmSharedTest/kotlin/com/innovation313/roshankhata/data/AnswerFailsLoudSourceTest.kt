@@ -42,14 +42,16 @@ class AnswerFailsLoudSourceTest {
         assertTrue("a failed read is told as a failure, never as none:\n" + hits.joinToString("\n"), hits.isEmpty())
     }
 
-    @Test fun `best effort is used in three named places only`() {
+    @Test fun `best effort is used in four named places only`() {
         val hits = files.flatMap { f ->
             codeLines(f).filter { (_, l) -> l.contains("HudhudReadFailure.bestEffort") }.map { (_, l) -> f.name to l.trim() }
         }
-        assertEquals(hits.toString(), 3, hits.size)
+        assertEquals(hits.toString(), 4, hits.size)
         val bookHits = hits.filter { it.first == "AnswerBook.kt" }.map { it.second }
         assertTrue("the day's chips", bookHits.any { it.contains("c.alerts(dao)") })
         assertTrue("the voice's own words", bookHits.any { it.contains("own()") })
+        // The seal line beside the backup card (H6, 24 Nov 2026): an extra line, never the answer itself.
+        assertTrue("the seal line", bookHits.any { it.contains("latestSealHead()") })
         assertTrue("the version name", hits.any { it.first == "AnswerFacts.kt" && it.second.contains("appVersion()") })
     }
 

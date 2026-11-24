@@ -185,7 +185,7 @@ object AnswerBook {
             Hudhud.Ask.Today -> today(context, dao)
             is Hudhud.Ask.Parties -> named(context, ask.ids, parties)
             is Hudhud.Ask.Help -> help(context, ask.key)
-            Hudhud.Ask.BackupStatus -> backup(context)
+            Hudhud.Ask.BackupStatus -> sealNote(context, dao, backup(context))
             Hudhud.Ask.Drawer -> drawer(context, dao)
             Hudhud.Ask.Salaam -> AnswerCard(
                 Mood.GOOD,
@@ -1171,6 +1171,22 @@ object AnswerBook {
                 }
             }
         }
+    }
+
+    /**
+     * The book seal's newest day under the backup's own answer (24 Nov 2026, the catalog's last book_seals columns): "Book
+     * seal: <when> · N entries sealed", read from the newest seal's head ([KhataDao.latestSealHead], never its leaves or
+     * its signed tokens). Told to who may open the Seal screen (the owner: it hangs off Backup, which only the owner opens;
+     * [AnswerGate] has no backup() of its own, so settings(), the same owner-only level, asks), and only when the book has a
+     * seal. It says what was written and when, never that anything is proved: the phone's clock dates it, the time services'
+     * answers are the Seal screen's to show. Nothing is added for a cashier, a manager or a book that was never sealed.
+     */
+    private suspend fun sealNote(context: AnswerEnv, dao: KhataDao, card: AnswerCard): AnswerCard {
+        if (!AnswerGate.settings()) return card
+        val head = HudhudReadFailure.bestEffort<SealHead?>(null) { dao.latestSealHead() } ?: return card
+        val line = AnswerFacts.line(context, W.muhar_title, AnswerFacts.whenOf(context, head.sealedAt)) +
+            " \u00B7 " + context.quantity(WP.muhar_entries, head.leafCount, head.leafCount)
+        return card.copy(lines = card.lines + line)
     }
 
     /**

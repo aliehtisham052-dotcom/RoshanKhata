@@ -47,11 +47,12 @@ object StockTransfer {
      * cannot be said.
      */
     fun inUnitOf(from: Product, qty: Double, to: Product): Double? {
-        val a = Units.norm(from.defaultUnit)
-        val b = Units.norm(to.defaultUnit)
-        if (a == null || b == null || a == b) return qty
-        if (Units.hasPack(to) && Units.norm(to.packUnit) == a) return qty * to.packSize!!
-        if (Units.hasPack(from) && Units.norm(from.packUnit) == b) return qty / from.packSize!!
+        // The units contract ([Units]): one name per unit, the one stated pack conversion, a quantity kept to six places (BC-271).
+        if (Units.agree(from.defaultUnit, to.defaultUnit)) return qty
+        // from's own unit is to's pack: to's own units are that many in each
+        if (Units.isPack(to, from.defaultUnit)) return Units.toBase(to, qty, from.defaultUnit).first
+        // to's own unit is from's pack: from's own units, as packs
+        if (Units.isPack(from, to.defaultUnit)) return Units.fromBase(from, qty, to.defaultUnit)
         return null
     }
 }

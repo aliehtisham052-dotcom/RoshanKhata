@@ -22,9 +22,13 @@ object LedgerLines {
     /** Customers per read: under SQLite's 999 values before 3.32 (Android 10 and older), and one 2 MB window. */
     const val SLICE = 400
 
-    /** Who owes, by the rule the single query had: a live customer whose balance is at least 0.005. */
+    /**
+     * Who owes, by the rule the single query had: a live customer whose balance is more than nothing — by the money
+     * contract ([Money.isPositive]: half the shop's own coin, 0.5 of a rupee-less coin or 0.0005 of a dinar), not a fixed
+     * half paisa (BC-263: a dinar balance of 0.004 is still owed and was left out).
+     */
     fun owing(parties: List<PartyWithBalance>): List<Long> =
-        parties.filter { it.isCustomer && it.balance >= 0.005 }.map { it.id }
+        parties.filter { it.isCustomer && Money.isPositive(it.balance) }.map { it.id }
 
     /** [partyIds]' live lines, by customer and time. */
     suspend fun of(dao: KhataDao, partyIds: List<Long>): List<LedgerPoint> {
@@ -46,8 +50,11 @@ object LedgerLines {
     /** [parties]' entries as [Aging] needs them, each party's newest first; only parties with something to age. */
     suspend fun agingMoves(dao: KhataDao, parties: List<PartyWithBalance>): List<AgingMove> {
         val out = ArrayList<AgingMove>()
-        val ids = parties.filter { kotlin.math.abs(it.balance) > 0.005 }.map { it.id }.sorted()
-        for (slice in ids.chunked(SLICE)) out += dao.agingMovesOf(slice)
+        for (slice in agingIds(parties).chunked(SLICE)) out += dao.agingMovesOf(slice)
         return out
     }
+
+    /** Whose lines [agingMoves] reads: a party whose balance is more than nothing either way by the money contract ([Money.isNotZero], BC-263), sorted. */
+    fun agingIds(parties: List<PartyWithBalance>): List<Long> =
+        parties.filter { Money.isNotZero(it.balance) }.map { it.id }.sorted()
 }

@@ -55,17 +55,17 @@ column	book_seals.auditHead	String?	STRUCT	why=the seal chain's own material, sh
 column	book_seals.digest	String	STRUCT	why=the seal chain's own material, shown only in the proof file
 column	book_seals.fromId	Long	STRUCT	pattern
 column	book_seals.id	Long	STRUCT	pattern
-column	book_seals.leafCount	Int	GAP	why=no question reaches them yet: when the book was last sealed needs an ask of its own in Hudhud's reader (Hudhud.kt), the answer layer has nothing to answer until then (the seal proof on an entry holds them)
+column	book_seals.leafCount	Int	READ	reader=AnswerBook.sealNote;gate=SETTINGS;screen=SealsActivity;why=the newest seal's day and how many entries it holds ride under the backup answer (Ask.BackupStatus) as 'Book seal: <when> · N entries sealed', for the owner only: the Seal screen hangs off Backup (BACKUP), AnswerGate has no backup() and settings() is the same owner-only level, only the head is read, never the leaves or the signed tokens, and nothing says a seal proves anything
 column	book_seals.leaves	ByteArray?	STRUCT	why=the seal chain's own material, shown only in the proof file
 column	book_seals.prevDigest	String?	STRUCT	why=the seal chain's own material, shown only in the proof file
-column	book_seals.sealedAt	Long	GAP	why=no question reaches them yet: when the book was last sealed needs an ask of its own in Hudhud's reader (Hudhud.kt), the answer layer has nothing to answer until then (the seal proof on an entry holds them)
+column	book_seals.sealedAt	Long	READ	reader=AnswerBook.sealNote;gate=SETTINGS;screen=SealsActivity;why=the newest seal's day and how many entries it holds ride under the backup answer (Ask.BackupStatus) as 'Book seal: <when> · N entries sealed', for the owner only: the Seal screen hangs off Backup (BACKUP), AnswerGate has no backup() and settings() is the same owner-only level, only the head is read, never the leaves or the signed tokens, and nothing says a seal proves anything
 column	book_seals.toId	Long	STRUCT	pattern
 column	book_seals.tokens	String?	WITHHELD	why=the time services' signed answers: raw proof bytes
 column	book_settings.key	String	WITHHELD	why=the book's own settings: PIN hashes, access keys and relay passes live here
 column	book_settings.value	String?	WITHHELD	why=the book's own settings: PIN hashes, access keys and relay passes live here
 column	cashbook.amount	Double	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	cashbook.category	String	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	cashbook.createdBy	String?	GAP	why=who wrote a cashbook row (schema 46) is read only by a shift's drawer (ShiftMath.byHand), no question asks who typed money in or out yet, and an answer would need the REPORTS gate a khata entry's writer has
+column	cashbook.createdBy	String?	READ	reader=AnswerFacts.cashbook;gate=REPORTS;screen=CashbookActivity;stricter=the cashbook list shows no writer at all (only the shift drawer and the entry screen's writer line use it), so Hudhud tells it only with REPORTS like an entry's writer;why=a row's line says who typed it ('By <name>') only when the book holds a name: the owner's rows and rows older than the column carry none and are not guessed (lesson 155)
 column	cashbook.deletedAt	Long?	STRUCT	pattern
 column	cashbook.id	Long	STRUCT	pattern
 column	cashbook.isDeleted	Boolean	STRUCT	pattern
@@ -158,7 +158,7 @@ column	invoices.templateId	Int	STRUCT	pattern
 column	invoices.uid	String?	STRUCT	pattern
 column	loyalty.id	Long	STRUCT	pattern
 column	loyalty.isDeleted	Boolean	STRUCT	pattern
-column	loyalty.note	String?	GAP	why=the note is the reason words of one point row (a sale, a void, a return), no question asks why a point moved
+column	loyalty.note	String?	STRUCT	why=every writer of a point row puts the sale's or the return's own number in it (KhataDao.postSale, voidSale, postReturn: saleNumber, returnNumber), so it is a copy of a number the ticket's card already tells through saleId, never words of the owner's, it is the key dropLoyaltyNoted uses to take a return's points back
 column	loyalty.partyId	Long	STRUCT	pattern
 column	loyalty.points	Double	READ	reader=AnswerCounterFacts.loyalty;via=KhataDao.pointRowsBetween;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	loyalty.saleId	Long?	STRUCT	pattern
@@ -253,7 +253,7 @@ column	sale_items.rate	Double	READ	reader=AnswerCounterFacts.ticket;gate=REPORTS
 column	sale_items.saleId	Long	STRUCT	pattern
 column	sale_items.taxAmount	Double?	READ	reader=AnswerCounterFacts.dayFigures;via=ZReport.compute;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
 column	sale_items.taxIncluded	Boolean?	READ	reader=AnswerCounterFacts.dayFigures;via=ZReport.compute;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
-column	sale_items.taxRate	Double?	GAP	why=the line's rate of tax is folded into taxAmount, which the tax figures tell, and no question asks a line's rate
+column	sale_items.taxRate	Double?	READ	reader=AnswerCounterFacts.ticket;gate=REPORTS;screen=CounterSaleActivity;stricter=told inside the ticket card, which stays with REPORTS (owner and manager) as its rate and discount do
 column	sale_items.uid	String?	STRUCT	pattern
 column	sale_items.unit	String?	READ	reader=AnswerFacts.topGoods;via=KhataDao.topProductsBetween;gate=REPORTS;screen=InsightsActivity
 column	sale_payments.amount	Double	READ	reader=AnswerCounterFacts.ticket;also=AnswerCounterFacts.dayFigures;gate=REPORTS;screen=CounterSaleActivity;stricter=the screen lists the rows to anyone who opens it, but Hudhud adds them into one figure and that stays with REPORTS (owner and manager) until the owner decides a cashier may hear it
@@ -323,7 +323,7 @@ column	sales.voidedAt	Long?	READ	reader=AnswerCounterFacts.voided;via=KhataDao.v
 column	schemes.claimedAmount	Double?	READ	reader=AnswerFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
 column	schemes.claimedAt	Long?	READ	reader=AnswerFacts.schemeAnswer;gate=REPORTS;screen=SchemesActivity;stricter=a scheme's reward and claim are money owed by a company, told only to who may see reports
 column	schemes.company	String?	READ	reader=AnswerFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
-column	schemes.createdAt	Long	GAP	why=the Schemes screen shows no day for when a scheme was written, and nobody asks it
+column	schemes.createdAt	Long	STRUCT	why=the day the row was written, not the scheme's own start (startDate, which the card tells): no screen shows it and the Schemes screen never sorts by it
 column	schemes.endDate	Long	READ	reader=AnswerFacts.schemeAnswer;gate=NONE;screen=SchemesActivity
 column	schemes.id	Long	STRUCT	pattern
 column	schemes.isDeleted	Boolean	STRUCT	pattern
@@ -427,7 +427,7 @@ column	transactions.season	String?	READ	reader=AnswerFacts.person;gate=NONE;scre
 column	transactions.timestamp	Long	READ	reader=AnswerFacts.person;gate=NONE;screen=PartyDetailActivity
 column	transactions.uid	String?	STRUCT	pattern
 column	transactions.unit	String?	READ	reader=AnswerFacts.person;gate=NONE;screen=EntryDetailActivity
-profile	askShareAfterEntry	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
+profile	askShareAfterEntry	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, and an Other shop's own trade words (the trade answer already says the owner's name for it through tradeLabel). AnswerProfile (AnswerEnv.kt) has no getter for any of the seven and each platform's env (HudhudPhoneEnv, HudhudDeskEnv, the roles test's profile) would have to give one, then a line in AnswerFacts.shop's whole-profile card behind SETTINGS: a change across files this step did not own
 profile	bankAccountTitle	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	bankIban	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	bankJazzCash	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
@@ -440,13 +440,13 @@ profile	businessPhone	String?	READ	reader=AnswerFacts.shop;gate=NONE;screen=Busi
 profile	calendar	ShopCalendar.Kind	READ	reader=AnswerFacts.clock;gate=NONE;screen=BusinessSettingsActivity;alsoseen=MainActivity;why=every date every screen shows is written in the shop's calendar
 profile	country	ShopCountry	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	currency	String	READ	reader=AnswerFacts.shop;gate=NONE;screen=BusinessSettingsActivity;alsoseen=MainActivity;why=the sign is on every amount every screen shows (through Format), Home reads it to ask the country once
-profile	logoDesign	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
-profile	otherTradeItems	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
-profile	otherTradeName	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
-profile	paymentOnReminder	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
-profile	photoOnStatement	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
-profile	receiptHeader	String	GAP	why=made of the name, address, phone and tax number the shop card already tells (the tax number only with SETTINGS), so it has no answer of its own
-profile	sealChoice	SealChoice	GAP	why=choices of how printed sheets and the entry flow look or behave, no question reaches them yet
+profile	logoDesign	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, and an Other shop's own trade words (the trade answer already says the owner's name for it through tradeLabel). AnswerProfile (AnswerEnv.kt) has no getter for any of the seven and each platform's env (HudhudPhoneEnv, HudhudDeskEnv, the roles test's profile) would have to give one, then a line in AnswerFacts.shop's whole-profile card behind SETTINGS: a change across files this step did not own
+profile	otherTradeItems	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, and an Other shop's own trade words (the trade answer already says the owner's name for it through tradeLabel). AnswerProfile (AnswerEnv.kt) has no getter for any of the seven and each platform's env (HudhudPhoneEnv, HudhudDeskEnv, the roles test's profile) would have to give one, then a line in AnswerFacts.shop's whole-profile card behind SETTINGS: a change across files this step did not own
+profile	otherTradeName	String?	GAP	why=choices of how printed sheets and the entry flow look or behave, and an Other shop's own trade words (the trade answer already says the owner's name for it through tradeLabel). AnswerProfile (AnswerEnv.kt) has no getter for any of the seven and each platform's env (HudhudPhoneEnv, HudhudDeskEnv, the roles test's profile) would have to give one, then a line in AnswerFacts.shop's whole-profile card behind SETTINGS: a change across files this step did not own
+profile	paymentOnReminder	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, and an Other shop's own trade words (the trade answer already says the owner's name for it through tradeLabel). AnswerProfile (AnswerEnv.kt) has no getter for any of the seven and each platform's env (HudhudPhoneEnv, HudhudDeskEnv, the roles test's profile) would have to give one, then a line in AnswerFacts.shop's whole-profile card behind SETTINGS: a change across files this step did not own
+profile	photoOnStatement	Boolean	GAP	why=choices of how printed sheets and the entry flow look or behave, and an Other shop's own trade words (the trade answer already says the owner's name for it through tradeLabel). AnswerProfile (AnswerEnv.kt) has no getter for any of the seven and each platform's env (HudhudPhoneEnv, HudhudDeskEnv, the roles test's profile) would have to give one, then a line in AnswerFacts.shop's whole-profile card behind SETTINGS: a change across files this step did not own
+profile	receiptHeader	String	WITHHELD	why=not a stored field but the name, address, phone and tax number joined for a receipt's head: each is told by its own reader and gate (the tax number only with SETTINGS), so a whole-header answer would be a second way past that gate
+profile	sealChoice	SealChoice	GAP	why=choices of how printed sheets and the entry flow look or behave, and an Other shop's own trade words (the trade answer already says the owner's name for it through tradeLabel). AnswerProfile (AnswerEnv.kt) has no getter for any of the seven and each platform's env (HudhudPhoneEnv, HudhudDeskEnv, the roles test's profile) would have to give one, then a line in AnswerFacts.shop's whole-profile card behind SETTINGS: a change across files this step did not own
 profile	strn	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	taxLabel	String	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=no screen of a cashier names the country, the email, the tax number or the bank, so they stay with the owner
 profile	termsAndConditions	String?	READ	reader=AnswerFacts.shop;gate=SETTINGS;screen=BusinessSettingsActivity;why=the terms are written on the settings screen the owner opens, no other screen of a cashier shows them
@@ -456,15 +456,15 @@ more	app_lock	group=security;target=appLock	ANSWERED	tier=NEVER;ask=Help;why=the
 more	auto_title	group=data;target=AutomationsDialog.show	ANSWERED	tier=OPEN;ask=Automations;why=he tells each automation's state and hour, Open shows the dialog
 more	duplicate_customers	group=data;target=DuplicateCustomersActivity	ANSWERED	tier=NEVER;ask=Help;why=the screen_duplicates page says where it is and what it does, he never opens it and never does it
 more	help_support	group=help;target=HelpActivity	OPEN	tier=OPEN
-more	hudhud_greet_title	group=display;target=HudhudGreet.settings	GAP	tier=LOOK;why=his own morning greeting switch, no answer yet. A page in the switch's own words (hudhud_greet_help) was tried on 17 Nov 2026 and took asks with his name in them (a Hindi hop order became a guess), so it needs words of its own or an ask in Hudhud.kt
+more	hudhud_greet_title	group=display;target=HudhudGreet.settings	GAP	tier=LOOK;why=his own morning greeting switch, no answer yet. A page in the switch's own words (hudhud_greet_help) was tried on 17 Nov 2026 and took asks with his name in them (a Hindi hop order became a guess), so it needs an Ask of its own in Hudhud.kt (a LOOK-tier switch read and flipped through HudhudLookDoor's pattern, with Undo), which this step could not edit
 more	hudhud_voice_title	group=display;target=HudhudVoiceSheet.show	ANSWERED	tier=LOOK;ask=Voice;why=the voice questions change his own voice, pace and switch
 more	language	group=display;target=LanguageActivity	OPEN	tier=OPEN
 more	mera_khata_title	group=data;target=MeraKhataActivity	OPEN	tier=OPEN
 more	paisa_title	group=data;target=PaymentVoiceActivity	OPEN	tier=OPEN
-more	radar_title	group=data;target=RadarUi.settings	GAP	tier=OPEN;why=no answer of its own yet for turning the Radar on or off (the feature_radar page explains the feature)
-more	screen_privacy	group=security;target=ScreenPrivacyDialog.show	GAP	tier=NEVER;why=hides the screen in Recents: a safety switch with no page yet. A page in the switch's own words (screen_privacy_explain) was tried on 17 Nov 2026 and took other questions (Roman Urdu "din band kaise karte hain" left Close the day for it), so it needs words of its own
+more	radar_title	group=data;target=RadarUi.settings	ANSWERED	tier=OPEN;ask=WhenPays;why=asked when somebody will pay he says where the Radar stands: off, 'turn it on to see it on each customer's page' (radar_state_off), else the reading, REPORTS, and never on a helper's phone. The switch itself stays the owner's tap (More > Payment Radar)
+more	screen_privacy	group=security;target=ScreenPrivacyDialog.show	NOT-ASKED	tier=NEVER;why=hides the screen in Recents: a safety switch he never flips and says nothing of. A page in the switch's own words (screen_privacy_explain) was tried on 17 Nov 2026 and took other questions (Roman Urdu 'din band kaise karte hain' left Close the day for it), so the switch stays out of his reach on purpose
 more	share_app	group=help;target=shareApp	NOT-ASKED	tier=NEVER;why=sharing sends a message, and his files may never send (check_hudhud_readonly.py)
-more	shop_settings_row	group=shop;target=ShopSheet.show	GAP	tier=NEVER;why=opens the shop sheet (name, other shops, profile): SETTINGS, the owner only
+more	shop_settings_row	group=shop;target=ShopSheet.show	NOT-ASKED	tier=NEVER;why=a door to the shop sheet (name, other shops, profile), owner only (SETTINGS): what is in it is told by the shop answers, each by its own gate, and he never opens it, other shops are other books and he answers only from the one open
 more	text_size	group=display;target=textSize	ANSWERED	tier=LOOK;ask=Look;why=at the owner's word he changes the text size one step or to a level, the card says what it was and has an Undo (HudhudLookDoor is the only writer)
 more	theme	group=display;target=theme	ANSWERED	tier=LOOK;ask=Look;why=at the owner's word he changes the theme (light, dark, as the phone), the card says what it was and has an Undo (HudhudLookDoor is the only writer)
 more	viewer_menu	group=data;target=ViewerActivity	ANSWERED	tier=NEVER;ask=Help;why=the screen_viewer page says where it is and what it does, he never opens it and never does it

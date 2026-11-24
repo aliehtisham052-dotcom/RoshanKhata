@@ -115,9 +115,5 @@ object PaymentHabit {
         return Habit(typical, waiting, late)
     }
 
-    private fun median(values: List<Int>): Int {
-        val s = values.sorted()
-        val mid = s.size / 2
-        return if (s.size % 2 == 1) s[mid] else Math.round((s[mid - 1] + s[mid]) / 2.0).toInt()
-    }
+    private fun median(values: List<Int>): Int = Median.of(values)
 }

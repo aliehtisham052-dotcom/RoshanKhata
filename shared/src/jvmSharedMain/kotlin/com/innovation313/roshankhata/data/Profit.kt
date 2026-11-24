@@ -1,7 +1,6 @@
 package com.innovation313.roshankhata.data
 
 import java.util.Calendar
-import java.util.Locale
 
 /**
  * What the shop actually earned on what it sold.
@@ -15,7 +14,8 @@ import java.util.Locale
  * 2. Otherwise the cost is the weighted average of every purchase of that
  *    product dated ON OR BEFORE the sale — the price the shop had actually
  *    paid by the time it sold. A purchase recorded after the sale cannot have
- *    been its cost, so it does not count.
+ *    been its cost, so it does not count. The sales report's khata lines cost
+ *    a sale by the very same call ([Cost.forSale], BC-261).
  * 3. A line whose product has no priced purchase by then, whose unit does not
  *    match the purchases (bought in "bag", sold in "kg" — see [Stock]), or
  *    which carries no product or no sale rate at all, has NO cost. It is left
@@ -61,7 +61,10 @@ object Profit {
         val entryLinesTotal: Double? = null,
         /** The cost the owner wrote on the product, and the unit it is per (8 Nov review M49: the sales report used it, Insights did not). */
         val costPrice: Double? = null,
-        val productUnit: String? = null
+        val productUnit: String? = null,
+        /** The product's pack (carton = 12 pieces), so a sale in the pack is costed as the sales report costs it (BC-261). */
+        val packUnit: String? = null,
+        val packSize: Double? = null
     ) {
         /** What the entry actually charged for each rupee of its goods: never more than 1 (freight on top is not profit). */
         val charged: Double get() {
@@ -125,36 +128,37 @@ object Profit {
             else ((coveredRevenue / salesTotal) * 100).toInt().coerceIn(0, 100)
     }
 
-    /** The [Stock] rule: a blank unit disagrees with nothing; two different units do. */
-    private fun unitsAgree(a: String?, b: String?): Boolean {
-        val x = a?.trim()?.lowercase(Locale.ROOT)?.takeIf { it.isNotEmpty() }
-        val y = b?.trim()?.lowercase(Locale.ROOT)?.takeIf { it.isNotEmpty() }
-        return x == null || y == null || x == y
-    }
-
     /**
      * The purchase rate for one sale line, or null when there is none to be
      * had honestly. Exposed for the tests; [compute] is the caller.
+     *
+     * One cost rule with the sales report (BC-261, 24 Nov 2026): the owner's cost price, else the weighted average of the
+     * purchases dated on or before the sale, else the newest rate that can be said — [Cost.forSale], the call the report's
+     * khata lines make too, with packs and units by [Units] ([Cost.forUnit]). Only a batch the owner chose for the line
+     * is costed on its own rate, ahead of the average.
      */
     internal fun costFor(
         line: SaleLine,
         purchasesById: Map<Long, PurchaseLine>,
         purchasesByProduct: Map<Long, List<PurchaseLine>>
     ): Double? {
-        // 0. The cost the owner wrote on the product, as the sales report's rule (Cost.perUnit) puts it first.
-        line.costPrice?.let { if (unitsAgree(line.productUnit, line.unit)) return it }
+        val productId = line.productId
+        val product = Product(
+            id = productId ?: 0L, name = line.itemName.orEmpty(), nameKey = "", normalisedName = "",
+            defaultUnit = line.productUnit, packUnit = line.packUnit, packSize = line.packSize, costPrice = line.costPrice
+        )
+        // 0. The cost the owner wrote on the product, as the sales report's rule puts it first (said for the line's own unit).
+        line.costPrice?.let { own -> Cost.forUnit(product, line.unit, own)?.let { return it } }
         // 1. The batch the owner chose, when its unit does not contradict the line.
         line.billItemId?.let { purchasesById[it] }?.let { batch ->
-            if (unitsAgree(batch.unit, line.unit)) return batch.rate
+            if (Units.agree(batch.unit, line.unit)) return batch.rate
         }
-        // 2. Weighted average of what was bought by the day of the sale.
-        val productId = line.productId ?: return null
-        val before = purchasesByProduct[productId].orEmpty()
-            .filter { it.billDate <= line.timestamp && it.quantity > 0.0 && unitsAgree(it.unit, line.unit) }
-        if (before.isEmpty()) return null
-        val qty = before.sumOf { it.quantity }
-        if (qty <= 0.0) return null
-        return before.sumOf { it.quantity * it.rate } / qty
+        // 2. What was bought by the day of the sale: the one rule of the sales report.
+        if (productId == null) return null
+        val bought = purchasesByProduct[productId].orEmpty()
+            .sortedWith(compareByDescending<PurchaseLine> { it.billDate }.thenByDescending { it.id })
+            .map { Cost.Dated(it.quantity, it.unit, it.rate, it.billDate) }
+        return Cost.forSale(product, line.timestamp, line.unit, bought)
     }
 
     /**
@@ -279,7 +283,7 @@ object Profit {
             expenses = dao.cashbookExpensesBetween(from - 1, to - 1) + dao.staffPaidBetween(from - 1, to - 1),
             // Each ticket's lines cut to the coin, as the sales report reads them (BC-252): one gross on both screens.
             walkIns = SoldLines.spread(dao.walkInSoldLinesBetween(from, to)),
-            walkInReturns = dao.walkInReturnedLinesBetween(from, to)
+            walkInReturns = ReturnedLines.spread(dao, dao.walkInReturnedLinesBetween(from, to))
         )
     }
 

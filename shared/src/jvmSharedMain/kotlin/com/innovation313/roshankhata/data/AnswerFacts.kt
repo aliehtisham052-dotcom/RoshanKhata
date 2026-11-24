@@ -1288,7 +1288,10 @@ object AnswerFacts {
             rows = rows.sortedByDescending { it.timestamp }.take(TOP).map { r ->
                 Row(0, r.category.ifBlank { c.getString(if (r.isIncome) W.hudhud_l_money_in else W.hudhud_l_money_out) },
                     if (r.isIncome) "+" + AnswerBook.money(r.amount) else AnswerBook.money(-r.amount),
+                    // Who typed the row (schema 46, the catalog's last cashbook column): only a name the book holds. A row with no
+                    // writer is the owner's or older than the column, so it is left unsaid, never guessed (lesson 155).
                     listOfNotNull(whenOf(c, r.timestamp), r.note?.takeIf { it.isNotBlank() },
+                        r.createdBy?.takeIf { it.isNotBlank() }?.let { line(c, W.hudhud_l_by, it) },
                         r.paymentRef?.takeIf { it.isNotBlank() }?.let { Format.ltr(it) }).joinToString(" \u00B7 "), open = open)
             },
             open = open, money = true,

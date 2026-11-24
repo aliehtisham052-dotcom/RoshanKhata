@@ -3329,7 +3329,9 @@ interface KhataDao {
            "t.timestamp AS timestamp, t.isGiven AS isGiven, t.amount AS entryAmount, " +
            "(SELECT SUM(x.quantity * x.rate) FROM entry_items x WHERE x.entryId = t.id AND x.rate IS NOT NULL AND x.quantity IS NOT NULL) AS entryLinesTotal, " +
            "(SELECT pr.costPrice FROM products pr WHERE pr.id = ei.productId) AS costPrice, " +
-           "(SELECT pr.defaultUnit FROM products pr WHERE pr.id = ei.productId) AS productUnit " +
+           "(SELECT pr.defaultUnit FROM products pr WHERE pr.id = ei.productId) AS productUnit, " +
+           "(SELECT pr.packUnit FROM products pr WHERE pr.id = ei.productId) AS packUnit, " +
+           "(SELECT pr.packSize FROM products pr WHERE pr.id = ei.productId) AS packSize " +
            "FROM entry_items ei JOIN transactions t ON t.id = ei.entryId " +
            "JOIN parties p ON p.id = t.partyId " +
            "WHERE t.isDeleted = 0 AND p.isCustomer = 1 AND t.entryKind = 'NORMAL' " +
@@ -3367,10 +3369,14 @@ interface KhataDao {
            "WHERE bi.isDeleted = 0 AND b.isDeleted = 0 AND p.isDeleted = 0 AND bi.rate IS NOT NULL AND bi.rate > 0")
     suspend fun supplierRateLinesOnce(): List<SupplierRates.Line>
 
-    /** Top customers by total purchases in a period. */
+    /**
+     * Top customers by total purchases in a period. The rows are [salesTotalBetween]'s own (BC-265): a customer in the bin is
+     * not left out here while his live sales stay in the total — the party's own flag is not asked, as in every other sales
+     * figure; binning a customer bins his entries, so his sales leave both together.
+     */
     @Query("SELECT p.name AS name, SUM(t.amount) AS total " +
            "FROM transactions t JOIN parties p ON p.id = t.partyId " +
-           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL' " +
+           "WHERE t.isGiven = 1 AND t.isDeleted = 0 AND p.isCustomer = 1 AND t.isQarzeHasna = 0 AND t.entryKind = 'NORMAL' " +
            "AND t.id NOT IN (SELECT refundEntryId FROM sale_returns WHERE refundEntryId IS NOT NULL) " +
            "AND t.timestamp >= :from AND t.timestamp < :to " +
            "GROUP BY t.partyId ORDER BY total DESC LIMIT :limit")
@@ -4855,7 +4861,7 @@ interface KhataDao {
         val refund = LineMath.round(ret.refundAmount)
         val soldLeft: Map<Long, Double> = ticket?.let { sale ->
             val back = returnedOfSale(sale.id).associate { it.saleItemId to it.qty }
-            soldItems.associate { it.id to it.quantity - (back[it.id] ?: 0.0) }
+            soldItems.associate { it.id to ReturnedLines.soldLeft(it.quantity, back[it.id] ?: 0.0) }
         } ?: emptyMap()
         // The last of a ticket back credits exactly what is left of it (3 Nov 2026 audit, M07; the form's own rule).
         val total = ReturnMath.totalFor(lines, ticket, soldLeft, ticket?.let { returnedTotalOfSale(it.id) } ?: 0.0)
@@ -5219,7 +5225,8 @@ interface KhataDao {
     @Query(
         """
         SELECT ri.quantity AS quantity, si.quantity AS soldQuantity, si.rate AS rate, si.discount AS discount, si.costRate AS costRate,
-               si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+               si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount,
+               si.id AS saleItemId, s.id AS saleId, NULL AS spread
         FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
              JOIN sales s ON s.id = si.saleId
         WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND r.timestamp >= :from AND r.timestamp < :to
@@ -5247,7 +5254,8 @@ interface KhataDao {
     @Query(
         """
         SELECT ri.quantity AS quantity, si.quantity AS soldQuantity, si.rate AS rate, si.discount AS discount, si.costRate AS costRate,
-               si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+               si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount,
+               si.id AS saleItemId, s.id AS saleId, NULL AS spread
         FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
              JOIN sales s ON s.id = si.saleId
         WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND r.partyId IS NULL
@@ -5255,6 +5263,14 @@ interface KhataDao {
         """
     )
     suspend fun walkInReturnedLinesBetween(from: Long, to: Long): List<ReturnedLine>
+
+    /**
+     * Every live line of one ticket, in the order [soldLinesBetween] reads them (BC-262): what [ReturnedLines.spread]
+     * cuts the ticket's discount over, so a returned line reverses what its sold line was counted at.
+     */
+    @Query("SELECT id AS saleItemId, quantity AS quantity, rate AS rate, discount AS discount, taxAmount AS taxAmount, taxIncluded AS taxIncluded " +
+           "FROM sale_items WHERE saleId = :saleId AND isDeleted = 0 ORDER BY lineNo ASC")
+    suspend fun ticketLinesOf(saleId: Long): List<ReturnedLines.TicketLine>
 
     /** Cashbook money out that is an expense — not a walk-in's refund (category Return), which is a return. */
     @Query("SELECT COALESCE(SUM(amount), 0) FROM cashbook WHERE isDeleted = 0 AND isIncome = 0 AND NOT (category = 'Return' AND saleId IS NOT NULL) AND timestamp > :from AND timestamp <= :to")
@@ -5595,6 +5611,17 @@ interface KhataDao {
         "WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0 AND i.rate IS NOT NULL AND i.quantity > 0"
     )
     suspend fun purchasesOfProduct(productId: Long): List<Cost.Purchase>
+
+    /**
+     * Every priced purchase of a product with the day of its bill, newest first (BC-261): what a sale's cost is read from
+     * ([Cost.forSale] keeps those on or before the sale). The same lines as [purchasesOfProduct] and
+     * [purchaseRatesNewestFirst], dated.
+     */
+    @Query(
+        "SELECT i.quantity AS qty, i.unit AS unit, i.rate AS rate, b.billDate AS boughtAt FROM bill_items i JOIN supplier_bills b ON b.id = i.billId " +
+        "WHERE i.productId = :productId AND i.isDeleted = 0 AND b.isDeleted = 0 AND i.rate IS NOT NULL ORDER BY b.billDate DESC, i.id DESC"
+    )
+    suspend fun datedPurchasesOfProduct(productId: Long): List<Cost.Dated>
 
     // ---------- A copy merged in (BookMerge, 21 Oct 2026) ----------
 

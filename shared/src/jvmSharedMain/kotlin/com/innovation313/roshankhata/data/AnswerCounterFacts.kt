@@ -145,7 +145,9 @@ internal object AnswerCounterFacts {
         lines += line(c, W.hudhud_l_by, who(c, s.createdBy))
         for (i in full.items.filter { !it.isDeleted }.take(TOP)) {
             val off = if (Money.isPositive(i.discount)) " − " + money(i.discount) else ""
-            lines += i.itemName + " · " + Format.qty(i.quantity, i.unit) + " × " + money(i.rate) + off
+            // The line's own rate of tax (schema 36), as the counter's line shows it ("Tax %: 18"; the catalog's last column GAP).
+            val tax = i.taxRate?.takeIf { it > 0.0 }?.let { " · " + c.getString(W.pos_tax) + ": " + Format.percent(it) } ?: ""
+            lines += i.itemName + " · " + Format.qty(i.quantity, i.unit) + " × " + money(i.rate) + off + tax
         }
         if (full.items.count { !it.isDeleted } > TOP) lines += line(c, W.hudhud_l_total, n(full.items.count { !it.isDeleted }))
         if (Money.isPositive(s.discountAmount)) lines += line(c, W.pos_discount, money(s.discountAmount))

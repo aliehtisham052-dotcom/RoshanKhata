@@ -330,10 +330,8 @@ object PaymentRadar {
         return today
     }
 
-    private fun median(xs: List<Int>): Int {
-        val s = xs.sorted()
-        return if (s.size % 2 == 1) s[s.size / 2] else (s[s.size / 2 - 1] + s[s.size / 2]) / 2
-    }
+    /** The one median of the payment rules ([Median.of]: an even count's middle two meet half up, as [PaymentHabit] reads it, BC-264). */
+    private fun median(xs: List<Int>): Int = Median.of(xs)
 }
 
 /**

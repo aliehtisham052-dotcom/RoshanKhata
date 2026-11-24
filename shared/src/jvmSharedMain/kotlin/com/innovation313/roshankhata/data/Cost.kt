@@ -25,6 +25,11 @@ object Cost {
 
     data class Purchase(val qty: Double, val unit: String?, val rate: Double)
 
+    /** A [Purchase] with the day it was bought (the supplier bill's date): what a sale's cost is read from ([forSale]). */
+    data class Dated(val qty: Double, val unit: String?, val rate: Double, val boughtAt: Long) {
+        fun asPurchase(): Purchase = Purchase(qty, unit, rate)
+    }
+
     /** [rate] to [RATE_DECIMALS] places, half up; not-a-number and infinity pass through. */
     fun roundRate(rate: Double): Double =
         if (!rate.isFinite()) rate
@@ -103,6 +108,25 @@ object Cost {
             if (Units.agree(p.unit, common as String?)) return p.rate
         }
         return null
+    }
+
+    /**
+     * THE ONE COST OF A SOLD LINE (BC-261, 24 Nov 2026): what one [unit] of [product] cost the shop when it was sold at
+     * [saleAt]. A purchase made after the sale cannot have been its cost, so only the supplier-bill lines dated on or
+     * before [saleAt] are read ([purchases], any order; the newest of equal days first when they are given so). Then the
+     * rule above ([rule]: the owner's cost price, else the weighted average, else the newest rate that can be said) and
+     * [forUnit] for the line's unit. A product with no unit of its own can only say its cost per the unit its purchases
+     * were written in, so only the purchases that agree with the line's [unit] count ("bought in bags, sold in kilos" has
+     * no cost, not a bag's cost read as a kilo's). Null when nobody can know it: the callers leave the line out or say so.
+     * Insights' profit ([Profit.costFor]) and the sales report's khata lines ([KhataSales.lines]) both call this, so the
+     * two screens cost one sale at one figure.
+     */
+    fun forSale(product: Product, saleAt: Long, unit: String?, purchases: List<Dated>): Double? {
+        val upTo = purchases.filter { it.boughtAt <= saleAt }.sortedByDescending { it.boughtAt }
+        val usable = if (Units.norm(product.defaultUnit) == null) upTo.filter { Units.agree(it.unit, unit) } else upTo
+        val lines = usable.map { it.asPurchase() }
+        val perUnit = rule(product, { lines }, { lines }) ?: return null
+        return forUnit(product, unit, perUnit)
     }
 
     /**

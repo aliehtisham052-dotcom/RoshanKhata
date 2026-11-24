@@ -142,18 +142,30 @@ object KhataSales {
         return out
     }
 
-    suspend fun lines(dao: KhataDao, rows: List<KhataSaleRow>): List<SoldLine> {
-        val unitCost = HashMap<Long, Pair<Product?, Double?>>()
+    /**
+     * What a sold line's cost is read from: the product and its supplier-bill lines with their days (newest first), or
+     * nothing for a line with no product. Each product once ([lines] keeps what it was given).
+     */
+    class Shelf(val product: Product?, val purchases: List<Cost.Dated>)
+
+    suspend fun lines(dao: KhataDao, rows: List<KhataSaleRow>): List<SoldLine> = lines(rows) { id ->
+        val p = dao.productById(id)
+        // The owner's own cost price is the first rule: no purchases are read for it.
+        Shelf(p, if (p == null || p.costPrice != null) emptyList() else dao.datedPurchasesOfProduct(id))
+    }
+
+    /**
+     * The sale's cost is [Cost.forSale]: the one rule Insights' profit calls too (BC-261) — purchases dated up to the sale
+     * only, and the line's unit by [Cost.forUnit] / [Units] (BC-271), never a rate in another unit.
+     */
+    suspend fun lines(rows: List<KhataSaleRow>, shelfOf: suspend (Long) -> Shelf): List<SoldLine> {
+        val shelves = HashMap<Long, Shelf>()
         suspend fun costRate(r: KhataSaleRow, qty: Double): Double? {
             val id = r.productId ?: return null
             if (qty <= 0.0) return null
-            val (product, perUnit) = unitCost.getOrPut(id) { dao.productById(id).let { p -> p to Cost.perUnit(dao, p) } }
-            if (product == null || perUnit == null) return null
-            val (base, baseUnit) = Units.toBase(product, qty, r.unit)
-            val own = Units.norm(product.defaultUnit)
-            // A quantity in a unit the product cannot be counted in has no cost here (lesson: never a rate in another unit).
-            if (own != null && Units.norm(baseUnit) != null && Units.norm(baseUnit) != own) return null
-            return perUnit * base / qty
+            val shelf = shelves.getOrPut(id) { shelfOf(id) }
+            val product = shelf.product ?: return null
+            return Cost.forSale(product, r.timestamp, r.unit, shelf.purchases)
         }
         val out = ArrayList<SoldLine>()
         for ((entryId, rs) in rows.groupBy { it.entryId }) {
@@ -217,18 +229,87 @@ data class ReturnedLine(
     val taxAmount: Double?,
     val taxIncluded: Boolean?,
     val saleSubtotal: Double?,
-    val saleDiscount: Double?
+    val saleDiscount: Double?,
+    /** The sold line this came back from and its ticket: [ReturnedLines.spread] finds the line's share of the ticket's discount by them. */
+    val saleItemId: Long = 0,
+    val saleId: Long = 0,
+    /**
+     * What the sold line was COUNTED at once its ticket's discount was shared over all its lines to the coin
+     * ([SoldLines.spread], BC-262): set, a return gives back exactly that (its share for the part returned); null (a line
+     * read alone, a ticket with no discount) and [revenue] works the share out as before.
+     */
+    val spread: Double? = null
 ) {
     val revenue: Double get() {
         if (soldQuantity <= 0.0) return 0.0
-        val sold = SoldLine(
-            saleId = 0, timestamp = 0, customerName = null, createdBy = null, taxPercent = null, productId = null, itemName = "",
-            category = null, quantity = soldQuantity, unit = null, rate = rate, discount = discount, costRate = costRate,
-            taxAmount = taxAmount, taxIncluded = taxIncluded, saleSubtotal = saleSubtotal, saleDiscount = saleDiscount
-        )
-        return LineMath.round(sold.revenue * (quantity / soldQuantity).coerceIn(0.0, 1.0))
+        val fraction = (quantity / soldQuantity).coerceIn(0.0, 1.0)
+        spread?.let { return LineMath.round(it * fraction) }
+        return LineMath.round(soldLine().revenue * fraction)
     }
     val cost: Double? get() = costRate?.let { LineMath.round(it * quantity) }
+
+    /** The sold line, whole, as the sales report reads it (no spread yet). */
+    internal fun soldLine(): SoldLine = SoldLine(
+        saleId = saleId, timestamp = 0, customerName = null, createdBy = null, taxPercent = null, productId = null, itemName = "",
+        category = null, quantity = soldQuantity, unit = null, rate = rate, discount = discount, costRate = costRate,
+        taxAmount = taxAmount, taxIncluded = taxIncluded, saleSubtotal = saleSubtotal, saleDiscount = saleDiscount
+    )
+}
+
+/**
+ * Goods back from a ticket that carried a discount (BC-262, 24 Nov 2026): the sales report counted each of the ticket's
+ * lines at its share cut to the coin over ALL the ticket's lines ([SoldLines.spread]: Rs 100 off 3 x 1,000 is 966.67,
+ * 966.67 and 966.66), but a returned line was rebuilt alone and took the plain share, 966.67, so returning the third line
+ * reversed a cent more than it had brought in. [spread] gives each returned line what its sold line was counted at.
+ */
+object ReturnedLines {
+
+    /** One line of a ticket as the spread needs it ([KhataDao.ticketLinesOf]): its worth and the tax inside its price. */
+    data class TicketLine(
+        val saleItemId: Long,
+        val quantity: Double,
+        val rate: Double,
+        val discount: Double,
+        val taxAmount: Double?,
+        val taxIncluded: Boolean?
+    )
+
+    /**
+     * [line] with the spread of its own sold line, found by cutting its ticket's discount over [ticket] (every line of the
+     * ticket, [SoldLines.spread]'s way). Unchanged when the ticket had no discount, the sold line is not among [ticket],
+     * or there is nothing sound to share.
+     */
+    fun spreadOf(line: ReturnedLine, ticket: List<TicketLine>): ReturnedLine {
+        val off = line.saleDiscount ?: 0.0
+        if (line.soldQuantity <= 0.0 || off <= 0.0 || (line.saleSubtotal ?: 0.0) <= 0.0) return line
+        val whole = ticket.map { t ->
+            SoldLine(
+                saleId = line.saleId, timestamp = 0, customerName = null, createdBy = null, taxPercent = null, productId = null,
+                itemName = "", category = null, quantity = t.quantity, unit = null, rate = t.rate, discount = t.discount, costRate = null,
+                taxAmount = t.taxAmount, taxIncluded = t.taxIncluded, saleSubtotal = line.saleSubtotal, saleDiscount = line.saleDiscount
+            )
+        }
+        val at = ticket.indexOfFirst { it.saleItemId == line.saleItemId }
+        if (at < 0) return line
+        return line.copy(spread = SoldLines.spread(whole)[at].revenue)
+    }
+
+    /**
+     * What is left of a sold line to come back: [sold] less [back], a quantity kept to six places by the units contract
+     * ([Units.roundQty], BC-271) — 0.3 less 0.1 and 0.2 is nothing left, not a dust of 5e-17 beside the form's own check.
+     */
+    fun soldLeft(sold: Double, back: Double): Double = Units.roundQty(sold - back)
+
+    /** [returned] each with its sold line's spread; one read of a ticket's lines per ticket ([ticketLines]). */
+    suspend fun spread(returned: List<ReturnedLine>, ticketLines: suspend (Long) -> List<TicketLine>): List<ReturnedLine> {
+        val tickets = HashMap<Long, List<TicketLine>>()
+        return returned.map { r ->
+            if ((r.saleDiscount ?: 0.0) <= 0.0) r
+            else spreadOf(r, tickets.getOrPut(r.saleId) { ticketLines(r.saleId) })
+        }
+    }
+
+    suspend fun spread(dao: KhataDao, returned: List<ReturnedLine>): List<ReturnedLine> = spread(returned) { dao.ticketLinesOf(it) }
 }
 
 /**
@@ -371,7 +452,7 @@ class SalesReport(
             val since = to - DEAD_DAYS * 24L * 60 * 60 * 1000
             val recent = dao.productsSoldSince(since).toSet()
             val dead = Stock.of(dao).filter { (it.onHand ?: 0.0) > 0.0 && it.productId !in recent }.map { it.name }.sortedWith(NameOrder.byName)
-            val returned = dao.returnedLinesBetween(from, to).filter { it.cost != null }
+            val returned = ReturnedLines.spread(dao, dao.returnedLinesBetween(from, to)).filter { it.cost != null }
             return SalesReport(
                 from, to, lines, LineMath.round(expenses), LineMath.round(returns), dead,
                 returnedCost = LineMath.round(returned.sumOf { it.cost!! }),
