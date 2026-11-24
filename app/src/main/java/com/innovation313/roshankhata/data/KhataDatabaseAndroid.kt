@@ -42,6 +42,9 @@ fun KhataDatabase.Companion.get(context: Context): KhataDatabase {
             current?.close()
             // A book SQLite called corrupt was kept aside (BookRecovery): rebuilt from the newest whole daily
             // copy before Room opens the file, never opened empty without a word (8 Nov 2026 review, C3).
+            // A daily-copy restore killed between moving the log aside and the rename (BC-245): the log goes back
+            // before Room opens the book, never while it is open.
+            runCatching { SnapshotSwap.recover(context.applicationContext.getDatabasePath(file)) }
             BookRecovery.recoverIfNeeded(context.applicationContext, file)
             Room.databaseBuilder(
                 context.applicationContext,

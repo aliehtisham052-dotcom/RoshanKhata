@@ -546,16 +546,30 @@ private suspend fun backup(
     file.length()
 }
 
-/** The ledger in one transaction, then the shop's details — the phone's order. */
+/**
+ * The ledger in one transaction, then the shop's details — the phone's order. The ledger is the restore: once it has
+ * committed, a shop profile that cannot be written is told to errors.log and the restore still counts as done (BC-245,
+ * 24 Nov 2026: it threw from here, the caller said "not restored" for a replaced book and, for a live pairing, never
+ * joined). The shop's old details stand; the owner sets them in Business Profile.
+ */
 private suspend fun restore(
     data: BackupCodec.ParsedBackup,
     db: com.innovation313.roshankhata.data.KhataDatabase,
     settings: FileShopSettings,
     /** False for a live pairing: the phone's book exactly, its PINs and counter keys too. */
     keepAccess: Boolean = true
-) = withContext(Dispatchers.IO) {
+) : Unit = withContext(Dispatchers.IO) {
     BackupCodec.restoreLedger(db.khataDao(), data, keepAccess)
-    data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
+    val profile = data.businessProfile
+    if (profile != null) {
+        try {
+            BackupCodec.restoreProfile(settings, profile)
+        } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            com.innovation313.roshankhata.data.LiveTrouble.note("restore profile", e)
+        }
+    }
 }
 
 /** App Lock returns after this long with no key or click (15 minutes, a shop's quiet spell). */

@@ -107,10 +107,11 @@ object Snapshots {
      *    restoring the wrong day is itself undoable. It goes in beside the
      *    others under today's name, which is exactly where the owner would
      *    look for it.
-     * 3. Room's handle is closed, and the -wal and -shm files are deleted.
+     * 3. Room's handle is closed, and the -wal is moved aside (-shm deleted).
      *    This is the step that is easy to miss and fatal to skip: a
      *    write-ahead log left behind belongs to the OLD database, and SQLite
-     *    would replay it over the restored file and corrupt it.
+     *    would replay it over the restored file and corrupt it. It is moved,
+     *    not deleted, and only once the new file is ready ([SnapshotSwap]).
      * 4. Only then is the file replaced, and via a temp-and-rename so that a
      *    crash mid-copy leaves the old file intact rather than half of each.
      */
@@ -185,14 +186,11 @@ object Snapshots {
         val tmp = File(live.parentFile, live.name + ".restoring")
         if (!foldedCopy(snapshot.file, tmp)) return RestoreResult.Failed
 
-        // The old write-ahead log must not survive its database — only now, once the new file is ready.
-        File(live.parentFile, live.name + "-wal").delete()
-        File(live.parentFile, live.name + "-shm").delete()
-        // One rename over the book, never a delete first (3 Nov 2026 audit, L01): a rename replaces the file in one
-        // step, while "delete, then rename" left a moment with no book at all — a kill there opened an empty one,
-        // and a rename that failed after the delete threw the restored copy away too.
-        if (!tmp.renameTo(live)) {
-            // Kept beside the book (".restoring") for the owner's safety copy is not the only way back.
+        // The old write-ahead log must not survive its database, but nothing of the live book is deleted before the
+        // new file is in place (BC-245, 24 Nov 2026): the log is moved aside, one rename puts the copy over the book
+        // (never a delete first, 3 Nov 2026 audit L01), and a rename that fails puts the log back. See SnapshotSwap.
+        if (!SnapshotSwap.swap(live, tmp)) {
+            // The copy stays beside the book (".restoring") and the book is as it was.
             return RestoreResult.Failed
         }
         keepAccess(live, here)

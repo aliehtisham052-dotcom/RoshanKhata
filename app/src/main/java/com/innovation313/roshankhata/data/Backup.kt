@@ -413,11 +413,15 @@ object Backup {
      * profile is LEFT ALONE rather than blanked — restoring "nothing" over a
      * shop's real name would be a silent loss, not a restore.
      *
+     * Returns how it ended once the ledger is replaced; it THROWS only when the ledger was not replaced
+     * (BC-245): a profile that cannot be written is [RestoreAfterCommit.Outcome.RESTORED_PROFILE_NOT_SET],
+     * never "not restored" — the ledger is the restore, and the callers' steps say "replaced" truthfully.
+     *
      * [keepAccess]: false for a live pairing (the shop's book taken by this phone), which must be the
      * other device's book exactly — its owner PIN, counter and owner-device keys too, as the computer's
      * own pairing restore does. Every other restore keeps this phone's access keys a copy says nothing of.
      */
-    suspend fun restore(context: Context, dao: KhataDao, data: ParsedBackup, keepAccess: Boolean = true) {
+    suspend fun restore(context: Context, dao: KhataDao, data: ParsedBackup, keepAccess: Boolean = true): RestoreAfterCommit.Outcome {
         // A book replaced by a copy is no longer the book the computer keeps (22 Oct 2026, the review):
         // live sync pauses first, so the restore's own deletes and inserts are not sent there as changes
         // (they would have removed the computer's newer work); once the restore went through it stops,
@@ -438,16 +442,29 @@ object Backup {
             if (live) kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) { LiveSync.resume(sql) }
             throw e
         }
-        if (live) {
-            // The relays are told this device is done with the conversation (best effort: its box there goes, and no
-            // wake-up rings a phone that will never answer — 23 Oct 2026, the second review), then it ends here.
-            runCatching { LiveCloud.leaveAll(sql) }
-            LiveSync.disable(sql, LiveSync.OFF_RESTORED)
-            NumberMark.mark = null
+        // The ledger is replaced and committed: from here nothing may make this restore look failed (BC-245,
+        // 24 Nov 2026). A profile that cannot be written used to throw from here to a caller that said "not
+        // restored" for a replaced book, and an earlier step's failure skipped the profile altogether. Each step
+        // runs whatever the one before did, under NonCancellable (a cancelled screen must not stop it half way).
+        val endLive: (suspend () -> Unit)? = if (live) {
+            suspend {
+                // The relays are told this device is done with the conversation (best effort: its box there goes, and no
+                // wake-up rings a phone that will never answer — 23 Oct 2026, the second review), then it ends here.
+                runCatching { LiveCloud.leaveAll(sql) }
+                LiveSync.disable(sql, LiveSync.OFF_RESTORED)
+                NumberMark.mark = null
+            }
+        } else null
+        val reattach: (suspend () -> Unit)? = if (before != null) {
+            suspend { ImageReattach.after(context, dao, before) }
+        } else null
+        val profile = data.businessProfile
+        val writeProfile: (suspend () -> Unit)? = if (profile != null) {
+            suspend { restoreBusinessProfile(context, profile) }
+        } else null
+        return kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+            RestoreAfterCommit.run(endLive, reattach, writeProfile)
         }
-        before?.let { ImageReattach.after(context, dao, it) }
-
-        data.businessProfile?.let { restoreBusinessProfile(context, it) }
     }
 
     /** Whether this book syncs live with the computer now (a restore would stop it: said in its confirmation). */
