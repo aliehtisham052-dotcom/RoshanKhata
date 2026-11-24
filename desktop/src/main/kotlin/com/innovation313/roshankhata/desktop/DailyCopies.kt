@@ -325,18 +325,27 @@ fun DailyCopiesPane(
                         val wasLive = door != null && runCatching { com.innovation313.roshankhata.data.LiveSync.pause(door) }.getOrDefault(false)
                         try {
                             BackupCodec.restoreLedger(dao, own)
-                            if (own !== data) own.paged?.source?.delete()
                         } catch (e: Exception) {
                             if (wasLive && door != null) runCatching { com.innovation313.roshankhata.data.LiveSync.resume(door) }
                             throw e
                         }
-                        if (wasLive && door != null) {
-                            com.innovation313.roshankhata.data.LiveSync.disable(door, com.innovation313.roshankhata.data.LiveSync.OFF_RESTORED)
-                            com.innovation313.roshankhata.data.NumberMark.mark = null
-                        }
-                        data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
+                        // The ledger is replaced from here (BC-258, as the phone's BC-245): every step runs whatever the
+                        // one before did, a failure goes to errors.log, and none of them can say "not restored".
+                        RestoreAfterCommit.run(listOf(
+                            RestoreAfterCommit.Step("restore end live sync") {
+                                if (wasLive && door != null) com.innovation313.roshankhata.data.LiveSync.disable(door, com.innovation313.roshankhata.data.LiveSync.OFF_RESTORED)
+                            },
+                            RestoreAfterCommit.Step("restore clear number mark") {
+                                if (wasLive) com.innovation313.roshankhata.data.NumberMark.mark = null
+                            },
+                            RestoreAfterCommit.Step("restore remove paged copy") { if (own !== data) own.paged?.source?.delete() },
+                            RestoreAfterCommit.Step(RestoreAfterCommit.PROFILE) {
+                                data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
+                            }
+                        ))
                     }
-                    onRestored()
+                    // The page's own refresh: a failure of it is told to errors.log, the book is replaced all the same.
+                    RestoreAfterCommit.guarded("restore refresh page") { onRestored() }
                     restoredTitle to ""
                 }.getOrElse { e -> damagedTitle to (if (e is IllegalStateException) e.message ?: failed else failed) }
                 version++

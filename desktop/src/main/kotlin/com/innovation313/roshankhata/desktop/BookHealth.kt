@@ -4,6 +4,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.innovation313.roshankhata.data.BackupCodec
 import com.innovation313.roshankhata.data.DesktopDatabase
 import com.innovation313.roshankhata.data.FileShopSettings
+import com.innovation313.roshankhata.data.KHATA_DB_VERSION
 import com.innovation313.roshankhata.data.KhataDatabase
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -41,7 +42,9 @@ object BookHealth {
         val recoveredFrom: File? = null,
         val nothingToRecover: Boolean = false,
         /** Books set aside earlier that are still beside this one (shown when this one is empty). */
-        val setAside: List<File> = emptyList()
+        val setAside: List<File> = emptyList(),
+        /** The rebuilt book is the copy's, but the shop's details could not be written (BC-258): Business Profile to be set again. */
+        val profileNotSet: Boolean = false
     )
 
     /** The book could not be read for a reason other than damage; nothing was changed. */
@@ -92,15 +95,71 @@ object BookHealth {
 
     private val SIDES = listOf("", "-wal", "-shm", "-journal")
 
-    /** [from] and its -wal/-shm/-journal moved to [to]; false (and nothing half-moved) when the main file would not go. */
-    private fun moveBook(from: File, to: File): Boolean {
-        val main = runCatching { Files.move(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING); true }.getOrDefault(false)
-        if (!main) return false
-        for (side in SIDES.drop(1)) {
-            val f = File(from.path + side)
-            if (f.isFile) runCatching { Files.move(f.toPath(), File(to.path + side).toPath(), StandardCopyOption.REPLACE_EXISTING) }
+    /**
+     * [from] and its -wal/-shm/-journal moved to [to], all or nothing (BC-258, 24 Nov 2026; the phone's SnapshotSwap
+     * order). The side files go FIRST and the main file LAST, and a side that will not go puts the ones already moved
+     * back and leaves the main file where it was: before, the main file went first and a side that failed was passed
+     * over, so the old log stayed beside the new file (SQLite would replay it over the wrong book) or the new book's
+     * own log was left behind (its last writes lost). A log is never deleted: it moves with its book. What is left of
+     * a book at [to] (a side file the source does not have) belongs to a file that is being replaced, and goes.
+     */
+    internal fun moveBook(from: File, to: File, move: (File, File) -> Unit = { a, b -> Files.move(a.toPath(), b.toPath(), StandardCopyOption.REPLACE_EXISTING) }): Boolean {
+        if (!from.isFile) return false
+        val moved = ArrayList<String>()
+        try {
+            for (side in SIDES.drop(1)) {
+                val f = File(from.path + side)
+                if (f.exists()) { move(f, File(to.path + side)); moved += side }
+                else File(to.path + side).delete()
+            }
+            move(from, to)
+            return true
+        } catch (e: Throwable) {
+            for (side in moved.asReversed()) runCatching { move(File(to.path + side), File(from.path + side)) }
+            return false
         }
-        return true
+    }
+
+    /** The version SQLite's `user_version` holds in [file] (Room keeps the schema version there); null when it cannot be read. */
+    fun userVersionOf(file: File): Int? {
+        if (!file.isFile) return null
+        return try {
+            val c = BundledSQLiteDriver().open(file.absolutePath)
+            try {
+                val s = c.prepare("PRAGMA user_version")
+                try { if (s.step()) s.getLong(0).toInt() else null } finally { s.close() }
+            } finally { c.close() }
+        } catch (e: Throwable) { null }
+    }
+
+    /** A book made by this build or an older one: version 0 is a new, empty file. Room has no way down (the phone's Snapshots.canOpen). */
+    fun canOpen(version: Int): Boolean = version <= KHATA_DB_VERSION
+
+    /** The book is from a newer build than this one: refused before anything is touched. */
+    class NewerBook(val version: Int) : Exception("This book was made by a newer version of Roshan Khata (schema $version; this one reads up to $KHATA_DB_VERSION). Update the app.")
+
+    /** The log of [file] folded into it, so a book about to be moved carries no log (best effort; a book with none is left as it is). */
+    private fun foldLog(file: File) {
+        val wal = File(file.path + "-wal")
+        if (!wal.isFile || wal.length() == 0L) return
+        runCatching {
+            val c = BundledSQLiteDriver().open(file.absolutePath)
+            try {
+                val s = c.prepare("PRAGMA wal_checkpoint(TRUNCATE)")
+                try { s.step() } finally { s.close() }
+            } finally { c.close() }
+        }
+    }
+
+    /**
+     * A rebuild killed between its two moves leaves no book, the finished rebuild beside it as ".recovering" and the
+     * damaged one kept. The rebuild is put in place when SQLite finds it sound; otherwise nothing is touched.
+     */
+    internal fun finishInterrupted(file: File): Boolean {
+        val building = File(file.path + ".recovering")
+        if (file.exists() || !building.isFile || setAside(file).isEmpty()) return false
+        if (check(building) != Verdict.SOUND) return false
+        return moveBook(building, file)
     }
 
     private fun deleteBook(file: File) { for (side in SIDES) File(file.path + side).delete() }
@@ -118,9 +177,14 @@ object BookHealth {
      * call it off the window's thread.
      */
     fun open(file: File, settings: FileShopSettings, copyDirs: List<File>): Opened {
+        finishInterrupted(file)
         val (verdict, why) = checkWhy(file)
         when (verdict) {
-            Verdict.SOUND -> return Opened(DesktopDatabase.open(file), setAside = setAside(file))
+            Verdict.SOUND -> {
+                // A book from a newer build is refused before Room touches it (BC-258; the phone's Snapshots.canOpen).
+                userVersionOf(file)?.let { if (!canOpen(it)) throw CannotOpen(file, NewerBook(it)) }
+                return Opened(DesktopDatabase.open(file), setAside = setAside(file))
+            }
             Verdict.UNREADABLE -> throw CannotOpen(file, why)
             Verdict.DAMAGED -> Unit
         }
@@ -150,6 +214,8 @@ object BookHealth {
             throw CannotOpen(file, e)
         }
         fresh.close()
+        // The rebuild's own log is folded in before it moves: the book goes as one file (best effort; moveBook carries a log along).
+        foldLog(building)
         if (!moveBook(file, kept)) { deleteBook(building); throw CannotOpen(file, null) }
         if (!moveBook(building, file)) {
             // Put the damaged one back where it was rather than leave no book at all.
@@ -157,7 +223,17 @@ object BookHealth {
             deleteBook(building)
             throw CannotOpen(file, null)
         }
-        data.businessProfile?.let { BackupCodec.restoreProfile(settings, it) }
-        return Opened(DesktopDatabase.open(file), corruptKept = kept, recoveredFrom = copy)
+        // The ledger is the copy's from here (BC-258, the phone's BC-245): a profile that cannot be written is noted to
+        // errors.log and told in [Opened.profileNotSet]; it never throws out of here, which said "cannot open" for a
+        // book that had been rebuilt and swapped in.
+        var profileNotSet = false
+        val profile = data.businessProfile
+        if (profile != null) {
+            val result = runBlocking {
+                RestoreAfterCommit.run(listOf(RestoreAfterCommit.Step(RestoreAfterCommit.PROFILE) { BackupCodec.restoreProfile(settings, profile) }))
+            }
+            profileNotSet = result.profileNotSet
+        }
+        return Opened(DesktopDatabase.open(file), corruptKept = kept, recoveredFrom = copy, profileNotSet = profileNotSet)
     }
 }
