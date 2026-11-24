@@ -25,7 +25,7 @@ C2	A real receipt printer, PDF, CSV and the khata link	WP-10; F-021; F-023	P2	6	
 C3	The final signed release, upgrade, rollback and restore drill	WP-11; F-017; F-019; F-025	P2	10	NOT STARTED	-	At the end (21-27 Dec): exact commit in CI, AAB and Store MSIX	-
 C4	Small leftovers: Windows cashbook line edit, Windows Hudhud Open page and counts	handover 23 Nov	P2	4	NOT STARTED	-	After the freeze	-
 C5	Number words in nine languages, one numeral system per screen, LRI/PDI around figures in PDFs	DeepSeek part V; Gemini 4.2	P2	5	NOT STARTED	-	Extend NumberWords tests and check_pdf_rtl.py	-
-H0	Hudhud's baseline and freeze (inventory, per-language figures, confusion matrix, seed noise, speed, sense hash)	Blueprint H0; MOD H0; Advanced stage 1; DeepSeek phase 0	P0	9	PARTIAL	scripts/hudhud_baseline.sh	Paused 24 Nov: five-seed run and docs/hudhud-baseline-24nov2026.md	-
+H0	Hudhud's baseline and freeze (inventory, per-language figures, confusion matrix, seed noise, speed, sense hash)	Blueprint H0; MOD H0; Advanced stage 1; DeepSeek phase 0	P0	9	VERIFIED COMPLETE	docs/hudhud-baseline-24nov2026.md	-	-
 H1	A stable training recipe (L017's two faults, locked features, one seed or averaged)	Blueprint H1; F-006; RK-004; L017	P1	9	NOT STARTED	-	After H0	-
 H2	A new sealed test set (v2), frozen in a private repo	F-007; T26; T28; T35	P1	10	BLOCKED	-	Needs native readers; the set may stay outside the repo in the owner's folder (the v1 set already lives there), so D12 is not required	-
 H3	The question contract and the Formula Book (every figure: formula, tables, date field, rounding), shared with part A	Blueprint; DeepSeek contract; Advanced stage 2; ChatGPT F-11; DeepSeek stage 5	P1	8	NOT STARTED	-	After H0	-
