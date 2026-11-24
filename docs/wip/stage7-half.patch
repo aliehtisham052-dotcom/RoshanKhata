@@ -1,0 +1,354 @@
+diff --git a/app/src/main/java/com/innovation313/roshankhata/RoshanKhataApp.kt b/app/src/main/java/com/innovation313/roshankhata/RoshanKhataApp.kt
+index 3dc976e..912073c 100644
+--- a/app/src/main/java/com/innovation313/roshankhata/RoshanKhataApp.kt
++++ b/app/src/main/java/com/innovation313/roshankhata/RoshanKhataApp.kt
+@@ -48,10 +48,15 @@ class RoshanKhataApp : Application() {
+         com.innovation313.roshankhata.data.ShopCalendar.refresh(this)
+         // Hudhud's sense (13 Nov 2026): what was learnt from the bank, shipped as an asset and read on the first
+         // question (Home warms it up a moment after it opens). Nothing is read here.
++        // A model that is missing or will not decode is told once in the log and marks him rules-only
++        // (HudhudSenseState, stage 7 F3), instead of being a silent, dumber Hudhud.
+         val appAssets = assets
+-        com.innovation313.roshankhata.data.HudhudSense.useModel {
+-            runCatching { appAssets.open("hudhud/sense.bin").use { it.readBytes() } }.getOrNull()
+-        }
++        com.innovation313.roshankhata.data.HudhudSenseState.sink = { android.util.Log.w("RoshanKhata", it) }
++        com.innovation313.roshankhata.data.HudhudSense.useModel(
++            com.innovation313.roshankhata.data.HudhudSenseState.reading("hudhud/sense.bin") {
++                appAssets.open("hudhud/sense.bin").use { it.readBytes() }
++            }
++        )
+         CrashLog.install(this)
+         // Live sync's passed-over failures go to their own small file, never shown as a crash (23 Oct 2026).
+         com.innovation313.roshankhata.data.SyncLog.install(this)
+diff --git a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/AnswerBook.kt b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/AnswerBook.kt
+index 8edb0ce..c2384dd 100644
+--- a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/AnswerBook.kt
++++ b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/AnswerBook.kt
+@@ -161,8 +161,12 @@ object AnswerBook {
+         )
+     }
+ 
+-    /** What he says when the book could not be read. */
+-    fun failed(context: AnswerEnv) = AnswerCard(Mood.CARE, lines = listOf(context.getString(W.hudhud_unknown)))
++    /**
++     * What he says when the book could not be read: that, in words ([HudhudReadFailure.words]) — never "I could not find this",
++     * which says the book was read and held nothing. The platforms show it for any exception an answer let through
++     * (the phone's sheet, the computer's panel), which is why no read in this layer is caught on its own (stage 7, F2).
++     */
++    fun failed(context: AnswerEnv) = AnswerCard(Mood.CARE, lines = listOf(HudhudReadFailure.words { context.getString(it) }))
+ 
+     suspend fun answer(context: AnswerEnv, dao: KhataDao, ask: Hudhud.Ask, parties: List<PartyWithBalance>): AnswerCard {
+         // The one door every ask passes before the book is read (15 Nov 2026): a span he cannot give is never read as
+@@ -973,7 +977,8 @@ object AnswerBook {
+                 openParty = p.id, money = true)
+         }
+         val promise = dao.getParty(p.id)?.harvestPromise
+-        val promises = runCatching { PromiseLog.of(dao.promiseLog(p.id)) }.getOrDefault(emptyList())
++        // A promise history that cannot be read is no empty history: a customer who broke three promises would read as clean.
++        val promises = PromiseLog.of(dao.promiseLog(p.id))
+         val r = PaymentRadar.read(LedgerLines.of(dao, listOf(p.id)), now, context.radarShopDays(dao), promise, promises)
+         val from = r.nextFrom
+         val to = r.nextTo
+@@ -1022,10 +1027,10 @@ object AnswerBook {
+     private suspend fun today(context: AnswerEnv, dao: KhataDao): AnswerCard {
+         val now = context.now()
+         val radar = AnswerGate.reports() && context.radarOn()
+-        val collect = if (context.viewer()) null
+-        else runCatching { Automations.collect(dao, context.remindedToday(now), now, radar = radar) }.getOrNull()
+-        val alerts = runCatching { context.alerts(dao) }.getOrDefault(emptyList())
+-            .filter { it.kind != AnswerAlert.Kind.UPDATED }
++        // Neither read is caught (stage 7, F2): a bell that failed to compute is not "nothing is waiting", and a failed list of whom
++        // to remind is not "nobody". The platform tells the failure instead.
++        val collect = if (context.viewer()) null else Automations.collect(dao, context.remindedToday(now), now, radar = radar)
++        val alerts = context.alerts(dao).filter { it.kind != AnswerAlert.Kind.UPDATED }
+         val remind = collect?.count ?: 0
+         val lines = ArrayList<String>()
+         if (remind > 0) lines += context.quantity(WP.hudhud_greet_remind, remind, remind)
+@@ -1055,8 +1060,8 @@ object AnswerBook {
+      */
+     suspend fun greetingLine(context: AnswerEnv, dao: KhataDao, bell: Int): String {
+         val now = context.now()
+-        val remind = if (context.viewer()) 0
+-        else runCatching { Automations.collect(dao, context.remindedToday(now), now).count }.getOrDefault(0)
++        // A failed read is no "0 to remind": it goes up, and Home (which catches it) simply shows no bubble today (stage 7, F2).
++        val remind = if (context.viewer()) 0 else Automations.collect(dao, context.remindedToday(now), now).count
+         return headline(context, remind, bell)
+     }
+ 
+@@ -1556,7 +1561,8 @@ object AnswerBook {
+      */
+     suspend fun suggested(c: AnswerEnv, dao: KhataDao): List<Hudhud.Ask> {
+         val reports = AnswerGate.reports()
+-        val alerts = runCatching { c.alerts(dao) }.getOrDefault(emptyList())
++        // The chips only: with no bell read there are no day's chips, and nothing is said of the day (stage 7, F2: best effort, named).
++        val alerts = HudhudReadFailure.bestEffort(emptyList()) { c.alerts(dao) }
+         return alerts.mapNotNull { a ->
+             when (a.kind) {
+                 AnswerAlert.Kind.CHEQUE -> Hudhud.Ask.Status(Hudhud.StatusOf.CHEQUES)
+@@ -1603,7 +1609,7 @@ object AnswerBook {
+     ): Speech? {
+         if (quiet) return null
+         spoken?.let { own ->
+-            val text = runCatching { own() }.getOrNull()?.takeIf { it.isNotBlank() } ?: return null
++            val text = HudhudReadFailure.bestEffort<String?>(null) { own() }?.takeIf { it.isNotBlank() } ?: return null
+             return Speech(text, false)
+         }
+         val onScreen = w.getString(W.hudhud_on_screen).trimEnd('.', '\u06D4', '\u0964', '!')
+diff --git a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/AnswerFacts.kt b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/AnswerFacts.kt
+index 8b4eaa3..fac7055 100644
+--- a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/AnswerFacts.kt
++++ b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/AnswerFacts.kt
+@@ -284,7 +284,8 @@ object AnswerFacts {
+         val name = p.name
+         val unit = p.defaultUnit?.takeIf { it.isNotBlank() }
+         fun perUnit(v: Double) = AnswerBook.money(v) + (unit?.let { " / " + UnitWords.label(it) } ?: "")
+-        val stock = runCatching { Valuation.compute(dao).rows.firstOrNull { it.productId == p.id } }.getOrNull()
++        // Not caught (stage 7, F2): a valuation that failed is no product with "no stock line" or one that is not low.
++        val stock = Valuation.compute(dao).rows.firstOrNull { it.productId == p.id }
+         val lines = dao.supplierRateLinesOnce().filter { l ->
+             l.rate > 0.0 && (l.productId == p.id || (l.productId == null && l.productName.trim().equals(name.trim(), ignoreCase = true)))
+         }.sortedByDescending { it.billDate }
+@@ -633,7 +634,7 @@ object AnswerFacts {
+         Hudhud.AboutTopic.LANGUAGES -> said(c, W.hudhud_about_languages, ScreenId.LANGUAGE)
+         Hudhud.AboutTopic.NAME_STORY -> AnswerCard(Mood.GOOD, lines = listOf(c.getString(W.hudhud_about_name_story)))
+         Hudhud.AboutTopic.VERSION -> {
+-            val version = runCatching { c.appVersion() }.getOrNull() ?: "?"
++            val version = HudhudReadFailure.bestEffort<String?>(null) { c.appVersion() } ?: "?"
+             AnswerCard(Mood.CALM, lines = listOf(c.getString(W.hudhud_about_version, version)), open = ScreenId.ABOUT)
+         }
+         Hudhud.AboutTopic.OWNER_NAME -> {
+@@ -794,9 +795,10 @@ object AnswerFacts {
+                 counted(c, W.hudhud_t_suppliers, null, all.size, listOf(line(c.getString(W.you_will_give), n(owed))), ScreenId.KHATA)
+             }
+             Hudhud.Thing.PRODUCTS -> {
+-                val v = runCatching { Valuation.compute(dao) }.getOrNull()
++                // Not caught (stage 7, F2): no low-stock line must never mean "nothing is low" for "the read failed".
++                val v = Valuation.compute(dao)
+                 val count = dao.productsOnce().size
+-                counted(c, W.tile_products, null, count, listOfNotNull(v?.low?.size?.takeIf { it > 0 }?.let { line(c, W.hudhud_t_low, n(it)) }),
++                counted(c, W.tile_products, null, count, listOfNotNull(v.low.size.takeIf { it > 0 }?.let { line(c, W.hudhud_t_low, n(it)) }),
+                     ScreenId.PRODUCTS)
+             }
+             // Staff is the owner's screen (STAFF): who works here is his to know, not a cashier's or a manager's.
+@@ -834,7 +836,7 @@ object AnswerFacts {
+                 val money = reports()
+                 val sum = if (money && came.isNotEmpty()) line(c, W.hudhud_l_total, AnswerBook.money(came.sumOf { it.totalAmount })) else null
+                 val rows = came.take(TOP).map { b ->
+-                    val items = runCatching { dao.billItems(b.id) }.getOrDefault(emptyList()).filter { !it.isDeleted }
++                    val items = dao.billItems(b.id).filter { !it.isDeleted }
+                     val what = items.take(2).joinToString(", ") { it.productName } + if (items.size > 2) "\u2026" else ""
+                     Row(b.partyId, b.partyName, if (money) AnswerBook.money(b.totalAmount) else "",
+                         listOf(dayOf(c, b.billDate), what).filter { it.isNotBlank() }.joinToString(" \u00B7 "))
+@@ -1092,7 +1094,7 @@ object AnswerFacts {
+             return AnswerCard(Mood.CALM, label = label, lines = listOf(c.getString(W.hudhud_deliveries_none)), open = ScreenId.BILLS)
+         }
+         val rows = bills.take(TOP).map { b ->
+-            val items = runCatching { dao.billItems(b.id) }.getOrDefault(emptyList()).filter { !it.isDeleted }
++            val items = dao.billItems(b.id).filter { !it.isDeleted }
+             val what = items.take(2).joinToString(", ") { it.productName } + if (items.size > 2) "…" else ""
+             Row(b.partyId, b.partyName, if (reports()) AnswerBook.money(b.totalAmount) else "",
+                 listOf(dayOf(c, b.billDate), what).filter { it.isNotBlank() }.joinToString(" · "))
+diff --git a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Hudhud.kt b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Hudhud.kt
+index b334b64..e919766 100644
+--- a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Hudhud.kt
++++ b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Hudhud.kt
+@@ -456,6 +456,9 @@ object Hudhud {
+         heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
+         goods: List<Name> = emptyList(), before: Ask? = null, staff: List<Name> = emptyList()
+     ): Ask {
++        // Whether the learnt sense is there is told once if it is not (stage 7, F3): rules alone are a far weaker reading, and a
++        // phone that lost its model must not look like one that has it.
++        HudhudSenseState.check()
+         val clean = salaamHeadRead(withoutSelf(heard))
+         val n = asRead(names)
+         val g = asRead(goods)
+diff --git a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/VoiceQuestion.kt b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/VoiceQuestion.kt
+index fe3161a..fd52c01 100644
+--- a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/VoiceQuestion.kt
++++ b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/VoiceQuestion.kt
+@@ -927,6 +927,8 @@ object VoiceQuestion {
+         "কে দেবে", "কারা দেবে", "আমাকে দেবে", "কে আমার কাছে", "من يدين لي", "يدينون لي", "به من بدهکار", "siapa yang berutang",
+         // 16 Nov 2026 (audit T11): Farsi "the customers' debt (to the shop)" — بدهی alone is the shop's own.
+         "بدهی مشتری", "بدهی مشتریان", "بدهی مشتریها", "به مغازه بدهکار",
++        // 24 Nov 2026 (A1): Farsi "the debt to me" — the shop is the one paid.
++        "بدهی به من", "بدهی را به من", "بدهکار به من",
+         // 16 Nov 2026 (audit T10): "payment dene wala" is the one who pays the shop, not what the shop owes.
+         // Only with "who": "dene wali raqam" is the sum the shop has to give.
+         "dene wala kaun", "dene wale kaun", "dene waale kaun", "dene wala kon", "dene wale kon", "دینے والا کون", "دینے والے کون",
+@@ -942,14 +944,18 @@ object VoiceQuestion {
+         "paisa mere paas", "paise mere paas", "raqam mere paas", "پیسے میرے پاس", "پیسہ میرے پاس", "पैसा मेरे पास", "पैसे मेरे पास", "میرا قرض", "میرے ذمے", "مجھ پر", "ہمارا قرض", "मेरा कर्ज", "मेरा क़र्ज़", "मेरे जिम्मे",
+         "मुझ पर", "আমার ঋণ", "আমার দেনা", "ديني", "علي دين", "بدهی من", "منهنجو قرض", "utang saya", "hutang saya",
+         // 16 Nov 2026 (audit T11): Indonesian's other "I/we" and the joined "my"; Arabic "on us".
+-        "utang aku", "hutang aku", "utangku", "hutangku", "utang kami", "hutang kami", "علينا"
++        "utang aku", "hutang aku", "utangku", "hutangku", "utang kami", "hutang kami", "علينا",
++        // 24 Nov 2026 (A1): Arabic "I owe" (أدين / ادين) and Indonesian "to whom do I owe" (the payable side).
++        "أدين", "ادين", "berutang kepada siapa", "berhutang kepada siapa", "utang ke siapa", "hutang ke siapa"
+     )
+ 
+     /** A supplier's side of the book: what is owed there is the shop's to pay. */
+     private val SUPPLIER_SIDE = listOf(
+         "supplier", "suppliers", "company", "kampani", "maal wale", "maal wala", "distributor", "wholesaler",
+         "سپلائر", "کمپنی", "مال والے", "सप्लायर", "कंपनी", "সাপ্লায়ার", "কোম্পানি", "المورد", "الموردين", "تامین کننده",
+-        "تأمین‌کننده", "سپلائر", "pemasok", "supplier"
++        "تأمین‌کننده", "سپلائر", "pemasok", "supplier",
++        // 24 Nov 2026 (A1): plural supplier words in Urdu/Sindhi script and Arabic's "suppliers" with the article.
++        "سپلائرز", "سپلائرون", "سپلائرن", "سپلائرس", "کمپنیاں", "کمپنیوں", "मालवाले", "सप्लायर्स"
+     )
+ 
+     /** The first of the recogniser's guesses that is a question this app knows. */
+diff --git a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/HudhudReadFailure.kt b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/HudhudReadFailure.kt
+new file mode 100644
+index 0000000..dbb482a
+--- /dev/null
++++ b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/HudhudReadFailure.kt
+@@ -0,0 +1,57 @@
++package com.innovation313.roshankhata.data
++
++import kotlinx.coroutines.CancellationException
++
++/**
++ * A book that could not be read is told as that, never as "none", "nothing waiting" or "all clear" (24 Nov 2026, stage 7 item F2).
++ *
++ * Until then the answer layer wrapped a handful of reads in `runCatching { … }.getOrDefault(emptyList())`: a bell that failed to
++ * compute read as "nothing waiting for you today", a failed bill-item read as a bill with no items, a failed stock valuation as a
++ * product with no low-stock line. Each of those is a reassuring answer made out of a failure — the costliest kind (lesson 151:
++ * a wrong answer is worse than a miss). Two further harms of `runCatching`: it also swallows [CancellationException], so a
++ * cancelled coroutine kept running as if its read had come back empty.
++ *
++ * The rule now: **a read in the answer layer is not caught.** The exception goes up to the platform's one catch (the phone's
++ * sheet, the computer's panel), which shows [AnswerBook.failed] — the words below. The few places that really are best-effort
++ * (a chip row that may stay empty, the voice's own words, the app's version name) go through [bestEffort], which names itself in
++ * the code, never catches cancellation, and is held to a short list by `AnswerFailsLoudSourceTest`.
++ */
++object HudhudReadFailure {
++
++    /**
++     * The word key of what he says when the book could not be read ("I could not read your book right now. Nothing is lost —
++     * please try again in a moment."). It is named as text, not as `W.hudhud_read_failed`, until the key is in strings.xml in all
++     * nine languages (stage 7 report): [words] falls back to the old words when the name is not there yet. Then write
++     * `W.hudhud_read_failed` in [AnswerBook.failed] and delete this fallback (and its test).
++     */
++    const val KEY = "hudhud_read_failed"
++
++    /** The words used before [KEY] exists: "I could not find this in your khata…" (honest about not answering, not about why). */
++    const val FALLBACK_KEY = "hudhud_unknown"
++
++    /**
++     * The failure words. [text] looks a word up by its name and throws for a name that is not in the app's strings (both the
++     * phone's `WordIds` and the computer's `XmlWords` do); a blank answer counts as not there.
++     */
++    fun words(text: (String) -> String): String {
++        val own = try {
++            text(KEY)
++        } catch (e: Exception) {
++            null
++        }
++        return own?.takeIf { it.isNotBlank() } ?: text(FALLBACK_KEY)
++    }
++
++    /**
++     * [block]'s answer, or [whenFailed] when it throws — except cancellation, which always goes on up (a cancelled read is no
++     * empty read). Only for what says nothing when it is empty: a row of chips, a spoken sentence, a version name. Never for a
++     * figure, a list of what is owed, what is waiting or what is in stock.
++     */
++    inline fun <T> bestEffort(whenFailed: T, block: () -> T): T = try {
++        block()
++    } catch (e: CancellationException) {
++        throw e
++    } catch (e: Exception) {
++        whenFailed
++    }
++}
+diff --git a/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/HudhudSenseState.kt b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/HudhudSenseState.kt
+new file mode 100644
+index 0000000..12c2d5f
+--- /dev/null
++++ b/shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/HudhudSenseState.kt
+@@ -0,0 +1,86 @@
++package com.innovation313.roshankhata.data
++
++import java.util.concurrent.atomic.AtomicBoolean
++
++/**
++ * Whether Hudhud's learnt sense is there (24 Nov 2026, stage 7 item F3).
++ *
++ * The sense is a model the app ships as an asset (`hudhud/sense.bin`) and reads on the first question. When that read fails — the
++ * asset missing from a build, a corrupt file, a decoder that throws — [HudhudSense] swallows it (its loader is `runCatching`, so a
++ * bad model reads as "no sense") and Hudhud goes on with his rules alone. That is a real mode (the shared tests run in it, and the
++ * rules read about half of the held-out sentences on their own against 91% with the sense), but it is a far weaker one, and nobody
++ * was ever told: not the log, not a bug report, not the owner's check log. A phone that lost its model looked exactly like one
++ * that had it, only dumber.
++ *
++ * [check] is the one place that notices. [Hudhud.understand] calls it on every sentence (it costs a volatile read once the model is
++ * loaded), and the first time the sense is found missing it says why once — to [sink], which the platforms point at their log — and
++ * [mode] reads [Mode.RULES_ONLY] from then on, for the platform to show or record. When the sense is there again the mode goes
++ * back; the log line is said once for the process, not once per sentence.
++ *
++ * [reading] wraps the shipped loader so that the reason is the loader's own ("the asset is not in this build", "reading it
++ * threw …") and not just "it did not load".
++ */
++object HudhudSenseState {
++
++    /** UNCHECKED: no sentence has been read yet. WITH_SENSE: the model is loaded. RULES_ONLY: it is not, and he reads by his rules alone. */
++    enum class Mode { UNCHECKED, WITH_SENSE, RULES_ONLY }
++
++    @Volatile
++    private var current: Mode = Mode.UNCHECKED
++
++    @Volatile
++    private var lost: String? = null
++
++    private val told = AtomicBoolean(false)
++
++    /** Where the one line goes (the phone: Log.w, the computer: its errors.log). Null: nowhere (the shared tests). */
++    @Volatile
++    var sink: ((String) -> Unit)? = null
++
++    /** The mode as of the last [check]. */
++    val mode: Mode get() = current
++
++    /** Why the sense is missing, when it is: the loader's own words, else that the model did not load. Null otherwise. */
++    val reason: String? get() = if (current == Mode.RULES_ONLY) lost ?: NOT_LOADED else null
++
++    /** The sense is missing and he reads by his rules alone. */
++    val rulesOnly: Boolean get() = current == Mode.RULES_ONLY
++
++    /**
++     * [read], watched: gives its bytes unchanged and notes why when it gives none or throws (a throw becomes "no bytes", as
++     * [HudhudSense.useModel] has always treated it). Pass this to `HudhudSense.useModel` in place of a bare `runCatching`.
++     */
++    fun reading(source: String, read: () -> ByteArray?): () -> ByteArray? = {
++        try {
++            read().also { if (it == null || it.isEmpty()) lost = "$source is not in this build" }
++        } catch (e: Exception) {
++            lost = "reading $source threw ${e.javaClass.simpleName}"
++            null
++        }
++    }
++
++    /**
++     * Looks whether the sense is there now, records the mode and, the first time it is missing, says so once. Safe on any thread,
++     * cheap once the model is loaded; the first call after [HudhudSense.useModel] reads the model itself (as the first question does).
++     */
++    fun check(): Mode {
++        val ready = HudhudSense.ready
++        current = if (ready) Mode.WITH_SENSE else Mode.RULES_ONLY
++        if (ready) {
++            lost = null
++        } else if (told.compareAndSet(false, true)) {
++            sink?.invoke("Hudhud's sense could not be loaded (${lost ?: NOT_LOADED}); he reads by his rules alone")
++        }
++        return current
++    }
++
++    /** Tests: forget what was said, so the next missing sense is told again. */
++    internal fun forgetForTest() {
++        told.set(false)
++        current = Mode.UNCHECKED
++        lost = null
++        sink = null
++    }
++
++    private const val NOT_LOADED = "the model did not load"
++}

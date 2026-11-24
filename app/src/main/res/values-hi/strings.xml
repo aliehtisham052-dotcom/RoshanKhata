@@ -429,12 +429,12 @@
     <string name="profile_preview_caption">आपके इनवॉइस के हेडर की झलक</string>
     <string name="business_settings_subtitle">आपके इनवॉइस, स्टेटमेंट और रिपोर्ट पर छपता है</string>
     <string name="business_name">बिज़नेस का नाम</string>
-    <string name="business_name_hint">जैसे भट्टी ट्रेडर्स</string>
+    <string name="business_name_hint">जैसे अल-नूर ट्रेडर्स</string>
     <string name="business_name_urdu">दुकान का नाम उर्दू में</string>
     <string name="business_name_urdu_hint">जैसे النور ٹریڈرز</string>
     <string name="business_name_urdu_help">उर्दू पोस्टर, बिज़नेस कार्ड और लोगो पर यही नाम छपेगा। खाली छोड़ें तो ऊपर वाला नाम।</string>
     <string name="business_address">दुकान का पता</string>
-    <string name="business_address_hint">जैसे मेन बाज़ार, पसरूर</string>
+    <string name="business_address_hint">जैसे मेन बाज़ार</string>
     <string name="invoice_bank_name_hint">बैंक का नाम</string>
     <string name="invoice_bank_title_hint">खाते का नाम</string>
     <string name="invoice_bank_iban_hint">IBAN / खाता नंबर</string>

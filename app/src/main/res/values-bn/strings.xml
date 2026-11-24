@@ -429,12 +429,12 @@
     <string name="profile_preview_caption">আপনার ইনভয়েসের হেডারের লাইভ নমুনা</string>
     <string name="business_settings_subtitle">আপনার ইনভয়েস, স্টেটমেন্ট ও রিপোর্টে ছাপা হয়</string>
     <string name="business_name">ব্যবসার নাম</string>
-    <string name="business_name_hint">যেমন ভাট্টি ট্রেডার্স</string>
+    <string name="business_name_hint">যেমন আল-নূর ট্রেডার্স</string>
     <string name="business_name_urdu">উর্দুতে দোকানের নাম</string>
     <string name="business_name_urdu_hint">যেমন النور ٹریڈرز</string>
     <string name="business_name_urdu_help">উর্দু পোস্টার, বিজনেস কার্ড ও লোগোতে এই নাম ছাপা হবে। খালি রাখলে উপরের নাম।</string>
     <string name="business_address">দোকানের ঠিকানা</string>
-    <string name="business_address_hint">যেমন মেইন বাজার, পসরুর</string>
+    <string name="business_address_hint">যেমন মেইন বাজার</string>
     <string name="invoice_bank_name_hint">ব্যাংকের নাম</string>
     <string name="invoice_bank_title_hint">অ্যাকাউন্টের নাম</string>
     <string name="invoice_bank_iban_hint">IBAN / অ্যাকাউন্ট নম্বর</string>
