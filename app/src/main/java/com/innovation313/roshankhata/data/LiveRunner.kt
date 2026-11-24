@@ -99,6 +99,8 @@ object LiveRunner {
     private var quietCloud = 0
     /** Relay rounds that failed in a row: each waits twice as long, up to about 13 minutes. */
     private var relayMisses = 0
+    /** The version refusal the relay round run beside the WiFi round last saw (BC-259); null when none, or no side round yet. */
+    @Volatile private var sideRefused: String? = null
     /**
      * While the relay is backing off and the computer does not answer on WiFi, the relay is asked again only from
      * this time on; the WiFi round and the address search keep their own pace ([WIFI_RETRY_MS]) meanwhile.
@@ -228,6 +230,7 @@ object LiveRunner {
         lastSeek = 0L
         quietCloud = 0
         relayMisses = 0
+        sideRefused = null
         relayRetryAt = 0L
         wakeTellWait = WAKE_TELL_MS
         lastWakeTell = 0L
@@ -334,10 +337,12 @@ object LiveRunner {
                 // A WiFi round that worked keeps the loop's short cadence: the relay's back-off starts again (R17).
                 relayMisses = 0
                 relayRetryAt = 0L
-                state.value = Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer)
+                // A third device refused over a version, seen by the relay round beside this one (BC-259), keeps the status.
+                state.value = sideRefused?.let { Status.UpdateNeeded(it) } ?: Status.Live(System.currentTimeMillis(), peer?.name ?: target.computer)
                 // More than the computer in this book (another phone), or a phone's yes awaited: the relay too, so
                 // the devices away from this WiFi hear this phone's changes (each device sends only its own).
                 val others = LiveSync.state(sql).peers.size > 1 || pending?.phone == true
+                if (!others) sideRefused = null
                 val side = if (others && sideDue(sql, now)) relayRound(app, db, sql, peer?.name, target.computer, side = true) else Long.MAX_VALUE
                 minOf(if (took.more) 200L else ROUND_MS, side)
             }
@@ -422,7 +427,16 @@ object LiveRunner {
                 relayMisses = 0
                 LiveSync.noteMark(sql, marks(app))
                 markFrom(db, sql)
-                if (!side) state.value = Status.Live(System.currentTimeMillis(), peerName ?: computer, relay = true)
+                // A device of the book that runs another version is not hidden by the others' changes (BC-259): the status
+                // says which to update, and the round goes on as for a good one — the other devices' sync is not stopped.
+                val skew = r.refused?.takeIf { LiveSync.needsUpdate(it) }
+                if (side) {
+                    sideRefused = skew
+                } else if (skew != null) {
+                    state.value = Status.UpdateNeeded(skew)
+                } else {
+                    state.value = Status.Live(System.currentTimeMillis(), peerName ?: computer, relay = true)
+                }
                 // What this round really carried, for the card's dots (a side round's too: it is the relay road).
                 if (r.carried > 0 || r.wrote > 0) traffic.tryEmit(Traffic(out = r.carried > 0, came = r.wrote > 0, relay = true))
                 // Quiet rounds wait longer (15 s, 30 s, then a minute): a daily limit is shared by every book.
@@ -448,6 +462,7 @@ object LiveRunner {
                 state.value = Status.Rejoin
                 ROUND_MS * 3
             } else if (side) {
+                sideRefused = (r as? LiveCloud.Result.Refused)?.why?.takeIf { LiveSync.needsUpdate(it) }
                 relayMisses = minOf(relayMisses + 1, 6)
                 Long.MAX_VALUE
             } else if (r is LiveCloud.Result.Refused && LiveSync.needsUpdate(r.why)) {

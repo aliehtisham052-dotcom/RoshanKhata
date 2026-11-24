@@ -57,16 +57,21 @@ class LiveDevicesActivity : BaseActivity() {
             val read = withContext(Dispatchers.IO) {
                 runCatching {
                     val s = sql()
-                    LiveSync.state(s) to LiveSync.conflictViews(s)
+                    Triple(LiveSync.state(s), LiveSync.conflictViews(s), LiveSync.skewed(s))
                 }.getOrNull()
             }
             if (isFinishing || isDestroyed) return@launch
-            showDevices(read?.first)
+            showDevices(read?.first, read?.third.orEmpty())
             showConflicts(read?.second.orEmpty())
         }
     }
 
-    private fun showDevices(state: LiveSync.State?) {
+    /**
+     * [skewed]: the devices whose last message this version refused over a version ([LiveSync.skewed], 24 Nov 2026, BC-259):
+     * each is listed under its own name with which of the two devices to update, as the computer's window does — the
+     * Backup card's one line can name only one device.
+     */
+    private fun showDevices(state: LiveSync.State?, skewed: Map<String, String>) {
         devices.removeAllViews()
         val peers = if (state?.on == true) state.peers else emptyList()
         findViewById<TextView>(R.id.tvDevicesEmpty).apply {
@@ -80,9 +85,16 @@ class LiveDevicesActivity : BaseActivity() {
             val row = inflater.inflate(R.layout.item_live_device, devices, false)
             val name = p.name?.takeIf { it.isNotBlank() } ?: "—"
             row.findViewById<TextView>(R.id.tvDeviceName).text = name
-            row.findViewById<TextView>(R.id.tvDeviceSeen).text = p.seen
+            val seen = p.seen
                 ?.let { getString(R.string.live_device_seen, bidi.unicodeWrap(Digits.toLatin(Format.dateTime(it)))) }
                 ?: getString(R.string.live_device_never)
+            val skewText = skewed[p.device]?.let {
+                com.innovation313.roshankhata.data.LiveWhy.skewText(com.innovation313.roshankhata.data.AndroidWords(this), it, p.name)
+            }
+            row.findViewById<TextView>(R.id.tvDeviceSeen).apply {
+                text = if (skewText == null) seen else seen + "\n" + skewText
+                if (skewText != null) setTextColor(ContextCompat.getColor(this@LiveDevicesActivity, R.color.red_gave_text))
+            }
             row.findViewById<MaterialButton>(R.id.btnDeviceRemove).setOnClickListener { confirmRemove(p.device, name) }
             TextFit.relax(row)
             devices.addView(row)

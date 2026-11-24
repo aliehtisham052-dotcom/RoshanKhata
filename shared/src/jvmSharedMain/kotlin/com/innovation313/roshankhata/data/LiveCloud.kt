@@ -148,9 +148,15 @@ object LiveCloud {
         /** [took] messages written in, [sent] whether one was left for the others. */
         /**
          * [carried]: how many changes this device's message held (0 for one of acknowledgements only); [wrote]: the
-         * rows the others' changes wrote here.
+         * rows the others' changes wrote here. [refused] (24 Nov 2026, BC-259): why a device's message in this round was
+         * refused (e.g. "schema 47") although others' were taken — [roundAll] also gives one still noted for a device
+         * of the book ([skewNow]); null when none. A refusal that [LiveSync.needsUpdate] words is kept before any other. The round still counts as done: the good devices' sync goes on, and a screen
+         * shows the refusal ([LiveRunner], [LiveDesk]) instead of "Live" alone.
          */
-        data class Done(val took: Int, val sent: Boolean, val more: Boolean, val carried: Int = 0, val wrote: Int = 0) : Result
+        data class Done(
+            val took: Int, val sent: Boolean, val more: Boolean, val carried: Int = 0, val wrote: Int = 0,
+            val refused: String? = null
+        ) : Result
         object Off : Result
         object NotPaired : Result
         /** Live sync is stopped for everyone ([LiveControl]); the relay is not asked. */
@@ -516,7 +522,9 @@ object LiveCloud {
                         // The book itself refused it (the other device runs a newer schema): said at the end of the
                         // round instead of "Live" (23 Oct 2026, the second review). The cursor still moves — the
                         // sender's pointer does not, so it comes again once this device is updated.
-                        lastRefusal?.let { refusedWhy = it }
+                        // With three devices one may be refused while another is taken: the version refusal is
+                        // kept over a later, other one, so the round can say it (BC-259).
+                        lastRefusal?.let { if (refusedWhy == null || (LiveSync.needsUpdate(it) && !LiveSync.needsUpdate(refusedWhy))) refusedWhy = it }
                     }
                 }
                 val seq = p.optLong("seq", -1L)
@@ -552,7 +560,7 @@ object LiveCloud {
                 if (resending) setMeta(sql, k("resend_from", id.book, tag), "$acked|$highWater")
                 sent = true
             }
-            return Result.Done(took, sent, more, carried = if (sent) parcelCount else 0, wrote = wroteRows[0])
+            return Result.Done(took, sent, more, carried = if (sent) parcelCount else 0, wrote = wroteRows[0], refused = refusedWhy)
         } catch (e: java.io.IOException) {
             return Result.Unreachable
         } catch (e: org.json.JSONException) {
@@ -619,6 +627,16 @@ object LiveCloud {
         }
     }
 
+    /**
+     * The version refusal ([LiveSync.needsUpdate]) of a device this book still has, whose last parcel this version refused
+     * and which has not been taken since ([LiveSync.skewed]); null when there is none (24 Nov 2026, BC-259). A device
+     * removed from the book is not counted: its note outlives it.
+     */
+    suspend fun skewNow(sql: SyncSql): String? {
+        val peers = LiveSync.state(sql).peers.map { it.device }.toSet()
+        return LiveSync.skewed(sql).filterKeys { it in peers }.values.firstOrNull { LiveSync.needsUpdate(it) }
+    }
+
     suspend fun roundAll(
         sql: SyncSql, http: Http = plain, roads: List<Road> = roads(), now: Long = System.currentTimeMillis(),
         halted: () -> Boolean = { LiveControl.halted() }, readOthers: Boolean = true
@@ -641,10 +659,15 @@ object LiveCloud {
         // so changes that came by the owner's hosting never moved them).
         var carried = 0
         var wrote = 0
+        // A device refused over a version on any relay is not hidden by the changes another device carried (BC-259).
+        var refused: String? = null
+        fun noteRefused(why: String?) {
+            if (why != null && (refused == null || (LiveSync.needsUpdate(why) && !LiveSync.needsUpdate(refused)))) refused = why
+        }
         for (road in roads) {
             if (mine == null) {
                 when (val r = round(sql, http, road.base, now, road.tag, send = true, useLines = road.tag == "", halted = { false })) {
-                    is Result.Done -> mine = r
+                    is Result.Done -> { mine = r; noteRefused(r.refused) }
                     Result.Off, Result.NotPaired -> return r
                     // The book's state, not the relay's: another relay would say the same.
                     is Result.Refused -> if (r.why == LiveRound.LOST || LiveSync.needsUpdate(r.why)) return r else if (failed == null) failed = r
@@ -660,12 +683,15 @@ object LiveCloud {
             val used = id != null && LiveSync.state(sql).peers.any { getMeta(sql, k("via_" + it.device, id.book)) == road.tag }
             if (!readOthers && !used) continue
             val r = round(sql, http, road.base, now, road.tag, send = used, useLines = road.tag == "", halted = { false })
-            if (r is Result.Done) { took += r.took; more = more || r.more; carried += r.carried; wrote += r.wrote }
+            if (r is Result.Done) { took += r.took; more = more || r.more; carried += r.carried; wrote += r.wrote; noteRefused(r.refused) }
         }
         // The later relays were read in this round: the next reading of them is OTHERS_MS from now (othersDue).
         if (readOthers && id != null) othersAt[id.book] = now
         val first = mine ?: return failed ?: Result.Unreachable
-        return first.copy(took = first.took + took, more = first.more || more, carried = first.carried + carried, wrote = first.wrote + wrote)
+        // A device refused in an earlier round that has not spoken since (it sends again only after a back-off) is still
+        // a device to update: the status does not flicker back to "Live" between its resends (BC-259).
+        if (refused == null) refused = runCatching { skewNow(sql) }.getOrNull()
+        return first.copy(took = first.took + took, more = first.more || more, carried = first.carried + carried, wrote = first.wrote + wrote, refused = refused)
     }
 
     /**

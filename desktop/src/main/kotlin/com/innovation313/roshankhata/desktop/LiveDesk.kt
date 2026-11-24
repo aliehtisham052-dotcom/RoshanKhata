@@ -359,7 +359,9 @@ object LiveDesk {
                 else when (val r = logged("relay round", null) { runBlocking { LiveCloud.roundAll(d.syncSql(), readOthers = LiveCloud.othersDue(d.syncSql(), now)) } }) {
                     is LiveCloud.Result.Done -> {
                         noteRound(d)
-                        relayState.value = RelayState.Live(now, r.took)
+                        // A device of the book on another version is not hidden by the others' changes (BC-259): the
+                        // window says which to update; the wait below is the good devices' own.
+                        relayState.value = RelayState.Live(now, r.took, r.refused?.takeIf { LiveSync.needsUpdate(it) })
                         if (r.carried > 0 || r.wrote > 0) traffic.tryEmit(Traffic(out = r.carried > 0, came = r.wrote > 0, relay = true))
                         // A device whose parcels come by the owner's hosting: no line, nudge or Firebase there wakes
                         // this computer for its changes, so the HTTP clock (15 s up to a minute) stands (R83).
@@ -404,7 +406,8 @@ object LiveDesk {
     sealed interface RelayState {
         object Unknown : RelayState
         object Off : RelayState
-        data class Live(val at: Long, val took: Int) : RelayState
+        /** [refused]: a device of the book whose message was refused over its version though others' were taken (BC-259). */
+        data class Live(val at: Long, val took: Int, val refused: String? = null) : RelayState
         data class Down(val why: String) : RelayState
     }
     val relayState = MutableStateFlow<RelayState>(RelayState.Unknown)
@@ -735,7 +738,16 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
                     Look.warn, Look.warnTint
                 )
                 if (relay) when (val r = rs) {
-                    is LiveDesk.RelayState.Live -> Text(word(W.live_pc_relay_ok, Format.dateTime(r.at)), color = Look.accent, fontSize = 13.sp)
+                    is LiveDesk.RelayState.Live -> {
+                        Text(word(W.live_pc_relay_ok, Format.dateTime(r.at)), color = Look.accent, fontSize = 13.sp)
+                        // The relay is up and others' changes came, but one device is on another version: said here too,
+                        // not only under that device below (which name it is: the device lines).
+                        r.refused?.let { why ->
+                            skewLine(com.innovation313.roshankhata.words.LocalWords.current, null, why)?.let {
+                                Text(it, color = c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                            }
+                        }
+                    }
                     // The kill switch is its own sentence; a reason code in the owner's language (LiveWhy, as the phone).
                     is LiveDesk.RelayState.Down -> Text(
                         if (r.why == LiveDesk.HALTED) word(W.live_status_halted)
