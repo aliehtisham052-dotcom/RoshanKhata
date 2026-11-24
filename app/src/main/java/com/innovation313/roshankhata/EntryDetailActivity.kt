@@ -1039,24 +1039,45 @@ class EntryDetailActivity : BaseActivity() {
 
     /** Render the receipt card to an image and offer it to the share sheet. */
     private fun shareReceipt() {
-        try {
-            val bitmap = withSeal(receiptPicture())
-
-            val dir = File(cacheDir, "receipts").apply { mkdirs() }
-            val file = File(dir, "receipt_${entryId}.png")
-            FileOutputStream(file).use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
-
-            val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
-            val share = Intent(Intent.ACTION_SEND).apply {
-                type = "image/png"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            startActivity(Intent.createChooser(share, getString(R.string.share)))
+        if (sharingReceipt) return
+        // The card is drawn into its picture here, on the main thread (a view draws only there); the seal's
+        // stamp decode, the PNG compress and the file write run off it (24 Nov 2026, ANR audit BC-246).
+        // A screen that is gone cancels the scope.
+        val slip = try {
+            receiptPicture()
         } catch (ex: Exception) {
             Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
+            return
+        }
+        sharingReceipt = true
+        lifecycleScope.launch {
+            try {
+                val file = withContext(Dispatchers.IO) {
+                    val bitmap = withSeal(slip)
+                    val dir = File(cacheDir, "receipts").apply { mkdirs() }
+                    val f = File(dir, "receipt_${entryId}.png")
+                    FileOutputStream(f).use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                    f
+                }
+                val uri = FileProvider.getUriForFile(this@EntryDetailActivity, "$packageName.fileprovider", file)
+                val share = Intent(Intent.ACTION_SEND).apply {
+                    type = "image/png"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(Intent.createChooser(share, getString(R.string.share)))
+            } catch (ce: kotlinx.coroutines.CancellationException) {
+                throw ce
+            } catch (ex: Exception) {
+                Toast.makeText(this@EntryDetailActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
+            } finally {
+                sharingReceipt = false
+            }
         }
     }
+
+    /** True while the receipt picture is being written for sharing: a second tap on Share does nothing. */
+    private var sharingReceipt = false
 
     // ---------- Kitab ki Muhar: this entry's seal proof (4 Nov 2026) ----------
 

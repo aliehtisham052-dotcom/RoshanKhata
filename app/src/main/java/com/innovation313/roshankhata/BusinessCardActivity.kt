@@ -20,8 +20,10 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.ui.CardVideo
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.innovation313.roshankhata.data.Branding
 import com.innovation313.roshankhata.data.CardLanguage
 import com.innovation313.roshankhata.data.Businesses
@@ -318,13 +320,24 @@ class BusinessCardActivity : BaseActivity() {
 
     /** Read the Profile logo, and show the switch or the "add one" hint accordingly. */
     private fun loadLogo() {
-        logo = BusinessProfile.loadLogo(this)
-        val has = logo != null
-        logoSwitch.visibility = if (has) android.view.View.VISIBLE else android.view.View.GONE
-        logoHint.visibility = if (has) android.view.View.GONE else android.view.View.VISIBLE
-        // A read-only phone cannot open Profile, so it is not offered the way there.
-        com.innovation313.roshankhata.data.ViewerMode.hide(this, logoHint)
+        // The decode runs off the main thread (24 Nov 2026, ANR audit BC-246); the screen is drawn
+        // without the logo until it arrives, then once more. A newer call replaces an older one, and
+        // a screen that is gone cancels it (lifecycleScope), so no view is touched afterwards.
+        logoJob?.cancel()
+        logoJob = lifecycleScope.launch {
+            val loaded = withContext(Dispatchers.IO) { BusinessProfile.loadLogo(this@BusinessCardActivity) }
+            logo = loaded
+            val has = loaded != null
+            logoSwitch.visibility = if (has) android.view.View.VISIBLE else android.view.View.GONE
+            logoHint.visibility = if (has) android.view.View.GONE else android.view.View.VISIBLE
+            // A read-only phone cannot open Profile, so it is not offered the way there.
+            com.innovation313.roshankhata.data.ViewerMode.hide(this@BusinessCardActivity, logoHint)
+            render()
+        }
     }
+
+    /** The logo read now in progress, if any: a share waits for it so the card is not drawn without it. */
+    private var logoJob: Job? = null
 
     /**
      * One chip per design, in a row that scrolls. Built from the template list
@@ -392,11 +405,9 @@ class BusinessCardActivity : BaseActivity() {
     )
 
     /** The still card that is shared: every moving part at rest. */
-    private fun drawCard(): Bitmap {
+    private fun drawCard(tpl: CardTemplates.Template, data: CardTemplates.CardData): Bitmap {
         val bmp = Bitmap.createBitmap(CardTemplates.W, CardTemplates.H, Bitmap.Config.ARGB_8888)
-        CardTemplates.byId(template).draw(
-            Canvas(bmp), cardData(), CardTemplates.W, CardTemplates.H, -1f
-        )
+        tpl.draw(Canvas(bmp), data, CardTemplates.W, CardTemplates.H, -1f)
         return bmp
     }
 
@@ -411,21 +422,40 @@ class BusinessCardActivity : BaseActivity() {
             Toast.makeText(this, R.string.biz_card_enter_name, Toast.LENGTH_SHORT).show()
             return
         }
+        if (sharingCard) return
         save()
-        try {
-            val dir = File(cacheDir, "cards").apply { mkdirs() }
-            val file = File(dir, "dukan-card.png")
-            FileOutputStream(file).use { drawCard().compress(Bitmap.CompressFormat.PNG, 100, it) }
-            val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
-            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                type = "image/png"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }, getString(R.string.biz_card_share)))
-        } catch (e: Exception) {
-            Toast.makeText(this, R.string.share_failed, Toast.LENGTH_SHORT).show()
+        sharingCard = true
+        // The views are read here, on the main thread; the 1200x700 draw, the PNG compress and the file
+        // write run off it (24 Nov 2026, ANR audit BC-246). A screen that is gone cancels the scope.
+        lifecycleScope.launch {
+            try {
+                logoJob?.join()
+                val tpl = CardTemplates.byId(template)
+                val data = cardData()
+                val file = withContext(Dispatchers.IO) {
+                    val dir = File(cacheDir, "cards").apply { mkdirs() }
+                    val f = File(dir, "dukan-card.png")
+                    FileOutputStream(f).use { drawCard(tpl, data).compress(Bitmap.CompressFormat.PNG, 100, it) }
+                    f
+                }
+                val uri = FileProvider.getUriForFile(this@BusinessCardActivity, "$packageName.fileprovider", file)
+                startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                    type = "image/png"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }, getString(R.string.biz_card_share)))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Toast.makeText(this@BusinessCardActivity, R.string.share_failed, Toast.LENGTH_SHORT).show()
+            } finally {
+                sharingCard = false
+            }
         }
     }
+
+    /** True while the still card is being made for sharing: a second tap does nothing. */
+    private var sharingCard = false
 
     // ---------- Moving card ----------
 

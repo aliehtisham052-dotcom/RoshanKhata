@@ -38,23 +38,27 @@ class PaymentListenerService : NotificationListenerService() {
         val ctx = applicationContext
         if (!PaymentVoice.isOn(ctx)) return
         val pkg = n.packageName ?: return
-        if (PaymentVoice.neverRead(ctx, pkg)) return
         val notification = n.notification ?: return
-        // Music, a download, a call in progress, a chat, an email: never a payment, and not a reason to list the app.
-        if (PaymentVoice.passedOver(notification)) return
-        if (!PaymentVoice.isChosen(ctx, pkg)) {
-            // Not ticked: its name only, so the owner can tick it later. Not a word of what it says.
-            PaymentVoice.noteSeen(ctx, pkg, PaymentVoice.labelOf(ctx, n))
-            return
-        }
-        // A group's summary repeats its children.
-        if (notification.flags and Notification.FLAG_GROUP_SUMMARY != 0) return
-        val extras = notification.extras ?: return
-        val title = runCatching { extras.getCharSequence(Notification.EXTRA_TITLE)?.toString() }.getOrNull()
-        val text = runCatching { extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() }.getOrNull()
-        val big = runCatching { extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() }.getOrNull()
-        val label = PaymentVoice.labelOf(ctx, n)
         scope.launch {
+            // The phone's package questions (is this an SMS or phone app? what is the app called?) are binder calls
+            // to the system, up to three a notice: asked off the main thread (24 Nov 2026, ANR audit BC-246). The
+            // rule is the same and asked afresh each time: an SMS or phone app is never read, never even noted.
+            val read = withContext(Dispatchers.Default) { !PaymentVoice.neverRead(ctx, pkg) }
+            if (!read) return@launch
+            // Music, a download, a call in progress, a chat, an email: never a payment, and not a reason to list the app.
+            if (PaymentVoice.passedOver(notification)) return@launch
+            val label = withContext(Dispatchers.Default) { PaymentVoice.labelOf(ctx, n) }
+            if (!PaymentVoice.isChosen(ctx, pkg)) {
+                // Not ticked: its name only, so the owner can tick it later. Not a word of what it says.
+                PaymentVoice.noteSeen(ctx, pkg, label)
+                return@launch
+            }
+            // A group's summary repeats its children.
+            if (notification.flags and Notification.FLAG_GROUP_SUMMARY != 0) return@launch
+            val extras = notification.extras ?: return@launch
+            val title = runCatching { extras.getCharSequence(Notification.EXTRA_TITLE)?.toString() }.getOrNull()
+            val text = runCatching { extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() }.getOrNull()
+            val big = runCatching { extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() }.getOrNull()
             // Off the main thread (P5): the text is cut and tidied before any pattern sees it, but reading is still work,
             // and an app that floods long notices must not hold up the phone's screen.
             val payment = withContext(Dispatchers.Default) {
@@ -64,8 +68,9 @@ class PaymentListenerService : NotificationListenerService() {
             if (REPEATS.isRepeat(pkg, payment.amount, payment.reference, words, System.currentTimeMillis())) return@launch
             // Turned off while it was being read.
             if (!PaymentVoice.isOn(ctx)) return@launch
+            val name = withContext(Dispatchers.Default) { PaymentVoice.nameOf(ctx, pkg, label) }
             val voice = speaker ?: PaymentSpeaker(ctx).also { speaker = it }
-            PaymentVoice.handle(ctx, scope, voice, pkg, PaymentVoice.nameOf(ctx, pkg, label), payment)
+            PaymentVoice.handle(ctx, scope, voice, pkg, name, payment)
         }
     }
 

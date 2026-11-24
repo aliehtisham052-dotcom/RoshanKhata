@@ -3116,7 +3116,19 @@ class PartyDetailActivity : BaseActivity() {
      * not big enough to actually recognise anyone by.
      */
     private fun viewPhotoFullSize() {
-        val photo = PartyPhoto.load(this, partyId) ?: return
+        // A photo already in memory (the avatar shows it) opens at once; a cold one is read off the main
+        // thread (24 Nov 2026, ANR audit BC-246), and a screen that is gone cancels the scope.
+        val warm = PartyPhoto.cached(partyId)
+        if (warm != null) { showPhotoViewer(warm); return }
+        lifecycleScope.launch {
+            val photo = withContext(Dispatchers.IO) { PartyPhoto.load(this@PartyDetailActivity, partyId) }
+                ?: return@launch
+            if (isFinishing || isDestroyed) return@launch
+            showPhotoViewer(photo)
+        }
+    }
+
+    private fun showPhotoViewer(photo: android.graphics.Bitmap) {
         val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         dialog.setContentView(R.layout.dialog_photo_viewer)
         dialog.findViewById<ImageView>(R.id.ivFullPhoto).setImageBitmap(photo)
@@ -3560,7 +3572,7 @@ class PartyDetailActivity : BaseActivity() {
         // over the full one.
         radarJob?.cancel()
         radarJob = lifecycleScope.launch {
-            val r = runCatching { com.innovation313.roshankhata.ui.RadarUi.read(dao, partyId, entries, promise) }.getOrNull()
+            val r = runCatching { com.innovation313.roshankhata.ui.RadarUi.read(this@PartyDetailActivity, dao, partyId, entries, promise) }.getOrNull()
             // Replaced by a newer reading meanwhile: it writes nothing (runCatching above kept the cancellation quiet).
             if (coroutineContext[kotlinx.coroutines.Job]?.isCancelled == true) return@launch
             if (isFinishing || isDestroyed) return@launch

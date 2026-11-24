@@ -167,20 +167,35 @@ class ImageCropActivity : BaseActivity() {
         val right = ((r.right - disp.left) * scale).toInt().coerceIn(left + 1, bmp.width)
         val bottom = ((r.bottom - disp.top) * scale).toInt().coerceIn(top + 1, bmp.height)
 
-        val cropped = Bitmap.createBitmap(bmp, left, top, right - left, bottom - top)
-
-        val outFile = File(cacheDir, "crop_${System.currentTimeMillis()}.png")
-        try {
-            FileOutputStream(outFile).use { out ->
-                cropped.compress(Bitmap.CompressFormat.PNG, 100, out)
+        if (saving) return
+        saving = true
+        // The crop and the PNG write run off the main thread (24 Nov 2026, ANR audit BC-246); the
+        // rectangle was read from the views above, on the main thread. A screen that is gone cancels
+        // the scope, and a second tap meanwhile does nothing.
+        lifecycleScope.launch {
+            val outFile = withContext(Dispatchers.IO) {
+                try {
+                    val cropped = Bitmap.createBitmap(bmp, left, top, right - left, bottom - top)
+                    val f = File(cacheDir, "crop_${System.currentTimeMillis()}.png")
+                    FileOutputStream(f).use { out ->
+                        cropped.compress(Bitmap.CompressFormat.PNG, 100, out)
+                    }
+                    f
+                } catch (e: Exception) {
+                    null
+                }
             }
-        } catch (e: Exception) {
-            Toast.makeText(this, R.string.crop_save_failed, Toast.LENGTH_SHORT).show()
-            return
+            saving = false
+            if (outFile == null) {
+                Toast.makeText(this@ImageCropActivity, R.string.crop_save_failed, Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            val result = Intent().putExtra(EXTRA_RESULT_PATH, outFile.absolutePath)
+            setResult(Activity.RESULT_OK, result)
+            finish()
         }
-
-        val result = Intent().putExtra(EXTRA_RESULT_PATH, outFile.absolutePath)
-        setResult(Activity.RESULT_OK, result)
-        finish()
     }
+
+    /** True while a confirmed crop is being written: a second tap on Use does nothing. */
+    private var saving = false
 }

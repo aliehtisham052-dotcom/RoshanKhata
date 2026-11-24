@@ -139,22 +139,44 @@ object PaymentVoice {
     // ------------------------------------------------------------------------------- which apps
 
     /** True for a package this app never reads a word of, nor lists: SMS, phone, and itself. */
-    fun neverRead(ctx: Context, pkg: String): Boolean {
-        if (pkg == ctx.packageName || pkg in SMS_APPS || pkg in DIALER_APPS) return true
-        val sms = runCatching { android.provider.Telephony.Sms.getDefaultSmsPackage(ctx) }.getOrNull()
-        if (sms != null && sms == pkg) return true
+    fun neverRead(ctx: Context, pkg: String): Boolean = Blockers(ctx).blocks(pkg)
+
+    /**
+     * The phone's answers to "which apps are messaging or phone apps", each asked at most once for the life of
+     * this object and never remembered beyond it (24 Nov 2026, ANR audit BC-246): [neverRead] makes one for one
+     * package, [seen] makes one for the whole list, so a screen listing 40 apps asks the PackageManager once, not
+     * 40 times. Nothing is kept between calls, so the privacy rule is exactly as fresh as before: an SMS app
+     * installed or made the default a moment ago is still never read. Call it off the main thread (binder calls).
+     */
+    private class Blockers(private val ctx: Context) {
+        private val defaultSms: String? by lazy {
+            runCatching { android.provider.Telephony.Sms.getDefaultSmsPackage(ctx) }.getOrNull()
+        }
+
         // Any other app that can send an SMS is a messaging app, whatever its package is called (L154): the fixed list
-        // above names four; this asks the phone for all.
-        val smsCapable = runCatching {
-            ctx.packageManager.queryIntentActivities(
-                android.content.Intent(android.content.Intent.ACTION_SENDTO, android.net.Uri.parse("smsto:")), 0
-            ).any { it.activityInfo?.packageName == pkg }
-        }.getOrDefault(false)
-        if (smsCapable) return true
-        val dialer = runCatching {
-            (ctx.getSystemService(Context.TELECOM_SERVICE) as? android.telecom.TelecomManager)?.defaultDialerPackage
-        }.getOrNull()
-        return dialer != null && dialer == pkg
+        // names four; this asks the phone for all.
+        private val smsCapable: Set<String> by lazy {
+            runCatching {
+                ctx.packageManager.queryIntentActivities(
+                    android.content.Intent(android.content.Intent.ACTION_SENDTO, android.net.Uri.parse("smsto:")), 0
+                ).mapNotNull { it.activityInfo?.packageName }.toSet()
+            }.getOrDefault(emptySet())
+        }
+
+        private val dialer: String? by lazy {
+            runCatching {
+                (ctx.getSystemService(Context.TELECOM_SERVICE) as? android.telecom.TelecomManager)?.defaultDialerPackage
+            }.getOrNull()
+        }
+
+        fun blocks(pkg: String): Boolean {
+            if (pkg == ctx.packageName || pkg in SMS_APPS || pkg in DIALER_APPS) return true
+            val sms = defaultSms
+            if (sms != null && sms == pkg) return true
+            if (pkg in smsCapable) return true
+            val d = dialer
+            return d != null && d == pkg
+        }
     }
 
     /**
@@ -213,10 +235,11 @@ object PaymentVoice {
     /** Apps that showed a notification since the feature was turned on, newest first, the two wallets aside. */
     fun seen(ctx: Context): List<SeenApp> {
         settleSeen(ctx)
+        val blockers = Blockers(ctx)
         return (prefs(ctx).getStringSet(KEY_SEEN, null) ?: emptySet()).mapNotNull { row ->
             val parts = row.split(SEP)
             if (parts.size != 3) null else SeenApp(parts[0], parts[1], parts[2].toLongOrNull() ?: 0L)
-        }.filter { s -> KNOWN.none { it.first == s.pkg } && !neverRead(ctx, s.pkg) }.sortedByDescending { it.at }
+        }.filter { s -> KNOWN.none { it.first == s.pkg } && !blockers.blocks(s.pkg) }.sortedByDescending { it.at }
     }
 
     /**
