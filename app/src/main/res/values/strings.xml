@@ -4114,6 +4114,15 @@
     <string name="na_sync_conflict">%1$s entries were changed on both devices at once</string>
     <string name="na_sync_conflict_sub">The amount kept may not be the one you meant. See Live sync → What changed.</string>
     <string name="live_status_update_both">The other device runs a newer version of the app (%1$s). Update this one; its changes wait until then.</string>
+    <string name="live_skew_this">%1$s runs a newer version of the app (%2$s; this device: %3$s). Update the app on this device; its changes wait until then.</string>
+    <string name="live_skew_other">%1$s runs an older version of the app (%2$s; this device: %3$s). Update the app on %1$s; its changes wait until then.</string>
+    <string name="live_skew_unknown">%1$s runs a version of the app that this device cannot sync with. Update the app on both devices.</string>
+    <string name="live_skew_pc_this">%1$s runs a newer version of the app (%2$s; this computer: %3$s). Update the app on this computer; its changes wait until then.</string>
+    <string name="live_skew_pc_other">%1$s runs an older version of the app (%2$s; this computer: %3$s). Update the app on %1$s; its changes wait until then.</string>
+    <string name="live_skew_pc_unknown">%1$s runs a version of the app that this computer cannot sync with. Update the app on both devices.</string>
+    <string name="live_skew_kind_schema">data version %1$s</string>
+    <string name="live_skew_kind_protocol">sync version %1$s</string>
+    <string name="live_skew_other_device">The other device</string>
     <string name="live_status_key_busy">This device’s key store did not answer (%1$s). Nothing was changed; it is tried again shortly.</string>
     <string name="na_sync_off">Live sync stopped</string>
     <string name="na_sync_off_sub">This book was replaced or went back to an older copy. Join the other device again.</string>

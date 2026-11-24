@@ -4134,6 +4134,15 @@
     <string name="na_sync_conflict">%1$s قيود تغيّرت على الجهازين في الوقت نفسه</string>
     <string name="na_sync_conflict_sub">قد لا يكون المبلغ المحفوظ هو ما قصدته. انظر المزامنة الحية ← ما الذي تغيّر.</string>
     <string name="live_status_update_both">الجهاز الآخر يعمل بإصدار أحدث من التطبيق (%1$s). حدِّث هذا الجهاز؛ تنتظر تغييراته حتى ذلك الحين.</string>
+    <string name="live_skew_this">%1$s يعمل بإصدار أحدث من التطبيق (%2$s؛ على هذا الجهاز: %3$s). حدِّث التطبيق على هذا الجهاز؛ تنتظر تغييراته حتى ذلك الحين.</string>
+    <string name="live_skew_other">%1$s يعمل بإصدار أقدم من التطبيق (%2$s؛ على هذا الجهاز: %3$s). حدِّث التطبيق على %1$s؛ تنتظر تغييراته حتى ذلك الحين.</string>
+    <string name="live_skew_unknown">%1$s يعمل بإصدار من التطبيق لا يستطيع هذا الجهاز المزامنة معه. حدِّث التطبيق على الجهازين.</string>
+    <string name="live_skew_pc_this">%1$s يعمل بإصدار أحدث من التطبيق (%2$s؛ على هذا الحاسوب: %3$s). حدِّث التطبيق على هذا الحاسوب؛ تنتظر تغييراته حتى ذلك الحين.</string>
+    <string name="live_skew_pc_other">%1$s يعمل بإصدار أقدم من التطبيق (%2$s؛ على هذا الحاسوب: %3$s). حدِّث التطبيق على %1$s؛ تنتظر تغييراته حتى ذلك الحين.</string>
+    <string name="live_skew_pc_unknown">%1$s يعمل بإصدار من التطبيق لا يستطيع هذا الحاسوب المزامنة معه. حدِّث التطبيق على الجهازين.</string>
+    <string name="live_skew_kind_schema">إصدار البيانات %1$s</string>
+    <string name="live_skew_kind_protocol">إصدار المزامنة %1$s</string>
+    <string name="live_skew_other_device">الجهاز الآخر</string>
     <string name="live_status_key_busy">لم يُجب مخزن المفاتيح في هذا الجهاز (%1$s). لم يتغير شيء؛ ستُعاد المحاولة بعد قليل.</string>
     <string name="na_sync_off">توقفت المزامنة الحية</string>
     <string name="na_sync_off_sub">استُبدل هذا الدفتر أو عاد إلى نسخة أقدم. اربط الجهاز الآخر من جديد.</string>

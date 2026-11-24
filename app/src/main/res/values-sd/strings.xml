@@ -3930,6 +3930,15 @@
     <string name="na_sync_conflict">%1$s داخلائون ٻنهي ڊوائيسن تي هڪ ئي وقت بدليون ويون</string>
     <string name="na_sync_conflict_sub">رکيل رقم شايد اها نه هجي جيڪا توهان چاهيو ٿي. لائيو سنڪ ← ڇا بدليو ڏسو.</string>
     <string name="live_status_update_both">ٻئي ڊوائيس تي ايپ جو نئون ورزن آهي (%1$s). هن ڊوائيس کي اپڊيٽ ڪريو؛ تيستائين ان جون تبديليون انتظار ۾ رهنديون.</string>
+    <string name="live_skew_this">%1$s تي ايپ جو نئون ورزن آهي (%2$s؛ هن ڊوائيس تي: %3$s). هن ڊوائيس تي ايپ اپڊيٽ ڪريو؛ تيستائين ان جون تبديليون انتظار ۾ رهنديون.</string>
+    <string name="live_skew_other">%1$s تي ايپ جو پراڻو ورزن آهي (%2$s؛ هن ڊوائيس تي: %3$s). %1$s تي ايپ اپڊيٽ ڪريو؛ تيستائين ان جون تبديليون انتظار ۾ رهنديون.</string>
+    <string name="live_skew_unknown">%1$s تي ايپ جو اهڙو ورزن آهي جنهن سان هي ڊوائيس سنڪ نٿو ڪري سگهي. ٻنهي ڊوائيسن تي ايپ اپڊيٽ ڪريو.</string>
+    <string name="live_skew_pc_this">%1$s تي ايپ جو نئون ورزن آهي (%2$s؛ هن ڪمپيوٽر تي: %3$s). هن ڪمپيوٽر تي ايپ اپڊيٽ ڪريو؛ تيستائين ان جون تبديليون انتظار ۾ رهنديون.</string>
+    <string name="live_skew_pc_other">%1$s تي ايپ جو پراڻو ورزن آهي (%2$s؛ هن ڪمپيوٽر تي: %3$s). %1$s تي ايپ اپڊيٽ ڪريو؛ تيستائين ان جون تبديليون انتظار ۾ رهنديون.</string>
+    <string name="live_skew_pc_unknown">%1$s تي ايپ جو اهڙو ورزن آهي جنهن سان هي ڪمپيوٽر سنڪ نٿو ڪري سگهي. ٻنهي ڊوائيسن تي ايپ اپڊيٽ ڪريو.</string>
+    <string name="live_skew_kind_schema">ڊيٽا ورزن %1$s</string>
+    <string name="live_skew_kind_protocol">سنڪ ورزن %1$s</string>
+    <string name="live_skew_other_device">ٻيو ڊوائيس</string>
     <string name="live_status_key_busy">هن ڊوائيس جي ڪي اسٽور جواب نه ڏنو (%1$s). ڪجهه نه بدليو؛ ٿوري دير ۾ ٻيهر ڪوشش ٿيندي.</string>
     <string name="na_sync_off">لائيو سنڪ بيهي ويو</string>
     <string name="na_sync_off_sub">هي کاتو بدلايو ويو يا پراڻي نقل تي واپس هليو ويو. ٻئي ڊوائيس سان ٻيهر ڳنڍيو.</string>

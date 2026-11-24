@@ -3892,6 +3892,15 @@
     <string name="na_sync_conflict">%1$s catatan diubah di kedua perangkat sekaligus</string>
     <string name="na_sync_conflict_sub">Jumlah yang disimpan mungkin bukan yang Anda maksud. Lihat Sinkron langsung → Apa yang berubah.</string>
     <string name="live_status_update_both">Perangkat lain menjalankan versi aplikasi yang lebih baru (%1$s). Perbarui perangkat ini; perubahannya menunggu sampai saat itu.</string>
+    <string name="live_skew_this">%1$s menjalankan versi aplikasi yang lebih baru (%2$s; di perangkat ini: %3$s). Perbarui aplikasi di perangkat ini; perubahannya menunggu sampai saat itu.</string>
+    <string name="live_skew_other">%1$s menjalankan versi aplikasi yang lebih lama (%2$s; di perangkat ini: %3$s). Perbarui aplikasi di %1$s; perubahannya menunggu sampai saat itu.</string>
+    <string name="live_skew_unknown">%1$s menjalankan versi aplikasi yang tidak bisa disinkronkan dengan perangkat ini. Perbarui aplikasi di kedua perangkat.</string>
+    <string name="live_skew_pc_this">%1$s menjalankan versi aplikasi yang lebih baru (%2$s; di komputer ini: %3$s). Perbarui aplikasi di komputer ini; perubahannya menunggu sampai saat itu.</string>
+    <string name="live_skew_pc_other">%1$s menjalankan versi aplikasi yang lebih lama (%2$s; di komputer ini: %3$s). Perbarui aplikasi di %1$s; perubahannya menunggu sampai saat itu.</string>
+    <string name="live_skew_pc_unknown">%1$s menjalankan versi aplikasi yang tidak bisa disinkronkan dengan komputer ini. Perbarui aplikasi di kedua perangkat.</string>
+    <string name="live_skew_kind_schema">versi data %1$s</string>
+    <string name="live_skew_kind_protocol">versi sinkronisasi %1$s</string>
+    <string name="live_skew_other_device">Perangkat lain</string>
     <string name="live_status_key_busy">Penyimpanan kunci perangkat ini tidak menjawab (%1$s). Tidak ada yang berubah; dicoba lagi sebentar lagi.</string>
     <string name="na_sync_off">Sinkron langsung berhenti</string>
     <string name="na_sync_off_sub">Buku ini diganti atau kembali ke salinan lama. Hubungkan perangkat lain lagi.</string>

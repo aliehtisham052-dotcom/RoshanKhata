@@ -3902,6 +3902,15 @@
     <string name="na_sync_conflict">%1$s indiraaj dono devices par ek saath badle gaye</string>
     <string name="na_sync_conflict_sub">Rakhi gayi raqam shayad wo na ho jo aap chahte the. Live sync → Kya badla dekhein.</string>
     <string name="live_status_update_both">Doosre device par app ka naya version hai (%1$s). Is device ko update karein; tab tak us ki tabdeeliyan intezar mein rahengi.</string>
+    <string name="live_skew_this">%1$s par app ka naya version hai (%2$s; is device par: %3$s). Is device par app update karein; tab tak us ki tabdeeliyan intezar mein rahengi.</string>
+    <string name="live_skew_other">%1$s par app ka purana version hai (%2$s; is device par: %3$s). %1$s par app update karein; tab tak us ki tabdeeliyan intezar mein rahengi.</string>
+    <string name="live_skew_unknown">%1$s par app ka aisa version hai jis se yeh device sync nahi kar sakta. Dono devices par app update karein.</string>
+    <string name="live_skew_pc_this">%1$s par app ka naya version hai (%2$s; is computer par: %3$s). Is computer par app update karein; tab tak us ki tabdeeliyan intezar mein rahengi.</string>
+    <string name="live_skew_pc_other">%1$s par app ka purana version hai (%2$s; is computer par: %3$s). %1$s par app update karein; tab tak us ki tabdeeliyan intezar mein rahengi.</string>
+    <string name="live_skew_pc_unknown">%1$s par app ka aisa version hai jis se yeh computer sync nahi kar sakta. Dono devices par app update karein.</string>
+    <string name="live_skew_kind_schema">data version %1$s</string>
+    <string name="live_skew_kind_protocol">sync version %1$s</string>
+    <string name="live_skew_other_device">Doosra device</string>
     <string name="live_status_key_busy">Is device ke key store ne jawab nahi diya (%1$s). Kuch nahi badla; thori der mein dobara koshish hogi.</string>
     <string name="na_sync_off">Live sync ruk gaya</string>
     <string name="na_sync_off_sub">Yeh khata badal diya gaya ya purani naqal par wapas chala gaya. Doosre device se dobara jorein.</string>

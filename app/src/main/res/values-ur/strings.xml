@@ -3902,6 +3902,15 @@
     <string name="na_sync_conflict">%1$s اندراج دونوں آلات پر ایک ساتھ بدلے گئے</string>
     <string name="na_sync_conflict_sub">رکھی گئی رقم شاید وہ نہ ہو جو آپ چاہتے تھے۔ لائیو سنک ← کیا بدلا دیکھیں۔</string>
     <string name="live_status_update_both">دوسرے آلے پر ایپ کا نیا ورژن ہے (%1$s)۔ اس آلے کو اپ ڈیٹ کریں؛ تب تک اس کی تبدیلیاں انتظار میں رہیں گی۔</string>
+    <string name="live_skew_this">%1$s پر ایپ کا نیا ورژن ہے (%2$s؛ اس آلے پر: %3$s)۔ اس آلے پر ایپ اپ ڈیٹ کریں؛ تب تک اس کی تبدیلیاں انتظار میں رہیں گی۔</string>
+    <string name="live_skew_other">%1$s پر ایپ کا پرانا ورژن ہے (%2$s؛ اس آلے پر: %3$s)۔ %1$s پر ایپ اپ ڈیٹ کریں؛ تب تک اس کی تبدیلیاں انتظار میں رہیں گی۔</string>
+    <string name="live_skew_unknown">%1$s پر ایپ کا ایسا ورژن ہے جس کے ساتھ یہ آلہ سنک نہیں کر سکتا۔ دونوں آلات پر ایپ اپ ڈیٹ کریں۔</string>
+    <string name="live_skew_pc_this">%1$s پر ایپ کا نیا ورژن ہے (%2$s؛ اس کمپیوٹر پر: %3$s)۔ اس کمپیوٹر پر ایپ اپ ڈیٹ کریں؛ تب تک اس کی تبدیلیاں انتظار میں رہیں گی۔</string>
+    <string name="live_skew_pc_other">%1$s پر ایپ کا پرانا ورژن ہے (%2$s؛ اس کمپیوٹر پر: %3$s)۔ %1$s پر ایپ اپ ڈیٹ کریں؛ تب تک اس کی تبدیلیاں انتظار میں رہیں گی۔</string>
+    <string name="live_skew_pc_unknown">%1$s پر ایپ کا ایسا ورژن ہے جس کے ساتھ یہ کمپیوٹر سنک نہیں کر سکتا۔ دونوں آلات پر ایپ اپ ڈیٹ کریں۔</string>
+    <string name="live_skew_kind_schema">ڈیٹا ورژن %1$s</string>
+    <string name="live_skew_kind_protocol">سنک ورژن %1$s</string>
+    <string name="live_skew_other_device">دوسرا آلہ</string>
     <string name="live_status_key_busy">اس آلے کے کی اسٹور نے جواب نہیں دیا (%1$s)۔ کچھ نہیں بدلا؛ تھوڑی دیر میں دوبارہ کوشش ہوگی۔</string>
     <string name="na_sync_off">لائیو سنک رک گیا</string>
     <string name="na_sync_off_sub">یہ کھاتہ بدل دیا گیا یا پرانی نقل پر واپس چلا گیا۔ دوسرے آلے سے دوبارہ جوڑیں۔</string>

@@ -3950,6 +3950,15 @@
     <string name="na_sync_conflict">%1$s प्रविष्टियाँ दोनों डिवाइस पर एक साथ बदली गईं</string>
     <string name="na_sync_conflict_sub">रखी गई रकम शायद वह न हो जो आप चाहते थे। लाइव सिंक → क्या बदला देखें।</string>
     <string name="live_status_update_both">दूसरे डिवाइस पर ऐप का नया वर्शन है (%1$s)। इस डिवाइस को अपडेट करें; तब तक उसके बदलाव इंतज़ार में रहेंगे।</string>
+    <string name="live_skew_this">%1$s पर ऐप का नया वर्शन है (%2$s; इस डिवाइस पर: %3$s)। इस डिवाइस पर ऐप अपडेट करें; तब तक उसके बदलाव इंतज़ार में रहेंगे।</string>
+    <string name="live_skew_other">%1$s पर ऐप का पुराना वर्शन है (%2$s; इस डिवाइस पर: %3$s)। %1$s पर ऐप अपडेट करें; तब तक उसके बदलाव इंतज़ार में रहेंगे।</string>
+    <string name="live_skew_unknown">%1$s पर ऐप का ऐसा वर्शन है जिससे यह डिवाइस सिंक नहीं कर सकता। दोनों डिवाइस पर ऐप अपडेट करें।</string>
+    <string name="live_skew_pc_this">%1$s पर ऐप का नया वर्शन है (%2$s; इस कंप्यूटर पर: %3$s)। इस कंप्यूटर पर ऐप अपडेट करें; तब तक उसके बदलाव इंतज़ार में रहेंगे।</string>
+    <string name="live_skew_pc_other">%1$s पर ऐप का पुराना वर्शन है (%2$s; इस कंप्यूटर पर: %3$s)। %1$s पर ऐप अपडेट करें; तब तक उसके बदलाव इंतज़ार में रहेंगे।</string>
+    <string name="live_skew_pc_unknown">%1$s पर ऐप का ऐसा वर्शन है जिससे यह कंप्यूटर सिंक नहीं कर सकता। दोनों डिवाइस पर ऐप अपडेट करें।</string>
+    <string name="live_skew_kind_schema">डेटा वर्शन %1$s</string>
+    <string name="live_skew_kind_protocol">सिंक वर्शन %1$s</string>
+    <string name="live_skew_other_device">दूसरा डिवाइस</string>
     <string name="live_status_key_busy">इस डिवाइस के की-स्टोर ने जवाब नहीं दिया (%1$s)। कुछ नहीं बदला; थोड़ी देर में फिर कोशिश होगी।</string>
     <string name="na_sync_off">लाइव सिंक रुक गया</string>
     <string name="na_sync_off_sub">यह खाता बदल दिया गया या पुरानी कॉपी पर लौट गया। दूसरे डिवाइस से फिर जोड़ें।</string>

@@ -766,7 +766,10 @@ class BackupActivity : BaseActivity() {
             )
             LiveRunner.Status.Unreachable -> getString(R.string.live_status_unreachable)
             is LiveRunner.Status.RelayDown -> getString(R.string.live_status_relay_down, bidi.unicodeWrap(liveWhy(s.why)))
-            is LiveRunner.Status.UpdateNeeded -> getString(R.string.live_status_update_both, bidi.unicodeWrap(s.why))
+            // Which device to update (24 Nov 2026, BC-248): the other one's number against this build's own.
+            is LiveRunner.Status.UpdateNeeded -> com.innovation313.roshankhata.data.LiveWhy.skewText(
+                com.innovation313.roshankhata.data.AndroidWords(this), s.why
+            ) ?: getString(R.string.live_status_update_both, bidi.unicodeWrap(s.why))
             is LiveRunner.Status.KeyBusy -> getString(R.string.live_status_key_busy, bidi.unicodeWrap(s.why))
             LiveRunner.Status.Halted -> getString(R.string.live_status_halted)
             LiveRunner.Status.NotAccepted -> getString(R.string.live_status_not_accepted)

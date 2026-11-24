@@ -573,6 +573,8 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
         opening = false
     }
     var state by remember { mutableStateOf<LiveSync.State?>(null) }
+    // The devices whose last parcel this version refused, by device, with the reason ("schema 47"): which one to update.
+    var skews by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     // The relay on the internet: one switch for the book (BookSettings.LIVE_RELAY), off until the owner turns it on.
     var relay by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -615,6 +617,7 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
     LaunchedEffect(Unit) {
         while (true) {
             state = withContext(Dispatchers.IO) { runCatching { LiveSync.state(book.syncSql()) }.getOrNull() }
+            skews = withContext(Dispatchers.IO) { runCatching { LiveSync.skewed(book.syncSql()) }.getOrDefault(emptyMap()) }
             delay(2000)
         }
     }
@@ -736,6 +739,8 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
                     // The kill switch is its own sentence; a reason code in the owner's language (LiveWhy, as the phone).
                     is LiveDesk.RelayState.Down -> Text(
                         if (r.why == LiveDesk.HALTED) word(W.live_status_halted)
+                        // Another version of the app on the far side is no relay trouble: say which device to update.
+                        else if (LiveSync.needsUpdate(r.why)) skewLine(com.innovation313.roshankhata.words.LocalWords.current, null, r.why) ?: r.why
                         else word(W.live_pc_relay_down, Format.isolate(com.innovation313.roshankhata.data.LiveWhy.text(com.innovation313.roshankhata.words.LocalWords.current, r.why))),
                         color = c.owedToMe, fontSize = 13.sp
                     )
@@ -758,6 +763,12 @@ fun LiveSyncDialog(book: KhataDatabase, onClose: () -> Unit, export: (suspend (F
                         Avatar(name, 30)
                         Text(line, color = colour, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
                         FluentButton(word(W.live_remove), { removing = p.device to name }, kind = ButtonKind.SUBTLE)
+                    }
+                    // This version refused that device's last parcel: which of the two is to be updated.
+                    skews[p.device]?.let { why ->
+                        skewLine(com.innovation313.roshankhata.words.LocalWords.current, p.name, why)?.let {
+                            Text(it, color = c.owedToMe, fontSize = 13.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(start = 42.dp))
+                        }
                     }
                 }
             }
@@ -841,6 +852,14 @@ private fun tableWord(table: String): String = when (table) {
     "staff" -> word(W.staff_title)
     else -> table
 }
+
+/**
+ * What the Live sync window says about a device whose parcel this version refused ([LiveSync.skewed]): its name, its
+ * version against this computer's, and which of the two to update ("update this computer" / "update that phone").
+ * Null when [why] is not a version refusal.
+ */
+internal fun skewLine(words: com.innovation313.roshankhata.words.Words, device: String?, why: String): String? =
+    com.innovation313.roshankhata.data.LiveWhy.skewText(words, why, device, computer = true)
 
 /** How a joined device stands in the Live sync window, by when it was last heard. */
 internal enum class PeerState { LIVE, QUIET, STALE, NEVER }
