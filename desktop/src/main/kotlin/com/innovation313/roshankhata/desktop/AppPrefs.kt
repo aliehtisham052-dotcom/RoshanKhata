@@ -1,5 +1,6 @@
 package com.innovation313.roshankhata.desktop
 
+import com.innovation313.roshankhata.data.BusinessKeys
 import com.innovation313.roshankhata.data.PinHash
 import java.io.File
 import java.util.Properties
@@ -10,8 +11,27 @@ import java.util.Properties
  * change through a temporary file, so a crash mid-write leaves the old one.
  */
 class AppPrefs(private val file: File) {
+    internal fun sameFile(canonical: String): Boolean = (runCatching { file.canonicalPath }.getOrDefault(file.absolutePath)) == canonical
+
     private val props = Properties().apply {
         if (file.isFile) file.reader(Charsets.UTF_8).use { load(it) }
+    }
+
+    init { AppPrefsLive.add(this) }
+
+    /**
+     * Removes every setting of a deleted business (BC-250): the keys ending "_b<id>" — invoice switches, "said today"
+     * marks, the last saved backup, the bin's first day — chosen by [BusinessKeys.ownedDesktopKeys], the one rule the
+     * phone's leftover purge shares ([BusinessKeys.owns]); "_b3" never takes "_b13", Business 1 has none to take.
+     * @return how many keys went
+     */
+    @Synchronized
+    fun forgetBusiness(id: Long): Int {
+        val gone = BusinessKeys.ownedDesktopKeys(props.stringPropertyNames(), id)
+        if (gone.isEmpty()) return 0
+        gone.forEach { props.remove(it) }
+        save()
+        return gone.size
     }
 
     /** The chosen language's tag ("ur", "ur-Latn"...), or null when never chosen. */
@@ -283,5 +303,25 @@ internal fun replaceAtomically(tmp: java.io.File, target: java.io.File) {
         java.nio.file.Files.move(tmp.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE)
     } catch (e: Exception) {
         java.nio.file.Files.move(tmp.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+    }
+}
+
+/**
+ * The AppPrefs instances alive in this process, by their file (BC-250). The window holds one for app.properties; a
+ * business delete that opened a second copy and wrote it would be undone by the window's copy on its next save, so
+ * the delete finds the live one first.
+ */
+internal object AppPrefsLive {
+    private val live = java.util.Collections.newSetFromMap(java.util.WeakHashMap<AppPrefs, Boolean>())
+    private val lock = Any()
+
+    fun add(p: AppPrefs) = synchronized(lock) { live.add(p); Unit }
+
+    /** Forgets business [id]'s keys in the settings file [file]: in every live copy of it, else in a copy read from the disk. */
+    fun forgetBusiness(file: File, id: Long): Int {
+        val path = runCatching { file.canonicalPath }.getOrDefault(file.absolutePath)
+        val copies = synchronized(lock) { live.filter { it.sameFile(path) } }
+        if (copies.isNotEmpty()) return copies.sumOf { it.forgetBusiness(id) }
+        return if (file.isFile) AppPrefs(file).forgetBusiness(id) else 0
     }
 }

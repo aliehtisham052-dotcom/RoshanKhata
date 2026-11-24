@@ -8,6 +8,8 @@ import android.text.style.ForegroundColorSpan
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.R
+import com.innovation313.roshankhata.data.BusinessKeys
+import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.quantity
@@ -45,23 +47,30 @@ object RadarUi {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_ON, on).apply()
     }
 
-    private var shopFor: Int = 0
-    private var shopAt: Long = 0
-    private var shopDays: Int? = null
+    /** One reading of the shop's normal, for the shop and book it was worked out from (BC-250). */
+    private class ShopNormal(val key: String, val at: Long, val days: Int?)
 
-    /** This shop's normal ([PaymentRadar.shopTypicalDays]), cached for [SHOP_TTL_MS] per open book. */
-    suspend fun shopDays(dao: KhataDao): Int? {
-        val key = System.identityHashCode(dao)
+    @Volatile private var lastNormal: ShopNormal? = null
+
+    /**
+     * This shop's normal ([PaymentRadar.shopTypicalDays]), cached for [SHOP_TTL_MS] per open book. The cache is keyed
+     * by the shop's id and its book file ([BusinessKeys.cacheKey]), taken BEFORE the read: a switch while the read runs
+     * stores the answer under the shop it was read for, never under the one now open (it was an identity hash of the
+     * dao, which two books may share).
+     */
+    suspend fun shopDays(context: Context, dao: KhataDao): Int? {
+        val open = Businesses.active(context)
+        val key = BusinessKeys.cacheKey(open.id, open.file)
         val now = System.currentTimeMillis()
-        if (key == shopFor && now - shopAt < SHOP_TTL_MS) return shopDays
+        lastNormal?.let { if (it.key == key && now - it.at < SHOP_TTL_MS) return it.days }
         val days = withContext(Dispatchers.IO) { runCatching { PaymentRadar.shopTypicalDays(com.innovation313.roshankhata.data.LedgerLines.customers(dao)) }.getOrNull() }
-        shopFor = key; shopAt = now; shopDays = days
+        lastNormal = ShopNormal(key, now, days)
         return days
     }
 
     /** One customer's reading from the entries his screen already holds, and his promised days (PromiseLog). */
-    suspend fun read(dao: KhataDao, partyId: Long, entries: List<LedgerEntry>, promise: Long?): PaymentRadar.Reading {
-        val shop = shopDays(dao)
+    suspend fun read(context: Context, dao: KhataDao, partyId: Long, entries: List<LedgerEntry>, promise: Long?): PaymentRadar.Reading {
+        val shop = shopDays(context, dao)
         val promises = withContext(Dispatchers.IO) { runCatching { PromiseLog.of(dao.promiseLog(partyId)) }.getOrDefault(emptyList()) }
         return withContext(Dispatchers.Default) {
             PaymentRadar.read(

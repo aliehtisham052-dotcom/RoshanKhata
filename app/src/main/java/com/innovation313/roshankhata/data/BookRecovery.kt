@@ -34,6 +34,11 @@ object BookRecovery {
     private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
     private fun pendingKey(name: String) = "pending:$name"
 
+    /** A deleted shop's book can never be rebuilt again: its mark goes with it (24 Nov 2026, BC-250's leftover). */
+    fun forget(context: Context, dbName: String) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(pendingKey(dbName)).apply()
+    }
+
     /** What the owner is told once: where the damaged file was kept, and the copy the book was rebuilt from (null: none). */
     data class Notice(val kept: String?, val copyAt: Long?)
 

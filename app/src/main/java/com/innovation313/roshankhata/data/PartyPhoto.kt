@@ -53,9 +53,18 @@ object PartyPhoto {
      * fresh from the right shop's own folder.
      */
     fun dropCaches() {
-        cache.evictAll()
-        onDisk.clear()
+        epoch.drop {
+            cache.evictAll()
+            onDisk.clear()
+        }
     }
+
+    /**
+     * Which generation of the caches a load belongs to (BC-250). A load that began before a shop switch (read its
+     * epoch, then the old shop's folder) must not put its answer after [dropCaches] has run: it would show the old
+     * shop's face on the new shop's same-numbered customer. Every put goes through [epoch].putIfCurrent.
+     */
+    private val epoch = CacheEpoch()
 
     /** The active business's photo folder — for the image backup to read and restore into. */
     fun folder(context: Context): File = dir(context)
@@ -74,7 +83,8 @@ object PartyPhoto {
 
     fun exists(context: Context, partyId: Long): Boolean {
         onDisk[partyId]?.let { return it }
-        return file(context, partyId).exists().also { onDisk[partyId] = it }
+        val seen = epoch.now()
+        return file(context, partyId).exists().also { found -> epoch.putIfCurrent(seen) { onDisk[partyId] = found } }
     }
 
     /**
@@ -97,15 +107,19 @@ object PartyPhoto {
         cache.get(partyId)?.let { return it }
         if (onDisk[partyId] == false) return null
 
+        // The epoch is read before the shop's folder is looked at (BC-250): a switch in the middle refuses the put.
+        val seen = epoch.now()
         val f = file(context, partyId)
         if (!f.exists()) {
-            onDisk[partyId] = false
+            epoch.putIfCurrent(seen) { onDisk[partyId] = false }
             return null
         }
         return try {
             BitmapFactory.decodeFile(f.absolutePath)?.also {
-                cache.put(partyId, it)
-                onDisk[partyId] = true
+                epoch.putIfCurrent(seen) {
+                    cache.put(partyId, it)
+                    onDisk[partyId] = true
+                }
             }
         } catch (e: Exception) {
             null
@@ -114,6 +128,7 @@ object PartyPhoto {
 
     /** @return the saved path, or null if it could not be written. */
     fun save(context: Context, partyId: Long, source: Uri): String? {
+        val seen = epoch.now()
         return try {
             // Sampled on the way in. The square crop below keeps the short
             // side, so that is the side that has to survive the sampling.
@@ -137,8 +152,10 @@ object PartyPhoto {
 
             // The saved bitmap is exactly what load() would decode back, so
             // the cache takes it now and the next bind costs nothing.
-            cache.put(partyId, scaled)
-            onDisk[partyId] = true
+            epoch.putIfCurrent(seen) {
+                cache.put(partyId, scaled)
+                onDisk[partyId] = true
+            }
 
             target.absolutePath
         } catch (e: Exception) {
@@ -147,9 +164,12 @@ object PartyPhoto {
     }
 
     fun remove(context: Context, partyId: Long) {
+        val seen = epoch.now()
         file(context, partyId).delete()
-        cache.remove(partyId)
-        onDisk[partyId] = false
+        epoch.putIfCurrent(seen) {
+            cache.remove(partyId)
+            onDisk[partyId] = false
+        }
     }
 
     /**
@@ -162,14 +182,17 @@ object PartyPhoto {
      */
     fun transferOnMerge(context: Context, loserId: Long, survivorId: Long) {
         if (exists(context, survivorId)) return
+        val seen = epoch.now()
         val from = file(context, loserId)
         if (!from.exists()) return
         val to = file(context, survivorId)
         if (from.renameTo(to)) {
-            cache.remove(loserId)
-            onDisk[loserId] = false
-            cache.remove(survivorId)
-            onDisk[survivorId] = true
+            epoch.putIfCurrent(seen) {
+                cache.remove(loserId)
+                onDisk[loserId] = false
+                cache.remove(survivorId)
+                onDisk[survivorId] = true
+            }
         }
     }
 

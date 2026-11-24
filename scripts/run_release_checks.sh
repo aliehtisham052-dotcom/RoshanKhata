@@ -32,6 +32,7 @@ CHECKS=(
   "check_repo_guards.py"
   "check_main_thread.py"
   "check_work_status.py"
+  "check_pref_names.py"
 )
 
 # The list must be strings.yml's own.

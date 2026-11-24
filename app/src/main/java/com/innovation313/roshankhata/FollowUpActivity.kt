@@ -254,7 +254,7 @@ class FollowUpActivity : BaseActivity() {
             // The Payment Radar (2 Nov 2026): this shop's normal, read once here, and the switch on this phone.
             // L88 (8 Nov 2026 review): the Radar is for REPORTS (owner, manager); a cashier's list shows no "usually pays now".
             val radarOn = com.innovation313.roshankhata.ui.RadarUi.on(this@FollowUpActivity) && com.innovation313.roshankhata.data.Access.can(com.innovation313.roshankhata.data.Access.Permission.REPORTS)
-            val shopDays = if (radarOn) com.innovation313.roshankhata.ui.RadarUi.shopDays(dao) else null
+            val shopDays = if (radarOn) com.innovation313.roshankhata.ui.RadarUi.shopDays(this@FollowUpActivity, dao) else null
             dao.observePartiesWithBalance()
                 // The owing customers' lines a slice at a time, from these same parties (LedgerLines, 3 Nov 2026).
                 .mapLatest { all -> all to com.innovation313.roshankhata.data.LedgerLines.owingOf(dao, all) }

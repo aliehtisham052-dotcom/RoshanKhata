@@ -126,7 +126,7 @@ class HudhudPhoneEnv(val context: Context, private val clock: () -> Long = { Sys
         HomeAlerts.compute(context, dao) { Format.money(it) }.map { AnswerAlert(kindOf(it.kind), it.title) }
 
     override fun remindedToday(now: Long): Set<Long> = ReminderLog.openedToday(context, now)
-    override suspend fun radarShopDays(dao: KhataDao): Int? = RadarUi.shopDays(dao)
+    override suspend fun radarShopDays(dao: KhataDao): Int? = RadarUi.shopDays(context, dao)
     override fun radarReasons(reading: PaymentRadar.Reading, promise: Long?, tone: Int): String =
         RadarUi.reasons(context, reading, promise, tone)
     override fun toneThatWorked(partyId: Long, balance: Double): Int = RadarUi.toneThatWorked(context, partyId, balance)

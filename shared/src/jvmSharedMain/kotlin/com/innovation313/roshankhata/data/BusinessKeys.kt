@@ -24,6 +24,20 @@ object BusinessKeys {
     /** A key that names a book FILE as its last or middle "|" field (customer links and live sync's notes). */
     fun namesBookFile(key: String, file: String): Boolean = key.endsWith("|$file") || key.contains("|$file|")
 
+    /**
+     * The key of an in-memory cache that holds one shop's reading (BC-250): the shop's id AND its book file, so a switch, a
+     * restored-as-new shop or a book reopened under another file can never be answered from another book's cache. Never
+     * a hash of an object (two objects may share one, and a freed one's number can be given again).
+     */
+    fun cacheKey(id: Long, bookFile: String): String = "$id|$bookFile"
+
+    /**
+     * The keys of the computer's one shared settings file (app.properties) that belong to shop [id] (BC-250): the
+     * ones ending "_b<id>" — invoice switches, "said today" marks, the last saved backup, the bin's day. Exactly
+     * [endsWithBusinessSuffix], so "_b3" never takes "_b13" and Business 1 (no suffix) is never matched.
+     */
+    fun ownedDesktopKeys(keys: Collection<String>, id: Long): List<String> = keys.filter { endsWithBusinessSuffix(it, id) }
+
     /** The preference files that every shop shares and how each names its shop in a key. */
     private val SUFFIXED = setOf("automations", "form_drafts", "book_seal", "seal_offer", "snapshots")
     private val BY_ID = setOf("poster", "rate_list")

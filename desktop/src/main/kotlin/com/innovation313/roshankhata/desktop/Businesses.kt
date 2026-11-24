@@ -177,6 +177,9 @@ class Businesses(private val home: File) {
         listOf(DailyCopies.dir(home, id), File(home, "profile/b$id"), Photos.partyDir(home, id), EntrySignatures.dir(home, id)).forEach { it.deleteRecursively() }
         // The highest id stays remembered, so this one is never given out again.
         props.setProperty(KEY_HIGHEST, maxOf(highest(), id).toString())
+        // Its settings in app.properties (invoice switches, said-marks, backup time, bin day): by the one key rule shared
+        // with the phone's leftover purge (BusinessKeys), through the live copy so the window's copy cannot write them back.
+        runCatching { AppPrefsLive.forgetBusiness(File(home, "app.properties"), id) }
         props.remove("live.$id")
         props.remove("book.$id")
         props.setProperty(KEY_IDS, list().map { it.id }.filter { it != id && it != 1L }.joinToString(","))

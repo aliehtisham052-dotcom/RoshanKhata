@@ -343,6 +343,7 @@ object Businesses {
         }
         context.deleteSharedPreferences("bin_kinds" + BusinessKeys.suffixFor(id))
         File(File(context.filesDir, "poster"), "stock_$id.jpg").delete()
+        BookRecovery.forget(context, file)
     }
 
     /**

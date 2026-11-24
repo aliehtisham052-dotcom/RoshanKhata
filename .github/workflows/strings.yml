@@ -192,6 +192,10 @@ jobs:
       # without evidence that exists, the duplicate register as its own column. Names only, not a run (lesson 125).
       - name: The work status register is honest (every plan item, allowed statuses, evidence for a done)
         run: python3 scripts/check_work_status.py
+      # BC-250 (24 Nov 2026): every SharedPreferences file the phone opens is per shop by its name, in BusinessKeys.SHARED_FILES,
+      # cleared by its owner, or on the device-wide list with a reason. Names only, not a run (lesson 125).
+      - name: Every preference file says whether it belongs to a shop
+        run: python3 scripts/check_pref_names.py
       # The local Gradle-free harness (lesson 93) finds its files by list: a file moved or renamed fails here, not at the next run.
       - name: The shared harness's file lists are current
         run: bash scripts/shared_harness/run.sh --lists-only
