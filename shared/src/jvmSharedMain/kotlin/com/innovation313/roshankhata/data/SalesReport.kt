@@ -249,7 +249,7 @@ class SalesReport(
      * revenue this covers ([costKnownRevenue]); nothing is guessed for the rest.
      */
     val grossProfit: Double get() = LineMath.round(costKnownRevenue - cost - (returnedRevenue - returnedCost))
-    /** Gross profit less the cashbook's expenses in the window (the walk-ins' refunds are not expenses — they are the returns). */
+    /** Gross profit less the expenses in the window: the cashbook's and the staff's pay (the walk-ins' refunds are not expenses — they are the returns). */
     val netProfit: Double get() = LineMath.round(grossProfit - expenses)
 
     /**
@@ -315,7 +315,9 @@ class SalesReport(
             // The counter's tickets and the khata's own sales (Marhala 3): what Sale Insights counts, line by line.
             val lines = (dao.soldLinesBetween(from, to) + KhataSales.lines(dao, KhataSales.rowsBetween(dao, from, to)))
                 .sortedBy { it.timestamp }
-            val expenses = dao.cashbookExpensesBetween(from - 1, to - 1)
+            // The same expenses Insights' profit takes (Profit.between): the cashbook's, and the staff's pay, which lives in
+            // its own table (reports-agree, 24 Nov 2026: the net here ignored it and read higher than Insights' by that pay).
+            val expenses = dao.cashbookExpensesBetween(from - 1, to - 1) + dao.staffPaidBetween(from - 1, to - 1)
             val returns = dao.returnsBetween(from, to).filter { it.status == SaleStatus.DONE }.sumOf { it.total }
             // Dead stock: on the shelf, and not sold over the counter or the khata in DEAD_DAYS.
             val since = to - DEAD_DAYS * 24L * 60 * 60 * 1000
