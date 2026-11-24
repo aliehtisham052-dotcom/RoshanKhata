@@ -21,6 +21,8 @@ package com.innovation313.roshankhata.data
  * should not be one — how many kilos are in a bag is a fact about the product,
  * which nobody has told this app, and inventing 50 would be inventing stock.
  *
+ * (The whole units-and-valuation contract is written on [Units]; this is its item 3.)
+ *
  * So when the units do not agree, [ProductStock.onHand] is null and the two
  * sides are reported separately. A screen showing "in: 40 bag / out: 300 kg"
  * tells the owner something true. A screen showing "-260" tells them something
@@ -61,7 +63,7 @@ object Stock {
          * it is "these numbers cannot be subtracted from each other".
          */
         val onHand: Double?
-            get() = if (unitsAgree) boughtQty + returnedQty - soldQty else null
+            get() = if (unitsAgree) Units.roundQty(boughtQty + returnedQty - soldQty) else null
 
         /**
          * Whether the two sides are counting in the same unit.
@@ -74,9 +76,7 @@ object Stock {
         val unitsAgree: Boolean
             get() {
                 if (mixedUnits) return false
-                val a = boughtUnit?.trim()?.lowercase()?.takeIf { it.isNotEmpty() }
-                val b = soldUnit?.trim()?.lowercase()?.takeIf { it.isNotEmpty() }
-                return a == null || b == null || a == b
+                return Units.agree(boughtUnit, soldUnit)
             }
 
         /** What to label the figure with, when there is a figure. */
@@ -143,11 +143,7 @@ object Stock {
     private class Side(val qty: Double, val unit: String?, val mixed: Boolean)
 
     /** Goods back counted in a unit the rest of the product was not (both written, and different). */
-    private fun returnsDisagree(returned: String?, other: String?): Boolean {
-        val a = Units.norm(returned) ?: return false
-        val b = Units.norm(other) ?: return false
-        return a != b
-    }
+    private fun returnsDisagree(returned: String?, other: String?): Boolean = !Units.agree(returned, other)
 
     /** One side's rows, per product: packs turned into the product's own unit, summed, mixed when two units remain. */
     private fun side(byId: Map<Long, Product>, vararg lists: List<ProductQty>): Map<Long, Side> {
@@ -165,7 +161,7 @@ object Stock {
                     if (unit == null) unit = u else if (Units.norm(unit) != n) mixed = true
                 }
             }
-            Side(qty, unit, mixed)
+            Side(Units.roundQty(qty), unit, mixed)
         }
     }
 

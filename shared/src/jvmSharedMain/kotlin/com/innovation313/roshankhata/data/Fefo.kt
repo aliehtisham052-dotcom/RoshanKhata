@@ -94,9 +94,10 @@ object Fefo {
             for (m in moves[b.id].orEmpty()) {
                 val (q, u) = Units.toBase(product, m.qty, m.unit)
                 // Only what is counted in the batch's own unit (after packs) is subtracted.
-                if (Units.norm(u) == null || Units.norm(baseUnit) == null || Units.norm(u) == Units.norm(baseUnit)) left -= q
+                if (Units.agree(u, baseUnit)) left -= q
             }
-            Lot(b.id, b.batchNumber, b.expiryDate, left, baseUnit)
+            // A quantity keeps six places, not the money's: 0.3 less 0.1 less 0.2 is nothing left, not 5e-17 (contract 5).
+            Lot(b.id, b.batchNumber, b.expiryDate, Units.roundQty(left), baseUnit)
         }.sortedWith(compareBy<Lot, Long?>(nullsLast()) { it.expiryDate }.thenBy { it.billItemId })
             .let { capByShelf(it, onHand) }
 
@@ -181,7 +182,7 @@ object Fefo {
         val product = item.productId?.let { dao.productById(it) }
         val lot = (if (product != null) lots(dao, product).firstOrNull { it.billItemId == billItemId } else allLots(dao)[billItemId])
             ?: return null
-        return lot.left / Units.factor(product, item.unit)
+        return Units.fromBase(product, lot.left, item.unit)
     }
 
     /** What the shelf holds of [product] by the books (every movement, tagged or not); null when it cannot be said. */
@@ -250,8 +251,8 @@ object Fefo {
         val whole = listOf(line.copy(billItemId = takes.firstOrNull()?.billItemId ?: line.billItemId, taxAmount = tax))
         if (takes.size <= 1) return whole
         val qty = line.quantity
-        val parts = takes.dropLast(1).map { Math.round(it.qty * 1_000_000.0) / 1_000_000.0 }
-        val lastQty = Math.round((qty - parts.sum()) * 1_000_000.0) / 1_000_000.0
+        val parts = takes.dropLast(1).map { Units.roundQty(it.qty) }
+        val lastQty = Units.roundQty(qty - parts.sum())
         val qtys = parts + lastQty
         if (qtys.any { it <= 0.0 }) return whole
         val total = line.lineTotal
@@ -284,12 +285,23 @@ object Fefo {
      */
     suspend fun writeOff(dao: KhataDao, billItemId: Long, note: String?, user: String? = Access.userName, allowedBy: String? = null): Double? {
         val (product, lot) = lotOf(dao, billItemId) ?: return null
-        if (lot.left <= EPS) return 0.0
-        // In the unit the batch is counted in (Marhala 3): a lot billed in a unit the product's own cannot be
-        // turned into is written off in that unit, so its own count reaches nothing, never another unit's figure.
-        dao.adjustStock(product.id, -lot.left, AdjustReason.EXPIRED, note, user, billItemId = billItemId, unit = lot.unit ?: product.defaultUnit, allowedBy = allowedBy)
-        return lot.left
+        val plan = writeOffOf(product, lot) ?: return 0.0
+        dao.adjustStock(product.id, -plan.qty, AdjustReason.EXPIRED, note, user, billItemId = billItemId, unit = plan.unit, allowedBy = allowedBy)
+        return plan.qty
     }
+
+    /** What a write-off writes: [qty] (positive, what leaves) in [unit], the unit the lot is counted in. */
+    data class WriteOff(val qty: Double, val unit: String?)
+
+    /**
+     * The one write-off [writeOff] makes of [lot], or null when nothing is left. In the unit the batch is counted in
+     * (Marhala 3): a lot billed in a unit the product's own cannot be turned into is written off in that unit, so its
+     * own count reaches nothing, never another unit's figure; a lot of a pack is already in the product's own unit
+     * ([Units.toBase]), so the adjustment is counted back into the shelf the way the pack's bought rows were. Taken
+     * back through [lotsOf] (the adjustment is a movement of this bill line) the lot reads empty.
+     */
+    fun writeOffOf(product: Product, lot: Lot): WriteOff? =
+        if (lot.left <= EPS) null else WriteOff(lot.left, lot.unit ?: product.defaultUnit)
 
     private const val EPS = 1e-9
 }

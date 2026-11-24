@@ -134,11 +134,27 @@ object OrderNumber {
  * rates ([Cost]: 100 at 10 and 100 at 12 cost 11), else its last rate. A product
  * whose cost nobody told the app is listed with no value, never a guessed
  * one; [known] says how much of the shelf the total covers.
+ *
+ * One contract with the units (written on [Units], items 3, 5 and 6): the figure is [Cost.value] (BigDecimal, once
+ * to the coin), and a shelf counted in a unit the cost is not per has no value ([Row.of]).
  */
 data class Valuation(val rows: List<Row>) {
     data class Row(val productId: Long, val name: String, val onHand: Double?, val unit: String?, val cost: Double?, val lowStockLevel: Double?) {
-        val value: Double? get() = if (onHand != null && cost != null) LineMath.round(maxOf(onHand, 0.0) * cost) else null // L73: oversold stock is not negative value
+        val value: Double? get() = if (onHand != null && cost != null) Cost.value(onHand, cost) else null // L73: oversold stock is not negative value
         val isLow: Boolean get() = onHand != null && lowStockLevel != null && onHand <= lowStockLevel
+
+        companion object {
+            /**
+             * One product's row: its stock and the cost of one of ITS OWN unit ([cost], by [Cost.rule]). The shelf is
+             * valued only when it is counted in that unit: stock that arrived in kilos for a product whose own unit
+             * is the bag has a cost per bag, and 40 kg x a bag's cost is not a value (24 Nov 2026, B11).
+             */
+            fun of(stock: Stock.ProductStock, product: Product?, cost: Double?): Row {
+                val own = product?.defaultUnit
+                val counted = Units.agree(own, stock.unit)
+                return Row(stock.productId, stock.name, stock.onHand, stock.unit, if (counted) cost else null, product?.lowStockLevel)
+            }
+        }
     }
     val total: Double get() = LineMath.round(rows.sumOf { it.value ?: 0.0 })
     val known: Int get() = rows.count { it.value != null }
@@ -151,9 +167,24 @@ data class Valuation(val rows: List<Row>) {
             return Valuation(stock.map { s ->
                 val p = products[s.productId]
                 // The owner's cost, else the weighted average purchase cost, else the last rate (Cost).
-                Row(s.productId, s.name, s.onHand, s.unit, Cost.perUnit(dao, p), p?.lowStockLevel)
+                Row.of(s, p, Cost.perUnit(dao, p))
             }.let { NameOrder.sortedBy(it) { r -> r.name } })
         }
+    }
+}
+
+/**
+ * What a stock count writes (contract item 5, written on [Units]): the difference between the shelf as the book has
+ * it ([book], in the product's own unit) and as it was found ([counted]) is a QUANTITY, kept to [Units.QTY_DECIMALS]
+ * places — never rounded to the money's decimals (24 Nov 2026, B11: [KhataDao.recordCount] rounded it with
+ * [LineMath.round], so in a shop with no decimals a count of 10.4 kg against 10 wrote nothing, and with two decimals
+ * 0.125 kg of oil became 0.13).
+ */
+object StockCount {
+    /** The signed adjustment a count writes, or null when the shelf was found as the book has it. */
+    fun difference(book: Double, counted: Double): Double? {
+        if (!book.isFinite() || !counted.isFinite() || counted < 0.0) return null
+        return Units.roundQty(counted - book).takeIf { it != 0.0 }
     }
 }
 

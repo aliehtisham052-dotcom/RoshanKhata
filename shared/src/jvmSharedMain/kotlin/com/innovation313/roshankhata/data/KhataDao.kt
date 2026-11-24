@@ -5004,8 +5004,9 @@ interface KhataDao {
             // there was taken against 0, and the shelf went that far wrong once a pack was set (22 Oct 2026).
             val book = s.onHand ?: continue
             if (!counted.isFinite() || counted < 0.0) continue
-            val diff = LineMath.round(counted - book)
-            if (kotlin.math.abs(diff) < 0.0005) continue
+            // A quantity, rounded as a quantity (Units.roundQty, B11): money's decimals took 10.4 against 10 as no
+            // difference in a shop whose coin has no decimals.
+            val diff = StockCount.difference(book, counted) ?: continue
             insertAdjustment(StockAdjustment(productId = productId, timestamp = now, quantity = diff, unit = s.unit,
                 reason = AdjustReason.COUNT, note = note, bookQty = book, countedQty = counted, createdBy = user))
             n++

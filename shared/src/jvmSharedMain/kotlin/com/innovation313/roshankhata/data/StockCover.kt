@@ -1,6 +1,9 @@
 package com.innovation313.roshankhata.data
 
 /**
+ * (Units and valuation contract, written on [Units]: sold quantities are turned into the shelf's unit by the same
+ * [Units.toBase] and agreement as the shelf itself, and kept to [Units.QTY_DECIMALS].)
+ *
  * How many days a product's shelf lasts at the pace it has been selling (15 Nov 2026, "Urea kitne din chalegi?").
  *
  * One rule for Hudhud's answer and for "Order the low stock" ([Automations.reorder] reads the same sold figure through
@@ -39,8 +42,8 @@ object StockCover {
     fun soldBase(rows: List<ProductStat>, product: Product?, unit: String?): Double? {
         if (rows.isEmpty()) return 0.0
         val counted = rows.map { s -> Units.toBase(product, s.qty, s.unit) }
-            .filter { (_, u) -> u.isNullOrBlank() || unit.isNullOrBlank() || UnitWords.canonical(u) == UnitWords.canonical(unit) }
-        return if (counted.isEmpty()) null else counted.sumOf { it.first }
+            .filter { (_, u) -> Units.agree(u, unit) } // contract 3: the same agreement the shelf itself uses
+        return if (counted.isEmpty()) null else Units.roundQty(counted.sumOf { it.first })
     }
 
     /** The cover of [onHand] when [sold] left the shelf in the last [windowDays] days. */

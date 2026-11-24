@@ -3,43 +3,88 @@ package com.innovation313.roshankhata.data
 /**
  * What one of a product's own unit cost the shop (21 Oct 2026, the critical
  * review: the last purchase rate alone swung every profit figure with the
- * newest bill).
+ * newest bill). Part of the units and valuation contract written on [Units]
+ * (item 4: the cost rule; item 5: rates keep [RATE_DECIMALS], money goes
+ * through [value]).
  *
  * In order: the cost the owner wrote on the product; else the weighted
  * average of every purchase on a supplier bill — Σ(quantity × rate) over Σ
  * quantity, each line turned into the product's own unit through its pack
  * ([Units]); else the last purchase rate as it was written. Lines in a unit
- * the app cannot convert are left out of the average, not guessed. Nothing
- * here is stored: it is worked out when a sale is rung up (and kept on the
- * sale line, so a ticket's profit never moves afterwards) or when the shelf
- * is valued.
+ * the app cannot convert are left out of the average, not guessed — and a
+ * product with no own unit set takes its cost only from lines that all agree
+ * on one unit (24 Nov 2026, B11: bag lines and kilo lines were averaged
+ * together). Nothing here is stored: it is worked out when a sale is rung up
+ * (and kept on the sale line, so a ticket's profit never moves afterwards) or
+ * when the shelf is valued.
  */
 object Cost {
 
+    /** Places a cost per unit keeps (a third of 100 is 33.333333, not 33.33): the sale line's own rate, never rounded to the coin. */
+    const val RATE_DECIMALS = 6
+
     data class Purchase(val qty: Double, val unit: String?, val rate: Double)
+
+    /** [rate] to [RATE_DECIMALS] places, half up; not-a-number and infinity pass through. */
+    fun roundRate(rate: Double): Double =
+        if (!rate.isFinite()) rate
+        else java.math.BigDecimal.valueOf(rate).setScale(RATE_DECIMALS, java.math.RoundingMode.HALF_UP).toDouble()
+
+    /**
+     * What [qty] of [unit]'s own count at [perUnit] comes to, in the shop's coin: the one product of a quantity and a
+     * rate (BigDecimal, rounded once, as every line total is), not a Double times a Double — 0.1 kg at 0.35 is 0.04, not
+     * 0.03. A shelf below nothing is worth nothing (oversold stock is not a negative value, 8 Nov review L73).
+     */
+    fun value(qty: Double, perUnit: Double): Double = LineMath.lineTotal(maxOf(qty, 0.0), perUnit) ?: 0.0
+
+    /**
+     * The one distinct unit the lines are written in (after packs), when the product names none of its own: null for
+     * "no unit written anywhere" is fine (the lines then agree with anything), and [Conflict] when two differ.
+     */
+    private object Conflict
+
+    private fun commonUnit(product: Product, units: List<String?>): Any? {
+        val own = Units.norm(product.defaultUnit)
+        if (own != null) return own
+        val written = units.mapNotNull { Units.norm(it) }.distinct()
+        return when (written.size) { 0 -> null; 1 -> written[0]; else -> Conflict }
+    }
 
     /** The weighted average purchase cost per one of [product]'s own unit; null when no line can be counted. */
     fun average(product: Product, purchases: List<Purchase>): Double? {
         var money = 0.0
         var qty = 0.0
-        val own = Units.norm(product.defaultUnit)
-        for (p in purchases) {
-            if (p.qty <= 0.0 || p.rate < 0.0) continue
-            val (q, u) = Units.toBase(product, p.qty, p.unit)
+        val counted = purchases.filter { it.qty > 0.0 && it.rate >= 0.0 }.map { p -> p to Units.toBase(product, p.qty, p.unit) }
+        val common = commonUnit(product, counted.map { it.second.second })
+        if (common === Conflict) return null
+        for ((p, converted) in counted) {
+            val (q, u) = converted
             // A line in a unit that is neither the product's own nor its pack cannot be averaged in.
-            if (own != null && Units.norm(u) != null && Units.norm(u) != own) continue
+            if (!Units.agree(u, common as String?)) continue
             money += p.qty * p.rate
             qty += q
         }
         return if (qty > 0.0) money / qty else null
     }
 
-    /** The cost of one of [product]'s own unit, by the rule above; null when nobody can know it. */
+    /**
+     * The cost of one of [product]'s own unit, by the rule above; null when nobody can know it. The two lists are read
+     * only as far as the rule goes (the owner's cost needs neither, the average needs the first).
+     */
     suspend fun perUnit(dao: KhataDao, product: Product?): Double? {
         if (product == null) return null
+        return rule(product, { dao.purchasesOfProduct(product.id) }, { dao.purchaseRatesNewestFirst(product.id) })
+    }
+
+    /**
+     * The rule itself, with nothing read: [purchases] (every priced bill line) and [newestFirst] (the same, newest first) are
+     * asked for only when the step before gives nothing. [perUnit] is this with the database behind the two lists, so a
+     * test of this is a test of the cost every screen shows.
+     */
+    inline fun rule(product: Product, purchases: () -> List<Purchase>, newestFirst: () -> List<Purchase>): Double? {
         product.costPrice?.let { return it }
-        average(product, dao.purchasesOfProduct(product.id))?.let { return it }
-        return lastInOwnUnit(product, dao.purchaseRatesNewestFirst(product.id))
+        average(product, purchases())?.let { return it }
+        return lastInOwnUnit(product, newestFirst())
     }
 
     /**
@@ -50,12 +95,26 @@ object Cost {
      * Null when every rate is in a unit the app cannot convert.
      */
     fun lastInOwnUnit(product: Product, newestFirst: List<Purchase>): Double? {
-        val own = Units.norm(product.defaultUnit)
-        for (p in newestFirst) {
-            if (p.rate < 0.0) continue
+        val priced = newestFirst.filter { it.rate >= 0.0 }
+        val common = commonUnit(product, priced.map { Units.toBase(product, 1.0, it.unit).second })
+        if (common === Conflict) return null
+        for (p in priced) {
             if (Units.isPack(product, p.unit)) return p.rate / product.packSize!!
-            if (own == null || Units.norm(p.unit) == null || Units.norm(p.unit) == own) return p.rate
+            if (Units.agree(p.unit, common as String?)) return p.rate
         }
         return null
+    }
+
+    /**
+     * The cost of one [unit] of [product] given the cost of one of its own unit ([perUnit], from [rule]): a pack costs
+     * its size times the own unit's, a line in the own unit (or in none) costs [perUnit], and a line in any other unit
+     * costs nothing the app can say — null, never the own unit's cost read as that unit's (a kilo is not a bag). Kept to
+     * [RATE_DECIMALS]: the sale line keeps it for good, so a ticket's profit never moves.
+     */
+    fun forUnit(product: Product?, unit: String?, perUnit: Double?): Double? {
+        if (perUnit == null) return null
+        if (Units.isPack(product, unit)) return roundRate(perUnit * product!!.packSize!!)
+        if (product != null && !Units.agree(product.defaultUnit, unit)) return null
+        return roundRate(perUnit)
     }
 }
