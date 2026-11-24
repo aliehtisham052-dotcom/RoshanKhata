@@ -23,7 +23,7 @@ B12	Backup protection shown plainly (plain or locked), advice for copies that le
 C1	Voice: a clear choice the first time the mic opens; Windows claims typed only	WP-9; F-012; F-013; RK-010; RK-011	P2	6	NOT STARTED	-	Waits for D10; then the first-open choice	-
 C2	A real receipt printer, PDF, CSV and the khata link	WP-10; F-021; F-023	P2	6	BLOCKED	-	Waits for the owner and a thermal printer	-
 C3	The final signed release, upgrade, rollback and restore drill	WP-11; F-017; F-019; F-025	P2	10	NOT STARTED	-	At the end (21-27 Dec): exact commit in CI, AAB and Store MSIX	-
-C4	Small leftovers: Windows cashbook line edit, Windows Hudhud Open page and counts	handover 23 Nov	P2	4	NOT STARTED	-	After the freeze	-
+C4	Small leftovers: Windows cashbook line edit, Windows Hudhud Open page and counts	handover 23 Nov	P2	4	PARTIAL	desktop/src/test/kotlin/com/innovation313/roshankhata/desktop/CashEditDeskTest.kt#CashEditDeskTest	24 Nov: Windows cashbook line edit through editCashEntryAudited (CI first, no picture yet); Windows Hudhud Open page and counts left	-
 C5	Number words in nine languages, one numeral system per screen, LRI/PDI around figures in PDFs	DeepSeek part V; Gemini 4.2	P2	5	PARTIAL	scripts/check_pdf_rtl.py	24 Nov: crore above 99, figures isolated in print, label digits (BC-268, BC-269); number words need native reads	-
 H0	Hudhud's baseline and freeze (inventory, per-language figures, confusion matrix, seed noise, speed, sense hash)	Blueprint H0; MOD H0; Advanced stage 1; DeepSeek phase 0	P0	9	VERIFIED COMPLETE	docs/hudhud-baseline-24nov2026.md	-	-
 H1	A stable training recipe (L017's two faults, locked features, one seed or averaged)	Blueprint H1; F-006; RK-004; L017	P1	9	NOT STARTED	-	After H0	-

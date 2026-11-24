@@ -121,6 +121,10 @@ fun CashbookPane(
     var deleting by remember { mutableStateOf<CashEntry?>(null) }
     // A line a counter ticket or a return wrote: said where to change it (22 Oct 2026, the review).
     var ownedBy by remember { mutableStateOf<String?>(null) }
+    // A written line being corrected (the phone's Edit on a cashbook row): the line and who let a cashier through (L023).
+    var editing by remember { mutableStateOf<CashEditing?>(null) }
+    // The line was binned meanwhile: its correction is not written, and the owner is told.
+    var editGone by remember { mutableStateOf(false) }
     var closing by remember { mutableStateOf(false) }
     if (closing) DayCloseDialog(dao) { closing = false }
     var reporting by remember { mutableStateOf(false) }
@@ -182,7 +186,7 @@ fun CashbookPane(
             EmptyState("ic_tile_cashbook", word(W.no_cash_entries), word(W.cashbook_separate_note), Modifier.weight(1f))
         } else ListCard(Modifier.weight(1f)) {
             ListHead(word(W.cashbook), lineCount.toString())
-            TableHead(listOf(word(W.date_label) to 150, word(W.cash_category_hint) to 0, word(W.amount) to 120, "" to 32, "" to 32), endAligned = setOf(2))
+            TableHead(listOf(word(W.date_label) to 150, word(W.cash_category_hint) to 0, word(W.amount) to 120, "" to 32, "" to 32, "" to 32), endAligned = setOf(2))
             LazyColumn(Modifier.fillMaxSize(), state = listState) {
                 items(entries, key = { it.id }) { e ->
                     Row(
@@ -202,6 +206,16 @@ fun CashbookPane(
                             color = if (e.isIncome) Look.accent else c.owedToMe,
                             fontSize = 14.sp, fontWeight = FontWeight.SemiBold, textAlign = androidx.compose.ui.text.style.TextAlign.End, maxLines = 1, softWrap = false
                         )
+                        // Edit (17 Nov 2026, L023 — the phone has had it since): EDIT_BOOK, asked of a manager for a cashier, and
+                        // a line a counter ticket or a return wrote says where to change it, before any PIN is typed for nothing.
+                        IconAction("ic_edit", word(W.edit), {
+                            Gates.needBy(com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK) { by ->
+                                scope.launch {
+                                    val owner = withContext(Dispatchers.IO) { runCatching { dao.cashOwner(e.id) }.getOrNull() }
+                                    if (owner != null) ownedBy = owner else editing = CashEditing(e, by)
+                                }
+                            }
+                        }, Modifier.width(32.dp))
                         // The receipt's picture (schema 43): the camera filled when one is kept; a click shows it, or
                         // chooses one for a row that has none (a change to the book: a cashier waits for a manager's PIN).
                         val kept = !e.photoPath.isNullOrBlank()
@@ -250,6 +264,20 @@ fun CashbookPane(
             }
         }
     }
+    editing?.let { f ->
+        CashEditDialog(
+            dao, f.entry, f.by,
+            onClose = { editing = null },
+            onRefused = { why ->
+                editing = null
+                if (why == com.innovation313.roshankhata.data.CashEdit.LINKED) {
+                    // A ticket or a return wrote it meanwhile: said in the words of whichever it was.
+                    scope.launch { ownedBy = withContext(Dispatchers.IO) { runCatching { dao.cashOwner(f.entry.id) }.getOrNull() } ?: "sale" }
+                } else editGone = true
+            }
+        )
+    }
+    if (editGone) TellDialog(word(W.edit), word(W.save_failed_not_saved), onClose = { editGone = false })
     deleting?.let { e ->
         AskDialog(
             word(W.delete_cash_entry), word(W.delete_cash_confirm), word(W.delete),
@@ -278,6 +306,9 @@ fun CashbookPane(
     }
     photoProblem?.let { TellDialog(word(W.cash_photo), it, onClose = { photoProblem = null }) }
 }
+
+/** A cashbook line being corrected, and [by]: who let a cashier correct it (a manager's PIN), checked again by the DAO. */
+private class CashEditing(val entry: CashEntry, val by: String?)
 
 /** Money in or out: an amount (sums allowed, as on the phone's pad), a category, a note. */
 @Composable
@@ -704,7 +735,7 @@ class LinesPrint(
 
 /** The counter's own cashbook categories in the owner's language; a typed category as typed (the phone's CashAdapter). */
 @Composable
-private fun cashCategoryWord(category: String): String = when (category) {
+internal fun cashCategoryWord(category: String): String = when (category) {
     com.innovation313.roshankhata.data.CashCategory.SALE -> word(W.cash_category_sale)
     com.innovation313.roshankhata.data.CashCategory.RETURN -> word(W.cash_category_return)
     else -> category
