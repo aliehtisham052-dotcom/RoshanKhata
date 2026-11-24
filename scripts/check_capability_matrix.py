@@ -32,7 +32,7 @@ LANGS = {"en", "ur", "ur-Latn", "sd", "fa", "ar", "hi", "bn", "in", "none", "des
 SPECIAL_GATES = {"NONE", "OWNER_PIN"}
 
 # the number of rows that say "no proof yet"; lower it as proofs are written, never raise it without a reason in the commit
-NONE_CEILING = 33
+NONE_CEILING = 0
 
 MANIFEST = "app/src/main/AndroidManifest.xml"
 ACCESS_UI = "app/src/main/java/com/innovation313/roshankhata/ui/AccessUi.kt"

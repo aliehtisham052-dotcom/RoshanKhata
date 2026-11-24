@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import com.innovation313.roshankhata.words.word
 import androidx.compose.ui.unit.LayoutDirection
 import com.innovation313.roshankhata.data.LedgerAlerts
 import com.innovation313.roshankhata.data.PartyWhen
@@ -588,6 +590,43 @@ class ScreenProofTest {
             partTen += shoot("screen-laptop-seasons-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.SEASONS, waits = 2) {
                 SeasonsPane(dao, partiesNow, 0)
             }
+            // The five pages the capability matrix had no picture of (24 Nov 2026), at the laptop's size, on the same made-up
+            // book: a plan with a next day, the price list in Urdu, the supplier's rates from the bill above, a draft
+            // purchase order, and the shop's own profile (the form the owner types the shop's name into).
+            kotlinx.coroutines.runBlocking {
+                val aslam = partiesNow.first { it.name == "Muhammad Aslam" }.id
+                val seeds = partiesNow.first { !it.isCustomer }.id
+                dao.insertPlan(com.innovation313.roshankhata.data.PaymentPlan(
+                    partyId = aslam, totalAmount = 30000.0, installmentAmount = 10000.0, nextDueDate = now + 3 * day, note = "Three payments"
+                ))
+                val confidor = products.first { it.name == "Confidor" }
+                dao.saveOrder(
+                    com.innovation313.roshankhata.data.PurchaseOrder(partyId = seeds),
+                    listOf(com.innovation313.roshankhata.data.PurchaseOrderItem(
+                        orderId = 0, productId = confidor.id, itemName = "Confidor", quantity = 12.0, unit = "bottle", rate = 720.0
+                    ))
+                )
+            }
+            val matrixPages = mutableListOf<File>()
+            matrixPages += shoot("screen-laptop-plans-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.PLANS, waits = 2) {
+                PlansPane(dao, partiesNow, words) {}
+            }
+            matrixPages += shoot("screen-laptop-ratelist-short-ur", ur = true, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.RATES, waits = 2) {
+                RateListPane(dao, desktopWords(Locale.forLanguageTag("ur")), rtl = true, shopName = "Al-Noor Agri Store")
+            }
+            matrixPages += shoot("screen-laptop-buyrates-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.BUY_RATES, waits = 3) {
+                SupplierRatesPane(dao, 0)
+            }
+            matrixPages += shoot("screen-laptop-orders-en", ur = false, dark = false, dir = dir, width = 1366, height = 768, scale = 1.25f, section = Section.ORDERS, waits = 2) {
+                OrdersPane(dao, partiesNow, words, rtl = false, shopName = "Al-Noor Agri Store") {}
+            }
+            val shopSettings = com.innovation313.roshankhata.data.FileShopSettings(home.resolve("shop-details-proof.properties")).apply {
+                setBusinessName("Al-Noor Agri Store"); setBusinessAddress("Main Bazaar, Sample Town"); setBusinessPhone("0300 0000000")
+            }
+            matrixPages += shoot("screen-laptop-shop-short-en", ur = false, dark = false, dir = dir, width = 1366, height = 669, scale = 1.25f, section = Section.SHOP, waits = 2) {
+                ShopDetailsPane(shopSettings, com.innovation313.roshankhata.desktop.invoice.ProfileImages(home.resolve("shop-pics-proof"))) {}
+            }
+            for (f in matrixPages) assertTrue("${f.name} looks empty: ${f.length()}", f.length() > 15_000)
             // The same customer written twice (one name, one number): the duplicates page's group.
             val twice = kotlinx.coroutines.runBlocking {
                 dao.insertParty(com.innovation313.roshankhata.data.Party(name = "Muhammad Aslam", phone = "03000000001", isCustomer = true))
@@ -864,6 +903,133 @@ class ScreenProofTest {
             org.junit.Assert.assertFalse("Roman Urdu is left to right", com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(Locale.forLanguageTag("ur-Latn")))
         } finally {
             Locale.setDefault(before)
+        }
+    }
+
+    /**
+     * The header More menu's windows and the first-run tour, drawn as the app draws them (capability matrix, plan B8,
+     * 24 Nov 2026): the Payment Radar's chip, reasons and switch, the shop-type picker, the language, theme and text-size
+     * lists, Report a problem, About, the sign-in window and the tour. The windows are the real AppDialog (a Compose
+     * Dialog in the window), so each picture is also held to differ from the same page with no dialog over it: a dialog
+     * that did not draw would be a blank page and fail here. NOT RUN where it was written (CI is its first run); it is its
+     * own test so a scene that cannot lay out a Dialog fails this one alone.
+     */
+    @Test
+    fun `the header More windows and the tour draw as the apps own dialogs`() {
+        Assume.assumeTrue("screen proofs are drawn on Windows", System.getProperty("os.name").orEmpty().startsWith("Windows"))
+        val dir = File("build/screen-proof").apply { mkdirs() }
+        val home = java.nio.file.Files.createTempDirectory("rk-proof-more").toFile()
+        val db = com.innovation313.roshankhata.data.DesktopDatabase.open(home.resolve("khata.db"))
+        val dao = db.khataDao()
+        // A made-up customer whose repayments took about six weeks each, in a shop whose norm is three: amber, with reasons.
+        val points = listOf(
+            com.innovation313.roshankhata.data.LedgerPoint(1, now - 300 * day, 10000.0, true, id = 1),
+            com.innovation313.roshankhata.data.LedgerPoint(1, now - 255 * day, 10000.0, false, id = 2),
+            com.innovation313.roshankhata.data.LedgerPoint(1, now - 200 * day, 10000.0, true, id = 3),
+            com.innovation313.roshankhata.data.LedgerPoint(1, now - 155 * day, 10000.0, false, id = 4),
+            com.innovation313.roshankhata.data.LedgerPoint(1, now - 120 * day, 10000.0, true, id = 5),
+            com.innovation313.roshankhata.data.LedgerPoint(1, now - 75 * day, 10000.0, false, id = 6),
+            com.innovation313.roshankhata.data.LedgerPoint(1, now - 40 * day, 5000.0, true, id = 7)
+        )
+        val reading = com.innovation313.roshankhata.data.PaymentRadar.read(points, now, shopDays = 20)
+        assertTrue("the made-up customer must give the chip a light", reading.light != com.innovation313.roshankhata.data.PaymentRadar.Light.NONE)
+
+        /** The same blank page with [over] on it; the page alone is [baseline] to compare against. */
+        fun window(name: String, lang: String = "en", dark: Boolean = false, width: Int = 1366, height: Int = 768, over: (@androidx.compose.runtime.Composable () -> Unit)?): ByteArray {
+            val before = Locale.getDefault()
+            val locale = Locale.forLanguageTag(lang).also { Locale.setDefault(it) }
+            val ur = com.innovation313.roshankhata.ui.BidiPort.isRtlLocale(locale)
+            val words = desktopWords(locale)
+            val scene = ImageComposeScene(width = width, height = height, density = Density(1.25f)) {
+                DeskTheme(dark = dark) {
+                    ProvideWords(words) {
+                        CompositionLocalProvider(LocalLayoutDirection provides if (ur) LayoutDirection.Rtl else LayoutDirection.Ltr) {
+                            Box(Modifier.fillMaxSize().background(Look.layerAlt).padding(24.dp)) {
+                                RadarChip(reading) {}
+                            }
+                            over?.invoke()
+                        }
+                    }
+                }
+            }
+            try {
+                scene.render(0); scene.render(16_000_000)
+                repeat(2) { n -> Thread.sleep(300); scene.render(250_000_000L + n * 100_000_000L) }
+                scene.render(500_000_000L)
+                val png = scene.render(1_000_000_000L).encodeToData(EncodedImageFormat.PNG)!!.bytes
+                if (name.isNotEmpty()) File(dir, "$name.png").writeBytes(png)
+                return png
+            } finally {
+                scene.close()
+                Locale.setDefault(before)
+            }
+        }
+        try {
+            val baselines = mutableMapOf<Pair<String, Boolean>, ByteArray>()
+            val shots = mutableListOf<File>()
+            fun dialog(name: String, lang: String = "en", dark: Boolean = false, over: @androidx.compose.runtime.Composable () -> Unit) {
+                val png = window(name, lang, dark, over = over)
+                val page = baselines.getOrPut(lang to dark) { window("", lang, dark, over = null) }
+                assertTrue("$name drew no dialog over the page", !png.contentEquals(page))
+                assertTrue("$name looks empty: ${png.size}", png.size > 8_000)
+                shots += File(dir, "$name.png")
+            }
+            // The Payment Radar: the reasons (More, and the chip on a customer) and the one switch.
+            dialog("dialog-laptop-radar-en") { RadarDialog(reading, promise = null) {} }
+            dialog("dialog-laptop-radar-settings-en") { RadarSettingsDialog {} }
+            // The three display lists, each with the one in use marked; the language in Urdu by night.
+            dialog("dialog-laptop-language-ur", lang = "ur", dark = true) {
+                PickDialog(word(com.innovation313.roshankhata.words.W.language), com.innovation313.roshankhata.words.AppLanguages.ALL.map { it.nativeName }, chosen = 2, onPick = {}, onDismiss = {})
+            }
+            dialog("dialog-laptop-theme-en") {
+                PickDialog(word(com.innovation313.roshankhata.words.W.theme), ThemeChoice.entries.map { word(it.word) }, chosen = 0, onPick = {}, onDismiss = {})
+            }
+            dialog("dialog-laptop-textsize-en") {
+                PickDialog(
+                    word(com.innovation313.roshankhata.words.W.text_size), TEXT_SIZE_WORDS.map { word(it) }, chosen = 1,
+                    onPick = {}, onDismiss = {}, textSizes = TEXT_FACTORS.map { 15f * it }
+                )
+            }
+            // More -> Shop type: the picker of the 25 trades, as Main wraps it.
+            dialog("dialog-laptop-trade-en") {
+                AppDialog(onCloseRequest = {}, title = word(com.innovation313.roshankhata.words.W.trade_pick_title), state = androidx.compose.ui.window.rememberDialogState(width = fitW(900.dp), height = fitH(760.dp))) {
+                    TradePicker(current = "KIRYANA", otherName = null, otherItems = null, mandatory = false, onPick = { _, _, _ -> }, onCancel = {})
+                }
+            }
+            dialog("dialog-laptop-report-en") { ReportProblemDialog(desktopWords(Locale.ENGLISH), home) {} }
+            dialog("dialog-laptop-about-en") {
+                AppDialog(onCloseRequest = {}, title = word(com.innovation313.roshankhata.words.W.about_us), state = androidx.compose.ui.window.rememberDialogState(width = fitW(520.dp), height = fitH(680.dp))) {
+                    com.innovation313.roshankhata.screens.AboutScreen(
+                        icon = androidx.compose.ui.res.painterResource("roshan_khata_icon.png"),
+                        versionName = "1.0.0", supportEmail = "support@example.invalid",
+                        privacyBody = word(com.innovation313.roshankhata.words.W.about_privacy_body_pc),
+                        onPrivacyPolicy = {}
+                    )
+                }
+            }
+            // The counter's sign-in window (a book with no staff and no owner PIN: the owner's row).
+            dialog("dialog-laptop-signin-en") { SignInDialog(dao) {} }
+            for (f in shots) assertTrue("${f.name} was not written", f.exists() && f.length() > 8_000)
+
+            // The first-run tour is a window of its own in Main; its content is drawn at that window's size.
+            val before = Locale.getDefault()
+            val tour = try {
+                Locale.setDefault(Locale.ENGLISH)
+                val scene = ImageComposeScene(width = 760, height = 520, density = Density(1f)) {
+                    DeskTheme(dark = false) { ProvideWords(desktopWords(Locale.ENGLISH)) { TourWindowContent(onDone = {}) } }
+                }
+                try {
+                    scene.render(0); scene.render(16_000_000)
+                    Thread.sleep(300)
+                    scene.render(500_000_000L)
+                    val png = scene.render(1_000_000_000L).encodeToData(EncodedImageFormat.PNG)!!.bytes
+                    File(dir, "window-laptop-tour-en.png").also { it.writeBytes(png) }
+                } finally { scene.close() }
+            } finally { Locale.setDefault(before) }
+            assertTrue("the tour looks empty: ${tour.length()}", tour.length() > 8_000)
+        } finally {
+            db.close()
+            home.deleteRecursively()
         }
     }
 }

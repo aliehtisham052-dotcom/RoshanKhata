@@ -39,6 +39,8 @@ import com.innovation313.roshankhata.data.InvoiceItem
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.LedgerEntry
 import com.innovation313.roshankhata.data.Party
+import com.innovation313.roshankhata.data.Scheme
+import com.innovation313.roshankhata.data.SchemeMath
 import com.innovation313.roshankhata.data.SupplierBill
 import com.innovation313.roshankhata.data.TextSize
 import kotlinx.coroutines.runBlocking
@@ -291,6 +293,16 @@ class EveryScreenOpensTest(
                 )
                 val product = dao.findOrCreateProduct(name = "Test Spray", defaultUnit = "bottle")
 
+                // A company scheme the supplier's bill counts towards (Schemes draws a card with its progress and the
+                // slab reached; 24 Nov 2026, capability matrix): 2% back once 3,000 is bought, the bill is 4,000.
+                dao.saveScheme(
+                    Scheme(
+                        name = "Test season scheme", partyId = supplier,
+                        startDate = now - 30 * day, endDate = now + 30 * day,
+                        measure = SchemeMath.BY_VALUE, rewardKind = SchemeMath.PERCENT, target1 = 3000.0, reward1 = 2.0
+                    )
+                )
+
                 val invoice = dao.saveInvoiceWithItems(
                     Invoice(customerName = "Test Kisan", customerPhone = "03000000000"),
                     listOf(InvoiceItem(invoiceId = 0, itemName = "Test Spray", quantity = 1.0, rate = 1200.0))
@@ -300,6 +312,22 @@ class EveryScreenOpensTest(
             }
             seeded = result
             return result
+        }
+
+        /**
+         * A one-page PDF in the app's own cache, which is the only place PdfPreviewActivity opens a file from
+         * (made-up words; 24 Nov 2026, capability matrix). Written once per call: the screen only reads it.
+         */
+        private fun previewPdf(): String {
+            val context = ApplicationProvider.getApplicationContext<Context>()
+            val file = java.io.File(context.cacheDir, "proof_preview.pdf")
+            val doc = android.graphics.pdf.PdfDocument()
+            val page = doc.startPage(android.graphics.pdf.PdfDocument.PageInfo.Builder(595, 842, 1).create())
+            page.canvas.drawText("Test statement", 60f, 90f, android.graphics.Paint().apply { textSize = 24f })
+            doc.finishPage(page)
+            file.outputStream().use { doc.writeTo(it) }
+            doc.close()
+            return file.absolutePath
         }
 
         private inline fun <reified T : Activity> open(
@@ -394,7 +422,18 @@ class EveryScreenOpensTest(
             open<ImageCropActivity>("Image crop (no picture)"),
             open<AboutActivity>("About"),
             open<HelpActivity>("Help"),
-            open<ReportProblemActivity>("Report a problem")
+            open<ReportProblemActivity>("Report a problem"),
+            // The five the capability matrix had no proof for (24 Nov 2026): Who did what over the seeded book's own
+            // audit rows, the shift screen with no shift open, the seeded scheme's card, the seasons the seeded credit
+            // sale falls in, and a one-page PDF in the preview.
+            open<AuditActivity>("Who did what"),
+            open<ShiftActivity>("Shifts and time clock"),
+            open<SchemesActivity>("Company schemes"),
+            open<SeasonsActivity>("Seasons"),
+            open<PdfPreviewActivity>("PDF preview") {
+                putExtra(PdfPreviewActivity.EXTRA_PATH, previewPdf())
+                putExtra(PdfPreviewActivity.EXTRA_TITLE, "Test statement")
+            }
         )
     }
 }

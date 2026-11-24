@@ -282,6 +282,20 @@ class ScreenProofPhoneTest(
         shoot("55-hudhud-radar", open(MainActivity::class.java) { putExtra(MainActivity.EXTRA_UNLOCKED, true) }) { a ->
             com.innovation313.roshankhata.ui.HudhudSheet.open(a, ask = "$BIG_NAME kab dega", speak = false)
         }
+        // The five screens the capability matrix had no picture of (24 Nov 2026): who did what over the seeded book's own
+        // audit rows, the shift screen with no shift open, the seeded company scheme's card, the seasons the credit sale
+        // falls in, and the statement's first page in the in-app preview (the file statementProof made, so the preview
+        // draws a real statement; skipped, not faked, when that one could not be made).
+        shoot("56-audit", open(AuditActivity::class.java), settleMs = 2000)
+        shoot("57-shifts", open(ShiftActivity::class.java), settleMs = 2000)
+        shoot("58-schemes", open(SchemesActivity::class.java), settleMs = 2000)
+        shoot("59-seasons", open(SeasonsActivity::class.java), settleMs = 2000)
+        statementFile?.let { f ->
+            shoot("60-pdf-preview", open(PdfPreviewActivity::class.java) {
+                putExtra(PdfPreviewActivity.EXTRA_PATH, f.absolutePath)
+                putExtra(PdfPreviewActivity.EXTRA_TITLE, BIG_NAME)
+            }, settleMs = 2500)
+        }
         shoot("35-live-roads", open(BackupActivity::class.java)) { a ->
             val roads = a.findViewById<com.innovation313.roshankhata.ui.LiveTrafficView>(R.id.liveTraffic)
             roads.visibility = android.view.View.VISIBLE
@@ -294,6 +308,9 @@ class ScreenProofPhoneTest(
             roads.post { roads.requestRectangleOnScreen(android.graphics.Rect(0, -200, roads.width, roads.height + 600), true) }
         }
     }
+
+    /** The statement PDF statementProof made, kept for the preview's picture (null until made, or when it could not be). */
+    private var statementFile: java.io.File? = null
 
     /** The customer statement's first page as the customer gets it (2 Nov 2026), drawn from its PDF. */
     private fun statementProof(party: Long) {
@@ -323,6 +340,7 @@ class ScreenProofPhoneTest(
                 bp.setBusinessAddress(app, before[0]); bp.setBusinessPhone(app, before[1])
                 bp.setBankName(app, before[2]); bp.setBankIban(app, before[3]); bp.setBankJazzCash(app, before[4])
             }) ?: return
+            statementFile = file
             android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY).use { fd ->
                 android.graphics.pdf.PdfRenderer(fd).use { r ->
                     r.openPage(0).use { pg ->
