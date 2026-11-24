@@ -241,7 +241,9 @@ class MainActivity : BaseActivity() {
         // His sense is read off the screen's thread a moment after Home opens, so the first question is answered
         // at once (a few hundred kilobytes; 13 Nov 2026).
         face.postDelayed({
-            if (!isFinishing && !isDestroyed) Thread { com.innovation313.roshankhata.data.HudhudSense.warmUp() }.apply {
+            // check() reads the model as warmUp does and, when it is missing, writes it once to the log (BC-254/BC-256): a phone
+            // that lost its model is told at start, not at the first question that reads worse.
+            if (!isFinishing && !isDestroyed) Thread { com.innovation313.roshankhata.data.HudhudSenseState.check() }.apply {
                 priority = Thread.MIN_PRIORITY
                 start()
             }

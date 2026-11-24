@@ -278,16 +278,23 @@ object HudhudSheet {
             }
         })
 
+        // The three reads below are NOT caught (24 Nov 2026, BC-256): a read that failed used to give an empty list, and he answered
+        // "I could not find this" against a book that looked empty. Now the failure comes out of `await()` inside [answer]'s own
+        // catch, which shows the failure card ([HudhudBook.failed]: "I could not read your book right now"); and [rereadBook] reads
+        // them again, so one failed read does not spoil every later question of the sheet.
+
         /** The book's customers and suppliers, read once for the sheet: names to match, balances to answer with. */
-        val parties: Deferred<List<PartyWithBalance>> = host.lifecycleScope.async(Dispatchers.IO) {
-            try { dao.partiesWithBalanceOnce() } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
-        }
+        var parties: Deferred<List<PartyWithBalance>> = readParties()
+
+        private fun readParties(): Deferred<List<PartyWithBalance>> = host.lifecycleScope.async(Dispatchers.IO) { dao.partiesWithBalanceOnce() }
 
         val topics: List<Hudhud.Topic> by lazy { HudhudBook.topics(host) }
 
         /** The shop's products by name, read once for the sheet: "Urea ka rate" is the product's (13 Nov 2026). */
-        val goods: Deferred<List<Hudhud.Name>> = host.lifecycleScope.async(Dispatchers.IO) {
-            try { dao.productsOnce().flatMap { p -> listOf(Hudhud.Name(p.id, p.name)) + com.innovation313.roshankhata.data.ProductFind.otherNamesOf(p.otherNames).map { Hudhud.Name(p.id, it) } } } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
+        var goods: Deferred<List<Hudhud.Name>> = readGoods()
+
+        private fun readGoods(): Deferred<List<Hudhud.Name>> = host.lifecycleScope.async(Dispatchers.IO) {
+            dao.productsOnce().flatMap { p -> listOf(Hudhud.Name(p.id, p.name)) + com.innovation313.roshankhata.data.ProductFind.otherNamesOf(p.otherNames).map { Hudhud.Name(p.id, it) } }
         }
 
         /**
@@ -295,10 +302,17 @@ object HudhudSheet {
          * staff member, who is not in the customers' list. Another person's sheet reads none, so a staff question is the staff's
          * dues as before. Names and ids only: nothing of what the book keeps about them (15 Nov 2026).
          */
-        val staffNames: Deferred<List<Hudhud.Name>> = host.lifecycleScope.async(Dispatchers.IO) {
-            try {
-                if (HudhudGate.staff()) dao.staffCardsOnce().filter { it.isActive }.map { Hudhud.Name(it.id, it.name) } else emptyList()
-            } catch (e: CancellationException) { throw e } catch (e: Exception) { emptyList() }
+        var staffNames: Deferred<List<Hudhud.Name>> = readStaffNames()
+
+        private fun readStaffNames(): Deferred<List<Hudhud.Name>> = host.lifecycleScope.async(Dispatchers.IO) {
+            // Not allowed to see staff is an empty list by the gate's rule; a read that FAILED is no such thing and goes up.
+            if (HudhudGate.staff()) dao.staffCardsOnce().filter { it.isActive }.map { Hudhud.Name(it.id, it.name) } else emptyList()
+        }
+
+        /** After a failed answer: the three reads again, so the next question meets the book as it is, not the failure. */
+        private fun rereadBook() {
+            parties.cancel(); goods.cancel(); staffNames.cancel()
+            parties = readParties(); goods = readGoods(); staffNames = readStaffNames()
         }
 
         /** What the last question was taken for, so "uska number?" or "aur kal?" carry on from it. */
@@ -737,6 +751,7 @@ object HudhudSheet {
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
+                    rereadBook()
                     Answered(heardFirst, null, HudhudBook.failed(ctx), emptyList())
                 }
                 view.removeCallbacks(later)

@@ -1821,6 +1821,8 @@ object Hudhud {
         // staff in Bengali, what is running short in Arabic and Farsi (the sense took the last for the day's summary).
         val saidAll = words(heard).joinToString(" ")
         if (ruled == Ask.Figure(VoiceQuestion.Kind.TO_GIVE) && has(saidAll, OWE_SUPPLIER)) return ruled
+        // Who owes the shop the most, said with Arabic's verb of debt ("من مدين لي بأكثر"): the sense read it as the total to get (BC-256).
+        if (ruled == Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST) && VoiceQuestion.owesMeSaid(heard)) return ruled
         if (ruled == Ask.Count(Thing.STAFF) && has(saidAll, STAFF_HEADCOUNT)) return ruled
         if (ruled == Ask.Status(StatusOf.LOW_STOCK) && has(saidAll, RUNNING_SHORT)) return ruled
         if (ruled is Ask.Activity && ruled.window != null && creditGivenOver(words(heard).joinToString(" "))) return ruled
@@ -2189,6 +2191,10 @@ object Hudhud {
         val joined = said.joinToString(" ")
         // How much must I pay the supplier (review D, 16 Nov 2026): what the shop owes, never a count of suppliers.
         if (has(joined, OWE_SUPPLIER)) return Ask.Figure(VoiceQuestion.Kind.TO_GIVE)
+        // Which suppliers I have not paid (24 Nov 2026, BC-256, Arabic): the word of a supplier with the shop's own "I have not paid" —
+        // what the shop owes there, as English "which suppliers have I not paid" is. HudhudMind took the supplier with "which" as
+        // the goods that came in (Deliveries), the same wrong answer for a payable.
+        if (unpaidSuppliersArabic(joined)) return Ask.Figure(VoiceQuestion.Kind.TO_GIVE)
         // The app's own history and his own story (14 Nov 2026, the owner: "app kab publish hui", "Hudhud kab add hua", "Hudhud
         // apni aap-beeti sunao"): answered only to a sentence that is nothing but those words, and before the how-to pages ("how
         // old is the app" holds a "how"). "Ali ki kahani" and "Roshan ka khata kab bana" are never read here: a word of the book
@@ -3058,6 +3064,16 @@ object Hudhud {
     /** "How much must I pay the supplier": what the shop owes, not a count of suppliers (the count's "how many" is also "how much" in Arabic and Indonesian). */
     private val OWE_SUPPLIER = listOf("أدفع للمورد", "ادفع للمورد", "أدفع للموردين", "ادفع للموردين", "أدين للمورد", "علي للمورد", "على للمورد", "للمورد علي",
         "bayar ke pemasok", "bayar kepada pemasok", "bayar ke supplier", "bayar kepada supplier", "utang ke pemasok", "utang saya ke pemasok", "utang kepada pemasok")
+    /**
+     * Arabic "I have not paid" (24 Nov 2026, BC-256): the shop's own unpaid, first person — "لم أدفع", "لم أسدد", "ما دفعت". Said of a
+     * customer in the third person ("لم يدفعوا لي") it is [VoiceQuestion]'s NOT_PAID and never here.
+     */
+    private val NOT_PAID_BY_ME = listOf("لم أدفع", "لم ادفع", "لم أسدد", "لم اسدد", "ما دفعت", "ما سددت", "لم نسدد", "لم ندفع")
+    private val SUPPLIER_ARABIC = listOf("المورد", "الموردين", "الموردون", "مورد", "موردين", "موردون", "الشركات", "شركات")
+
+    /** An Arabic sentence that says which suppliers the shop has not paid: what it owes them, never the goods that came. */
+    private fun unpaidSuppliersArabic(joined: String): Boolean = has(joined, NOT_PAID_BY_ME) && has(joined, SUPPLIER_ARABIC)
+
     private val RUNNING_SHORT = listOf("ما الذي ينقص", "ما الذى ينقص", "ما الذي ينفد", "ما الذي قارب على النفاد", "ما الذي يوشك على النفاد",
         "چه چیزهایی تمام می‌شود", "چه چیزی تمام می‌شود", "چه چیزهایی تمام می شود", "چه چیزی تمام می شود", "چه چیزهایی کم است", "چه چیزی کم است")
     private val WHOM = listOf("kis ko", "kisko", "kin ko", "kin se", "kis se", "kaun", "kon", "kis", "kin", "who", "whom", "کس کو", "کن کو",

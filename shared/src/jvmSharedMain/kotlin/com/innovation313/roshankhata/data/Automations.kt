@@ -120,9 +120,9 @@ object Automations {
         val points = LedgerLines.owingOf(dao, parties)
         val habits = PaymentHabit.forAll(points)
         val promises = dao.observePromises().first().associate { it.partyId to it.due }
-        val likely = if (!radar) emptySet() else runCatching {
+        // A Radar read that fails is no "nobody is due": it goes up, and [noticesDue] leaves the morning notice unsaid (24 Nov 2026, BC-256).
+        val likely = if (!radar) emptySet() else
             PaymentRadar.likelyNow(points, PaymentRadar.shopTypicalDays(LedgerLines.customers(dao)), promises, now, tz)
-        }.getOrDefault(emptySet())
         val due = FollowUpRank.order(debtors, habits, promises, now, tz, remindedToday, likely).filter {
             !it.phone.isNullOrBlank() && FollowUpRank.remindToday(it.id, habits, promises, now, tz, remindedToday, likely)
         }
@@ -163,7 +163,8 @@ object Automations {
      * supplier is the one on the newest bill that carried the product (by product, else by name).
      */
     suspend fun reorder(dao: KhataDao, now: Long): List<ReorderLine> {
-        val low = runCatching { Valuation.compute(dao).low }.getOrDefault(emptyList())
+        // A valuation that failed is no "nothing is low" (24 Nov 2026, BC-256): it goes up to the caller's own catch.
+        val low = Valuation.compute(dao).low
         if (low.isEmpty()) return emptyList()
         val onOrder = mutableSetOf<Long>()
         // Only an order still on its way (3 Nov 2026 audit, M30): a CLOSED one carried its lines for ever and the
@@ -230,8 +231,8 @@ object Automations {
 
     /** The batches still holding something inside the warning window, soonest first. */
     suspend fun expiring(dao: KhataDao, now: Long): List<ExpiringBatch> =
-        runCatching { Fefo.expiring(dao, DayMath.startOfDay(now) + ExpiryWindow.WARN_MS) }.getOrDefault(emptyList())
-            .sortedBy { it.expiryDate }
+        // No catch: a shelf that could not be read is no "nothing expiring", and the notice must not mark itself said (BC-256).
+        Fefo.expiring(dao, DayMath.startOfDay(now) + ExpiryWindow.WARN_MS).sortedBy { it.expiryDate }
 
     /**
      * The cheques due today or past their day and still pending, by [ChequesDue] — the very rule the bell rows
@@ -285,16 +286,26 @@ object Automations {
         now: Long = System.currentTimeMillis(),
         tz: TimeZone = TimeZone.getDefault(),
         /** The Payment Radar's switch on this device (the morning list's likely names, [collect]). */
-        radar: Boolean = false
+        radar: Boolean = false,
+        /** Told of each kind whose read failed (the phone's log, the computer's errors.log); the kind is left unsaid. Default: nobody. */
+        onFailed: (Kind, Throwable) -> Unit = { _, _ -> }
     ): List<Notice> {
         val out = mutableListOf<Notice>()
         for (kind in Kind.values()) {
             if (!due(kind, settings, now, tz)) continue
-            val tried = runCatching { noticeOf(kind, dao, words, money, date, monthName, remindedToday, now, tz, radar) }
-            // A computation that failed (a busy book) is not "said today": the next run tries again (8 Nov 2026 review, L151).
-            if (tried.isFailure) continue
+            val notice = try {
+                noticeOf(kind, dao, words, money, date, monthName, remindedToday, now, tz, radar)
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // A computation that failed (a busy book) is not "said today" and is no empty morning: the next run tries
+                // again (8 Nov 2026 review, L151). Every read below [noticeOf] goes up to here, none turns a failure into
+                // an empty list (24 Nov 2026, BC-256), and a cancelled run is not a failed read.
+                onFailed(kind, e)
+                continue
+            }
             settings.setSaid(kind, stamp(kind, now, tz))
-            tried.getOrNull()?.let { out += it }
+            notice?.let { out += it }
         }
         return out
     }

@@ -34,10 +34,13 @@ import com.innovation313.roshankhata.data.AnswerGate
 import com.innovation313.roshankhata.data.AnswerProfile
 import com.innovation313.roshankhata.data.Automations
 import com.innovation313.roshankhata.data.DayCloseMath
+import com.innovation313.roshankhata.data.DesktopDatabase
 import com.innovation313.roshankhata.data.FileShopSettings
 import com.innovation313.roshankhata.data.Hudhud
 import com.innovation313.roshankhata.data.HudhudLook
+import com.innovation313.roshankhata.data.HudhudReadFailure
 import com.innovation313.roshankhata.data.HudhudSense
+import com.innovation313.roshankhata.data.HudhudSenseState
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerAlerts
 import com.innovation313.roshankhata.data.OpenWith
@@ -309,13 +312,18 @@ class HudhudDeskEnv(
         /**
          * Hudhud's learnt sense on the computer: the phone's model when the build carries it as a resource
          * (/hudhud/sense.bin); without it he reads by his rules alone, as the shared tests do without a model.
+         * A resource that is missing or will not read is not silent (24 Nov 2026, BC-254/BC-256): the load goes through
+         * [HudhudSenseState] as the phone's does, and the one line it says lands in errors.log (not a crash).
          */
         fun useSense() {
             if (senseSet) return
             senseSet = true
-            HudhudSense.useModel {
-                runCatching { HudhudDeskEnv::class.java.getResourceAsStream("/hudhud/sense.bin")?.use { it.readBytes() } }.getOrNull()
+            HudhudSenseState.sink = { line ->
+                runCatching { CrashLog.write(DesktopDatabase.home(), "Hudhud's sense (not a crash: he went on by his rules)", IllegalStateException(line)) }
             }
+            HudhudSense.useModel(HudhudSenseState.reading("/hudhud/sense.bin") {
+                HudhudDeskEnv::class.java.getResourceAsStream("/hudhud/sense.bin")?.use { it.readBytes() }
+            })
         }
 
         /**
@@ -382,18 +390,32 @@ fun HudhudPanel(
     val topics = remember(env) { AnswerBook.topics(env) }
     val language = env.locale.toLanguageTag()
 
-    LaunchedEffect(dao) {
-        HudhudDeskEnv.useSense()
+    // The shop's products and staff names, read from the book. A read that FAILS is no empty list (24 Nov 2026, BC-256): he
+    // would answer "I could not find this" against a book that looked empty. It says so with the failure card, and the next
+    // question reads the book again before it is answered.
+    var bookRead by remember { mutableStateOf(false) }
+    suspend fun readBook(): Boolean = try {
         products = withContext(Dispatchers.IO) {
-            runCatching { dao.productsOnce().flatMap { p -> listOf(Hudhud.Name(p.id, p.name)) + ProductFind.otherNamesOf(p.otherNames).map { Hudhud.Name(p.id, it) } } }
-                .getOrDefault(emptyList())
+            dao.productsOnce().flatMap { p -> listOf(Hudhud.Name(p.id, p.name)) + ProductFind.otherNamesOf(p.otherNames).map { Hudhud.Name(p.id, it) } }
         }
         staff = withContext(Dispatchers.IO) {
-            runCatching { if (AnswerGate.staff()) dao.staffCardsOnce().filter { it.isActive }.map { Hudhud.Name(it.id, it.name) } else emptyList() }
-                .getOrDefault(emptyList())
+            if (AnswerGate.staff()) dao.staffCardsOnce().filter { it.isActive }.map { Hudhud.Name(it.id, it.name) } else emptyList()
         }
-        // The day's own questions first (what the bell has), then the ones he always knows.
-        val day = withContext(Dispatchers.IO) { runCatching { AnswerBook.suggested(env, dao) }.getOrDefault(emptyList()) }
+        true
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        false
+    }
+
+    LaunchedEffect(dao) {
+        HudhudDeskEnv.useSense()
+        // Looks at the sense now, so a missing model is written down when the panel opens, not at the first question.
+        withContext(Dispatchers.Default) { HudhudSenseState.check() }
+        bookRead = readBook()
+        if (!bookRead) card = AnswerBook.failed(env)
+        // The day's own questions first (what the bell has), then the ones he always knows. A row of chips may stay empty.
+        val day = withContext(Dispatchers.IO) { HudhudReadFailure.bestEffort(emptyList<Hudhud.Ask>()) { AnswerBook.suggested(env, dao) } }
         chips = HudhudDeskEnv.labelled(env, day + AnswerBook.usualChips(env), null)
     }
 
@@ -404,6 +426,12 @@ fun HudhudPanel(
         asked = words
         val talk = before
         scope.launch {
+            if (!bookRead) bookRead = readBook()
+            if (!bookRead) {
+                card = AnswerBook.failed(env)
+                busy = false
+                return@launch
+            }
             val result: Pair<AnswerCard, List<Hudhud.Ask>>? = try {
                 val q = known ?: withContext(Dispatchers.Default) {
                     Hudhud.understand(listOf(words), names, topics, language, products, talk, staff).second

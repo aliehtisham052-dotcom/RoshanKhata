@@ -54,7 +54,10 @@ object VoiceQuestion {
     private val MOST = listOf("sab se zyada", "sabse zyada", "sab se ziada", "most", "highest", "biggest", "terbanyak", "paling",
         "terbesar",
         "سب سے زیادہ", "سڀ کان وڌيڪ", "الأكثر", "أكثر", "اكثر", "بیشترین", "सबसे ज़्यादा", "सबसे ज्यादा",
-        "সবচেয়ে বেশি")
+        "সবচেয়ে বেশি",
+        // 24 Nov 2026 (BC-256): Arabic "biggest" and "highest" ("من يدين لي بأكبر مبلغ": the one who owes me the biggest sum; "بأكبر" is "with
+        // biggest": the joined "ب" is taken by isWord).
+        "أكبر", "اكبر", "الأكبر", "أعلى", "اعلى", "الأعلى")
     // The other end of "most" (14 Nov 2026, the owner's check log: "jisne mere sabse kam paise dene hain" was answered with
     // the shop's total to give). Two spellings of Sindhi's "less" (ھ and ه) and Persian's with and without the half-space.
     private val LEAST = listOf("sab se kam", "sabse kam", "least", "lowest", "smallest", "fewest", "terkecil", "terendah",
@@ -862,7 +865,16 @@ object VoiceQuestion {
 
     /** Money is the shop's to get: its debtors' words, "lena", or somebody else who has to give. */
     private fun owedToUs(t: String): Boolean =
-        saysAny(t, DEBT) || saysAny(t, TO_GET) || (saysAny(t, TO_GIVE) && owedToTheShop(t)) || owedToMe(t)
+        saysAny(t, DEBT) || saysAny(t, TO_GET) || (saysAny(t, TO_GIVE) && owedToTheShop(t)) || owedToMe(t) || saysAny(t, OWES_ME)
+
+    /**
+     * Arabic "who owes me" (24 Nov 2026, BC-256): "من يدين لي", "مدين لي", "يدينون لي" — the debtors' side said with the debt's verb, which
+     * [DEBT]'s noun ("دين", "ديون") does not match as a whole word. Beside a [MOST] word it is who owes the shop most.
+     */
+    /** The sentence says "who owes me" with Arabic's verb of debt ([OWES_ME]); Hudhud keeps a reading made from it against the sense. */
+    fun owesMeSaid(heard: String): Boolean = saysAny(normalise(heard), OWES_ME)
+
+    private val OWES_ME = listOf("يدين لي", "يدينون لي", "مدين لي", "مدينون لي", "مدينين لي", "مديون لي", "يديننا", "يدينوننا")
 
     /** A supplier's side with nobody else giving and nothing to take: what is owed there is the shop's to pay. */
     private fun supplierOwed(t: String): Boolean =

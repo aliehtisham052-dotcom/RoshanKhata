@@ -39,6 +39,25 @@ object LedgerAlerts {
         return day to DaySpans.workingDay(day, tz)
     }
 
+    /**
+     * A read that may fail without taking the whole bell with it: its answer, or null when it threw — except cancellation, which
+     * always goes on up (a cancelled read is no empty read). The caller says the null ([unreadRow]); it never reads it as "none".
+     */
+    private inline fun <T : Any> readOrNull(block: () -> T): T? = try {
+        block()
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        null
+    }
+
+    /**
+     * The one row that says the shelf could not be read (24 Nov 2026, BC-256): the stock and expiry rows are missing because the
+     * read failed, not because nothing is low or expiring. It is a [Kind.STOCK] row (a kind with a screen, so the platforms'
+     * exhaustive maps need nothing new) tagged "Failed", in the words the assistant uses for a book it could not read.
+     */
+    internal fun unreadRow(words: Words): Alert = Alert(Kind.STOCK, words.text(W.hudhud_read_failed), "", words.text(W.na_tag_failed))
+
     /** The three counts the phone's daily notice says, by this bell's own rules (3 Nov 2026 audit, M14). */
     data class Due(val cheques: Int, val plans: Int, val expiring: Int)
 
@@ -54,8 +73,10 @@ object LedgerAlerts {
         val endToday = ChequesDue.endOfToday(System.currentTimeMillis())
         val cheques = dao.pendingChequesOnce().count { ChequesDue.isDue(it, endToday) }
         val plans = dao.openPlansOnce().count { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > 0.004 }
-        val low = runCatching { Stock.of(dao) }.getOrDefault(emptyList())
-        val expiring = runCatching { Fefo.expiring(dao, t0 + ExpiryWindow.WARN_MS, low.associate { it.productId to it.onHand }).size }.getOrDefault(0)
+        // A shelf that could not be read is no "nothing expiring" (24 Nov 2026, BC-256): the exception goes up, so a daily sweep
+        // that cannot count leaves yesterday's notice standing instead of cancelling it for a count of nought.
+        val low = Stock.of(dao)
+        val expiring = Fefo.expiring(dao, t0 + ExpiryWindow.WARN_MS, low.associate { it.productId to it.onHand }).size
         return Due(cheques, plans, expiring)
     }
 
@@ -98,18 +119,23 @@ object LedgerAlerts {
             out += Alert(Kind.BILL, words.text(W.na_bill_due, DateWords.format("d MMM", b.date)),
                 b.name + " · " + money(b.amount))
         }
-        // The shelf once, for the expiring batches and the low stock below.
-        val low = runCatching { Stock.of(dao) }.getOrDefault(emptyList())
+        // The shelf once, for the expiring batches and the low stock below. A shelf that could not be read is told as that
+        // (one row, [unreadRow]) and never as "nothing expiring, nothing low" (24 Nov 2026, BC-256); the bell's other parts,
+        // already read above and below, still show.
+        val low = readOrNull { Stock.of(dao) }
         // Batches that still hold something, by the one rule (Marhala 3, 25 Oct 2026: every dated batch was
         // counted, sold out or written off, so the row never went away), within the one window every page warns
         // in (ExpiryWindow, 60 days: Marhala 4, the audit — the bell said 30 where Bills and Expiry said 60).
-        val expiring = runCatching { Fefo.expiring(dao, t0 + ExpiryWindow.WARN_MS, low.associate { it.productId to it.onHand }).size }.getOrDefault(0)
-        if (expiring > 0) out += Alert(Kind.EXPIRING, words.text(W.na_expiring, expiring.toString()), "")
+        val expiring = low?.let { shelf -> readOrNull { Fefo.expiring(dao, t0 + ExpiryWindow.WARN_MS, shelf.associate { it.productId to it.onHand }).size } }
+        if (low == null || expiring == null) out += unreadRow(words)
+        if (expiring != null && expiring > 0) out += Alert(Kind.EXPIRING, words.text(W.na_expiring, expiring.toString()), "")
         // Low stock (POS Phase 2): products at or under the level the owner set, where the shelf is known.
-        val levels = dao.productsOnce().filter { it.lowStockLevel != null }.associate { it.id to it.lowStockLevel!! }
-        val lowRows = low.filter { s -> levels[s.productId]?.let { lvl -> s.onHand?.let { it <= lvl } } == true }
-        if (lowRows.isNotEmpty()) out += Alert(Kind.STOCK, words.text(W.na_low_stock, lowRows.size.toString()),
-            lowRows.take(3).joinToString(" · ") { it.name })
+        if (low != null) {
+            val levels = dao.productsOnce().filter { it.lowStockLevel != null }.associate { it.id to it.lowStockLevel!! }
+            val lowRows = low.filter { s -> levels[s.productId]?.let { lvl -> s.onHand?.let { it <= lvl } } == true }
+            if (lowRows.isNotEmpty()) out += Alert(Kind.STOCK, words.text(W.na_low_stock, lowRows.size.toString()),
+                lowRows.take(3).joinToString(" · ") { it.name })
+        }
 
         // Yesterday's drawer (POS Phase 4): money moved yesterday and no count was made for it — yesterday's working day, as
         // Close the day files a count, and its moments as [from, to) (the four cash sums through DaySpans' wrappers).
