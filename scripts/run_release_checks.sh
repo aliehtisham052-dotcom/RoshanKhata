@@ -33,6 +33,9 @@ CHECKS=(
   "check_main_thread.py"
   "check_work_status.py"
   "check_pref_names.py"
+  "check_capability_matrix.py"
+  "check_data_flows.py"
+  "check_formula_book.py"
 )
 
 # The list must be strings.yml's own.

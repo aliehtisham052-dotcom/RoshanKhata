@@ -52,6 +52,10 @@ on:
       - 'scripts/check_dao_gates.py'
       - 'scripts/check_repo_guards.py'
       - 'scripts/check_main_thread.py'
+      - 'scripts/check_capability_matrix.py'
+      - 'scripts/check_data_flows.py'
+      - 'scripts/check_formula_book.py'
+      - 'docs/formula-book.tsv'
       - '.github/workflows/**'
       # Hudhud's sentence sets: one JSONL view and a quality gate (hudhud_sets.py --check, T27).
       - 'scripts/hudhud_sets.py'
@@ -103,6 +107,10 @@ on:
       - 'scripts/check_dao_gates.py'
       - 'scripts/check_repo_guards.py'
       - 'scripts/check_main_thread.py'
+      - 'scripts/check_capability_matrix.py'
+      - 'scripts/check_data_flows.py'
+      - 'scripts/check_formula_book.py'
+      - 'docs/formula-book.tsv'
       - '.github/workflows/**'
       # Hudhud's sentence sets: one JSONL view and a quality gate (hudhud_sets.py --check, T27).
       - 'scripts/hudhud_sets.py'
@@ -196,6 +204,17 @@ jobs:
       # cleared by its owner, or on the device-wide list with a reason. Names only, not a run (lesson 125).
       - name: Every preference file says whether it belongs to a shop
         run: python3 scripts/check_pref_names.py
+      # Plan B8 (24 Nov 2026): every screen, Home tile, More entry and printed document is a row of docs/capability-matrix.tsv with
+      # its gate, trade limit and proof; a row with no proof says NONE and is counted (a ratchet). Names only, not a run (lesson 125).
+      - name: Every screen and document is in the capability matrix, with its proof
+        run: python3 scripts/check_capability_matrix.py
+      # Plan B3 (24 Nov 2026): every host, SDK and intent that sends anything off the device is a row of docs/data-flows.tsv, and the
+      # privacy-policy sections it names exist; a flow the policy does not name is written down as a gap. Names only (lesson 125).
+      - name: Every place the app sends data is written down and named in the privacy policy
+        run: python3 scripts/check_data_flows.py
+      # Plan H3 (24 Nov 2026): every figure in the formula book names a function that exists.
+      - name: Every figure in the formula book names a function that exists
+        run: python3 scripts/check_formula_book.py
       # The local Gradle-free harness (lesson 93) finds its files by list: a file moved or renamed fails here, not at the next run.
       - name: The shared harness's file lists are current
         run: bash scripts/shared_harness/run.sh --lists-only
