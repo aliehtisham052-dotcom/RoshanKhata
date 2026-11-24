@@ -284,7 +284,8 @@ object AnswerFacts {
         val name = p.name
         val unit = p.defaultUnit?.takeIf { it.isNotBlank() }
         fun perUnit(v: Double) = AnswerBook.money(v) + (unit?.let { " / " + UnitWords.label(it) } ?: "")
-        val stock = runCatching { Valuation.compute(dao).rows.firstOrNull { it.productId == p.id } }.getOrNull()
+        // Not caught (stage 7, F2): a valuation that failed is no product with "no stock line" or one that is not low.
+        val stock = Valuation.compute(dao).rows.firstOrNull { it.productId == p.id }
         val lines = dao.supplierRateLinesOnce().filter { l ->
             l.rate > 0.0 && (l.productId == p.id || (l.productId == null && l.productName.trim().equals(name.trim(), ignoreCase = true)))
         }.sortedByDescending { it.billDate }
@@ -633,7 +634,7 @@ object AnswerFacts {
         Hudhud.AboutTopic.LANGUAGES -> said(c, W.hudhud_about_languages, ScreenId.LANGUAGE)
         Hudhud.AboutTopic.NAME_STORY -> AnswerCard(Mood.GOOD, lines = listOf(c.getString(W.hudhud_about_name_story)))
         Hudhud.AboutTopic.VERSION -> {
-            val version = runCatching { c.appVersion() }.getOrNull() ?: "?"
+            val version = HudhudReadFailure.bestEffort<String?>(null) { c.appVersion() } ?: "?"
             AnswerCard(Mood.CALM, lines = listOf(c.getString(W.hudhud_about_version, version)), open = ScreenId.ABOUT)
         }
         Hudhud.AboutTopic.OWNER_NAME -> {
@@ -794,9 +795,10 @@ object AnswerFacts {
                 counted(c, W.hudhud_t_suppliers, null, all.size, listOf(line(c.getString(W.you_will_give), n(owed))), ScreenId.KHATA)
             }
             Hudhud.Thing.PRODUCTS -> {
-                val v = runCatching { Valuation.compute(dao) }.getOrNull()
+                // Not caught (stage 7, F2): no low-stock line must never mean "nothing is low" for "the read failed".
+                val v = Valuation.compute(dao)
                 val count = dao.productsOnce().size
-                counted(c, W.tile_products, null, count, listOfNotNull(v?.low?.size?.takeIf { it > 0 }?.let { line(c, W.hudhud_t_low, n(it)) }),
+                counted(c, W.tile_products, null, count, listOfNotNull(v.low.size.takeIf { it > 0 }?.let { line(c, W.hudhud_t_low, n(it)) }),
                     ScreenId.PRODUCTS)
             }
             // Staff is the owner's screen (STAFF): who works here is his to know, not a cashier's or a manager's.
@@ -834,7 +836,7 @@ object AnswerFacts {
                 val money = reports()
                 val sum = if (money && came.isNotEmpty()) line(c, W.hudhud_l_total, AnswerBook.money(came.sumOf { it.totalAmount })) else null
                 val rows = came.take(TOP).map { b ->
-                    val items = runCatching { dao.billItems(b.id) }.getOrDefault(emptyList()).filter { !it.isDeleted }
+                    val items = dao.billItems(b.id).filter { !it.isDeleted }
                     val what = items.take(2).joinToString(", ") { it.productName } + if (items.size > 2) "\u2026" else ""
                     Row(b.partyId, b.partyName, if (money) AnswerBook.money(b.totalAmount) else "",
                         listOf(dayOf(c, b.billDate), what).filter { it.isNotBlank() }.joinToString(" \u00B7 "))
@@ -1092,7 +1094,7 @@ object AnswerFacts {
             return AnswerCard(Mood.CALM, label = label, lines = listOf(c.getString(W.hudhud_deliveries_none)), open = ScreenId.BILLS)
         }
         val rows = bills.take(TOP).map { b ->
-            val items = runCatching { dao.billItems(b.id) }.getOrDefault(emptyList()).filter { !it.isDeleted }
+            val items = dao.billItems(b.id).filter { !it.isDeleted }
             val what = items.take(2).joinToString(", ") { it.productName } + if (items.size > 2) "…" else ""
             Row(b.partyId, b.partyName, if (reports()) AnswerBook.money(b.totalAmount) else "",
                 listOf(dayOf(c, b.billDate), what).filter { it.isNotBlank() }.joinToString(" · "))

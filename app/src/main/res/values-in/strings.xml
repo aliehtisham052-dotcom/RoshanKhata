@@ -1095,6 +1095,7 @@
     <string name="hudhud_speaking">Berbicara</string>
     <string name="hudhud_replay">Dengar lagi</string>
     <string name="hudhud_unknown">Ini tidak saya temukan di buku Anda. Pertanyaan terdekat yang bisa saya jawab ada di bawah.</string>
+    <string name="hudhud_read_failed">Saya belum bisa membaca buku Anda sekarang. Tidak ada yang hilang, silakan tanya lagi sebentar lagi.</string>
     <string name="hudhud_off_topic">Saya hanya membantu buku toko Anda dan aplikasi ini, jadi saya tidak bisa menjawab ini.</string>
     <string name="hudhud_took_none">Tidak ada transaksi %2$s dengan %1$s di buku.</string>
     <string name="hudhud_took_none_span">Tidak ada transaksi %2$s dengan %1$s di buku pada periode ini.</string>

@@ -1165,6 +1165,7 @@
     <string name="hudhud_speaking">أتحدث</string>
     <string name="hudhud_replay">استمع مرة أخرى</string>
     <string name="hudhud_unknown">لم أجد هذا في دفترك. أقرب الأسئلة التي أستطيع الإجابة عنها في الأسفل.</string>
+    <string name="hudhud_read_failed">لم أستطع قراءة دفترك الآن. لم يضع شيء، اسأل مرة أخرى بعد قليل.</string>
     <string name="hudhud_off_topic">أساعد فقط في دفتر متجرك وفي هذا التطبيق، لذلك لا أستطيع الإجابة عن هذا.</string>
     <string name="hudhud_took_none">لا يوجد في الدفتر أي تعامل في %2$s مع %1$s.</string>
     <string name="hudhud_took_none_span">لا يوجد في الدفتر أي تعامل في %2$s مع %1$s في هذه الفترة.</string>

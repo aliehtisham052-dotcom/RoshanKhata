@@ -1119,6 +1119,7 @@
     <string name="hudhud_speaking">Speaking</string>
     <string name="hudhud_replay">Hear again</string>
     <string name="hudhud_unknown">I could not find this in your khata. The nearest questions I can answer are below.</string>
+    <string name="hudhud_read_failed">I could not read your book right now. Nothing is lost, please ask again in a moment.</string>
     <string name="hudhud_off_topic">I help only with your shop\'s book and this app, so I cannot answer this.</string>
     <string name="hudhud_took_none">The book has no %2$s with %1$s.</string>
     <string name="hudhud_took_none_span">The book has no %2$s with %1$s in this time.</string>

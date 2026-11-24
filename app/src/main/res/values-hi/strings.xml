@@ -1117,6 +1117,7 @@
     <string name="hudhud_speaking">बता रहा हूँ</string>
     <string name="hudhud_replay">फिर से सुनें</string>
     <string name="hudhud_unknown">यह आपके खाते में नहीं मिला। इसके सबसे करीब के सवाल, जिनका जवाब दे सकता हूँ, नीचे हैं।</string>
+    <string name="hudhud_read_failed">अभी आपका खाता नहीं पढ़ सका। कुछ भी खोया नहीं है, थोड़ी देर बाद फिर पूछें।</string>
     <string name="hudhud_off_topic">मैं सिर्फ़ आपकी दुकान के खाते और इस ऐप में मदद करता हूँ, इसलिए इसका जवाब नहीं दे सकता।</string>
     <string name="hudhud_took_none">खाते में %1$s के साथ %2$s का कोई लेन-देन नहीं है।</string>
     <string name="hudhud_took_none_span">इस अवधि में खाते में %1$s के साथ %2$s का कोई लेन-देन नहीं है।</string>

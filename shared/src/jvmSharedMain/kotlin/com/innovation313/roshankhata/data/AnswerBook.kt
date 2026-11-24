@@ -161,8 +161,12 @@ object AnswerBook {
         )
     }
 
-    /** What he says when the book could not be read. */
-    fun failed(context: AnswerEnv) = AnswerCard(Mood.CARE, lines = listOf(context.getString(W.hudhud_unknown)))
+    /**
+     * What he says when the book could not be read: that, in words ([HudhudReadFailure.words]) — never "I could not find this",
+     * which says the book was read and held nothing. The platforms show it for any exception an answer let through
+     * (the phone's sheet, the computer's panel), which is why no read in this layer is caught on its own (stage 7, F2).
+     */
+    fun failed(context: AnswerEnv) = AnswerCard(Mood.CARE, lines = listOf(HudhudReadFailure.words { context.getString(it) }))
 
     suspend fun answer(context: AnswerEnv, dao: KhataDao, ask: Hudhud.Ask, parties: List<PartyWithBalance>): AnswerCard {
         // The one door every ask passes before the book is read (15 Nov 2026): a span he cannot give is never read as
@@ -973,7 +977,8 @@ object AnswerBook {
                 openParty = p.id, money = true)
         }
         val promise = dao.getParty(p.id)?.harvestPromise
-        val promises = runCatching { PromiseLog.of(dao.promiseLog(p.id)) }.getOrDefault(emptyList())
+        // A promise history that cannot be read is no empty history: a customer who broke three promises would read as clean.
+        val promises = PromiseLog.of(dao.promiseLog(p.id))
         val r = PaymentRadar.read(LedgerLines.of(dao, listOf(p.id)), now, context.radarShopDays(dao), promise, promises)
         val from = r.nextFrom
         val to = r.nextTo
@@ -1022,10 +1027,10 @@ object AnswerBook {
     private suspend fun today(context: AnswerEnv, dao: KhataDao): AnswerCard {
         val now = context.now()
         val radar = AnswerGate.reports() && context.radarOn()
-        val collect = if (context.viewer()) null
-        else runCatching { Automations.collect(dao, context.remindedToday(now), now, radar = radar) }.getOrNull()
-        val alerts = runCatching { context.alerts(dao) }.getOrDefault(emptyList())
-            .filter { it.kind != AnswerAlert.Kind.UPDATED }
+        // Neither read is caught (stage 7, F2): a bell that failed to compute is not "nothing is waiting", and a failed list of whom
+        // to remind is not "nobody". The platform tells the failure instead.
+        val collect = if (context.viewer()) null else Automations.collect(dao, context.remindedToday(now), now, radar = radar)
+        val alerts = context.alerts(dao).filter { it.kind != AnswerAlert.Kind.UPDATED }
         val remind = collect?.count ?: 0
         val lines = ArrayList<String>()
         if (remind > 0) lines += context.quantity(WP.hudhud_greet_remind, remind, remind)
@@ -1055,8 +1060,8 @@ object AnswerBook {
      */
     suspend fun greetingLine(context: AnswerEnv, dao: KhataDao, bell: Int): String {
         val now = context.now()
-        val remind = if (context.viewer()) 0
-        else runCatching { Automations.collect(dao, context.remindedToday(now), now).count }.getOrDefault(0)
+        // A failed read is no "0 to remind": it goes up, and Home (which catches it) simply shows no bubble today (stage 7, F2).
+        val remind = if (context.viewer()) 0 else Automations.collect(dao, context.remindedToday(now), now).count
         return headline(context, remind, bell)
     }
 
@@ -1556,7 +1561,8 @@ object AnswerBook {
      */
     suspend fun suggested(c: AnswerEnv, dao: KhataDao): List<Hudhud.Ask> {
         val reports = AnswerGate.reports()
-        val alerts = runCatching { c.alerts(dao) }.getOrDefault(emptyList())
+        // The chips only: with no bell read there are no day's chips, and nothing is said of the day (stage 7, F2: best effort, named).
+        val alerts = HudhudReadFailure.bestEffort(emptyList()) { c.alerts(dao) }
         return alerts.mapNotNull { a ->
             when (a.kind) {
                 AnswerAlert.Kind.CHEQUE -> Hudhud.Ask.Status(Hudhud.StatusOf.CHEQUES)
@@ -1603,7 +1609,7 @@ object AnswerBook {
     ): Speech? {
         if (quiet) return null
         spoken?.let { own ->
-            val text = runCatching { own() }.getOrNull()?.takeIf { it.isNotBlank() } ?: return null
+            val text = HudhudReadFailure.bestEffort<String?>(null) { own() }?.takeIf { it.isNotBlank() } ?: return null
             return Speech(text, false)
         }
         val onScreen = w.getString(W.hudhud_on_screen).trimEnd('.', '\u06D4', '\u0964', '!')

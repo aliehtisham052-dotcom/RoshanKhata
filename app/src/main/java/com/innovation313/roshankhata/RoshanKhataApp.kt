@@ -48,10 +48,15 @@ class RoshanKhataApp : Application() {
         com.innovation313.roshankhata.data.ShopCalendar.refresh(this)
         // Hudhud's sense (13 Nov 2026): what was learnt from the bank, shipped as an asset and read on the first
         // question (Home warms it up a moment after it opens). Nothing is read here.
+        // A model that is missing or will not decode is told once in the log and marks him rules-only
+        // (HudhudSenseState, stage 7 F3), instead of being a silent, dumber Hudhud.
         val appAssets = assets
-        com.innovation313.roshankhata.data.HudhudSense.useModel {
-            runCatching { appAssets.open("hudhud/sense.bin").use { it.readBytes() } }.getOrNull()
-        }
+        com.innovation313.roshankhata.data.HudhudSenseState.sink = { android.util.Log.w("RoshanKhata", it) }
+        com.innovation313.roshankhata.data.HudhudSense.useModel(
+            com.innovation313.roshankhata.data.HudhudSenseState.reading("hudhud/sense.bin") {
+                appAssets.open("hudhud/sense.bin").use { it.readBytes() }
+            }
+        )
         CrashLog.install(this)
         // Live sync's passed-over failures go to their own small file, never shown as a crash (23 Oct 2026).
         com.innovation313.roshankhata.data.SyncLog.install(this)

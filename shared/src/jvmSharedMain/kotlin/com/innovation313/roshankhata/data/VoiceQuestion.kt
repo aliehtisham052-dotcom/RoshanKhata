@@ -927,6 +927,8 @@ object VoiceQuestion {
         "কে দেবে", "কারা দেবে", "আমাকে দেবে", "কে আমার কাছে", "من يدين لي", "يدينون لي", "به من بدهکار", "siapa yang berutang",
         // 16 Nov 2026 (audit T11): Farsi "the customers' debt (to the shop)" — بدهی alone is the shop's own.
         "بدهی مشتری", "بدهی مشتریان", "بدهی مشتریها", "به مغازه بدهکار",
+        // 24 Nov 2026 (A1): Farsi "the debt to me" — the shop is the one paid.
+        "بدهی به من", "بدهی را به من", "بدهکار به من",
         // 16 Nov 2026 (audit T10): "payment dene wala" is the one who pays the shop, not what the shop owes.
         // Only with "who": "dene wali raqam" is the sum the shop has to give.
         "dene wala kaun", "dene wale kaun", "dene waale kaun", "dene wala kon", "dene wale kon", "دینے والا کون", "دینے والے کون",
@@ -942,14 +944,18 @@ object VoiceQuestion {
         "paisa mere paas", "paise mere paas", "raqam mere paas", "پیسے میرے پاس", "پیسہ میرے پاس", "पैसा मेरे पास", "पैसे मेरे पास", "میرا قرض", "میرے ذمے", "مجھ پر", "ہمارا قرض", "मेरा कर्ज", "मेरा क़र्ज़", "मेरे जिम्मे",
         "मुझ पर", "আমার ঋণ", "আমার দেনা", "ديني", "علي دين", "بدهی من", "منهنجو قرض", "utang saya", "hutang saya",
         // 16 Nov 2026 (audit T11): Indonesian's other "I/we" and the joined "my"; Arabic "on us".
-        "utang aku", "hutang aku", "utangku", "hutangku", "utang kami", "hutang kami", "علينا"
+        "utang aku", "hutang aku", "utangku", "hutangku", "utang kami", "hutang kami", "علينا",
+        // 24 Nov 2026 (A1): Arabic "I owe" (أدين / ادين) and Indonesian "to whom do I owe" (the payable side).
+        "أدين", "ادين", "berutang kepada siapa", "berhutang kepada siapa", "utang ke siapa", "hutang ke siapa"
     )
 
     /** A supplier's side of the book: what is owed there is the shop's to pay. */
     private val SUPPLIER_SIDE = listOf(
         "supplier", "suppliers", "company", "kampani", "maal wale", "maal wala", "distributor", "wholesaler",
         "سپلائر", "کمپنی", "مال والے", "सप्लायर", "कंपनी", "সাপ্লায়ার", "কোম্পানি", "المورد", "الموردين", "تامین کننده",
-        "تأمین‌کننده", "سپلائر", "pemasok", "supplier"
+        "تأمین‌کننده", "سپلائر", "pemasok", "supplier",
+        // 24 Nov 2026 (A1): plural supplier words in Urdu/Sindhi script and Arabic's "suppliers" with the article.
+        "سپلائرز", "سپلائرون", "سپلائرن", "سپلائرس", "کمپنیاں", "کمپنیوں", "मालवाले", "सप्लायर्स"
     )
 
     /** The first of the recogniser's guesses that is a question this app knows. */

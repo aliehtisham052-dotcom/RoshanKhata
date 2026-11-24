@@ -1105,6 +1105,7 @@
     <string name="hudhud_speaking">ٻڌائي رهيو آهيان</string>
     <string name="hudhud_replay">ٻيهر ٻڌو</string>
     <string name="hudhud_unknown">هي توهان جي کاتي ۾ نه مليو. ان جي ويجهو سوال، جن جو جواب ڏئي سگهان ٿو، هيٺ آهن.</string>
+    <string name="hudhud_read_failed">هن وقت توهان جو کاتو پڙهي نه سگهيس. ڪجهه به ضايع نه ٿيو، ٿوري دير کان پوءِ وري پڇو.</string>
     <string name="hudhud_off_topic">مان رڳو توهان جي دڪان جي کاتي ۽ هن ايپ ۾ مدد ڪريان ٿو، تنهنڪري ان جو جواب نٿو ڏئي سگهان.</string>
     <string name="hudhud_took_none">کاتي ۾ %1$s سان %2$s جي ڪا ڏي وٺ ناهي.</string>
     <string name="hudhud_took_none_span">هن عرصي ۾ کاتي ۾ %1$s سان %2$s جي ڪا ڏي وٺ ناهي.</string>

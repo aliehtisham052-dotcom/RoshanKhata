@@ -1,2 +1,0 @@
-[10:35] Stage 8: DONE F1 (hi/bn business_name_hint + business_address_hint now invented; check_strings.py OK). DONE files: scripts/hudhud_baseline_inventory.py, scripts/hudhud_baseline.sh, scripts/shared_harness/HudhudBaseline.kt (first no-seeds run worked: shipped figures measured).
-NEXT: full run with 5 seeds (last compile failed after other helpers changed files: see build/hudhud-baseline/clog.txt), then write docs/hudhud-baseline-24nov2026.md, then SubagentHandback. Half-done: the report doc not yet written.

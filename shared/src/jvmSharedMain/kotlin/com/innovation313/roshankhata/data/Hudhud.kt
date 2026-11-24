@@ -456,6 +456,9 @@ object Hudhud {
         heard: String, names: List<Name>, topics: List<Topic>, language: String? = null,
         goods: List<Name> = emptyList(), before: Ask? = null, staff: List<Name> = emptyList()
     ): Ask {
+        // Whether the learnt sense is there is told once if it is not (stage 7, F3): rules alone are a far weaker reading, and a
+        // phone that lost its model must not look like one that has it.
+        HudhudSenseState.check()
         val clean = salaamHeadRead(withoutSelf(heard))
         val n = asRead(names)
         val g = asRead(goods)
@@ -2136,7 +2139,7 @@ object Hudhud {
                 } else {
                     val nameWords = VoiceEntry.nameWords(heard)
                     twoEntries(heard, names, goods, language)
-                        ?: Ask.Entry(amount, entry.isGiven ?: (label == "entry_gave"), partiesOf(names, nameWords), nameWords, entryDayOf(heard, names, goods))
+                        ?: Ask.Entry(amount, sindhiToMe(heard, entry.isGiven) ?: (label == "entry_gave"), partiesOf(names, nameWords), nameWords, entryDayOf(heard, names, goods))
                 }
             }
             "goods_price" -> goodsOf(GoodsFacet.PRICE)
@@ -2238,7 +2241,7 @@ object Hudhud {
         // An entry said as a fact: the form opens filled in, the owner saves it (voice entry's own reading).
         // The count of a span ("3" of "pichle 3 mahine") is no amount of money.
         val amount = entry.amount?.takeUnless { it in VoiceQuestion.spanFigures(heard) || orderDo(heard, it) }
-        val given = entry.isGiven
+        val given = sindhiToMe(heard, entry.isGiven)
         // Two entries joined by "and": each offered on its own, never one wrong entry made of both. Before the single entry, which
         // needs one way for the whole sentence: "gave" and "got" together left it none, and the sentence was read as a person.
         // A verb in the future ("Ali kal 500 dega", "will pay") is a promise, never money that moved (BC-113): no entry.
@@ -3917,7 +3920,7 @@ object Hudhud {
                 val noDate = VoiceQuestion.withoutDate(half) { w -> knownName(w, names) || knownName(w, goods) }
                 val e = VoiceEntry.parse(noDate, emptyList(), language)
                 val amount = e.amount?.takeUnless { it in VoiceQuestion.spanFigures(half) || orderDo(half, it) }
-                val given = e.isGiven
+                val given = sindhiToMe(half, e.isGiven)
                 if (amount == null || amount <= 0.0 || given == null) null
                 else VoiceEntry.nameWords(half).let { w -> Ask.Entry(amount, given, partiesOf(names, w), w, entryDayOf(half, names, goods) ?: whole) }
             }
@@ -3926,6 +3929,17 @@ object Hudhud {
         }
         return null
     }
+
+    /**
+     * Sindhi's "to me" (24 Nov 2026, stage 7 A1): "Ali Raza مون کي 500 ڏنا" is Ali giving the shop 500 — money IN — but the verb
+     * "ڏنا" (gave) alone read it as the shop giving. The two words "مون کي" together are Sindhi's dative (Urdu says مجھے; "I gave
+     * Ali" is "مون Ali کي ڏنا", where the "I" and "کي" are apart), so a "gave" with them is the other side's. Never turns a
+     * side VoiceEntry did not say, and never a "got".
+     */
+    private fun sindhiToMe(heard: String, given: Boolean?): Boolean? =
+        if (given == true && SINDHI_TO_ME.containsMatchIn(heard)) false else given
+
+    private val SINDHI_TO_ME = Regex("(^|\\s)\u0645\u0648\u0646\\s?\u06A9\u064A(\\s|$)")
 
     /** The customer an entry names: one when NameSearch is sure, else those it could be (at most five), else none. */
     private fun partiesOf(names: List<Name>, nameWords: List<String>): List<Long> {

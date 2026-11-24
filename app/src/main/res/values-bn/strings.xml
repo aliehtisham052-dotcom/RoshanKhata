@@ -1117,6 +1117,7 @@
     <string name="hudhud_speaking">বলছি</string>
     <string name="hudhud_replay">আবার শুনুন</string>
     <string name="hudhud_unknown">এটি আপনার খাতায় পাইনি। কাছাকাছি যে প্রশ্নগুলোর উত্তর দিতে পারি, নিচে আছে।</string>
+    <string name="hudhud_read_failed">এখন আপনার খাতা পড়তে পারিনি। কিছুই হারায়নি, একটু পরে আবার জিজ্ঞেস করুন।</string>
     <string name="hudhud_off_topic">আমি শুধু আপনার দোকানের খাতা আর এই অ্যাপে সাহায্য করি, তাই এর উত্তর দিতে পারছি না।</string>
     <string name="hudhud_took_none">খাতায় %1$s-এর সাথে %2$s-এর কোনো লেনদেন নেই।</string>
     <string name="hudhud_took_none_span">এই সময়ে খাতায় %1$s-এর সাথে %2$s-এর কোনো লেনদেন নেই।</string>
