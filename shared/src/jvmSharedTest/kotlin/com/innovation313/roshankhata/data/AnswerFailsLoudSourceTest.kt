@@ -54,7 +54,7 @@ class AnswerFailsLoudSourceTest {
     }
 
     @Test fun `the failure card uses the failure words`() {
-        val book = File(dir, "AnswerBook.kt").readText()
+        val book = File(dir, "AnswerBook.kt").readText().replace("\r\n", "\n")
         val failed = book.substringAfter("fun failed(").substringBefore("\n\n")
         assertTrue(failed, failed.contains("HudhudReadFailure.words"))
         assertTrue("the old 'I could not find this' words are not the failure's", !failed.contains("W.hudhud_unknown"))
