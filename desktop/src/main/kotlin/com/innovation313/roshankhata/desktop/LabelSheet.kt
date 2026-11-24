@@ -64,9 +64,9 @@ class LabelSheet(private val products: List<Product>, private val copies: Int = 
         val fm = g.fontMetrics
         // The price first, at the far end; the name takes what room is left (25 Oct 2026, the audit: a long name
         // was fitted to the whole label and the price, the figure a shelf label is for, was left off).
-        val priceText = p.salePrice?.let { Format.money(it) }
+        val priceText = p.salePrice?.let { com.innovation313.roshankhata.data.Digits.forPrint(Format.money(it)) } // lesson 28: the sheet's own digits when chosen (C5, NOT TESTED)
         val priceW = priceText?.let { PrintFonts.width(g, it) } ?: 0.0
-        val name = fitted(g, p.name, labelW - 2 * pad - (if (priceText != null) priceW + pad else 0.0))
+        val name = fitted(g, com.innovation313.roshankhata.data.Digits.forPrint(p.name), labelW - 2 * pad - (if (priceText != null) priceW + pad else 0.0))
         val nameW = PrintFonts.width(g, name)
         val nameX = if (rtl) x + labelW - pad - nameW else x + pad
         PrintFonts.draw(g, name, nameX.toFloat(), (y + pad + fm.ascent).toFloat())

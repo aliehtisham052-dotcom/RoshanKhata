@@ -46,11 +46,11 @@ object ReturnReceiptText {
             )
         }
         out += Line(Kind.BLANK, "")
-        out += Line(Kind.TOTAL, words.text(W.pos_return_title) + ": " + Format.money(ret.total))
+        out += Line(Kind.TOTAL, words.text(W.pos_return_title) + ": " + Format.moneyLtr(ret.total))
         out += Line(
             Kind.PLAIN,
-            if (ret.refundMethod == SaleReturn.ACCOUNT) words.text(W.pos_refund_account) + ": " + Format.money(ret.total)
-            else words.text(W.pos_return_refund) + " · " + PaymentMethod.label(words, ret.refundMethod) + ": " + Format.money(ret.refundAmount)
+            if (ret.refundMethod == SaleReturn.ACCOUNT) words.text(W.pos_refund_account) + ": " + Format.moneyLtr(ret.total)
+            else words.text(W.pos_return_refund) + " · " + PaymentMethod.label(words, ret.refundMethod) + ": " + Format.moneyLtr(ret.refundAmount)
         )
         if (ret.reason.isNotBlank()) out += Line(Kind.PLAIN, words.text(W.pos_return_reason) + ": " + ret.reason)
         balanceAfter?.let { out += Line(Kind.PLAIN, words.text(W.net_balance) + ": " + (ret.customerName?.let { n -> ReceiptBalance.named(words, it, shop, n) } ?: ReceiptBalance.text(words, it))) } // L85: named

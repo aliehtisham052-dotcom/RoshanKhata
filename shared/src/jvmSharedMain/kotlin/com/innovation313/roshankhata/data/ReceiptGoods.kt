@@ -57,7 +57,7 @@ object ReceiptGoods {
 
         val total = LineMath.linesTotal(items)
         val summary = listOfNotNull(
-            total?.let { words.text(W.receipt_items_total, Format.money(it)) },
+            total?.let { words.text(W.receipt_items_total, Format.moneyLtr(it)) },
             rateLabel(words, rateType)
         ).joinToString(" · ")
         if (summary.isNotEmpty()) lines += summary
@@ -66,10 +66,10 @@ object ReceiptGoods {
             when (val check = EntryLines.compare(total, amount)) {
                 is EntryLines.AmountCheck.Equal -> Unit
                 is EntryLines.AmountCheck.Less -> lines += words.text(
-                    W.lines_amount_less, Format.money(total), Format.money(amount), Format.money(check.by)
+                    W.lines_amount_less, Format.moneyLtr(total), Format.moneyLtr(amount), Format.moneyLtr(check.by)
                 )
                 is EntryLines.AmountCheck.More -> lines += words.text(
-                    W.lines_amount_more, Format.money(total), Format.money(amount), Format.money(check.by)
+                    W.lines_amount_more, Format.moneyLtr(total), Format.moneyLtr(amount), Format.moneyLtr(check.by)
                 )
             }
         }

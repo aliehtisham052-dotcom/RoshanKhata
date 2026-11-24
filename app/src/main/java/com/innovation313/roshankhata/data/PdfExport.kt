@@ -620,7 +620,7 @@ object PdfExport {
                 y += 4f
                 val endLine = context.getString(
                     R.string.pdf_stmt_period_end_balance,
-                    Format.dateOnly(rows.last().entry.timestamp), Format.signedIfNegative(atEnd)
+                    Format.dateOnly(rows.last().entry.timestamp), Format.ltr(Format.signedIfNegative(atEnd))
                 )
                 PdfRtl.drawText(c, fitted(endLine, muted, PAGE_W - 2 * MARGIN), MARGIN, y + 8f, muted)
                 y += 14f
@@ -679,12 +679,12 @@ object PdfExport {
                     payLine(context.getString(R.string.pdf_stmt_bank, bankWho), number = false)
                     iban?.let { payLine(it, number = true) }
                 }
-                iban != null -> payLine(context.getString(R.string.pdf_stmt_bank, iban), number = true)
+                iban != null -> payLine(context.getString(R.string.pdf_stmt_bank, Format.ltr(iban)), number = true)
             }
-            wallet?.let { payLine(context.getString(R.string.pdf_stmt_wallet, it), number = true) }
+            wallet?.let { payLine(context.getString(R.string.pdf_stmt_wallet, Format.ltr(it)), number = true) }
             quote?.let {
                 val q = Paint(muted).apply { textSize = 7f }
-                PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_mention_ref, it), q, 184f), boxL + 8f, ly, q)
+                PdfRtl.drawText(c, fitted(context.getString(R.string.pdf_stmt_mention_ref, Format.ltr(it)), q, 184f), boxL + 8f, ly, q)
             }
         }
 

@@ -138,10 +138,12 @@ object NumberWords {
      * Whole rupees only — an invoice figure that matters is being read
      * aloud or checked against a printed number, not audited to the paisa.
      *
-     * Caps each of the crore/lakh/hazar digit-groups at 99 rather than
-     * recursing further (an "Ek Sau Crore" shape) — genuinely out of range
-     * for what a small shop's invoice will ever total, and a safe cap beats
-     * a crash on the rare figure that overflows it.
+     * The lakh and crore languages count crores past 99 in groups of their
+     * own ("Ek Sau Crore", "Das Hazar Crore"; 24 Nov 2026 - they were capped
+     * at "Ninety-Nine Crore", a wrong figure); the count is capped only at
+     * 99,99,999 crore, far past any invoice. The Western-group languages
+     * still cap their top group at 999 (billion, triliun, milyard), as noted
+     * on each.
      */
     fun rupeesInWords(lang: String, amount: Double): String =
         when (lang) {
@@ -456,17 +458,31 @@ object NumberWords {
         var n = amount.toLong().coerceAtLeast(0)
         if (n == 0L) return "${onesTable[0]} $rupeesWord"
 
-        val parts = mutableListOf<String>()
-        val crore = (n / 10000000).coerceAtMost(99); n %= 10000000
-        val lakh = (n / 100000).coerceAtMost(99); n %= 100000
-        val hazar = (n / 1000).coerceAtMost(99); n %= 1000
-        val sau = n / 100; n %= 100
+        // The groups below one crore: lakh, hazar, sau and the last two digits. Used for the rest of the figure and,
+        // from 100 crore up, for the COUNT of crores too ("Ek Lakh Crore"): the count used to be capped at 99, so
+        // Rs 1,500,000,000 was spelled "Ninety-Nine Crore" - a plausible, wrong figure (24 Nov 2026, plan C5).
+        fun belowCrore(v: Long): List<String> {
+            var r = v
+            val out = mutableListOf<String>()
+            val lakh = r / 100000; r %= 100000
+            val hazar = r / 1000; r %= 1000
+            val sau = r / 100; r %= 100
+            if (lakh > 0) out.add("${below100(lakh.toInt())} $lakhWord")
+            if (hazar > 0) out.add("${below100(hazar.toInt())} $thousandWord")
+            if (sau > 0) out.add("${below100(sau.toInt())} $hundredWord")
+            if (r > 0) out.add(below100(r.toInt()))
+            return out
+        }
 
-        if (crore > 0) parts.add("${below100(crore.toInt())} $croreWord")
-        if (lakh > 0) parts.add("${below100(lakh.toInt())} $lakhWord")
-        if (hazar > 0) parts.add("${below100(hazar.toInt())} $thousandWord")
-        if (sau > 0) parts.add("${below100(sau.toInt())} $hundredWord")
-        if (n > 0) parts.add(below100(n.toInt()))
+        val parts = mutableListOf<String>()
+        val crore = n / 10000000; n %= 10000000
+        if (crore > 0) {
+            // Under 100 it is one word of the table, exactly as before; from 100 it is spelled in groups of its own.
+            val count = if (crore < 100) below100(crore.toInt())
+                else belowCrore(crore.coerceAtMost(9_999_999L)).joinToString(" ")
+            parts.add("$count $croreWord")
+        }
+        parts.addAll(belowCrore(n))
 
         return parts.joinToString(" ") + " " + rupeesWord
     }

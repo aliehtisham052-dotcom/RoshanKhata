@@ -26,35 +26,35 @@ object SaleReceiptText {
         }
         for (i in lines) {
             b.append(i.itemName).append('\n')
-            b.append("  ").append(Calc.trim(i.quantity)).append(com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }).append(" × ").append(Format.money(i.rate))
-            if (i.discount > 0.0) b.append("  −").append(Format.money(i.discount))
-            b.append("  =  ").append(Format.money(i.lineTotal)).append('\n')
+            b.append("  ").append(Calc.trim(i.quantity)).append(com.innovation313.roshankhata.data.UnitWords.label(i.unit).let { u -> if (u.isEmpty()) "" else " $u" }).append(" × ").append(Format.moneyLtr(i.rate))
+            if (i.discount > 0.0) b.append("  −").append(Format.moneyLtr(i.discount))
+            b.append("  =  ").append(Format.moneyLtr(i.lineTotal)).append('\n')
         }
         b.append('\n')
         // The discount line is the discount alone: points spent are a discount in the ticket's sum, and the loyalty
         // line below says them, so the receipt no longer counts them twice (8 Nov 2026 review, m72).
         val shownDiscount = (sale.discountAmount - (points?.usedValue ?: 0.0)).coerceAtLeast(0.0)
         if (shownDiscount > 0.005 || sale.discountAmount > 0.0 || sale.taxAmount > 0.0 || sale.roundOff != 0.0) {
-            b.append(words.text(W.pos_subtotal)).append(": ").append(Format.money(sale.subtotal)).append('\n')
-            if (shownDiscount > 0.005) b.append(words.text(W.pos_discount)).append(": −").append(Format.money(shownDiscount)).append('\n')
-            if (sale.taxAmount > 0.0) b.append(words.text(W.pos_tax_total)).append(": ").append(Format.money(sale.taxAmount)).append('\n')
+            b.append(words.text(W.pos_subtotal)).append(": ").append(Format.moneyLtr(sale.subtotal)).append('\n')
+            if (shownDiscount > 0.005) b.append(words.text(W.pos_discount)).append(": −").append(Format.moneyLtr(shownDiscount)).append('\n')
+            if (sale.taxAmount > 0.0) b.append(words.text(W.pos_tax_total)).append(": ").append(Format.moneyLtr(sale.taxAmount)).append('\n')
             // A round-off down keeps its minus (3 Nov 2026 audit, L05): "Rs 0.40" read as forty paisa added.
-            if (sale.roundOff != 0.0) b.append(words.text(W.pos_round_off)).append(": ").append(Format.signedIfNegative(sale.roundOff)).append('\n')
+            if (sale.roundOff != 0.0) b.append(words.text(W.pos_round_off)).append(": ").append(Format.ltr(Format.signedIfNegative(sale.roundOff))).append('\n')
         }
-        b.append(words.text(W.pos_grand_total)).append(": ").append(Format.money(sale.grandTotal)).append('\n')
+        b.append(words.text(W.pos_grand_total)).append(": ").append(Format.moneyLtr(sale.grandTotal)).append('\n')
         // Tax that was inside the prices (schema 36): said, not added.
         val inside = s.items.filter { it.taxIncluded == true }.sumOf { it.taxAmount ?: 0.0 }
-        if (inside > 0.004) b.append(words.text(W.pos_tax_included)).append(": ").append(Format.money(inside)).append('\n')
+        if (inside > 0.004) b.append(words.text(W.pos_tax_included)).append(": ").append(Format.moneyLtr(inside)).append('\n')
         for (p in s.payments) {
             val m = PaymentMethod.label(words, p.method)
             b.append(m).append(": ").append(Format.money(p.amount)).append(p.reference?.let { "  $it" } ?: "").append('\n')
         }
-        if (sale.creditAmount > 0.005) b.append(words.text(W.pos_to_account)).append(": ").append(Format.money(sale.creditAmount)).append('\n')
+        if (sale.creditAmount > 0.005) b.append(words.text(W.pos_to_account)).append(": ").append(Format.moneyLtr(sale.creditAmount)).append('\n')
         // The balance in the customer's words, its side said (3 Nov 2026 audit, L05): a bare figure lost which way it ran.
         balanceAfter?.let { b.append(words.text(W.net_balance)).append(": ").append(sale.customerName?.let { n -> ReceiptBalance.named(words, it, shop, n) } ?: ReceiptBalance.text(words, it)).append('\n') } // L85: named, as the entry receipt says it
         // Loyalty (21 Oct 2026): what was spent, what was earned, what the customer holds now.
         points?.let { pt ->
-            if (pt.used > 0.0) b.append(words.text(W.loyalty_used, Calc.trim(pt.used), Format.money(pt.usedValue))).append('\n')
+            if (pt.used > 0.0) b.append(words.text(W.loyalty_used, Calc.trim(pt.used), Format.moneyLtr(pt.usedValue))).append('\n')
             b.append(words.text(W.loyalty_earned, Calc.trim(pt.earned), Calc.trim(pt.balance))).append('\n')
         }
         b.append('\n').append(words.text(W.app_name))

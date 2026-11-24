@@ -297,7 +297,7 @@ class StatementPrint(
             periodEnd?.let { atEnd ->
                 g.color = muted
                 g.font = Font(PrintFonts.family, Font.PLAIN, 9)
-                g.text(words.text(W.pdf_stmt_period_end_balance, Format.dateOnly(rows.last().e.entry.timestamp), Format.signedIfNegative(atEnd)), margin, y + 6)
+                g.text(words.text(W.pdf_stmt_period_end_balance, Format.dateOnly(rows.last().e.entry.timestamp), Format.ltr(Format.signedIfNegative(atEnd))), margin, y + 6)
             }
             // Room for that line always (CLOSING_H), so a page holds the same rows either way.
             y += 14
