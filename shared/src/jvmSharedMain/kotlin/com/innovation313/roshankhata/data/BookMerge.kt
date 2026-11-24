@@ -65,7 +65,8 @@ object BookMerge {
 
     private fun norm(s: String?) = s.orEmpty().trim().lowercase().replace(Regex("\\s+"), " ")
     private fun phone(s: String?) = s.orEmpty().filter { it.isDigit() }.takeLast(10)
-    private fun money(v: Double) = Math.round(v * 100)
+    // The shop's own smallest coin (24 Nov 2026, A5): a fixed 100 called two KWD amounts a fils apart the same.
+    private fun money(v: Double) = Money.minor(v)
     private fun List<IdUid>.byUid(): Map<String, Long> = mapNotNull { r -> r.uid?.let { it to r.id } }.toMap()
 
     /** A customer of the copy, found here: the same id and name, else the same name and phone, else the one of that name when a phone is missing. */

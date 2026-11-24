@@ -201,8 +201,7 @@ object LineMath {
      */
     fun scale(): Int = Currency.decimals()
 
-    fun round(value: Double): Double =
-        BigDecimal.valueOf(value).setScale(scale(), RoundingMode.HALF_UP).toDouble()
+    fun round(value: Double): Double = Money.round(value, scale())
 
     /**
      * What one line comes to. Zero for a bonus line, whatever its rate. Null

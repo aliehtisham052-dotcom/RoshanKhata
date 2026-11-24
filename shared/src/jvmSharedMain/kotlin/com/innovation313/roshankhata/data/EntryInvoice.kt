@@ -64,5 +64,6 @@ object EntryInvoice {
     private fun qty(q: Double?): Double = q?.takeIf { it > 0 } ?: 1.0
 
     private fun divide(total: BigDecimal, q: Double): Double =
-        total.divide(BigDecimal.valueOf(q), 2, RoundingMode.HALF_UP).toDouble()
+        // Never fewer than two places, and the shop's own when it has more (KWD: 3): a rate is a price, not a total.
+        total.divide(BigDecimal.valueOf(q), maxOf(2, LineMath.scale()), RoundingMode.HALF_UP).toDouble()
 }

@@ -111,7 +111,9 @@ object Calc {
         val bare = t.removeSuffix("%")
         if (t.endsWith("%") && bare.isNotEmpty() && bare.all { it.isDigit() || it == '.' }) {
             val p = bare.toDoubleOrNull() ?: return null
-            return kotlin.math.round(base * p) / 100.0
+            // One rule with every other figure (Money.percentOf): decimals, the shop's coin, half up. It was
+            // kotlin.math.round(base * p) / 100: banker's rounding to a whole cent, so KWD lost its third decimal.
+            return com.innovation313.roshankhata.data.Money.percentOf(base, p)
         }
         return evalPad(input)?.let { kotlin.math.abs(it) }
     }

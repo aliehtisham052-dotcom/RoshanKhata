@@ -38,4 +38,30 @@ object Money {
 
     /** Negative beyond the noise — the shop owes. */
     fun isNegative(value: Double): Boolean = value <= -EPSILON
+
+    // ---- The money contract (24 Nov 2026, plan item A5) ------------------------------------------------------
+    // One rule for turning a Double into a figure the shop could pay: the DECIMAL text of the Double
+    // (BigDecimal.valueOf, so 1.005 is 1.005, not 1.00499999999999989...), the shop's own decimals
+    // (Currency.decimals: 2 for Rs, 3 for KWD, none for Rp) and HALF_UP, the way a person rounds. Before this the
+    // app had four others side by side: the binary value (NumberWords: 1.005 printed 1.01 and was spoken as 1.00),
+    // banker's rounding to whole cents (Calc.evalDiscount: a tie went to the even cent and KWD lost its third
+    // decimal), a fixed 100 (BookMerge) and a fixed 2 (EntryInvoice's rate). SQL sums are not rounded by this: they
+    // add Doubles and the screens round the sum once, as Format.money does with the same rule.
+
+    /** [value] as the shop would write it: the decimal text, [decimals] places, half up. Not-a-number and infinity pass through. */
+    fun round(value: Double, decimals: Int = Currency.decimals()): Double =
+        if (!value.isFinite()) value
+        else java.math.BigDecimal.valueOf(value).setScale(decimals, java.math.RoundingMode.HALF_UP).toDouble()
+
+    /** [value] in the smallest coin (paisa, fils, rupiah) as a whole number, by the same rule: two sums are equal when these are. */
+    fun minor(value: Double, decimals: Int = Currency.decimals()): Long =
+        java.math.BigDecimal.valueOf(value).setScale(decimals, java.math.RoundingMode.HALF_UP).unscaledValue().toLong()
+
+    /** Whether two figures are the same amount of money to the smallest coin. */
+    fun same(a: Double, b: Double, decimals: Int = Currency.decimals()): Boolean = minor(a, decimals) == minor(b, decimals)
+
+    /** [percent] per cent of [base], worked out in decimals and rounded once, to the shop's coin: 10% of 333.3 is 33.33. */
+    fun percentOf(base: Double, percent: Double, decimals: Int = Currency.decimals()): Double =
+        java.math.BigDecimal.valueOf(base).multiply(java.math.BigDecimal.valueOf(percent))
+            .divide(java.math.BigDecimal(100), decimals, java.math.RoundingMode.HALF_UP).toDouble()
 }

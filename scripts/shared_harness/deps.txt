@@ -12,3 +12,4 @@ shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/ShopCalendar.
 shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Currency.kt
 shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/ui/Calc.kt
 shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/DateWords.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Money.kt

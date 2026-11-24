@@ -179,9 +179,9 @@ object NumberWords {
     fun amountInWords(lang: String, rawAmount: Double): String {
         // Rounded to the currency's own decimals first: 229.99999999999997 is Rs 230, not "Two Hundred Twenty Nine"
         // with the fraction dropped (8 Nov 2026 review, M72).
-        val amount = if (rawAmount.isFinite())
-            java.math.BigDecimal(rawAmount).setScale(Currency.decimals(), java.math.RoundingMode.HALF_UP).toDouble()
-        else rawAmount
+        // The decimal text, as Format.money rounds (24 Nov 2026, A5): the binary value made 1.005 "one" in words
+        // beside "1.01" on the screen.
+        val amount = com.innovation313.roshankhata.data.Money.round(rawAmount)
         val sign = Currency.symbol
         // Indonesian reads every currency the same way, in its own words:
         // "rupiah" for Rp, "taka" for the taka sign, and the currency's code
