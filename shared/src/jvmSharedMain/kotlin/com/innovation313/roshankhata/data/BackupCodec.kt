@@ -1208,12 +1208,25 @@ object BackupCodec {
             shifts = data.shifts,
             bookSeals = data.bookSeals
         )
-        // The restore itself is the first row of the restored log (POS Phase 5).
-        dao.log(AuditAction.RESTORE, Access.userName, detail = data.businessName)
-        // The book's PINs came with it (book_settings), so a sign-in made in the old book does not
-        // carry into this one (21 Oct 2026: a copy whose owner PIN someone knew made them the owner,
-        // and they stayed the owner after the real book came back). Phone and computer alike.
-        Access.signOut()
+        // The book is replaced and committed by now. Nothing below may make the restore look failed to the caller (it
+        // would resume live sync and tell the owner "not restored" on a book that was replaced), and the sign-out
+        // must always run (a sign-in made in the old book must not carry into this one).
+        try {
+            // The restore itself is the first row of the restored log (POS Phase 5). A row that cannot be written is
+            // only a missing line in Who did what: the book is whole.
+            try {
+                dao.log(AuditAction.RESTORE, Access.userName, detail = data.businessName)
+            } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                LiveTrouble.note("restore log row", e)
+            }
+        } finally {
+            // The book's PINs came with it (book_settings), so a sign-in made in the old book does not
+            // carry into this one (21 Oct 2026: a copy whose owner PIN someone knew made them the owner,
+            // and they stayed the owner after the real book came back). Phone and computer alike.
+            Access.signOut()
+        }
     }
 
     // ---------- Mapping ----------

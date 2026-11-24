@@ -119,6 +119,10 @@ object Snapshots {
 
         if (!isHealthy(snapshot.file)) return RestoreResult.SnapshotUnhealthy
 
+        // A copy a NEWER build wrote has a schema this build cannot open (Room has no downgrade): put in place it
+        // would leave the book unopenable. Refused here, with the live book untouched.
+        if (!canOpen(userVersionOf(snapshot.file))) return RestoreResult.Failed
+
         return try {
             val business = Businesses.active(context)
             val live = context.getDatabasePath(business.file)
@@ -379,6 +383,22 @@ object Snapshots {
             tmp.delete(); clear()
             false
         }
+    }
+
+    /**
+     * Can this build open a book whose `PRAGMA user_version` is [version]? Older ones are brought forward by the
+     * migrations; a newer one (or one that could not be read: -1) is not opened, never guessed. 0 is a file Room has
+     * not written yet and stays refused too: a copy of the book always carries its version.
+     */
+    internal fun canOpen(version: Int): Boolean = version in 1..com.innovation313.roshankhata.data.KHATA_DB_VERSION
+
+    /** The file's `PRAGMA user_version`, or -1 when it cannot be read. */
+    private fun userVersionOf(file: File): Int = try {
+        android.database.sqlite.SQLiteDatabase.openDatabase(
+            file.absolutePath, null, android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+        ).use { db -> db.version }
+    } catch (e: Exception) {
+        -1
     }
 
     /** Is this file a database SQLite is willing to vouch for? */

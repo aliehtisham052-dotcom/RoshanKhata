@@ -481,7 +481,7 @@ object PaymentVoice {
     private fun nextNoticeId(ctx: Context): Int {
         val p = prefs(ctx)
         val n = (p.getInt(KEY_NEXT_ID, -1) + 1).mod(ID_COUNT)
-        p.edit().putInt(KEY_NEXT_ID, n).commit()
+        p.edit().putInt(KEY_NEXT_ID, n).apply()   // in-memory at once; no fsync on the listener's main thread
         return ID_BASE + n
     }
 

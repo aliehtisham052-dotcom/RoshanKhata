@@ -161,4 +161,26 @@ object DuplicateDetector {
         }
         return existing.firstOrNull { ProductName.normalised(it.name) == normalisedName }
     }
+
+    /**
+     * The book's names and numbers worked out once (24 Nov 2026, the ANR audit): the add-party form asked
+     * [matchExisting] on every keystroke, normalising every name of the book each time — 10,000 customers meant
+     * 10,000 normalisations per letter, on the main thread. The first in the book's order wins, as before.
+     */
+    class Index(existing: List<Candidate>) {
+        private val byPhone = HashMap<String, Candidate>()
+        private val byName = HashMap<String, Candidate>()
+        init {
+            for (c in existing) {
+                normalisedPhone(c.phone)?.let { byPhone.putIfAbsent(it, c) }
+                ProductName.normalised(c.name).takeIf { it.isNotBlank() }?.let { byName.putIfAbsent(it, c) }
+            }
+        }
+        fun match(name: String, phone: String?): Candidate? {
+            val normalisedName = ProductName.normalised(name)
+            if (normalisedName.isBlank()) return null
+            normalisedPhone(phone)?.let { k -> byPhone[k]?.let { return it } }
+            return byName[normalisedName]
+        }
+    }
 }

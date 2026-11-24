@@ -30,6 +30,7 @@ CHECKS=(
   "check_word_keys.py"
   "check_dao_gates.py --ratchet"
   "check_repo_guards.py"
+  "check_main_thread.py"
   "check_work_status.py"
 )
 

@@ -352,7 +352,7 @@ object BusinessProfile {
             val v = from.getString(k, null) ?: continue
             if (!to.contains(k)) edit.putString(k, v)
         }
-        edit.commit()
+        edit.apply()   // result unread; the in-memory copy is current at once, no fsync on the main thread
     }
 
     // ---------- Country (21 Oct 2026): see ShopCountry ----------

@@ -747,9 +747,12 @@ class KhataActivity : BaseActivity() {
         // The book, loaded once when the dialog opens rather than re-queried
         // on every keystroke — nothing in it changes while this dialog is up,
         // so one snapshot is both correct and cheap to check against.
-        var bookSnapshot: List<DuplicateDetector.Candidate> = emptyList()
+        // An index of the book's names and numbers (24 Nov 2026, the ANR audit): matchExisting normalised every
+        // name of the book on the main thread at each pause in typing. Built once, off the main thread.
+        var bookSnapshot = DuplicateDetector.Index(emptyList())
         lifecycleScope.launch {
-            bookSnapshot = dao.observePartiesWithBalance().first().map {
+            val parties = dao.observePartiesWithBalance().first()
+            bookSnapshot = withContext(Dispatchers.Default) { DuplicateDetector.Index(parties.map {
                 DuplicateDetector.Candidate(
                     partyId = it.id,
                     name = it.name,
@@ -757,7 +760,7 @@ class KhataActivity : BaseActivity() {
                     isCustomer = it.isCustomer,
                     balance = it.balance
                 )
-            }
+            }) }
             // A first check right after the book loads, in case the owner
             // had already typed something while it was still on its way.
             checkAddPartyDuplicateLive(etName, etPhone, tvWarning, bookSnapshot)
@@ -887,11 +890,11 @@ class KhataActivity : BaseActivity() {
         etName: EditText,
         etPhone: EditText,
         tvWarning: TextView,
-        book: List<DuplicateDetector.Candidate>
+        book: DuplicateDetector.Index
     ) {
         val name = etName.text.toString().trim()
         val phone = etPhone.text.toString().trim().ifEmpty { null }
-        val match = DuplicateDetector.matchExisting(name, phone, book)
+        val match = book.match(name, phone)
 
         if (match == null) {
             tvWarning.visibility = View.GONE

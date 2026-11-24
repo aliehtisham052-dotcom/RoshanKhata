@@ -51,6 +51,7 @@ on:
       # Gates only tighten; release jobs hold no secrets; nothing ignored is tracked; CSV reads are decoded (BC-192..195, 223, 225).
       - 'scripts/check_dao_gates.py'
       - 'scripts/check_repo_guards.py'
+      - 'scripts/check_main_thread.py'
       - '.github/workflows/**'
       # Hudhud's sentence sets: one JSONL view and a quality gate (hudhud_sets.py --check, T27).
       - 'scripts/hudhud_sets.py'
@@ -101,6 +102,7 @@ on:
       # Gates only tighten; release jobs hold no secrets; nothing ignored is tracked; CSV reads are decoded (BC-192..195, 223, 225).
       - 'scripts/check_dao_gates.py'
       - 'scripts/check_repo_guards.py'
+      - 'scripts/check_main_thread.py'
       - '.github/workflows/**'
       # Hudhud's sentence sets: one JSONL view and a quality gate (hudhud_sets.py --check, T27).
       - 'scripts/hudhud_sets.py'
@@ -182,6 +184,10 @@ jobs:
       # is still tracked, and every CSV import reads its text through CsvImport.decode (Excel's encodings).
       - name: Release jobs hold no secrets, nothing ignored is tracked, CSV reads are decoded
         run: python3 scripts/check_repo_guards.py
+      # BC-243 (24 Nov 2026, plan B5): no runBlocking or Thread.sleep in app/src/main outside an allow-list of waits known
+      # to run off the main thread (Play Console's ANR is 5 s of unanswered input).
+      - name: No blocking wait on a path the main thread can reach
+        run: python3 scripts/check_main_thread.py
       # The 24 Nov 2026 master plan (section 10): one line per item, five statuses only, no VERIFIED COMPLETE or PARTIAL
       # without evidence that exists, the duplicate register as its own column. Names only, not a run (lesson 125).
       - name: The work status register is honest (every plan item, allowed statuses, evidence for a done)

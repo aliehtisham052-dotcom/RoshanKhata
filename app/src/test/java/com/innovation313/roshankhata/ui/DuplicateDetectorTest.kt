@@ -194,4 +194,28 @@ class DuplicateDetectorTest {
         assertEquals("0300 1234567", plain(DuplicateDetector.displayPhone("0300 1234567", "")))
         assertTrue(plain(DuplicateDetector.displayPhone(null, "92")).isNotEmpty())
     }
+
+    // 24 Nov 2026, the ANR audit (BC-243): the add-party form asks a prebuilt index instead of normalising the
+    // whole book at each pause in typing. The index must answer exactly as matchExisting does, first in book order.
+    @Test
+    fun `the prebuilt index answers as matchExisting does`() {
+        val book = listOf(
+            c(1, "Bavistin", phone = "0301-1234567"),
+            c(2, "Bavisteen"),
+            c(3, "Akram", phone = "+92 301 1234567"),
+            c(4, "Someone Else", phone = "0300-9999999"),
+            c(5, "  "),
+            c(6, "Akram")
+        )
+        val index = DuplicateDetector.Index(book)
+        val asks = listOf(
+            "Bavistin" to null, "bavisteen" to null, "Akram" to null, "New Name" to "0301 1234567",
+            "New Name" to "0300 0000001", "" to "0300-9999999", "Someone Else" to "0300-9999999", "  " to null,
+            "Akram" to "0300-9999999"
+        )
+        for ((name, phone) in asks) {
+            assertEquals("$name / $phone", DuplicateDetector.matchExisting(name, phone, book)?.partyId,
+                index.match(name, phone)?.partyId)
+        }
+    }
 }

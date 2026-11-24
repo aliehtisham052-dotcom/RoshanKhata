@@ -80,7 +80,8 @@ class DuplicateCustomersActivity : BaseActivity() {
                 )
             }
             val dismissedKeys = dao.getDismissedDuplicateKeys().toSet()
-            val groups = DuplicateDetector.find(candidates, dismissedKeys)
+            // Grouped off the main thread (24 Nov 2026, the ANR audit): the whole book on a big shop.
+            val groups = withContext(Dispatchers.Default) { DuplicateDetector.find(candidates, dismissedKeys) }
             adapter.submitList(groups)
             tvEmpty.visibility = if (groups.isEmpty()) View.VISIBLE else View.GONE
         }
