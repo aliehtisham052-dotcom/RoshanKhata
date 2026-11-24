@@ -163,7 +163,7 @@ object Businesses {
      * everywhere else already calls, so [delete] can name a business's own
      * keys without needing that business to be the open one.
      */
-    fun suffixFor(id: Long): String = if (id == 1L) "" else "_b$id"
+    fun suffixFor(id: Long): String = BusinessKeys.suffixFor(id)
 
     fun suffix(context: Context): String = suffixFor(active(context).id)
 
@@ -317,11 +317,32 @@ object Businesses {
         // Its daily copies too (21 Oct 2026): left behind, they were offered as "your copies" of
         // whichever shop came next. Named khata-b<id>-…db (Snapshots.list's rule).
         File(context.filesDir, "snapshots").listFiles { f -> f.name.startsWith("khata-b$id-") }?.forEach { it.delete() }
+        // What it left in preference files that other shops share, and its poster photo (24 Nov 2026, stage 4).
+        runCatching { forgetLeftovers(context, id, target.file) }
         // The highest id stays remembered, so this one is never given out again.
         prefs(context).edit().putLong(KEY_HIGHEST, maxOf(prefs(context).getLong(KEY_HIGHEST, 0L), id)).commit()
 
         // The registry row itself, last.
         save(context, list(context).filterNot { it.id == id })
+    }
+
+    /**
+     * The keys a deleted shop left inside preference files that every shop shares (24 Nov 2026, the stage-4 audit: "delete
+     * is a promise about this phone"): its poster words and WhatsApp number, its rate-list choices, its automations'
+     * "said" marks, its seal and snapshot marks, the customer-link and live-sync notes that name its file, a long form's
+     * kept text, the new-stock photo of its poster and its recycle-bin kinds. Every match is by [BusinessKeys], which never
+     * takes a neighbour's key; an id is never reused, so nothing here could have been read by another shop — this is
+     * only so that nothing of a deleted shop stays on the phone. Business 1 is never deleted and never matched.
+     */
+    internal fun forgetLeftovers(context: Context, id: Long, file: String) {
+        if (id == 1L) return
+        for (name in BusinessKeys.SHARED_FILES) {
+            val p = context.getSharedPreferences(name, Context.MODE_PRIVATE)
+            val gone = p.all.keys.filter { BusinessKeys.owns(name, it, id, file) }
+            if (gone.isNotEmpty()) p.edit().apply { gone.forEach { remove(it) } }.apply()
+        }
+        context.deleteSharedPreferences("bin_kinds" + BusinessKeys.suffixFor(id))
+        File(File(context.filesDir, "poster"), "stock_$id.jpg").delete()
     }
 
     /**

@@ -46,14 +46,19 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
         ShopCalendar.refresh(ctx)
         ensureChannel(ctx)
         dropStaleDailyNotices(ctx)
+        // The shop this run is about, read ONCE before the book is opened (24 Nov 2026, stage 4, BC-NEW): the said-marks
+        // and the notice's shop were read from the active shop later, so a switch in between wrote one shop's notices
+        // under another's name. A switch while the book opens ends the run; the next hour's run is that shop's own.
+        val shop = com.innovation313.roshankhata.data.Businesses.active(ctx).id
         val dao = KhataDatabase.get(ctx).khataDao()
+        if (com.innovation313.roshankhata.data.Businesses.active(ctx).id != shop) return Result.success()
         // L96 (8 Nov 2026 review): the words come from ctx, but DateWords reads the default locale — a phone in English
         // with the app in Urdu said last month's name in English. The default follows the app's language for this run.
         val previous = java.util.Locale.getDefault()
         runCatching { java.util.Locale.setDefault(ctx.resources.configuration.locales[0]) }
         val notices = try { runCatching {
             Automations.noticesDue(
-                dao, AndroidAutomationSettings(ctx), AndroidWords(ctx),
+                dao, AndroidAutomationSettings(ctx, shop), AndroidWords(ctx),
                 money = { Format.money(it) },
                 date = { DateWords.format("d MMM", it) },
                 monthName = { DateWords.format("MMMM yyyy", it) },
@@ -61,7 +66,9 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
                 radar = com.innovation313.roshankhata.ui.RadarUi.on(ctx)
             )
         }.getOrDefault(emptyList()) } finally { java.util.Locale.setDefault(previous) }
-        notices.forEach { post(ctx, it) }
+        // Still the same shop after the reading? Else these are another shop's figures and nothing is said.
+        if (com.innovation313.roshankhata.data.Businesses.active(ctx).id != shop) return Result.success()
+        notices.forEach { post(ctx, it, shop) }
         return Result.success()
     }
 
@@ -91,7 +98,7 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
         }
     }
 
-    private fun post(ctx: Context, n: Automations.Notice) {
+    private fun post(ctx: Context, n: Automations.Notice, shop: Long) {
         val args = Bundle()
         val target = when (n.kind) {
             Automations.Kind.COLLECT -> { args.putBoolean(FollowUpActivity.EXTRA_START_QUEUE, true); FollowUpActivity::class.java }
@@ -113,7 +120,7 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
         val intent = Intent(ctx, GateActivity::class.java)
             .putExtra(MainActivity.EXTRA_OPEN, target.name)
             .putExtra(MainActivity.EXTRA_OPEN_ARGS, args)
-            .putExtra(MainActivity.EXTRA_OPEN_BUSINESS, com.innovation313.roshankhata.data.Businesses.active(ctx).id)
+            .putExtra(MainActivity.EXTRA_OPEN_BUSINESS, shop)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         val id = ID_BASE + n.kind.ordinal
         val pending = PendingIntent.getActivity(ctx, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
@@ -165,13 +172,16 @@ class AutomationWorker(context: Context, params: WorkerParameters) : CoroutineWo
 }
 
 /** The automations' switches, hours and "last said" marks on this phone ([Automations.Settings]). */
-class AndroidAutomationSettings(context: Context) : Automations.Settings {
+class AndroidAutomationSettings(
+    context: Context,
+    /** The shop the said-marks belong to; a background run passes the one it captured before opening the book. */
+    private val shop: Long = com.innovation313.roshankhata.data.Businesses.active(context.applicationContext).id
+) : Automations.Settings {
     private val prefs = context.applicationContext.getSharedPreferences("automations", Context.MODE_PRIVATE)
     override fun isOn(kind: Automations.Kind) = prefs.getBoolean("on_${kind.key}", true)
     override fun hour(kind: Automations.Kind) = prefs.getInt("hour_${kind.key}", kind.defaultHour)
     // When each was last said, per shop (3 Nov 2026 audit, M19): one mark for the phone meant a shop opened later
     // that day never heard its own notices. The switches and hours stay the phone's.
-    private val shop = com.innovation313.roshankhata.data.Businesses.active(context.applicationContext).id
     private fun saidKey(kind: Automations.Kind) = "said_${kind.key}_b$shop"
     override fun lastSaid(kind: Automations.Kind): Long? =
         if (prefs.contains(saidKey(kind))) prefs.getLong(saidKey(kind), 0L) else null
