@@ -57,7 +57,7 @@ object HudhudRolesTable {
         "Count" to Row(Held.FACETS, why = "see COUNT"),
         "Status" to Row(Held.FACETS, why = "see STATUS"),
         "Record" to Row(Held.FACETS, why = "see RECORD"),
-        "Deliveries" to Row(Held.GATED, Gate.REPORTS, "bills carry rates and totals"),
+        "Deliveries" to Row(Held.OPEN, why = "the bills that came: the Supplier bills screen is every signed-in user's (CI, 24 Nov 2026)"),
         "Activity" to Row(Held.GATED, Gate.REPORTS, "who did what and for how much"),
         "Collected" to Row(Held.GATED, Gate.REPORTS),
         "NeedName" to Row(Held.FACETS, why = "the private note's list says a read-only copy holds none"),
@@ -71,11 +71,11 @@ object HudhudRolesTable {
         "Automations" to Row(Held.OPEN, why = "which notices are on and when; no figure (finding F3)"),
         "NeedGoods" to Row(Held.OPEN, why = "product names only; the facet's own answer is gated when it is asked"),
         "Paper" to Row(Held.FACETS, why = "see PAPER"),
-        "OnDays" to Row(Held.GATED, Gate.REPORTS),
+        "OnDays" to Row(Held.FACETS, why = "see DATED"),
         "Both" to Row(Held.WRAP), "Compare" to Row(Held.GATED, Gate.REPORTS), "SpanLimit" to Row(Held.WRAP),
         "Now" to Row(Held.WRAP), "Guessed" to Row(Held.WRAP), "DidYouMean" to Row(Held.WRAP),
         "Why" to Row(Held.GATED, Gate.REPORTS, "facts about a figure, never a cause the book cannot show"),
-        "Took" to Row(Held.GATED, Gate.REPORTS),
+        "Took" to Row(Held.OPEN, why = "what one named customer took: his own Khata page, as Moved"),
         "NoHistory" to Row(Held.OPEN)
     )
 
@@ -115,7 +115,8 @@ object HudhudRolesTable {
 
     /** "Which are still open": the cheques, plans, bills, the book as a whole and the salaries. */
     val STATUS: Map<String, Gate> =
-        facets("StatusOf", Gate.REPORTS, "CHEQUES", "PLANS", "BILLS", "BOOK", "INVOICES") +
+        facets("StatusOf", Gate.REPORTS, "CHEQUES", "PLANS", "BOOK", "INVOICES") +
+            facets("StatusOf", Gate.OPEN, "BILLS") +
             facets("StatusOf", Gate.STAFF, "STAFF") +
             facets("StatusOf", Gate.OPEN, "LOW_STOCK")
 
@@ -129,12 +130,15 @@ object HudhudRolesTable {
         "STOCK_CHANGES", "LAST_COUNT"
     )
 
-    val PAPER: Map<String, Gate> = facets("PaperOf", Gate.REPORTS, "BILL", "ORDER", "INVOICE", "SCHEMES")
+    val PAPER: Map<String, Gate> = facets("PaperOf", Gate.REPORTS, "ORDER", "INVOICE", "SCHEMES") +
+        facets("PaperOf", Gate.OPEN, "BILL")
 
     /** Every span-and-measure ask is a figure. */
     val MEASURE: Map<String, Gate> = facets("Measure", Gate.REPORTS, "SALES", "PROFIT")
     val WHY: Map<String, Gate> = facets("WhyOf", Gate.REPORTS, "SALES", "PROFIT", "EXPENSES", "COLLECTED", "DUES")
-    val DATED: Map<String, Gate> = facets("DatedOf", Gate.REPORTS, "SALES", "PROFIT", "COLLECTED", "ACTIVITY", "PAID", "TOOK")
+    // A named customer's paid or took on a day is his own Khata page, as Moved (CI, 24 Nov 2026).
+    val DATED: Map<String, Gate> = facets("DatedOf", Gate.REPORTS, "SALES", "PROFIT", "COLLECTED", "ACTIVITY") +
+        facets("DatedOf", Gate.OPEN, "PAID", "TOOK")
 
     /** Enum class simple name to its table, for the coverage test. */
     val TABLES: Map<String, Map<String, Gate>> = mapOf(

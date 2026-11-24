@@ -130,7 +130,8 @@ class HudhudRolesTableTest {
             assertTrue("$kind -> $file:$fn does not ask ${token(row.gate)}", token(row.gate) in b)
             checked++
         }
-        assertTrue("too few gated kinds were checked: $checked", checked >= 15)
+        // 12 since 24 Nov 2026: Deliveries, Took and OnDays follow their open screens (supplier bills, a customer's page).
+        assertTrue("too few gated kinds were checked: $checked", checked >= 12)
     }
 
     /** Facet to the function its dispatcher calls, one table per dispatching file. */

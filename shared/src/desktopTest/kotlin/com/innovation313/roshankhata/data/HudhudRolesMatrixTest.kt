@@ -340,6 +340,8 @@ class HudhudRolesMatrixTest {
         for (f in Hudhud.RecordFacet.values()) add(Hudhud.Ask.Record(f), HudhudRolesTable.RECORD.getValue("RecordFacet.${f.name}"))
         for (f in Hudhud.CounterFacet.values()) add(Hudhud.Ask.Counter(f), HudhudRolesTable.COUNTER.getValue("CounterFacet.${f.name}"))
         for (p in Hudhud.PaperOf.values()) add(Hudhud.Ask.Paper(p), HudhudRolesTable.PAPER.getValue("PaperOf.${p.name}"))
+        // A day's figure is gated; a named customer's paid or took on a day is his own Khata page (DATED).
+        asks(ids).filterIsInstance<Hudhud.Ask.OnDays>().forEach { add(it, HudhudRolesTable.DATED.getValue("DatedOf.${it.of.name}")) }
         assertTrue("too few gated asks were built: ${gated.size}", gated.size > 40)
 
         val told = ArrayList<String>()
@@ -435,10 +437,12 @@ class HudhudRolesMatrixTest {
                 for (m in HudhudRolesTable.MARKERS) if (text.contains(flat(m.text))) spoken += "${describe(a.ask)}: its own spoken words hold '${m.name}'"
             }
         }
-        // The phone number of the customer is the card's secret and is on the card.
+        // The phone number of the customer is the card's secret and is on the card. Matched by its last ten digits: the
+        // card may write it in the shop's own shape (+92 300 1234567), so the national 0 is not there (CI, 24 Nov 2026).
         val phone = answered.first { it.ask == Hudhud.Ask.Person(listOf(ids.ali), Hudhud.Facet.PHONE) }
-        assertTrue("the phone card lists the number as a secret", phone.card.secrets.any { flat(it).contains("03001234567") })
-        assertTrue("the phone is on the card", flat(phone.text).contains("03001234567"))
+        fun digits(t: String) = t.filter { it.isDigit() }
+        assertTrue("the phone card lists the number as a secret: " + phone.card.secrets, phone.card.secrets.any { digits(it).endsWith("3001234567") })
+        assertTrue("the phone is on the card", digits(phone.text).contains("3001234567"))
         assertEquals("a private number was said aloud", emptyList<String>(), spoken)
     }
 
