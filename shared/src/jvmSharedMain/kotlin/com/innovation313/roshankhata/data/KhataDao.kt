@@ -5182,7 +5182,7 @@ interface KhataDao {
                s.taxPercent AS taxPercent, i.productId AS productId, i.itemName AS itemName, p.category AS category,
                i.quantity AS quantity, i.unit AS unit, i.rate AS rate, i.discount AS discount, i.costRate AS costRate,
                i.taxRate AS taxRate, i.taxAmount AS taxAmount, i.taxIncluded AS taxIncluded,
-               s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+               s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount, NULL AS spread
         FROM sale_items i JOIN sales s ON s.id = i.saleId LEFT JOIN products p ON p.id = i.productId
         WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND s.timestamp >= :from AND s.timestamp < :to
         ORDER BY s.timestamp ASC, i.lineNo ASC
@@ -5233,7 +5233,7 @@ interface KhataDao {
                s.taxPercent AS taxPercent, i.productId AS productId, i.itemName AS itemName, p.category AS category,
                i.quantity AS quantity, i.unit AS unit, i.rate AS rate, i.discount AS discount, i.costRate AS costRate,
                i.taxRate AS taxRate, i.taxAmount AS taxAmount, i.taxIncluded AS taxIncluded,
-               s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount
+               s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount, NULL AS spread
         FROM sale_items i JOIN sales s ON s.id = i.saleId LEFT JOIN products p ON p.id = i.productId
         WHERE s.isDeleted = 0 AND s.status = 'done' AND i.isDeleted = 0 AND s.partyId IS NULL
           AND s.timestamp >= :from AND s.timestamp < :to

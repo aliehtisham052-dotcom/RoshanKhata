@@ -26,7 +26,13 @@ data class SoldLine(
     val taxIncluded: Boolean? = null,
     /** The ticket's goods before its own discount, and that discount (21 Oct 2026). */
     val saleSubtotal: Double? = null,
-    val saleDiscount: Double? = null
+    val saleDiscount: Double? = null,
+    /**
+     * What the line brought in once its ticket's money was shared over ALL its lines to the coin ([SoldLines.spread],
+     * BC-252): set, [revenue] is this figure; null (a ticket with no discount, or a line read alone) and [revenue]
+     * works the share out as before. Lines of one ticket then add up to the ticket's own total exactly.
+     */
+    val spread: Double? = null
 ) {
     /**
      * What the line brought in: its share of the ticket's own discount taken
@@ -38,6 +44,7 @@ data class SoldLine(
      * off before, a 1,180 line with 18% inside and 118 off read 916.20, not 900).
      */
     val revenue: Double get() {
+        spread?.let { return it }
         val sub = saleSubtotal ?: 0.0
         val off = (saleDiscount ?: 0.0).coerceAtLeast(0.0)
         val share = if (sub > 0.0 && off > 0.0) (1.0 - off / sub).coerceIn(0.0, 1.0) else 1.0
@@ -45,6 +52,40 @@ data class SoldLine(
         return LineMath.round(SaleMath.lineTotal(quantity, rate, discount) * share - inside)
     }
     val cost: Double? get() = costRate?.let { LineMath.round(it * quantity) }
+}
+
+/**
+ * The counter's sold lines with each ticket's discount shared over its lines to the coin (BC-252). [KhataSales] does
+ * the same for a khata entry's goods as it builds them.
+ */
+object SoldLines {
+
+    /**
+     * [lines] in the same order, each ticket's lines carrying [SoldLine.spread] when the ticket has a discount: the
+     * ticket's own goods less its discount, shared over its lines by their worth (largest remainder, [TicketSpread]),
+     * then any tax that was inside a line's price taken off it. Lines of a ticket with no discount, or with nothing
+     * sound to share, and lines that already carry a spread, are returned as they are.
+     */
+    fun spread(lines: List<SoldLine>): List<SoldLine> {
+        val d = LineMath.scale()
+        val byTicket = lines.withIndex().filter { it.value.spread == null }.groupBy { it.value.saleId }
+        val out = lines.toMutableList()
+        for ((_, ls) in byTicket) {
+            val head = ls.first().value
+            val sub = head.saleSubtotal ?: continue
+            val off = (head.saleDiscount ?: 0.0).coerceAtLeast(0.0)
+            if (sub <= 0.0 || off <= 0.0) continue
+            val taxable = Money.minor(sub, d) - Money.minor(off.coerceAtMost(sub), d)
+            val weights = ls.map { Money.minor(SaleMath.lineTotal(it.value.quantity, it.value.rate, it.value.discount), d) }
+            val shares = TicketSpread.shares(taxable, weights) ?: continue
+            ls.forEachIndexed { k, iv ->
+                val l = iv.value
+                val inside = if (l.taxIncluded == true) l.taxAmount ?: 0.0 else 0.0
+                out[iv.index] = l.copy(spread = Money.round(TicketSpread.figure(shares[k], d) - inside, d))
+            }
+        }
+        return out
+    }
 }
 
 /** One khata sale's goods line, or the sale alone when it has none ([KhataDao.khataSaleRowsBetween]). */
@@ -118,11 +159,11 @@ object KhataSales {
         for ((entryId, rs) in rows.groupBy { it.entryId }) {
             val head = rs.first()
             val amount = head.amount
-            fun line(r: KhataSaleRow?, qty: Double, rate: Double, cost: Double?, sub: Double? = null, off: Double? = null) = SoldLine(
+            fun line(r: KhataSaleRow?, qty: Double, rate: Double, cost: Double?, sub: Double? = null, off: Double? = null, spread: Double? = null) = SoldLine(
                 saleId = -entryId, timestamp = head.timestamp, customerName = head.partyName, createdBy = head.createdBy, taxPercent = null,
                 productId = r?.productId, itemName = r?.itemName?.trim().orEmpty(), category = r?.category,
                 quantity = qty, unit = r?.unit, rate = rate, discount = 0.0, costRate = cost,
-                saleSubtotal = sub, saleDiscount = off
+                saleSubtotal = sub, saleDiscount = off, spread = spread
             )
             // A sale with no goods comes back from the LEFT JOIN as one row with no line at all.
             val goods = rs.filter { it.itemName != null || it.quantity != null || it.rate != null }
@@ -134,19 +175,26 @@ object KhataSales {
                 priced.isEmpty() && sold.size == 1 && (sold[0].quantity ?: 0.0) > 0.0 -> {
                     val r = sold[0]
                     val q = r.quantity!!
-                    out += line(r, q, amount / q, costRate(r, q))
+                    out += line(r, q, amount / q, costRate(r, q), spread = Money.round(amount))
                     goods.filter { it.isBonus == true }.forEach { b -> out += line(b, b.quantity ?: 0.0, 0.0, costRate(b, b.quantity ?: 0.0)) }
                 }
                 else -> {
-                    // The goods' own value first; an amount under it is a discount spread over the priced lines.
-                    val off = if (value > 0.0 && amount < value) value - amount else 0.0
+                    // The goods' own value first; an amount under it is a discount spread over the priced lines. The
+                    // lines of one entry add up to its amount to the coin (BC-252): the discount is cut by the
+                    // largest-remainder rule from the entry's own amount, and what an amount holds above its goods
+                    // is the coins left over, exactly, as a line of no item.
+                    val d = LineMath.scale()
+                    val weights = priced.map { Money.minor(LineMath.lineTotal(it.quantity, it.rate)!!, d) }
+                    val cut = TicketSpread.cut(Money.minor(amount, d), weights)
+                    val off = if (cut.discounted) value - amount else 0.0
+                    var k = 0
                     goods.forEach { r ->
                         val q = r.quantity ?: 0.0
-                        if (r in priced) out += line(r, q, r.rate!!, costRate(r, q), sub = value, off = off)
-                        else out += line(r, q, 0.0, costRate(r, q))
+                        if ((r.quantity ?: 0.0) > 0.0 && (r.rate ?: 0.0) > 0.0 && r.isBonus != true) {
+                            out += line(r, q, r.rate!!, costRate(r, q), sub = value, off = off, spread = TicketSpread.figure(cut.shares[k++], d))
+                        } else out += line(r, q, 0.0, costRate(r, q))
                     }
-                    val rest = LineMath.round(amount - value)
-                    if (rest > 0.0) out += line(null, 1.0, rest, null)
+                    if (cut.rest > 0L) out += line(null, 1.0, TicketSpread.figure(cut.rest, d), null, spread = TicketSpread.figure(cut.rest, d))
                 }
             }
         }
@@ -313,7 +361,7 @@ class SalesReport(
 
         suspend fun compute(dao: KhataDao, from: Long, to: Long): SalesReport {
             // The counter's tickets and the khata's own sales (Marhala 3): what Sale Insights counts, line by line.
-            val lines = (dao.soldLinesBetween(from, to) + KhataSales.lines(dao, KhataSales.rowsBetween(dao, from, to)))
+            val lines = (SoldLines.spread(dao.soldLinesBetween(from, to)) + KhataSales.lines(dao, KhataSales.rowsBetween(dao, from, to)))
                 .sortedBy { it.timestamp }
             // The same expenses Insights' profit takes (Profit.between): the cashbook's, and the staff's pay, which lives in
             // its own table (reports-agree, 24 Nov 2026: the net here ignored it and read higher than Insights' by that pay).

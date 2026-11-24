@@ -277,7 +277,8 @@ object Profit {
             // return, not an expense (23 Oct 2026, the review: it came off in full, as if it were rent).
             // Staff pay is a cost too (3 Nov 2026 audit, M03): it lives in its own table, so profit never saw it.
             expenses = dao.cashbookExpensesBetween(from - 1, to - 1) + dao.staffPaidBetween(from - 1, to - 1),
-            walkIns = dao.walkInSoldLinesBetween(from, to),
+            // Each ticket's lines cut to the coin, as the sales report reads them (BC-252): one gross on both screens.
+            walkIns = SoldLines.spread(dao.walkInSoldLinesBetween(from, to)),
             walkInReturns = dao.walkInReturnedLinesBetween(from, to)
         )
     }
