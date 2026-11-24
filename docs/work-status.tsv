@@ -1,0 +1,51 @@
+id	work	sources	priority	importance	status	evidence	next	duplicate_of
+F1	The owner's shop name and town out of the Hindi hints, tests and comments, with a hash guard	privacy; BC-242	P0	6	NOT STARTED	-	Root cause found 24 Nov (the 31 Oct search was Latin and Urdu script only; Hindi and Bengali kept the words; 33 files, 59 lines): invented names everywhere, then a hash-only check over every script, BC-242	-
+F2	A book read that fails is said as a failure, not as "nothing" or "all clear"	RK-006	P0	7	NOT STARTED	-	Split read failure from an empty answer in AnswerBook and AnswerFacts; a test that makes the DAO throw	-
+F3	A sense that fails to load is logged once and marked, not silently rules-only	RK-005	P0	6	NOT STARTED	-	HudhudSense.current keeps the loader's failure; one log line, a mark, a test	-
+A1	Money side and orders to the machine: opposite pairs in nine languages, injection, every seed	WP-0; F-001; RK-001	P0	10	NOT STARTED	-	Extend HudhudMoneySideTest and HudhudInjectionTest with the opposite pairs; gate 0 wrong side, 0 wrong form on 5 seeds	-
+A2	One made-up book on which every report agrees (the 8 pairs), Android and Windows	WP-1; F-002; F-003; F-004; RK-014; ChatGPT F-02; DeepSeek stage 5	P0	10	NOT STARTED	-	Write the fixture's design (entries and expected figures) and the list of existing tests to extend	-
+A3	A failed restore leaves the book as it was (truncated file, wrong password, app killed mid-restore)	F-014; ChatGPT F-10; DeepSeek FMEA B1-B10; Gemini 2.3	P0	10	NOT STARTED	-	Three tests beside BackupPagedRestoreTest and RestoreCheck, then disk full, a bad -wal, missing photos, an old schema and a kept receipt	-
+A4	Each business stays apart (switch, Hudhud's last turn, counter session, notices, sync)	Master Operating Doc part 5; T13; Gemini 3.1; Gemini 3.2	P0	9	NOT STARTED	-	ISOLATED / LEAK-RISK / BROKEN matrix; Access switch and logout tests; a trade switch keeps old sales and plans in the reports	-
+A5	A money contract: decimals per currency, rounding mode and step, SQL and Kotlin sums alike, golden vectors on both platforms	ChatGPT F-01; Gemini 2.2	P0	10	NOT STARTED	-	docs/money-contract.md and golden-vector tests; no schema change in the freeze (D13 decides the route)	-
+A6	The docs tell the truth: CLAUDE.md "everything stays on the phone" and the worker README "not deployed"	ChatGPT F-03	P0	5	NOT STARTED	-	Correct both lines to what the code and the 8 Nov deploy run show	-
+B1	The tie button: the last ungated DAO write (linkGoodsToProducts)	WP-2; F-005	P1	7	BLOCKED	-	Waits for the owner's D8 answer (recommended: a Who-did-what row, no PIN)	-
+B2	Old books and backups open right in this version (schema 31->46, backup 1->21)	WP-3; F-024; RK-007; ChatGPT F-05; DeepSeek stage 3; Gemini 2.1	P1	9	NOT STARTED	-	Migration and restore matrix on both platforms; keep schema JSON 32-46; a newer backup is refused, never cut	-
+B3	The data-flow list matches the privacy policy and Play Data safety	WP-5; F-009; F-010; ChatGPT F-03; ChatGPT F-08; DeepSeek stage 8; Gemini 5.4	P1	8	NOT STARTED	-	Data-flow list with a relay deployment ledger; the owner asks GitHub Support for the purge record	-
+B4	Nine languages x 25 trades x 2 platforms as a covering array, with native reads	WP-7; F-020; T35	P1	7	NOT STARTED	-	Pairwise array with money cases weighted; screen proofs on CI; native readers from the owner	-
+B5	Real devices: lifecycle, ANR, performance, Play vitals	WP-8; F-015; F-016; RK-012; T18	P1	10	BLOCKED	-	Waits for D9 (the owner's phones and laptop) and his weekly vitals screenshots	-
+B6	Live sync on the owner's two devices	WP-4; F-008; RK-013	P1	8	BLOCKED	-	Waits for the owner, two devices and an hour	-
+B7	Every Ask x every role (owner, manager, cashier, helper copy); read-only at run time; double submit	RK-002; RK-003; F-022; DeepSeek VI.2	P1	8	NOT STARTED	-	Extend HudhudGoldenAnswersTest to manager and helper copy; golden answers over ViewerDao	-
+B8	Capability matrix: every screen, tile, More entry, language and trade labelled with its proof	Capability Blueprint; WA0051 output C	P1	8	NOT STARTED	-	docs/capability-matrix.tsv from the catalog, with its checker	-
+B9	Windows: App Lock said honestly; the MSI through the Microsoft Store	RK-008; F-011; RK-009; F-017	P1	8	BLOCKED	-	T1 is the owner's (D8); MSIX submission waits for his yes (D11)	-
+B10	Sync between versions: a clear "update the other device" and N/N-1 tests	ChatGPT F-07	P1	8	NOT STARTED	-	Mixed-version matrix; no parcel silently dropped	-
+B11	Units and stock valuation written as one contract with mixed-unit tests	ChatGPT F-12; DeepSeek IV.3	P1	8	NOT STARTED	-	Contract over Units, Cost and Fefo; mixed-unit, pack, return and write-off tests	-
+B12	Backup protection shown plainly (plain or locked), advice for copies that leave the phone	ChatGPT F-09	P1	7	NOT STARTED	-	After D14	-
+C1	Voice: a clear choice the first time the mic opens; Windows claims typed only	WP-9; F-012; F-013; RK-010; RK-011	P2	6	NOT STARTED	-	Waits for D10; then the first-open choice	-
+C2	A real receipt printer, PDF, CSV and the khata link	WP-10; F-021; F-023	P2	6	BLOCKED	-	Waits for the owner and a thermal printer	-
+C3	The final signed release, upgrade, rollback and restore drill	WP-11; F-017; F-019; F-025	P2	10	NOT STARTED	-	At the end (21-27 Dec): exact commit in CI, AAB and Store MSIX	-
+C4	Small leftovers: Windows cashbook line edit, Windows Hudhud Open page and counts	handover 23 Nov	P2	4	NOT STARTED	-	After the freeze	-
+C5	Number words in nine languages, one numeral system per screen, LRI/PDI around figures in PDFs	DeepSeek part V; Gemini 4.2	P2	5	NOT STARTED	-	Extend NumberWords tests and check_pdf_rtl.py	-
+H0	Hudhud's baseline and freeze (inventory, per-language figures, confusion matrix, seed noise, speed, sense hash)	Blueprint H0; MOD H0; Advanced stage 1; DeepSeek phase 0	P0	9	NOT STARTED	-	docs/hudhud-baseline-2026-11.md with seeds 313-318	-
+H1	A stable training recipe (L017's two faults, locked features, one seed or averaged)	Blueprint H1; F-006; RK-004; L017	P1	9	NOT STARTED	-	After H0	-
+H2	A new sealed test set (v2), frozen in a private repo	F-007; T26; T28; T35	P1	10	BLOCKED	-	Waits for D12 (the private repo) and native readers	-
+H3	The question contract and the Formula Book (every figure: formula, tables, date field, rounding), shared with part A	Blueprint; DeepSeek contract; Advanced stage 2; ChatGPT F-11; DeepSeek stage 5	P1	8	NOT STARTED	-	After H0	-
+H4	New data (ds-2) and one retrain	Blueprint; MOD H1; DeepSeek dataset	P1	9	NOT STARTED	-	After H1 and H2	-
+H5	Business understanding, the answer protocol, conversation, proactive	Advanced; MOD H2-H4; Blueprint H4-H5; DeepSeek VII.5-VII.7; ChatGPT F-15	P1	8	NOT STARTED	-	After the freeze (14-20 Dec)	-
+H6	The catalog's last GAPs (6 columns, 8 profile fields, 4 More entries)	catalog report	P2	6	NOT STARTED	-	A decision for each with reader and gate	-
+H7	Voice per language, the D10 choice, voice measured apart	MOD H5; RK-010; RK-011	P2	6	BLOCKED	-	Waits for D10 and the owner's phone	-
+H8	The sealed evaluation once, the hard zeros, the release gate	MOD H6-H7; Hindi audit 18.2	P2	10	NOT STARTED	-	21-27 Dec, after H2 is frozen	-
+H9	The model decision (optional, Jan 2027)	D4; gates E and G; T17	P2	7	BLOCKED	-	Only on H8's evidence and the owner's yes	-
+D1	When Hudhud asks back and when he answers with "Taken as"	plan section 9	P1	7	BLOCKED	-	The owner's decision by 6 Dec	-
+D2	The private note and phone number	plan section 9	P1	6	BLOCKED	-	The owner's decision by 6 Dec	-
+D3	Hudhud changing settings (LOOK only)	plan section 9	P1	6	BLOCKED	-	The owner's decision by 6 Dec	-
+D4	On-device LLM	plan section 9; T17	P2	7	BLOCKED	-	The owner's decision by 13 Dec	-
+D5	Languages (the same nine)	plan section 9	P1	5	BLOCKED	-	The owner's decision by 30 Nov	-
+D6	Trades (the same 25)	plan section 9	P1	5	BLOCKED	-	The owner's decision by 30 Nov	-
+D7	Hudhud writing (read-only; fills a form only)	plan section 9	P1	8	BLOCKED	-	The owner's decision by 30 Nov	-
+D8	The handover's four decisions (T39, cashier totals, T1, tie button)	plan section 9; T39; T1; F-005	P0	8	BLOCKED	-	The owner's decision by 26 Nov	-
+D9	The owner's devices (phones and laptop)	plan section 9; T18	P0	9	BLOCKED	-	The owner's details by 25 Nov	-
+D10	The first step of Hudhud's voice (phone only or online)	plan section 9; RK-010	P2	6	BLOCKED	-	The owner's decision by 13 Dec	-
+D11	The Windows MSI road (Microsoft Store MSIX)	plan section 9; RK-009; F-017	P2	7	BLOCKED	-	The owner's decision by 13 Dec	-
+D12	A free private repo for the sealed set	plan section 9; T26	P1	8	BLOCKED	-	The owner's decision by 1 Dec	-
+D13	Money stays Double with the contract, or a minor-unit migration in Jan 2027	ChatGPT F-01; plan v2 section 10	P1	8	BLOCKED	-	The owner decides on A5's results by 13 Dec	-
+D14	Backup password by default on a new install, or optional	ChatGPT F-09; plan v2 section 10	P1	6	BLOCKED	-	The owner decides by 6 Dec	-

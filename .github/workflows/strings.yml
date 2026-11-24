@@ -182,6 +182,10 @@ jobs:
       # is still tracked, and every CSV import reads its text through CsvImport.decode (Excel's encodings).
       - name: Release jobs hold no secrets, nothing ignored is tracked, CSV reads are decoded
         run: python3 scripts/check_repo_guards.py
+      # The 24 Nov 2026 master plan (section 10): one line per item, five statuses only, no VERIFIED COMPLETE or PARTIAL
+      # without evidence that exists, the duplicate register as its own column. Names only, not a run (lesson 125).
+      - name: The work status register is honest (every plan item, allowed statuses, evidence for a done)
+        run: python3 scripts/check_work_status.py
       # The local Gradle-free harness (lesson 93) finds its files by list: a file moved or renamed fails here, not at the next run.
       - name: The shared harness's file lists are current
         run: bash scripts/shared_harness/run.sh --lists-only
