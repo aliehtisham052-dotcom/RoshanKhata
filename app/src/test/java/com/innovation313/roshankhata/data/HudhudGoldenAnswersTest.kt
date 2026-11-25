@@ -275,6 +275,10 @@ internal object HudhudGoldenAsks {
         a += Hudhud.Ask.Guessed(Hudhud.Ask.Count(Hudhud.Thing.CUSTOMERS))
         a += Hudhud.Ask.DidYouMean(listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET), Hudhud.Ask.Status(Hudhud.StatusOf.BILLS)))
         a += Hudhud.Ask.DidYouMean(emptyList())
+        // D15 (Marhala 1, 25 Nov 2026): the side nobody said is asked first, both sides as chips; a cashier is told it is the owner's.
+        a += Hudhud.Ask.DidYouMean(
+            listOf(Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET), Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GIVE)), unsure = Hudhud.Unsure.SIDE
+        )
         a += Hudhud.Ask.SpanLimit(listOf(Hudhud.Ask.Activity(VoiceQuestion.Window.TODAY), Hudhud.Ask.Activity(VoiceQuestion.Window.THIS_WEEK)), long = false)
         a += Hudhud.Ask.SpanLimit(
             listOf(Hudhud.Ask.Period(Hudhud.Measure.SALES, VoiceQuestion.Window.THIS_MONTH), Hudhud.Ask.Period(Hudhud.Measure.SALES, VoiceQuestion.Window.ALL_TIME)),
