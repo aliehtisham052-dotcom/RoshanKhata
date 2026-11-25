@@ -54,6 +54,16 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/heads/kmp-') }}
           gradle-version: 8.14.3
 
+      # Robolectric's Android jars (android-all-instrumented, ~100 MB each) are fetched by the tests themselves at run
+      # time, outside Gradle and its cache, and Maven Central answered 429 for them (25 Nov 2026, BC-302): eight test
+      # classes failed before running one line. Kept between runs here; a changed build file fetches afresh.
+      - name: Cache Robolectric jars
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: ~/.m2/repository/org/robolectric
+          key: robolectric-${{ hashFiles('app/build.gradle.kts', 'gradle/libs.versions.toml', 'app/src/test/resources/robolectric.properties') }}
+          restore-keys: robolectric-
+
       # Decode the stable release keystore from a repository secret. The key
       # itself is never committed — only its base64 form lives in Secrets, and
       # the decoded file exists only for the length of this run. A stable key is

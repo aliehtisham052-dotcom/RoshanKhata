@@ -326,19 +326,35 @@ def zero_tests_by_the_money_contract(root=ROOT):
     return faults
 
 
+# BC-302 (25 Nov 2026): Robolectric fetches its Android jars from Maven Central while the tests run, outside Gradle's
+# cache, and a 429 failed whole test classes. A workflow that runs the phone's unit tests caches them, except the
+# Play bundle's (it builds from nothing on purpose, BC-290).
+def robolectric_jars_cached(root=ROOT):
+    faults = []
+    for p in sorted((root / ".github/workflows").glob("*.yml")):
+        if p.name == "aab.yml":
+            continue
+        text = p.read_text()
+        if "testDebugUnitTest" in text and "~/.m2/repository/org/robolectric" not in text:
+            faults.append("%s runs the phone's unit tests without caching Robolectric's jars (~/.m2/repository/org/robolectric)"
+                          % p.relative_to(root))
+    return faults
+
+
 def main():
     faults = (publish_jobs_hold_no_secrets() + no_tracked_ignored_files() + csv_reads_are_decoded()
               + shown_bitmaps_never_recycled() + left_margins_name_their_side() + test_names_are_jvm_names()
               + gradle_cache_on_except_release()
               + windows_cancel_asks_first() + duplicates_off_the_screen_thread()
               + payment_voice_asks_off_main() + day_ends_by_the_calendar()
-              + zero_tests_by_the_money_contract())
+              + zero_tests_by_the_money_contract()
+              + robolectric_jars_cached())
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
     print("repo guards: release jobs hold no secrets, nothing ignored is tracked, every CSV read is decoded, "
-          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first, the duplicate scan and the payment-voice screen's system questions run off the main thread, every day ends by the calendar, every zero test asks the money contract")
+          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first, the duplicate scan and the payment-voice screen's system questions run off the main thread, every day ends by the calendar, every zero test asks the money contract, Robolectric's jars are cached")
 
 
 if __name__ == "__main__":
