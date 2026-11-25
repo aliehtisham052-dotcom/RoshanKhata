@@ -79,8 +79,8 @@ class HudhudSeedSafeTest {
         assertTrue("the review sets hold side rows", sides.size > 100)
         val problems = ArrayList<String>()
         try {
-            for (seed in listOf(HudhudSense.SEED, 314L, 315L, 316L, 317L, 318L)) {
-                HudhudSense.use(if (seed == HudhudSense.SEED) HudhudModelTest.shippedModel() else HudhudSense.train(bank, seed))
+            for ((seed, model) in listOf(HudhudSense.SEED to HudhudModelTest.shippedModel()) + HudhudModelTest.otherSenses(bank)) {
+                HudhudSense.use(model)
                 problems += problemsNow(seed, exact, sides)
             }
         } finally {

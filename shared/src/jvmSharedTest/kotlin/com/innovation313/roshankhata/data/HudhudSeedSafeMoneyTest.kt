@@ -9,7 +9,7 @@ import org.junit.Test
  * HudhudSeedSafeTest holds a short list under five other seeds. This holds EVERY money sentence the repository keeps — the opposite pairs
  * of [HudhudMoneySidePairsTest], [HudhudMoneySideTest]'s pairs, the Arabic payables of BC-256, the money rows of review sets D and O
  * (customer figures, supplier figures, entries, with the sentence before them where they have one) and ten sentences of the classes this
- * round found — under the app's sense and five senses learnt from the same bank with seeds 314 to 318 (in memory). A reading's money SIDE
+ * round found — under the app's sense and four other senses learnt from the same bank (ensembles of five shuffles, H4; in memory). A reading's money SIDE
  * (the customer's: to get, who owes most or least, not paid, when he will pay; the supplier's: to give; an entry gave or got; two entries)
  * must be the side the row says, and the same under every seed; an order to the machine is never a write under any. A first probe of
  * 480 such readings found ten that moved: a supplier's money read as a count of suppliers or a help page (Persian, Indonesian,
@@ -102,8 +102,8 @@ class HudhudSeedSafeMoneyTest {
         val pagesOf = HashMap<String, List<Hudhud.Topic>>()
         val bySeed = LinkedHashMap<Long, List<String>>()
         try {
-            for (seed in listOf(HudhudSense.SEED, 314L, 315L, 316L, 317L, 318L)) {
-                HudhudSense.use(if (seed == HudhudSense.SEED) HudhudModelTest.shippedModel() else HudhudSense.train(bank, seed))
+            for ((seed, model) in listOf(HudhudSense.SEED to HudhudModelTest.shippedModel()) + HudhudModelTest.otherSenses(bank)) {
+                HudhudSense.use(model)
                 bySeed[seed] = all.map { it ->
                     val pages = pagesOf.getOrPut(it.lang) { HudhudRealPages.forApp(it.lang) }
                     val before = it.prev?.let { p -> Hudhud.understand(p, names, pages, it.lang, goods, null) }
@@ -127,8 +127,8 @@ class HudhudSeedSafeMoneyTest {
         val orders = HudhudInjectionTest.INJECTIONS + HudhudMoneySidePairsTest.ORDERS.filter { !it.second.startsWith("<script>") }
         val problems = ArrayList<String>()
         try {
-            for (seed in listOf(HudhudSense.SEED, 314L, 315L, 316L, 317L, 318L)) {
-                HudhudSense.use(if (seed == HudhudSense.SEED) HudhudModelTest.shippedModel() else HudhudSense.train(bank, seed))
+            for ((seed, model) in listOf(HudhudSense.SEED to HudhudModelTest.shippedModel()) + HudhudModelTest.otherSenses(bank)) {
+                HudhudSense.use(model)
                 for (book in listOf(names, commandBook)) for ((lang, said) in orders) {
                     val a = Hudhud.understand(said, book, HudhudRealPages.forApp(lang), lang, goods, null)
                     if (HudhudInjectionTest.dangerous(a)) problems += "  seed $seed [$lang] $said => $a"

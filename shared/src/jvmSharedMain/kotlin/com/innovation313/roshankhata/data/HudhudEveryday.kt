@@ -144,7 +144,7 @@ internal object HudhudEveryday {
         "do i buy", "i bought", "i pay for", "آتی ہے", "آتا ہے", "پڑتی ہے", "پڑتا ہے", "आती है", "आता है", "पड़ती है", "पड़ता है", "কিনেছি", "কিনি",
         "اشتريت", "اشتريته", "خريدم", "خریدم", "خريد", "beli berapa", "beli dengan harga"
     )
-    private val BUY_FOR = listOf("kitne ki aati", "kitne ka aata", "kitne mein aati", "kitne mein aata", "kitne ki parti", "kitne ka padta", "mujhe kitne")
+    private val BUY_FOR = listOf("kitne ki aati", "kitne ka aata", "kitne mein aati", "kitne mein aata", "kitne ki parti", "kitne ka padta", "mujhe kitne", "what did i buy", "what did we buy", "what do i buy")
 
     /** Asking what is left, in a shape of its own ("Urea hai ya nahi", "Urea kam hai kya", "is Urea running low", "كم بقي من"). */
     private val STOCK_SHAPE = listOf(

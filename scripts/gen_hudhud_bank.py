@@ -46,7 +46,7 @@ LANGS = ["en", "ur", "ur-Latn", "hi", "bn", "ar", "fa", "sd", "id"]
 # Of every meaning's ten sentences in a language, these two are held out (positions 0-9 as written).
 HELD_OUT = {3, 8}
 # What a plain run writes and --check holds the shipped files to. H4 (the one real retrain) flips this to 2 with the new sense.bin.
-DEFAULT_RECIPE = 1
+DEFAULT_RECIPE = 2
 
 
 def numbered_lines_of(path):

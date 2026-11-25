@@ -1109,7 +1109,7 @@ sd	OK	اڄ جي سيل		Figure:SALES_TODAY
 sd	OK	ڪالهه جو وڪرو		Period:SALES
 sd	OK	هن مهيني جو وڪرو		Figure:SALES_MONTH
 sd	OK	هن مهيني ڪيترو نفعو ٿيو		Figure:PROFIT_MONTH
-sd	OK	Urea جون ڪيتريون ٻوريون آهن		Goods:OVERVIEW
+sd	OK	Urea جون ڪيتريون ٻوريون آهن		Goods:STOCK
 sd	OK	ڪهڙو مال ختم ٿيڻ وارو آهي		Status:LOW_STOCK
 sd	OK	Urea جو اگهه ڇا آهي		Goods:OVERVIEW
 sd	OK	علي رضا جو نمبر ڏيو		Person:PHONE

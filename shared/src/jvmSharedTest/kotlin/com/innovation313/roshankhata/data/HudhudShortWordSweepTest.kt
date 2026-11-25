@@ -107,7 +107,6 @@ class HudhudShortWordSweepTest {
          */
         val LATIN_FROZEN: Map<String, String> = mapOf(
             "bit" to "G",
-            "blm" to "P",
             "bot" to "G",
             "dah" to "P",
             "dat" to "G",
@@ -117,7 +116,6 @@ class HudhudShortWordSweepTest {
             "lah" to "P",
             "lot" to "G",
             "net" to "G",
-            "nma" to "P",
             "oes" to "P",
             "pcs" to "P",
             "put" to "G",

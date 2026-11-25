@@ -171,6 +171,15 @@ object HudhudSense {
      */
     internal fun train(lines: List<String>, seed: Long = SEED): Model = trainEnsemble(lines, listOf(seed))
 
+    /** The shuffles the app's sense is the mean of (H4, 25 Nov 2026): fifteen, seeds 313..327. */
+    internal val SHIPPED_SEEDS: List<Long> = (SEED until SEED + 15L).toList()
+
+    /** Weights under this many steps (of 32,767) are left out of the shipped file: it keeps the app's size near what it was (see docs/hudhud-recipe-25nov2026.md). */
+    internal const val SHIPPED_PRUNE = 200
+
+    /** The sense the app ships: the ensemble of [SHIPPED_SEEDS], pruned by [SHIPPED_PRUNE]. HudhudModelTest holds sense.bin to it byte for byte. */
+    internal fun trainShipped(lines: List<String>): Model = trainEnsemble(lines, SHIPPED_SEEDS, SHIPPED_PRUNE)
+
     /**
      * The stable recipe (25 Nov 2026, plan H1, lesson 163): the sense learnt once for every seed in [seeds], on the very same
      * features, and the learnt weights AVERAGED before they are made whole numbers. One perceptron's weights depend on its
@@ -180,7 +189,7 @@ object HudhudSense {
      * it is exactly [train] of that seed (a test holds the two byte for byte), so the app's shipped sense is still
      * `train(bank)`; a new sense learnt as an ensemble is a retrain like any other (the bank, the file and the tests move together).
      */
-    internal fun trainEnsemble(lines: List<String>, seeds: List<Long>): Model {
+    internal fun trainEnsemble(lines: List<String>, seeds: List<Long>, prune: Int = 0): Model {
         require(seeds.isNotEmpty()) { "an ensemble needs at least one seed" }
         val labelIds = LinkedHashMap<String, Int>()
         val rows = ArrayList<Pair<Int, List<String>>>()
@@ -229,7 +238,8 @@ object HudhudSense {
             start[f] = pl.size
             for (l in 0 until labels) {
                 val q = (w[f * labels + l] / scale).roundToInt().coerceIn(-Short.MAX_VALUE.toInt(), Short.MAX_VALUE.toInt())
-                if (q != 0) {
+                // [prune]: a weight under that many steps of the file's whole-number scale is left out (0 keeps every one).
+                if (q != 0 && abs(q) >= prune) {
                     pl += l.toByte()
                     pw += q.toShort()
                 }

@@ -34,7 +34,7 @@ object VoiceQuestion {
         val isLong: Boolean get() = this == LAST_6_MONTHS || this == THIS_YEAR || this == LAST_YEAR || this == ALL_TIME
     }
 
-    private val PROFIT = listOf("munafa", "munafah", "profit", "laba", "untung", "منافع", "نفعو", "ربح", "أرباح", "ارباح",
+    private val PROFIT = listOf("munafa", "munafah", "profit", "laba", "untung", "منافع", "نفعو", "ربح", "ربحت", "ربحنا", "أرباح", "ارباح",
         "سود", "मुनाफ़ा", "मुनाफा", "लाभ", "লাভ", "মুনাফা",
         // 12 Nov 2026 (Hudhud): "is mahine kitna faida hua", as most owners say it.
         "faida", "fayda", "faaida", "فائدہ", "फायदा",
@@ -47,7 +47,7 @@ object VoiceQuestion {
     private val NOT_PAID = listOf("nahi diya", "nahin diya", "paisa nahi", "not paid", "hasn't paid", "havent paid", "belum bayar",
         // 13 Nov 2026 (Hudhud Brain v2): "kaun nahi de raha", the present and the plural.
         "nahi diye", "nahin diye", "nahi de raha", "nahi de rahe", "nahi de rahi", "nahi deta", "nahi dete",
-        "belum membayar", "نہیں دیا", "نہیں دیے", "نہیں دئیے", "ادا نہیں", "نه ڏنو", "نه ڏنا", "لم يدفع", "لم يسدد", "پرداخت نکرده",
+        "belum membayar", "نہیں دیا", "نہیں دیے", "نہیں دئیے", "ادا نہیں", "نه ڏنو", "نه ڏنا", "لم يدفع", "لم يدفعوا", "لم يسدد", "لم يسددوا", "پرداخت نکرده",
         "नहीं दिया", "नहीं दिए", "দেয়নি", "দেননি", "পরিশোধ করেনি",
         // 16 Nov 2026 (audit T10, wrong side): "paise na dene wale kaun hain" are the ones who do not pay, not the shop's debt.
         "na dene wale", "na dene wala", "na dene waale", "nahi dene wale", "nahi dene wala", "نہ دینے والے", "न देने वाले")
@@ -86,11 +86,15 @@ object VoiceQuestion {
         "وڪاميو", "وڪاميا", "مباع",
         // 15 Nov 2026 (review O): Arabic "I sold", "we sold" — which the name search had folded into a customer called Butt.
         "بعت", "بعنا",
+        // 25 Nov 2026 (H4): Farsi "I sold", "we sold".
+        "فروختم", "فروختیم",
         // The English word as Urdu and Hindi write it ("آج کی ٹوٹل سیلز" was what the shop is owed).
         "سیل", "سیلز", "सेल", "सेल्स")
     private val TODAY = listOf("aaj", "today", "hari ini", "آج", "اڄ", "اليوم", "امروز", "आज", "আজ",
         // 15 Nov 2026 (review O): "aaj" as it is typed fast ("aj ki sel", "aj ka munafa").
-        "aj", "ajj")
+        "aj", "ajj",
+        // 25 Nov 2026 (H4): "since the morning (until now)" is the day so far.
+        "از صبح", "subah se", "since morning", "since the morning")
 
     // The windows' words (12 Nov 2026). Urdu writes "kal" (yesterday) and "kul" (total) alike, so in its own script
     // yesterday is only "کل کی/کا/کے" or "گزشتہ روز"; Hindi, Sindhi and the rest have a word of their own. Indonesian
@@ -816,6 +820,7 @@ object VoiceQuestion {
         (saysAny(t, TO_ME) && saysAny(t, WILL_GIVE)) || saysAny(t, OWED_TO_ME) ||
             (saysAny(t, listOf("pay me", "pay us", "give me money")) && saysAny(t, listOf("will")))
             || othersHoldMine(t)
+            || (saysAny(t, MY_SHARE) && !saysAny(t, MY_DEBT))
 
     /**
      * My money held by others (23 Nov 2026, BC-240): "logon ke paas mere kitne paise hain", "mera kitna paisa logon ke paas phansa hua
@@ -825,6 +830,9 @@ object VoiceQuestion {
      */
     private fun othersHoldMine(t: String): Boolean =
         saysAny(t, OTHERS_HOLD) && saysAny(t, MINE) && saysAny(t, MONEY_WORDS) && !saysAny(t, MY_DEBT)
+
+    /** "Mere hisse ka kitna baqi hai": what is left of my share is money owed to the shop (25 Nov 2026, H4: a retrained sense put it on the other side). */
+    private val MY_SHARE = listOf("mere hisse", "mera hissa", "my share", "میرے حصے", "میرا حصہ", "मेरे हिस्से", "मेरा हिस्सा")
 
     private val OTHERS_HOLD = listOf(
         "logon ke paas", "logo ke paas", "logon ke pas", "logon par", "logo par", "logon pe", "logo pe", "logon ki taraf",
@@ -902,7 +910,7 @@ object VoiceQuestion {
     }
 
     /** Words of paying, owing and money that make a supplier sentence a question of the shop's payables and not of its suppliers. */
-    private val PAY_CUES = listOf("payable", "payables", "bayar", "dibayar", "membayar", "utang", "paisa", "paise", "pese", "raqam", "پیسے", "پیسہ", "رقم",
+    private val PAY_CUES = listOf("payable", "payables", "payment", "پول", "bayar", "dibayar", "membayar", "utang", "paisa", "paise", "pese", "raqam", "پیسے", "پیسہ", "رقم",
         "پے ایبل", "بدهم", "بدهیم", "بدهکارم", "بدهکار", "بدهی", "টাকা", "পয়সা", "बकाया", "पैसे", "पैसा", "ادا", "ادائیگی", "أدفع", "ادفع", "أسدد", "اسدد", "دفع", "سدد", "دینا", "دینے", "دیں", "ڏيڻا", "ڏيڻو")
 
     /** Money coming FROM a supplier or a company ("company se scheme ka paisa kab aayega") is the shop's to get, never its payable. */

@@ -195,7 +195,8 @@ class HudhudNameWordsTest {
 
     @Test fun `a word that calls somebody in front of a shop question is a call, and the question is the shops`() {
         check(Ask.Figure(Kind.SALES_TODAY), callers, "ur", "yaar aaj ki sale batao", "jaan aaj ki sale kitni hai", "bhai aaj ki sale")
-        check(Ask.Status(StatusOf.BOOK), callers, "ur", "dost aaj ka khata kaisa raha")
+        // The day's own summary (the rules' reading, as without the calling word); the retrained sense no longer reads it as the whole book (H4, 25 Nov 2026).
+        check(Ask.Today, callers, "ur", "dost aaj ka khata kaisa raha")
         assertEquals(Ask.About(AboutTopic.PRIVACY), read("رفیق بھائی میرا ڈیٹا محفوظ ہے", "ur", callers))
     }
 

@@ -69,7 +69,8 @@ def _load(name):
 
 BANK = _load("gen_hudhud_bank")
 NUMBERS = _load("check_invented_numbers")
-key = BANK.key
+# Compared as the shipped recipe compares (recipe 2 keeps Devanagari and Bengali marks: "कि" is not "के").
+key = BANK.key if BANK.DEFAULT_RECIPE == 1 else BANK.key_indic
 
 
 # ---------------------------------------------------------------------------------------------------------------

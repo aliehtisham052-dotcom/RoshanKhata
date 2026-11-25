@@ -21,7 +21,7 @@ class HudhudModelTest {
     @Test fun `the shipped sense is the one the bank teaches`() {
         val shipped = shippedModel()
         assertNotNull("the app's asset hudhud/sense.bin is missing or unreadable", shipped)
-        val learnt = HudhudSense.train(bank())
+        val learnt = HudhudSense.trainShipped(bank())
         val m = shipped!!
         assertEquals("meanings", learnt.labels, m.labels)
         assertEquals("examples", learnt.examples, m.examples)
@@ -54,6 +54,16 @@ class HudhudModelTest {
             HudhudModelTest::class.java.getResourceAsStream("/hudhud/bank.tsv")?.bufferedReader(Charsets.UTF_8)?.readLines()
                 ?.filter { it.isNotBlank() }.orEmpty()
 
+        /**
+         * Other senses of the very same bank for the tests that hold a reading to NOT hang on one learning (lessons 106, 163): each is an
+         * ensemble of five shuffles (the recipe H4 shipped, K=5 of them with their own seeds), pruned as the shipped one is. Label (the first seed) -> model.
+         * One shuffle alone is not the recipe any more: recipe 2's data learnt with one seed fails nine of the money and order guards by design (H1).
+         */
+        fun otherSenses(bank: List<String>): List<Pair<Long, HudhudSense.Model>> =
+            listOf(1000L, 2000L, 3000L, 4000L).map { first ->
+                first to HudhudSense.trainEnsemble(bank, (first until first + 5L).toList(), HudhudSense.SHIPPED_PRUNE)
+            }
+
         /** The repository's root: the tests run in the module's folder, a program wherever it is started. */
         private fun root(): File {
             var dir: File? = File("").absoluteFile
@@ -73,7 +83,7 @@ class HudhudModelTest {
         @JvmStatic
         fun main(args: Array<String>) {
             val lines = if (args.isNotEmpty()) File(args[0]).readLines().filter { it.isNotBlank() } else bank()
-            val m = HudhudSense.train(lines)
+            val m = HudhudSense.trainShipped(lines)
             val bytes = HudhudSense.encode(m)
             val out = if (args.size > 1) File(args[1]) else asset()
             out.parentFile.mkdirs()

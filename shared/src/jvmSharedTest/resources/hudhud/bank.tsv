@@ -31,7 +31,6 @@ can_talk	are you listening to me or not
 can_talk	you there buddy
 can_talk	is anyone hearing me, can you talk
 address	hey brother
-address	Hudhud
 address	listen
 address	hey buddy
 address	dear brother
@@ -42,13 +41,11 @@ salaam	assalamu alaikum
 salaam	salam
 salaam	assalam o alaikum Hudhud
 salaam	assalamualaikum wa rahmatullah
-salaam	salam alaikum
 salaam	assalamu alaikum wa rahmatullahi wa barakatuh
 salaam	salaam Hudhud
 salaam	salam bhai
 hello	hello
 hello	hi
-hello	good morning
 hello	hi there
 hello	good evening
 hello	good afternoon buddy
@@ -56,7 +53,6 @@ hello	hello hello
 hello	greetings
 thanks	thanks
 thanks	thank you
-thanks	thank you so much
 thanks	many thanks
 thanks	okay thanks
 thanks	thank you Hudhud
@@ -2633,7 +2629,6 @@ can_talk	هل ستتحدث معي
 address	يا أخي
 address	يا هدهد
 address	اسمع
-address	هدهد
 address	يا صاحبي
 address	اسمع يا هدهد
 address	يا أخي العزيز
@@ -3153,12 +3148,10 @@ can_talk	می‌شنوی چی میگم
 address	داداش
 address	هدهد جان
 address	گوش کن
-address	هدهد
 address	برادر
 address	هی هدهد
 address	داداش جان
 address	بیادر جان
-salaam	سلام علیکم
 salaam	السلام علیکم
 salaam	سلام
 salaam	سلام علیکم داداش
@@ -4194,7 +4187,6 @@ address	Bang
 address	Pak
 address	hei Hudhud
 address	kak
-address	Hudhud
 address	Bang Hudhud
 address	hei Bang
 address	eh dengar dulu
@@ -4202,7 +4194,6 @@ salaam	assalamualaikum
 salaam	salam
 salaam	assalamualaikum Hudhud
 salaam	assalamualaikum warahmatullah
-salaam	salam alaikum
 salaam	assalamualaikum warahmatullahi wabarakatuh
 salaam	salam Hudhud
 salaam	samlekum
@@ -7579,6 +7570,7 @@ abilities	तुमसे क्या पूछूं
 abilities	काम क्या है तेरा
 abilities	कुछ आता भी है तुम्हें
 abilities	यार तू मेरी क्या मदद करेगा
+abilities	आप क्या क्या बता सकते हो
 abilities	अपनी ख़ूबियां बताओ
 abilities	कौन कौन से सवाल का जवाब देते हो
 abilities	तुम्हें दुकान के बारे में क्या क्या मालूम है
@@ -7588,6 +7580,7 @@ how_are_you	कैसे हो भाई
 how_are_you	ठीक हो
 how_are_you	और सुनाओ क्या हाल हैं
 how_are_you	तबीयत कैसी है
+how_are_you	हाल?
 how_are_you	सब ख़ैरियत है
 how_are_you	क्या हाल चाल हैं जनाब के
 how_are_you	तुम ठीक ठाक हो ना
@@ -7596,6 +7589,7 @@ how_are_you	आपकी तबीयत ठीक है
 how_are_you	और भाई कैसा चल रहा है
 how_are_you	सब बढ़िया
 how_are_you	मज़े में हो
+how_are_you	क्या हाल हे
 how_are_you	सुनो जी आप कैसे हो आज
 can_talk	सुन रहे हो ना
 can_talk	हेलो सुनाई दे रहा है
@@ -7630,6 +7624,7 @@ address	हुद हुद
 salaam	अस्सलाम अलैकुम व रहमतुल्लाह भाई
 salaam	सलाम भाई
 salaam	असलाम अलेकुम
+salaam	अस्सलामु अलैकुम हुदहुद
 salaam	सलाम जी
 salaam	सलाम अलैकुम जनाब
 salaam	अस्सलाम अलैकुम यार
@@ -7650,6 +7645,7 @@ hello	हेलो हेलो
 hello	हाय दोस्त
 hello	नमस्ते जी
 hello	नमस्कार भाई
+hello	हलो
 hello	आदाब अर्ज़ है
 hello	राम राम
 hello	गुड आफ्टरनून
@@ -7669,6 +7665,7 @@ thanks	थैंक यू हुदहुद
 thanks	बहुत बहुत शुक्रिया
 thanks	शुक्रिया दोस्त
 thanks	तेरा शुक्रिया
+thanks	शुकरिया
 bye	बाय बाय यार
 bye	चलता हूं
 bye	फिर मिलेंगे
@@ -7738,6 +7735,7 @@ app_about	यह एप्लिकेशन किसलिए है
 app_about	रोशन खाता में क्या क्या है
 app_about	भाई ये ऐप है क्या चीज़
 app_about	इस ऐप का फ़ायदा क्या है
+app_about	रोशन खाता क्या हे
 app_about	ये खाता ऐप किस चीज़ की है
 app_about	ज़रा इस ऐप की जानकारी दो क्या क्या होता है इसमें
 app_about	ऐप किस मक़सद के लिए बनी
@@ -7809,6 +7807,7 @@ sales_today	आज की बिक्री कितनी रही
 sales_today	सेल कितनी हुई आज
 sales_today	आज टोटल सेल बताओ
 sales_today	भाई आज दुकान पर कितने की सेल हुई
+sales_today	आज की सेल कितनी हे
 sales_today	आज कितने रुपये का सामान बेचा
 sales_today	आज की सेल का टोटल
 sales_today	आज कितनी कितनी बिक्री हुई
@@ -7904,6 +7903,7 @@ not_paid	कौन कौन अभी तक नहीं दे रहा
 not_paid	देर से देने वाले कौन कौन हैं
 not_paid	भाई किस किस की पेमेंट लेट चल रही है
 not_paid	किसने काफ़ी दिनों से कुछ नहीं दिया
+not_paid	किसने पेसे नही दिए
 not_paid	देरी किस किस की है
 not_paid	बकाया न चुकाने वाले कौन हैं
 likely_payers	आज किससे पैसे आएंगे
@@ -8050,6 +8050,7 @@ party_promise	{NAME} का प्रॉमिस किस दिन का ह
 party_promise	{NAME} ने क्या तारीख़ बोली थी
 party_promise	भाई {NAME} ने किस दिन का बोला था
 party_promise	{NAME} ने पैसे देने का वादा कब का किया
+party_promise	{NAME} का वादा कब का हे
 party_promise	{NAME} ने कौन सी डेट दी है
 party_promise	{NAME} की वादे वाली तारीख़ बताओ
 party_promise	{NAME} ने ज़बान किस दिन की दी थी
@@ -8064,6 +8065,7 @@ party_when_pays	{NAME} कब दे सकता है
 party_when_pays	कब देगा {NAME}
 party_when_pays	भाई {NAME} के पैसे कब आएंगे
 party_when_pays	{NAME} अक्सर किन दिनों में देता है
+party_when_pays	{NAME} कब देगा पेसे
 party_when_pays	{NAME} से वसूली कब होगी
 party_when_pays	{NAME} कितने दिन में दे देगा
 party_when_pays	{NAME} का पैसा कब तक आ जाएगा
@@ -8080,6 +8082,7 @@ party_details	{NAME} का घर कहां है
 party_details	भाई {NAME} के बारे में क्या क्या लिखा है
 party_details	{NAME} का पूरा ब्योरा
 party_details	{NAME} कहां का रहने वाला है
+party_details	{NAME} का पता क्या हे
 party_details	{NAME} के पिता जी कौन हैं
 party_details	{NAME} कौन है कहां से है
 party_details	{NAME} विवरण
@@ -8138,6 +8141,7 @@ goods_stock	{ITEM} ख़त्म तो नहीं हुआ
 goods_stock	भाई {ITEM} कितना पड़ा है गोदाम में
 goods_stock	{ITEM} की कितनी बोरी बची हैं
 goods_stock	{ITEM} मौजूद है क्या
+goods_stock	{ITEM} का स्टाक कितना हे
 goods_stock	{ITEM} के कितने डिब्बे रहते हैं
 goods_stock	{ITEM} शेल्फ़ पर कितना है
 goods_stock	{ITEM} उपलब्ध है
@@ -8332,6 +8336,7 @@ cheques_status	बाउंस चेक कौन से हैं
 cheques_status	आज किस चेक की तारीख़ है
 cheques_status	भाई चेकों का क्या सीन है
 cheques_status	कितने चेक क्लियर हो गए
+cheques_status	चैक का क्या हाल हे
 cheques_status	बैंक में लगाने वाले चेक कौन से हैं
 cheques_status	चेक कितने के पेंडिंग हैं
 cheques_status	ड्यू चेक बताओ
@@ -8346,6 +8351,7 @@ plans_status	क़िस्त प्लान का हाल बताओ
 plans_status	अगली क़िस्त किसकी और कब है
 plans_status	भाई क़िस्तों वाले खातों का क्या हाल है
 plans_status	कितनी क़िस्तें आ चुकी हैं कितनी रहती हैं
+plans_status	किस्तो का क्या हाल हे
 plans_status	इंस्टॉलमेंट प्लान कितने हैं
 plans_status	इस महीने किस किस की क़िस्त आनी है
 plans_status	ड्यू क़िस्तें बताओ
@@ -8431,8 +8437,10 @@ cashbook_today	आज कितना पैसा आया और कितन
 cashbook_today	कल के ख़र्चे बताओ
 cashbook_today	आज कैशबुक में क्या क्या लिखा है
 cashbook_today	इस हफ़्ते कितना ख़र्चा हुआ
+cashbook_today	आज के ख़र्च
 cashbook_today	इस महीने कैश बुक में कितना आया कितना निकला
 cashbook_today	भाई आज दुकान के ख़र्चे कितने हुए
+cashbook_today	पिछले हफ़्ते का ख़र्चा कितना था
 cashbook_today	अज का खर्चा कितना हे
 cashbook_today	आज मनी इन मनी आउट बताओ
 cashbook_today	कल कैश बुक का क्या हिसाब था
@@ -8527,6 +8535,7 @@ who_are_you	এই পাখিটার নাম কি
 who_are_you	তুই কে রে
 who_are_you	নাম কি তোমার ভাই
 who_are_you	তুমি ক্যা
+who_are_you	তমার নাম কি
 abilities	তুমি আমার দোকানের জন্য কি করতে পারো
 abilities	তুমি কি কাজে লাগো
 abilities	আমাকে কিভাবে সাহায্য করবে
@@ -8540,6 +8549,7 @@ abilities	তুমি আদৌ কিছু জানো
 abilities	কি কি পারো একটু লিস্ট দাও
 abilities	আমি নতুন, তোমাকে কি জিজ্ঞেস করা যায়
 abilities	ব্যবসায় তুমি কি হেল্প করতে পারো
+abilities	তুমি কি কি করতে পার
 abilities	তুমি কি পারু
 how_are_you	কি খবর ভাই
 how_are_you	ভালো আছো তো ভাই
@@ -8554,6 +8564,8 @@ how_are_you	তুমি ঠিক আছো তো
 how_are_you	হুদহুদ কেমন আছো
 how_are_you	আছো কেমন
 how_are_you	কি খবর, ভালো তো
+how_are_you	কেমন আছ
+how_are_you	কেমুন আছো
 can_talk	শুনছো
 can_talk	তুমি কি আছো ওখানে
 can_talk	আমার কথা শোনা যাচ্ছে
@@ -8598,6 +8610,7 @@ salaam	ভাই সালাম
 salaam	আসসালামু আলাইকুম প্রিয় হুদহুদ
 salaam	সালাম নিবেন
 salaam	আসালামু আলাইকুম
+salaam	সালামালাইকুম
 hello	হ্যালো হুদহুদ ভাই
 hello	হাই ভাই
 hello	শুভ সকাল ভাই
@@ -8776,6 +8789,7 @@ sales_today	আজ সকাল থেকে কত বিক্রি হয়
 sales_today	আজকের বিক্রি একটু তাড়াতাড়ি বলো
 sales_today	আজ বিক্রি?
 sales_today	আজ দোকানে কত টাকার মাল গেলো
+sales_today	আজ কত বিক্রী হয়েছে
 sales_today	আজকের সেইল কতো
 sales_period	গতকালের বিক্রি
 sales_period	কাল কত বেচলাম
@@ -8790,6 +8804,7 @@ sales_period	এই মাসে এখন পর্যন্ত বিক্র
 sales_period	গত সপ্তাহের সেল একটু বলো
 sales_period	শুধু গত মাসের বিক্রিটা বলো
 sales_period	চলতি মাসে আমি কত বিক্রি করেছি
+sales_period	গতকালের বিক্রী
 sales_period	গত সপ্তার বিক্রি
 profit	এই মাসের লাভ
 profit	এই মাসে কত আয় করলাম
@@ -8819,6 +8834,8 @@ to_get	সব কাস্টমারের ব্যালেন্স যো�
 to_get	বাজার থেকে আমার কত টাকা তুলতে হবে
 to_get	আমার বাইরে মোট কত টাকা
 to_get	মোট পাওনা?
+to_get	আমি মোট কত টাকা পাব
+to_get	মোট পাওনা কতো
 to_give	আমি মোট কত টাকা দেনা
 to_give	সাপ্লায়ারদের সব মিলে কত দিতে হবে
 to_give	মানুষকে আমার কত টাকা দিতে হবে
@@ -8832,6 +8849,8 @@ to_give	আমার মোট দায়
 to_give	ভাই অন্যদের আমি কত টাকা ফেরত দেবো
 to_give	মোট দিতে হবে কত বলো
 to_give	মোট দেনা?
+to_give	আমার মোট কত টাকা দিতে হব
+to_give	মোট দেনা কতো
 who_owes_most	আমার সবচেয়ে বড় দেনাদার কে
 who_owes_most	কোন কাস্টমারের কাছে সবচেয়ে বেশি টাকা পাই
 who_owes_most	টপ দেনাদার
@@ -8875,6 +8894,7 @@ likely_payers	মাসের এই সময়ে কোন কাস্ট�
 likely_payers	আজ কার কাছ থেকে পেমেন্ট আশা করা যায়
 likely_payers	আজ কে দিতে পারে
 likely_payers	আজ সম্ভাব্য কারা দেবে
+likely_payers	আজ কে টাকা দিবে
 likely_payers	আজ কে কে টাকা দেব
 collected	আজ কত টাকা আদায় হলো
 collected	আজ কাস্টমারদের কাছ থেকে কত টাকা পেলাম
@@ -8905,6 +8925,7 @@ drawer	ভাই ড্রয়ারের টাকা বলো, দোক�
 drawer	দিন শেষ, ক্যাশে কত থাকার কথা
 drawer	ড্রয়ারের ক্যাশ মিলছে তো
 drawer	ক্যাস বাক্সে কত টাকা
+drawer	হাতে ক্যাশ কতো
 expiring	কোন কোন মালের মেয়াদ শেষ হচ্ছে
 expiring	কি তাড়াতাড়ি এক্সপায়ার হবে
 expiring	মেয়াদ শেষের কাছাকাছি মাল
@@ -8949,6 +8970,7 @@ party_balance	{NAME} আর কত বাকি
 party_balance	{NAME} এর পাওনা টাকার পরিমাণ বলো
 party_balance	{NAME} এর হিসাবের অবস্থা কি
 party_balance	{NAME} এর বেলেন্স
+party_balance	{NAME} এর বাকী কত
 party_phone	{NAME} এর নাম্বার
 party_phone	{NAME} এর মোবাইল নাম্বার
 party_phone	{NAME} এর নাম্বারটা কত
@@ -8962,6 +8984,8 @@ party_phone	ভাই {NAME} এর ফোন নাম্বারটা বে
 party_phone	{NAME} এর মোবাইল দেখাও
 party_phone	কোন নাম্বারে {NAME} কে পাওয়া যাবে
 party_phone	{NAME} এর সেল নাম্বার বলো
+party_phone	{NAME} এর ফুন নাম্বার
+party_phone	{NAME} এর ফোন নম্বার
 party_last_payment	{NAME} এর শেষ পেমেন্টটা
 party_last_payment	{NAME} শেষবার কবে টাকা দিয়েছে
 party_last_payment	{NAME} লাস্ট কবে টাকা দিলো
@@ -8991,6 +9015,7 @@ party_limit	{NAME} এর লিমিট কত টাকা
 party_limit	{NAME} কি তার ক্রেডিট লিমিটের উপরে
 party_limit	{NAME} এর বাকির সীমা কত
 party_limit	{NAME} এর ক্রেডিট লিমিড
+party_limit	{NAME} এর লিমেট কত
 party_promise	{NAME} কবে টাকা দেওয়ার কথা দিয়েছে
 party_promise	{NAME} এর ওয়াদার তারিখ কবে
 party_promise	{NAME} পেমেন্টের জন্য কোন তারিখটা দিয়ে গেছে
@@ -9019,6 +9044,8 @@ party_when_pays	{NAME} সাধারণত কবে নাগাদ দেয
 party_when_pays	{NAME} কি এই সপ্তাহে দেবে
 party_when_pays	{NAME} এর পেমেন্ট কবে আসতে পারে
 party_when_pays	{NAME} কবে শোধ করবে বলে ধরবো
+party_when_pays	{NAME} কবে টাকা দিবে
+party_when_pays	{NAME} কবে দেব
 party_details	{NAME} এর বিস্তারিত দাও
 party_details	{NAME} এর সব তথ্য
 party_details	{NAME} কোথায় থাকে
@@ -9076,6 +9103,7 @@ goods_price	ভাই {ITEM} এর রেট কত
 goods_price	{ITEM} এর নগদ দাম আর বাকির দাম
 goods_price	{ITEM} এর জন্য কত নেবো
 goods_price	কাস্টমার {ITEM} এর দাম জিজ্ঞেস করছে, তাড়াতাড়ি বলো
+goods_price	{ITEM} এর দাম কতো
 goods_price	{ITEM} এর রেইট
 goods_stock	{ITEM} কত আছে
 goods_stock	{ITEM} এর পরিমাণ
@@ -9089,6 +9117,7 @@ goods_stock	ভাই দোকানে {ITEM} কতটুকু পড়ে 
 goods_stock	{ITEM} আর কত অবশিষ্ট
 goods_stock	{ITEM} কয় বস্তা আছে
 goods_stock	{ITEM} কতটা পাওয়া যাবে
+goods_stock	{ITEM} এর স্টোক
 goods_stock	{ITEM} কত আসে
 goods_suppliers	{ITEM} আমাকে সবচেয়ে সস্তায় কে দেয়
 goods_suppliers	{ITEM} এর ক্রয় মূল্য
@@ -9148,6 +9177,7 @@ shop_info	দোকানের নাম আর ঠিকানা বলো
 shop_info	ভাই দোকানের নাম কি লেখা আছে
 shop_info	এখানে দোকানের কোন মোবাইল নাম্বার সেভ
 shop_info	দোকানের ট্যাক্স নাম্বার কি
+shop_info	আমার দোকানের ঠিকান
 shop_info	দোকানের নাম কী
 count_customers	কতজন কাস্টমার
 count_customers	কাস্টমারের সংখ্যা
@@ -9237,6 +9267,7 @@ entries_today	ভাই আজ আমরা কয়টা এন্ট্র�
 entries_today	গতকাল খাতায় কয়টা লেখা হয়েছে
 entries_today	আজ খাতায় কয়বার লিখেছি
 entries_today	আজ এন্ট্রি?
+entries_today	আজ কয়টা এনট্রি
 entries_today	আজ কয়টা এন্টি লিখসি
 calculator_uses	আজ ক্যালকুলেটর ব্যবহার হয়েছে
 calculator_uses	আজ আমি কয়বার ক্যালকুলেটর চালিয়েছি
@@ -9371,6 +9402,7 @@ book_summary	ভাই পুরো খাতার সামারি দাও
 book_summary	সবকিছুর সার্বিক সারাংশ
 book_summary	আমার পুরো খাতার অবস্থা কি
 book_summary	খাতার সামারি?
+book_summary	আমার পুরা খাতা
 book_summary	সার্বিক হিসাবের সারাংস
 cashbook_today	আজকের ক্যাশবুক
 cashbook_today	আজ টাকা ঢুকলো কত বের হলো কত
@@ -9445,6 +9477,7 @@ act_dance	খুশিতে নাচো
 act_dance	চলো নাচো তো
 act_dance	নাচ জানো তো, দেখাও
 act_dance	এই নেচে দেখাও
+act_dance	নাচু
 act_dance	একটা নাছ দেখাও
 act_jump	একটা লাফ দাও
 act_jump	লাফাও প্লিজ
@@ -9460,6 +9493,7 @@ act_jump	একটু লাফালাফি করো
 act_jump	দেখি তোমার ট্রিক
 act_jump	এই লাফিয়ে দেখাও
 act_jump	লাপ দাও
+act_jump	একটা লাফ দেও
 who_are_you	عرفني بنفسك
 who_are_you	حضرتك مين بالضبط
 who_are_you	انت ايش بالضبط

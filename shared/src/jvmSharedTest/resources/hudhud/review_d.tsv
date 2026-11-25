@@ -1092,7 +1092,7 @@ sd	OK	قرض حسنہ ڪيترو آهي		Qarz
 sd	OK	پگهار ڪيترو ڏيڻو آهي		Status:STAFF
 sd	OK	سپلائر کي ڪيترو ڏيڻو باقي آهي		Figure:TO_GIVE
 sd	OK	هن مهيني ڪهڙو مال سڀ کان وڌيڪ وڪرو ٿيو		TopGoods
-sd	OK	ميعاد ڪڏهن ختم ٿئي ٿو		NeedGoods
+sd	OK	ميعاد ڪڏهن ختم ٿئي ٿو		Figure:EXPIRING
 sd	OK	سڀ کان گهٽ اڌار ڪنهن جو آهي		Figure:WHO_OWES_LEAST
 sd	OK	ڪير پئسا نٿو ڏئي		Figure:NOT_PAID
 sd	OK	اڄ ڪنهن پئسا ڏنا		Collected

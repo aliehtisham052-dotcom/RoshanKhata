@@ -1,12 +1,7 @@
 # Train sentences that were also held-out, owner or review sentences on 16 Nov 2026 (hudhud_sets.py).
 # Each goes when the bank is next changed and the sense learnt again; nothing may be added by hand.
+# Keys rewritten 25 Nov 2026 to recipe 2's key (Devanagari and Bengali marks kept); only entries listed before stay.
 # set<TAB>sentence as compared (no case, marks or punctuation)
-heldout.tsv	good morning
-heldout.tsv	hudhud
-heldout.tsv	salam alaikum
-heldout.tsv	thank you so much
-heldout.tsv	سلام علیکم
-heldout.tsv	هدهد
 owner_1000.tsv	aaj ka khulasa batao
 owner_1000.tsv	aaj ki total sale
 owner_1000.tsv	assalam o alaikum
@@ -130,27 +125,23 @@ review_d.tsv	ڪيين اهيو
 review_d.tsv	گذريل مهيني جو نفعو
 review_d.tsv	گلي ۾ ڪيترا پيسا اهن
 review_d.tsv	گلے میں کتنے پیسے ہیں
-review_d.tsv	आज कतन मल वपस आय
-review_d.tsv	इनवइस कस बनऊ
-review_d.tsv	कतन गरहक ह
-review_d.tsv	कस ह भई
-review_d.tsv	कसन पस नह दए
-review_d.tsv	गलल म कतन पस ह
-review_d.tsv	दकन क नम
-review_d.tsv	धनयवद
-review_d.tsv	मनफ
-review_d.tsv	আজ ক ক হল
-review_d.tsv	আজ কত খরচ হল
-review_d.tsv	আজ কত তরখ
-review_d.tsv	আজ কত মল ফরত এল
-review_d.tsv	আজকর সরশ
-review_d.tsv	ইনভযস কভব বনব
-review_d.tsv	এখন পরযনত আজ কত বকর
-review_d.tsv	কমন আছ
-review_d.tsv	গত মসর লভ
-review_d.tsv	গতকলর বকর
-review_d.tsv	দকনর নম ক
-review_d.tsv	ধনযবদ
+review_d.tsv	आज कितना माल वापस आया
+review_d.tsv	किसने पैसे नहीं दिए
+review_d.tsv	कैसे हो भाई
+review_d.tsv	गल्ले में कितने पैसे हैं
+review_d.tsv	दुकान का नाम
+review_d.tsv	धन्यवाद
+review_d.tsv	मुनाफ़ा
+review_d.tsv	আজ কত খরচ হলো
+review_d.tsv	আজ কত তারিখ
+review_d.tsv	আজ কত মাল ফেরত এলো
+review_d.tsv	আজকের সারাংশ
+review_d.tsv	এখন পর্যন্ত আজ কত বিক্রি
+review_d.tsv	কেমন আছো
+review_d.tsv	গত মাসের লাভ
+review_d.tsv	গতকালের বিক্রি
+review_d.tsv	দোকানের নাম কী
+review_d.tsv	ধন্যবাদ
 review_o.tsv	aaj kitne bill aaye
 review_o.tsv	allah hafiz
 review_o.tsv	assalamualaikum
@@ -207,7 +198,6 @@ review_o.tsv	خداحافظ
 review_o.tsv	دراز ۾ ڪيترا پيسا هجڻ گهرجن
 review_o.tsv	سب سے بڑا بقایا دار کون ہے
 review_o.tsv	سلام
-review_o.tsv	سلام علیکم
 review_o.tsv	سڀ کان وڌيڪ اڌار ڪنهن تي اهي
 review_o.tsv	شكرا
 review_o.tsv	فروش امروز
@@ -232,32 +222,24 @@ review_o.tsv	کون سا چیک باونس ہوا
 review_o.tsv	کیا حال ہے
 review_o.tsv	کیش ان ہینڈ کتنا ہے
 review_o.tsv	ڪالهه جو وڪرو
-review_o.tsv	अससलम अलकम
-review_o.tsv	आज कतन क मल बक
-review_o.tsv	इनवइस कस बनऊ
-review_o.tsv	कन स चक बउस हआ
-review_o.tsv	कस ह
-review_o.tsv	कसत
-review_o.tsv	चक
-review_o.tsv	तम कन ह
-review_o.tsv	नमसत
-review_o.tsv	बकअप
-review_o.tsv	बकअप कस ल
-review_o.tsv	मनफ
-review_o.tsv	सबस बड बकयदर कन ह
-review_o.tsv	আজ বকর
-review_o.tsv	আজকর খরচ
-review_o.tsv	আসসলম আলইকম
-review_o.tsv	এই মসর বকর
-review_o.tsv	ক টক দচছ ন
-review_o.tsv	কন চক বউনস হযছ
-review_o.tsv	কমন আছ
-review_o.tsv	চক
-review_o.tsv	তম ক
-review_o.tsv	তম ক ক করত পর
-review_o.tsv	তম ক পর
-review_o.tsv	নমসকর
-review_o.tsv	বদয
-review_o.tsv	বযকআপ কভব নব
-review_o.tsv	ভষ কভব বদলব
-review_o.tsv	সবচয বশ বক কর
+review_o.tsv	अस्सलाम अलैकुम
+review_o.tsv	आज कितने का माल बिका
+review_o.tsv	इनवॉइस कैसे बनाऊं
+review_o.tsv	कैसे हो
+review_o.tsv	कौन सा चेक बाउंस हुआ
+review_o.tsv	चेक
+review_o.tsv	तुम कौन हो
+review_o.tsv	नमस्ते
+review_o.tsv	बैकअप
+review_o.tsv	बैकअप कैसे लूं
+review_o.tsv	আজ বিক্রি
+review_o.tsv	আজকের খরচ
+review_o.tsv	আসসালামু আলাইকুম
+review_o.tsv	এই মাসের বিক্রি
+review_o.tsv	কে টাকা দিচ্ছে না
+review_o.tsv	কেমন আছ
+review_o.tsv	চেক
+review_o.tsv	তুমি কে
+review_o.tsv	নমস্কার
+review_o.tsv	বিদায়
+review_o.tsv	সবচেয়ে বেশি বাকি কার

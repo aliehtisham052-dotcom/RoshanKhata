@@ -260,7 +260,8 @@ class HudhudSpansTest {
 
     @Test fun `rows are never listed for a longer span, only a day, a week or a month at a time`() {
         assertEquals(Ask.SpanLimit(shortWindows.map { Ask.Cashbook(it) }, long = false), read("cashbook this year"))
-        assertEquals(Ask.SpanLimit(shortWindows.map { Ask.Cashbook(it) }, long = false), read("money in this year"))
+        // "Money in" is the payments received (the rules' reading; the retrained sense is 0.50 against 0.46 for the cashbook and no longer turns it): told with the spans he has either way.
+        assertEquals(Ask.SpanLimit(shortWindows.map { Ask.Collected(it) }, long = false), read("money in this year"))
         assertEquals(Ask.SpanLimit(shortWindows.map { Ask.Count(Thing.INVOICES, it) }, long = false), read("how many invoices this year"))
         assertEquals(Ask.SpanLimit(shortWindows.map { Ask.Count(Thing.BILLS, it) }, long = false), read("kitne bills aaye is saal"))
     }

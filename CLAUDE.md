@@ -3057,6 +3057,14 @@ Each of these cost a build or a bug.
      `object`), and compile the file before the push (lesson 93: a single shared file compiles here with stand-ins for
      the DAO in seconds, as `/tmp/cfstub` did).
 
+165. **A model that changes shape takes its thresholds with it.** `Hudhud.decide`'s certainties (0.95 to turn the
+     rules, 0.60 to answer, 0.30 to guess) were measured on one perceptron (lesson 107). The 15-seed ensemble of 25 Nov
+     2026 is surer: right only 68% of the time at 0.95-0.97 on the held-out set, so it turned thirty of the owner's own
+     readings ("Cash kitna bacha hai" became the month's profit) while the held-out figure rose 1,076 -> 1,100. A retrain
+     that changes the model's kind (an ensemble, another learner, another feature set) measures its certainty-to-accuracy
+     table on the held-out set again and re-derives every threshold from it (`SENSE_FIRM_TURN` 0.99, BC-289), and is
+     compared sentence by sentence with HEAD on the owner's lists (`comm` of the two miss lists), not only by count.
+
 ## Working with the owner
 
 - **Reply in Roman Urdu** unless English is asked for.
