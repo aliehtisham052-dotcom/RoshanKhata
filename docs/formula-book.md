@@ -1,6 +1,6 @@
 # Formula book
 
-One row per figure the app shows or Hudhud tells: the ONE function that computes it, what it reads, its window, what it leaves out, its rounding, its gate and where it is shown. Built 24 Nov 2026 by reading the code (no run). `docs/formula-book.tsv` holds the same rows; `scripts/check_formula_book.py` checks every `path::Symbol` still exists (drift protection, not proof: lesson 125). Not wired into CI: add `python3 scripts/check_formula_book.py` to `.github/workflows/strings.yml` and `scripts/run_release_checks.sh`.
+One row per figure the app shows or Hudhud tells: the ONE function that computes it, what it reads, its window, what it leaves out, its rounding, its gate and where it is shown. Built 24 Nov 2026 by reading the code (no run). `docs/formula-book.tsv` holds the same rows; `scripts/check_formula_book.py` checks every `path::Symbol` still exists (drift protection, not proof: lesson 125). Run in CI by `.github/workflows/strings.yml` and by `scripts/run_release_checks.sh` (wired 24 Nov 2026).
 
 Labels: VERIFIED = read in the code; INFERRED = not read directly. Gates marked 'none found' were not seen in the code read, which is not the same as none.
 

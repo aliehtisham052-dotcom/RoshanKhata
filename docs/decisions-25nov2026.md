@@ -23,3 +23,18 @@ The owner accepted the professional recommendation for each (25 Nov 2026, 07:12)
 | D11 | The Windows app goes to the Microsoft Store as MSIX with the final release (21-27 Dec); it is sent only after the owner's yes on that day. |
 | D12 | The sealed test set stays in the owner's own folder, outside the repository (as v1 already is); no new account. |
 | D9 | The owner's devices for the real-device runs (B5, B6, H7): an Oppo Reno 11F phone and an HP EliteBook 830 G7 laptop (25 Nov 08:19; Android and Windows versions to be read on the devices). |
+
+## Hudhud's training master plan v1, 25 November 2026 (evening, the owner's answers at 20:10)
+
+The owner read the Hudhud Training Master Plan v1 (`docs/hudhud-master-plan-v1.md`) and accepted the professional
+recommendation for each of D15–D21 ("Sab haan").
+
+| Id | Decision |
+|---|---|
+| D15 | D1 changes in one place: when the money's side (to get / to give), the amount or the person is not certain, Hudhud asks one question first ("lene hain ya dene?") instead of "Taken as: …". Everywhere else D1 stays as it is. Built in Marhala 1. |
+| D16 | Business knowledge questions (margin, markup, cash flow, stock) are allowed after the release, in eight modules only, every answer with its source and date. The 16 Nov refusal of cricket, jokes and general knowledge stays. Marhala 9. |
+| D17 | Sindhi, Bengali, Farsi and Arabic are called "beta" in the app and in every figure until a native speaker has read them. Marhala 4 (release) and 11. |
+| D18 | Sealed set v2: 500 new sentences (400 Roman Urdu, 100 English), written without looking at Hudhud's answers — 400 by the owner and 100 by a second writer who has never tuned Hudhud, measured and reported apart (the owner's lists were the dev set, so his writing alone would say how Hudhud reads him, not other shopkeepers). The other seven languages' sealed figures are "not certified" in H8. Kept in the owner's folder (D12). Marhala 3. |
+| D19 | Concentration: first only the share of all credit one party holds is shown; an alert and its threshold come later, set by the owner or by measurement. Marhala 10. |
+| D20 | The master plan v1 is the base. A new plan is fitted into its phases (what exists, what is new, what goes against a decision); a v2 only when new evidence changes a decision, saying what changed, why and the source. |
+| D21 | The repository stays public: GitHub's standard runners are free for public repositories, while private ones draw on a monthly allowance (the owner's rule: free routes only). Hudhud's name and training bank are therefore public; outside AI tools get only the name-free context pack. |

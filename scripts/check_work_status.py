@@ -6,7 +6,7 @@ a done when something can be opened to see it. This checks the register, not the
 protection, not proof). It fails when
 
   - the header is not the register's, a line has the wrong number of columns, an id is malformed or used twice;
-  - an item of the plan is missing (F1-F3, A1-A6, B1-B12, C1-C5, H0-H9, D1-D14);
+  - an item of the plan is missing (F1-F3, A1-A6, B1-B12, C1-C5, H0-H9, D1-D21);
   - a status is not one of the five the plan allows, a priority is not P0-P2, an importance is not 1-10;
   - VERIFIED COMPLETE or PARTIAL has no evidence, or its evidence names a repository path that does not exist
     (a word with a "/" in it is read as a path; "#Name" after a path is a symbol that must be in that file);
@@ -25,7 +25,7 @@ COLUMNS = ["id", "work", "sources", "priority", "importance", "status", "evidenc
 STATUSES = {"VERIFIED COMPLETE", "PARTIAL", "NOT STARTED", "BLOCKED", "NEEDS REVALIDATION"}
 PRIORITIES = {"P0", "P1", "P2"}
 PLAN = ([f"F{i}" for i in range(1, 4)] + [f"A{i}" for i in range(1, 7)] + [f"B{i}" for i in range(1, 13)]
-        + [f"C{i}" for i in range(1, 6)] + [f"H{i}" for i in range(0, 10)] + [f"D{i}" for i in range(1, 15)])
+        + [f"C{i}" for i in range(1, 6)] + [f"H{i}" for i in range(0, 10)] + [f"D{i}" for i in range(1, 22)])
 ID = re.compile(r"^[A-Z]{1,2}\d{1,3}$")
 
 

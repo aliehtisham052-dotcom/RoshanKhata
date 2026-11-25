@@ -3,8 +3,7 @@
 
 Drift protection, not proof (lesson 125): it says the named function is still there,
 not that the row's words about it are true. A rename or a delete fails here, so the
-book is read again.  Not wired into CI: add `python3 scripts/check_formula_book.py`
-to .github/workflows/strings.yml and scripts/run_release_checks.sh.
+book is read again.  Run by .github/workflows/strings.yml and scripts/run_release_checks.sh.
 Usage: python3 scripts/check_formula_book.py   (exit 1 on any problem)
 """
 import csv, os, re, sys
