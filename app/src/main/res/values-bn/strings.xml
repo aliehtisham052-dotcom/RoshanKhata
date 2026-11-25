@@ -4889,4 +4889,6 @@
     <string name="backup_prot_done_open">খোলা: যার কাছে এই ফাইল থাকবে সে আপনার খাতা পড়তে পারবে।</string>
     <string name="audit_backup_files_open">ব্যাকআপ ফাইল খোলা করা হয়েছে (পাসওয়ার্ড ছাড়া)</string>
     <string name="audit_backup_files_protected">ব্যাকআপ ফাইল সুরক্ষিত করা হয়েছে (পাসওয়ার্ড দিয়ে)</string>
+    <string name="hudhud_l_on">চালু</string>
+    <string name="hudhud_l_off">বন্ধ</string>
 </resources>

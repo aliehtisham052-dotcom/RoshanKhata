@@ -169,6 +169,11 @@ class HudhudDeskEnv(
         override fun bankAccountTitle() = settings.bankAccountTitle().kept()
         override fun bankIban() = settings.bankIban().kept()
         override fun bankJazzCash() = settings.bankJazzCash().kept()
+        override fun otherTradeName() = settings.otherTradeName().kept()
+        override fun otherTradeItems() = settings.otherTradeItems().kept()
+        override fun photoOnStatement(): Boolean = settings.photoOnStatement()
+        override fun sealChoice(): com.innovation313.roshankhata.data.SealChoice = settings.sealChoice()
+        override fun paymentOnReminder(): Boolean = settings.paymentOnReminder()
     }
 
     /** The phone's Trade.label: the trade's own word, an Other shop's own name. */

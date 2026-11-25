@@ -106,6 +106,12 @@ class HudhudPhoneEnv(val context: Context, private val clock: () -> Long = { Sys
         override fun bankAccountTitle() = BusinessProfile.bankAccountTitle(context)
         override fun bankIban() = BusinessProfile.bankIban(context)
         override fun bankJazzCash() = BusinessProfile.bankJazzCash(context)
+        override fun otherTradeName() = BusinessProfile.otherTradeName(context)
+        override fun otherTradeItems() = BusinessProfile.otherTradeItems(context)
+        override fun photoOnStatement(): Boolean = BusinessProfile.photoOnStatement(context)
+        override fun sealChoice(): SealChoice = BusinessProfile.sealChoice(context)
+        override fun paymentOnReminder(): Boolean = BusinessProfile.paymentOnReminder(context)
+        override fun askShareAfterEntry(): Boolean = BusinessProfile.askShareAfterEntry(context)
     }
 
     override fun tradeLabel(key: String): String = Trade.of(key).label(context)

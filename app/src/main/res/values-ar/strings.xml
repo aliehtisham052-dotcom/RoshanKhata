@@ -5142,4 +5142,6 @@
     <string name="backup_prot_done_open">مفتوح: يمكن لأي شخص لديه هذا الملف قراءة دفترك.</string>
     <string name="audit_backup_files_open">تم جعل ملفات النسخ الاحتياطية مفتوحة (بلا كلمة مرور)</string>
     <string name="audit_backup_files_protected">تم جعل ملفات النسخ الاحتياطية محمية (بكلمة مرور)</string>
+    <string name="hudhud_l_on">مُفعّل</string>
+    <string name="hudhud_l_off">متوقف</string>
 </resources>

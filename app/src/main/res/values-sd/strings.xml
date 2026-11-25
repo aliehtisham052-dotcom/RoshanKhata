@@ -4869,4 +4869,6 @@
     <string name="backup_prot_done_open">کليل: جنهن وٽ هي فائل هجي سو توهانجو کاتو پڙهي سگهي ٿو.</string>
     <string name="audit_backup_files_open">بيڪ اپ فائلون کليل ڪيون ويون (بنا پاس ورڊ)</string>
     <string name="audit_backup_files_protected">بيڪ اپ فائلون محفوظ ڪيون ويون (پاس ورڊ سان)</string>
+    <string name="hudhud_l_on">آن</string>
+    <string name="hudhud_l_off">بند</string>
 </resources>

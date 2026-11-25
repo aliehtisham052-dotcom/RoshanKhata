@@ -4841,4 +4841,6 @@
     <string name="backup_prot_done_open">Khuli: jis ke paas yeh file ho woh aap ki kitab parh sakta hai.</string>
     <string name="audit_backup_files_open">Backup files khuli kar di gayin (baghair password)</string>
     <string name="audit_backup_files_protected">Backup files mehfooz kar di gayin (password se)</string>
+    <string name="hudhud_l_on">On</string>
+    <string name="hudhud_l_off">Band</string>
 </resources>

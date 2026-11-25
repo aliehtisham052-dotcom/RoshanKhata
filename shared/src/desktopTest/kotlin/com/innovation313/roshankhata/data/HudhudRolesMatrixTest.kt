@@ -390,6 +390,30 @@ class HudhudRolesMatrixTest {
     }
 
     @Test
+    fun theShopsPaperSettingsAreTheOwnersAlone() = runBlocking {
+        // H6 (25 Nov 2026): the whole-profile card says how the papers behave in the settings screen's own words, and only
+        // to whoever may open that screen (SETTINGS): the owner. A manager and a cashier get the card without them.
+        val now = System.currentTimeMillis()
+        val owner = book("paper-settings")
+        val ids = seed(owner.khataDao(), now)
+        val dao = owner.khataDao()
+        for (role in listOf(HudhudRolesTable.Role.OWNER, HudhudRolesTable.Role.MANAGER, HudhudRolesTable.Role.CASHIER)) {
+            become(role, ids)
+            val env = HudhudRolesEnv(now, viewer = false)
+            val text = textOf(AnswerBook.answer(env, dao, Hudhud.Ask.Shop(Hudhud.ShopFacet.ALL), dao.partiesWithBalanceOnce()))
+            val photo = env.words.text(W.bp_photo)
+            val seal = env.words.text(W.seal_choice_own)
+            if (role == HudhudRolesTable.Role.OWNER) {
+                assertTrue("the owner is told the statement photo setting: $text", text.contains(photo))
+                assertTrue("the owner is told the seal: $text", text.contains(seal))
+            } else {
+                assertFalse("$role is told a setting only the owner opens: $text", text.contains(photo) || text.contains(seal))
+            }
+        }
+        Access.resetForTest()
+    }
+
+    @Test
     fun aPrivateNoteIsWrittenButNeverSaidAtACounter() = runBlocking {
         // The owner's decision D8 on T39 (25 Nov 2026): at a counter (counter mode on, or somebody signed in) the customer
         // may be standing there, so his private note is on the card and never said aloud; the owner's own phone says it.

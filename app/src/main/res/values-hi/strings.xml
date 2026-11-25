@@ -4889,4 +4889,6 @@
     <string name="backup_prot_done_open">खुली: जिसके पास यह फ़ाइल हो वह आपकी बही पढ़ सकता है।</string>
     <string name="audit_backup_files_open">बैकअप फ़ाइलें खुली कर दी गईं (बिना पासवर्ड)</string>
     <string name="audit_backup_files_protected">बैकअप फ़ाइलें सुरक्षित कर दी गईं (पासवर्ड से)</string>
+    <string name="hudhud_l_on">चालू</string>
+    <string name="hudhud_l_off">बंद</string>
 </resources>

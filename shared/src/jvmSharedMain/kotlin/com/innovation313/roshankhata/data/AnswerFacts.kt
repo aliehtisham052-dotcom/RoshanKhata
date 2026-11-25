@@ -46,6 +46,14 @@ object AnswerFacts {
     /** "Label: value", the value isolated so a name or a figure reads right in a right-to-left line. */
     fun line(label: String, value: String) = label + ": " + Format.isolate(value)
 
+    private fun onOff(c: AnswerEnv, on: Boolean): String = c.getString(if (on) W.hudhud_l_on else W.hudhud_l_off)
+
+    private fun sealWord(s: SealChoice): String = when (s) {
+        SealChoice.APP -> W.seal_choice_app
+        SealChoice.OWN -> W.seal_choice_own
+        SealChoice.NONE -> W.seal_choice_none
+    }
+
     internal fun line(c: AnswerEnv, label: String, value: String) = line(c.getString(label), value)
 
     internal fun whenOf(c: AnswerEnv, t: Long) = WhenWords.whenWords(t, c.now(), c.words)
@@ -606,7 +614,13 @@ object AnswerFacts {
                     // What the shop prints (15 Nov 2026, the catalog's profile fields): the name it uses in Urdu and the terms on every
                     // invoice. The Urdu name is on posters and cards anyone prints, so it is everyone's; the terms are written on the settings screen, so they are the owner's, cut at 200 letters.
                     nameUrdu?.let { line(c, W.business_name_urdu, it) },
-                    terms?.let { line(c, W.invoice_terms, if (it.length > 200) it.take(200).trimEnd() + "\u2026" else it) }
+                    terms?.let { line(c, W.invoice_terms, if (it.length > 200) it.take(200).trimEnd() + "\u2026" else it) },
+                    // How the papers and the entry flow behave (25 Nov 2026, H6): the settings screen's own words, the owner's alone.
+                    if (owner && !c.profile.otherTradeName().isNullOrBlank()) c.profile.otherTradeItems()?.takeIf { it.isNotBlank() }?.let { line(c, W.trade_other_items_label, it) } else null,
+                    if (owner) c.profile.photoOnStatement()?.let { line(c, W.bp_photo, onOff(c, it)) } else null,
+                    if (owner) c.profile.sealChoice()?.let { line(c, W.seal_choice_title, c.getString(sealWord(it))) } else null,
+                    if (owner) c.profile.paymentOnReminder()?.let { line(c, W.bp_pay_reminder, onOff(c, it)) } else null,
+                    if (owner) c.profile.askShareAfterEntry()?.let { line(c, W.bp_ask_share, onOff(c, it)) } else null
                 )
                 AnswerCard(Mood.CALM, label = name?.takeIf { it.isNotBlank() } ?: c.getString(W.hudhud_chip_shop),
                     lines = if (name.isNullOrBlank()) listOf(c.getString(W.hudhud_not_set)) + lines else lines, open = open,

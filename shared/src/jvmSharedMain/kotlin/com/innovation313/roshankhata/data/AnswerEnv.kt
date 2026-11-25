@@ -113,4 +113,19 @@ interface AnswerProfile {
     fun bankAccountTitle(): String?
     fun bankIban(): String?
     fun bankJazzCash(): String?
+
+    // How the shop's papers and flows behave (25 Nov 2026, the catalog's last profile fields, H6). Null: this platform has no
+    // such setting, and the card says nothing of it.
+    /** An Other shop's own name for its trade (the trade line says it through tradeLabel). */
+    fun otherTradeName(): String? = null
+    /** An Other shop's own three item words. */
+    fun otherTradeItems(): String? = null
+    /** Whether the customer's photo is printed on his statement. */
+    fun photoOnStatement(): Boolean? = null
+    /** The seal on the shop's papers. */
+    fun sealChoice(): SealChoice? = null
+    /** Whether payment details are added under every reminder. */
+    fun paymentOnReminder(): Boolean? = null
+    /** Whether each saved entry offers to go to the customer on WhatsApp (the phone's setting). */
+    fun askShareAfterEntry(): Boolean? = null
 }

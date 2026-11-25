@@ -4841,4 +4841,6 @@
     <string name="backup_prot_done_open">کھلی: جس کے پاس یہ فائل ہو وہ آپ کی کتاب پڑھ سکتا ہے۔</string>
     <string name="audit_backup_files_open">بیک اپ فائلیں کھلی کر دی گئیں (بغیر پاس ورڈ)</string>
     <string name="audit_backup_files_protected">بیک اپ فائلیں محفوظ کر دی گئیں (پاس ورڈ سے)</string>
+    <string name="hudhud_l_on">آن</string>
+    <string name="hudhud_l_off">بند</string>
 </resources>

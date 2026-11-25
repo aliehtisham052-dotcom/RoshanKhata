@@ -4814,4 +4814,6 @@
     <string name="backup_prot_done_open">Terbuka: siapa pun yang memegang berkas ini dapat membaca buku Anda.</string>
     <string name="audit_backup_files_open">Berkas cadangan dibuat terbuka (tanpa kata sandi)</string>
     <string name="audit_backup_files_protected">Berkas cadangan dilindungi (dengan kata sandi)</string>
+    <string name="hudhud_l_on">Aktif</string>
+    <string name="hudhud_l_off">Nonaktif</string>
 </resources>

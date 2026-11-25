@@ -5054,4 +5054,6 @@
     <string name="backup_prot_done_open">Open: anyone with this file can read your book.</string>
     <string name="audit_backup_files_open">Backup files set to open (no password)</string>
     <string name="audit_backup_files_protected">Backup files set to protected (password)</string>
+    <string name="hudhud_l_on">On</string>
+    <string name="hudhud_l_off">Off</string>
 </resources>

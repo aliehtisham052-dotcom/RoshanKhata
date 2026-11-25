@@ -81,4 +81,8 @@ internal class HudhudRolesProfile : AnswerProfile {
     override fun bankAccountTitle(): String? = "Roles Test Traders"
     override fun bankIban(): String? = marker("bank account")
     override fun bankJazzCash(): String? = null
+    // How the papers behave (H6, 25 Nov 2026): the owner's alone, as their settings screen.
+    override fun photoOnStatement(): Boolean = true
+    override fun sealChoice(): SealChoice = SealChoice.OWN
+    override fun paymentOnReminder(): Boolean = false
 }

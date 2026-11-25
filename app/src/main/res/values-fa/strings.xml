@@ -4869,4 +4869,6 @@
     <string name="backup_prot_done_open">باز: هر کس این فایل را داشته باشد می‌تواند دفتر شما را بخواند.</string>
     <string name="audit_backup_files_open">فایل‌های پشتیبان باز شدند (بدون رمز عبور)</string>
     <string name="audit_backup_files_protected">فایل‌های پشتیبان محافظت شدند (با رمز عبور)</string>
+    <string name="hudhud_l_on">روشن</string>
+    <string name="hudhud_l_off">خاموش</string>
 </resources>

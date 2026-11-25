@@ -112,7 +112,8 @@ profile	BusinessProfile	READ	cols=country,businessEmail,strn,taxLabel,bankName,b
 profile	BusinessProfile	READ	cols=businessNameUrdu	reader=AnswerFacts.shop	gate=NONE	screen=BusinessSettingsActivity	alsoseen=PosterActivity,BusinessCardActivity	why=the Urdu name is printed on the Urdu posters and the business card anyone prints
 profile	BusinessProfile	READ	cols=termsAndConditions	reader=AnswerFacts.shop	gate=SETTINGS	screen=BusinessSettingsActivity	why=the terms are written on the settings screen the owner opens, no other screen of a cashier shows them
 profile	BusinessProfile	WITHHELD	cols=receiptHeader	why=not a stored field but the name, address, phone and tax number joined for a receipt's head: each is told by its own reader and gate (the tax number only with SETTINGS), so a whole-header answer would be a second way past that gate
-profile	BusinessProfile	GAP	cols=otherTradeName,otherTradeItems,logoDesign,photoOnStatement,sealChoice,askShareAfterEntry,paymentOnReminder	why=choices of how printed sheets and the entry flow look or behave, and an Other shop's own trade words (the trade answer already says the owner's name for it through tradeLabel). AnswerProfile (AnswerEnv.kt) has no getter for any of the seven and each platform's env (HudhudPhoneEnv, HudhudDeskEnv, the roles test's profile) would have to give one, then a line in AnswerFacts.shop's whole-profile card behind SETTINGS: a change across files this step did not own
+profile	BusinessProfile	READ	cols=otherTradeName,otherTradeItems,photoOnStatement,sealChoice,paymentOnReminder,askShareAfterEntry	reader=AnswerFacts.shop	gate=SETTINGS	screen=BusinessSettingsActivity	why=how the papers and the entry flow behave, said on the whole-profile card in the settings screen's own words (25 Nov 2026, H6), the settings screen is the owner's, so are they
+profile	BusinessProfile	WITHHELD	cols=logoDesign	why=the logo maker's design id (a key, not words): the logo picture itself is what the screens show, and nobody asks the id
 
 # ---- screen
 screen	AgingActivity	OPEN
@@ -193,7 +194,7 @@ more	mera_khata_title	OPEN	tier=OPEN
 more	language	OPEN	tier=OPEN
 more	text_size	ANSWERED	ask=Look	tier=LOOK	why=at the owner's word he changes the text size one step or to a level, the card says what it was and has an Undo (HudhudLookDoor is the only writer)
 more	theme	ANSWERED	ask=Look	tier=LOOK	why=at the owner's word he changes the theme (light, dark, as the phone), the card says what it was and has an Undo (HudhudLookDoor is the only writer)
-more	hudhud_greet_title	GAP	tier=LOOK	why=his own morning greeting switch, no answer yet. A page in the switch's own words (hudhud_greet_help) was tried on 17 Nov 2026 and took asks with his name in them (a Hindi hop order became a guess), so it needs an Ask of its own in Hudhud.kt (a LOOK-tier switch read and flipped through HudhudLookDoor's pattern, with Undo), which this step could not edit
+more	hudhud_greet_title	NOT-ASKED	tier=NEVER	why=by the owner's decision D3 (25 Nov 2026) he changes only the text size and the theme, so his morning greeting is switched by the owner's own tap (More > Morning greeting, or the greeting's own close button for the day)
 more	hudhud_voice_title	ANSWERED	ask=Voice	tier=LOOK	why=the voice questions change his own voice, pace and switch
 more	help_support	OPEN	tier=OPEN
 more	share_app	NOT-ASKED	tier=NEVER	why=sharing sends a message, and his files may never send (check_hudhud_readonly.py)
