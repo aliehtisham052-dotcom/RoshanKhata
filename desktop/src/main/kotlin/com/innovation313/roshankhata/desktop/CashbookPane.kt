@@ -170,8 +170,8 @@ fun CashbookPane(
         // The whole cashbook, every category: a walk-in's refund is money out here, while profit's expenses
         // (cashbookExpensesBetween) leave it out as a return (D9, by design; the phone's Cashbook reads the same two sums).
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FigureCard(word(W.cash_income), Format.money(income), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
-            FigureCard(word(W.cash_expense), Format.money(expense), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
+            FigureCard(word(W.cash_in), Format.money(income), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
+            FigureCard(word(W.cash_out), Format.money(expense), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
             // With its sign (21 Oct 2026): more out than in printed as a plain, positive figure.
             FigureCard(word(W.cash_net), Format.signedTotal(net), if (net < 0) c.owedToMe else c.ink, Modifier.weight(1f), icon = "ic_tile_cashbook", tint = Look.subtle)
             FigureCard(

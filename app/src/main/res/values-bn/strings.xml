@@ -588,8 +588,8 @@
     <string name="cashbook_subtitle">ব্যবসার টাকা আসা-যাওয়া</string>
     <string name="cashbook_separate_note">ক্যাশবুক আপনার গ্রাহক খাতা থেকে আলাদা। ভাড়া, মজুরি, হঠাৎ আসা ক্রেতার নগদ বিক্রি — যে টাকার সঙ্গে কোনো গ্রাহক যুক্ত নয়। এতে কারও দেনা-পাওনা বদলায় না।</string>
     <string name="add_cash_entry">এন্ট্রি যোগ করুন</string>
-    <string name="cash_in">নগদ এসেছে</string>
-    <string name="cash_out">নগদ গেছে</string>
+    <string name="cash_in">টাকা এসেছে</string>
+    <string name="cash_out">টাকা গেছে</string>
     <string name="cash_net">নিট</string>
     <string name="cash_income">টাকা এসেছে</string>
     <string name="cash_expense">টাকা গেছে</string>

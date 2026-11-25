@@ -588,8 +588,8 @@
     <string name="cashbook_subtitle">कारोबार का पैसा आना-जाना</string>
     <string name="cashbook_separate_note">कैशबुक आपके ग्राहक खाते से अलग है। किराया, मज़दूरी, राह चलते की नकद बिक्री — ऐसा पैसा जिससे कोई ग्राहक जुड़ा नहीं। इससे किसी का बकाया नहीं बदलता।</string>
     <string name="add_cash_entry">एंट्री जोड़ें</string>
-    <string name="cash_in">नकद आया</string>
-    <string name="cash_out">नकद गया</string>
+    <string name="cash_in">पैसा आया</string>
+    <string name="cash_out">पैसा गया</string>
     <string name="cash_net">शुद्ध</string>
     <string name="cash_income">पैसा आया</string>
     <string name="cash_expense">पैसा गया</string>

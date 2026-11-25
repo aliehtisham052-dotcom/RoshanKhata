@@ -581,8 +581,8 @@
     <string name="cashbook_subtitle">ڪاروبار جا پئسا اندر ۽ ٻاهر</string>
     <string name="cashbook_separate_note">روڪڙ ڪتاب توهان جي گراهڪ کاتي کان الڳ آهي. مسواڙ، پگهارون، اچي وٺي ويندڙ نقد وڪرو — اهي پئسا جن سان ڪو گراهڪ ڳنڍيل ناهي. اهو ڪنهن جي قرض کي نٿو بدلائي.</string>
     <string name="add_cash_entry">داخلا شامل ڪريو</string>
-    <string name="cash_in">روڪڙ اندر</string>
-    <string name="cash_out">روڪڙ ٻاهر</string>
+    <string name="cash_in">پئسا اندر</string>
+    <string name="cash_out">پئسا ٻاهر</string>
     <string name="cash_net">خالص</string>
     <string name="cash_income">پئسا اندر</string>
     <string name="cash_expense">پئسا ٻاهر</string>

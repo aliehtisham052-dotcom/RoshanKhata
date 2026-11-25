@@ -581,8 +581,8 @@
     <string name="cashbook_subtitle">پول ورودی و خروجی کسب‌وکار</string>
     <string name="cashbook_separate_note">دفتر صندوق از دفتر مشتریان شما جداست. اجاره، دستمزد، فروش نقدی گذری — پولی که مشتری خاصی ندارد. بدهی هیچ‌کس را تغییر نمی‌دهد.</string>
     <string name="add_cash_entry">افزودن ثبت</string>
-    <string name="cash_in">ورود نقد</string>
-    <string name="cash_out">خروج نقد</string>
+    <string name="cash_in">پول ورودی</string>
+    <string name="cash_out">پول خروجی</string>
     <string name="cash_net">خالص</string>
     <string name="cash_income">پول ورودی</string>
     <string name="cash_expense">پول خروجی</string>

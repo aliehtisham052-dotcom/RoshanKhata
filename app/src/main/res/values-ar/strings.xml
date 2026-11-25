@@ -621,8 +621,8 @@
     <string name="cashbook_subtitle">دخول المال التجاري وخروجه</string>
     <string name="cashbook_separate_note">دفتر النقد منفصل عن دفتر عملائك. الإيجار والأجور وبيع نقدي عابر — مال بلا عميل. لا يغيّر ما يستحق على أحد.</string>
     <string name="add_cash_entry">إضافة قيد</string>
-    <string name="cash_in">نقد داخل</string>
-    <string name="cash_out">نقد خارج</string>
+    <string name="cash_in">مال داخل</string>
+    <string name="cash_out">مال خارج</string>
     <string name="cash_net">الصافي</string>
     <string name="cash_income">مال داخل</string>
     <string name="cash_expense">مال خارج</string>

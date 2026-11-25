@@ -574,8 +574,8 @@
     <string name="cashbook_subtitle">Uang usaha masuk dan keluar</string>
     <string name="cashbook_separate_note">Buku Kas terpisah dari buku pelanggan Anda. Sewa, gaji, penjualan tunai langsung — uang yang tidak terkait pelanggan mana pun. Ini tidak mengubah utang siapa pun kepada Anda.</string>
     <string name="add_cash_entry">Tambah Catatan</string>
-    <string name="cash_in">Kas masuk</string>
-    <string name="cash_out">Kas keluar</string>
+    <string name="cash_in">Uang masuk</string>
+    <string name="cash_out">Uang keluar</string>
     <string name="cash_net">Bersih</string>
     <string name="cash_income">Uang masuk</string>
     <string name="cash_expense">Uang keluar</string>

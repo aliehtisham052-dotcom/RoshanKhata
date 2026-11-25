@@ -588,8 +588,8 @@
     <string name="cashbook_subtitle">Business money in and out</string>
     <string name="cashbook_separate_note">The Cashbook is separate from your customer ledger. Rent, wages, a walk-in cash sale — money with no customer attached. It does not change what anyone owes you.</string>
     <string name="add_cash_entry">Add entry</string>
-    <string name="cash_in">Cash in</string>
-    <string name="cash_out">Cash out</string>
+    <string name="cash_in">Money in</string>
+    <string name="cash_out">Money out</string>
     <string name="cash_net">Net</string>
     <string name="cash_income">Money in</string>
     <string name="cash_expense">Money out</string>
