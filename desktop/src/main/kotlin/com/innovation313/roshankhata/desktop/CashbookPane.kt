@@ -167,6 +167,8 @@ fun CashbookPane(
     ) {
         val net = income - expense
         // The cashbook's own sums say "money" (every method); the drawer's figure is the one that says cash.
+        // The whole cashbook, every category: a walk-in's refund is money out here, while profit's expenses
+        // (cashbookExpensesBetween) leave it out as a return (D9, by design; the phone's Cashbook reads the same two sums).
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FigureCard(word(W.cash_income), Format.money(income), Look.accent, Modifier.weight(1f), icon = "ic_arrow_got", tint = Look.accentTint)
             FigureCard(word(W.cash_expense), Format.money(expense), c.owedToMe, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)

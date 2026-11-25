@@ -240,7 +240,9 @@ object SeasonBook {
                 given = LineMath.round(list.sumOf { it.given }),
                 cleared = LineMath.round(list.sumOf { it.cleared }),
                 clearedCustomers = days.size,
-                medianDaysAfterHarvest = if (days.isEmpty()) null else if (days.size % 2 == 1) days[days.size / 2] else (days[days.size / 2 - 1] + days[days.size / 2]) / 2
+                // The one median of whole days ([Median.of], D5, BC-295): an even count's middle two meet half up, as the Radar and
+                // Follow-up read a customer's days; the integer mean here cut 3 and 4 (3.5) down to 3.
+                medianDaysAfterHarvest = if (days.isEmpty()) null else Median.of(days)
             )
         }.newestFirst()
 

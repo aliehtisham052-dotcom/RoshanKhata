@@ -69,7 +69,8 @@ object CashFlow {
     }
 
     private const val DAY = 24L * 60 * 60 * 1000
-    private fun pos(v: Double) = v > 0.004
+    /** More than nothing by the money contract ([Money.isPositive]: half the shop's coin), not a fixed 0.004 (D4, BC-294). */
+    private fun pos(v: Double) = Money.isPositive(v)
 
     fun items(
         plans: List<Plan>, cheques: List<Cheque>, harvests: List<Harvest>,

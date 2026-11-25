@@ -1616,7 +1616,7 @@ interface KhataDao {
     suspend fun importOpeningBalances(rows: List<CsvImport.Row>, note: String, now: Long = System.currentTimeMillis(), user: String? = Access.userName): Int {
         rows.forEach { r ->
             val id = insertParty(Party(name = r.name, phone = r.phone, isCustomer = true))
-            if (kotlin.math.abs(r.balance) >= 0.005) {
+            if (Money.isNotZero(r.balance)) {
                 // Who brought them in, on each entry and in the log (22 Oct 2026, the review: they read as the owner's).
                 insertEntryNumbered(
                     LedgerEntry(partyId = id, amount = kotlin.math.abs(r.balance), isGiven = r.balance > 0, note = note, entryNumber = "",
@@ -4913,7 +4913,7 @@ interface KhataDao {
                     EntryItem(entryId = 0, itemName = l.itemName, quantity = l.quantity, unit = l.unit, rate = l.rate, productId = l.productId, billItemId = l.billItemId)
                 }
             )
-            if (refund > 0.005 && ret.refundMethod != SaleReturn.ACCOUNT) {
+            if (Money.isPositive(refund) && ret.refundMethod != SaleReturn.ACCOUNT) {
                 refundEntryId = insertEntryNumbered(
                     LedgerEntry(
                         partyId = partyId, amount = refund, isGiven = true, note = number, entryNumber = "",
@@ -4922,7 +4922,7 @@ interface KhataDao {
                     )
                 )
             }
-        } else if (refund > 0.005) {
+        } else if (Money.isPositive(refund)) {
             refundCashId = insertCashEntry(
                 CashEntry(
                     amount = refund, isIncome = false, category = CashCategory.RETURN, note = number,
@@ -5243,12 +5243,18 @@ interface KhataDao {
     )
     suspend fun khataSaleRowsBetween(from: Long, to: Long): List<KhataSaleRow>
 
-    /** Each line returned in [from, to) with the sold line it came back from ([ReturnedLine]; 22 Oct 2026, the review). */
+    /**
+     * Each line returned in [from, to) with the sold line it came back from ([ReturnedLine]; 22 Oct 2026, the review), and how much
+     * of that line came back before it, in any window ([ReturnedLine.backBefore], D3, BC-293), so the parts of a line add up to it.
+     */
     @Query(
         """
         SELECT ri.quantity AS quantity, si.quantity AS soldQuantity, si.rate AS rate, si.discount AS discount, si.costRate AS costRate,
                si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount,
-               si.id AS saleItemId, s.id AS saleId, NULL AS spread
+               si.id AS saleItemId, s.id AS saleId, NULL AS spread,
+               (SELECT COALESCE(SUM(ri2.quantity), 0) FROM sale_return_items ri2 JOIN sale_returns r2 ON r2.id = ri2.returnId
+                 WHERE ri2.saleItemId = ri.saleItemId AND ri2.isDeleted = 0 AND r2.isDeleted = 0 AND r2.status = 'done'
+                   AND (r2.timestamp < r.timestamp OR (r2.timestamp = r.timestamp AND ri2.id < ri.id))) AS backBefore
         FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
              JOIN sales s ON s.id = si.saleId
         WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND r.timestamp >= :from AND r.timestamp < :to
@@ -5277,7 +5283,10 @@ interface KhataDao {
         """
         SELECT ri.quantity AS quantity, si.quantity AS soldQuantity, si.rate AS rate, si.discount AS discount, si.costRate AS costRate,
                si.taxAmount AS taxAmount, si.taxIncluded AS taxIncluded, s.subtotal AS saleSubtotal, s.discountAmount AS saleDiscount,
-               si.id AS saleItemId, s.id AS saleId, NULL AS spread
+               si.id AS saleItemId, s.id AS saleId, NULL AS spread,
+               (SELECT COALESCE(SUM(ri2.quantity), 0) FROM sale_return_items ri2 JOIN sale_returns r2 ON r2.id = ri2.returnId
+                 WHERE ri2.saleItemId = ri.saleItemId AND ri2.isDeleted = 0 AND r2.isDeleted = 0 AND r2.status = 'done'
+                   AND (r2.timestamp < r.timestamp OR (r2.timestamp = r.timestamp AND ri2.id < ri.id))) AS backBefore
         FROM sale_return_items ri JOIN sale_returns r ON r.id = ri.returnId JOIN sale_items si ON si.id = ri.saleItemId
              JOIN sales s ON s.id = si.saleId
         WHERE r.isDeleted = 0 AND r.status = 'done' AND ri.isDeleted = 0 AND r.partyId IS NULL

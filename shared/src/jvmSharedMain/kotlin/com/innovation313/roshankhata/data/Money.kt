@@ -25,6 +25,14 @@ object Money {
      */
     private val EPSILON: Double get() = 0.5 / Math.pow(10.0, Currency.decimals().toDouble())
 
+    /**
+     * The same line as a figure, for a test the four calls below cannot say (a tolerance in a check, a "more than"
+     * between two amounts). Every money figure's zero test reads this or the calls, never a literal 0.005 or 0.004
+     * (25 Nov 2026, formula book D4): a literal is half a paisa for every currency, so a dinar's 0.004 read as nothing
+     * and a rupiah's 0.3 as a debt.
+     */
+    val halfCoin: Double get() = EPSILON
+
     fun isZero(value: Double): Boolean = abs(value) < EPSILON
 
     fun isNotZero(value: Double): Boolean = !isZero(value)

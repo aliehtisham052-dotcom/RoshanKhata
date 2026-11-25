@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.innovation313.roshankhata.data.DateWords
 import com.innovation313.roshankhata.data.DayClose
 import com.innovation313.roshankhata.data.DayCloseMath
+import com.innovation313.roshankhata.data.DaySpans
 import com.innovation313.roshankhata.data.EntryWithParty
 import com.innovation313.roshankhata.data.KhataDao
 import com.innovation313.roshankhata.data.LedgerAlerts
@@ -57,7 +58,6 @@ import com.innovation313.roshankhata.words.word
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import java.util.Calendar
 
 /** What Home asks "whose?" for before it goes on: an entry either way, or a customer's statement. */
 enum class HomePick(val word: String) { GAVE(W.you_gave), GOT(W.you_got), STATEMENT(W.statement_pdf) }
@@ -86,10 +86,10 @@ const val HOME_RECENT = 8
 
 /** The book's figures for Home: the cashbook's two sums, the drawer by the books, today's and the last entries, today's promises. */
 suspend fun homeFigures(dao: KhataDao): HomeFigures = withContext(Dispatchers.IO) {
-    val start = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
-    val end = start + 24L * 60 * 60 * 1000 - 1
+    // Today by the calendar ([DaySpans.calendarDay], D8, BC-296): midnight + 24 h ran an hour off on a day the clocks change.
+    // entriesInRange reads both ends (BETWEEN), so its end is the last moment before tomorrow.
+    val (start, tomorrow) = DaySpans.calendarDay(System.currentTimeMillis())
+    val end = tomorrow - 1
     // What should be in the drawer now (25 Oct 2026, the audit): Home's "Cash in hand" was the cashbook's
     // all-time net in every method, so it never matched the drawer. The rule is shared with the phone.
     val drawer = runCatching { DayCloseMath.drawerByTheBooks(dao) }.getOrNull()

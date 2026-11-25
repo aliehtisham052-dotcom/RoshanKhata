@@ -70,9 +70,9 @@ object ShiftMath {
      */
     suspend fun byHand(dao: KhataDao, shift: Shift, until: Long): Pair<Double, Double> {
         val user = shift.user?.takeIf { it.isNotBlank() } ?: return 0.0 to 0.0
-        val from = shift.openedAt
-        val handIn = dao.khataCashBy(user, given = false, from = from, to = until) + dao.cashbookCashBy(user, income = true, from = from, to = until)
-        val handOut = dao.khataCashBy(user, given = true, from = from, to = until) + dao.cashbookCashBy(user, income = false, from = from, to = until)
+        val (from, to) = span(shift, until)
+        val handIn = dao.khataCashBy(user, given = false, from = from, to = to) + dao.cashbookCashBy(user, income = true, from = from, to = to)
+        val handOut = dao.khataCashBy(user, given = true, from = from, to = to) + dao.cashbookCashBy(user, income = false, from = from, to = to)
         return handIn to handOut
     }
 
@@ -84,10 +84,19 @@ object ShiftMath {
     fun markOf(shift: Shift): String = shift.device?.takeIf { it.isNotBlank() }?.let { "-$it" } ?: NumberMark.suffix()
 
     /** The cash taken on the shift's own tickets until [until]. */
-    suspend fun taken(dao: KhataDao, shift: Shift, until: Long): Double = dao.cashTakenBy(shift.user, shift.openedAt, until, markOf(shift))
+    suspend fun taken(dao: KhataDao, shift: Shift, until: Long): Double =
+        span(shift, until).let { (from, to) -> dao.cashTakenBy(shift.user, from, to, markOf(shift)) }
 
     /** The cash handed back on the shift's own returns until [until]. */
-    suspend fun back(dao: KhataDao, shift: Shift, until: Long): Double = dao.cashRefundedBy(shift.user, shift.openedAt, until, markOf(shift))
+    suspend fun back(dao: KhataDao, shift: Shift, until: Long): Double =
+        span(shift, until).let { (from, to) -> dao.cashRefundedBy(shift.user, from, to, markOf(shift)) }
+
+    /**
+     * The shift's stretch as its `[from, to)` queries read it: from its opening up to AND including [until] (D8, BC-297,
+     * [DaySpans.through]). The day's drawer counts a line written at the moment of its close ([DayCloseMath.drawerByTheBooks],
+     * `(from, to]`); the shift did not, so a cash line written in the very millisecond the shift closed was in one and not the other.
+     */
+    fun span(shift: Shift, until: Long): Pair<Long, Long> = shift.openedAt to DaySpans.through(until)
 
     /** Hours on the clock per person (null = the owner) over [shifts], closed ones only, to two places. */
     fun hours(shifts: List<Shift>): Map<String?, Double> =
@@ -95,6 +104,6 @@ object ShiftMath {
 
     /** Why a close is refused: a short or over drawer needs its reason, as the day's close does. */
     fun needsReason(expected: Double, counted: Double, note: String?): Boolean =
-        kotlin.math.abs(counted - expected) > 0.005 && note.isNullOrBlank()
+        Money.isNotZero(counted - expected) && note.isNullOrBlank()
 }
 

@@ -134,9 +134,11 @@ data class ZReport(
             sales += words.text(W.z_returns, returnCount.toString()) to money(returnsTotal)
             refundsByMethod.forEach { (k, v) -> sales += ("  " + m(k)) to money(v) }
         }
+        // A loss carries its minus (25 Oct 2026, the audit: a day's loss printed as a positive profit). The profit is the counter
+        // tickets' (D10, by design: [counterSales] less tax and cost), so it is said with the counter's lines, BEFORE the line of
+        // every sale (counter + khata); under that line it read as the profit of the khata's sales too (BC-298).
+        profit?.let { sales += words.text(W.z_profit) to (if (Money.isNegative(it)) "− " else "") + money(it) }
         sales += words.text(W.z_sales_all) to money(salesTotal)
-        // A loss carries its minus (25 Oct 2026, the audit: a day's loss printed as a positive profit).
-        profit?.let { sales += words.text(W.z_profit) to (if (it < -0.005) "− " else "") + money(it) }
 
         val cash = listOf(
             words.text(W.z_cash_in_day) to money(khataCashIn + cashbookIn),
@@ -148,11 +150,12 @@ data class ZReport(
         // A drawer the books put below zero carries its minus (4 Nov 2026), as the variance does.
         expectedCash?.let {
             val label = if (closedAt != null && clock != null) words.text(W.z_expected_at, clock(closedAt)) else words.text(W.z_expected)
-            drawer += label to (if (it < -0.005) "\u2212 " else "") + money(it)
+            drawer += label to (if (Money.isNegative(it)) "\u2212 " else "") + money(it)
         }
         counted?.let { drawer += words.text(W.dc_counted) to money(it) }
         // Short or over, said with its sign (the money format drops it).
-        variance?.let { drawer += words.text(W.z_variance) to (if (it < -0.005) "\u2212 " else if (it > 0.005) "+ " else "") + money(it) }
+        // Signs by the money contract (D4, BC-294): a dinar drawer 0.004 short is short, not "even".
+        variance?.let { drawer += words.text(W.z_variance) to (if (Money.isNegative(it)) "\u2212 " else if (Money.isPositive(it)) "+ " else "") + money(it) }
 
         return listOfNotNull(
             Section(words.text(W.z_sales_count), sales),

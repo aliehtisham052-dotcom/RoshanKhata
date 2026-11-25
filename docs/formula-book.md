@@ -93,7 +93,7 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Reads: sale_items, entry_items, sales, transactions via soldLinesBetween/khataSaleRowsBetween/walkInSoldLinesBetween
 - Window: [from,to) by ticket or entry day
 - Left out: held tickets; voided; Qarz-e-Hasna; refunds; suppliers; OPENING; revenue is EX tax
-- Rounding: TicketSpread largest-remainder per ticket; LineMath for khata lines
+- Rounding: TicketSpread largest-remainder per ticket; LineMath for khata lines. A returned line gives back its sold line's spread (BC-262), and a line returned in parts its running share rounded once (`ReturnedLine.backBefore`, D3, BC-293), so the parts add up to the line
 - Gate: REPORTS (page); EXPORT for Excel
 - Shown on: Sales report page/PDF/Excel (both platforms)
 - Confidence: VERIFIED
@@ -189,14 +189,14 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Confidence: VERIFIED
 
 ### F19 Cashbook in / out (net)
-- Function: `data/KhataDao.kt::cashbookTotalBetween`
-- Reads: cashbook(isIncome,amount,isDeleted,timestamp)
-- Window: [from,to)
-- Left out: binned
+- Function: `data/KhataDao.kt::observeCashIncome; data/KhataDao.kt::observeCashExpense` (the screens); `cashbookTotalBetween` is the same sum over a window, `(from,to]`
+- Reads: cashbook(isIncome,amount,isDeleted)
+- Window: all time (the whole cashbook)
+- Left out: binned rows only: every way of paying and every category, a walk-in's refund (category Return) included as money out
 - Rounding: none
 - Gate: none (own screen)
-- Shown on: Cashbook screen figures: app CashbookActivity.kt:~511, desktop CashbookPane.kt:118
-- Confidence: VERIFIED SQL; screen is all-time, includes 'Return' refunds as out (D9)
+- Shown on: Cashbook screen figures: app CashbookActivity.kt observe(), desktop CashbookPane.kt FigureCards
+- Confidence: VERIFIED. Rightly not F17 (D9, by design): money moved, not profit's expenses
 
 ### F20 Cash in cashbook (drawer part)
 - Function: `data/KhataDao.kt::cashbookCashBetween`
@@ -273,7 +273,7 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Reads: sales, sale_payments, returns, cashbook, day_close
 - Window: working day
 - Left out: voids shown apart; held tickets not counted
-- Rounding: Money epsilon (literals 0.004/0.005, see D4)
+- Rounding: signs by the money contract (`Money.isNegative`/`isPositive`; the literals went, D4, BC-294)
 - Gate: REPORTS
 - Shown on: Z report / Day book (both platforms)
 - Confidence: VERIFIED
@@ -285,8 +285,8 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Left out: khata sales not included (by design)
 - Rounding: Money.round
 - Gate: REPORTS
-- Shown on: Z report
-- Confidence: VERIFIED; narrower than F10 (D10)
+- Shown on: Z report, with the counter's lines, before "All sales (counter + khata)" (BC-298)
+- Confidence: VERIFIED; narrower than F10 by design (D10)
 
 ### F29 Dues by age buckets
 - Function: `data/Aging.kt::Aging.compute`
@@ -479,9 +479,9 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Confidence: VERIFIED
 
 ### F48 Shift drawer
-- Function: `data/Shift.kt::ShiftMath.drawer; data/ShiftDrawer.kt::ShiftDrawer.sum`
+- Function: `data/Shift.kt::ShiftMath.drawer; data/ShiftDrawer.kt::ShiftDrawer.sum; data/Shift.kt::ShiftMath.span`
 - Reads: float + person's counter cash - refunds + khataCashBy + cashbookCashBy
-- Window: shift [open,close) vs (from,to] drawer (D8)
+- Window: shift [open, close]: the closing moment is in, as in the day's drawer (from, to] (`ShiftMath.span`, `DaySpans.through`; D8 fixed, BC-297)
 - Left out: owner's rows carry no writer so stay in no shift
 - Rounding: Money.round
 - Gate: none found
@@ -643,26 +643,26 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Reads: customers' entries by day or tagged season, payments
 - Window: Oct-Dec Rabi that year, Jan-Mar Rabi of the year before, Apr-Sep Kharif; window = this and the previous season
 - Left out: a Qarz-e-Hasna loan and an imported OPENING balance are owed but are no season's credit (Line.seasonal); the reading starts at SeasonBook.readFrom so a credit written before the window but tagged to a shown season is that season's (E1 fixed 25 Nov 2026, BC-284)
-- Rounding: money in whole paisa (Long); a payment clears the oldest credit first (FIFO)
+- Rounding: money in whole paisa (Long); a payment clears the oldest credit first (FIFO); the median days after the harvest by `Median.of`, the Radar's and Follow-up's rule (D5, BC-295)
 - Gate: none found
 - Shown on: Seasons page, customer page season chips
 - Confidence: VERIFIED
 
 ## Disagreements between two places computing one figure
 
-Line numbers are as read on 24 Nov 2026. Examples use made-up figures. D1 was fixed on 25 Nov 2026; the others stand.
+Line numbers are as read on 24 Nov 2026. Examples use made-up figures. D1-D12 were read against the code again on 25 Nov 2026: each is FIXED (one figure, one rule, with its bug class and test) or BY DESIGN (two figures that answer two questions; the screen says which, or the string it needs is named). D12 stands.
 
 - **D1 Cost of a khata sale (FIXED 25 Nov 2026, BC-279).** Cause found: Insights alone costed a line tagged to a batch at that bill line's rate (100 and 200 purchases: Insights 200, report 150). `Profit.costFor` now calls `Cost.forSale` like every other figure. Older text:  `data/Profit.kt:144-158` (Profit.costFor) takes the average of purchases dated up to the sale; `data/Cost.kt:38-43` via `data/SalesReport.kt:147-157` (KhataSales.costRate) takes the average of all purchases. Example: no cost price, 10 bought at 60 on 1 Oct, 10 at 80 on 15 Nov, sold 1 Nov: Insights cost 60, sales report cost 70. VERIFIED.
-- **D2 Sales total against sales report revenue.** `KhataDao.kt` ~3268 (salesTotalBetween) uses the grand total with tax and round-off; `data/SalesReport.kt:46-53,286` revenue is ex tax. Example: Rs 1,000 plus 18% tax: 1,180 against 1,000. ReportsAgreeTest covers only no-tax books. VERIFIED.
-- **D3 Returned line revenue.** `data/SalesReport.kt:222-230` (ReturnedLine.revenue) ignores the ticket spread that `SoldLines.spread` applied. Example: Rs 100 off three lines of 1,000 spreads 966.67/966.67/966.66; returning line 3 reverses 966.67, 0.01 off gross profit. VERIFIED.
-- **D4 Zero tests.** `data/LedgerLines.kt:27,49` hard-code 0.005 where `data/Money.kt` uses half the coin (0.5/10^decimals); other literals: CashFlow.kt:55, ZReport.kt:138-154, SaleReturn.kt:179-180. Example (KWD): a 0.004 balance is in Aging.receivable but has no moves, so `data/Aging.kt:70` puts it in day 0. Code VERIFIED, consequence INFERRED.
-- **D5 Medians.** `data/PaymentRadar.kt` median floors ([3,4] gives 3); `data/PaymentHabit.kt` median rounds half up ([3,4] gives 4). VERIFIED.
-- **D6 Qarz-e-Hasna.** Radar balance excludes it (by design, M34); party balance, Aging, Home include it. Example: a Rs 5,000 loan-only customer: Home to-get 5,000, Radar balance 0. VERIFIED.
-- **D7 Binned parties.** `KhataDao.kt` ~3377 topCustomersBetween filters `p.isDeleted=0`; ~3268 salesTotalBetween does not. A binned customer's sales are in the total but not in the ranking. INFERRED from reading both queries.
-- **D8 Window edges.** [from,to) in most sums, (from,to] in the six cash sums, inclusive BETWEEN in entriesInRange (~1008), a fixed 24 h 'today' in HomePane.kt, ShiftMath [from,to) against the drawer's (from,to]. An entry at exactly the shift's closing millisecond is in one and not the other. INFERRED for that edge.
-- **D9 Cashbook screen against profit expenses.** The Cashbook screen's in/out/net (CashbookPane.kt:118, CashbookActivity.kt:~511) are all-time and count 'Return' refunds as out (the phone's comment says month); `cashbookExpensesBetween` (~5260) skips them and adds staff pay. VERIFIED for the queries; the screen's all-time scope INFERRED.
-- **D10 Z report profit.** `data/ZReport.kt` profit covers counter tickets only; `SalesReport.grossProfit` also covers khata sales. By design, minor.
-- **D11 Stock sold basis.** Stock counts supplier 'I gave' and binned parties' goods (M45); `productsSoldSince` (~5306) and cover use customers only. Low confidence.
+- **D2 Sales total against sales report revenue (BY DESIGN, 25 Nov 2026).** `KhataDao.salesTotalBetween` is what the customers were charged: the grand total with tax and round-off (Insights, the 21:00 notice, the Z report's "All sales (counter + khata)", Hudhud). `SoldLine.revenue` is what the shop earned: tax taken off, because that money is the government's (the sales report, P&L). Rs 1,000 plus 18% tax: 1,180 against 1,000; with no tax the two are equal to the coin (ReportsAgreeTest, ReportsAgreeSpreadTest). The sales report's word is "Revenue" beside its own Tax page; the label that would say it outright ("Revenue (without tax)") needs a new string in nine languages, NOT made here (strings.xml was not this task's to touch).
+- **D3 Returned line revenue (FIXED 24 Nov 2026, BC-262; the rest 25 Nov 2026, BC-293).** A returned line reverses what its sold line was counted at after the ticket's discount (`ReturnedLines.spread`, the same `SoldLines.spread`). Left after BC-262: a line returned in parts rounded each part alone, so a line of 3 counted at 966.67 came back as 3 x 322.22 = 966.66, and a line of 299.99 as 3 x 100.00 = 300.00. Now `ReturnedLine.backBefore` (how much of the line came back in earlier returns, read by `returnedLinesBetween`/`walkInReturnedLinesBetween` in any window) and `revenue` = the running share through this return less the running share before it, each rounded once: the parts add up to the line to the paisa (322.22, 322.23, 322.22). FormulaDisagreementsTest; ReturnedPartsDesktopTest (Room, CI first).
+- **D4 Zero tests (FIXED 24 Nov 2026 for dues by age, BC-263; the rest 25 Nov 2026, BC-294).** Every money zero test in these figures is the money contract, half the shop's coin (`Money.isZero/isPositive/isNegative`, `Money.halfCoin`: 0.005 Rs, 0.0005 KWD, 0.5 Rp): CashFlow's `pos` (was 0.004), the Z report's signs (0.005), the return's refund checks (0.005), the shift's reason test and its screen (0.005), the radar's own copy (`PENNY` now `Money.halfCoin`), the return's refund rows and the CSV import's opening balance in KhataDao (0.005). A dinar plan with 0.004 left is coming in; a dinar refund 0.004 over is refused; a rupiah 0.3 is nothing. FormulaDisagreementsTest. Literals still in files outside this task (SaleReceiptText, CounterDraft, Access, SupplierRates, ReminderLadder, CustomerPage, AnswerFacts, AnswerRecordFacts, CounterSaleScreen, Sale.kt's own `tolerance` which already is half a coin, KhataDao `sameDayTwin` SQL and two ticket checks): the same class, listed for the next round.
+- **D5 Medians (FIXED 24 Nov 2026, BC-264; Seasons 25 Nov 2026, BC-295).** One rule, `Median.of`: the middle one, or the middle two half up, in whole days. The Radar and Follow-up already called it; the Seasons summary had a third copy, the integer mean of the middle two, which cut 3 and 4 (3.5) to 3. Half up is chosen because the figure is whole days and a day that drifts early says a customer pays sooner than he does; it is also what the owner already sees on the Radar. MedianTest, FormulaDisagreementsTest.
+- **D6 Qarz-e-Hasna (BY DESIGN, M34).** The Radar's balance leaves an interest-free loan out (a loan is not credit to chase); the party balance, Aging and Home include it (it is owed). The Radar shows no balance figure, only how a customer pays and when, so no screen shows the two numbers side by side. A Rs 5,000 loan-only customer: Home to-get 5,000, no Radar reading. VERIFIED.
+- **D7 Binned parties (FIXED 24 Nov 2026, BC-265).** `topCustomersBetween` reads exactly `salesTotalBetween`'s rows; neither asks the party's own bin flag, because binning a customer bins his entries (`softDeleteEntriesOfParty`) and the entries' `isDeleted` takes them out of both. So a binned customer's sales leave the total and the ranking together. TopCustomersRuleTest, TopCustomersAgreeDesktopTest. VERIFIED.
+- **D8 Window edges (FIXED where two figures meant to agree differed, 25 Nov 2026, BC-296, BC-297).** The rule: `[from, to)` for spans; the six cash sums `(from, to]` with the `DaySpans` `*Over` wrappers (unchanged); a stretch "up to now / up to the close" includes that moment. Fixed: the shift's drawer read `[open, until)` while the day's drawer reads `(last count, now]`, so a cash line or ticket at the closing millisecond was in the day's drawer and in no shift (`ShiftMath.span` = `[open, until]` via `DaySpans.through`); the computer's Home took "today" as midnight + 24 h, an hour off on a day the clocks change (`DaySpans.calendarDay`, the calendar's). BY DESIGN: `entriesInRange` and its two siblings read `BETWEEN` and every caller hands the last millisecond of its window (`ReportWindow`, `dayAfter - 1`, the month's `- 1`), which is `[from, to)` written another way. Same class, files not this task's: `PartyDetailActivity` (~3397), `SchemesActivity.endOfDay`, desktop `Main.kt` (~1917) still take a day as 24 h.
+- **D9 Cashbook screen against profit expenses (BY DESIGN, 25 Nov 2026).** The Cashbook's Money in / out / Net (`observeCashIncome`/`observeCashExpense`, both platforms) are the whole cashbook, every way of paying and every category: money that came in and went out, a walk-in's refund included. `cashbookExpensesBetween` is profit's expenses: a refund is a return taken off the sales, not an expense, and staff pay is added. Two questions, two figures. The phone's comment that said "the month" was wrong and is corrected (the sums were always all-time). The label: the computer says `cash_income`/`cash_expense` ("Money in"/"Money out"); the phone says `cash_in`/`cash_out`, which in English ("Cash in") and Hindi ("नकद आया") say cash for every way of paying, while Urdu and Roman Urdu `cash_income`/`cash_expense` say "Aamdani"/"Kharch" (income/expense), wrong for a refund. One key on both with words that say "money" in all nine needs a strings change, NOT made here.
+- **D10 Z report profit (BY DESIGN, BC-298 for its place).** The profit is the counter tickets' (`counterSales` less tax and cost; khata sales have no cost on the counter's day). It now stands with the counter's lines, before "All sales (counter + khata)" (it read as the profit of every sale under that line). Its label "Profit (sales − cost)" would say "counter" only with a new string; not made here. FormulaDisagreementsTest.
+- **D11 Stock sold basis (BY DESIGN, 25 Nov 2026).** Stock on hand counts every way goods left: a supplier's "I gave" (goods sent back) and a binned party's goods (M45, the owner's rule). `productsSoldSince` (the sales report's "Not selling") and the cover days / reorder (`StockCover.soldBase`) count customers only, because they ask how fast goods SELL; goods sent back to a supplier are no sale. Different questions; no code change.
 - **D12 Zakat.** Cash and stock are typed, not read from Valuation or the drawer. VERIFIED.
 
 ## Not done

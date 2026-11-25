@@ -137,7 +137,7 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
                 CalcField(countedText, { countedText = it }, Modifier.fillMaxWidth(), label = word(W.dc_counted))
                 val counted = amount(countedText)
                 val difference = counted?.let { LineMath.round(it - expected) }
-                if (difference != null && kotlin.math.abs(difference) > 0.005) {
+                if (difference != null && com.innovation313.roshankhata.data.Money.isNotZero(difference)) {
                     Figure(word(W.z_variance), signed(difference), color = if (difference < 0) c.owedToMe else c.iOwe, bold = true)
                     OutlinedTextField(reason, { reason = it }, Modifier.fillMaxWidth(), label = { Text(word(W.z_variance_reason)) })
                 }
@@ -204,7 +204,7 @@ fun ShiftScreen(dao: KhataDao, modifier: Modifier = Modifier, onChanged: () -> U
                     Figure(word(W.z_expected), Format.money(s.expected ?: 0.0))
                     Figure(word(W.dc_counted), Format.money(s.counted ?: 0.0))
                     val d = s.difference ?: 0.0
-                    if (kotlin.math.abs(d) > 0.005) Figure(word(W.z_variance), signed(d), color = if (d < 0) c.owedToMe else c.iOwe, bold = true)
+                    if (com.innovation313.roshankhata.data.Money.isNotZero(d)) Figure(word(W.z_variance), signed(d), color = if (d < 0) c.owedToMe else c.iOwe, bold = true)
                     s.note?.let { Text(it, color = c.inkSoft, fontSize = 12.sp) }
                 }
             }

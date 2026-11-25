@@ -35,6 +35,21 @@ object DaySpans {
         return t
     }
 
+    /**
+     * The calendar day holding [millis] as `[from, to)`: its first moment and the next day's first moment (D8, BC-296). One rule
+     * for every "today" a screen shows: the computer's Home took midnight + 24 h, which on a day the clocks change ran an hour
+     * into tomorrow or stopped an hour short of midnight.
+     */
+    fun calendarDay(millis: Long, tz: TimeZone = TimeZone.getDefault()): Pair<Long, Long> =
+        DayMath.startOfDay(millis, tz) to nextDayStart(millis, tz)
+
+    /**
+     * The end to hand a `[from, to)` query so that [until] itself is in (D8, BC-297): a stretch "up to now" or "up to the
+     * close" counts what was written at that very moment, as the drawer's six `(from, to]` sums do. A shift closed at the
+     * same millisecond a cash line was written counted the line in the day's drawer and not in the shift's.
+     */
+    fun through(until: Long): Long = if (until == Long.MAX_VALUE) until else until + 1
+
     /** The first moment of the calendar day before the one holding [millis]. */
     fun previousDayStart(millis: Long, tz: TimeZone = TimeZone.getDefault()): Long =
         DayMath.startOfDay(DayMath.startOfDay(millis, tz) - 12 * HOUR, tz)

@@ -176,8 +176,9 @@ object ReturnMath {
             l.saleItemId?.let { id -> soldLeft[id]?.let { left -> if (l.quantity > left + 0.000001) return Problem.OVER_SOLD } }
         }
         if (refundMethod != SaleReturn.ACCOUNT && refundMethod !in PaymentMethod.ALL) return Problem.BAD_METHOD
-        if (refundAmount < 0.0 || refundAmount > total + 0.005) return Problem.BAD_REFUND
-        if (!hasParty && (refundMethod == SaleReturn.ACCOUNT || refundAmount < total - 0.005)) return Problem.WALK_IN_NEEDS_CASH
+        // Over or under the total by more than half the shop's coin (D4, BC-294): a fixed 0.005 let a dinar refund 0.004 over.
+        if (refundAmount < 0.0 || Money.isPositive(refundAmount - total)) return Problem.BAD_REFUND
+        if (!hasParty && (refundMethod == SaleReturn.ACCOUNT || Money.isNegative(refundAmount - total))) return Problem.WALK_IN_NEEDS_CASH
         return null
     }
 

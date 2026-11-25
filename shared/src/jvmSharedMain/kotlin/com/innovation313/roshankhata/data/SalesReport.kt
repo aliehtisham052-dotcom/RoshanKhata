@@ -238,13 +238,21 @@ data class ReturnedLine(
      * ([SoldLines.spread], BC-262): set, a return gives back exactly that (its share for the part returned); null (a line
      * read alone, a ticket with no discount) and [revenue] works the share out as before.
      */
-    val spread: Double? = null
+    val spread: Double? = null,
+    /**
+     * How much of the same sold line came back in returns written before this one (D3, BC-293). A line returned in parts
+     * gives back its cumulative share each time, rounded once: (before + this) of the line less (before) of it. Three
+     * returns of one bag each from a line of 3 counted at 966.67 give back 322.22, 322.23 and 322.22 — the 966.67 the
+     * sale brought in, not 966.66. 0 (a line returned whole, a test's line) is the single share as before.
+     */
+    val backBefore: Double = 0.0
 ) {
     val revenue: Double get() {
         if (soldQuantity <= 0.0) return 0.0
-        val fraction = (quantity / soldQuantity).coerceIn(0.0, 1.0)
-        spread?.let { return LineMath.round(it * fraction) }
-        return LineMath.round(soldLine().revenue * fraction)
+        val line = spread ?: soldLine().revenue
+        val before = (backBefore / soldQuantity).coerceIn(0.0, 1.0)
+        val through = ((backBefore + quantity) / soldQuantity).coerceIn(0.0, 1.0)
+        return LineMath.round(LineMath.round(line * through) - LineMath.round(line * before))
     }
     val cost: Double? get() = costRate?.let { LineMath.round(it * quantity) }
 

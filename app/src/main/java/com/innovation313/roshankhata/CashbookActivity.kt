@@ -520,7 +520,10 @@ class CashbookActivity : BaseActivity() {
                     // already said by a label or a + / − beside it. Here it
                     // was the whole meaning, so Rs 50,000 short read as
                     // Rs 50,000 in hand. Sign and colour both now say which
-                    // way the month went.
+                    // way the book went. These are the whole cashbook's sums, every way of paying and
+                    // every category (a walk-in's refund is money out): not a month's, and not the
+                    // profit's expenses (cashbookExpensesBetween leaves refunds out). D9, by design,
+                    // as the computer's Cashbook (CashbookPane) says them.
                     val net = income - expense
                     tvNet.text = Format.signedTotal(net)
                     tvNet.setTextColor(
