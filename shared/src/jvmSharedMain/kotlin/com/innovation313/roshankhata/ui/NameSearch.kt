@@ -264,8 +264,10 @@ object NameSearch {
         // nothing.
         val spoken = (heard + heard.zipWithNext { a, b -> a + b }).distinct()
 
-        // How well each name answers each spoken word, worked out once.
-        val parts = items.map { partsOf(nameOf(it)) }
+        // How well each name answers each spoken word, worked out once. A name's parts come from [SPOKEN_PARTS]: they are the
+        // same every time the name is asked, and folding the whole book again for every word of every sentence was most of
+        // Hudhud's time on a shop's book (26 Nov 2026, BC-353).
+        val parts = items.map { SPOKEN_PARTS.get(nameOf(it), ::partsOf) }
         val hits = Array(items.size) { i ->
             IntArray(spoken.size) { w ->
                 var best = 0
@@ -295,7 +297,8 @@ object NameSearch {
             if (found == 0) 0.0 else kotlin.math.ln(1.0 + n / found)
         }
 
-        return items.indices
+        // Each name's lower-case spelling once, not once per comparison of the sort (the same order: a stable sort on the same keys).
+        val ordered = items.indices
             .map { i ->
                 var score = 0.0
                 var strong = 0
@@ -303,13 +306,54 @@ object NameSearch {
                     if (hits[i][w] > 0) score += hits[i][w] / 100.0 * weight[w]
                     if (hits[i][w] >= STRONG) strong++
                 }
-                Scored(items[i], score, strong)
+                Scored(items[i], score, strong) to nameOf(items[i]).lowercase()
             }
             .sortedWith(
-                compareByDescending<Scored<T>> { it.score }
-                    .thenBy { nameOf(it.item).lowercase() }
+                compareByDescending<Pair<Scored<T>, String>> { it.first.score }
+                    .thenBy { it.second }
             )
+        return ordered.map { it.first }
     }
+
+    /**
+     * Whether any name recognises (not merely comes near) one of the spoken words: `scoreSpoken(items, words, nameOf).any {
+     * it.strongHits > 0 }`, without weighing and sorting the whole book to say yes or no (26 Nov 2026, BC-353: Hudhud asks this
+     * for every word of a sentence). The same parts, the same spoken words and joins, the same [wordScore] and [STRONG].
+     */
+    fun <T> hasStrongHit(items: List<T>, words: List<String>, nameOf: (T) -> String): Boolean {
+        if (items.isEmpty()) return false
+        val heard = words.map { fold(it) }.filter { it.isNotEmpty() }
+        if (heard.isEmpty()) return false
+        val spoken = (heard + heard.zipWithNext { a, b -> a + b }).distinct()
+        for (item in items) {
+            for (p in SPOKEN_PARTS.get(nameOf(item), ::partsOf)) for (s in spoken) if (strongWord(p, s)) return true
+        }
+        return false
+    }
+
+    /**
+     * `wordScore(part, spoken) >= STRONG`, without the edit distance a near miss needs: only the two rungs at or above [STRONG]
+     * (the same word, 100; a part that begins with the spoken word on at least [MIN_OVERLAP] letters, 80). Held to [wordScore] by
+     * NameSearchStrongTest.
+     */
+    internal fun strongWord(part: String, spoken: String): Boolean =
+        part == spoken || (minOf(part.length, spoken.length) >= MIN_OVERLAP && part.startsWith(spoken))
+
+    /** Whether a folded spoken word is long enough for the prefix rung of [strongWord] ([MIN_OVERLAP] letters). */
+    internal fun strongPrefixLength(spoken: String): Boolean = spoken.length >= MIN_OVERLAP
+
+    /** A stored name's parts as [scoreSpoken] compares them (its folded words and their joins), made once per spelling. */
+    internal fun spokenParts(name: String): List<String> = SPOKEN_PARTS.get(name, ::partsOf)
+
+    /** [wordScore] for the test that holds [strongWord] to it. */
+    internal fun wordScoreForTest(part: String, spoken: String): Int = wordScore(part, spoken)
+
+    /**
+     * A stored name's [partsOf], made once per spelling (26 Nov 2026, BC-353). Keyed by the name's own letters, so a renamed customer is
+     * simply another key and nothing can be stale; bounded, so a name deleted from the book leaves it in time. [partsOf] reads nothing
+     * but its argument.
+     */
+    private val SPOKEN_PARTS = TextMemo<List<String>>(TextMemo.NAMES_CAP)
 
     /** At or above this, a name recognised the word rather than neared it. */
     private const val STRONG = 80
@@ -562,5 +606,38 @@ object NameSearch {
             compareBy<T> { rank(nameOf(it), query) }
                 .thenBy { nameOf(it).lowercase() }
         )
+    }
+}
+
+/**
+ * A bounded memo of a pure function of a text (26 Nov 2026, BC-353): what a name of the book is to the readers (its folded words,
+ * its parts, its forms) is the same every time it is asked, and Hudhud asks it for every name on every word of every sentence. Keyed
+ * by the text itself, never by an id or a list: a renamed customer is another key, so no answer is ever stale. When [cap] is passed
+ * the memo starts again empty. Safe across threads (Hudhud reads off the screen's thread; the Khata microphone too).
+ */
+internal class TextMemo<V : Any>(private val cap: Int) {
+    private val map = java.util.concurrent.ConcurrentHashMap<String, V>()
+
+    /** The made value for [key]; made (perhaps twice when two threads ask at once: the same value) when not yet held. */
+    fun get(key: String, make: (String) -> V): V {
+        map[key]?.let { return it }
+        val made = make(key)
+        // Past the cap everything goes at once rather than the least used one by one: a lookup stays one read, and what is
+        // asked again is made again (a pure function: the same answer).
+        if (map.size >= cap) map.clear()
+        map[key] = made
+        return made
+    }
+
+    val size: Int get() = map.size
+
+    fun clear() = map.clear()
+
+    companion object {
+        /**
+         * Room for every name of a big shop's book three ways (customers and suppliers, products, staff) with spare: a book past
+         * it still reads right, only without the saving for the names that do not fit.
+         */
+        const val NAMES_CAP = 40_000
     }
 }

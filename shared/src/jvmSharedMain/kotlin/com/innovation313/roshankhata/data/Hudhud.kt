@@ -1,6 +1,7 @@
 package com.innovation313.roshankhata.data
 
 import com.innovation313.roshankhata.ui.NameSearch
+import com.innovation313.roshankhata.ui.TextMemo
 import java.util.Calendar
 import java.util.TimeZone
 import kotlin.math.ln
@@ -634,7 +635,7 @@ object Hudhud {
         data class Cand(val kind: Int, val name: Name, val parts: List<String>)
         val cands = listOf(n, g, st).flatMapIndexed { kind, list ->
             list.mapNotNull { nm ->
-                val parts = words(nm.name)
+                val parts = nameWords(nm.name)
                 val ok = parts.size >= 2 || (parts.size == 1 && parts[0].length >= 4 && parts[0].any { it.isLetter() } && !questionWord(parts[0]))
                 if (ok) Cand(kind, nm, parts) else null
             }
@@ -1270,7 +1271,7 @@ object Hudhud {
         window: VoiceQuestion.Window?
     ): Ask? {
         if (goods.isEmpty() || m.any(HudhudMind.C.PAYMENT, HudhudMind.C.MONEY) || said.any { it in AND_WORDS }) return null
-        val his = names.filter { it.id in named }.flatMap { words(it.name) }.map { NameSearch.fold(it) }.toSet()
+        val his = names.filter { it.id in named }.flatMap { nameWords(it.name) }.map { NameSearch.fold(it) }.toSet()
         val rest = said.filter { NameSearch.fold(it) !in his }
         if (rest.isEmpty()) return null
         val product = whoIsNamed(rest, goods, topics, m, window)
@@ -1715,7 +1716,7 @@ object Hudhud {
         if (said.isEmpty()) return false
         for (n in names) {
             if (n.id !in ids) continue
-            val own = words(n.name)
+            val own = nameWords(n.name)
             val folds = own.map { NameSearch.fold(it) }.filter { it.isNotEmpty() }.toSet()
             // Across scripts a name meets its spelling by its consonants ("بشیر" and "Bashir"): three or more is a name.
             val bones = own.map { HudhudMind.skeleton(it) }.filter { it.length >= 3 }.toSet()
@@ -1747,7 +1748,7 @@ object Hudhud {
         val said = words(heard).filter { it !in QUIET_SET && it !in VOCATIVE_SET }
         for (n in names) {
             if (n.id !in ids) continue
-            val own = words(n.name)
+            val own = nameWords(n.name)
             val folds = own.map { NameSearch.fold(it) }.filter { it.isNotEmpty() }.toSet()
             val bones = own.map { HudhudMind.skeleton(it) }.filter { it.length >= 2 }.toSet()
             val parts = partsOf(n.name)
@@ -1761,7 +1762,7 @@ object Hudhud {
 
     /** True when every word that asks something is a word of [id]'s name: the sentence only names him. */
     private fun onlyNames(heard: String, names: List<Name>, id: Long): Boolean {
-        val own = names.firstOrNull { it.id == id }?.let { words(it.name).map { w -> NameSearch.fold(w) }.toSet() } ?: return false
+        val own = names.firstOrNull { it.id == id }?.let { nameWords(it.name).map { w -> NameSearch.fold(w) }.toSet() } ?: return false
         return words(heard).all { it in QUIET_SET || it in VOCATIVE_SET || NameSearch.fold(it) in own }
     }
 
@@ -1772,7 +1773,7 @@ object Hudhud {
      */
     private fun nameAlone(heard: String, names: List<Name>, id: Long): Boolean {
         val name = names.firstOrNull { it.id == id } ?: return false
-        val own = words(name.name).map { w -> NameSearch.fold(w) }.toSet()
+        val own = nameWords(name.name).map { w -> NameSearch.fold(w) }.toSet()
         val parts = partsOf(name.name)
         val said = words(heard)
         // A greeting or a thank-you in front of his name is not a question either (25 Nov 2026, H4: "salam Ali" was his details under the retrained sense).
@@ -3886,7 +3887,7 @@ object Hudhud {
     /** One of the book's own names (a customer, a supplier, a product), recognised outright. */
     private fun knownName(w: String, names: List<Name>): Boolean =
         names.isNotEmpty() && !shortOrdinaryPrefix(w, names) &&
-            ((!foldBlocked(w, names) && NameSearch.scoreSpoken(names, listOf(w)) { it.name }.any { it.strongHits > 0 }) ||
+            ((!foldBlocked(w, names) && prepared(names).strong(w)) ||
                 meetsAcrossScripts(w, names))
 
     /**
@@ -3906,14 +3907,15 @@ object Hudhud {
      */
     private fun shortOrdinaryPrefix(w: String, names: List<Name>): Boolean {
         if (w.length > 4 || scriptOf(w) != Script.LATIN || !ordinaryWord(Form(w))) return false
-        return names.none { n -> words(n.name).any { it == w } }
+        return w !in prepared(names).words
     }
 
     private fun foldBlocked(w: String, names: List<Name>): Boolean {
         val script = scriptOf(w)
         if (script == Script.LATIN || !ordinaryWord(Form(w))) return false
         val fw = NameSearch.fold(w)
-        return names.none { n -> scriptOf(n.name) == script && words(n.name).any { it == w || NameSearch.fold(it) == fw } }
+        val book = prepared(names)
+        return !(book.wordsIn(script).contains(w) || book.foldsIn(script).contains(fw))
     }
 
     /**
@@ -3925,8 +3927,10 @@ object Hudhud {
     private fun meetsAcrossScripts(w: String, names: List<Name>): Boolean {
         if (HudhudMind.isHardWord(w)) return false
         val forms = saidForms(w)
-        if (!mayBridge(forms, names)) return false
-        return names.any { bridgedLatin(forms, partsOf(it.name)) != null }
+        val book = prepared(names)
+        if (!mayBridge(forms, book)) return false
+        // Only a part of the other side's script can bridge ([bridges]): the same answer as asking every name in turn.
+        return forms.any { f -> book.partsAcross(f.script).any { p -> bridges(f, p) } }
     }
 
     /**
@@ -3987,7 +3991,7 @@ object Hudhud {
         val named = whoIsNamed(said.filterNot { HudhudNote.isNoteWord(it) }, names, topics, m, window)
         if (named.isNotEmpty()) {
             val noteWords = said.count { HudhudNote.isNoteWord(it) }
-            val inTheirNames = names.filter { it.id in named }.maxOfOrNull { nm -> words(nm.name).count { HudhudNote.isNoteWord(it) } } ?: 0
+            val inTheirNames = names.filter { it.id in named }.maxOfOrNull { nm -> nameWords(nm.name).count { HudhudNote.isNoteWord(it) } } ?: 0
             if (inTheirNames > 0 && noteWords <= inTheirNames && !n.specific) return null
             return Ask.Person(named, Facet.NOTE)
         }
@@ -4266,9 +4270,10 @@ object Hudhud {
     private fun acrossScripts(names: List<Name>, words: List<String>): List<Long> {
         // A Bengali word is read both ways, with its case ending and without ("বশীর" is Bashir; "আলীর" is Ali's): it counts once.
         val said = words.map { saidForms(it) }
-        if (!mayBridge(said.flatten(), names)) return emptyList()
-        val met = names.map { n ->
-            val parts = partsOf(n.name)
+        val book = prepared(names)
+        if (!mayBridge(said.flatten(), book)) return emptyList()
+        val met = names.mapIndexed { i, n ->
+            val parts = book.forms[i]
             n to said.count { forms -> bridgedLatin(forms, parts) != null }
         }.filter { it.second > 0 }
         val best = met.maxOfOrNull { it.second } ?: return emptyList()
@@ -4282,13 +4287,93 @@ object Hudhud {
     private fun saidForms(w: String): List<Form> =
         listOf(w, bengaliStem(w)).distinct().map { Form(it) }
 
-    /** The words of a name as the search reads them, each with its script ("Ali Raza" is "ali" and "raza"). */
-    private fun partsOf(name: String): List<Form> =
-        name.split(' ', '-', '.').filter { it.isNotBlank() }.map { Form(it) }.filter { it.folded.isNotEmpty() }
+    /**
+     * The words of a name as the search reads them, each with its script ("Ali Raza" is "ali" and "raza"). Made once per spelling
+     * ([NAME_FORMS]): a Form keeps its letters once they are read, so the bridge does not read the whole book's letters again for every
+     * word of every sentence (26 Nov 2026, BC-353).
+     */
+    private fun partsOf(name: String): List<Form> = NAME_FORMS.get(name) { nm ->
+        nm.split(' ', '-', '.').filter { it.isNotBlank() }.map { Form(it) }.filter { it.folded.isNotEmpty() }
+    }
+
+    /** [words] of one of the book's names, made once per spelling (26 Nov 2026, BC-353): a name is read the same way every time. */
+    private fun nameWords(name: String): List<String> = NAME_WORDS.get(name, ::words)
+
+    /** Each of [nameWords] as the search folds it (an empty fold kept); [Prepared] keeps them, once per book. */
+    private fun nameFolds(name: String): List<String> = nameWords(name).map { NameSearch.fold(it) }
+
+    /**
+     * What the readers make of a name of the book, kept by the name's own letters (26 Nov 2026, BC-353). Before them a question
+     * against a shop of 1,000 names normalised, folded and cut every name again for every word asked: 4.7 times the time of a book
+     * of nine on the computer, 1.3 s at the middle on CI's emulator. Keyed by the spelling, never by an id or a list, so a renamed
+     * customer is another key and no answer can be stale; bounded ([TextMemo.NAMES_CAP]) so a deleted name leaves in time.
+     */
+    private val NAME_FORMS = TextMemo<List<Form>>(TextMemo.NAMES_CAP)
+    private val NAME_WORDS = TextMemo<List<String>>(TextMemo.NAMES_CAP)
+
+    /** How many names the memos hold now (the speed test reports it; nothing reads it to decide). */
+    internal fun nameMemoSizes(): List<Int> = listOf(NAME_FORMS.size, NAME_WORDS.size)
 
     /** Whether anything can bridge at all: only when a said word or a name is not written in Latin letters. */
-    private fun mayBridge(said: List<Form>, names: List<Name>): Boolean =
-        said.any { it.script != Script.LATIN } || names.any { scriptOf(it.name) != Script.LATIN }
+    private fun mayBridge(said: List<Form>, book: Prepared): Boolean =
+        said.any { it.script != Script.LATIN } || book.nonLatin
+
+    /**
+     * A list of the book's names as the readers ask it, made once (26 Nov 2026, BC-353): each name's [partsOf], every word and fold
+     * of every name by script, every part the search compares ([NameSearch.spokenParts]) in order for its prefix question, and
+     * whether any name is not in Latin letters. [knownName] is asked for every word of a sentence by a dozen readers, each time
+     * over the whole book; with this it looks a word up instead. Nothing in it but what the names' own letters make, so it is
+     * the same answer as walking the list.
+     */
+    private class Prepared(val spelled: Array<String>, val forms: Array<List<Form>>) {
+        val nonLatin: Boolean = spelled.any { scriptOf(it) != Script.LATIN }
+        /** Every [nameWords] of every name ([shortOrdinaryPrefix]). */
+        val words: Set<String> = spelled.flatMapTo(HashSet()) { nameWords(it) }
+        private val byScript = spelled.groupBy { scriptOf(it) }
+        private val wordsBy = byScript.mapValues { (_, l) -> l.flatMapTo(HashSet()) { nameWords(it) } }
+        private val foldsBy = byScript.mapValues { (_, l) -> l.flatMapTo(HashSet()) { nameFolds(it) } }
+        /** [foldBlocked]: the words, and their folds, of the names written in [script]. */
+        fun wordsIn(script: Script): Set<String> = wordsBy[script].orEmpty()
+        fun foldsIn(script: Script): Set<String> = foldsBy[script].orEmpty()
+        private val latinParts: List<Form> = forms.flatMap { l -> l.filter { it.script == Script.LATIN } }
+        private val otherParts: List<Form> = forms.flatMap { l -> l.filter { it.script != Script.LATIN } }
+        /** The parts a word written in [script] may bridge to: Latin ones for another script, the others for Latin. */
+        fun partsAcross(script: Script): List<Form> = if (script == Script.LATIN) otherParts else latinParts
+        private val spoken: Set<String> = spelled.flatMapTo(HashSet()) { NameSearch.spokenParts(it) }
+        private val sortedSpoken: Array<String> = spoken.toTypedArray().also { it.sort() }
+        /** `NameSearch.hasStrongHit(names, listOf(w))` by lookup: the same word, or a part it begins on enough letters. */
+        fun strong(w: String): Boolean {
+            val s = NameSearch.fold(w)
+            if (s.isEmpty()) return false
+            if (s in spoken) return true
+            if (!NameSearch.strongPrefixLength(s)) return false
+            // The first part at or after [s] in order is the one that begins with it, if any does.
+            var at = java.util.Arrays.binarySearch(sortedSpoken, s)
+            if (at < 0) at = -at - 1
+            return at < sortedSpoken.size && NameSearch.strongWord(sortedSpoken[at], s)
+        }
+
+        fun same(names: List<Name>): Boolean {
+            if (names.size != spelled.size) return false
+            for (i in spelled.indices) if (names[i].name != spelled[i]) return false
+            return true
+        }
+    }
+
+    /** The last few books asked ([Prepared]): a sentence asks the customers, the goods and the staff again and again. */
+    private val PREPARED = arrayOfNulls<Prepared>(4)
+    private var preparedNext = 0
+
+    private fun prepared(names: List<Name>): Prepared {
+        synchronized(PREPARED) { for (p in PREPARED) if (p != null && p.same(names)) return p }
+        val spelled = Array(names.size) { names[it].name }
+        val made = Prepared(spelled, Array(spelled.size) { partsOf(spelled[it]) })
+        synchronized(PREPARED) {
+            PREPARED[preparedNext] = made
+            preparedNext = (preparedNext + 1) % PREPARED.size
+        }
+        return made
+    }
 
     /**
      * The Latin spelling (as folded) that a said word meets in one of a name's [parts] written in another script, or null when
@@ -4311,12 +4396,14 @@ object Hudhud {
         val folded: String = NameSearch.fold(raw)
         val script: Script = scriptOf(raw)
         /** As [VoiceQuestion.normalise] writes it: the spelling the sense's vocabulary and [CALLS_AS_NAMES] are kept in. */
-        val norm: String by lazy(LazyThreadSafetyMode.NONE) { VoiceQuestion.normalise(raw) }
-        val letters: String by lazy(LazyThreadSafetyMode.NONE) {
+        val norm: String by lazy(LazyThreadSafetyMode.PUBLICATION) { VoiceQuestion.normalise(raw) }
+        /** Whether the word is "why" in some language ([HudhudWhyAsk.isWhyWord]), read once: [bridges] asks it of every pair. */
+        val why: Boolean by lazy(LazyThreadSafetyMode.PUBLICATION) { HudhudWhyAsk.isWhyWord(norm) }
+        val letters: String by lazy(LazyThreadSafetyMode.PUBLICATION) {
             if (script == Script.ARABIC) HudhudNameBridge.arabicLetters(raw) else HudhudNameBridge.latinLetters(raw)
         }
         /** A Latin spelling's "ea" read as two sounds ("Urea" folded "uria", not "uri"); null when it has none ([indicMeetsLatin]). */
-        val eaApart: String? by lazy(LazyThreadSafetyMode.NONE) {
+        val eaApart: String? by lazy(LazyThreadSafetyMode.PUBLICATION) {
             val low = raw.lowercase()
             if (script != Script.LATIN || "ea" !in low) null else NameSearch.fold(low.replace("ea", "ia")).takeIf { it != folded }
         }
@@ -4333,9 +4420,12 @@ object Hudhud {
 
     /** Whether two words of different scripts, one of them Latin, are one name. */
     private fun bridges(a: Form, b: Form): Boolean = when {
+        // Only a Latin word and one of another script can bridge; asked first, as it is the cheap question and most pairs of a book
+        // end there (26 Nov 2026, BC-353). It changes no answer: every branch below needs such a pair.
+        (a.script == Script.LATIN) == (b.script == Script.LATIN) -> false
         // "Why" in any script is never a name (16 Nov 2026, BC-110: Bengali "কেন" was the customer Naeem Khan, so "এই মাসে বিক্রি কম
         // কেন" — why are sales down this month — and a bare "কেন" answered with his balance).
-        HudhudWhyAsk.isWhyWord(a.norm) || HudhudWhyAsk.isWhyWord(b.norm) -> false
+        a.why || b.why -> false
         a.script == Script.ARABIC && b.script == Script.LATIN -> arabicMeets(a, b)
         a.script == Script.LATIN && b.script == Script.ARABIC -> arabicMeets(b, a)
         a.script == Script.INDIC && b.script == Script.LATIN -> !ordinaryWord(a) && indicMeetsLatin(a, b)
