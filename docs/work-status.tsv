@@ -19,8 +19,8 @@ B8	Capability matrix: every screen, tile, More entry, language and trade labelle
 B9	Windows: App Lock said honestly; the MSI through the Microsoft Store	RK-008; F-011; RK-009; F-017	P1	8	BLOCKED	-	T1 is the owner's (D8); MSIX submission waits for his yes (D11)	-
 B10	Sync between versions: a clear "update the other device" and N/N-1 tests	ChatGPT F-07	P1	8	PARTIAL	shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/LiveSync.kt#skewOf	24 Nov: refusal before reading, recorded per device, pairing refused across schemas (BC-247); tests run first on CI; words for newer/older and the desktop list open (BC-248); no real two-version device run	-
 B11	Units and stock valuation written as one contract with mixed-unit tests	ChatGPT F-12; DeepSeek IV.3	P1	8	PARTIAL	shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Units.kt#roundQty	24 Nov: contract in Units/Cost/Stock/Fefo/Inventory, count and counter cost on it (BC-270); open BC-271; Room parts first on CI	-
-B12	Backup protection shown plainly (plain or locked), advice for copies that leave the phone	ChatGPT F-09	P1	7	NOT STARTED	-	After D14	-
-C1	Voice: a clear choice the first time the mic opens; Windows claims typed only	WP-9; F-012; F-013; RK-010; RK-011	P2	6	NOT STARTED	-	Waits for D10; then the first-open choice	-
+B12	Backup protection shown plainly (plain or locked), advice for copies that leave the phone	ChatGPT F-09	P1	7	NOT STARTED	-	D14 decided 25 Nov: build the hybrid	-
+C1	Voice: a clear choice the first time the mic opens; Windows claims typed only	WP-9; F-012; F-013; RK-010; RK-011	P2	6	NOT STARTED	-	D10 decided 25 Nov: build the first-step choice	-
 C2	A real receipt printer, PDF, CSV and the khata link	WP-10; F-021; F-023	P2	6	BLOCKED	-	Waits for the owner and a thermal printer	-
 C3	The final signed release, upgrade, rollback and restore drill	WP-11; F-017; F-019; F-025	P2	10	NOT STARTED	-	At the end (21-27 Dec): exact commit in CI, AAB and Store MSIX	-
 C4	Small leftovers: Windows cashbook line edit, Windows Hudhud Open page and counts	handover 23 Nov	P2	4	PARTIAL	desktop/src/test/kotlin/com/innovation313/roshankhata/desktop/CashEditDeskTest.kt#CashEditDeskTest	24 Nov: Windows cashbook line edit through editCashEntryAudited (CI first, no picture yet); Windows Hudhud Open page and counts left	-
@@ -42,10 +42,10 @@ D4	On-device LLM	plan section 9; T17	P2	7	BLOCKED	-	The owner's decision by 13 D
 D5	Languages (the same nine)	plan section 9	P1	5	BLOCKED	-	The owner's decision by 30 Nov	-
 D6	Trades (the same 25)	plan section 9	P1	5	BLOCKED	-	The owner's decision by 30 Nov	-
 D7	Hudhud writing (read-only; fills a form only)	plan section 9	P1	8	BLOCKED	-	The owner's decision by 30 Nov	-
-D8	The handover's four decisions (T39, cashier totals, T1, tie button)	plan section 9; T39; T1; F-005	P0	8	BLOCKED	-	The owner's decision by 26 Nov	-
+D8	The handover's four decisions (T39, cashier totals, T1, tie button)	plan section 9; T39; T1; F-005	P0	8	PARTIAL	docs/decisions-25nov2026.md	25 Nov: three of four decided; T39 to be identified from the handover	-
 D9	The owner's devices (phones and laptop)	plan section 9; T18	P0	9	BLOCKED	-	The owner's details by 25 Nov	-
-D10	The first step of Hudhud's voice (phone only or online)	plan section 9; RK-010	P2	6	BLOCKED	-	The owner's decision by 13 Dec	-
+D10	The first step of Hudhud's voice (phone only or online)	plan section 9; RK-010	P2	6	VERIFIED COMPLETE	docs/decisions-25nov2026.md	-	-
 D11	The Windows MSI road (Microsoft Store MSIX)	plan section 9; RK-009; F-017	P2	7	BLOCKED	-	The owner's decision by 13 Dec	-
 D12	A free private repo for the sealed set	plan section 9; T26	P1	8	BLOCKED	-	The owner's decision by 1 Dec	-
-D13	Money stays Double with the contract, or a minor-unit migration in Jan 2027	ChatGPT F-01; plan v2 section 10	P1	8	BLOCKED	-	The owner decides on A5's results by 13 Dec	-
-D14	Backup password by default on a new install, or optional	ChatGPT F-09; plan v2 section 10	P1	6	BLOCKED	-	The owner decides by 6 Dec	-
+D13	Money stays Double with the contract, or a minor-unit migration in Jan 2027	ChatGPT F-01; plan v2 section 10	P1	8	VERIFIED COMPLETE	docs/decisions-25nov2026.md	-	-
+D14	Backup password by default on a new install, or optional	ChatGPT F-09; plan v2 section 10	P1	6	VERIFIED COMPLETE	docs/decisions-25nov2026.md	-	-
