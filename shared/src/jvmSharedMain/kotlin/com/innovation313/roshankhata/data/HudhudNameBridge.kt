@@ -27,6 +27,10 @@ import java.text.Normalizer
  *  - fewer than three letters is a word, not a name, and any letter that is not known fails the whole word.
  * Not met, on purpose: the Arabic article and "Abdul" and "Abdur" written as one word with the name that follows them, and
  * abbreviations ("Mohd").
+ * One more, asked apart ([meetsYouGlide], 25 Nov 2026, BC-350): a Latin spelling that begins with a "u" said "you" (Urea,
+ * Uniform, Unilever) is written "یو" in these scripts, a "ی" glide before the "و" ("یوریا", "يوريا"); the plain rules read
+ * that "ی" as a "y" the Latin spelling does not have, so a product saved in Latin letters was never met by its Urdu,
+ * Sindhi, Persian or Arabic spelling.
  * Pure functions on strings, so a test holds each rule one at a time.
  */
 internal object HudhudNameBridge {
@@ -129,6 +133,23 @@ internal object HudhudNameBridge {
     }
 
     /**
+     * Whether [a] (letters of an Arabic-script word) is [l] (a Latin spelling's letters) said with the "you" glide that these
+     * scripts write before a first "u" (25 Nov 2026, BC-350): "یوریا" is Urea, "یونیفارم" Uniform. Only a word that begins
+     * "یو", only against a Latin spelling that begins "u" or "eu" (Euro), and only with three letters or more after the
+     * glide: "یوں" (thus) and "یوم" (day) are never "Un" or "Uma". A word spelt so writes its vowels: after the "یو" it has
+     * another long vowel ("یوریا", "یونیفارم", "یورو"); Arabic's verbs that begin "يو" write none ("يوجد", there is; "يولد",
+     * "يوصل"), so they are never a product (BC-350). The rest is read by the very rules of [meetsLetters], from the "و" on.
+     */
+    fun meetsYouGlide(a: String, l: String): Boolean {
+        if (a.length < 2 || a[0] != YEH || a[1] != WAW || a.length - 1 < MIN_LETTERS || a.length > MAX_ARABIC) return false
+        if (l.length < 2 || l.length > MAX_LATIN || !(l[0] == 'u' || l.startsWith("eu"))) return false
+        val rest = a.substring(2)
+        if (rest.none { it == WAW || it == YEH || isLongVowel(it) }) return false
+        if (a.substring(1).all { it == WAW || it == YEH || isLongVowel(it) }) return false
+        return Matcher(a, l).run(1)
+    }
+
+    /**
      * The letters of an Arabic-script word as the matcher reads them: the marks (vowel signs, shadda, the superscript alef,
      * tatweel, joiners), digits and anything that is not a letter gone; every form of a letter made the one Urdu form
      * (ي ى ئ ے → ی, ك → ک, ه ة ۃ ھ → ہ, أ إ آ ٱ → ا, ؤ → و, ں → ن); a doubled letter one.
@@ -184,7 +205,8 @@ internal object HudhudNameBridge {
         private fun articleAlif(i: Int): Boolean =
             (i == 3 && a.startsWith(ABD)) || (i == a.length - 3 && a.endsWith(ALLAH_END))
 
-        fun run(): Boolean = go(0, 0, 0)
+        /** From letter [from] of [a] (1 after the "you" glide of [meetsYouGlide]) against the whole of [l]. */
+        fun run(from: Int = 0): Boolean = go(from, 0, 0)
 
         /** [a] from letter [i] against [l] from letter [j]; [mask] is what the long vowels written just before ask of the Latin vowels. */
         private fun go(i: Int, j: Int, mask: Int): Boolean {

@@ -37,8 +37,13 @@ class HudhudOtherNamesTest {
         assertEquals(Ask.Goods(listOf(100L), GoodsFacet.PRICE), ask)
     }
 
-    @Test fun `without the other names the other script finds nothing`() {
-        val bare = Hudhud.understand("یوریا کا ریٹ کیا ہے", names, topics, null, goods = listOf(Hudhud.Name(100L, "Urea"), Hudhud.Name(101L, "DAP")))
-        assertTrue("$bare", !(bare is Ask.Goods && 100L in bare.ids))
+    @Test fun `without the other names a spelling of the same sound still finds it, a translation does not`() {
+        // Since 25 Nov 2026 (BC-350) the bridge reads the "you" glide: "یوریا" is the Latin "Urea" by its letters, other names or not.
+        val book = listOf(Hudhud.Name(100L, "Urea"), Hudhud.Name(101L, "DAP"), Hudhud.Name(102L, "Sugar"))
+        val bare = Hudhud.understand("یوریا کا ریٹ کیا ہے", names, topics, null, goods = book)
+        assertEquals(Ask.Goods(listOf(100L), GoodsFacet.PRICE), bare)
+        // A word of another language for the same goods ("چینی", sugar) is no spelling of it: only an other name can say it.
+        val other = Hudhud.understand("چینی کا ریٹ کیا ہے", names, topics, null, goods = book)
+        assertTrue("$other", !(other is Ask.Goods && 102L in other.ids))
     }
 }
