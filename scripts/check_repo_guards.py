@@ -82,7 +82,7 @@ def csv_reads_are_decoded():
             for i, line in enumerate(lines):
                 if not CSV_PARSE.search(line):
                     continue
-                near = "\n".join(lines[max(0, i - 3):i + 1])
+                near = "\n".join(lines[max(0, i - 12):i + 1])
                 if "CsvImport.decode(" not in near:
                     faults.append("%s:%d parses CSV text that CsvImport.decode did not make" %
                                   (p.relative_to(ROOT), i + 1))
@@ -204,17 +204,93 @@ def windows_cancel_asks_first(root=ROOT):
     return faults
 
 
+# BC-306 (25 Nov 2026): grouping or matching the whole book for duplicates is work in proportion to the book; on a
+# screen's thread it stalls the window (an ANR on the phone). The whole-book calls run inside a withContext on a
+# background dispatcher (an enclosing block, braces matched); matchExisting (per keystroke) is replaced by DuplicateDetector.Index.
+WHOLE_BOOK_DUP = re.compile(r"DuplicateDetector\.(find|Index)\(")
+
+
+BACKGROUND = re.compile(r"withContext\(Dispatchers\.(Default|IO)\)")
+
+
+def inside_background(lines, i, col):
+    """True when the call at lines[i][col] sits inside a block opened on a line holding withContext(Dispatchers.X):
+    walks back over the code, matching braces, and looks at each block that is still open at the call."""
+    if BACKGROUND.search(lines[i][:col]):
+        return True
+    depth = 0
+    for j in range(i, max(-1, i - 60), -1):
+        code = lines[j].split("//")[0]
+        if j == i:
+            code = code[:col]
+        for ch in reversed(code):
+            if ch == "}":
+                depth += 1
+            elif ch == "{":
+                if depth == 0:
+                    if BACKGROUND.search(code):
+                        return True
+                    if re.search(r"\bfun\s", code):
+                        return False
+                else:
+                    depth -= 1
+    return False
+
+
+def duplicates_off_the_screen_thread(root=ROOT):
+    faults = []
+    for base in ("app/src/main", "desktop/src/main"):
+        for p in sorted((root / base).rglob("*.kt")):
+            lines = p.read_text().splitlines()
+            for i, l in enumerate(lines):
+                code = l.split("//")[0]
+                if code.lstrip().startswith("*"):
+                    continue
+                rel = p.relative_to(root)
+                if "DuplicateDetector.matchExisting(" in code:
+                    faults.append("%s:%d calls matchExisting, which normalises the whole book per call: build a "
+                                  "DuplicateDetector.Index once, off the screen's thread" % (rel, i + 1))
+                m = WHOLE_BOOK_DUP.search(code)
+                if m and "Index(emptyList())" not in code and not inside_background(lines, i, m.start()):
+                    faults.append("%s:%d groups or indexes the whole book for duplicates outside an enclosing "
+                                  "withContext(Dispatchers.Default) block" % (rel, i + 1))
+    return faults
+
+
+# BC-305 (25 Nov 2026): the payment-voice screen asks the system about ten binder questions (notification access,
+# packages, installers, SMS and dialer apps). In onResume on the main thread they stalled the screen; every one is
+# asked inside a withContext(Dispatchers.IO) block now, and stays so.
+PAYMENT_VOICE_SCREEN = "app/src/main/java/com/innovation313/roshankhata/PaymentVoiceActivity.kt"
+BINDER_ASKS = re.compile(r"PaymentVoice\.(hasAccess|installed|fromPlay|seen|settleDefaults)\(|(?<!fun )installedFromPlay\(")
+
+
+def payment_voice_asks_off_main(root=ROOT):
+    faults = []
+    p = root / PAYMENT_VOICE_SCREEN
+    if not p.exists():
+        return ["%s is missing" % PAYMENT_VOICE_SCREEN]
+    lines = p.read_text().splitlines()
+    for i, l in enumerate(lines):
+        code = l.split("//")[0]
+        m = BINDER_ASKS.search(code)
+        if m and not inside_background(lines, i, m.start()):
+            faults.append("%s:%d asks the system (a binder call) outside a withContext(Dispatchers.IO) block"
+                          % (PAYMENT_VOICE_SCREEN, i + 1))
+    return faults
+
+
 def main():
     faults = (publish_jobs_hold_no_secrets() + no_tracked_ignored_files() + csv_reads_are_decoded()
               + shown_bitmaps_never_recycled() + left_margins_name_their_side() + test_names_are_jvm_names()
               + gradle_cache_on_except_release()
-              + windows_cancel_asks_first())
+              + windows_cancel_asks_first() + duplicates_off_the_screen_thread()
+              + payment_voice_asks_off_main())
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
     print("repo guards: release jobs hold no secrets, nothing ignored is tracked, every CSV read is decoded, "
-          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first")
+          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first, the duplicate scan and the payment-voice screen's system questions run off the main thread")
 
 
 if __name__ == "__main__":

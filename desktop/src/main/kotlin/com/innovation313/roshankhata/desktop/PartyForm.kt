@@ -14,6 +14,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,6 +33,8 @@ import com.innovation313.roshankhata.ui.DuplicateDetector
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.word
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * A customer or supplier, new or edited (KMP Phase 8b), the phone's add and
@@ -56,10 +59,14 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
     var photoVersion by remember { mutableStateOf(0) }
     var photoFailed by remember { mutableStateOf(false) }
     val photoTitle = word(W.set_photo)
-    val others = remember(book, existing) {
-        book.filter { it.id != existing?.id }.map { DuplicateDetector.Candidate(it.id, it.name, it.phone, it.isCustomer, it.balance) }
+    // The book's names and numbers worked out once, off the window's thread (25 Nov 2026, BC-306): matchExisting
+    // normalised every name of the book on every keystroke. The phone's form uses the same Index (KhataActivity).
+    val index by produceState<DuplicateDetector.Index?>(null, book, existing) {
+        value = withContext(Dispatchers.Default) {
+            DuplicateDetector.Index(book.filter { it.id != existing?.id }.map { DuplicateDetector.Candidate(it.id, it.name, it.phone, it.isCustomer, it.balance) })
+        }
     }
-    val similar = DuplicateDetector.matchExisting(name.trim(), phone.trim().ifEmpty { null }, others)
+    val similar = index?.match(name.trim(), phone.trim().ifEmpty { null })
     // In a dialog, Esc and the ✕ ask first once anything differs from how the form opened (17 Nov 2026, audit L005).
     fun formNow(): List<Any?> = listOf(name, phone, father, village, customer, limit, note, photo, photoVersion)
     val opened = rememberOpened(formNow())

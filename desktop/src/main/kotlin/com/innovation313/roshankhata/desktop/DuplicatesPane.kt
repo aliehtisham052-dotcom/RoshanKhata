@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -63,8 +64,12 @@ fun DuplicatesPane(
     var confirming by remember { mutableStateOf(false) }
     var notice by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(again) { dismissed = withContext(Dispatchers.IO) { dao.getDismissedDuplicateKeys().toSet() } }
-    val groups = remember(parties, dismissed) {
-        DuplicateDetector.find(parties.map { DuplicateDetector.Candidate(it.id, it.name, it.phone, it.isCustomer, it.balance) }, dismissed)
+    // Grouped off the window's thread (25 Nov 2026, lesson 72, BC-306): the phone's screen does it on Default; on a
+    // 10,000-customer book the window waited for it on every change of the list.
+    val groups by produceState(emptyList<DuplicateDetector.Group>(), parties, dismissed) {
+        value = withContext(Dispatchers.Default) {
+            DuplicateDetector.find(parties.map { DuplicateDetector.Candidate(it.id, it.name, it.phone, it.isCustomer, it.balance) }, dismissed)
+        }
     }
     val doneWord = word(W.duplicate_dismissed)
     val failed = word(W.duplicate_merge_failed)
