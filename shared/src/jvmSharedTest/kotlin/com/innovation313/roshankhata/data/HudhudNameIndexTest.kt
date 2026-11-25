@@ -84,6 +84,19 @@ class HudhudNameIndexTest {
         }
     }
 
+    @Test fun `a word that begins a name is one of the book's names, by the index as by the search`() {
+        // A Latin-only book: nothing bridges and nothing is fold-blocked, so knownName is the search's strong hit alone.
+        val latin = listOf("Bashirullah Traders", "Rameezuddin", "Tallay Wali", "Qadeer Sheikh", "Owais", "Zarnosh Kiryana")
+        val book = latin.mapIndexed { i, n -> Hudhud.Name(i + 1L, n) }
+        for (w in listOf("bashir", "Bashirul", "rameez", "rameezuddin", "talla", "tallaywali", "qadeer", "sheikh", "shei",
+            "owai", "zarnosh", "kiryana", "kiry", "traders", "trad", "nobody", "xyzzy", "zarnoshkiryana")) {
+            val slow = NameSearch.scoreSpoken(book, listOf(w)) { it.name }.any { it.strongHits > 0 }
+            assertEquals("'$w'", slow, Hudhud.knownNameForTest(w, book))
+        }
+        assertTrue(Hudhud.knownNameForTest("Rameez", book))
+        assertTrue(Hudhud.knownNameForTest("Bashirul", book))
+    }
+
     @Test fun `a memo past its cap starts again and still answers`() {
         val memo = TextMemo<String>(3)
         var made = 0

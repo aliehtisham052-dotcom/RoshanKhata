@@ -3885,6 +3885,9 @@ object Hudhud {
     private fun goodsOf(a: Ask): List<Long>? = (a as? Ask.Goods)?.ids?.takeIf { it.isNotEmpty() }
 
     /** One of the book's own names (a customer, a supplier, a product), recognised outright. */
+    /** Tests: [knownName], whose quick index ([Prepared]) HudhudNameIndexTest holds to the slow search. */
+    internal fun knownNameForTest(w: String, names: List<Name>): Boolean = knownName(w, names)
+
     private fun knownName(w: String, names: List<Name>): Boolean =
         names.isNotEmpty() && !shortOrdinaryPrefix(w, names) &&
             ((!foldBlocked(w, names) && prepared(names).strong(w)) ||
