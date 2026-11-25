@@ -52,8 +52,10 @@ class ShiftCloseEdgeDesktopTest {
         val d = ShiftMath.drawer(dao, open, closing)
         assertEquals(200.0, d.handIn, 0.001)
         assertEquals(400.0, d.taken, 0.001)
-        // The day's drawer for the same stretch counts the same cash line ((from, to]).
-        assertEquals(200.0, dao.cashbookCashBetween(true, opened - 1, closing), 0.001)
+        // The day's drawer for the same stretch ((from, to]) holds both: its cashbook sum counts every cash row, the
+        // ticket's own (saleId set) beside the line by hand, 200 + 400. The shift says the same 600 in its two parts.
+        assertEquals(600.0, dao.cashbookCashBetween(true, opened - 1, closing), 0.001)
+        assertEquals(d.handIn + d.taken, dao.cashbookCashBetween(true, opened - 1, closing), 0.001)
         assertEquals(shift, open.id)
     }
 }
