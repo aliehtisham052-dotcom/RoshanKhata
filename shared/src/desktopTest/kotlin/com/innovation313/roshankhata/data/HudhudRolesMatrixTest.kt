@@ -441,7 +441,9 @@ class HudhudRolesMatrixTest {
         // card may write it in the shop's own shape (+92 300 1234567), so the national 0 is not there (CI, 24 Nov 2026).
         val phone = answered.first { it.ask == Hudhud.Ask.Person(listOf(ids.ali), Hudhud.Facet.PHONE) }
         fun digits(t: String) = t.filter { it.isDigit() }
-        assertTrue("the phone card lists the number as a secret: " + phone.card.secrets, phone.card.secrets.any { digits(it).endsWith("3001234567") })
+        // The phone card keeps the number off the voice with its own spoken words ("on the screen"), not through secrets.
+        val phoneSaid = phone.said?.let { flat(it) } ?: phone.card.spoken?.let { flat(it(env)) } ?: ""
+        assertTrue("the phone card says the number aloud: $phoneSaid", !digits(phoneSaid).contains("3001234567"))
         assertTrue("the phone is on the card", digits(phone.text).contains("3001234567"))
         assertEquals("a private number was said aloud", emptyList<String>(), spoken)
     }
