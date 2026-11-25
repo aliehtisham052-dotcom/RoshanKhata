@@ -439,6 +439,26 @@ object VoiceQuestion {
     fun unsupportedSpan(heard: String): Boolean = spans(heard).unsupported
 
     /**
+     * How many spans [heard] names (25 Nov 2026, plan H5, the advisor's comparisons): each word of a week, a month or a year, each
+     * time it is said, and today, yesterday, this year and last year once each. "Pichle hafte se zyada bika" names one span (the
+     * one it is compared against); "is hafte pichle hafte se zyada bika" names two, a comparison of two spans the sentence states
+     * itself. Indonesian "kemarin" beside a unit is that unit's "last" ("minggu kemarin"), not yesterday as well.
+     */
+    internal fun spansNamed(heard: String): Int {
+        val t = normalise(heard)
+        if (t.isEmpty()) return 0
+        val said = t.split(' ')
+        var n = said.count { s -> UNIT_SPANS.any { k -> isWord(s, k) } }
+        if (saysAny(t, TODAY)) n++
+        if (saysAny(t, YESTERDAY) && !(n > 0 && said.contains("kemarin"))) n++
+        if (saysAny(t, THIS_YEAR) || saysAny(t, LAST_YEAR)) n++
+        return n
+    }
+
+    /** The words of a week, a month and a year, each one word (normalised), for [spansNamed]. */
+    private val UNIT_SPANS: List<String> by lazy { (WEEK + MONTH + YEAR).map { normalise(it) }.filter { ' ' !in it } }
+
+    /**
      * The counts that belong to a span in [heard] ("3" of "pichle 3 mahine", "6" of "last 6 months") — figures that are not
      * an amount of money. A sentence's number that is only one of these is no amount: "Bashir ne pichle 3 mahine kitna diya"
      * asks what Bashir paid, it does not say that 3 rupees moved.

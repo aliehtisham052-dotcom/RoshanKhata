@@ -451,7 +451,7 @@ internal object HudhudMind {
     private val GIVES_WAY: Set<String> by lazy { setOf(norm("من")) }
 
     /** Letters only Urdu, Sindhi or Persian write, after [VoiceQuestion.normalise] (which folds ي ك ه into ی ک ہ). */
-    private const val NOT_ARABIC_LETTERS = "\u0679\u0688\u0691\u06BA\u06D2\u06BE\u06AF\u067E\u0686\u0698\u06AA\u067B\u0680\u0684\u0683" +
+    internal const val NOT_ARABIC_LETTERS = "\u0679\u0688\u0691\u06BA\u06D2\u06BE\u06AF\u067E\u0686\u0698\u06AA\u067B\u0680\u0684\u0683" +
         "\u0687\u068C\u068D\u068F\u0699\u06B3\u06B1\u06BB\u067A\u067D\u067F\u06A6\u06FE\u06FD"
 
     /**

@@ -33,7 +33,34 @@ object HudhudAdviceAsk {
         "فروش",
         "बिक्री सेल बिकरी",
         "বিক্রি বিক্রয় সেল বিক্রী",
-        "penjualan jualan omzet"
+        "penjualan jualan omzet",
+        // 25 Nov 2026 (H5, the everyday ways): the verb of selling itself, as a comparison says it ("pichle hafte se zyada bika?",
+        // "did I sell more than last week"): VoiceQuestion's own selling words in each script.
+        "sell sold bik bika biki bike bikta bikti bikte becha bechi beche",
+        "بکا بکی بکے بکتا بکتی بیچا بیچی",
+        "وڪاميو وڪاميا",
+        "بعت بعنا",
+        "فروختم فروختیم",
+        "बिका बिकी बिके बिकता बिकती बेचा बेची",
+        "terjual menjual jual"
+    )
+
+    /**
+     * The shop's business as a whole (25 Nov 2026, H5: "is my business growing", "karobar barh raha hai"): a way said of it is the
+     * sales' trend, the one figure of growth the book holds. The words the app's own strings use for a business in each language
+     * (businesses_title and the help pages): کاروبار, कारोबार / व्यवसाय, ব্যবসা, ڪاروبار, کسب‌وکار, نشاط, usaha / bisnis; with the
+     * everyday dhanda, व्यापार and تجارة. Never "shop" or "dukaan": "kaun si dukan zyada chal rahi hai" is the other shops' page.
+     */
+    private val BUSINESS = AdviceWords(
+        "business",
+        "karobar kaarobar karobaar kaarobaar dhanda dhandha",
+        "کاروبار دھندا دھندہ بزنس",
+        "ڪاروبار ڌنڌو ڌنڌي",
+        "نشاط نشاطي نشاطنا تجارة تجارتي تجارتنا تجاري",
+        "کسب کار کارم وکار وکارم",
+        "कारोबार व्यवसाय व्यापार धंधा बिजनेस बिज़नेस",
+        "ব্যবসা ব্যবসায়",
+        "usaha usahaku bisnis bisnisku"
     )
 
     /** It is going up. */
@@ -46,7 +73,15 @@ object HudhudAdviceAsk {
         "بالا افزایش رشد",
         "बढ़ बढ़ा बढ़ी बढ़े बढ़ती बढ़ता ऊपर",
         "বাড়ছে বাড়ল বাড়ে বেড়েছে বেড়ে বাড়তি উপরে",
-        "naik meningkat bertambah bertumbuh tumbuh membaik"
+        "naik meningkat bertambah bertumbuh tumbuh membaik",
+        // 25 Nov 2026 (H5): growing said of a business, and getting better ("are my sales getting better or worse").
+        "better improve expanding behtar",
+        "بہتر",
+        "بهتر",
+        "تنمو ينمو نمو ازدياد تزايد تتزايد",
+        "بهتر",
+        "बेहतर",
+        "berkembang"
     )
 
     /** It is going down. */
@@ -59,8 +94,83 @@ object HudhudAdviceAsk {
         "کم کاهش پایین افت",
         "कम घट घटती घटता गिर गिरती गिरता नीचे",
         "কমছে কমল কমেছে কমে কমে নিচে",
-        "turun menurun berkurang anjlok melemah"
+        "turun menurun berkurang anjlok melemah",
+        // 25 Nov 2026 (H5): getting worse, shrinking.
+        "worse shrinking kharab kharaab bura buri",
+        "خراب بری برا",
+        "خراب",
+        "انخفاض تناقص تتناقص يتراجع يتناقص",
+        "بدتر",
+        "खराब ख़राब बुरी",
+        "খারাপ",
+        "memburuk menyusut"
     )
+
+    /**
+     * More and less (25 Nov 2026, H5): a way only in a comparison the sentence makes ([THAN] a span before, or "than before"),
+     * never alone — "zyada sale" alone is much sale, and "sab se zyada" is the most ([SUPERLATIVE]).
+     */
+    private val MORE_LESS = AdviceWords(
+        "more less higher lower fewer zyada ziada ziyada zyaada zaida kam kum",
+        "زیادہ کم",
+        "وڌيڪ گهٽ گھٽ",
+        "أكثر اكثر أقل اقل",
+        "بیشتر کمتر زیاد کم",
+        "ज्यादा ज़्यादा अधिक कम",
+        "বেশি কম",
+        "lebih banyak sedikit kurang tinggi rendah"
+    )
+
+    /**
+     * "Than" (25 Nov 2026, H5): the word that sets a span before as the one compared against ("pichle hafte se", "than last week",
+     * "گذشته هفته از"...). The span the sentence names after it is the one before; the trend is told for the span after it.
+     */
+    private val THAN = AdviceWords(
+        "than compared versus vs",
+        "se sy say",
+        "سے",
+        "کان",
+        "من مقارنة",
+        "از نسبت",
+        "से",
+        "চেয়ে চাইতে তুলনায় থেকে",
+        "dari daripada dibanding dibandingkan"
+    )
+
+    /** The most: "sab se zyada bika" is the best seller, never a comparison (the Sindhi سڀ is also a little word). */
+    private val SUPERLATIVE = AdviceWords(
+        "most best highest top least lowest sab sabse",
+        "سب سبھی",
+        "سڀ",
+        "الأكثر الاكثر الأقل الاقل",
+        "بیشترین کمترین",
+        "सब सबसे",
+        "সবচেয়ে সব",
+        "paling terbanyak tertinggi terendah"
+    )
+
+    /**
+     * "Than before" (25 Nov 2026, H5: "sale pehle se behtar hai?", "am I selling more than before"): a comparison with the span
+     * before the asked one, the asked one this month when none is said. As phrases, after [VoiceQuestion.normalise], spaces around.
+     */
+    private val THAN_BEFORE: List<String> = listOf(
+        "pehle se", "pahle se", "pehlay se", "than before", "compared to before", "پہلے سے", "पहले से", "আগের চেয়ে", "আগের থেকে",
+        "اڳ کان", "من قبل", "از قبل", "نسبت به قبل", "dari sebelumnya", "daripada sebelumnya", "dibanding sebelumnya"
+    ).map { " ${VoiceQuestion.normalise(it)} " }
+
+    /** The span after each span before: "than last week" asks this week's trend. */
+    private val AFTER: Map<VoiceQuestion.Window, VoiceQuestion.Window> = mapOf(
+        VoiceQuestion.Window.YESTERDAY to VoiceQuestion.Window.TODAY,
+        VoiceQuestion.Window.LAST_WEEK to VoiceQuestion.Window.THIS_WEEK,
+        VoiceQuestion.Window.LAST_MONTH to VoiceQuestion.Window.THIS_MONTH,
+        VoiceQuestion.Window.LAST_YEAR to VoiceQuestion.Window.THIS_YEAR
+    )
+
+    /**
+     * Arabic's "increase" and Urdu's "more" are one spelling once the letters are folded (زيادة, زیادہ; lesson 92): it is a way only
+     * in an Arabic sentence (no letter only Urdu, Sindhi or Persian writes), and Urdu's comparative otherwise.
+     */
+    private val ZIYADA = VoiceQuestion.normalise("زيادة")
 
     /**
      * A word that says "going down" only when something is going on: "kam" is also "little" ("aaj bohat kam bikri hui") and, once
@@ -116,7 +226,7 @@ object HudhudAdviceAsk {
         // English
         "the a an my our is are was were do does did has have been be being so much very this that it its in on of for to from than " +
             "compared what whats how hows tell me us please show going go keep keeps keeping getting get gets looking look ok okay now over within during " +
-            "lately really and not no i should shall can could would will need must want we you",
+            "lately really and not no i should shall can could would will need must want we you am",
         // Roman Urdu and Hindi
         "is iss us ki ka ke ko se mein me main mai meri mera mere hamari hamara hamare apni apna apne hui hua hue ho hoga hogi " +
             "gayi gai gaya gaye rahi raha rahe rhi rha thi tha the hai hain hy he itni itna itne bohat bahut kaafi kafi ab abhi " +
@@ -125,19 +235,19 @@ object HudhudAdviceAsk {
         // Urdu
         "اس میں کی کا کے کو سے میری میرا میرے ہماری ہمارا ہمارے اپنی اپنا ہوئی ہوا ہوئے ہو ہوگا ہوگی گئی گیا گئے رہی رہا رہے " +
             "تھی تھا تھے ہے ہیں اتنی اتنا اتنے بہت کافی اب ابھی بتاؤ بتاو بتائیں بتائیے دکھاؤ کیا ہونے ہونا تک پر یہ وہ سب مجھے ہمیں " +
-            "جی نہیں نہ کروں کرنا کرنی چاہیے چاہئے لوں گے گی گا",
+            "جی نہیں نہ کروں کرنا کرنی چاہیے چاہئے چاہئیں چاہییں لوں گے گی گا",
         // Sindhi
         "هن ۾ جو جي جا کي کان منهنجو منهنجي اسان ٿيو ٿي ٿيا ويو وئي ويا رهيو رهي آهي آهن هو هئي ايترو ايتري تمام گهڻو هاڻي " +
             "ٻڌايو ٻڌاءِ ڇا هي اهو سڀ نه ناهي ڪريان ڪرڻ گهرجي",
         // Arabic
         "هذا هذه في من على عن الى إلى لي قل اخبرني أخبرني كثيرا جدا قد ما هل كان كانت هو هي لا لم يجب ينبغي علي ان أن خلال الذي التي",
         // Farsi
-        "این آن در از به را که شد شده است بود بوده چه ما من خیلی بگو بده هم مان نه نمی می باید بکنم کنم آیا حال",
+        "این آن در از به را که شد شده است بود بوده چه ما من خیلی بگو بده هم مان نه نمی می باید بکنم کنم آیا حال و کند رو",
         // Hindi
         "इस उस में की का के को से मेरी मेरा मेरे हमारी हमारा हमारे अपनी अपना हुई हुआ हुए हो होगा गई गया गए रही रहा रहे थी था थे है " +
-            "हैं इतनी इतना इतने बहुत काफी अब अभी बताओ बताइए क्या होने होना तक पर यह ये वह वो सब मुझे हमें जी नहीं न करूं करना करनी चाहिए चाहिये लूं",
+            "हैं इतनी इतना इतने बहुत काफी अब अभी बताओ बताइए क्या होने होना तक पर यह ये वह वो सब मुझे हमें जी नहीं न करूं करना करनी चाहिए चाहिये लूं होगी",
         // Bengali
-        "এই এ এর আমার আমাদের হল হলো হয়েছে হয়ে গেল গেছে ছিল আছে কি কী এত এতো অনেক এখন বলো বলুন টা টি না নাকি করব করবো উচিত থেকে",
+        "এই এ এর আমার আমাদের হল হলো হয়েছে হচ্ছে হয়ে গেল গেছে ছিল আছে কি কী এত এতো অনেক এখন বলো বলুন টা টি না নাকি করব করবো উচিত থেকে",
         // Indonesian
         "ini itu di ke dari yang saya kami kita jadi menjadi sangat begitu ya tolong apa apakah nya tidak tak harus sebaiknya lebih dalam selama"
     )
@@ -152,7 +262,7 @@ object HudhudAdviceAsk {
         "اول اولین ابتدا",
         "पहले पहला",
         "আগে প্রথমে প্রথম",
-        "dulu pertama dahulu"
+        "dulu pertama dahulu duluan"
     )
 
     /** To chase money: ask for it, remind, collect. Not "call" or "phone" alone: they are a customer's number. */
@@ -165,12 +275,35 @@ object HudhudAdviceAsk {
         "مطالبه وصول پیگیری بگیرم",
         "वसूली मांगू मांगना तकाज़ा तकाजा",
         "আদায় চাইব চাইবো তাগাদা",
-        "tagih menagih penagihan"
+        "tagih menagih penagihan",
+        // 25 Nov 2026 (H5, the everyday ways): "pehle kis se paise maangun", "sab se pehle kis ka udhaar wasool karun", Hindi's
+        // मांगूं with its nasal, Arabic "أطالبه" (ask him), Farsi "طلب کنم" (claim it).
+        "maangun maangoon maangu maango maangna mangoon wasool wusool wasul",
+        "وصول",
+        "أطالبه اطالبه أطالبهم اطالبهم",
+        "طلب",
+        "मांगूं मांगूँ माँगूं माँगूँ माँगू वसूल"
+    )
+
+    /**
+     * Asking or taking, which is the chase only beside a word of money ([MONEY]): "who do I ask for money first", "kis se pehle
+     * paise lene chahiye", "আগে কার কাছ থেকে টাকা নেব". "Who should I ask first" alone asks nothing of the dues.
+     */
+    private val ASK_TAKE = AdviceWords(
+        "ask request demand take",
+        "lun loon lu lena lene leni",
+        "لوں لینا لینے لینی",
+        "وٺان وٺڻ",
+        "آخذ اخذ",
+        "بخواهم",
+        "लूं लूँ लेना लेने लेनी",
+        "নেব নেবো নিব",
+        "minta ambil"
     )
 
     /** "Who" and "whom", the customers and the money: words around the question that add nothing. */
     private val WHO = AdviceWords(
-        "who whom which customer customers people one ones money payment payments dues udhaar",
+        "who whom whose which customer customers people one ones money payment payments dues udhaar",
         "kis kisse kisko kiski kaun kaunsa kon kise paise paisa paisay rupay raqam udhaar udhar baqaya gahak customer log",
         "کس کسے کون کونسا کیا پیسے رقم ادھار بقایا گاہک لوگ",
         "ڪنهن ڪير ڪنھن پيسا رقم اڌار گراهڪ",
@@ -205,7 +338,10 @@ object HudhudAdviceAsk {
         "پول مبلغ پرداخت",
         "पैसे पैसा रकम वसूली उधार",
         "টাকা পয়সা",
-        "uang dana pembayaran"
+        "uang dana pembayaran",
+        // 25 Nov 2026 (H5): "expected collections", Arabic "المال" (the money) and "الدفع" (paying), "dues".
+        "collection collections dues",
+        "مال دفع"
     )
 
     /** What is NEEDED is the money going out, not coming in: "agle mahine kitna cash chahiye" is not this reader's. */
@@ -261,7 +397,12 @@ object HudhudAdviceAsk {
         "sab se pehle" to "pehle", "sabse pehle" to "pehle", "سب سے پہلے" to "پہلے", "सबसे पहले" to "पहले", "सब से पहले" to "पहले",
         "up or down" to "up down", "اوپر یا نیچے" to "اوپر نیچے", "ऊपर या नीचे" to "ऊपर नीचे",
         "going up" to "up", "going down" to "down", "go up" to "up", "go down" to "down",
-        "aane wale" to "aane", "آنے والے" to "آنے", "आने वाले" to "आने", "aane wala" to "aane", "aane wali" to "aane"
+        "aane wale" to "aane", "آنے والے" to "آنے", "आने वाले" to "आने", "aane wala" to "aane", "aane wali" to "aane",
+        // 25 Nov 2026 (H5): money paid TO the shop is money coming in ("how much will customers pay me next month"); "pay" alone
+        // is the shop paying out ([NEED]). And "compared to" is one word of comparing ([THAN]).
+        "pay me" to "payments receive", "pay us" to "payments receive",
+        "compared to" to "than", "compared with" to "than", "ke muqable mein" to "se", "ke muqable" to "se", "ke muqabla" to "se",
+        "کے مقابلے میں" to "سے", "کے مقابلے" to "سے", "की तुलना में" to "से", "के मुकाबले" to "से", "نسبت به" to "از"
     ).map { (from, to) -> " ${VoiceQuestion.normalise(from)} " to " ${VoiceQuestion.normalise(to)} " }.sortedByDescending { it.first.length }
 
     /** The sentence as words, phrases applied; null when it is empty or longer than a sentence of these is. */
@@ -287,30 +428,57 @@ object HudhudAdviceAsk {
     /**
      * "Is my sale going up or down", "kya sale barh rahi hai", "sales trend this week": the sales, and a way — up, down or "trend" —
      * over the span said, this month when none is. The sales over the span against the span before it, by [AnswerAdvisor.trend].
+     *
+     * 25 Nov 2026 (H5, the everyday ways): the business growing ("is my business growing", "karobar barh raha hai") is the sales'
+     * trend; more or less than ONE span before ("pichle hafte se zyada bika?") or than before ("pehle se behtar") is a comparison,
+     * told for the span after the one named; better and worse are ways. Two spans the sentence names itself stay its own two
+     * figures, and "sab se zyada" stays the most.
      */
     internal fun trend(heard: String, isName: (String) -> Boolean, calling: (String) -> Boolean): Hudhud.Ask.Trend? {
-        val said = wordsOf(heard) ?: return null
-        // The cheap question first: no sales word, no answer (every question comes through here).
-        if (said.none { SALES.has(it) }) return null
+        val first = wordsOf(heard) ?: return null
+        // The cheap question first: no sales word and no business, no answer (every question comes through here).
+        if (first.none { SALES.has(it) || BUSINESS.has(it) }) return null
         // A span he has no window for ("pichle 3 mahine", "parson") is never read as another; the whole book has nothing before it.
         if (VoiceQuestion.unsupportedSpan(heard)) return null
-        val window = VoiceQuestion.windowOf(heard) ?: VoiceQuestion.Window.THIS_MONTH
-        if (window == VoiceQuestion.Window.ALL_TIME) return null
+        val spanSaid = VoiceQuestion.windowOf(heard)
+        val asked = spanSaid ?: VoiceQuestion.Window.THIS_MONTH
+        if (asked == VoiceQuestion.Window.ALL_TIME) return null
+        // "Than before" ("pehle se zyada"): taken out of the words, it is the comparison's own.
+        val text = " " + first.joinToString(" ") + " "
+        val sinceBefore = THAN_BEFORE.any { text.contains(it) }
+        val said = if (!sinceBefore) first else
+            THAN_BEFORE.fold(text) { acc, p -> acc.replace(p, " ") }.split(' ').filter { it.isNotEmpty() }
         val spanWords = VoiceQuestion.spanWordsIn(said.joinToString(" "))
+        // A comparison (25 Nov 2026, H5): "pichle hafte se zyada bika?" — more or less THAN one span before (the sentence names that
+        // span alone), or than before. Two spans named ("is mahine pichle mahine se zyada bika") are the sentence's own two figures,
+        // read as before; "sab se zyada" is the most, never a comparison.
+        val than = said.any { THAN.has(it) }
+        val named = VoiceQuestion.spansNamed(heard)
+        val most = said.any { SUPERLATIVE.has(it) }
+        val after = AFTER[asked]
+        val comparing = !most && ((than && after != null && named == 1) || (sinceBefore && named <= 1))
+        // Than a span before, the trend is the span after it's ("compared to last week" is this week against last).
+        val window = if (than && after != null) after else asked
         // A bare "sale up or down" is the sales page's own question (the owner's list reads it so): the trend is asked for the
-        // asker's own sales ("my"), over a span said, or by the word "trend".
-        val spanSaid = VoiceQuestion.windowOf(heard) != null
-        if (!(spanSaid || said.any { MINE.has(it) || TREND.has(it) })) return null
+        // asker's own sales ("my"), the business, over a span said, in a comparison, or by the word "trend".
+        if (!(spanSaid != null || comparing || said.any { MINE.has(it) || TREND.has(it) || BUSINESS.has(it) })) return null
         val moving = said.any { MOTION.has(it) || TREND.has(it) }
+        val arabic = said.any { w -> w.any { it in '\u0600'..'\u06FF' } } && said.none { w -> w.any { it in HudhudMind.NOT_ARABIC_LETTERS } }
         var way = false
         for (w in said) {
             if (calling(w)) continue
-            if (isName(w)) return null
+            // A word of the book's names is never part of the question — but the reader's own word for selling or the business is
+            // not a name: Arabic "بعت" (I sold) meets a customer called Butt by its letters alone (the name search's own lesson).
+            val own = SALES.has(w) || BUSINESS.has(w)
+            if (!own && isName(w)) return null
             var ok = false
-            if (SALES.has(w)) ok = true
-            if (UP.has(w) || TREND.has(w) || (DOWN.has(w) && !SOFT_DOWN.has(w))) { way = true; ok = true }
+            if (own) ok = true
+            // Urdu's "more" (زیادہ) is Arabic's "increase" only in an Arabic sentence.
+            val up = UP.has(w) && !(w == ZIYADA && !arabic)
+            if (up || TREND.has(w) || (DOWN.has(w) && !SOFT_DOWN.has(w))) { way = true; ok = true }
             if (SOFT_DOWN.has(w)) { if (moving) way = true; ok = true }
-            if (w in spanWords || OR.has(w) || MOTION.has(w) || LITTLE.has(w)) ok = true
+            if (MORE_LESS.has(w)) { if (comparing) way = true; ok = true }
+            if (w in spanWords || OR.has(w) || MOTION.has(w) || THAN.has(w) || SUPERLATIVE.has(w) || LITTLE.has(w)) ok = true
             if (!ok) return null
         }
         return if (way) Hudhud.Ask.Trend(window) else null
@@ -322,11 +490,13 @@ object HudhudAdviceAsk {
      */
     internal fun chase(heard: String, isName: (String) -> Boolean, calling: (String) -> Boolean): Hudhud.Ask.Advise? {
         val said = wordsOf(heard) ?: return null
-        if (said.none { FIRST.has(it) } || said.none { CHASE.has(it) }) return null
+        // Collecting is said by its own word, or by asking or taking beside a word of money ("who do I ask for money first").
+        val collects = said.any { CHASE.has(it) } || (said.any { ASK_TAKE.has(it) } && said.any { MONEY.has(it) })
+        if (said.none { FIRST.has(it) } || !collects) return null
         for (w in said) {
             if (calling(w)) continue
             if (isName(w)) return null
-            if (!(FIRST.has(w) || CHASE.has(w) || WHO.has(w) || LITTLE.has(w))) return null
+            if (!(FIRST.has(w) || CHASE.has(w) || ASK_TAKE.has(w) || MONEY.has(w) || WHO.has(w) || LITTLE.has(w))) return null
         }
         return Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE)
     }
