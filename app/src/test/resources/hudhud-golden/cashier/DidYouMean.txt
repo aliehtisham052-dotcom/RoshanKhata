@@ -1,4 +1,4 @@
-=== DidYouMean(options=[Figure(kind=TO_GET), Status(of=BILLS, cheques=null)])
+=== DidYouMean(options=[Figure(kind=TO_GET), Status(of=BILLS, cheques=null)], unsure=null)
 mood: CALM
 label: Total I have to get
 line: Only the owner or a manager can see this figure.
@@ -7,10 +7,18 @@ ask: Figure(kind=TO_GET)
 tookAs: Taken as: Total I have to get
 quiet: true
 
-=== DidYouMean(options=[])
+=== DidYouMean(options=[], unsure=null)
 mood: CALM
 line: I could not find this in your khata. The nearest questions I can answer are below.
 speech: I could not find this in your khata. The nearest questions I can answer are below.
 speechHidden: I could not find this in your khata. The nearest questions I can answer are below.
-ask: DidYouMean(options=[])
+ask: DidYouMean(options=[], unsure=null)
+
+=== DidYouMean(options=[Figure(kind=TO_GET), Figure(kind=TO_GIVE)], unsure=SIDE)
+mood: CALM
+label: Money you have to get, or to give?
+line: Only the owner or a manager can see this figure.
+speech: Money you have to get, or to give? Only the owner or a manager can see this figure.
+speechHidden: Money you have to get, or to give? Only the owner or a manager can see this figure.
+ask: DidYouMean(options=[Figure(kind=TO_GET), Figure(kind=TO_GIVE)], unsure=SIDE)
 
