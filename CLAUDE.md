@@ -2470,7 +2470,9 @@ Each of these cost a build or a bug.
     owner's rule:** what is Windows' stays Windows', what is the phone's stays the
     phone's, and only what fits both is shared — a shared screen is checked at the
     phone's width (and at 150% text, in Urdu) before it is shared, not only on the
-    laptop's proof pictures.
+    laptop's proof pictures. An action's own word is never cut with "…": where two weighted buttons
+    cannot hold it at 150%, the button takes a second line (`maxLines=2`, 8 dp side padding; BC-288,
+    the seal offer's "Chalu ka…" in the 25 Nov 2026 Roman Urdu proof).
 
 59. **A hint is one line; a question longer than its box goes above it.** A one-line box cuts its
     hint at the edge, and which hints overrun depends on the trade (TradeVocab's examples), the

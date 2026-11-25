@@ -441,6 +441,8 @@
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
+                    <!-- Two lines, never "Chalu ka…" (25 Nov 2026, the 150% Roman Urdu proof):
+                         an action's word is not cut; the row grows instead (BC-288). -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -453,8 +455,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:maxLines="1"
-                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
                             android:minHeight="44dp"
                             android:text="@string/muhar_offer_dismiss"
                             android:textAllCaps="false"
@@ -466,8 +469,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:layout_weight="1"
-                            android:maxLines="1"
-                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
                             android:minHeight="44dp"
                             android:text="@string/muhar_turn_on"
                             android:textAllCaps="false" />
