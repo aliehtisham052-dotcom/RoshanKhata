@@ -38,6 +38,11 @@ on:
       - 'scripts/check_hudhud_readonly.py'
       # Hudhud's engine answers a typed question offline (check_hudhud_offline.py; hard-zero gate, Marhala 3).
       - 'scripts/check_hudhud_offline.py'
+      # Hudhud's data manifest, rights register and decision log (hudhud_manifest.py --check; governance, Marhala 12):
+      # any data file of his in any module (the model in the assets too), the script and the hash helper it shares.
+      - '**/hudhud/**'
+      - 'scripts/hudhud_manifest.py'
+      - 'scripts/hudhud_model_card.py'
       - 'scripts/gen_viewer_dao.py'
       # Hudhud's catalog: every stored column, screen, tile and More entry has a decision (gen_hudhud_catalog.py --check).
       - 'scripts/gen_hudhud_catalog.py'
@@ -99,6 +104,11 @@ on:
       - 'scripts/check_hudhud_readonly.py'
       # Hudhud's engine answers a typed question offline (check_hudhud_offline.py; hard-zero gate, Marhala 3).
       - 'scripts/check_hudhud_offline.py'
+      # Hudhud's data manifest, rights register and decision log (hudhud_manifest.py --check; governance, Marhala 12):
+      # any data file of his in any module (the model in the assets too), the script and the hash helper it shares.
+      - '**/hudhud/**'
+      - 'scripts/hudhud_manifest.py'
+      - 'scripts/hudhud_model_card.py'
       - 'scripts/gen_viewer_dao.py'
       # Hudhud's catalog: every stored column, screen, tile and More entry has a decision (gen_hudhud_catalog.py --check).
       - 'scripts/gen_hudhud_catalog.py'
@@ -169,6 +179,12 @@ jobs:
       # names nothing of the shared module's network files (LiveCloud, WifiSync…). The allow-list is empty.
       - name: Hudhud's engine answers a typed question offline (no network package, type, call or network file in its closure)
         run: python3 scripts/check_hudhud_offline.py
+      # Plan v1, Marhala 12 (governance): every data file Hudhud is trained, tuned or tested on is a row of
+      # docs/hudhud-data-manifest.tsv with its role, languages, rows, SHA-256, origin, synthetic and native-read status (D17);
+      # a file that moved without its row, or a new one with no row, fails. Every source the manifest names is in
+      # docs/hudhud-rights-register.tsv, and docs/decision-log.md lists every D-decision of docs/decisions-*.md. Names only (lesson 125).
+      - name: Hudhud's data manifest, rights register and decision log are current
+        run: python3 scripts/hudhud_manifest.py --check
       # The owner's rule: Hudhud's reach is the app's own map, not a list somebody remembered. A new table, column, screen, Home tile
       # or More entry fails here until shared/hudhud/catalog/decisions.tsv says what Hudhud does with it, and every claim that he
       # tells something is held to the code that tells it and to the gate its own screen asks (scripts/gen_hudhud_catalog.py).

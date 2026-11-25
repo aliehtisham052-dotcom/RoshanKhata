@@ -22,6 +22,7 @@ CHECKS=(
   "gen_hudhud_bank.py --check"
   "check_hudhud_readonly.py"
   "check_hudhud_offline.py"
+  "hudhud_manifest.py --check"
   "gen_hudhud_catalog.py --check"
   "check_book_columns.py"
   "check_bug_classes.py"
