@@ -4272,8 +4272,10 @@ object Hudhud {
             n to said.count { forms -> bridgedLatin(forms, parts) != null }
         }.filter { it.second > 0 }
         val best = met.maxOfOrNull { it.second } ?: return emptyList()
-        val nearest = met.filter { it.second == best }
-        return if (nearest.size in 1..MAX_NAMES) nearest.map { it.first.id } else emptyList()
+        // One product saved under several names ("Urea" and its other name "یوریا", one id) is met once (25 Nov 2026, BC-352): the
+        // glides let the Latin word meet the Urdu name too, and [1, 1] was a choice between the product and itself.
+        val nearest = met.filter { it.second == best }.map { it.first.id }.distinct()
+        return if (nearest.size in 1..MAX_NAMES) nearest else emptyList()
     }
 
     /** A said word as the search reads it, with its script; a Bengali word is read both ways, with its case ending and without. */
@@ -4313,6 +4315,11 @@ object Hudhud {
         val letters: String by lazy(LazyThreadSafetyMode.NONE) {
             if (script == Script.ARABIC) HudhudNameBridge.arabicLetters(raw) else HudhudNameBridge.latinLetters(raw)
         }
+        /** A Latin spelling's "ea" read as two sounds ("Urea" folded "uria", not "uri"); null when it has none ([indicMeetsLatin]). */
+        val eaApart: String? by lazy(LazyThreadSafetyMode.NONE) {
+            val low = raw.lowercase()
+            if (script != Script.LATIN || "ea" !in low) null else NameSearch.fold(low.replace("ea", "ia")).takeIf { it != folded }
+        }
     }
 
     /** The scripts a name is written in that the search folds to Latin letters without being able to put its vowels back. */
@@ -4329,12 +4336,21 @@ object Hudhud {
         // "Why" in any script is never a name (16 Nov 2026, BC-110: Bengali "কেন" was the customer Naeem Khan, so "এই মাসে বিক্রি কম
         // কেন" — why are sales down this month — and a bare "কেন" answered with his balance).
         HudhudWhyAsk.isWhyWord(a.norm) || HudhudWhyAsk.isWhyWord(b.norm) -> false
-        a.script == Script.ARABIC && b.script == Script.LATIN -> HudhudNameBridge.meetsLetters(a.letters, b.letters)
-        a.script == Script.LATIN && b.script == Script.ARABIC -> HudhudNameBridge.meetsLetters(b.letters, a.letters)
-        a.script == Script.INDIC && b.script == Script.LATIN -> !ordinaryWord(a) && indicMeets(a.folded, b.folded)
-        a.script == Script.LATIN && b.script == Script.INDIC -> !ordinaryWord(b) && indicMeets(b.folded, a.folded)
+        a.script == Script.ARABIC && b.script == Script.LATIN -> arabicMeets(a, b)
+        a.script == Script.LATIN && b.script == Script.ARABIC -> arabicMeets(b, a)
+        a.script == Script.INDIC && b.script == Script.LATIN -> !ordinaryWord(a) && indicMeetsLatin(a, b)
+        a.script == Script.LATIN && b.script == Script.INDIC -> !ordinaryWord(b) && indicMeetsLatin(b, a)
         else -> false
     }
+
+    /**
+     * An Arabic-script word against a Latin one, on their letters ([HudhudNameBridge]), with the "you" glide read too ("یوریا"
+     * for Urea, 25 Nov 2026, BC-350: a product saved in Latin letters was never met by its Urdu, Sindhi, Persian or Arabic
+     * spelling, so "یوریا کا ریٹ" named no product). The language's own "یو" words are kept away by the glide's own rule (a
+     * loanword writes its vowels, a verb does not), not by the bank's vocabulary: the bank taught none of them.
+     */
+    private fun arabicMeets(arabic: Form, latin: Form): Boolean =
+        HudhudNameBridge.meetsLetters(arabic.letters, latin.letters) || HudhudNameBridge.meetsYouGlide(arabic.letters, latin.letters)
 
     /**
      * Whether a Hindi or Bengali [word] is a word of the language that the bank taught, not somebody's name (15 Nov 2026). The
@@ -4360,7 +4376,48 @@ object Hudhud {
     private fun indicMeets(bare: String, latin: String): Boolean {
         if (bare.length < 3) return false
         val l = latin.replace('z', 'j')
-        return indicRun(bare, l.replace('w', 'b')) || ('w' in l && indicRun(bare, l.replace("w", "oy")))
+        return indicGlides(bare, l).any { b ->
+            b.length >= 3 && (indicRun(b, l.replace('w', 'b')) || ('w' in l && indicRun(b, l.replace("w", "oy"))))
+        }
+    }
+
+    /**
+     * A Hindi or Bengali word against a Latin one, as the search folds both ([indicMeets]). The fold reads a Latin "ea" as one long
+     * "i" ("Urea" is "uri"), but it is as often two sounds, "e-a", which Hindi and Bengali write whole ("यूरिया", "ইউরিয়া"): a Latin
+     * spelling with an "ea" is read that way too ([Form.eaApart], 25 Nov 2026, BC-351).
+     */
+    private fun indicMeetsLatin(indic: Form, latin: Form): Boolean =
+        indicMeets(indic.folded, latin.folded) || latin.eaApart?.let { indicMeets(indic.folded, it) } == true
+
+    /**
+     * [bare] and the ways it may be read with the "y" glides Hindi and Bengali write and a Latin spelling does not (25 Nov 2026,
+     * BC-351; the Arabic script's own is [HudhudNameBridge.meetsYouGlide]): a first "u" said "you" is "यू" ("yu") or "ইউ" ("iu") —
+     * "यूरिया" and "ইউরিয়া" are Urea, read only against a Latin spelling that begins "u" or "eu" — Bengali's "ইউ" is the "yu" of a
+     * Latin "y" ("ইউসুফ" is Yusuf), and a "y" between two vowels is the glide of "-ia" ("शाज़िया" is Shazia, "-iya" for "-ia"
+     * and "-ea"). Each reading keeps every consonant: only a written "y" can go, never a letter the Latin spelling needs.
+     */
+    private fun indicGlides(bare: String, latin: String): List<String> {
+        val starts = ArrayList<String>(3).apply { add(bare) }
+        if ((bare.startsWith("yu") || bare.startsWith("iu")) && (latin.startsWith("u") || latin.startsWith("eu"))) starts += bare.drop(1)
+        if (bare.startsWith("iu") && latin.startsWith("y")) starts += "y" + bare.drop(1)
+        val all = ArrayList<String>(starts)
+        for (b in starts) {
+            val off = withoutGlideY(b)
+            if (off != b) all += off
+        }
+        return all
+    }
+
+    /** [bare] with every "y" that stands between two vowels taken out ("sajiya" is "sajia"); the word itself when there is none. */
+    private fun withoutGlideY(bare: String): String {
+        if ('y' !in bare) return bare
+        val sb = StringBuilder(bare.length)
+        for (i in bare.indices) {
+            val c = bare[i]
+            if (c == 'y' && i > 0 && i < bare.length - 1 && bare[i - 1] in "aeiou" && bare[i + 1] in "aeiou") continue
+            sb.append(c)
+        }
+        return sb.toString()
     }
 
     private fun indicRun(bare: String, latin: String): Boolean {
