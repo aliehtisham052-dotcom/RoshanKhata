@@ -384,12 +384,38 @@ class ViewerActivity : BaseActivity() {
             .setTitle(R.string.viewer_leave_title)
             .setMessage(R.string.viewer_leave_body)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.viewer_leave) { _, _ ->
-                ViewerMode.leave(this)
-                restart()
-            }
+            .setPositiveButton(R.string.viewer_leave) { _, _ -> leaveNow() }
             .show()
     }
+
+    /**
+     * Off the main thread (25 Nov 2026, the ANR audit): [ViewerMode.leave] commits the role away, closes Room under
+     * its lock and deletes the helper's whole book file, its photos folder and four preference files — it ran in the
+     * button's click. It runs on AppScope (IO) now, so leaving the screen cannot stop it half done, and the app starts
+     * again through the gate on the main thread once it is finished. A second tap meanwhile does nothing.
+     */
+    private fun leaveNow() {
+        if (leaving) return
+        leaving = true
+        val app = applicationContext
+        com.innovation313.roshankhata.data.AppScope.launch {
+            try {
+                ViewerMode.leave(app)
+            } finally {
+                withContext(Dispatchers.Main) {
+                    leaving = false
+                    if (!isFinishing && !isDestroyed) restart()
+                    else app.startActivity(
+                        Intent(app, GateActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    )
+                }
+            }
+        }
+    }
+
+    /** The helper's copy is being taken away ([leaveNow]). */
+    private var leaving = false
 
     /**
      * The book that is open just changed (copy loaded, or back to this

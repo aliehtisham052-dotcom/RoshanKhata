@@ -28,6 +28,7 @@ import androidx.core.os.BundleCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.AppLock
+import com.innovation313.roshankhata.data.AppScope
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.Currency
 import com.innovation313.roshankhata.data.IncomingPayment
@@ -127,9 +128,16 @@ object PaymentVoice {
         }
         prefs(ctx).edit().putBoolean(KEY_ON, false).remove(KEY_SEEN).apply()
         synchronized(this) { noted.clear() }
-        val gone = runCatching { tickets(ctx).clear() }.getOrDefault(emptyList())
-        val manager = NotificationManagerCompat.from(ctx)
-        for (t in gone) runCatching { manager.cancel(t.noticeId) }
+        // Off the main thread (25 Nov 2026, the ANR audit): the switch's tap wrote the tickets away with commit()
+        // and cancelled each notice through the system. Still with commit(), now on AppScope (IO), so
+        // leaving the screen does not stop it. Nothing waits on it: a ticket asked for meanwhile is refused anyway,
+        // because [redeem] reads the switch (now off, in memory at once) before it reads the ticket.
+        val app = ctx.applicationContext
+        AppScope.launch {
+            val gone = runCatching { tickets(app).clear() }.getOrDefault(emptyList())
+            val manager = NotificationManagerCompat.from(app)
+            for (t in gone) runCatching { manager.cancel(t.noticeId) }
+        }
     }
 
     fun voice(ctx: Context): Voice =
@@ -339,13 +347,17 @@ object PaymentVoice {
      */
     fun openTicket(activity: AppCompatActivity, args: Bundle?) {
         val key = runCatching { args?.getString(ARG_TICKET) }.getOrNull() ?: return
-        val ticket = redeem(activity, key)
-        if (ticket == null) {
-            Toast.makeText(activity, R.string.paisa_notice_gone, Toast.LENGTH_LONG).show()
-            return
-        }
         val app = activity.applicationContext
         activity.lifecycleScope.launch {
+            // Taken off the main thread (25 Nov 2026, the ANR audit): the ticket is spent with commit() — it must be
+            // on disk before its form opens (lesson 82) — and its notice is cancelled through the system (a binder
+            // call). This ran in MainActivity.onCreate.
+            val ticket = withContext(Dispatchers.IO) { redeem(app, key) }
+            if (activity.isFinishing || activity.isDestroyed) return@launch
+            if (ticket == null) {
+                Toast.makeText(activity, R.string.paisa_notice_gone, Toast.LENGTH_LONG).show()
+                return@launch
+            }
             // The book could not be read: the owner chooses, as for a notice that matched nobody.
             val opening = runCatching { withContext(Dispatchers.IO) { openingOf(app, ticket) } }.getOrNull()
                 ?: PaymentNotice.Opening.Choose(ticket.sender)

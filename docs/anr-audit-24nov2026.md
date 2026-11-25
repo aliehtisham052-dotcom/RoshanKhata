@@ -9,6 +9,9 @@ the first build). Severity: CERTAIN (blocks main in a normal use) / PLAUSIBLE (b
 when something else holds a lock) / SAFE (off the main thread, or tiny and bounded).
 
 Result: 2 CERTAIN (both fixed), 10 PLAUSIBLE rows (6 in section 5, 4 commit() groups in section 3; reported, not changed), the rest SAFE.
+25 Nov 2026 (round 3): item 5.6 fixed with near-linear grouping (proved equal to the old on random books); the commit()
+callers on main moved (PaymentVoice tickets, Businesses create/rename, ViewerMode.leave) or kept with a reason; a
+`commits_listed` rule in the guard; binder calls scanned (section 8) and the Payment voice screen's moved.
 
 ## 1. runBlocking (5 code hits, 2 import lines) -- all SAFE (VERIFIED callers)
 
@@ -36,11 +39,11 @@ Result: 2 CERTAIN (both fixed), 10 PLAUSIBLE rows (6 in section 5, 4 commit() gr
 |---|---|---|
 | PaymentVoice.kt:484 `nextNoticeId` | CERTAIN -> FIXED | ran on the notification listener's main thread for every notice; result unread. Now `apply()` (in-memory value is current at once; the @Synchronized counter still never repeats in-process) |
 | data/BusinessProfile.kt:355 `copyRegion` | CERTAIN -> FIXED | called on main from BusinessSwitchActivity when a shop is added; result unread. Now `apply()` |
-| PaymentVoice.kt:293 (tickets) | SAFE by design | a consumed ticket must be durable (lesson 82); a few bytes. Left on purpose |
-| data/Businesses.kt:138, :181, :323, :410 | PLAUSIBLE | registry; :181 is `switchTo`, which runs on main (see 5.2). Business* is not editable in this stage |
-| data/SetupProgress.kt:59, :63 | PLAUSIBLE (low) | once per install, bytes; "done" must survive a kill, so commit is right |
-| data/ViewerMode.kt:95, :116, :131 | PLAUSIBLE (low) | helper-phone switch, rare, must be durable |
-| ui/FeatureIntro.kt:113, :118 | PLAUSIBLE (low) | once per feature, on a sheet's first show |
+| PaymentVoice.kt `tickets`/`save` (tickets) | SAFE by design -> MOVED (25 Nov) | a consumed ticket must be durable (lesson 82), so it stays `commit()`; but its callers ran on main: `openTicket` (MainActivity.onCreate) redeemed it there, and the switch's tap (`setOn(false)`) cleared every ticket there with a notice cancel (binder) per ticket. Since 25 Nov: `openTicket` redeems on Dispatchers.IO in lifecycleScope and says "gone" / opens the form on main after; `setOn(false)` clears on AppScope (IO). Safe because `redeem` reads the switch (off at once, in memory) before the ticket. Known edge, accepted: off, on again and a payment notice within the few ms the clear takes, and that one fresh ticket is cleared (its tap then says the notice is gone). NOT TESTED |
+| data/Businesses.kt `create`, `switchTo`, `delete`, `save` | PLAUSIBLE -> MOVED (25 Nov) | registry, must be durable, so `commit()` stays. `switchTo` is off main since BC-246. `create` and `rename` (-> `save`) ran in BusinessSwitchActivity's clicks: now on AppScope (IO), the switch / list redraw on main after; a second shop answer while one is being made does nothing (`creating`). BackupActivity's `create`/`ensure` and `delete` were already on IO. NOT TESTED |
+| data/SetupProgress.kt:59, :63 | SAFE by design | on main, once per install, bytes; `markStarted` must be on disk before the first language is saved (else an update takes the setup for an old one and skips it) and a lost `markDone` sends the owner through the setup again. Kept `commit()` |
+| data/ViewerMode.kt `switchOn`, `recordCopy`, `leave` | PLAUSIBLE -> MOVED (25 Nov) | `switchOn`/`recordCopy` run in ViewerSync on IO. `leave` ran in ViewerActivity's Stop button on main -- not only a commit: Room's close under the lock, `deleteDatabase` of the helper's whole book, its photos folder and four preference files. Now `ViewerActivity.leaveNow` runs it on AppScope (IO) and restarts through the gate on main when it is done; a second tap does nothing. NOT TESTED |
+| ui/FeatureIntro.kt `markAllSeen`, `forget` | SAFE (was listed PLAUSIBLE) | test helpers only (screen proofs, store pictures); the app's own `markSeen` already uses `apply()` |
 | data/BookRecovery.kt:60, :80 | SAFE | in the recovery path, already under the DB lock and rare |
 | data/Snapshots.kt:467 | SAFE | daily-copy bookkeeping on the copy's own thread |
 | data/DriveBackup.kt:133 | SAFE | IO |
@@ -92,9 +95,27 @@ Result: 2 CERTAIN (both fixed), 10 PLAUSIBLE rows (6 in section 5, 4 commit() gr
    (a photo already in memory opens at once, a cold one is read on IO). Both files are already small: the logo is saved at
    most 1000 px (`BusinessProfile.MAX_EDGE`) and the party photo at 400 px (`PartyPhoto.EDGE`), so no inSampleSize was
    added -- the decode was a disk read, not a full-size camera decode.
-6. **DuplicateDetector over the whole book on main:** DuplicateCustomersActivity.kt:70-89, KhataActivity.kt:740-760 and
-   :887-897. Quadratic in customers on a big book; the 10,000-customer book of the speed work is the case to measure.
-   NOT TESTED.
+6. **FIXED (24-25 Nov 2026, BC-243, BC-303) -- DuplicateDetector over the whole book.** 24 Nov (ce4d604): the duplicates
+   screen grouped on Dispatchers.Default and the add-party form built `DuplicateDetector.Index` once off main (its check
+   per pause in typing is two hash lookups). 25 Nov: (a) `DuplicateDetector.find` was quadratic -- each group's members
+   were found by reading the whole book again (`all.filter { it.partyId in ids }`); now the book's places by party id
+   are read once and each group takes its members from them, sorted back into the book's order, every record of an id
+   included: the same groups, order, reasons and dismissals. (b) `caution` (run by the card's bind, on main) compared
+   every pair of a group's numbers -- 4.5 million for 3,000 parties under one number; now each distinct number is filed
+   once per place with that place covered, and a file holding a second number is "one digit apart": the same answer.
+   (c) DuplicateCustomersActivity: the candidates are made on Default too, one look at a time (a newer look cancels the
+   older, so a late one cannot show a group a merge removed), and onCreate no longer starts a second look beside
+   onResume's. **Proof (local, shared harness compiler):** `DuplicateDetectorBucketTest` runs the old code (copied in
+   the test) against the new on 400 random invented books (names folding alike, numbers typed four ways, one digit off,
+   in Arabic-Indic digits, short, blank; a party id listed twice; dismissed groups): every group, its order, reason and
+   caution equal, every Caution and Reason reached, over 2,000 groups compared; the one-digit rule against the pairwise
+   rule on 5,000 random lists. Broken on purpose six ways (no sort, first record of an id only, no covered marker, no
+   de-duplication, a size guard off by one, the first place skipped): each failed. **Measured** on a 10,400-party
+   invented book (2,230 groups, 400 parties under one number), this machine, best of 3: find 259 ms old -> 31 ms new
+   (a second run under load: 676 -> 91); caution of every group 25 -> 11 ms (38 -> 24). The test asserts only "not
+   slower" (+50 ms noise); the figures are printed. Android code (the screen): NOT TESTED, CI first. Windows'
+   `DuplicatesPane` still groups inside `remember` on the window's thread and `PartyForm` calls `matchExisting` (all
+   names normalised) at every recomposition -- not changed (not this stage's files; see section 8).
 
 ## 6. Checked and SAFE (VERIFIED)
 
@@ -108,4 +129,25 @@ hand to AppScope (Dispatchers.IO). The 3 Nov speed work's slices (LedgerLines) h
 `scripts/check_main_thread.py` fails on a `runBlocking`, `Thread.sleep` or `SystemClock.sleep` in `app/src/main` unless
 its file:function is in the script's allow-list with a count and a reason (8 code hits, 7 entries today: runBlocking x5, Thread.sleep x3). Run once clean (exit 0);
 broken once on purpose with a temporary copy holding both patterns in a new function: exit 1, the line named.
-Not covered by the guard: commit() on main (needs the caller's thread, which a line scan cannot know) and binder calls.
+Since 25 Nov 2026 it also lists every `.commit()` in `app/src/main` (rule `commits_listed`, BC-304): 19 hits in 18
+file:function entries, each with the most it may hold and why it is safe (off main by its callers, or rare and needing the
+disk before the next step). A line scan cannot know the caller's thread, so the list is where a person reads each new one
+once. Run clean (exit 0); broken once on purpose -- a new file with a `commit()` in a click-like function and a second
+`commit()` in an allowed function: exit 1, both lines named; restored, exit 0.
+Not covered by the guard: binder calls (section 8: no line scan can tell a cheap one, a rare one and an off-main one apart).
+
+## 8. Binder calls on the main path (25 Nov 2026, scan of app/src/main)
+
+Scanned for PackageManager (`getPackageInfo`, `queryIntentActivities`, `resolveActivity`, `getInstallSourceInfo`,
+`getApplicationLabel`), `contentResolver.query`, AccountManager and the notification-listener list, each caller read.
+
+| Where | Label | Note |
+|---|---|---|
+| PaymentVoiceActivity.onResume / renderApps | MOVED (BC-305) | about ten binder calls in onResume and on the switch's tap: notification access (Settings), the two wallets' `getPackageInfo` and installer, the default SMS app, every SMS-capable app (`queryIntentActivities`), the default dialer, this app's installer. Now asked on Dispatchers.IO in lifecycleScope (one look at a time); only the views are made on main, with the screen's own words. NOT TESTED (EveryScreenOpensTest opens the screen on CI) |
+| PaymentVoice.openTicket / setOn(false) | MOVED | the notice cancels (NotificationManager) go with the ticket writes, section 3 |
+| PaymentListenerService (neverRead, labelOf) | SAFE | moved 24 Nov (5.1) |
+| ui/Reminder.kt `whatsAppIntents` | NOT CHANGED (low) | one `queryIntentActivities` on a tap, only on Android 7-10; the answer decides which intent opens next, so it stays |
+| ui/SignInProblem.kt `signingSha1` | NOT CHANGED (low) | one `getPackageInfo` when a Drive sign-in failure dialog opens; rare |
+| data/HudhudPhoneEnv.kt `appVersion` | NOT CHANGED | `getPackageInfo` for the app's own version when Hudhud answers "which version"; a Hudhud file, not this stage's |
+| SalesReportActivity.writeCsv, data/Contacts.kt | SAFE | `contentResolver.query` inside withContext(Dispatchers.IO) |
+| AccountManager | none | the app has no AccountManager call |

@@ -10,9 +10,13 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.innovation313.roshankhata.data.IncomingPayment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * More → Payment voice (5 Nov 2026, [PaymentVoice]): the switch, notification access, which apps are listened to,
@@ -42,7 +46,7 @@ class PaymentVoiceActivity : BaseActivity() {
         switch.setOnCheckedChangeListener { _, on ->
             PaymentVoice.setOn(this, on)
             // Off lets go of the apps seen (7 Nov 2026, the review's P6): the list says so at once.
-            if (on) askNotifications() else renderApps()
+            if (on) askNotifications() else refresh()
         }
 
         findViewById<MaterialButton>(R.id.btnPayAppInfo).setOnClickListener {
@@ -86,38 +90,86 @@ class PaymentVoiceActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        val access = PaymentVoice.hasAccess(this)
-        if (access) PaymentVoice.settleDefaults(this)
+        refresh()
+        checkUrdu()
+    }
+
+    /** What the screen shows, asked of the system off the main thread. */
+    private class Seen(
+        val access: Boolean,
+        val goPhone: Boolean,
+        val fromPlay: Boolean,
+        val known: List<Known>,
+        val seen: List<PaymentVoice.SeenApp>,
+        val chosen: Set<String>
+    )
+
+    /** One of the two wallets: whether it is on this phone and whether the Play Store put it there. */
+    private class Known(val pkg: String, val name: String, val here: Boolean, val fromPlay: Boolean)
+
+    /** The look under way; a newer one (the switch turned off, the screen back from Settings) takes its place. */
+    private var reading: kotlinx.coroutines.Job? = null
+
+    /**
+     * Reads, then draws (25 Nov 2026, the ANR audit). Every answer here comes from the system through a binder call —
+     * notification access (Settings), the two wallets' package and installer, the default SMS app, every app that can
+     * send an SMS, the default dialer and this app's installer: about ten calls, all on the main thread in onResume
+     * before. They are asked on Dispatchers.IO now; only the views are made on the main thread, with this screen's own
+     * words. In [lifecycleScope]: a screen that is gone stops it.
+     */
+    private fun refresh() {
+        reading?.cancel()
+        val app = applicationContext
+        reading = lifecycleScope.launch {
+            val now = withContext(Dispatchers.IO) {
+                val access = PaymentVoice.hasAccess(app)
+                if (access) PaymentVoice.settleDefaults(app)
+                Seen(
+                    access = access,
+                    // L101 (8 Nov 2026 review): Android Go phones on Android 10 or older may not offer notification
+                    // access at all; the screen said nothing of why the button opened nothing.
+                    goPhone = !access && Build.VERSION.SDK_INT <= 29 &&
+                        (app.getSystemService(ACTIVITY_SERVICE) as? android.app.ActivityManager)?.isLowRamDevice == true,
+                    fromPlay = installedFromPlay(app),
+                    known = PaymentVoice.KNOWN.map { (pkg, name) ->
+                        val here = PaymentVoice.installed(app, pkg)
+                        Known(pkg, name, here, here && PaymentVoice.fromPlay(app, pkg))
+                    },
+                    seen = PaymentVoice.seen(app),
+                    chosen = PaymentVoice.chosen(app)
+                )
+            }
+            show(now)
+        }
+    }
+
+    private fun show(now: Seen) {
+        val access = now.access
         findViewById<TextView>(R.id.tvPayAccess).apply {
             setText(if (access) R.string.paisa_access_given else R.string.paisa_access_not_given)
             setTextColor(ContextCompat.getColor(this@PaymentVoiceActivity, if (access) R.color.green_got_text else R.color.red_gave_text))
         }
-        // L101 (8 Nov 2026 review): Android Go phones on Android 10 or older may not offer notification access at all;
-        // the screen said nothing of why the button opened nothing.
-        val goPhone = !access && Build.VERSION.SDK_INT <= 29 &&
-            (getSystemService(ACTIVITY_SERVICE) as? android.app.ActivityManager)?.isLowRamDevice == true
         findViewById<TextView>(R.id.tvPayRestricted).apply {
             setText(R.string.paisa_access_go)
-            visibility = if (goPhone) View.VISIBLE else View.GONE
+            visibility = if (now.goPhone) View.VISIBLE else View.GONE
         }
         // Owner point 29 (8 Nov 2026): Android 13+ greys out the access of an app not installed from the Play Store
         // ("restricted setting"). The steps show on API 33+ after a failed attempt, or when the installer is not Play.
         findViewById<View>(R.id.payRestrictedBlock).visibility =
-            if (!access && Build.VERSION.SDK_INT >= 33 && (askedAccess || !installedFromPlay())) View.VISIBLE else View.GONE
+            if (!access && Build.VERSION.SDK_INT >= 33 && (askedAccess || !now.fromPlay)) View.VISIBLE else View.GONE
         // Nothing can be said without the access: the switch waits for it, and says so (6 Nov 2026).
         val row = findViewById<View>(R.id.payRowOn)
         row.findViewById<Switch>(R.id.switchFeature).isEnabled = access
         row.alpha = if (access) 1f else 0.55f
         row.findViewById<TextView>(R.id.tvFeatureDesc)
             .setText(if (access) R.string.paisa_switch_desc else R.string.paisa_switch_needs_access)
-        renderApps()
-        checkUrdu()
+        renderApps(now)
     }
 
     /** API 30+: Play Store is the installer. Older Android cannot tell, so it counts as Play (the block needs API 33 anyway). */
-    private fun installedFromPlay(): Boolean {
+    private fun installedFromPlay(app: android.content.Context): Boolean {
         if (Build.VERSION.SDK_INT < 30) return true
-        return runCatching { packageManager.getInstallSourceInfo(packageName).installingPackageName }
+        return runCatching { app.packageManager.getInstallSourceInfo(app.packageName).installingPackageName }
             .getOrNull() == "com.android.vending"
     }
 
@@ -138,17 +190,16 @@ class PaymentVoiceActivity : BaseActivity() {
      * its package name under it (7 Nov 2026, the review's P2: a look-alike can wear a wallet's name, not its package),
      * and a wallet not put on the phone by the Play Store says so.
      */
-    private fun renderApps() {
+    private fun renderApps(now: Seen) {
         val list = findViewById<LinearLayout>(R.id.payAppsList)
         list.removeAllViews()
-        val chosen = PaymentVoice.chosen(this)
-        val rows = PaymentVoice.KNOWN.map { (pkg, name) ->
-            val here = PaymentVoice.installed(this, pkg)
+        val chosen = now.chosen
+        val rows = now.known.map { k ->
             AppRow(
-                pkg, if (here) name else getString(R.string.paisa_not_installed, name), here,
-                if (here && !PaymentVoice.fromPlay(this, pkg)) getString(R.string.paisa_not_from_play) else null
+                k.pkg, if (k.here) k.name else getString(R.string.paisa_not_installed, k.name), k.here,
+                if (k.here && !k.fromPlay) getString(R.string.paisa_not_from_play) else null
             )
-        } + PaymentVoice.seen(this).map { AppRow(it.pkg, it.label, true, null) }
+        } + now.seen.map { AppRow(it.pkg, it.label, true, null) }
         val dp = resources.displayMetrics.density
         for (row in rows) {
             // An app not on this phone reads muted: ticked, it waits for the app to be installed (6 Nov 2026).

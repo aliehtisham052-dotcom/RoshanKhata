@@ -9,6 +9,13 @@
       A new one must either go off the main thread without blocking (suspend, withContext) or be
       added here with its reason, so a person reads it once.
 
+  commits_listed (25 Nov 2026, BC-304): every `.commit()` in app/src/main (SharedPreferences.Editor's
+      synchronous write, which waits for the disk on the thread it runs on) is in COMMITS below with the
+      most it may hold and why it is safe: the callers run it off the main thread, or it must be on disk
+      before the next step and runs rarely (once per install, a test helper). A line scan cannot see the
+      caller's thread, so a person reads each new one once: either `apply()` (when a lost write costs
+      nothing worse than asking again) or off the main thread, or listed here with its reason.
+
   A comment line, an import line and a string that only mentions the word are not hits. The function is
   the nearest `fun` above the hit; a hit before any is "<top>".
 
@@ -21,6 +28,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = "app/src/main"
 
 HIT = re.compile(r"\brunBlocking\b|\bThread\.sleep\b|\bSystemClock\.sleep\b")
+COMMIT = re.compile(r"\.commit\(\s*\)")
 FUN = re.compile(r"\bfun\s+(?:<[^>]*>\s*)?(?:[\w.<>?]+\.)?(\w+)\s*[(<]")
 
 P = "app/src/main/java/com/innovation313/roshankhata/"
@@ -42,8 +50,55 @@ ALLOWED = {
         (2, "Bluetooth writes paced for a slow printer; documented and called only from the print thread on IO"),
 }
 
+# (file, function) -> (most commit() hits, why it is safe there)
+COMMITS = {
+    (P + "PaymentVoice.kt", "save"):
+        (1, "a payment notice's one-time ticket must be on disk before its form opens (lesson 82); issued on the "
+            "listener's Default thread, redeemed on IO (openTicket), cleared on AppScope (setOn) since 25 Nov 2026"),
+    (P + "data/Backup.kt", "write"):
+        (2, "the backup password and file protection: the next backup must find them; written in BackupActivity's "
+            "withContext(Dispatchers.IO) and its result is read (a failure throws)"),
+    (P + "data/BookRecovery.kt", "keepAside"):
+        (1, "Room's corruption callback, on the thread that opened the damaged book; the note must survive the kill "
+            "that often follows; rare"),
+    (P + "data/BookRecovery.kt", "recoverIfNeeded"):
+        (1, "only after a damaged book was set aside, inside KhataDatabase.get's rebuild (audit 5.3); rare"),
+    (P + "data/Businesses.kt", "create"):
+        (1, "the highest id ever given; callers on AppScope (BusinessSwitchActivity since 25 Nov 2026, BackupActivity)"),
+    (P + "data/Businesses.kt", "switchTo"):
+        (1, "the open shop; a killed process must wake in the shop it switched to. Screens call switchOffMain (IO, BC-246)"),
+    (P + "data/Businesses.kt", "delete"):
+        (1, "the highest id after a delete; delete runs on Dispatchers.IO"),
+    (P + "data/Businesses.kt", "save"):
+        (1, "the registry, the map to every book; from create, ensure, rename and delete, all off the main thread "
+            "since 25 Nov 2026 (rename on AppScope)"),
+    (P + "data/DriveBackup.kt", "deviceId"):
+        (1, "made once per install, inside the Drive upload's withContext(Dispatchers.IO)"),
+    (P + "data/SetupProgress.kt", "markStarted"):
+        (1, "on the main thread, once per install: it must be on disk before the first language is saved, or an "
+            "update would take this setup for an old one and skip it"),
+    (P + "data/SetupProgress.kt", "markDone"):
+        (1, "on the main thread, once per install (Start my khata / Maybe later); a lost 'done' sends the owner back "
+            "through the setup"),
+    (P + "data/Snapshots.kt", "refreshToday"):
+        (1, "from afterSale (AppScope) and beforeLeaving (BusinessSwitchActivity's AppScope); the copy that follows "
+            "reads the marker"),
+    (P + "data/ViewerMode.kt", "switchOn"):
+        (1, "ViewerSync.load on IO; the next line opens the database and must see the role"),
+    (P + "data/ViewerMode.kt", "recordCopy"):
+        (1, "ViewerSync.load on IO"),
+    (P + "data/ViewerMode.kt", "leave"):
+        (1, "ViewerSync (IO) and ViewerActivity.leaveNow (AppScope, since 25 Nov 2026)"),
+    (P + "data/WarisAndroid.kt", "markHeirCopy"):
+        (1, "inside openHeirCopy's withContext(Dispatchers.IO)"),
+    (P + "ui/FeatureIntro.kt", "markAllSeen"):
+        (1, "a test helper (screen proofs, store pictures); the app's own markSeen uses apply()"),
+    (P + "ui/FeatureIntro.kt", "forget"):
+        (1, "a test helper (ScreenProofPhoneTest)"),
+}
 
-def code_hits(path):
+
+def code_hits(path, pattern=HIT):
     """(line number, function, text) for each hit that is code: not a comment, an import, or a string."""
     out, fn, in_block = [], "<top>", False
     for n, raw in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
@@ -63,7 +118,7 @@ def code_hits(path):
         m = FUN.search(code)
         if m:
             fn = m.group(1)
-        if HIT.search(code):
+        if pattern.search(code):
             out.append((n, fn, line))
     return out
 
@@ -84,14 +139,31 @@ def no_blocking_waits(root=ROOT, listing=False):
     return faults
 
 
+def commits_listed(root=ROOT, listing=False):
+    faults, seen = [], {}
+    for path in sorted((root / SRC).rglob("*.kt")):
+        rel = path.relative_to(root).as_posix()
+        for n, fn, text in code_hits(path, COMMIT):
+            key = (rel, fn)
+            seen[key] = seen.get(key, 0) + 1
+            if listing:
+                print(("allowed " if key in COMMITS else "REFUSED ") + f"{rel}:{n} [{fn}] {text}")
+            if key not in COMMITS:
+                faults.append(f"{rel}:{n} [{fn}] commit() waits for the disk on its thread; apply(), move it off the "
+                              f"main thread, or list it in COMMITS with its reason: {text}")
+            elif seen[key] > COMMITS[key][0]:
+                faults.append(f"{rel}:{n} [{fn}] a further commit() beyond the {COMMITS[key][0]} allowed: {text}")
+    return faults
+
+
 def main():
     listing = "--list" in sys.argv
-    faults = no_blocking_waits(listing=listing)
+    faults = no_blocking_waits(listing=listing) + commits_listed(listing=listing)
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
-    print("main thread: every runBlocking and sleep in app/src/main is an allowed one, off the main thread")
+    print("main thread: every runBlocking, sleep and commit() in app/src/main is an allowed one, with its reason")
 
 
 if __name__ == "__main__":

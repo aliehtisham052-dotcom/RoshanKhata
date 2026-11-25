@@ -64,6 +64,9 @@ class BusinessSwitchActivity : BaseActivity() {
         adapter.submit(Businesses.list(this), Businesses.active(this).id)
     }
 
+    /** A shop is being made ([promptCreate]): a second answer meanwhile makes no second shop. */
+    private var creating = false
+
     private fun promptCreate() {
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_business_name, null)
         com.innovation313.roshankhata.ui.TextFit.relax(view)
@@ -91,13 +94,26 @@ class BusinessSwitchActivity : BaseActivity() {
                 com.innovation313.roshankhata.ui.TradePicker.show(this, null, required = false, onClosed = {
                     android.widget.Toast.makeText(this, R.string.business_not_added, android.widget.Toast.LENGTH_LONG).show()
                 }) { trade ->
-                    val fresh = Businesses.create(this, name)
-                    com.innovation313.roshankhata.data.BusinessProfile.setTradeOf(this, fresh.id, trade)
-                    // Its country, sign and calendar from the shop open now (23 Oct 2026): never a silent Pakistan.
-                    com.innovation313.roshankhata.data.BusinessProfile.copyRegion(this, Businesses.active(this).id, fresh.id)
-                    // Created to be used: open it straight away. The restart
-                    // below is also what makes the new empty book visibly real.
-                    switchAndRestart(fresh.id)
+                    if (creating) return@show
+                    creating = true
+                    val app = applicationContext
+                    // Off the main thread (25 Nov 2026, the ANR audit): the registry is written with commit() twice
+                    // (the highest id, then the list: the map to every book, worth a disk write each). On AppScope,
+                    // so leaving this screen cannot leave a number taken and no shop listed.
+                    com.innovation313.roshankhata.data.AppScope.launch {
+                        val fresh = try {
+                            Businesses.create(app, name).also { b ->
+                                com.innovation313.roshankhata.data.BusinessProfile.setTradeOf(app, b.id, trade)
+                                // Its country, sign and calendar from the shop open now (23 Oct 2026): never a silent Pakistan.
+                                com.innovation313.roshankhata.data.BusinessProfile.copyRegion(app, Businesses.active(app).id, b.id)
+                            }
+                        } finally {
+                            withContext(Dispatchers.Main) { creating = false }
+                        }
+                        // Created to be used: open it straight away. The restart
+                        // below is also what makes the new empty book visibly real.
+                        withContext(Dispatchers.Main) { switchAndRestart(this@BusinessSwitchActivity, fresh.id) }
+                    }
                 }
             }
         }
@@ -118,8 +134,12 @@ class BusinessSwitchActivity : BaseActivity() {
             .setPositiveButton(R.string.save) { _, _ ->
                 val name = et.text.toString().trim()
                 if (name.isEmpty()) return@setPositiveButton
-                Businesses.rename(this, id, name)
-                refresh()
+                // The registry's commit() off the main thread (25 Nov 2026, the ANR audit); the list is drawn again after.
+                val app = applicationContext
+                com.innovation313.roshankhata.data.AppScope.launch {
+                    Businesses.rename(app, id, name)
+                    withContext(Dispatchers.Main) { if (!isFinishing && !isDestroyed) refresh() }
+                }
             }
             .setNegativeButton(R.string.cancel, null)
             .show().also { com.innovation313.roshankhata.ui.KeyboardFollow.dialog(it) }
