@@ -797,6 +797,20 @@ object VoiceQuestion {
 
     private class Spans(val window: Window?, val unsupported: Boolean)
 
+    /**
+     * "Kal" is yesterday and tomorrow alike in Urdu and Hindi (and the Urdu script's "کل کی/کا/کے" with it): in a sentence whose verb is
+     * in the future ([saysFuture]: "Kal Ali ko 500 dunga", "kal dega", "कल दूँगा") it is tomorrow, a day ahead the book has no span for —
+     * never yesterday's span (26 Nov 2026, BC-354: the promise was answered "as it stands now", a note for a span he cannot give). A word
+     * that is yesterday alone ("yesterday", "guzishta roz", "أمس", "دیروز", "গতকাল", "kemarin") keeps the span whatever the verb says.
+     */
+    private fun kalIsTomorrow(t: String, heard: String): Boolean = !saysAny(t, YESTERDAY_ONLY) && saysFuture(heard)
+
+    /** The words of [YESTERDAY] that are never tomorrow: all but "kal" and its Urdu-script and Hindi spellings. */
+    private val YESTERDAY_ONLY by lazy {
+        val either = listOf("kal", "کل کی", "کل کا", "کل کے", "कल").map { normalise(it) }.toSet()
+        YESTERDAY.filter { normalise(it) !in either }
+    }
+
     private val NO_SPAN = Spans(null, false)
     private val NOT_OURS = Spans(null, true)
 
@@ -830,7 +844,7 @@ object VoiceQuestion {
             last && saysAny(t, WEEK) -> Window.LAST_WEEK
             saysAny(t, WEEK) -> Window.THIS_WEEK
             saysAny(t, TODAY) -> Window.TODAY
-            saysAny(t, YESTERDAY) -> Window.YESTERDAY
+            saysAny(t, YESTERDAY) && !kalIsTomorrow(t, heard) -> Window.YESTERDAY
             saysAny(t, MONTH) -> Window.THIS_MONTH
             saysAny(withoutGreeting(t), PARTS) -> Window.TODAY
             // "Ab tak" is only the whole book when no other span is said: "aaj ab tak" is today so far.
