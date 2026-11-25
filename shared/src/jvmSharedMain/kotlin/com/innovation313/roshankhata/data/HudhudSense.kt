@@ -169,7 +169,19 @@ object HudhudSense {
      * does not hang on one shuffle (23 Nov 2026, BC-240: with the same bank, seeds 314 and 315 read two money sentences on
      * the other side and an order to a machine as an entry).
      */
-    internal fun train(lines: List<String>, seed: Long = SEED): Model {
+    internal fun train(lines: List<String>, seed: Long = SEED): Model = trainEnsemble(lines, listOf(seed))
+
+    /**
+     * The stable recipe (25 Nov 2026, plan H1, lesson 163): the sense learnt once for every seed in [seeds], on the very same
+     * features, and the learnt weights AVERAGED before they are made whole numbers. One perceptron's weights depend on its
+     * shuffle (the owner's short list moved by up to 10 of 200 and about 25 guard readings changed between seeds); the mean of
+     * several shuffles is the part the data teaches, with the part the shuffle adds mostly gone. The model is the same kind of
+     * thing as before (same fields, same file, the reading code untouched): only the numbers in it are the mean. With one seed
+     * it is exactly [train] of that seed (a test holds the two byte for byte), so the app's shipped sense is still
+     * `train(bank)`; a new sense learnt as an ensemble is a retrain like any other (the bank, the file and the tests move together).
+     */
+    internal fun trainEnsemble(lines: List<String>, seeds: List<Long>): Model {
+        require(seeds.isNotEmpty()) { "an ensemble needs at least one seed" }
         val labelIds = LinkedHashMap<String, Int>()
         val rows = ArrayList<Pair<Int, List<String>>>()
         for (line in lines) {
@@ -196,7 +208,16 @@ object HudhudSense {
             Example(label, own, FloatArray(own.size) { (raw[it] / norm).toFloat() })
         }
         val labels = labelIds.size
-        val w = learn(examples, labels, features.size, seed)
+        val w = learn(examples, labels, features.size, seeds[0])
+        if (seeds.size > 1) {
+            // The mean of the weights of every shuffle, summed in seed order so the result is the same on every computer.
+            for (k in 1 until seeds.size) {
+                val more = learn(examples, labels, features.size, seeds[k])
+                for (i in w.indices) w[i] += more[i]
+            }
+            val n = seeds.size.toFloat()
+            for (i in w.indices) w[i] /= n
+        }
         // Sixteen-bit whole numbers, a share of the largest weight; noughts are not kept.
         var largest = 0f
         for (v in w) largest = maxOf(largest, abs(v))
