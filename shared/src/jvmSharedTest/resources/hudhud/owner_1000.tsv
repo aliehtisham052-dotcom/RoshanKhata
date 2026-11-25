@@ -120,26 +120,26 @@ K0117	Is hafte udhaar kitna gaya	6	Figure:SALES|Period:SALES|Help:screen_sales_r
 K0118	Is hafte cash kitna aya	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
 K0119	Mere zyada customers udhaar lete hain ya naqad	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
 K0120	Udhaar ka percent kitna hai	6	Figure:SALES|Period:SALES|Help:screen_sales_report|Activity|Collected|Figure:TO_GET|Today
-K0121	Kal se aaj ki sale zyada hai ya kam	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0122	Is hafte pichle hafte se behtar hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0123	Is mahine pichle mahine se zyada bika	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0121	Kal se aaj ki sale zyada hai ya kam	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend|Compare
+K0122	Is hafte pichle hafte se behtar hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend|Compare
+K0123	Is mahine pichle mahine se zyada bika	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend|Compare
 K0124	Aaj aur kal ka muqabla karo	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Compare
-K0125	Is saal aur pichle saal ki sale	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0126	Sale gir rahi hai ya barh rahi hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0127	Is mahine sale kam kyun hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0128	Pichle mahine se kitna farq hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0125	Is saal aur pichle saal ki sale	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend|Compare
+K0126	Sale gir rahi hai ya barh rahi hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend
+K0127	Is mahine sale kam kyun hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend|Why
+K0128	Pichle mahine se kitna farq hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend|Compare
 K0129	Kis hafte mein sab se zyada bika	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
 K0130	Kaun sa din sab se achha raha	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
 K0131	Sab se kam sale kis din hui	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
 K0132	Sale ka graph dikhao	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0133	Is mahine ka trend kya hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0134	Is season mein pichle season se behtar hoon	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0135	Sale mein kitna izafa hua	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0136	Sale mein kitni kami aayi	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0133	Is mahine ka trend kya hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend
+K0134	Is season mein pichle season se behtar hoon	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend|Compare
+K0135	Sale mein kitna izafa hua	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend
+K0136	Sale mein kitni kami aayi	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend|Why
 K0137	Roz ki sale ka average kitna hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
 K0138	Hafte ke kaun se din rush hota hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
 K0139	Mahine ke kaun se din sale zyada hoti hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
-K0140	Meri sale kaisi ja rahi hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report
+K0140	Meri sale kaisi ja rahi hai	7	Figure:SALES|Period:SALES|Help:screen_insights|Help:screen_sales_report|Trend
 K0141	Sab se zyada kya bik raha hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
 K0142	Kaun si cheez sab se zyada bikti hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed
 K0143	Top selling item kaun sa hai	8	Help:screen_insights|Help:screen_sales_report|TopGoods|Help:screen_lapsed

@@ -459,11 +459,17 @@ object HudhudAdviceAsk {
         val comparing = !most && ((than && after != null && named == 1) || (sinceBefore && named <= 1))
         // Than a span before, the trend is the span after it's ("compared to last week" is this week against last).
         val window = if (than && after != null) after else asked
-        // A bare "sale up or down" is the sales page's own question (the owner's list reads it so): the trend is asked for the
-        // asker's own sales ("my"), the business, over a span said, in a comparison, or by the word "trend".
-        if (!(spanSaid != null || comparing || said.any { MINE.has(it) || TREND.has(it) || BUSINESS.has(it) })) return null
         val moving = said.any { MOTION.has(it) || TREND.has(it) }
         val arabic = said.any { w -> w.any { it in '\u0600'..'\u06FF' } } && said.none { w -> w.any { it in HudhudMind.NOT_ARABIC_LETTERS } }
+        // Sales said to be MOVING one way ("sale gir rahi hai ya barh rahi hai", "sale barh rahi hai"), with nothing else, ask the
+        // trend too (25 Nov 2026, the owner's yes, BC-317): the words ask which way it goes. A bare "sale zyada hai" (no motion)
+        // is still the figure. Urdu's زیادہ is Arabic's increase only in an Arabic sentence.
+        // The motion is read from the sentence as said: the phrases fold "going up" into "up" (BC-317's first run missed it).
+        val goingOneWay = VoiceQuestion.normalise(heard).split(' ').any { MOTION.has(it) } &&
+            said.any { (UP.has(it) && !(it == ZIYADA && !arabic)) || DOWN.has(it) }
+        // Otherwise the trend is asked for the asker's own sales ("my"), the business, over a span said, in a comparison, or by
+        // the word "trend".
+        if (!(spanSaid != null || comparing || goingOneWay || said.any { MINE.has(it) || TREND.has(it) || BUSINESS.has(it) })) return null
         var way = false
         for (w in said) {
             if (calling(w)) continue

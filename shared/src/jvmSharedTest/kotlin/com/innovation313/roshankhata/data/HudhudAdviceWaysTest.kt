@@ -161,8 +161,6 @@ class HudhudAdviceWaysTest {
         // The most is the best sellers, never a comparison.
         assertEquals(Ask.TopGoods(Window.LAST_WEEK), read("ur-Latn", "pichle hafte sab se zyada kya bika"))
         assertFalse(read("sd", "گذريل هفتي سڀ کان وڌيڪ ڇا وڪرو ٿيو") is Ask.Trend)
-        // A bare up or down of the sales is still the sales page's own question (the owner's list).
-        assertFalse(read("ur-Latn", "Sale gir rahi hai ya barh rahi hai") is Ask.Trend)
         // Much sale is no way.
         assertFalse(read("ur-Latn", "meri sale zyada hai") is Ask.Trend)
         assertFalse(read("ur", "میری سیل زیادہ ہے") is Ask.Trend)
@@ -179,6 +177,22 @@ class HudhudAdviceWaysTest {
     // ------------------------------------------------------------------------------------------------ each guard alone (lesson 129)
 
     private val none: (String) -> Boolean = { false }
+
+    /** BC-317 (25 Nov 2026, the owner's yes): sales said to be moving one way ask the trend, even with nothing else said. */
+    @Test fun `sales moving one way are the trend, a bare much is not`() {
+        assertEquals(trend(), read("ur-Latn", "Sale gir rahi hai ya barh rahi hai"))
+        assertEquals(trend(), read("ur-Latn", "sale barh rahi hai"))
+        assertEquals(trend(), read("ur-Latn", "sale kam ho rahi hai"))
+        assertEquals(trend(), read("ur", "سیل بڑھ رہی ہے یا گھٹ رہی ہے"))
+        assertEquals(trend(), read("hi", "बिक्री बढ़ रही है या घट रही है"))
+        assertEquals(trend(), read("en", "are sales going up or down"))
+        // No motion: a much or a little is the figure, never a way.
+        assertFalse(read("ur-Latn", "sale zyada hai") is Ask.Trend)
+        assertFalse(read("ur", "سیل زیادہ ہے") is Ask.Trend)
+        // Only this guard lets a bare moving sale through: the reader alone, no span, no "my", no "trend".
+        assertEquals(trend(), HudhudAdviceAsk.trend("sale barh rahi hai", none, none))
+        assertNull(HudhudAdviceAsk.trend("sale barh hai", none, none))
+    }
 
     @Test fun `a comparison names one span, the other is the sentence's own`() {
         // Two weeks named: the sentence compares its own two figures.

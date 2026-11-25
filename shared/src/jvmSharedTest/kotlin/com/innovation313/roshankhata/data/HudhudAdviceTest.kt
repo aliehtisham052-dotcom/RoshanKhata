@@ -91,11 +91,11 @@ class HudhudAdviceTest {
         assertNull(HudhudAdviceAsk.trend("sale barh rahi hai ya kam ho rahi hai kya meri is hafte ki aap bata sakte hain mujhe kya", none, none))
     }
 
-    @Test fun `the trend needs my, a span or the word trend, and a bare up or down is the sales page's question`() {
+    @Test fun `the trend needs my, a span, the word trend or sales moving one way`() {
         val none: (String) -> Boolean = { false }
-        // The owner's own list reads these as the sales page's help: no "my", no span, no "trend".
-        assertNull(HudhudAdviceAsk.trend("sale gir rahi hai ya barh rahi hai", none, none))
-        assertNull(HudhudAdviceAsk.trend("sales going up", none, none))
+        // Sales said to be moving one way ask the trend (25 Nov 2026, the owner's yes, BC-317).
+        assertEquals(trend(), HudhudAdviceAsk.trend("sale gir rahi hai ya barh rahi hai", none, none))
+        assertEquals(trend(), HudhudAdviceAsk.trend("sales going up", none, none))
         assertEquals(trend(), HudhudAdviceAsk.trend("meri sale gir rahi hai ya barh rahi hai", none, none))
         assertEquals(trend(Window.THIS_WEEK), HudhudAdviceAsk.trend("is hafte sale barh rahi hai", none, none))
         assertEquals(trend(), HudhudAdviceAsk.trend("sale ka trend", none, none))
