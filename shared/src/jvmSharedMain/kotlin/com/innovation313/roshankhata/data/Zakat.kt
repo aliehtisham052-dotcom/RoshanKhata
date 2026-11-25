@@ -23,6 +23,10 @@ package com.innovation313.roshankhata.data
  */
 object Zakat {
 
+    // Source (read 26 Nov 2026, rights register RS-14): Darul Uloom Deoband fatwa 1758/B=399/TB=1433 gives 2.5%, silver
+    // nisab 612.36 g and gold 87.48 g (islamqa.org/hanafi/darulifta-deoband/78605); Darul Ifta Birmingham gives 612.35 g
+    // and 87.47 g (islamqa.org/hanafi/daruliftaa-birmingham/20373). The app states figures, never a ruling: a disputed
+    // question goes to a qualified Hanafi scholar.
     const val RATE = 0.025
     const val NISAB_SILVER_GRAMS = 612.36
     const val NISAB_GOLD_GRAMS = 87.48
