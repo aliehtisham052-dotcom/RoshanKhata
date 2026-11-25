@@ -38,3 +38,13 @@ recommendation for each of D15–D21 ("Sab haan").
 | D19 | Concentration: first only the share of all credit one party holds is shown; an alert and its threshold come later, set by the owner or by measurement. Marhala 10. |
 | D20 | The master plan v1 is the base. A new plan is fitted into its phases (what exists, what is new, what goes against a decision); a v2 only when new evidence changes a decision, saying what changed, why and the source. |
 | D21 | The repository stays public: GitHub's standard runners are free for public repositories, while private ones draw on a monthly allowance (the owner's rule: free routes only). Hudhud's name and training bank are therefore public; outside AI tools get only the name-free context pack. |
+
+### 26 November 2026 (03:44): the timeline, not the limits
+
+The owner: no phase is kept for later; every phase is worked now, without stopping. So D16's "after the release" no
+longer holds: business knowledge (Marhala 9) is built now, with D16's limits unchanged (eight modules, every answer
+with its source and date; cricket, jokes and general knowledge still refused). Marhalas 5-10 start now in the plan's
+order; the plan's rules stay (each piece with its tests, no big refactor, figures only from the book). Marhala 8's
+retrain still needs the owner's own check-log mistakes (decided 25 Nov: no synthetic retrain). The owner will use the
+test build for two days (about 70 real questions a day, marking wrong answers) instead of seven (Marhala 2), and will
+look at the sealed set (D18) later; Claude never writes its sentences.
