@@ -4733,7 +4733,7 @@
     <string name="hudhud_t_return_reasons">মাল কেন ফেরত এল</string>
     <string name="hudhud_t_return_ways">ফেরতের টাকা কীভাবে দেওয়া হলো</string>
     <string name="hudhud_t_return_goods">ফেরত আসা মাল</string>
-    <string name="hudhud_t_day_count">ড্রয়ারের গণনা</string>
+    <string name="hudhud_t_day_count">ক্যাশ বাক্সের গণনা</string>
     <string name="hudhud_t_written_off">নষ্ট লেখা মাল</string>
     <string name="hudhud_t_stock_changes">মালের পরিবর্তন</string>
     <string name="hudhud_t_last_count">শেষ মাল গণনা</string>

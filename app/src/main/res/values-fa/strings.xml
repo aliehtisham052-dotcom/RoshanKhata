@@ -422,7 +422,7 @@
     <string name="profile_preview_caption">پیش‌نمایش زندهٔ سربرگ فاکتور شما</string>
     <string name="business_settings_subtitle">روی فاکتورها، صورت‌حساب‌ها و گزارش‌های شما چاپ می‌شود</string>
     <string name="business_name">نام کسب‌وکار</string>
-    <string name="business_name_hint">مثلاً بهاتی تریدرز</string>
+    <string name="business_name_hint">مثلاً النور تریدرز</string>
     <string name="business_name_urdu">نام فروشگاه به اردو</string>
     <string name="business_name_urdu_hint">مثلاً النور ٹریڈرز</string>
     <string name="business_name_urdu_help">روی پوسترها، کارت فروشگاه و لوگوی اردو نشان داده می‌شود. خالی بگذارید تا نام بالا استفاده شود.</string>
@@ -3817,7 +3817,7 @@
     <string name="entry_kind_line">حساب‌شده به‌عنوان: %1$s</string>
     <string name="entry_kind_normal">ثبت معمولی</string>
     <string name="entry_kind_title">این ثبت چیست؟</string>
-    <string name="entry_kind_help">مانده ابتدایی پولی است که از پیش از این دفتر طلب دارید. در مانده و صورت‌حساب می‌ماند و هرگز فروش حساب نمی‌شود.</string>
+    <string name="entry_kind_help">مانده ابتدایی طلب یا بدهی‌ای است که از پیش از این دفتر مانده است. در مانده و صورت‌حساب می‌ماند و هرگز فروش حساب نمی‌شود.</string>
     <string name="entry_kind_refused">فقط یک مبلغ ساده می‌تواند مانده ابتدایی باشد: نه کالا، نه وام، نه نیمی از یک فروش نقدی، و نه ثبتی که فاکتور، طرح، چک یا فروش صندوق نوشته است.</string>
     <string name="entry_cash_lent">پول قرض‌داده: قرض‌الحسنه (فروش نیست)</string>
     <string name="entry_cash_lent_help">پولی که بی‌سود قرض داده شده، یا وامی که پس داده شده. در مانده می‌ماند و هرگز فروش یا سود حساب نمی‌شود. هرگز بهره یا جریمه دیرکرد به آن تعلق نمی‌گیرد.</string>
@@ -4617,7 +4617,7 @@
     <string name="hudhud_l_cheques_in">چک‌های دریافتی</string>
     <string name="hudhud_l_cheques_out">چک‌های پرداختی</string>
     <string name="hudhud_l_due">سررسید امروز یا گذشته</string>
-    <string name="hudhud_plans_none">برنامه بازی وجود ندارد.</string>
+    <string name="hudhud_plans_none">هیچ برنامه‌ای باز نیست.</string>
     <string name="hudhud_l_remaining">باقی‌مانده</string>
     <string name="hudhud_bills_none">همه فاکتورهای تأمین‌کننده پرداخت شده است.</string>
     <string name="hudhud_t_invoices_due">فاکتورهای دارای مبلغ باقی‌مانده</string>
@@ -4713,7 +4713,7 @@
     <string name="hudhud_t_return_reasons">چرا کالا برگشت خورد</string>
     <string name="hudhud_t_return_ways">برگشتی‌ها چگونه پرداخت شد</string>
     <string name="hudhud_t_return_goods">کالای برگشتی</string>
-    <string name="hudhud_t_day_count">شمارش کشو</string>
+    <string name="hudhud_t_day_count">شمارش صندوق</string>
     <string name="hudhud_t_written_off">کالای حذف‌شده از موجودی</string>
     <string name="hudhud_t_stock_changes">تغییرات موجودی</string>
     <string name="hudhud_t_last_count">آخرین شمارش موجودی</string>

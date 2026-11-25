@@ -456,12 +456,12 @@
     <string name="profile_preview_caption">معاينة مباشرة لرأس فاتورتك</string>
     <string name="business_settings_subtitle">تُطبع على فواتيرك وكشوفك وتقاريرك</string>
     <string name="business_name">اسم النشاط التجاري</string>
-    <string name="business_name_hint">مثل بهاتي للتجارة</string>
+    <string name="business_name_hint">مثل النور للتجارة</string>
     <string name="business_name_urdu">اسم المحل بالأردية</string>
     <string name="business_name_urdu_hint">مثلاً النور ٹریڈرز</string>
     <string name="business_name_urdu_help">يظهر على الملصقات وبطاقة المتجر والشعار باللغة الأردية. اتركه فارغاً لاستخدام الاسم أعلاه.</string>
     <string name="business_address">عنوان المحل</string>
-    <string name="business_address_hint">مثل السوق الرئيسي، باسرور</string>
+    <string name="business_address_hint">مثل السوق الرئيسي</string>
     <string name="invoice_bank_name_hint">اسم البنك</string>
     <string name="invoice_bank_title_hint">اسم صاحب الحساب</string>
     <string name="invoice_bank_iban_hint">رقم الآيبان / الحساب</string>
@@ -4627,7 +4627,7 @@
     <string name="share_app_text">روشن كهاتا يحفظ دفتر محلي في هاتفي، مجانًا وبلا حساب. جرّبه: %1$s</string>
     <string name="home_add_first_customer">دفترك فارغ — اضغط هنا لإضافة أول عميل</string>
     <string name="audit_cheque_deleted">تم حذف الشيك</string>
-    <string name="audit_cheque_cleared">عُلّم الشيك كمصروف</string>
+    <string name="audit_cheque_cleared">عُلّم الشيك بأنه تم صرفه</string>
     <string name="audit_cheque_bounced">عُلّم الشيك كمرتجع</string>
     <string name="audit_cheque_cancelled">عُلّم الشيك كملغى</string>
     <string name="audit_cheque_reopened">الشيك قيد الانتظار مرة أخرى</string>
@@ -5011,7 +5011,7 @@
     <string name="hudhud_pace">سرعة الكلام</string>
     <string name="hudhud_chirps_title">أصوات الطائر</string>
     <string name="hudhud_chirps_switch">نداء طائر صغير قبل أن يتكلم وعندما يبدأ الاستماع</string>
-    <string name="hudhud_bird_hoop">ندائه</string>
+    <string name="hudhud_bird_hoop">نداؤه</string>
     <string name="hudhud_bird_ready">أستمع</string>
     <string name="hudhud_bird_glad">خبر سارّ</string>
     <string name="hudhud_pron_say">كيف ينطق الحمد لله</string>
@@ -5131,7 +5131,7 @@
     <string name="backup_prot_first_title">احمِ ملفات النسخ الاحتياطية</string>
     <string name="backup_prot_first_body">ملف النسخة الاحتياطية يغادر جهازك، ومن يحصل عليه يمكنه قراءة دفترك. عيّن كلمة مرور الآن. تُطلب مرة واحدة، والملفات اللاحقة تستخدمها دون سؤال. إذا نسيتها فلن تُفتح الملفات المقفلة أبدًا، ولا حتى من قِبلنا.</string>
     <string name="backup_prot_hint_hint">تلميح (اختياري)</string>
-    <string name="backup_prot_hint_note">تُعرض التلميح لكل من يفتح ملفًا مقفلاً قبل أن تُطلب كلمة المرور. لا تكتب كلمة المرور فيه.</string>
+    <string name="backup_prot_hint_note">يُعرض التلميح لكل من يفتح ملفًا مقفلاً قبل أن تُطلب كلمة المرور. لا تكتب كلمة المرور فيه.</string>
     <string name="backup_prot_hint_gives_away">يجب ألا يحتوي التلميح على كلمة المرور.</string>
     <string name="backup_prot_hint_is">التلميح: %1$s</string>
     <string name="backup_prot_saved">تم تعيين كلمة المرور. ستُقفل ملفات النسخ الاحتياطية من الآن فصاعدًا.</string>
