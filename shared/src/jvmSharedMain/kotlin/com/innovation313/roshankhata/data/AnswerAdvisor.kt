@@ -116,13 +116,15 @@ object AnswerAdvisor {
         }
         val rows = first.map { ch ->
             val sub = ArrayList<String>()
-            sub += c.getString(W.radar_oldest, c.quantity(WP.radar_days, ch.days, ch.days))
-            when (ch.light) {
+            // The oldest unpaid credit's age, counted as Dues by age counts it (Aging.bucketOf's whole days).
+            val days = by[ch.id]?.oldest?.let { ((now - it).coerceAtLeast(0L) / DAY_MS).toInt() }
+            if (days != null) sub += c.getString(W.radar_oldest, c.quantity(WP.radar_days, days, days))
+            when (lights[ch.id]) {
                 PaymentRadar.Light.RED -> sub += c.getString(W.radar_very_late)
                 PaymentRadar.Light.AMBER -> sub += c.getString(W.radar_late)
                 else -> {}
             }
-            Row(ch.row.partyId, ch.row.name, AnswerBook.money(ch.row.balance), sub.joinToString(" · "))
+            Row(ch.id, ch.name, AnswerBook.money(ch.balance), sub.joinToString(" · "))
         }
         return AnswerCard(Mood.CARE, label = title, lines = listOf(c.getString(W.hudhud_chase_note)), rows = rows, open = ScreenId.FOLLOW_UP, money = true)
     }
@@ -221,4 +223,6 @@ object AnswerAdvisor {
                 else c.getString(W.hudhud_today_cover, Format.isolate(r.name), c.quantity(WP.radar_days, days, days))
             }
     }
+
+    private const val DAY_MS = 24L * 60 * 60 * 1000
 }

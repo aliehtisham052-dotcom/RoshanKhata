@@ -47,7 +47,11 @@ object CashFlow {
         val gapWeek: Week?,
         /** By how much, at the end of [gapWeek]. */
         val gap: Double,
-        /**
+        /** Credit bills with money still owed but no due date: left out, counted so the screen can say so. */
+        val undatedBills: Int
+    )
+
+    /**
      * THE ONE LOADER (25 Nov 2026, BC-285): the instalments, pending cheques of a party still in the book, promised days, credit
      * bills and what the shop owes each supplier, read from the book and handed to [items]. The phone's and the computer's
      * Cash flow page, the bell's cash gap and the assistant's "next 30 days" each kept their own copy of these lines.
@@ -63,10 +67,6 @@ object CashFlow {
         val owed = parties.filter { it.balance < 0 }.associate { it.id to -it.balance }
         return items(plans, cheques, harvests, dao.cashFlowBillsOnce(), owed)
     }
-
-    /** Credit bills with money still owed but no due date: left out, counted so the screen can say so. */
-        val undatedBills: Int
-    )
 
     private const val DAY = 24L * 60 * 60 * 1000
     private fun pos(v: Double) = v > 0.004

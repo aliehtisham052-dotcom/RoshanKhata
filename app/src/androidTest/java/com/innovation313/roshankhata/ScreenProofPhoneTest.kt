@@ -57,52 +57,10 @@ class ScreenProofPhoneTest(
     private val app: Context get() = ApplicationProvider.getApplicationContext()
 
     @Before
-    fun ready() {
-        app.getSharedPreferences("language", Context.MODE_PRIVATE).edit().putBoolean("chosen", true).commit()
-        // A returning owner: the setup finished (5 Nov 2026, SetupProgress) and the shop's country saved, so
-        // Home does not ask an older book's country over the pictures (this emulator's SIM says US).
-        app.getSharedPreferences("setup", Context.MODE_PRIVATE).edit().putBoolean("done", true).commit()
-        BusinessProfile.setCountry(app, com.innovation313.roshankhata.data.ShopCountry.PAKISTAN)
-        app.getSharedPreferences("welcome", Context.MODE_PRIVATE).edit().putBoolean("welcome_seen", true).commit()
-        app.getSharedPreferences("home_offers", Context.MODE_PRIVATE).edit().putBoolean("backup_offered", true).commit()
-        CoachMarkController.markRun(app)
-        // The pictures are of the screens, not of their first-open sheets (one sheet has its own picture).
-        com.innovation313.roshankhata.ui.FeatureIntro.markAllSeen(app)
-        // Nor of Hudhud's morning greeting, which has its own picture (52).
-        com.innovation313.roshankhata.ui.HudhudGreet.greeted(app)
-        BalancePrivacy.setHidden(app, false)
-        BusinessProfile.setTrade(app, trade)
-        BusinessProfile.setBusinessName(app, "Al-Noor Traders")
-        // Made-up shop details, so the statement's band and How to pay show (no real number).
-        BusinessProfile.setBusinessPhone(app, "0300 0000000")
-        BusinessProfile.setBusinessAddress(app, "Main Bazar")
-        BusinessProfile.setBankName(app, "Test Bank")
-        BusinessProfile.setBankIban(app, "PK00 TEST 0000 0000 0000")
-        BusinessProfile.setBankJazzCash(app, "0300 0000001")
-        val ui = InstrumentationRegistry.getInstrumentation().uiAutomation
-        ui.grantRuntimePermission(app.packageName, Manifest.permission.READ_CONTACTS)
-        if (Build.VERSION.SDK_INT >= 33) ui.grantRuntimePermission(app.packageName, Manifest.permission.POST_NOTIFICATIONS)
-        // The phone's own text size, under the app's (TextSize multiplies the two, 85%-150%).
-        ui.executeShellCommand("settings put system font_scale $phoneScale").close()
-        SystemClock.sleep(500)
-        TextSize.setLevel(app, level)
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            ThemeMode.set(app, if (dark) ThemeMode.DARK else ThemeMode.LIGHT)
-            AppCompatDelegate.setApplicationLocales(
-                if (language == "en") LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(language)
-            )
-        }
-    }
+    fun ready() = ScreenProofKit.apply(app, language, level, phoneScale, dark, trade)
 
     @After
-    fun back() {
-        InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("settings put system font_scale 1.0").close()
-        TextSize.setLevel(app, TextSize.NORMAL)
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            ThemeMode.set(app, ThemeMode.LIGHT)
-            AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
-        }
-    }
+    fun back() = ScreenProofKit.reset(app)
 
     @Test
     fun theScreens() {
@@ -356,39 +314,11 @@ class ScreenProofPhoneTest(
         }
     }
 
-    /** A customer with seven-figure dealings, so every total on the way is wide (made-up name). */
-    private fun bigAccount(): Long = runBlocking {
-        val dao = KhataDatabase.get(app).khataDao()
-        dao.partiesWithBalanceOnce().firstOrNull { it.name == BIG_NAME }?.let { return@runBlocking it.id }
-        // A private note (schema 43): its chip under the name on 03-customer.
-        val id = dao.insertParty(Party(name = BIG_NAME, phone = "03000000001", village = "Test Village", note = "Test note: pays on the 10th"))
-        val now = System.currentTimeMillis()
-        dao.insertEntry(LedgerEntry(partyId = id, amount = 2_345_678.0, isGiven = true, entryNumber = "RK-900101", timestamp = now - 5 * DAY, note = "Test sale"))
-        dao.insertEntry(LedgerEntry(partyId = id, amount = 1_111_111.0, isGiven = false, entryNumber = "RK-900102", timestamp = now - DAY))
-        id
-    }
+    /** A customer with seven-figure dealings (ScreenProofKit; made-up name). */
+    private fun bigAccount(): Long = ScreenProofKit.bigAccount(app)
 
-    private fun shoot(name: String, intent: Intent, settleMs: Long = 1500, then: ((Activity) -> Unit)? = null) {
-        try {
-            ActivityScenario.launch<Activity>(intent).use {
-                InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-                SystemClock.sleep(settleMs)
-                if (then != null) {
-                    it.onActivity { a -> then(a) }
-                    InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-                    SystemClock.sleep(1500)
-                }
-                val bmp = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
-                assertTrue("no picture for $name", bmp != null && bmp.width > 0)
-                save("$name.png", bmp)
-            }
-        } catch (e: AssertionError) {
-            throw e
-        } catch (e: Exception) {
-            // One screen that cannot open must not cost the others' pictures; its name says it is missing.
-            android.util.Log.e("ScreenProof", "$look/$name failed", e)
-        }
-    }
+    private fun shoot(name: String, intent: Intent, settleMs: Long = 1500, then: ((Activity) -> Unit)? = null) =
+        ScreenProofKit.shoot(look, app, name, intent, settleMs, then)
 
     private fun sealNames(): Bitmap {
         val names = listOf(
@@ -408,21 +338,11 @@ class ScreenProofPhoneTest(
         return bmp
     }
 
-    private fun save(name: String, bmp: Bitmap) {
-        if (Build.VERSION.SDK_INT < 29) return
-        val values = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-            put(MediaStore.MediaColumns.RELATIVE_PATH, "Download/screen-proof/$look")
-        }
-        val resolver = app.contentResolver
-        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: return
-        resolver.openOutputStream(uri)?.use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
-    }
+    private fun save(name: String, bmp: Bitmap) = ScreenProofKit.save(app, look, name, bmp)
 
     companion object {
-        private const val BIG_NAME = "Test Wholesale Customer"
-        private const val DAY = 24L * 60 * 60 * 1000
+        private const val BIG_NAME = ScreenProofKit.BIG_NAME
+        private const val DAY = ScreenProofKit.DAY
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
