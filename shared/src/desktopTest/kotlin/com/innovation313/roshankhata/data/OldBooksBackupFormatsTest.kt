@@ -21,8 +21,9 @@ import java.nio.file.Files
  *  - every row that existed then restored (parties, entries, cash rows, tickets from format 8);
  *  - a field that came later reading as nothing / the old default — never as another row's value;
  *  - a field that was already there kept.
- * Formats 1 to 6 are read as the format-7 shape stamped lower (INFERRED: their real shapes are not in the repository,
- * only the rule that every key but "format" and "version" is optional). Made-up names and figures only.
+ * Formats 1 to 6 are also read here as the format-7 shape stamped lower; their real shapes, written from each format's
+ * own export code in the history, are [OldBackupShapes] and are held by [OldBackupShapesTest] (25 Nov 2026). Made-up
+ * names and figures only.
  */
 class OldBooksBackupFormatsTest {
 
