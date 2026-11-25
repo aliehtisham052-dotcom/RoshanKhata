@@ -106,8 +106,10 @@ object Format {
      * as one and a half. Every other language keeps 1,500.00. The digits
      * stay 0-9 either way; only the two marks trade places.
      */
+    // One rule with what is typed (Digits.decimalComma, 25 Nov 2026, the covering array): an Indonesian shop with the
+    // app in English read "1.250,50" typed but printed "Rp 1,250.50".
     private fun groupedForReader(figure: String, locale: Locale = Locale.getDefault()): String =
-        if (locale.language == "in" || locale.language == "id") {
+        if (com.innovation313.roshankhata.data.Digits.decimalComma(locale)) {
             figure.map { when (it) { ',' -> '.'; '.' -> ','; else -> it } }.joinToString("")
         } else figure
 

@@ -36,6 +36,7 @@ CHECKS=(
   "check_capability_matrix.py"
   "check_data_flows.py"
   "check_formula_book.py"
+  "gen_covering_array.py --check"
 )
 
 # The list must be strings.yml's own.
