@@ -13,6 +13,9 @@ The sets, as they are kept today:
     python3 scripts/hudhud_sets.py --check             # the quality gate (the strings job runs this)
     python3 scripts/hudhud_sets.py --report            # the gate, plus every overlap and duplicate it knows of
     python3 scripts/hudhud_sets.py --write-overlap     # rewrite the overlap list (it only ever shrinks)
+    python3 scripts/hudhud_sets.py --check --near-list 40          # the gate, plus the first 40 near-duplicate pairs
+    python3 scripts/hudhud_sets.py --check --sealed /owner/folder  # plus the sealed set v2, from OUTSIDE the repository
+    python3 scripts/hudhud_sets.py --check --near-strict           # fail on any near-duplicate of a trained sentence
 
 A JSONL record: id, text, language, split (train / heldout / owner / review), source (file:line), and what the set
 says of the sentence — `meaning` (the bank's label) with `ask` (the reading that meaning is answered as, from
@@ -35,6 +38,19 @@ The gate fails on
   5. one sentence with two meanings in train + held-out (a label conflict).
 Drift protection, not proof (lesson 125): it cannot say that a label is the RIGHT one; docs/hudhud-annotation-guide.md
 says how to choose it.
+
+NEAR-DUPLICATES (plan Marhala 3, 25 Nov 2026; REPORT ONLY unless --near-strict). Every --check also compares the sets'
+sentences after a stronger fold (`near_key`: the leakage key, then {NAME}/{ITEM} and the test books' invented customer and
+product names in their scripts masked as one name and one product word, every run of digits one number, spaces folded) and
+by character 3-grams (Jaccard of the folded sentence's 3-grams, padded with a space, >= NEAR_JACCARD = 0.80). It counts the
+pairs between the families train, heldout, owner, review and (with --sealed) sealed — never two sentences of one family — and
+prints one line per pair of families: "same after masking" (Jaccard 1) and "near" (>= 0.80). The exit code is unchanged by
+them unless --near-strict, which fails on any pair with a TRAIN sentence (the known overlap list keeps exact leakage apart).
+`--sealed DIR` reads every *.tsv and *.txt in DIR, a folder of the owner's outside the repository (D12, D18): one sentence a
+line, or the column with the most letters; `#` lines are skipped. For the sealed set only counts and the sealed file's own
+line numbers are printed, never a sentence and never the repository sentence it meets (plan "Never" 9: nothing is fixed by
+looking at the sealed set). Cross-script twins (Roman Urdu and Urdu script) are not compared here: their letters differ; the
+calibration's folds (scripts/hudhud_calib_folds.py) keep those together by place instead.
 """
 import importlib.util
 import json
@@ -383,6 +399,138 @@ def duplicates_within(recs):
     return out
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# Near-duplicates (report only by default).
+
+NEAR_JACCARD = 0.80
+# The invented books of the set tests (HudhudOwnerSetTest, HudhudSenseTest and their copies in the shared harness): two-word
+# names first, so "Saleem Bhai" is one name and "bhai" alone stays a word.
+_NAME_PHRASES = ["Ali Raza", "Bashir Ahmad", "Tariq Butt", "Naeem Khan", "Saleem Bhai", "Kamran Traders",
+                 "علی رضا", "علي رضا", "अली रज़ा", "আলী রাজা"]
+_NAME_WORDS = ["Ali", "Raza", "Bashir", "Ahmad", "Tariq", "Butt", "Naeem", "Khan", "Saleem", "Kamran"]
+_GOODS_WORDS = ["Urea", "DAP", "Sugar", "Paracetamol", "Atta", "Ghee", "یوریا", "يوريا", "यूरिया", "ইউরিয়া"]
+_NAME_TOKEN, _ITEM_TOKEN, _NUM_TOKEN = "qqname", "qqitem", "qqnum"
+_PHRASES = None
+
+
+def near_key(text):
+    """The sentence folded for the near-duplicate scan: the leakage key, names, products and numbers masked."""
+    global _PHRASES
+    if _PHRASES is None:
+        _PHRASES = ([(key(p), _NAME_TOKEN) for p in _NAME_PHRASES],
+                    {key(w): _NAME_TOKEN for w in _NAME_WORDS} | {key(w): _ITEM_TOKEN for w in _GOODS_WORDS})
+    phrases, words = _PHRASES
+    t = text.replace("{NAME}", f" {_NAME_TOKEN} ").replace("{ITEM}", f" {_ITEM_TOKEN} ")
+    t = "".join("0" if unicodedata.category(c) == "Nd" else c for c in t)
+    t = " " + key(t) + " "
+    for p, tok in phrases:
+        t = t.replace(f" {p} ", f" {tok} ")
+    out = []
+    for w in t.split():
+        w = words.get(w, w)
+        w = _NUM_TOKEN if re.fullmatch(r"0+(?:[.,]0+)*", w) else w
+        if not (w == _NUM_TOKEN and out and out[-1] == _NUM_TOKEN):
+            out.append(w)
+    return " ".join(out)
+
+
+def _grams(k):
+    b = f" {k} "
+    return {b[i:i + 3] for i in range(len(b) - 2)} if len(b) >= 3 else {b}
+
+
+def _family(r):
+    return {"train": "train", "heldout": "heldout", "owner": "owner", "review": "review"}.get(r["split"], r["split"])
+
+
+def sealed_records(folder):
+    """The sealed set v2 from the owner's folder (never the repository): one sentence a line, else the column with most letters."""
+    root = Path(folder).expanduser()
+    if not root.is_dir():
+        raise SystemExit(f"hudhud_sets: --sealed {folder}: not a folder")
+    if ROOT in root.resolve().parents or root.resolve() == ROOT:
+        raise SystemExit("hudhud_sets: --sealed must be a folder OUTSIDE the repository (D12, D18)")
+    out = []
+    for path in sorted(list(root.glob("*.tsv")) + list(root.glob("*.txt"))):
+        for n, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if not raw.strip() or raw.startswith("#"):
+                continue
+            text = max(raw.split("\t"), key=lambda c: sum(ch.isalpha() for ch in c))
+            out.append({"id": f"sealed-{path.name}-{n}", "text": text, "split": "sealed", "source": f"{path.name}:{n}"})
+    return out
+
+
+def near_duplicates(recs, threshold=NEAR_JACCARD):
+    """Pairs (a, b, jaccard) of sentences of two different families with Jaccard >= threshold of their folded 3-grams.
+    Prefix filtering (the rarest grams first) keeps it to seconds: a pair at or above the threshold shares one of the first
+    |A| - ceil(t|A|) + 1 grams of A."""
+    import math
+    docs = []
+    for r in recs:
+        k = near_key(r["text"])
+        if k:
+            docs.append((r, _family(r), k, _grams(k)))
+    freq = Counter(g for _, _, _, gs in docs for g in gs)
+    postings = defaultdict(list)
+    for i, (_, _, _, gs) in enumerate(docs):
+        for g in gs:
+            postings[g].append(i)
+    found = {}
+    for i, (r, fam, k, gs) in enumerate(docs):
+        if fam == "train":
+            continue
+        order = sorted(gs, key=lambda g: (freq[g], g))
+        prefix = order[:len(order) - math.ceil(threshold * len(order)) + 1]
+        cands = set()
+        for g in prefix:
+            cands.update(postings[g])
+        for j in cands:
+            if j == i:
+                continue
+            r2, fam2, k2, gs2 = docs[j]
+            if fam2 == fam:
+                continue
+            if not (threshold * len(gs) <= len(gs2) <= len(gs) / threshold):
+                continue
+            inter = len(gs & gs2)
+            jac = inter / (len(gs) + len(gs2) - inter)
+            if jac >= threshold:
+                a, b = (j, i) if j < i else (i, j)
+                found[(a, b)] = (docs[a][0], docs[b][0], 1.0 if k == k2 else jac)
+    return list(found.values())
+
+
+def near_report(pairs, listed=0):
+    """One line per pair of families; with [listed], that many example pairs (never a sealed sentence)."""
+    fams = ["train", "heldout", "owner", "review", "sealed"]
+    by = defaultdict(lambda: [0, 0, 0])
+    for a, b, jac in pairs:
+        fa, fb = sorted((_family(a), _family(b)), key=fams.index)
+        by[(fa, fb)][0 if key(a["text"]) == key(b["text"]) else 1 if jac >= 1.0 else 2] += 1
+    lines = [f"near-duplicates (pairs of sentences; Jaccard of 3-grams >= {NEAR_JACCARD}, names/products/numbers masked; report only):"]
+    for (fa, fb), (exact, same, near) in sorted(by.items(), key=lambda kv: (fams.index(kv[0][0]), fams.index(kv[0][1]))):
+        lines.append(f"  {fa} x {fb}: {exact} exact (the leakage key), {same} the same once masked, {near} near")
+    if not by:
+        lines.append("  none")
+    if listed:
+        shown = 0
+        for a, b, jac in sorted(pairs, key=lambda p: (-p[2], p[0]["source"], p[1]["source"])):
+            if shown >= listed:
+                break
+            if "sealed" in (_family(a), _family(b)):
+                s = a if _family(a) == "sealed" else b
+                o = b if s is a else a
+                lines.append(f"  {jac:.2f} sealed {s['source']} ~ a {_family(o)} sentence (not shown: plan Never 9)")
+            else:
+                lines.append(f"  {jac:.2f} {a['source']} '{a['text']}' ~ {b['source']} '{b['text']}'")
+            shown += 1
+    return lines
+
+
+def _arg(argv, name):
+    return argv[argv.index(name) + 1] if name in argv and argv.index(name) + 1 < len(argv) else None
+
+
 def main(argv):
     engine, problems = Engine(), []
     recs = records(engine, problems)
@@ -408,6 +556,19 @@ def main(argv):
         print(f"{len(now)} overlaps written to {OVERLAP.relative_to(ROOT)}")
         return 0
     now = check(engine, recs, problems)
+    near_lines = []
+    if "--check" in argv or "--report" in argv:
+        scanned = recs + (sealed_records(_arg(argv, "--sealed")) if _arg(argv, "--sealed") else [])
+        pairs = near_duplicates(scanned)
+        listed = int(_arg(argv, "--near-list") or (20 if "--report" in argv else 0))
+        near_lines = near_report(pairs, listed)
+        if "--near-strict" in argv:
+            for a, b, jac in pairs:
+                if "train" in (_family(a), _family(b)):
+                    o = b if _family(a) == "train" else a
+                    where = o["source"] if _family(o) != "sealed" else f"sealed {o['source']}"
+                    problems.append(f"near-duplicate ({jac:.2f}) of a train sentence: {where}")
+        print("\n".join(near_lines))
     if "--report" in argv:
         for name, n in sorted(Counter(name for name, _ in now).items()):
             print(f"known overlap with train: {name} {n}")
