@@ -166,3 +166,13 @@ val syncAppWords by tasks.registering(Sync::class) {
 
 kotlin.sourceSets.getByName("jvmSharedMain").kotlin.srcDir(generateWordKeys)
 kotlin.sourceSets.getByName("desktopMain").resources.srcDir(syncAppWords.map { it.destinationDir.parentFile })
+
+// A failed test says its own message in the log (25 Nov 2026): the short format printed only "AssertionError at
+// File.kt:420", and the CI step that turns the log into an annotation had nothing to say about WHICH check failed.
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events("failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStackTraces = false
+    }
+}

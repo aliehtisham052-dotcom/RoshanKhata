@@ -21,7 +21,9 @@ class FormatShopMarksTest {
 
     @Test fun `an Indonesian shop in English prints the marks it types`() = with(Locale.ENGLISH, ShopCountry.INDONESIA) {
         assertTrue(Digits.decimalComma())
-        assertEquals("Rp 1.250,50", Format.money(1250.5, "Rp").replace(' ', ' ').takeLast(11))
+        // The rupiah prints no decimals (Currency.decimals): 1,250.40 is "Rp 1.250"; a sign with decimals shows both marks.
+        assertEquals("Rp 1.250", Format.money(1250.4, "Rp").replace(' ', ' ').takeLast(8))
+        assertEquals("Rs 1.250,50", Format.money(1250.5, "Rs").replace(' ', ' ').takeLast(11))
     }
 
     @Test fun `a Pakistani shop in English keeps comma groups and a decimal point`() = with(Locale.ENGLISH, ShopCountry.PAKISTAN) {

@@ -1630,13 +1630,19 @@ object AnswerBook {
         }
         val onScreen = w.getString(W.hudhud_on_screen).trimEnd('.', '\u06D4', '\u0964', '!')
         var leftOut = false
-        fun said(text: String?): String? {
-            if (text.isNullOrBlank()) return null
+        // Every part said aloud passes the secret filter, a row's NAME too (25 Nov 2026, BC-283: a batch number named its
+        // row and was said aloud while the card listed it as a secret).
+        fun masked(text: String): String {
             var t = HudhudSpeech.clean(text)
             for (secret in secrets) {
                 val v = HudhudSpeech.clean(secret)
                 if (v.isNotEmpty()) t = t.replace(v, onScreen)
             }
+            return t
+        }
+        fun said(text: String?): String? {
+            if (text.isNullOrBlank()) return null
+            val t = masked(text)
             if (hideMoney && hasMoney(t)) {
                 leftOut = true
                 return null
@@ -1653,7 +1659,7 @@ object AnswerBook {
         }
         lines.forEach { line -> said(line)?.let { parts += it } }
         for (r in rows) {
-            val bits = listOfNotNull(HudhudSpeech.clean(r.name).takeIf { it.isNotBlank() }, said(r.figure), said(r.sub))
+            val bits = listOfNotNull(masked(r.name).takeIf { it.isNotBlank() }, said(r.figure), said(r.sub))
             if (bits.isNotEmpty()) parts += bits.joinToString(", ")
         }
         // Only the heading is left (its figure and lines were amounts): nothing worth saying.

@@ -279,9 +279,11 @@ class CoveringArrayLogicTest {
         val faults = ArrayList<String>()
         val done = HashSet<String>()
         for (r in rows) {
-            if (!done.add("${r.language}/${r.currency}")) continue
+            if (!done.add("${r.language}/${r.currency}/${r.country}")) continue
             inRow(r) {
-                val dot = r.language == "in"  // Indonesian groups with "." and marks the decimal with ","
+                // Indonesian groups with "." and marks the decimal with ",": the language, or an Indonesian shop in any
+                // language, which types its figures so and prints them as typed (BC-275).
+                val dot = r.language == "in" || r.country == "INDONESIA"
                 val group = if (dot) '.' else ','
                 val mark = if (dot) ',' else '.'
                 for (v in figures) {
