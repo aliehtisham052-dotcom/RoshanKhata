@@ -4176,8 +4176,9 @@ object Hudhud {
                 val e = VoiceEntry.parse(noDate, emptyList(), language)
                 val amount = e.amount?.takeUnless { it in VoiceQuestion.spanFigures(half) || orderDo(half, it) }
                 val given = sindhiToMe(half, e.isGiven)
-                // A half that is a promise, a denial or a debt still owed is no entry (BC-113, BC-321, BC-322): then neither is the whole.
-                if (amount == null || amount <= 0.0 || given == null || VoiceQuestion.saysFuture(half) || VoiceQuestion.moneyNotMoved(half)) null
+                // (A half that is a promise, a denial or a debt still owed never gets here: the whole sentence says it too, and both
+                // callers refuse such a sentence first — BC-113, BC-321, BC-322.)
+                if (amount == null || amount <= 0.0 || given == null) null
                 else VoiceEntry.nameWords(half).let { w -> Ask.Entry(amount, given, partiesOf(names, w), w, entryDayOf(half, names, goods) ?: whole) }
             }
             if (entries.any { it == null }) continue

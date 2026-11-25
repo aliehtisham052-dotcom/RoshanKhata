@@ -349,6 +349,9 @@ class HudhudMoneyFirstTest {
             "Kis supplier ko payment late ho gayi", "qarz e hasna kitna hai", "Kis ki raqam deni hai", "sab se zyada kis ka baqi hai",
             "logon par mera kitna qarz hai", "Kis ka udhaar bohat dair se baqi hai", "kitne customers ka qarz baqi hai"))
             assertFalse(s, VoiceQuestion.sideUnsure(s))
+        // Most and least say the side (who owes the shop most or least): only this guard refuses these (a guess of the sense would
+        // otherwise be asked; lesson 129).
+        for (s in listOf("sab se zyada kis ka paisa baqi hai", "kis ki payment sab se kam baqi hai", "whose payment is the biggest pending")) assertFalse(s, VoiceQuestion.sideUnsure(s))
         assertTrue(VoiceQuestion.saysLate("Kis ki payment late ho gayi"))
         assertFalse(VoiceQuestion.saysLate("Kitna qarz baqi hai"))
     }
