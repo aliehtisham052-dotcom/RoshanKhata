@@ -3334,7 +3334,7 @@ hidden with the big-shop tools off was an earlier audit's choice), L86 (phone to
   Report PDF has its page line on every page; the rate-list picture prints native digits when chosen; PDF DOWNLOAD links
   reach pages under nested /Pages nodes (a 12-page statement).
 - **Money rules:** the Radar's "nothing left" and the counter's checks use half the shop's smallest coin
-  (KWD 0.0005), not 0.5/0.005; the Seasons median of an even count is the mean of the middle two; the report's expenses
+  (KWD 0.0005), not 0.5/0.005; the Seasons median of an even count is the mean of the middle two (since 25 Nov 2026 rounded half up by `Median.of`, one rule with the Radar and Follow-up, BC-295); the report's expenses
   skip only counter refunds ("Return" by hand counts); a shift's refused close says it in the owner's words.
 - **Windows:** purchase-order Send reads off the window thread; the phone-pull book is written straight to bytes.
 - **Release:** `check_16kb.py` reads an .aab and aab.yml runs it (x86_64 Filament); README says it is published; the

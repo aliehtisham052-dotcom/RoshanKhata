@@ -1087,7 +1087,7 @@ object AnswerFacts {
         val due = staff.map { person ->
             person to Payroll.month(person.monthlySalary, days, marks.filter { it.staffId == person.id }.map { it.status },
                 pays.filter { it.staffId == person.id }).due
-        }.filter { it.second > 0.004 }
+        }.filter { it.second > Money.halfCoin }
         if (due.isEmpty()) {
             return AnswerCard(Mood.GOOD, label = label, lines = listOf(c.getString(W.hudhud_salary_none)), open = ScreenId.STAFF)
         }
@@ -1147,8 +1147,8 @@ object AnswerFacts {
         val opens = c.usageCount(Hudhud.Thing.APP_OPENS, from, to)
         val lines = listOfNotNull(
             line(c, W.hudhud_l_entries, n(entries)),
-            if (moneyIn > 0.004) line(c, W.hudhud_l_money_in, AnswerBook.money(moneyIn)) else null,
-            if (moneyOut > 0.004) line(c, W.hudhud_l_money_out, AnswerBook.money(moneyOut)) else null,
+            if (moneyIn > Money.halfCoin) line(c, W.hudhud_l_money_in, AnswerBook.money(moneyIn)) else null,
+            if (moneyOut > Money.halfCoin) line(c, W.hudhud_l_money_out, AnswerBook.money(moneyOut)) else null,
             if (invoices > 0) line(c, W.invoices, n(invoices)) else null,
             if (bills > 0) line(c, W.supplier_bills, n(bills)) else null,
             if (tickets > 0) line(c, W.hudhud_t_tickets, n(tickets)) else null,

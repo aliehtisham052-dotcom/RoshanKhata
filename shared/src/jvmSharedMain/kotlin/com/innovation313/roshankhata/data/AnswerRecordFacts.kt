@@ -70,11 +70,11 @@ internal object AnswerRecordFacts {
         val (p, m) = months.first()
         val due = m.due
         val state = when {
-            due > 0.004 -> c.getString(W.staff_due, AnswerBook.money(due))
-            due < -0.004 -> c.getString(W.staff_overpaid, AnswerBook.money(-due))
+            due > Money.halfCoin -> c.getString(W.staff_due, AnswerBook.money(due))
+            due < -Money.halfCoin -> c.getString(W.staff_overpaid, AnswerBook.money(-due))
             else -> c.getString(W.staff_settled)
         }
-        return AnswerCard(if (due > 0.004) Mood.CARE else Mood.GOOD, label = p.name + " · " + title, figure = AnswerBook.money(abs(due)),
+        return AnswerCard(if (due > Money.halfCoin) Mood.CARE else Mood.GOOD, label = p.name + " · " + title, figure = AnswerBook.money(abs(due)),
             lines = listOfNotNull(
                 c.getString(W.staff_salary_line, AnswerBook.money(p.monthlySalary)),
                 c.getString(W.staff_money, AnswerBook.money(m.earned), AnswerBook.money(m.advances), AnswerBook.money(m.paid)),
@@ -99,8 +99,8 @@ internal object AnswerRecordFacts {
         val salary = pays.filter { it.kind == Payroll.SALARY }.sumOf { it.amount }
         return AnswerCard(Mood.CALM, label = title, figure = AnswerBook.money(pays.sumOf { it.amount }),
             lines = listOfNotNull(
-                if (advances > 0.004) AnswerFacts.line(c, W.staff_advance, AnswerBook.money(advances)) else null,
-                if (salary > 0.004) AnswerFacts.line(c, W.hudhud_l_salary_paid, AnswerBook.money(salary)) else null
+                if (advances > Money.halfCoin) AnswerFacts.line(c, W.staff_advance, AnswerBook.money(advances)) else null,
+                if (salary > Money.halfCoin) AnswerFacts.line(c, W.hudhud_l_salary_paid, AnswerBook.money(salary)) else null
             ),
             rows = pays.take(AnswerFacts.TOP).map { pay ->
                 val kind = c.getString(if (pay.kind == Payroll.ADVANCE) W.staff_advance else W.hudhud_l_salary_paid)
@@ -232,7 +232,7 @@ internal object AnswerRecordFacts {
             if (progress.size > 1) AnswerFacts.line(c, W.nav_plans, progress.size.toString()) else null,
             if (money) c.getString(W.plan_paid, AnswerBook.money(p.paidSoFar), AnswerBook.money(p.totalAmount)) else null,
             if (money && !p.isClosed) c.getString(W.plan_remaining, AnswerBook.money(p.remaining)) else null,
-            p.installmentAmount?.takeIf { money && it > 0.004 }?.let { AnswerFacts.line(c, W.plan_installment_hint, AnswerBook.money(it)) },
+            p.installmentAmount?.takeIf { money && it > Money.halfCoin }?.let { AnswerFacts.line(c, W.plan_installment_hint, AnswerBook.money(it)) },
             if (p.isClosed) c.getString(W.plan_closed) else c.getString(W.plan_next_due, p.nextDueDate?.let { AnswerFacts.dayOf(c, it) } ?: c.getString(W.plan_next_due_none)),
             row?.let { AnswerFacts.line(c, W.hudhud_l_plan_started, AnswerFacts.dayOf(c, it.createdAt)) },
             row?.closedAt?.let { AnswerFacts.line(c, W.hudhud_l_plan_closed_on, AnswerFacts.dayOf(c, it)) },

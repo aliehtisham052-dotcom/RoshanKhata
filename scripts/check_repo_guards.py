@@ -301,7 +301,7 @@ def day_ends_by_the_calendar(root=ROOT):
 # isPositive). Left alone: Money.kt itself, comments, Room's SQL text (it cannot call Kotlin), a price ratio. The
 # assistant's answer files wait in HALF_COIN_WAITING until their round ends (a file listed here must still hold one).
 HALF_COIN_LITERAL = re.compile(r"(?<![\w.])-?0\.00[45](?![\d\w])")
-HALF_COIN_WAITING = {"AnswerFacts.kt", "AnswerRecordFacts.kt"}
+HALF_COIN_WAITING = set()
 
 
 def zero_tests_by_the_money_contract(root=ROOT):
