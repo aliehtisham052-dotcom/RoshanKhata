@@ -2,56 +2,56 @@
 mood: CALM
 label: What happened · Today
 line: Only the owner or a manager can see this figure.
-speech: What happened Today. Only the owner or a manager can see this figure.
-speechHidden: What happened Today. Only the owner or a manager can see this figure.
+speech: What happened, Today. Only the owner or a manager can see this figure.
+speechHidden: What happened, Today. Only the owner or a manager can see this figure.
 ask: Activity(window=null)
 
 === Activity(window=TODAY)
 mood: CALM
 label: What happened · Today
 line: Only the owner or a manager can see this figure.
-speech: What happened Today. Only the owner or a manager can see this figure.
-speechHidden: What happened Today. Only the owner or a manager can see this figure.
+speech: What happened, Today. Only the owner or a manager can see this figure.
+speechHidden: What happened, Today. Only the owner or a manager can see this figure.
 ask: Activity(window=TODAY)
 
 === Activity(window=YESTERDAY)
 mood: CALM
 label: What happened · Yesterday
 line: Only the owner or a manager can see this figure.
-speech: What happened Yesterday. Only the owner or a manager can see this figure.
-speechHidden: What happened Yesterday. Only the owner or a manager can see this figure.
+speech: What happened, Yesterday. Only the owner or a manager can see this figure.
+speechHidden: What happened, Yesterday. Only the owner or a manager can see this figure.
 ask: Activity(window=YESTERDAY)
 
 === Activity(window=THIS_WEEK)
 mood: CALM
 label: What happened · This week
 line: Only the owner or a manager can see this figure.
-speech: What happened This week. Only the owner or a manager can see this figure.
-speechHidden: What happened This week. Only the owner or a manager can see this figure.
+speech: What happened, This week. Only the owner or a manager can see this figure.
+speechHidden: What happened, This week. Only the owner or a manager can see this figure.
 ask: Activity(window=THIS_WEEK)
 
 === Activity(window=LAST_WEEK)
 mood: CALM
 label: What happened · Last week
 line: Only the owner or a manager can see this figure.
-speech: What happened Last week. Only the owner or a manager can see this figure.
-speechHidden: What happened Last week. Only the owner or a manager can see this figure.
+speech: What happened, Last week. Only the owner or a manager can see this figure.
+speechHidden: What happened, Last week. Only the owner or a manager can see this figure.
 ask: Activity(window=LAST_WEEK)
 
 === Activity(window=THIS_MONTH)
 mood: CALM
 label: What happened · This month
 line: Only the owner or a manager can see this figure.
-speech: What happened This month. Only the owner or a manager can see this figure.
-speechHidden: What happened This month. Only the owner or a manager can see this figure.
+speech: What happened, This month. Only the owner or a manager can see this figure.
+speechHidden: What happened, This month. Only the owner or a manager can see this figure.
 ask: Activity(window=THIS_MONTH)
 
 === Activity(window=LAST_MONTH)
 mood: CALM
 label: What happened · Last month
 line: Only the owner or a manager can see this figure.
-speech: What happened Last month. Only the owner or a manager can see this figure.
-speechHidden: What happened Last month. Only the owner or a manager can see this figure.
+speech: What happened, Last month. Only the owner or a manager can see this figure.
+speechHidden: What happened, Last month. Only the owner or a manager can see this figure.
 ask: Activity(window=LAST_MONTH)
 
 === Activity(window=LAST_6_MONTHS)

@@ -1,0 +1,113 @@
+=== Trend(window=TODAY)
+mood: GOOD
+label: Sales trend · Today
+figure: +Rs 13,200
+line: Sales are going up.
+line: Now (<date>): Rs 13,200
+line: The same days before (<date>): Rs 0
+line: Difference: +Rs 13,200
+line: Nothing was sold in the period before, so there is no percentage.
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Sales trend, Today: +Rs 13,200. Sales are going up. Now (<date>): Rs 13,200. The same days before (<date>): Rs 0. Difference: +Rs 13,200. Nothing was sold in the period before, so there is no percentage. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales trend, Today. Sales are going up. Nothing was sold in the period before, so there is no percentage. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Trend(window=TODAY)
+
+=== Trend(window=YESTERDAY)
+mood: CALM
+label: Sales trend · Yesterday
+line: Nothing was sold in either period.
+line: Now (<date>): Rs 0
+line: Before (<date>): Rs 0
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Sales trend, Yesterday. Nothing was sold in either period. Now (<date>): Rs 0. Before (<date>): Rs 0. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales trend, Yesterday. Nothing was sold in either period. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Trend(window=YESTERDAY)
+
+=== Trend(window=THIS_WEEK)
+mood: GOOD
+label: Sales trend · This week
+figure: +Rs 13,200
+line: Sales are going up.
+line: Now (<date> – <date>): Rs 13,200
+line: The same days before (<date> – <date>): Rs 0
+line: Difference: +Rs 13,200
+line: Nothing was sold in the period before, so there is no percentage.
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Sales trend, This week: +Rs 13,200. Sales are going up. Now (<date> – <date>): Rs 13,200. The same days before (<date> – <date>): Rs 0. Difference: +Rs 13,200. Nothing was sold in the period before, so there is no percentage. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales trend, This week. Sales are going up. Nothing was sold in the period before, so there is no percentage. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Trend(window=THIS_WEEK)
+
+=== Trend(window=LAST_WEEK)
+mood: CALM
+label: Sales trend · Last week
+line: Nothing was sold in either period.
+line: Now (<date> – <date>): Rs 0
+line: Before (<date> – <date>): Rs 0
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Sales trend, Last week. Nothing was sold in either period. Now (<date> – <date>): Rs 0. Before (<date> – <date>): Rs 0. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales trend, Last week. Nothing was sold in either period. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Trend(window=LAST_WEEK)
+
+=== Trend(window=THIS_MONTH)
+mood: GOOD
+label: Sales trend · This month
+figure: +Rs 13,200
+line: Sales are going up.
+line: Now (<date> – <date>): Rs 13,200
+line: The same days before (<date> – <date>): Rs 0
+line: Difference: +Rs 13,200
+line: Nothing was sold in the period before, so there is no percentage.
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Sales trend, This month: +Rs 13,200. Sales are going up. Now (<date> – <date>): Rs 13,200. The same days before (<date> – <date>): Rs 0. Difference: +Rs 13,200. Nothing was sold in the period before, so there is no percentage. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales trend, This month. Sales are going up. Nothing was sold in the period before, so there is no percentage. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Trend(window=THIS_MONTH)
+
+=== Trend(window=LAST_MONTH)
+mood: CARE
+label: Sales trend · Last month
+figure: −Rs 8,000
+line: Sales are going down.
+line: Now (<date> – <date>): Rs 0
+line: Before (<date> – <date>): Rs 8,000
+line: Difference: −Rs 8,000 (−100%)
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Sales trend, Last month: −Rs 8,000. Sales are going down. Now (<date> – <date>): Rs 0. Before (<date> – <date>): Rs 8,000. Difference: −Rs 8,000 (−100%). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales trend, Last month. Sales are going down. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Trend(window=LAST_MONTH)
+
+=== Trend(window=LAST_6_MONTHS)
+mood: GOOD
+label: Sales trend · Last 6 months
+figure: +Rs 21,200
+line: Sales are going up.
+line: Now (<date> – <date>): Rs 21,200
+line: The same days before (<date> – <date>): Rs 0
+line: Difference: +Rs 21,200
+line: Nothing was sold in the period before, so there is no percentage.
+line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+open: InsightsActivity
+money: true
+speech: Sales trend, Last 6 months: +Rs 21,200. Sales are going up. Now (<date> – <date>): Rs 21,200. The same days before (<date> – <date>): Rs 0. Difference: +Rs 21,200. Nothing was sold in the period before, so there is no percentage. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales trend, Last 6 months. Sales are going up. Nothing was sold in the period before, so there is no percentage. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+ask: Trend(window=LAST_6_MONTHS)
+
+=== Trend(window=ALL_TIME)
+mood: CALM
+label: Sales trend
+line: I could not find this in your khata. The nearest questions I can answer are below.
+speech: Sales trend. I could not find this in your khata. The nearest questions I can answer are below.
+speechHidden: Sales trend. I could not find this in your khata. The nearest questions I can answer are below.
+ask: Trend(window=ALL_TIME)
+

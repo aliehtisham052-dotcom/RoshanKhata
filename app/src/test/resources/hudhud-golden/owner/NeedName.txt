@@ -81,7 +81,7 @@ row: party=2 | Bashir Ahmad | - | No credit limit is set.
 row: party=1 | Ali Raza | Rs 50,000 | Rs 17,000 · You will get
 row: party=3 | Tariq Butt | - | No credit limit is set.
 open: KhataActivity
-speech: Credit limits of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, No credit limit is set. Ali Raza, Rs 50,000, Rs 17,000 You will get. Tariq Butt, No credit limit is set.
+speech: Credit limits of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, No credit limit is set. Ali Raza, Rs 50,000, Rs 17,000, You will get. Tariq Butt, No credit limit is set.
 speechHidden: Credit limits of recent customers. For one customer, add the name: “Ali's number”. Bashir Ahmad, No credit limit is set. Ali Raza. Tariq Butt, No credit limit is set. [an amount left out]
 ask: NeedName(facet=LIMIT)
 

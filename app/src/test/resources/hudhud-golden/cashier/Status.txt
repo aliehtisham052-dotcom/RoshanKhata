@@ -69,8 +69,8 @@ label: Invoices with money still due
 figure: 1
 row: party=0 | Ali Raza | - | INV-000001 · <weekday> | open=InvoicesActivity
 open: InvoicesActivity
-speech: Invoices with money still due: 1. Ali Raza, INV-000001 <weekday>.
-speechHidden: Invoices with money still due: 1. Ali Raza, INV-000001 <weekday>.
+speech: Invoices with money still due: 1. Ali Raza, INV-000001, <weekday>.
+speechHidden: Invoices with money still due: 1. Ali Raza, INV-000001, <weekday>.
 ask: Status(of=INVOICES, cheques=null)
 
 === Status(of=CHEQUES, cheques=PENDING)
@@ -78,8 +78,8 @@ mood: CALM
 label: Cheques · Cleared
 line: No cheque has cleared.
 open: ChequesActivity
-speech: Cheques Cleared. No cheque has cleared.
-speechHidden: Cheques Cleared. No cheque has cleared.
+speech: Cheques, Cleared. No cheque has cleared.
+speechHidden: Cheques, Cleared. No cheque has cleared.
 ask: Status(of=CHEQUES, cheques=PENDING)
 
 === Status(of=CHEQUES, cheques=BOUNCED)
@@ -90,8 +90,8 @@ line: Cheques you got: 1
 line: Cheques you gave: 0
 row: party=2 | Bashir Ahmad | - | 000222 · Test Bank · Due <date> · Written <date> · Bounced · Settled <date>
 open: ChequesActivity
-speech: Cheques Bounced: 1. Cheques you got: 1. Cheques you gave: 0. Bashir Ahmad, 000222 Test Bank Due <date> Written <date> Bounced Settled <date>
-speechHidden: Cheques Bounced: 1. Cheques you got: 1. Cheques you gave: 0. Bashir Ahmad, 000222 Test Bank Due <date> Written <date> Bounced Settled <date>
+speech: Cheques, Bounced: 1. Cheques you got: 1. Cheques you gave: 0. Bashir Ahmad, 000222, Test Bank, Due <date>, Written <date>, Bounced, Settled <date>
+speechHidden: Cheques, Bounced: 1. Cheques you got: 1. Cheques you gave: 0. Bashir Ahmad, 000222, Test Bank, Due <date>, Written <date>, Bounced, Settled <date>
 ask: Status(of=CHEQUES, cheques=BOUNCED)
 
 === Status(of=CHEQUES, cheques=CLEARED)
@@ -99,7 +99,7 @@ mood: CALM
 label: Cheques · Cleared
 line: No cheque has cleared.
 open: ChequesActivity
-speech: Cheques Cleared. No cheque has cleared.
-speechHidden: Cheques Cleared. No cheque has cleared.
+speech: Cheques, Cleared. No cheque has cleared.
+speechHidden: Cheques, Cleared. No cheque has cleared.
 ask: Status(of=CHEQUES, cheques=CLEARED)
 

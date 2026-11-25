@@ -7,7 +7,7 @@ line: In stock: 47 bag
 line: Last came in: Tariq Butt · <date> · Rs 3,500
 open: ProductsActivity
 money: true
-speech: Urea. Cash price: Rs 4,000 / bag. Credit price: Rs 4,200 / bag. In stock: 47 bag. Last came in: Tariq Butt <date> Rs 3,500.
+speech: Urea. Cash price: Rs 4,000 / bag. Credit price: Rs 4,200 / bag. In stock: 47 bag. Last came in: Tariq Butt, <date>, Rs 3,500.
 speechHidden: Urea. In stock: 47 bag. [an amount left out]
 ask: Goods(ids=[1], facet=OVERVIEW, window=null)
 
@@ -40,7 +40,7 @@ line: Cost price
 line: Last came in: Tariq Butt · <date> · Rs 3,500
 open: SupplierRatesActivity
 money: true
-speech: Urea: Rs 3,500 / bag. Cost price. Last came in: Tariq Butt <date> Rs 3,500.
+speech: Urea: Rs 3,500 / bag. Cost price. Last came in: Tariq Butt, <date>, Rs 3,500.
 speechHidden: Urea. Cost price. [an amount left out]
 ask: Goods(ids=[1], facet=COST, window=null)
 
@@ -51,7 +51,7 @@ line: Cheapest: Tariq Butt · Rs 3,500
 row: party=3 | Tariq Butt | Rs 3,500 | <date>
 open: SupplierRatesActivity
 money: true
-speech: Urea. Cheapest: Tariq Butt Rs 3,500. Tariq Butt, Rs 3,500, <date>.
+speech: Urea. Cheapest: Tariq Butt, Rs 3,500. Tariq Butt, Rs 3,500, <date>.
 speechHidden: Urea. Tariq Butt, <date>. [an amount left out]
 ask: Goods(ids=[1], facet=SUPPLIERS, window=null)
 
@@ -63,7 +63,7 @@ line: Last came in
 line: Tariq Butt · Rs 3,500
 row: party=3 | Tariq Butt | Rs 3,500 | <date>
 open: BillsActivity
-speech: Urea: <date>. Last came in. Tariq Butt Rs 3,500. Tariq Butt, Rs 3,500, <date>.
+speech: Urea: <date>. Last came in. Tariq Butt, Rs 3,500. Tariq Butt, Rs 3,500, <date>.
 speechHidden: Urea: <date>. Last came in. Tariq Butt, <date>. [an amount left out]
 ask: Goods(ids=[1], facet=LAST_IN, window=null)
 
@@ -86,8 +86,8 @@ label: Urea · This month
 figure: 1 bag
 line: Sold
 open: SalesReportActivity
-speech: Urea This month: 1 bag. Sold.
-speechHidden: Urea This month: 1 bag. Sold.
+speech: Urea, This month: 1 bag. Sold.
+speechHidden: Urea, This month: 1 bag. Sold.
 ask: Goods(ids=[1], facet=SOLD, window=null)
 
 === Goods(ids=[1], facet=COVER, window=null)
@@ -97,8 +97,8 @@ figure: 1410 days
 line: In stock: 47 bag
 line: Going by the last 30 days' sales: about 0.03 bag a day.
 open: ProductsActivity
-speech: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
-speechHidden: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speech: Urea, How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speechHidden: Urea, How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
 ask: Goods(ids=[1], facet=COVER, window=null)
 
 === Goods(ids=[1], facet=LABEL, window=null)
@@ -165,8 +165,8 @@ figure: 1
 line: Batches in stock
 row: party=0 | U-01 | 47 bag | -
 open: ProductsActivity
-speech: Urea: 1. Batches in stock. U-01, 47 bag.
-speechHidden: Urea: 1. Batches in stock. U-01, 47 bag.
+speech: Urea: 1. Batches in stock. It's on the screen, 47 bag.
+speechHidden: Urea: 1. Batches in stock. It's on the screen, 47 bag.
 ask: Goods(ids=[1], facet=BATCHES, window=null)
 secret: U-01
 
@@ -192,8 +192,8 @@ label: Urea · Today
 figure: 1 bag
 line: Sold
 open: SalesReportActivity
-speech: Urea Today: 1 bag. Sold.
-speechHidden: Urea Today: 1 bag. Sold.
+speech: Urea, Today: 1 bag. Sold.
+speechHidden: Urea, Today: 1 bag. Sold.
 ask: Goods(ids=[1], facet=SOLD, window=TODAY)
 
 === Goods(ids=[1], facet=SOLD, window=THIS_MONTH)
@@ -202,8 +202,8 @@ label: Urea · This month
 figure: 1 bag
 line: Sold
 open: SalesReportActivity
-speech: Urea This month: 1 bag. Sold.
-speechHidden: Urea This month: 1 bag. Sold.
+speech: Urea, This month: 1 bag. Sold.
+speechHidden: Urea, This month: 1 bag. Sold.
 ask: Goods(ids=[1], facet=SOLD, window=THIS_MONTH)
 
 === Goods(ids=[1], facet=SOLD, window=LAST_6_MONTHS)
@@ -212,8 +212,8 @@ label: Urea · Last 6 months
 figure: 3 bag
 line: Sold
 open: SalesReportActivity
-speech: Urea Last 6 months: 3 bag. Sold.
-speechHidden: Urea Last 6 months: 3 bag. Sold.
+speech: Urea, Last 6 months: 3 bag. Sold.
+speechHidden: Urea, Last 6 months: 3 bag. Sold.
 ask: Goods(ids=[1], facet=SOLD, window=LAST_6_MONTHS)
 
 === Goods(ids=[1], facet=BUYERS, window=TODAY)
@@ -224,8 +224,8 @@ line: Customers
 row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
 open: ProductCustomersActivity
 openExtras: fromMillis=<millis>, productId=1, productName=Urea, toMillis=<millis>
-speech: Urea Today: 1. Customers. Bashir Ahmad, Rs 3,000, You will get.
-speechHidden: Urea Today: 1. Customers. Bashir Ahmad, You will get. [an amount left out]
+speech: Urea, Today: 1. Customers. Bashir Ahmad, Rs 3,000, You will get.
+speechHidden: Urea, Today: 1. Customers. Bashir Ahmad, You will get. [an amount left out]
 ask: Goods(ids=[1], facet=BUYERS, window=TODAY)
 
 === Goods(ids=[1], facet=BUYERS, window=THIS_MONTH)
@@ -236,8 +236,8 @@ line: Customers
 row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
 open: ProductCustomersActivity
 openExtras: fromMillis=<millis>, productId=1, productName=Urea, toMillis=<millis>
-speech: Urea This month: 1. Customers. Bashir Ahmad, Rs 3,000, You will get.
-speechHidden: Urea This month: 1. Customers. Bashir Ahmad, You will get. [an amount left out]
+speech: Urea, This month: 1. Customers. Bashir Ahmad, Rs 3,000, You will get.
+speechHidden: Urea, This month: 1. Customers. Bashir Ahmad, You will get. [an amount left out]
 ask: Goods(ids=[1], facet=BUYERS, window=THIS_MONTH)
 
 === Goods(ids=[1], facet=BUYERS, window=LAST_6_MONTHS)
@@ -249,8 +249,8 @@ row: party=2 | Bashir Ahmad | Rs 3,000 | You will get
 row: party=1 | Ali Raza | Rs 17,000 | You will get
 open: ProductCustomersActivity
 openExtras: fromMillis=<millis>, productId=1, productName=Urea, toMillis=<millis>
-speech: Urea Last 6 months: 2. Customers. Bashir Ahmad, Rs 3,000, You will get. Ali Raza, Rs 17,000, You will get.
-speechHidden: Urea Last 6 months: 2. Customers. Bashir Ahmad, You will get. Ali Raza, You will get. [an amount left out]
+speech: Urea, Last 6 months: 2. Customers. Bashir Ahmad, Rs 3,000, You will get. Ali Raza, Rs 17,000, You will get.
+speechHidden: Urea, Last 6 months: 2. Customers. Bashir Ahmad, You will get. Ali Raza, You will get. [an amount left out]
 ask: Goods(ids=[1], facet=BUYERS, window=LAST_6_MONTHS)
 
 === Goods(ids=[1], facet=COVER, window=TODAY)
@@ -260,8 +260,8 @@ figure: 1410 days
 line: In stock: 47 bag
 line: Going by the last 30 days' sales: about 0.03 bag a day.
 open: ProductsActivity
-speech: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
-speechHidden: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speech: Urea, How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speechHidden: Urea, How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
 ask: Goods(ids=[1], facet=COVER, window=TODAY)
 
 === Goods(ids=[1], facet=COVER, window=THIS_MONTH)
@@ -271,8 +271,8 @@ figure: 1410 days
 line: In stock: 47 bag
 line: Going by the last 30 days' sales: about 0.03 bag a day.
 open: ProductsActivity
-speech: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
-speechHidden: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speech: Urea, How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speechHidden: Urea, How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
 ask: Goods(ids=[1], facet=COVER, window=THIS_MONTH)
 
 === Goods(ids=[1], facet=COVER, window=LAST_6_MONTHS)
@@ -282,8 +282,8 @@ figure: 1410 days
 line: In stock: 47 bag
 line: Going by the last 30 days' sales: about 0.03 bag a day.
 open: ProductsActivity
-speech: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
-speechHidden: Urea How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speech: Urea, How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
+speechHidden: Urea, How long will it last?: 1410 days. In stock: 47 bag. Going by the last 30 days' sales: about 0.03 bag a day.
 ask: Goods(ids=[1], facet=COVER, window=LAST_6_MONTHS)
 
 === Goods(ids=[3], facet=OVERVIEW, window=null)
@@ -294,7 +294,7 @@ line: In stock: 96 packet
 line: Last came in: Tariq Butt · <date> · Rs 40
 open: ProductsActivity
 money: true
-speech: Paracetamol. Cash price: Rs 50 / packet. In stock: 96 packet. Last came in: Tariq Butt <date> Rs 40.
+speech: Paracetamol. Cash price: Rs 50 / packet. In stock: 96 packet. Last came in: Tariq Butt, <date>, Rs 40.
 speechHidden: Paracetamol. In stock: 96 packet. [an amount left out]
 ask: Goods(ids=[3], facet=OVERVIEW, window=null)
 
@@ -327,7 +327,7 @@ line: Cost price
 line: Last came in: Tariq Butt · <date> · Rs 40
 open: SupplierRatesActivity
 money: true
-speech: Paracetamol: Rs 40 / packet. Cost price. Last came in: Tariq Butt <date> Rs 40.
+speech: Paracetamol: Rs 40 / packet. Cost price. Last came in: Tariq Butt, <date>, Rs 40.
 speechHidden: Paracetamol. Cost price. [an amount left out]
 ask: Goods(ids=[3], facet=COST, window=null)
 
@@ -338,7 +338,7 @@ line: Cheapest: Tariq Butt · Rs 40
 row: party=3 | Tariq Butt | Rs 40 | <date>
 open: SupplierRatesActivity
 money: true
-speech: Paracetamol. Cheapest: Tariq Butt Rs 40. Tariq Butt, Rs 40, <date>.
+speech: Paracetamol. Cheapest: Tariq Butt, Rs 40. Tariq Butt, Rs 40, <date>.
 speechHidden: Paracetamol. Tariq Butt, <date>. [an amount left out]
 ask: Goods(ids=[3], facet=SUPPLIERS, window=null)
 
@@ -350,7 +350,7 @@ line: Last came in
 line: Tariq Butt · Rs 40
 row: party=3 | Tariq Butt | Rs 40 | <date>
 open: BillsActivity
-speech: Paracetamol: <date>. Last came in. Tariq Butt Rs 40. Tariq Butt, Rs 40, <date>.
+speech: Paracetamol: <date>. Last came in. Tariq Butt, Rs 40. Tariq Butt, Rs 40, <date>.
 speechHidden: Paracetamol: <date>. Last came in. Tariq Butt, <date>. [an amount left out]
 ask: Goods(ids=[3], facet=LAST_IN, window=null)
 
@@ -368,8 +368,8 @@ label: Paracetamol · This month
 figure: 4 packet
 line: Sold
 open: SalesReportActivity
-speech: Paracetamol This month: 4 packet. Sold.
-speechHidden: Paracetamol This month: 4 packet. Sold.
+speech: Paracetamol, This month: 4 packet. Sold.
+speechHidden: Paracetamol, This month: 4 packet. Sold.
 ask: Goods(ids=[3], facet=SOLD, window=null)
 
 === Goods(ids=[3], facet=COVER, window=null)
@@ -379,8 +379,8 @@ figure: 720 days
 line: In stock: 96 packet
 line: Going by the last 30 days' sales: about 0.13 packet a day.
 open: ProductsActivity
-speech: Paracetamol How long will it last?: 720 days. In stock: 96 packet. Going by the last 30 days' sales: about 0.13 packet a day.
-speechHidden: Paracetamol How long will it last?: 720 days. In stock: 96 packet. Going by the last 30 days' sales: about 0.13 packet a day.
+speech: Paracetamol, How long will it last?: 720 days. In stock: 96 packet. Going by the last 30 days' sales: about 0.13 packet a day.
+speechHidden: Paracetamol, How long will it last?: 720 days. In stock: 96 packet. Going by the last 30 days' sales: about 0.13 packet a day.
 ask: Goods(ids=[3], facet=COVER, window=null)
 
 === Goods(ids=[3], facet=LABEL, window=null)
@@ -445,8 +445,8 @@ figure: <date>
 line: Expiry date
 row: party=0 | P-01 | 96 packet | <date>
 open: ProductsActivity
-speech: Paracetamol: <date>. Expiry date. P-01, 96 packet, <date>.
-speechHidden: Paracetamol: <date>. Expiry date. P-01, 96 packet, <date>.
+speech: Paracetamol: <date>. Expiry date. It's on the screen, 96 packet, <date>.
+speechHidden: Paracetamol: <date>. Expiry date. It's on the screen, 96 packet, <date>.
 ask: Goods(ids=[3], facet=BATCHES, window=null)
 secret: P-01
 
@@ -467,7 +467,7 @@ line: In stock: 9 bag
 line: Last came in: Tariq Butt · <date> · Rs 8,500
 open: ProductsActivity
 money: true
-speech: DAP. Cash price: Rs 9,000 / bag. In stock: 9 bag. Last came in: Tariq Butt <date> Rs 8,500.
+speech: DAP. Cash price: Rs 9,000 / bag. In stock: 9 bag. Last came in: Tariq Butt, <date>, Rs 8,500.
 speechHidden: DAP. In stock: 9 bag. [an amount left out]
 ask: Goods(ids=[2], facet=OVERVIEW, window=null)
 
@@ -489,7 +489,7 @@ line: Cost price
 line: Last came in: Tariq Butt · <date> · Rs 8,500
 open: SupplierRatesActivity
 money: true
-speech: DAP: Rs 8,500 / bag. Cost price. Last came in: Tariq Butt <date> Rs 8,500.
+speech: DAP: Rs 8,500 / bag. Cost price. Last came in: Tariq Butt, <date>, Rs 8,500.
 speechHidden: DAP. Cost price. [an amount left out]
 ask: Goods(ids=[2], facet=COST, window=null)
 
@@ -500,7 +500,7 @@ line: Cheapest: Tariq Butt · Rs 8,500
 row: party=3 | Tariq Butt | Rs 8,500 | <date>
 open: SupplierRatesActivity
 money: true
-speech: DAP. Cheapest: Tariq Butt Rs 8,500. Tariq Butt, Rs 8,500, <date>.
+speech: DAP. Cheapest: Tariq Butt, Rs 8,500. Tariq Butt, Rs 8,500, <date>.
 speechHidden: DAP. Tariq Butt, <date>. [an amount left out]
 ask: Goods(ids=[2], facet=SUPPLIERS, window=null)
 

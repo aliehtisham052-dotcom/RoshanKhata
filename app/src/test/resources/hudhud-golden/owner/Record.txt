@@ -17,8 +17,8 @@ line: Absent 1 · Half day 0 · Paid leave 0
 line: Still to pay: Rs 27,000
 open: StaffActivity
 money: true
-speech: Hamid Khan Salary still to pay This month: Rs 27,000. Salary: Rs 30,000 a month. Earned Rs 29,000 Advance Rs 2,000 Paid Rs 0. Absent 1 Half day 0 Paid leave 0. Still to pay: Rs 27,000.
-speechHidden: Hamid Khan Salary still to pay This month. Absent 1 Half day 0 Paid leave 0. [an amount left out]
+speech: Hamid Khan, Salary still to pay, This month: Rs 27,000. Salary: Rs 30,000 a month. Earned Rs 29,000, Advance Rs 2,000, Paid Rs 0. Absent 1, Half day 0, Paid leave 0. Still to pay: Rs 27,000.
+speechHidden: Hamid Khan, Salary still to pay, This month. Absent 1, Half day 0, Paid leave 0. [an amount left out]
 ask: Record(facet=STAFF_PAY, ids=[1], window=null)
 
 === Record(facet=STAFF_PAY, ids=[1], window=THIS_MONTH)
@@ -31,8 +31,8 @@ line: Absent 1 · Half day 0 · Paid leave 0
 line: Still to pay: Rs 27,000
 open: StaffActivity
 money: true
-speech: Hamid Khan Salary still to pay This month: Rs 27,000. Salary: Rs 30,000 a month. Earned Rs 29,000 Advance Rs 2,000 Paid Rs 0. Absent 1 Half day 0 Paid leave 0. Still to pay: Rs 27,000.
-speechHidden: Hamid Khan Salary still to pay This month. Absent 1 Half day 0 Paid leave 0. [an amount left out]
+speech: Hamid Khan, Salary still to pay, This month: Rs 27,000. Salary: Rs 30,000 a month. Earned Rs 29,000, Advance Rs 2,000, Paid Rs 0. Absent 1, Half day 0, Paid leave 0. Still to pay: Rs 27,000.
+speechHidden: Hamid Khan, Salary still to pay, This month. Absent 1, Half day 0, Paid leave 0. [an amount left out]
 ask: Record(facet=STAFF_PAY, ids=[1], window=THIS_MONTH)
 
 === Record(facet=STAFF_PAID, ids=[], window=null)
@@ -43,8 +43,8 @@ line: Advance: Rs 2,000
 row: party=0 | Hamid Khan | Rs 2,000 | Advance · Today | open=StaffActivity
 open: StaffActivity
 money: true
-speech: Paid to staff This month: Rs 2,000. Advance: Rs 2,000. Hamid Khan, Rs 2,000, Advance Today.
-speechHidden: Paid to staff This month. Hamid Khan, Advance Today. [an amount left out]
+speech: Paid to staff, This month: Rs 2,000. Advance: Rs 2,000. Hamid Khan, Rs 2,000, Advance, Today.
+speechHidden: Paid to staff, This month. Hamid Khan, Advance, Today. [an amount left out]
 ask: Record(facet=STAFF_PAID, ids=[], window=null)
 
 === Record(facet=STAFF_PAID, ids=[1], window=null)
@@ -55,8 +55,8 @@ line: Advance: Rs 2,000
 row: party=0 | Hamid Khan | Rs 2,000 | Advance · Today | open=StaffActivity
 open: StaffActivity
 money: true
-speech: Paid to staff This month: Rs 2,000. Advance: Rs 2,000. Hamid Khan, Rs 2,000, Advance Today.
-speechHidden: Paid to staff This month. Hamid Khan, Advance Today. [an amount left out]
+speech: Paid to staff, This month: Rs 2,000. Advance: Rs 2,000. Hamid Khan, Rs 2,000, Advance, Today.
+speechHidden: Paid to staff, This month. Hamid Khan, Advance, Today. [an amount left out]
 ask: Record(facet=STAFF_PAID, ids=[1], window=null)
 
 === Record(facet=STAFF_PAID, ids=[1], window=THIS_MONTH)
@@ -67,8 +67,8 @@ line: Advance: Rs 2,000
 row: party=0 | Hamid Khan | Rs 2,000 | Advance · Today | open=StaffActivity
 open: StaffActivity
 money: true
-speech: Paid to staff This month: Rs 2,000. Advance: Rs 2,000. Hamid Khan, Rs 2,000, Advance Today.
-speechHidden: Paid to staff This month. Hamid Khan, Advance Today. [an amount left out]
+speech: Paid to staff, This month: Rs 2,000. Advance: Rs 2,000. Hamid Khan, Rs 2,000, Advance, Today.
+speechHidden: Paid to staff, This month. Hamid Khan, Advance, Today. [an amount left out]
 ask: Record(facet=STAFF_PAID, ids=[1], window=THIS_MONTH)
 
 === Record(facet=ATTENDANCE, ids=[], window=null)
@@ -78,8 +78,8 @@ figure: 1
 line: Absent: Hamid Khan
 line: Present: 0
 open: StaffActivity
-speech: Attendance Today: 1. Absent: Hamid Khan. Present: 0.
-speechHidden: Attendance Today: 1. Absent: Hamid Khan. Present: 0.
+speech: Attendance, Today: 1. Absent: Hamid Khan. Present: 0.
+speechHidden: Attendance, Today: 1. Absent: Hamid Khan. Present: 0.
 ask: Record(facet=ATTENDANCE, ids=[], window=null)
 
 === Record(facet=ATTENDANCE, ids=[1], window=null)
@@ -89,8 +89,8 @@ figure: 1
 line: Absent: Hamid Khan
 line: Present: 0
 open: StaffActivity
-speech: Attendance Today: 1. Absent: Hamid Khan. Present: 0.
-speechHidden: Attendance Today: 1. Absent: Hamid Khan. Present: 0.
+speech: Attendance, Today: 1. Absent: Hamid Khan. Present: 0.
+speechHidden: Attendance, Today: 1. Absent: Hamid Khan. Present: 0.
 ask: Record(facet=ATTENDANCE, ids=[1], window=null)
 
 === Record(facet=ATTENDANCE, ids=[1], window=THIS_MONTH)
@@ -99,8 +99,8 @@ label: Hamid Khan · Attendance · This month
 figure: 1
 row: party=0 | Today | - | Absent | open=StaffActivity
 open: StaffActivity
-speech: Hamid Khan Attendance This month: 1. Today, Absent.
-speechHidden: Hamid Khan Attendance This month: 1. Today, Absent.
+speech: Hamid Khan, Attendance, This month: 1. Today, Absent.
+speechHidden: Hamid Khan, Attendance, This month: 1. Today, Absent.
 ask: Record(facet=ATTENDANCE, ids=[1], window=THIS_MONTH)
 
 === Record(facet=STAFF_PERSON, ids=[], window=null)
@@ -167,8 +167,8 @@ line: Instalments paid: 0
 line: Tractor parts
 open: PlansActivity
 money: true
-speech: Ali Raza Plans: Rs 10,000. Paid Rs 0 of Rs 10,000. Rs 10,000 left. Each instalment: Rs 2,000. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
-speechHidden: Ali Raza Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts. [an amount left out]
+speech: Ali Raza, Plans: Rs 10,000. Paid Rs 0 of Rs 10,000. Rs 10,000 left. Each instalment: Rs 2,000. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
+speechHidden: Ali Raza, Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts. [an amount left out]
 ask: Record(facet=PLAN, ids=[1], window=null)
 
 === Record(facet=PLAN, ids=[1], window=THIS_MONTH)
@@ -184,8 +184,8 @@ line: Instalments paid: 0
 line: Tractor parts
 open: PlansActivity
 money: true
-speech: Ali Raza Plans: Rs 10,000. Paid Rs 0 of Rs 10,000. Rs 10,000 left. Each instalment: Rs 2,000. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
-speechHidden: Ali Raza Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts. [an amount left out]
+speech: Ali Raza, Plans: Rs 10,000. Paid Rs 0 of Rs 10,000. Rs 10,000 left. Each instalment: Rs 2,000. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts.
+speechHidden: Ali Raza, Plans. Next: <weekday>. Started: <date> Instalments paid: 0. Tractor parts. [an amount left out]
 ask: Record(facet=PLAN, ids=[1], window=THIS_MONTH)
 
 === Record(facet=PLAN_CLOSED, ids=[], window=null)
@@ -211,8 +211,8 @@ mood: CALM
 label: Plans that were closed · This month
 line: No plan has been closed yet.
 open: PlansActivity
-speech: Plans that were closed This month. No plan has been closed yet.
-speechHidden: Plans that were closed This month. No plan has been closed yet.
+speech: Plans that were closed, This month. No plan has been closed yet.
+speechHidden: Plans that were closed, This month. No plan has been closed yet.
 ask: Record(facet=PLAN_CLOSED, ids=[1], window=THIS_MONTH)
 
 === Record(facet=CHEQUE, ids=[], window=null)
@@ -231,8 +231,8 @@ figure: 1
 line: Pending: 1
 row: party=1 | Ali Raza | Rs 2,500 | 000111 · Test Bank · Due <weekday> · Written <date>
 open: ChequesActivity
-speech: Ali Raza Cheques: 1. Pending: 1. Ali Raza, Rs 2,500, 000111 Test Bank Due <weekday> Written <date>
-speechHidden: Ali Raza Cheques: 1. Pending: 1. Ali Raza, 000111 Test Bank Due <weekday> Written <date> [an amount left out]
+speech: Ali Raza, Cheques: 1. Pending: 1. Ali Raza, Rs 2,500, 000111, Test Bank, Due <weekday>, Written <date>
+speechHidden: Ali Raza, Cheques: 1. Pending: 1. Ali Raza, 000111, Test Bank, Due <weekday>, Written <date> [an amount left out]
 ask: Record(facet=CHEQUE, ids=[1], window=null)
 
 === Record(facet=CHEQUE, ids=[1], window=THIS_MONTH)
@@ -242,7 +242,7 @@ figure: 1
 line: Pending: 1
 row: party=1 | Ali Raza | Rs 2,500 | 000111 · Test Bank · Due <weekday> · Written <date>
 open: ChequesActivity
-speech: Ali Raza Cheques: 1. Pending: 1. Ali Raza, Rs 2,500, 000111 Test Bank Due <weekday> Written <date>
-speechHidden: Ali Raza Cheques: 1. Pending: 1. Ali Raza, 000111 Test Bank Due <weekday> Written <date> [an amount left out]
+speech: Ali Raza, Cheques: 1. Pending: 1. Ali Raza, Rs 2,500, 000111, Test Bank, Due <weekday>, Written <date>
+speechHidden: Ali Raza, Cheques: 1. Pending: 1. Ali Raza, 000111, Test Bank, Due <weekday>, Written <date> [an amount left out]
 ask: Record(facet=CHEQUE, ids=[1], window=THIS_MONTH)
 

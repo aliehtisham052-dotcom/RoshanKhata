@@ -164,8 +164,8 @@ row: party=0 | Bashir Ahmad | Rs 4,000 | I Gave · Today <time> | open=KhataActi
 row: party=0 | Ali Raza | Rs 1,000 | I Got · Today <time> | open=KhataActivity
 row: party=0 | Ali Raza | Rs 9,000 | I Gave · Today <time> | open=KhataActivity
 open: KhataActivity
-speech: Entries Today: 4. All: 10. Bashir Ahmad, Rs 4,000, I Got Today <time> Bashir Ahmad, Rs 4,000, I Gave Today <time> Ali Raza, Rs 1,000, I Got Today <time> Ali Raza, Rs 9,000, I Gave Today <time>
-speechHidden: Entries Today: 4. All: 10. Bashir Ahmad, I Got Today <time> Bashir Ahmad, I Gave Today <time> Ali Raza, I Got Today <time> Ali Raza, I Gave Today <time> [an amount left out]
+speech: Entries, Today: 4. All: 10. Bashir Ahmad, Rs 4,000, I Got, Today <time> Bashir Ahmad, Rs 4,000, I Gave, Today <time> Ali Raza, Rs 1,000, I Got, Today <time> Ali Raza, Rs 9,000, I Gave, Today <time>
+speechHidden: Entries, Today: 4. All: 10. Bashir Ahmad, I Got, Today <time> Bashir Ahmad, I Gave, Today <time> Ali Raza, I Got, Today <time> Ali Raza, I Gave, Today <time> [an amount left out]
 ask: Count(thing=ENTRIES, window=null)
 
 === Count(thing=ENTRIES, window=TODAY)
@@ -177,8 +177,8 @@ row: party=0 | Bashir Ahmad | Rs 4,000 | I Gave · Today <time> | open=KhataActi
 row: party=0 | Ali Raza | Rs 1,000 | I Got · Today <time> | open=KhataActivity
 row: party=0 | Ali Raza | Rs 9,000 | I Gave · Today <time> | open=KhataActivity
 open: KhataActivity
-speech: Entries Today: 4. Bashir Ahmad, Rs 4,000, I Got Today <time> Bashir Ahmad, Rs 4,000, I Gave Today <time> Ali Raza, Rs 1,000, I Got Today <time> Ali Raza, Rs 9,000, I Gave Today <time>
-speechHidden: Entries Today: 4. Bashir Ahmad, I Got Today <time> Bashir Ahmad, I Gave Today <time> Ali Raza, I Got Today <time> Ali Raza, I Gave Today <time> [an amount left out]
+speech: Entries, Today: 4. Bashir Ahmad, Rs 4,000, I Got, Today <time> Bashir Ahmad, Rs 4,000, I Gave, Today <time> Ali Raza, Rs 1,000, I Got, Today <time> Ali Raza, Rs 9,000, I Gave, Today <time>
+speechHidden: Entries, Today: 4. Bashir Ahmad, I Got, Today <time> Bashir Ahmad, I Gave, Today <time> Ali Raza, I Got, Today <time> Ali Raza, I Gave, Today <time> [an amount left out]
 ask: Count(thing=ENTRIES, window=TODAY)
 
 === Count(thing=ENTRIES, window=THIS_MONTH)
@@ -190,8 +190,8 @@ row: party=0 | Bashir Ahmad | Rs 4,000 | I Gave · Today <time> | open=KhataActi
 row: party=0 | Ali Raza | Rs 1,000 | I Got · Today <time> | open=KhataActivity
 row: party=0 | Ali Raza | Rs 9,000 | I Gave · Today <time> | open=KhataActivity
 open: KhataActivity
-speech: Entries This month: 4. Bashir Ahmad, Rs 4,000, I Got Today <time> Bashir Ahmad, Rs 4,000, I Gave Today <time> Ali Raza, Rs 1,000, I Got Today <time> Ali Raza, Rs 9,000, I Gave Today <time>
-speechHidden: Entries This month: 4. Bashir Ahmad, I Got Today <time> Bashir Ahmad, I Gave Today <time> Ali Raza, I Got Today <time> Ali Raza, I Gave Today <time> [an amount left out]
+speech: Entries, This month: 4. Bashir Ahmad, Rs 4,000, I Got, Today <time> Bashir Ahmad, Rs 4,000, I Gave, Today <time> Ali Raza, Rs 1,000, I Got, Today <time> Ali Raza, Rs 9,000, I Gave, Today <time>
+speechHidden: Entries, This month: 4. Bashir Ahmad, I Got, Today <time> Bashir Ahmad, I Gave, Today <time> Ali Raza, I Got, Today <time> Ali Raza, I Gave, Today <time> [an amount left out]
 ask: Count(thing=ENTRIES, window=THIS_MONTH)
 
 === Count(thing=ENTRIES, window=LAST_6_MONTHS)
@@ -215,8 +215,8 @@ line: Total: Rs 9,000
 line: All: 1
 row: party=0 | Ali Raza | Rs 9,000 | INV-000001 · Today | open=InvoicesActivity
 open: InvoicesActivity
-speech: Invoices Today: 1. Total: Rs 9,000. All: 1. Ali Raza, Rs 9,000, INV-000001 Today.
-speechHidden: Invoices Today: 1. All: 1. Ali Raza, INV-000001 Today. [an amount left out]
+speech: Invoices, Today: 1. Total: Rs 9,000. All: 1. Ali Raza, Rs 9,000, INV-000001, Today.
+speechHidden: Invoices, Today: 1. All: 1. Ali Raza, INV-000001, Today. [an amount left out]
 ask: Count(thing=INVOICES, window=null)
 
 === Count(thing=INVOICES, window=TODAY)
@@ -226,8 +226,8 @@ figure: 1
 line: Total: Rs 9,000
 row: party=0 | Ali Raza | Rs 9,000 | INV-000001 · Today | open=InvoicesActivity
 open: InvoicesActivity
-speech: Invoices Today: 1. Total: Rs 9,000. Ali Raza, Rs 9,000, INV-000001 Today.
-speechHidden: Invoices Today: 1. Ali Raza, INV-000001 Today. [an amount left out]
+speech: Invoices, Today: 1. Total: Rs 9,000. Ali Raza, Rs 9,000, INV-000001, Today.
+speechHidden: Invoices, Today: 1. Ali Raza, INV-000001, Today. [an amount left out]
 ask: Count(thing=INVOICES, window=TODAY)
 
 === Count(thing=INVOICES, window=THIS_MONTH)
@@ -237,8 +237,8 @@ figure: 1
 line: Total: Rs 9,000
 row: party=0 | Ali Raza | Rs 9,000 | INV-000001 · Today | open=InvoicesActivity
 open: InvoicesActivity
-speech: Invoices This month: 1. Total: Rs 9,000. Ali Raza, Rs 9,000, INV-000001 Today.
-speechHidden: Invoices This month: 1. Ali Raza, INV-000001 Today. [an amount left out]
+speech: Invoices, This month: 1. Total: Rs 9,000. Ali Raza, Rs 9,000, INV-000001, Today.
+speechHidden: Invoices, This month: 1. Ali Raza, INV-000001, Today. [an amount left out]
 ask: Count(thing=INVOICES, window=THIS_MONTH)
 
 === Count(thing=INVOICES, window=LAST_6_MONTHS)
@@ -260,8 +260,8 @@ label: Supplier Bills · Today
 line: None in this time.
 line: All: 1
 open: BillsActivity
-speech: Supplier Bills Today. None in this time. All: 1.
-speechHidden: Supplier Bills Today. None in this time. All: 1.
+speech: Supplier Bills, Today. None in this time. All: 1.
+speechHidden: Supplier Bills, Today. None in this time. All: 1.
 ask: Count(thing=BILLS, window=null)
 
 === Count(thing=BILLS, window=TODAY)
@@ -269,8 +269,8 @@ mood: CALM
 label: Supplier Bills · Today
 line: None in this time.
 open: BillsActivity
-speech: Supplier Bills Today. None in this time.
-speechHidden: Supplier Bills Today. None in this time.
+speech: Supplier Bills, Today. None in this time.
+speechHidden: Supplier Bills, Today. None in this time.
 ask: Count(thing=BILLS, window=TODAY)
 
 === Count(thing=BILLS, window=THIS_MONTH)
@@ -278,8 +278,8 @@ mood: CALM
 label: Supplier Bills · This month
 line: None in this time.
 open: BillsActivity
-speech: Supplier Bills This month. None in this time.
-speechHidden: Supplier Bills This month. None in this time.
+speech: Supplier Bills, This month. None in this time.
+speechHidden: Supplier Bills, This month. None in this time.
 ask: Count(thing=BILLS, window=THIS_MONTH)
 
 === Count(thing=BILLS, window=LAST_6_MONTHS)
@@ -302,8 +302,8 @@ figure: 1
 line: Total: Rs 200
 row: party=0 | Walk-in customer | Rs 200 | S-000001 · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
-speech: Counter sales Today: 1. Total: Rs 200. Walk-in customer, Rs 200, S-000001 Today <time>
-speechHidden: Counter sales Today: 1. Walk-in customer, S-000001 Today <time> [an amount left out]
+speech: Counter sales, Today: 1. Total: Rs 200. Walk-in customer, Rs 200, S-000001, Today <time>
+speechHidden: Counter sales, Today: 1. Walk-in customer, S-000001, Today <time> [an amount left out]
 ask: Count(thing=TICKETS, window=null)
 
 === Count(thing=TICKETS, window=TODAY)
@@ -313,8 +313,8 @@ figure: 1
 line: Total: Rs 200
 row: party=0 | Walk-in customer | Rs 200 | S-000001 · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
-speech: Counter sales Today: 1. Total: Rs 200. Walk-in customer, Rs 200, S-000001 Today <time>
-speechHidden: Counter sales Today: 1. Walk-in customer, S-000001 Today <time> [an amount left out]
+speech: Counter sales, Today: 1. Total: Rs 200. Walk-in customer, Rs 200, S-000001, Today <time>
+speechHidden: Counter sales, Today: 1. Walk-in customer, S-000001, Today <time> [an amount left out]
 ask: Count(thing=TICKETS, window=TODAY)
 
 === Count(thing=TICKETS, window=THIS_MONTH)
@@ -324,8 +324,8 @@ figure: 1
 line: Total: Rs 200
 row: party=0 | Walk-in customer | Rs 200 | S-000001 · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
-speech: Counter sales This month: 1. Total: Rs 200. Walk-in customer, Rs 200, S-000001 Today <time>
-speechHidden: Counter sales This month: 1. Walk-in customer, S-000001 Today <time> [an amount left out]
+speech: Counter sales, This month: 1. Total: Rs 200. Walk-in customer, Rs 200, S-000001, Today <time>
+speechHidden: Counter sales, This month: 1. Walk-in customer, S-000001, Today <time> [an amount left out]
 ask: Count(thing=TICKETS, window=THIS_MONTH)
 
 === Count(thing=TICKETS, window=LAST_6_MONTHS)
@@ -347,8 +347,8 @@ label: Calculator sums · Today
 line: None in this time.
 line: Since counting began: 0
 open: CalculatorActivity
-speech: Calculator sums Today. None in this time. Since counting began: 0.
-speechHidden: Calculator sums Today. None in this time. Since counting began: 0.
+speech: Calculator sums, Today. None in this time. Since counting began: 0.
+speechHidden: Calculator sums, Today. None in this time. Since counting began: 0.
 ask: Count(thing=CALCULATIONS, window=null)
 
 === Count(thing=CALCULATIONS, window=TODAY)
@@ -356,8 +356,8 @@ mood: CALM
 label: Calculator sums · Today
 line: None in this time.
 open: CalculatorActivity
-speech: Calculator sums Today. None in this time.
-speechHidden: Calculator sums Today. None in this time.
+speech: Calculator sums, Today. None in this time.
+speechHidden: Calculator sums, Today. None in this time.
 ask: Count(thing=CALCULATIONS, window=TODAY)
 
 === Count(thing=CALCULATIONS, window=THIS_MONTH)
@@ -365,8 +365,8 @@ mood: CALM
 label: Calculator sums · This month
 line: None in this time.
 open: CalculatorActivity
-speech: Calculator sums This month. None in this time.
-speechHidden: Calculator sums This month. None in this time.
+speech: Calculator sums, This month. None in this time.
+speechHidden: Calculator sums, This month. None in this time.
 ask: Count(thing=CALCULATIONS, window=THIS_MONTH)
 
 === Count(thing=CALCULATIONS, window=LAST_6_MONTHS)
@@ -387,24 +387,24 @@ mood: CALM
 label: Times the app opened · Today
 line: None in this time.
 line: Since counting began: 0
-speech: Times the app opened Today. None in this time. Since counting began: 0.
-speechHidden: Times the app opened Today. None in this time. Since counting began: 0.
+speech: Times the app opened, Today. None in this time. Since counting began: 0.
+speechHidden: Times the app opened, Today. None in this time. Since counting began: 0.
 ask: Count(thing=APP_OPENS, window=null)
 
 === Count(thing=APP_OPENS, window=TODAY)
 mood: CALM
 label: Times the app opened · Today
 line: None in this time.
-speech: Times the app opened Today. None in this time.
-speechHidden: Times the app opened Today. None in this time.
+speech: Times the app opened, Today. None in this time.
+speechHidden: Times the app opened, Today. None in this time.
 ask: Count(thing=APP_OPENS, window=TODAY)
 
 === Count(thing=APP_OPENS, window=THIS_MONTH)
 mood: CALM
 label: Times the app opened · This month
 line: None in this time.
-speech: Times the app opened This month. None in this time.
-speechHidden: Times the app opened This month. None in this time.
+speech: Times the app opened, This month. None in this time.
+speechHidden: Times the app opened, This month. None in this time.
 ask: Count(thing=APP_OPENS, window=THIS_MONTH)
 
 === Count(thing=APP_OPENS, window=LAST_6_MONTHS)

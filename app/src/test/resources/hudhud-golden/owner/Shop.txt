@@ -4,9 +4,13 @@ label: Shop details
 line: Not filled in your Business Profile.
 line: Country: Pakistan
 line: Currency: Rs
+line: Customer photo on statements: Off
+line: Seal on your papers: Shop seal (with your shop's name)
+line: Payment details on reminders: On
+line: Offer to send each entry on WhatsApp: On
 open: BusinessSettingsActivity
-speech: Shop details. Not filled in your Business Profile. Country: Pakistan. Currency: Rs.
-speechHidden: Shop details. Not filled in your Business Profile. Country: Pakistan. Currency: Rs.
+speech: Shop details. Not filled in your Business Profile. Country: Pakistan. Currency: Rs. Customer photo on statements: Off. Seal on your papers: Shop seal (with your shop's name). Payment details on reminders: On. Offer to send each entry on WhatsApp: On.
+speechHidden: Shop details. Not filled in your Business Profile. Country: Pakistan. Currency: Rs. Customer photo on statements: Off. Seal on your papers: Shop seal (with your shop's name). Payment details on reminders: On. Offer to send each entry on WhatsApp: On.
 ask: Shop(facet=ALL)
 
 === Shop(facet=NAME)

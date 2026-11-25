@@ -10,8 +10,8 @@ line: 50 bag — Urea · Batch: U-01
 line: 10 bag — DAP · Batch: D-01
 line: 100 packet — Paracetamol · Batch: P-01 · Expiry date: <date>
 open: BillsActivity
-speech: Last supplier bill Tariq Butt: It's on the screen. Bill number: It's on the screen. Bill date: <date>. Added on: <date>. Goods. 50 bag — Urea Batch: It's on the screen. 10 bag — DAP Batch: It's on the screen. 100 packet — Paracetamol Batch: It's on the screen Expiry date: <date>.
-speechHidden: Last supplier bill Tariq Butt: It's on the screen. Bill number: It's on the screen. Bill date: <date>. Added on: <date>. Goods. 50 bag — Urea Batch: It's on the screen. 10 bag — DAP Batch: It's on the screen. 100 packet — Paracetamol Batch: It's on the screen Expiry date: <date>.
+speech: Last supplier bill, Tariq Butt: It's on the screen. Bill number: It's on the screen. Bill date: <date>. Added on: <date>. Goods. 50 bag — Urea, Batch: It's on the screen. 10 bag — DAP, Batch: It's on the screen. 100 packet — Paracetamol, Batch: It's on the screen, Expiry date: <date>.
+speechHidden: Last supplier bill, Tariq Butt: It's on the screen. Bill number: It's on the screen. Bill date: <date>. Added on: <date>. Goods. 50 bag — Urea, Batch: It's on the screen. 10 bag — DAP, Batch: It's on the screen. 100 packet — Paracetamol, Batch: It's on the screen, Expiry date: <date>.
 ask: Paper(of=BILL, ids=[])
 secret: B-101
 secret: U-01
@@ -29,8 +29,8 @@ line: Date: <date>
 line: Goods
 line: 20 bag — Urea
 open: OrdersActivity
-speech: Last purchase order Tariq Butt: Sent. Order number: It's on the screen. Supplier: Tariq Butt. Status: Sent. Date: <date>. Goods. 20 bag — Urea.
-speechHidden: Last purchase order Tariq Butt: Sent. Order number: It's on the screen. Supplier: Tariq Butt. Status: Sent. Date: <date>. Goods. 20 bag — Urea.
+speech: Last purchase order, Tariq Butt: Sent. Order number: It's on the screen. Supplier: Tariq Butt. Status: Sent. Date: <date>. Goods. 20 bag — Urea.
+speechHidden: Last purchase order, Tariq Butt: Sent. Order number: It's on the screen. Supplier: Tariq Butt. Status: Sent. Date: <date>. Goods. 20 bag — Urea.
 ask: Paper(of=ORDER, ids=[])
 secret: PO-000001
 
@@ -45,8 +45,8 @@ line: Phone number: 0300 1234567
 line: Items
 line: 1 bag — DAP × Rs 9,000
 open: InvoicesActivity
-speech: Last invoice Ali Raza: It's on the screen. Invoice number: It's on the screen. Date: <date>. Added on: <date>. Phone number: It's on the screen. Items. 1 bag — DAP × Rs 9,000.
-speechHidden: Last invoice Ali Raza: It's on the screen. Invoice number: It's on the screen. Date: <date>. Added on: <date>. Phone number: It's on the screen. Items. [an amount left out]
+speech: Last invoice, Ali Raza: It's on the screen. Invoice number: It's on the screen. Date: <date>. Added on: <date>. Phone number: It's on the screen. Items. 1 bag — DAP × Rs 9,000.
+speechHidden: Last invoice, Ali Raza: It's on the screen. Invoice number: It's on the screen. Date: <date>. Added on: <date>. Phone number: It's on the screen. Items. [an amount left out]
 ask: Paper(of=INVOICE, ids=[])
 secret: INV-000001
 secret: 0300 1234567
@@ -76,8 +76,8 @@ line: 50 bag — Urea · Batch: U-01
 line: 10 bag — DAP · Batch: D-01
 line: 100 packet — Paracetamol · Batch: P-01 · Expiry date: <date>
 open: BillsActivity
-speech: Last supplier bill Tariq Butt: It's on the screen. Bill number: It's on the screen. Bill date: <date>. Added on: <date>. Goods. 50 bag — Urea Batch: It's on the screen. 10 bag — DAP Batch: It's on the screen. 100 packet — Paracetamol Batch: It's on the screen Expiry date: <date>.
-speechHidden: Last supplier bill Tariq Butt: It's on the screen. Bill number: It's on the screen. Bill date: <date>. Added on: <date>. Goods. 50 bag — Urea Batch: It's on the screen. 10 bag — DAP Batch: It's on the screen. 100 packet — Paracetamol Batch: It's on the screen Expiry date: <date>.
+speech: Last supplier bill, Tariq Butt: It's on the screen. Bill number: It's on the screen. Bill date: <date>. Added on: <date>. Goods. 50 bag — Urea, Batch: It's on the screen. 10 bag — DAP, Batch: It's on the screen. 100 packet — Paracetamol, Batch: It's on the screen, Expiry date: <date>.
+speechHidden: Last supplier bill, Tariq Butt: It's on the screen. Bill number: It's on the screen. Bill date: <date>. Added on: <date>. Goods. 50 bag — Urea, Batch: It's on the screen. 10 bag — DAP, Batch: It's on the screen. 100 packet — Paracetamol, Batch: It's on the screen, Expiry date: <date>.
 ask: Paper(of=BILL, ids=[3])
 secret: B-101
 secret: U-01
@@ -95,8 +95,8 @@ line: Date: <date>
 line: Goods
 line: 20 bag — Urea
 open: OrdersActivity
-speech: Last purchase order Tariq Butt: Sent. Order number: It's on the screen. Supplier: Tariq Butt. Status: Sent. Date: <date>. Goods. 20 bag — Urea.
-speechHidden: Last purchase order Tariq Butt: Sent. Order number: It's on the screen. Supplier: Tariq Butt. Status: Sent. Date: <date>. Goods. 20 bag — Urea.
+speech: Last purchase order, Tariq Butt: Sent. Order number: It's on the screen. Supplier: Tariq Butt. Status: Sent. Date: <date>. Goods. 20 bag — Urea.
+speechHidden: Last purchase order, Tariq Butt: Sent. Order number: It's on the screen. Supplier: Tariq Butt. Status: Sent. Date: <date>. Goods. 20 bag — Urea.
 ask: Paper(of=ORDER, ids=[3])
 secret: PO-000001
 
@@ -111,8 +111,8 @@ line: Phone number: 0300 1234567
 line: Items
 line: 1 bag — DAP × Rs 9,000
 open: InvoicesActivity
-speech: Last invoice Ali Raza: It's on the screen. Invoice number: It's on the screen. Date: <date>. Added on: <date>. Phone number: It's on the screen. Items. 1 bag — DAP × Rs 9,000.
-speechHidden: Last invoice Ali Raza: It's on the screen. Invoice number: It's on the screen. Date: <date>. Added on: <date>. Phone number: It's on the screen. Items. [an amount left out]
+speech: Last invoice, Ali Raza: It's on the screen. Invoice number: It's on the screen. Date: <date>. Added on: <date>. Phone number: It's on the screen. Items. 1 bag — DAP × Rs 9,000.
+speechHidden: Last invoice, Ali Raza: It's on the screen. Invoice number: It's on the screen. Date: <date>. Added on: <date>. Phone number: It's on the screen. Items. [an amount left out]
 ask: Paper(of=INVOICE, ids=[1])
 secret: INV-000001
 secret: 0300 1234567

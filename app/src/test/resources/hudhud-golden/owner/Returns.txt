@@ -6,8 +6,8 @@ line: Worth of goods returned: Rs 50
 line: Refunded: Rs 50
 row: party=0 | Walk-in customer | Rs 50 | R-000001 · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
-speech: Returns Today: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001 Today <time>
-speechHidden: Returns Today: 1. Walk-in customer, R-000001 Today <time> [an amount left out]
+speech: Returns, Today: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001, Today <time>
+speechHidden: Returns, Today: 1. Walk-in customer, R-000001, Today <time> [an amount left out]
 ask: Returns(window=null)
 
 === Returns(window=TODAY)
@@ -18,8 +18,8 @@ line: Worth of goods returned: Rs 50
 line: Refunded: Rs 50
 row: party=0 | Walk-in customer | Rs 50 | R-000001 · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
-speech: Returns Today: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001 Today <time>
-speechHidden: Returns Today: 1. Walk-in customer, R-000001 Today <time> [an amount left out]
+speech: Returns, Today: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001, Today <time>
+speechHidden: Returns, Today: 1. Walk-in customer, R-000001, Today <time> [an amount left out]
 ask: Returns(window=TODAY)
 
 === Returns(window=YESTERDAY)
@@ -27,8 +27,8 @@ mood: CALM
 label: Returns · Yesterday
 line: No goods came back in this time.
 open: CounterSaleActivity
-speech: Returns Yesterday. No goods came back in this time.
-speechHidden: Returns Yesterday. No goods came back in this time.
+speech: Returns, Yesterday. No goods came back in this time.
+speechHidden: Returns, Yesterday. No goods came back in this time.
 ask: Returns(window=YESTERDAY)
 
 === Returns(window=THIS_WEEK)
@@ -39,8 +39,8 @@ line: Worth of goods returned: Rs 50
 line: Refunded: Rs 50
 row: party=0 | Walk-in customer | Rs 50 | R-000001 · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
-speech: Returns This week: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001 Today <time>
-speechHidden: Returns This week: 1. Walk-in customer, R-000001 Today <time> [an amount left out]
+speech: Returns, This week: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001, Today <time>
+speechHidden: Returns, This week: 1. Walk-in customer, R-000001, Today <time> [an amount left out]
 ask: Returns(window=THIS_WEEK)
 
 === Returns(window=LAST_WEEK)
@@ -48,8 +48,8 @@ mood: CALM
 label: Returns · Last week
 line: No goods came back in this time.
 open: CounterSaleActivity
-speech: Returns Last week. No goods came back in this time.
-speechHidden: Returns Last week. No goods came back in this time.
+speech: Returns, Last week. No goods came back in this time.
+speechHidden: Returns, Last week. No goods came back in this time.
 ask: Returns(window=LAST_WEEK)
 
 === Returns(window=THIS_MONTH)
@@ -60,8 +60,8 @@ line: Worth of goods returned: Rs 50
 line: Refunded: Rs 50
 row: party=0 | Walk-in customer | Rs 50 | R-000001 · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
-speech: Returns This month: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001 Today <time>
-speechHidden: Returns This month: 1. Walk-in customer, R-000001 Today <time> [an amount left out]
+speech: Returns, This month: 1. Worth of goods returned: Rs 50. Refunded: Rs 50. Walk-in customer, Rs 50, R-000001, Today <time>
+speechHidden: Returns, This month: 1. Walk-in customer, R-000001, Today <time> [an amount left out]
 ask: Returns(window=THIS_MONTH)
 
 === Returns(window=LAST_MONTH)
@@ -69,8 +69,8 @@ mood: CALM
 label: Returns · Last month
 line: No goods came back in this time.
 open: CounterSaleActivity
-speech: Returns Last month. No goods came back in this time.
-speechHidden: Returns Last month. No goods came back in this time.
+speech: Returns, Last month. No goods came back in this time.
+speechHidden: Returns, Last month. No goods came back in this time.
 ask: Returns(window=LAST_MONTH)
 
 === Returns(window=LAST_6_MONTHS)

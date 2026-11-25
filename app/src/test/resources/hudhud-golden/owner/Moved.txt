@@ -5,8 +5,8 @@ figure: Rs 1,000
 line: I Got · Today
 openParty: 1
 money: true
-speech: Ali Raza: Rs 1,000. I Got Today.
-speechHidden: Ali Raza. I Got Today. [an amount left out]
+speech: Ali Raza: Rs 1,000. I Got, Today.
+speechHidden: Ali Raza. I Got, Today. [an amount left out]
 ask: Moved(ids=[1], window=TODAY, got=true)
 
 === Moved(ids=[1], window=THIS_MONTH, got=true)
@@ -16,8 +16,8 @@ figure: Rs 1,000
 line: I Got · This month
 openParty: 1
 money: true
-speech: Ali Raza: Rs 1,000. I Got This month.
-speechHidden: Ali Raza. I Got This month. [an amount left out]
+speech: Ali Raza: Rs 1,000. I Got, This month.
+speechHidden: Ali Raza. I Got, This month. [an amount left out]
 ask: Moved(ids=[1], window=THIS_MONTH, got=true)
 
 === Moved(ids=[1], window=ALL_TIME, got=true)
@@ -27,8 +27,8 @@ figure: Rs 5,000
 line: I Got · All time
 openParty: 1
 money: true
-speech: Ali Raza: Rs 5,000. I Got All time.
-speechHidden: Ali Raza. I Got All time. [an amount left out]
+speech: Ali Raza: Rs 5,000. I Got, All time.
+speechHidden: Ali Raza. I Got, All time. [an amount left out]
 ask: Moved(ids=[1], window=ALL_TIME, got=true)
 
 === Moved(ids=[1], window=TODAY, got=false)
@@ -38,8 +38,8 @@ figure: Rs 9,000
 line: I Gave · Today
 openParty: 1
 money: true
-speech: Ali Raza: Rs 9,000. I Gave Today.
-speechHidden: Ali Raza. I Gave Today. [an amount left out]
+speech: Ali Raza: Rs 9,000. I Gave, Today.
+speechHidden: Ali Raza. I Gave, Today. [an amount left out]
 ask: Moved(ids=[1], window=TODAY, got=false)
 
 === Moved(ids=[1], window=THIS_MONTH, got=false)
@@ -49,8 +49,8 @@ figure: Rs 9,000
 line: I Gave · This month
 openParty: 1
 money: true
-speech: Ali Raza: Rs 9,000. I Gave This month.
-speechHidden: Ali Raza. I Gave This month. [an amount left out]
+speech: Ali Raza: Rs 9,000. I Gave, This month.
+speechHidden: Ali Raza. I Gave, This month. [an amount left out]
 ask: Moved(ids=[1], window=THIS_MONTH, got=false)
 
 === Moved(ids=[1], window=ALL_TIME, got=false)
@@ -60,8 +60,8 @@ figure: Rs 22,000
 line: I Gave · All time
 openParty: 1
 money: true
-speech: Ali Raza: Rs 22,000. I Gave All time.
-speechHidden: Ali Raza. I Gave All time. [an amount left out]
+speech: Ali Raza: Rs 22,000. I Gave, All time.
+speechHidden: Ali Raza. I Gave, All time. [an amount left out]
 ask: Moved(ids=[1], window=ALL_TIME, got=false)
 
 === Moved(ids=[2], window=ALL_TIME, got=false)
@@ -71,8 +71,8 @@ figure: Rs 4,000
 line: I Gave · All time
 openParty: 2
 money: true
-speech: Bashir Ahmad: Rs 4,000. I Gave All time.
-speechHidden: Bashir Ahmad. I Gave All time. [an amount left out]
+speech: Bashir Ahmad: Rs 4,000. I Gave, All time.
+speechHidden: Bashir Ahmad. I Gave, All time. [an amount left out]
 ask: Moved(ids=[2], window=ALL_TIME, got=false)
 
 === Moved(ids=[1, 2], window=TODAY, got=true)

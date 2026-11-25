@@ -10,8 +10,8 @@ line: Paid now: Rs 200
 line: Cash: Rs 200
 open: CounterSaleActivity
 money: true
-speech: Biggest bills Today: Rs 200. S-000001 Walk-in customer Today <time> By: Hamid Khan. Paracetamol 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
-speechHidden: Biggest bills Today. S-000001 Walk-in customer Today <time> By: Hamid Khan. [an amount left out]
+speech: Biggest bills, Today: Rs 200. S-000001, Walk-in customer, Today <time> By: Hamid Khan. Paracetamol, 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
+speechHidden: Biggest bills, Today. S-000001, Walk-in customer, Today <time> By: Hamid Khan. [an amount left out]
 ask: Counter(facet=BIGGEST, window=null, ids=[])
 
 === Counter(facet=BIGGEST, window=TODAY, ids=[])
@@ -26,8 +26,8 @@ line: Paid now: Rs 200
 line: Cash: Rs 200
 open: CounterSaleActivity
 money: true
-speech: Biggest bills Today: Rs 200. S-000001 Walk-in customer Today <time> By: Hamid Khan. Paracetamol 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
-speechHidden: Biggest bills Today. S-000001 Walk-in customer Today <time> By: Hamid Khan. [an amount left out]
+speech: Biggest bills, Today: Rs 200. S-000001, Walk-in customer, Today <time> By: Hamid Khan. Paracetamol, 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
+speechHidden: Biggest bills, Today. S-000001, Walk-in customer, Today <time> By: Hamid Khan. [an amount left out]
 ask: Counter(facet=BIGGEST, window=TODAY, ids=[])
 
 === Counter(facet=BIGGEST, window=THIS_MONTH, ids=[])
@@ -42,8 +42,8 @@ line: Paid now: Rs 200
 line: Cash: Rs 200
 open: CounterSaleActivity
 money: true
-speech: Biggest bills This month: Rs 200. S-000001 Walk-in customer Today <time> By: Hamid Khan. Paracetamol 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
-speechHidden: Biggest bills This month. S-000001 Walk-in customer Today <time> By: Hamid Khan. [an amount left out]
+speech: Biggest bills, This month: Rs 200. S-000001, Walk-in customer, Today <time> By: Hamid Khan. Paracetamol, 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
+speechHidden: Biggest bills, This month. S-000001, Walk-in customer, Today <time> By: Hamid Khan. [an amount left out]
 ask: Counter(facet=BIGGEST, window=THIS_MONTH, ids=[])
 
 === Counter(facet=LAST_TICKET, window=null, ids=[])
@@ -58,8 +58,8 @@ line: Paid now: Rs 200
 line: Cash: Rs 200
 open: CounterSaleActivity
 money: true
-speech: Latest bill: Rs 200. S-000001 Walk-in customer Today <time> By: Hamid Khan. Paracetamol 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
-speechHidden: Latest bill. S-000001 Walk-in customer Today <time> By: Hamid Khan. [an amount left out]
+speech: Latest bill: Rs 200. S-000001, Walk-in customer, Today <time> By: Hamid Khan. Paracetamol, 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
+speechHidden: Latest bill. S-000001, Walk-in customer, Today <time> By: Hamid Khan. [an amount left out]
 ask: Counter(facet=LAST_TICKET, window=null, ids=[])
 
 === Counter(facet=LAST_TICKET, window=TODAY, ids=[])
@@ -74,8 +74,8 @@ line: Paid now: Rs 200
 line: Cash: Rs 200
 open: CounterSaleActivity
 money: true
-speech: Latest bill: Rs 200. S-000001 Walk-in customer Today <time> By: Hamid Khan. Paracetamol 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
-speechHidden: Latest bill. S-000001 Walk-in customer Today <time> By: Hamid Khan. [an amount left out]
+speech: Latest bill: Rs 200. S-000001, Walk-in customer, Today <time> By: Hamid Khan. Paracetamol, 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
+speechHidden: Latest bill. S-000001, Walk-in customer, Today <time> By: Hamid Khan. [an amount left out]
 ask: Counter(facet=LAST_TICKET, window=TODAY, ids=[])
 
 === Counter(facet=LAST_TICKET, window=THIS_MONTH, ids=[])
@@ -90,8 +90,8 @@ line: Paid now: Rs 200
 line: Cash: Rs 200
 open: CounterSaleActivity
 money: true
-speech: Latest bill: Rs 200. S-000001 Walk-in customer Today <time> By: Hamid Khan. Paracetamol 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
-speechHidden: Latest bill. S-000001 Walk-in customer Today <time> By: Hamid Khan. [an amount left out]
+speech: Latest bill: Rs 200. S-000001, Walk-in customer, Today <time> By: Hamid Khan. Paracetamol, 4 packet × Rs 50. Subtotal: Rs 200. Paid now: Rs 200. Cash: Rs 200.
+speechHidden: Latest bill. S-000001, Walk-in customer, Today <time> By: Hamid Khan. [an amount left out]
 ask: Counter(facet=LAST_TICKET, window=THIS_MONTH, ids=[])
 
 === Counter(facet=BY_CASHIER, window=null, ids=[])
@@ -102,8 +102,8 @@ line: Bills: 1
 row: party=0 | Hamid Khan | Rs 200 | Bills: 1 | open=CounterSaleActivity
 open: CounterSaleActivity
 money: true
-speech: Sales by cashier Today: Rs 200. Bills: 1. Hamid Khan, Rs 200, Bills: 1.
-speechHidden: Sales by cashier Today. Bills: 1. Hamid Khan, Bills: 1. [an amount left out]
+speech: Sales by cashier, Today: Rs 200. Bills: 1. Hamid Khan, Rs 200, Bills: 1.
+speechHidden: Sales by cashier, Today. Bills: 1. Hamid Khan, Bills: 1. [an amount left out]
 ask: Counter(facet=BY_CASHIER, window=null, ids=[])
 
 === Counter(facet=BY_CASHIER, window=TODAY, ids=[])
@@ -114,8 +114,8 @@ line: Bills: 1
 row: party=0 | Hamid Khan | Rs 200 | Bills: 1 | open=CounterSaleActivity
 open: CounterSaleActivity
 money: true
-speech: Sales by cashier Today: Rs 200. Bills: 1. Hamid Khan, Rs 200, Bills: 1.
-speechHidden: Sales by cashier Today. Bills: 1. Hamid Khan, Bills: 1. [an amount left out]
+speech: Sales by cashier, Today: Rs 200. Bills: 1. Hamid Khan, Rs 200, Bills: 1.
+speechHidden: Sales by cashier, Today. Bills: 1. Hamid Khan, Bills: 1. [an amount left out]
 ask: Counter(facet=BY_CASHIER, window=TODAY, ids=[])
 
 === Counter(facet=BY_CASHIER, window=THIS_MONTH, ids=[])
@@ -126,8 +126,8 @@ line: Bills: 1
 row: party=0 | Hamid Khan | Rs 200 | Bills: 1 | open=CounterSaleActivity
 open: CounterSaleActivity
 money: true
-speech: Sales by cashier This month: Rs 200. Bills: 1. Hamid Khan, Rs 200, Bills: 1.
-speechHidden: Sales by cashier This month. Bills: 1. Hamid Khan, Bills: 1. [an amount left out]
+speech: Sales by cashier, This month: Rs 200. Bills: 1. Hamid Khan, Rs 200, Bills: 1.
+speechHidden: Sales by cashier, This month. Bills: 1. Hamid Khan, Bills: 1. [an amount left out]
 ask: Counter(facet=BY_CASHIER, window=THIS_MONTH, ids=[])
 
 === Counter(facet=DISCOUNTS, window=null, ids=[])
@@ -137,8 +137,8 @@ figure: Rs 0
 line: Bills: 1
 open: DayBookActivity
 money: true
-speech: Discounts given Today: Rs 0. Bills: 1.
-speechHidden: Discounts given Today. Bills: 1. [an amount left out]
+speech: Discounts given, Today: Rs 0. Bills: 1.
+speechHidden: Discounts given, Today. Bills: 1. [an amount left out]
 ask: Counter(facet=DISCOUNTS, window=null, ids=[])
 
 === Counter(facet=DISCOUNTS, window=TODAY, ids=[])
@@ -148,8 +148,8 @@ figure: Rs 0
 line: Bills: 1
 open: DayBookActivity
 money: true
-speech: Discounts given Today: Rs 0. Bills: 1.
-speechHidden: Discounts given Today. Bills: 1. [an amount left out]
+speech: Discounts given, Today: Rs 0. Bills: 1.
+speechHidden: Discounts given, Today. Bills: 1. [an amount left out]
 ask: Counter(facet=DISCOUNTS, window=TODAY, ids=[])
 
 === Counter(facet=DISCOUNTS, window=THIS_MONTH, ids=[])
@@ -159,8 +159,8 @@ figure: Rs 0
 line: Bills: 1
 open: DayBookActivity
 money: true
-speech: Discounts given This month: Rs 0. Bills: 1.
-speechHidden: Discounts given This month. Bills: 1. [an amount left out]
+speech: Discounts given, This month: Rs 0. Bills: 1.
+speechHidden: Discounts given, This month. Bills: 1. [an amount left out]
 ask: Counter(facet=DISCOUNTS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=TAX, window=null, ids=[])
@@ -171,8 +171,8 @@ line: Bills: 1
 line: Round off: Rs 0
 open: DayBookActivity
 money: true
-speech: Tax and round-off Today: Rs 0. Bills: 1. Round off: Rs 0.
-speechHidden: Tax and round-off Today. Bills: 1. [an amount left out]
+speech: Tax and round-off, Today: Rs 0. Bills: 1. Round off: Rs 0.
+speechHidden: Tax and round-off, Today. Bills: 1. [an amount left out]
 ask: Counter(facet=TAX, window=null, ids=[])
 
 === Counter(facet=TAX, window=TODAY, ids=[])
@@ -183,8 +183,8 @@ line: Bills: 1
 line: Round off: Rs 0
 open: DayBookActivity
 money: true
-speech: Tax and round-off Today: Rs 0. Bills: 1. Round off: Rs 0.
-speechHidden: Tax and round-off Today. Bills: 1. [an amount left out]
+speech: Tax and round-off, Today: Rs 0. Bills: 1. Round off: Rs 0.
+speechHidden: Tax and round-off, Today. Bills: 1. [an amount left out]
 ask: Counter(facet=TAX, window=TODAY, ids=[])
 
 === Counter(facet=TAX, window=THIS_MONTH, ids=[])
@@ -195,8 +195,8 @@ line: Bills: 1
 line: Round off: Rs 0
 open: DayBookActivity
 money: true
-speech: Tax and round-off This month: Rs 0. Bills: 1. Round off: Rs 0.
-speechHidden: Tax and round-off This month. Bills: 1. [an amount left out]
+speech: Tax and round-off, This month: Rs 0. Bills: 1. Round off: Rs 0.
+speechHidden: Tax and round-off, This month. Bills: 1. [an amount left out]
 ask: Counter(facet=TAX, window=THIS_MONTH, ids=[])
 
 === Counter(facet=ON_ACCOUNT, window=null, ids=[])
@@ -207,8 +207,8 @@ line: Bills: 1
 line: Total: Rs 200
 open: DayBookActivity
 money: true
-speech: Sold on account Today: Rs 0. Bills: 1. Total: Rs 200.
-speechHidden: Sold on account Today. Bills: 1. [an amount left out]
+speech: Sold on account, Today: Rs 0. Bills: 1. Total: Rs 200.
+speechHidden: Sold on account, Today. Bills: 1. [an amount left out]
 ask: Counter(facet=ON_ACCOUNT, window=null, ids=[])
 
 === Counter(facet=ON_ACCOUNT, window=TODAY, ids=[])
@@ -219,8 +219,8 @@ line: Bills: 1
 line: Total: Rs 200
 open: DayBookActivity
 money: true
-speech: Sold on account Today: Rs 0. Bills: 1. Total: Rs 200.
-speechHidden: Sold on account Today. Bills: 1. [an amount left out]
+speech: Sold on account, Today: Rs 0. Bills: 1. Total: Rs 200.
+speechHidden: Sold on account, Today. Bills: 1. [an amount left out]
 ask: Counter(facet=ON_ACCOUNT, window=TODAY, ids=[])
 
 === Counter(facet=ON_ACCOUNT, window=THIS_MONTH, ids=[])
@@ -231,8 +231,8 @@ line: Bills: 1
 line: Total: Rs 200
 open: DayBookActivity
 money: true
-speech: Sold on account This month: Rs 0. Bills: 1. Total: Rs 200.
-speechHidden: Sold on account This month. Bills: 1. [an amount left out]
+speech: Sold on account, This month: Rs 0. Bills: 1. Total: Rs 200.
+speechHidden: Sold on account, This month. Bills: 1. [an amount left out]
 ask: Counter(facet=ON_ACCOUNT, window=THIS_MONTH, ids=[])
 
 === Counter(facet=PAY_WAYS, window=null, ids=[])
@@ -243,8 +243,8 @@ line: Bills: 1
 line: Cash: Rs 200
 open: DayBookActivity
 money: true
-speech: Takings by way of payment Today: Rs 200. Bills: 1. Cash: Rs 200.
-speechHidden: Takings by way of payment Today. Bills: 1. [an amount left out]
+speech: Takings by way of payment, Today: Rs 200. Bills: 1. Cash: Rs 200.
+speechHidden: Takings by way of payment, Today. Bills: 1. [an amount left out]
 ask: Counter(facet=PAY_WAYS, window=null, ids=[])
 
 === Counter(facet=PAY_WAYS, window=TODAY, ids=[])
@@ -255,8 +255,8 @@ line: Bills: 1
 line: Cash: Rs 200
 open: DayBookActivity
 money: true
-speech: Takings by way of payment Today: Rs 200. Bills: 1. Cash: Rs 200.
-speechHidden: Takings by way of payment Today. Bills: 1. [an amount left out]
+speech: Takings by way of payment, Today: Rs 200. Bills: 1. Cash: Rs 200.
+speechHidden: Takings by way of payment, Today. Bills: 1. [an amount left out]
 ask: Counter(facet=PAY_WAYS, window=TODAY, ids=[])
 
 === Counter(facet=PAY_WAYS, window=THIS_MONTH, ids=[])
@@ -267,8 +267,8 @@ line: Bills: 1
 line: Cash: Rs 200
 open: DayBookActivity
 money: true
-speech: Takings by way of payment This month: Rs 200. Bills: 1. Cash: Rs 200.
-speechHidden: Takings by way of payment This month. Bills: 1. [an amount left out]
+speech: Takings by way of payment, This month: Rs 200. Bills: 1. Cash: Rs 200.
+speechHidden: Takings by way of payment, This month. Bills: 1. [an amount left out]
 ask: Counter(facet=PAY_WAYS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=VOIDED, window=null, ids=[])
@@ -276,8 +276,8 @@ mood: CALM
 label: Cancelled bills · Today
 line: Nothing was written in this time.
 open: CounterSaleActivity
-speech: Cancelled bills Today. Nothing was written in this time.
-speechHidden: Cancelled bills Today. Nothing was written in this time.
+speech: Cancelled bills, Today. Nothing was written in this time.
+speechHidden: Cancelled bills, Today. Nothing was written in this time.
 ask: Counter(facet=VOIDED, window=null, ids=[])
 
 === Counter(facet=VOIDED, window=TODAY, ids=[])
@@ -285,8 +285,8 @@ mood: CALM
 label: Cancelled bills · Today
 line: Nothing was written in this time.
 open: CounterSaleActivity
-speech: Cancelled bills Today. Nothing was written in this time.
-speechHidden: Cancelled bills Today. Nothing was written in this time.
+speech: Cancelled bills, Today. Nothing was written in this time.
+speechHidden: Cancelled bills, Today. Nothing was written in this time.
 ask: Counter(facet=VOIDED, window=TODAY, ids=[])
 
 === Counter(facet=VOIDED, window=THIS_MONTH, ids=[])
@@ -294,8 +294,8 @@ mood: CALM
 label: Cancelled bills · This month
 line: Nothing was written in this time.
 open: CounterSaleActivity
-speech: Cancelled bills This month. Nothing was written in this time.
-speechHidden: Cancelled bills This month. Nothing was written in this time.
+speech: Cancelled bills, This month. Nothing was written in this time.
+speechHidden: Cancelled bills, This month. Nothing was written in this time.
 ask: Counter(facet=VOIDED, window=THIS_MONTH, ids=[])
 
 === Counter(facet=RETURN_REASONS, window=null, ids=[])
@@ -306,8 +306,8 @@ line: Wrong strength: 1 · Rs 50
 row: party=0 | Wrong strength | Rs 50 | R-000001 · Walk-in customer · Hamid Khan · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
 money: true
-speech: Why goods came back Today: 1. Wrong strength: 1 Rs 50. Wrong strength, Rs 50, R-000001 Walk-in customer Hamid Khan Today <time>
-speechHidden: Why goods came back Today. Wrong strength, R-000001 Walk-in customer Hamid Khan Today <time> [an amount left out]
+speech: Why goods came back, Today: 1. Wrong strength: 1, Rs 50. Wrong strength, Rs 50, R-000001, Walk-in customer, Hamid Khan, Today <time>
+speechHidden: Why goods came back, Today. Wrong strength, R-000001, Walk-in customer, Hamid Khan, Today <time> [an amount left out]
 ask: Counter(facet=RETURN_REASONS, window=null, ids=[])
 
 === Counter(facet=RETURN_REASONS, window=TODAY, ids=[])
@@ -318,8 +318,8 @@ line: Wrong strength: 1 · Rs 50
 row: party=0 | Wrong strength | Rs 50 | R-000001 · Walk-in customer · Hamid Khan · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
 money: true
-speech: Why goods came back Today: 1. Wrong strength: 1 Rs 50. Wrong strength, Rs 50, R-000001 Walk-in customer Hamid Khan Today <time>
-speechHidden: Why goods came back Today. Wrong strength, R-000001 Walk-in customer Hamid Khan Today <time> [an amount left out]
+speech: Why goods came back, Today: 1. Wrong strength: 1, Rs 50. Wrong strength, Rs 50, R-000001, Walk-in customer, Hamid Khan, Today <time>
+speechHidden: Why goods came back, Today. Wrong strength, R-000001, Walk-in customer, Hamid Khan, Today <time> [an amount left out]
 ask: Counter(facet=RETURN_REASONS, window=TODAY, ids=[])
 
 === Counter(facet=RETURN_REASONS, window=THIS_MONTH, ids=[])
@@ -330,8 +330,8 @@ line: Wrong strength: 1 · Rs 50
 row: party=0 | Wrong strength | Rs 50 | R-000001 · Walk-in customer · Hamid Khan · Today <time> | open=CounterSaleActivity
 open: CounterSaleActivity
 money: true
-speech: Why goods came back This month: 1. Wrong strength: 1 Rs 50. Wrong strength, Rs 50, R-000001 Walk-in customer Hamid Khan Today <time>
-speechHidden: Why goods came back This month. Wrong strength, R-000001 Walk-in customer Hamid Khan Today <time> [an amount left out]
+speech: Why goods came back, This month: 1. Wrong strength: 1, Rs 50. Wrong strength, Rs 50, R-000001, Walk-in customer, Hamid Khan, Today <time>
+speechHidden: Why goods came back, This month. Wrong strength, R-000001, Walk-in customer, Hamid Khan, Today <time> [an amount left out]
 ask: Counter(facet=RETURN_REASONS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=RETURN_WAYS, window=null, ids=[])
@@ -342,7 +342,7 @@ line: Returns: 1 · Rs 50
 line: Cash: 1 · Rs 50
 open: CounterSaleActivity
 money: true
-speech: How returns were paid back Today: Rs 50. Returns: 1 Rs 50. Cash: 1 Rs 50.
+speech: How returns were paid back, Today: Rs 50. Returns: 1, Rs 50. Cash: 1, Rs 50.
 ask: Counter(facet=RETURN_WAYS, window=null, ids=[])
 
 === Counter(facet=RETURN_WAYS, window=TODAY, ids=[])
@@ -353,7 +353,7 @@ line: Returns: 1 · Rs 50
 line: Cash: 1 · Rs 50
 open: CounterSaleActivity
 money: true
-speech: How returns were paid back Today: Rs 50. Returns: 1 Rs 50. Cash: 1 Rs 50.
+speech: How returns were paid back, Today: Rs 50. Returns: 1, Rs 50. Cash: 1, Rs 50.
 ask: Counter(facet=RETURN_WAYS, window=TODAY, ids=[])
 
 === Counter(facet=RETURN_WAYS, window=THIS_MONTH, ids=[])
@@ -364,7 +364,7 @@ line: Returns: 1 · Rs 50
 line: Cash: 1 · Rs 50
 open: CounterSaleActivity
 money: true
-speech: How returns were paid back This month: Rs 50. Returns: 1 Rs 50. Cash: 1 Rs 50.
+speech: How returns were paid back, This month: Rs 50. Returns: 1, Rs 50. Cash: 1, Rs 50.
 ask: Counter(facet=RETURN_WAYS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=RETURN_GOODS, window=null, ids=[])
@@ -374,8 +374,8 @@ figure: 1
 row: party=0 | Paracetamol | 1 packet | Rs 50 | open=CounterSaleActivity
 open: CounterSaleActivity
 money: true
-speech: Goods that came back Today: 1. Paracetamol, 1 packet, Rs 50.
-speechHidden: Goods that came back Today. Paracetamol, 1 packet. [an amount left out]
+speech: Goods that came back, Today: 1. Paracetamol, 1 packet, Rs 50.
+speechHidden: Goods that came back, Today. Paracetamol, 1 packet. [an amount left out]
 ask: Counter(facet=RETURN_GOODS, window=null, ids=[])
 
 === Counter(facet=RETURN_GOODS, window=TODAY, ids=[])
@@ -385,8 +385,8 @@ figure: 1
 row: party=0 | Paracetamol | 1 packet | Rs 50 | open=CounterSaleActivity
 open: CounterSaleActivity
 money: true
-speech: Goods that came back Today: 1. Paracetamol, 1 packet, Rs 50.
-speechHidden: Goods that came back Today. Paracetamol, 1 packet. [an amount left out]
+speech: Goods that came back, Today: 1. Paracetamol, 1 packet, Rs 50.
+speechHidden: Goods that came back, Today. Paracetamol, 1 packet. [an amount left out]
 ask: Counter(facet=RETURN_GOODS, window=TODAY, ids=[])
 
 === Counter(facet=RETURN_GOODS, window=THIS_MONTH, ids=[])
@@ -396,8 +396,8 @@ figure: 1
 row: party=0 | Paracetamol | 1 packet | Rs 50 | open=CounterSaleActivity
 open: CounterSaleActivity
 money: true
-speech: Goods that came back This month: 1. Paracetamol, 1 packet, Rs 50.
-speechHidden: Goods that came back This month. Paracetamol, 1 packet. [an amount left out]
+speech: Goods that came back, This month: 1. Paracetamol, 1 packet, Rs 50.
+speechHidden: Goods that came back, This month. Paracetamol, 1 packet. [an amount left out]
 ask: Counter(facet=RETURN_GOODS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=SHIFTS, window=null, ids=[])
@@ -407,8 +407,8 @@ figure: 1
 row: party=0 | Hamid Khan | Rs 50 short | Today <time> · 0.38 h · Starting cash: Rs 1,000 · Counted: Rs 1,150 · Books said: Rs 1,200 | open=ShiftActivity
 open: ShiftActivity
 money: true
-speech: Shifts This week: 1. Hamid Khan, Rs 50 short, Today <time> 0.38 h Starting cash: Rs 1,000 Counted: Rs 1,150 Books said: Rs 1,200.
-speechHidden: Shifts This week. Hamid Khan. [an amount left out]
+speech: Shifts, This week: 1. Hamid Khan, Rs 50 short, Today <time>, 0.38 h, Starting cash: Rs 1,000, Counted: Rs 1,150, Books said: Rs 1,200.
+speechHidden: Shifts, This week. Hamid Khan. [an amount left out]
 ask: Counter(facet=SHIFTS, window=null, ids=[])
 
 === Counter(facet=SHIFTS, window=TODAY, ids=[])
@@ -418,8 +418,8 @@ figure: 1
 row: party=0 | Hamid Khan | Rs 50 short | Today <time> · 0.38 h · Starting cash: Rs 1,000 · Counted: Rs 1,150 · Books said: Rs 1,200 | open=ShiftActivity
 open: ShiftActivity
 money: true
-speech: Shifts Today: 1. Hamid Khan, Rs 50 short, Today <time> 0.38 h Starting cash: Rs 1,000 Counted: Rs 1,150 Books said: Rs 1,200.
-speechHidden: Shifts Today. Hamid Khan. [an amount left out]
+speech: Shifts, Today: 1. Hamid Khan, Rs 50 short, Today <time>, 0.38 h, Starting cash: Rs 1,000, Counted: Rs 1,150, Books said: Rs 1,200.
+speechHidden: Shifts, Today. Hamid Khan. [an amount left out]
 ask: Counter(facet=SHIFTS, window=TODAY, ids=[])
 
 === Counter(facet=SHIFTS, window=THIS_MONTH, ids=[])
@@ -429,8 +429,8 @@ figure: 1
 row: party=0 | Hamid Khan | Rs 50 short | Today <time> · 0.38 h · Starting cash: Rs 1,000 · Counted: Rs 1,150 · Books said: Rs 1,200 | open=ShiftActivity
 open: ShiftActivity
 money: true
-speech: Shifts This month: 1. Hamid Khan, Rs 50 short, Today <time> 0.38 h Starting cash: Rs 1,000 Counted: Rs 1,150 Books said: Rs 1,200.
-speechHidden: Shifts This month. Hamid Khan. [an amount left out]
+speech: Shifts, This month: 1. Hamid Khan, Rs 50 short, Today <time>, 0.38 h, Starting cash: Rs 1,000, Counted: Rs 1,150, Books said: Rs 1,200.
+speechHidden: Shifts, This month. Hamid Khan. [an amount left out]
 ask: Counter(facet=SHIFTS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=SHIFT_SHORT, window=null, ids=[])
@@ -440,8 +440,8 @@ figure: 1
 row: party=0 | Hamid Khan | Rs 50 short | Today <time> · 0.38 h · Starting cash: Rs 1,000 · Counted: Rs 1,150 · Books said: Rs 1,200 | open=ShiftActivity
 open: ShiftActivity
 money: true
-speech: Shifts This week: 1. Hamid Khan, Rs 50 short, Today <time> 0.38 h Starting cash: Rs 1,000 Counted: Rs 1,150 Books said: Rs 1,200.
-speechHidden: Shifts This week. Hamid Khan. [an amount left out]
+speech: Shifts, This week: 1. Hamid Khan, Rs 50 short, Today <time>, 0.38 h, Starting cash: Rs 1,000, Counted: Rs 1,150, Books said: Rs 1,200.
+speechHidden: Shifts, This week. Hamid Khan. [an amount left out]
 ask: Counter(facet=SHIFT_SHORT, window=null, ids=[])
 
 === Counter(facet=SHIFT_SHORT, window=TODAY, ids=[])
@@ -451,8 +451,8 @@ figure: 1
 row: party=0 | Hamid Khan | Rs 50 short | Today <time> · 0.38 h · Starting cash: Rs 1,000 · Counted: Rs 1,150 · Books said: Rs 1,200 | open=ShiftActivity
 open: ShiftActivity
 money: true
-speech: Shifts Today: 1. Hamid Khan, Rs 50 short, Today <time> 0.38 h Starting cash: Rs 1,000 Counted: Rs 1,150 Books said: Rs 1,200.
-speechHidden: Shifts Today. Hamid Khan. [an amount left out]
+speech: Shifts, Today: 1. Hamid Khan, Rs 50 short, Today <time>, 0.38 h, Starting cash: Rs 1,000, Counted: Rs 1,150, Books said: Rs 1,200.
+speechHidden: Shifts, Today. Hamid Khan. [an amount left out]
 ask: Counter(facet=SHIFT_SHORT, window=TODAY, ids=[])
 
 === Counter(facet=SHIFT_SHORT, window=THIS_MONTH, ids=[])
@@ -462,8 +462,8 @@ figure: 1
 row: party=0 | Hamid Khan | Rs 50 short | Today <time> · 0.38 h · Starting cash: Rs 1,000 · Counted: Rs 1,150 · Books said: Rs 1,200 | open=ShiftActivity
 open: ShiftActivity
 money: true
-speech: Shifts This month: 1. Hamid Khan, Rs 50 short, Today <time> 0.38 h Starting cash: Rs 1,000 Counted: Rs 1,150 Books said: Rs 1,200.
-speechHidden: Shifts This month. Hamid Khan. [an amount left out]
+speech: Shifts, This month: 1. Hamid Khan, Rs 50 short, Today <time>, 0.38 h, Starting cash: Rs 1,000, Counted: Rs 1,150, Books said: Rs 1,200.
+speechHidden: Shifts, This month. Hamid Khan. [an amount left out]
 ask: Counter(facet=SHIFT_SHORT, window=THIS_MONTH, ids=[])
 
 === Counter(facet=DAY_COUNT, window=null, ids=[])
@@ -487,8 +487,8 @@ mood: CALM
 label: Drawer count · Today
 line: Nothing was written in this time.
 open: CashbookActivity
-speech: Drawer count Today. Nothing was written in this time.
-speechHidden: Drawer count Today. Nothing was written in this time.
+speech: Drawer count, Today. Nothing was written in this time.
+speechHidden: Drawer count, Today. Nothing was written in this time.
 ask: Counter(facet=DAY_COUNT, window=TODAY, ids=[])
 
 === Counter(facet=DAY_COUNT, window=THIS_MONTH, ids=[])
@@ -496,8 +496,8 @@ mood: CALM
 label: Drawer count · This month
 line: Nothing was written in this time.
 open: CashbookActivity
-speech: Drawer count This month. Nothing was written in this time.
-speechHidden: Drawer count This month. Nothing was written in this time.
+speech: Drawer count, This month. Nothing was written in this time.
+speechHidden: Drawer count, This month. Nothing was written in this time.
 ask: Counter(facet=DAY_COUNT, window=THIS_MONTH, ids=[])
 
 === Counter(facet=LOYALTY, window=null, ids=[])
@@ -505,8 +505,8 @@ mood: CALM
 label: Loyalty points · This month
 line: Nothing was written in this time.
 open: KhataActivity
-speech: Loyalty points This month. Nothing was written in this time.
-speechHidden: Loyalty points This month. Nothing was written in this time.
+speech: Loyalty points, This month. Nothing was written in this time.
+speechHidden: Loyalty points, This month. Nothing was written in this time.
 ask: Counter(facet=LOYALTY, window=null, ids=[])
 
 === Counter(facet=LOYALTY, window=TODAY, ids=[])
@@ -514,8 +514,8 @@ mood: CALM
 label: Loyalty points · Today
 line: Nothing was written in this time.
 open: KhataActivity
-speech: Loyalty points Today. Nothing was written in this time.
-speechHidden: Loyalty points Today. Nothing was written in this time.
+speech: Loyalty points, Today. Nothing was written in this time.
+speechHidden: Loyalty points, Today. Nothing was written in this time.
 ask: Counter(facet=LOYALTY, window=TODAY, ids=[])
 
 === Counter(facet=LOYALTY, window=THIS_MONTH, ids=[])
@@ -523,8 +523,8 @@ mood: CALM
 label: Loyalty points · This month
 line: Nothing was written in this time.
 open: KhataActivity
-speech: Loyalty points This month. Nothing was written in this time.
-speechHidden: Loyalty points This month. Nothing was written in this time.
+speech: Loyalty points, This month. Nothing was written in this time.
+speechHidden: Loyalty points, This month. Nothing was written in this time.
 ask: Counter(facet=LOYALTY, window=THIS_MONTH, ids=[])
 
 === Counter(facet=WRITTEN_OFF, window=null, ids=[])
@@ -533,8 +533,8 @@ label: Goods written off · This month
 figure: 1
 row: party=0 | Paracetamol | 1 packet | Damaged | open=ProductsActivity
 open: ProductsActivity
-speech: Goods written off This month: 1. Paracetamol, 1 packet, Damaged.
-speechHidden: Goods written off This month: 1. Paracetamol, 1 packet, Damaged.
+speech: Goods written off, This month: 1. Paracetamol, 1 packet, Damaged.
+speechHidden: Goods written off, This month: 1. Paracetamol, 1 packet, Damaged.
 ask: Counter(facet=WRITTEN_OFF, window=null, ids=[])
 
 === Counter(facet=WRITTEN_OFF, window=TODAY, ids=[])
@@ -543,8 +543,8 @@ label: Goods written off · Today
 figure: 1
 row: party=0 | Paracetamol | 1 packet | Damaged | open=ProductsActivity
 open: ProductsActivity
-speech: Goods written off Today: 1. Paracetamol, 1 packet, Damaged.
-speechHidden: Goods written off Today: 1. Paracetamol, 1 packet, Damaged.
+speech: Goods written off, Today: 1. Paracetamol, 1 packet, Damaged.
+speechHidden: Goods written off, Today: 1. Paracetamol, 1 packet, Damaged.
 ask: Counter(facet=WRITTEN_OFF, window=TODAY, ids=[])
 
 === Counter(facet=WRITTEN_OFF, window=THIS_MONTH, ids=[])
@@ -553,8 +553,8 @@ label: Goods written off · This month
 figure: 1
 row: party=0 | Paracetamol | 1 packet | Damaged | open=ProductsActivity
 open: ProductsActivity
-speech: Goods written off This month: 1. Paracetamol, 1 packet, Damaged.
-speechHidden: Goods written off This month: 1. Paracetamol, 1 packet, Damaged.
+speech: Goods written off, This month: 1. Paracetamol, 1 packet, Damaged.
+speechHidden: Goods written off, This month: 1. Paracetamol, 1 packet, Damaged.
 ask: Counter(facet=WRITTEN_OFF, window=THIS_MONTH, ids=[])
 
 === Counter(facet=STOCK_CHANGES, window=null, ids=[])
@@ -563,8 +563,8 @@ label: Stock changes · This month
 figure: 1
 row: party=0 | Paracetamol | -1 packet | Damaged · Hamid Khan · Torn packet · Today <time> | open=ProductsActivity
 open: ProductsActivity
-speech: Stock changes This month: 1. Paracetamol, -1 packet, Damaged Hamid Khan Torn packet Today <time>
-speechHidden: Stock changes This month: 1. Paracetamol, -1 packet, Damaged Hamid Khan Torn packet Today <time>
+speech: Stock changes, This month: 1. Paracetamol, -1 packet, Damaged, Hamid Khan, Torn packet, Today <time>
+speechHidden: Stock changes, This month: 1. Paracetamol, -1 packet, Damaged, Hamid Khan, Torn packet, Today <time>
 ask: Counter(facet=STOCK_CHANGES, window=null, ids=[])
 
 === Counter(facet=STOCK_CHANGES, window=TODAY, ids=[])
@@ -573,8 +573,8 @@ label: Stock changes · Today
 figure: 1
 row: party=0 | Paracetamol | -1 packet | Damaged · Hamid Khan · Torn packet · Today <time> | open=ProductsActivity
 open: ProductsActivity
-speech: Stock changes Today: 1. Paracetamol, -1 packet, Damaged Hamid Khan Torn packet Today <time>
-speechHidden: Stock changes Today: 1. Paracetamol, -1 packet, Damaged Hamid Khan Torn packet Today <time>
+speech: Stock changes, Today: 1. Paracetamol, -1 packet, Damaged, Hamid Khan, Torn packet, Today <time>
+speechHidden: Stock changes, Today: 1. Paracetamol, -1 packet, Damaged, Hamid Khan, Torn packet, Today <time>
 ask: Counter(facet=STOCK_CHANGES, window=TODAY, ids=[])
 
 === Counter(facet=STOCK_CHANGES, window=THIS_MONTH, ids=[])
@@ -583,8 +583,8 @@ label: Stock changes · This month
 figure: 1
 row: party=0 | Paracetamol | -1 packet | Damaged · Hamid Khan · Torn packet · Today <time> | open=ProductsActivity
 open: ProductsActivity
-speech: Stock changes This month: 1. Paracetamol, -1 packet, Damaged Hamid Khan Torn packet Today <time>
-speechHidden: Stock changes This month: 1. Paracetamol, -1 packet, Damaged Hamid Khan Torn packet Today <time>
+speech: Stock changes, This month: 1. Paracetamol, -1 packet, Damaged, Hamid Khan, Torn packet, Today <time>
+speechHidden: Stock changes, This month: 1. Paracetamol, -1 packet, Damaged, Hamid Khan, Torn packet, Today <time>
 ask: Counter(facet=STOCK_CHANGES, window=THIS_MONTH, ids=[])
 
 === Counter(facet=LAST_COUNT, window=null, ids=[])

@@ -8,6 +8,7 @@ spoken: Ali Raza: It's on the screen.
 speech: Ali Raza: It's on the screen.
 speechHidden: Ali Raza: It's on the screen.
 ask: Person(ids=[1], facet=PHONE)
+secret: 0300 1234567
 
 === Person(ids=[1], facet=DETAILS)
 mood: CALM
@@ -19,7 +20,7 @@ line: Phone number: 0300 1234567
 line: First entry: <date>
 line: Balance: Rs 17,000 · You will get
 openParty: 1
-speech: Ali Raza. Customer. Father's name: Raza Ahmad. Village: Chak 12. Phone number: It's on the screen. First entry: <date>. Balance: Rs 17,000 You will get.
+speech: Ali Raza. Customer. Father's name: Raza Ahmad. Village: Chak 12. Phone number: It's on the screen. First entry: <date>. Balance: Rs 17,000, You will get.
 speechHidden: Ali Raza. Customer. Father's name: Raza Ahmad. Village: Chak 12. Phone number: It's on the screen. First entry: <date>. [an amount left out]
 ask: Person(ids=[1], facet=DETAILS)
 secret: 0300 1234567
@@ -34,7 +35,7 @@ line: Paid by: Cash
 line: Balance: Rs 17,000 · You will get
 openParty: 1
 money: true
-speech: Ali Raza: Rs 1,000. Last payment: Today <time> Entry number: RK-000008. Paid by: Cash. Balance: Rs 17,000 You will get.
+speech: Ali Raza: Rs 1,000. Last payment: Today <time> Entry number: RK-000008. Paid by: Cash. Balance: Rs 17,000, You will get.
 speechHidden: Ali Raza. Last payment: Today <time> Entry number: RK-000008. Paid by: Cash. [an amount left out]
 ask: Person(ids=[1], facet=LAST_PAYMENT)
 
@@ -48,8 +49,8 @@ line: Paid by: Cash
 line: Balance: Rs 17,000 · You will get
 openParty: 1
 money: true
-speech: Ali Raza: Rs 1,000. Last entry: Today <time> I Got. Entry number: RK-000008. Paid by: Cash. Balance: Rs 17,000 You will get.
-speechHidden: Ali Raza. Last entry: Today <time> I Got. Entry number: RK-000008. Paid by: Cash. [an amount left out]
+speech: Ali Raza: Rs 1,000. Last entry: Today <time>, I Got. Entry number: RK-000008. Paid by: Cash. Balance: Rs 17,000, You will get.
+speechHidden: Ali Raza. Last entry: Today <time>, I Got. Entry number: RK-000008. Paid by: Cash. [an amount left out]
 ask: Person(ids=[1], facet=LAST_ENTRY)
 
 === Person(ids=[1], facet=SINCE)
@@ -73,7 +74,7 @@ line: Balance: Rs 17,000 · You will get
 line: Limit used: 34%
 openParty: 1
 money: true
-speech: Ali Raza: Rs 50,000. Credit limit. Balance: Rs 17,000 You will get. Limit used: 34%.
+speech: Ali Raza: Rs 50,000. Credit limit. Balance: Rs 17,000, You will get. Limit used: 34%.
 speechHidden: Ali Raza. Credit limit. Limit used: 34%. [an amount left out]
 ask: Person(ids=[1], facet=LIMIT)
 
@@ -84,7 +85,7 @@ figure: <date>
 line: Promised day
 line: Balance: Rs 17,000 · You will get
 openParty: 1
-speech: Ali Raza: <date>. Promised day. Balance: Rs 17,000 You will get.
+speech: Ali Raza: <date>. Promised day. Balance: Rs 17,000, You will get.
 speechHidden: Ali Raza: <date>. Promised day. [an amount left out]
 ask: Person(ids=[1], facet=PROMISE)
 
@@ -96,7 +97,7 @@ line: Entries
 line: I Gave: 3 · Rs 22,000
 line: I Got: 2 · Rs 5,000
 openParty: 1
-speech: Ali Raza: 5. Entries. I Gave: 3 Rs 22,000. I Got: 2 Rs 5,000.
+speech: Ali Raza: 5. Entries. I Gave: 3, Rs 22,000. I Got: 2, Rs 5,000.
 speechHidden: Ali Raza: 5. Entries. [an amount left out]
 ask: Person(ids=[1], facet=ENTRIES)
 
@@ -129,7 +130,7 @@ line: First entry: <date>
 line: Opening balance: Rs 3,000 · You will get
 line: Balance: Rs 3,000 · You will get
 openParty: 2
-speech: Bashir Ahmad. Customer. Phone number: It's on the screen. First entry: <date>. Opening balance: Rs 3,000 You will get. Balance: Rs 3,000 You will get.
+speech: Bashir Ahmad. Customer. Phone number: It's on the screen. First entry: <date>. Opening balance: Rs 3,000, You will get. Balance: Rs 3,000, You will get.
 speechHidden: Bashir Ahmad. Customer. Phone number: It's on the screen. First entry: <date>. [an amount left out]
 ask: Person(ids=[2], facet=DETAILS)
 secret: 0300 7654321
@@ -144,7 +145,7 @@ line: Paid by: Cash
 line: Balance: Rs 164,000 · You will give
 openParty: 3
 money: true
-speech: Tariq Butt: Rs 100,000. Last payment: <date> <time> Entry number: RK-000005. Paid by: Cash. Balance: Rs 164,000 You will give.
+speech: Tariq Butt: Rs 100,000. Last payment: <date> <time> Entry number: RK-000005. Paid by: Cash. Balance: Rs 164,000, You will give.
 speechHidden: Tariq Butt. Last payment: <date> <time> Entry number: RK-000005. Paid by: Cash. [an amount left out]
 ask: Person(ids=[3], facet=LAST_PAYMENT)
 

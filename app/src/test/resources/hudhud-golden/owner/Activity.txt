@@ -14,8 +14,8 @@ row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=Au
 row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
 open: DayBookActivity
 openExtras: day=<millis>
-speech: What happened Today. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
-speechHidden: What happened Today. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+speech: What happened, Today. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1, Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills, by Owner. Promised day set, Today <time>, Customers, by Owner. Entry changed, Today <time>, Entries, by Hamid Khan.
+speechHidden: What happened, Today. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1, Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills, by Owner. Promised day set, Today <time>, Customers, by Owner. Entry changed, Today <time>, Entries, by Hamid Khan. [an amount left out]
 ask: Activity(window=null)
 
 === Activity(window=TODAY)
@@ -34,8 +34,8 @@ row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=Au
 row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
 open: DayBookActivity
 openExtras: day=<millis>
-speech: What happened Today. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
-speechHidden: What happened Today. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+speech: What happened, Today. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1, Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills, by Owner. Promised day set, Today <time>, Customers, by Owner. Entry changed, Today <time>, Entries, by Hamid Khan.
+speechHidden: What happened, Today. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1, Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills, by Owner. Promised day set, Today <time>, Customers, by Owner. Entry changed, Today <time>, Entries, by Hamid Khan. [an amount left out]
 ask: Activity(window=TODAY)
 
 === Activity(window=YESTERDAY)
@@ -44,8 +44,8 @@ label: What happened · Yesterday
 line: Nothing was written in this time.
 open: DayBookActivity
 openExtras: day=<millis>
-speech: What happened Yesterday. Nothing was written in this time.
-speechHidden: What happened Yesterday. Nothing was written in this time.
+speech: What happened, Yesterday. Nothing was written in this time.
+speechHidden: What happened, Yesterday. Nothing was written in this time.
 ask: Activity(window=YESTERDAY)
 
 === Activity(window=THIS_WEEK)
@@ -63,8 +63,8 @@ row: party=0 | Supplier bill added | Today <time> | Supplier Bills · by Owner |
 row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=AuditActivity
 row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
 open: AuditActivity
-speech: What happened This week. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
-speechHidden: What happened This week. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+speech: What happened, This week. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1, Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills, by Owner. Promised day set, Today <time>, Customers, by Owner. Entry changed, Today <time>, Entries, by Hamid Khan.
+speechHidden: What happened, This week. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1, Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills, by Owner. Promised day set, Today <time>, Customers, by Owner. Entry changed, Today <time>, Entries, by Hamid Khan. [an amount left out]
 ask: Activity(window=THIS_WEEK)
 
 === Activity(window=LAST_WEEK)
@@ -72,8 +72,8 @@ mood: CALM
 label: What happened · Last week
 line: Nothing was written in this time.
 open: AuditActivity
-speech: What happened Last week. Nothing was written in this time.
-speechHidden: What happened Last week. Nothing was written in this time.
+speech: What happened, Last week. Nothing was written in this time.
+speechHidden: What happened, Last week. Nothing was written in this time.
 ask: Activity(window=LAST_WEEK)
 
 === Activity(window=THIS_MONTH)
@@ -91,8 +91,8 @@ row: party=0 | Supplier bill added | Today <time> | Supplier Bills · by Owner |
 row: party=0 | Promised day set | Today <time> | Customers · by Owner | open=AuditActivity
 row: party=0 | Entry changed | Today <time> | Entries · by Hamid Khan | open=AuditActivity
 open: AuditActivity
-speech: What happened This month. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan.
-speechHidden: What happened This month. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1 Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills by Owner. Promised day set, Today <time>, Customers by Owner. Entry changed, Today <time>, Entries by Hamid Khan. [an amount left out]
+speech: What happened, This month. Entries: 4. Money in: Rs 5,200. Money out: Rs 2,550. Invoices: 1. Counter sales: 1. Edited: 1, Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills, by Owner. Promised day set, Today <time>, Customers, by Owner. Entry changed, Today <time>, Entries, by Hamid Khan.
+speechHidden: What happened, This month. Entries: 4. Invoices: 1. Counter sales: 1. Edited: 1, Deleted: 0. By: Hamid Khan. Day closed, Today <time>, by Owner. Supplier bill added, Today <time>, Supplier Bills, by Owner. Promised day set, Today <time>, Customers, by Owner. Entry changed, Today <time>, Entries, by Hamid Khan. [an amount left out]
 ask: Activity(window=THIS_MONTH)
 
 === Activity(window=LAST_MONTH)
@@ -100,8 +100,8 @@ mood: CALM
 label: What happened · Last month
 line: Nothing was written in this time.
 open: AuditActivity
-speech: What happened Last month. Nothing was written in this time.
-speechHidden: What happened Last month. Nothing was written in this time.
+speech: What happened, Last month. Nothing was written in this time.
+speechHidden: What happened, Last month. Nothing was written in this time.
 ask: Activity(window=LAST_MONTH)
 
 === Activity(window=LAST_6_MONTHS)

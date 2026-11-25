@@ -1,0 +1,16 @@
+=== Advise(of=CHASE)
+mood: CALM
+label: Whom to chase first
+line: Only the owner or a manager can see this figure.
+speech: Whom to chase first. Only the owner or a manager can see this figure.
+speechHidden: Whom to chase first. Only the owner or a manager can see this figure.
+ask: Advise(of=CHASE)
+
+=== Advise(of=NEXT_30)
+mood: CALM
+label: Next 30 days
+line: Only the owner or a manager can see this figure.
+speech: Next 30 days. Only the owner or a manager can see this figure.
+speechHidden: Next 30 days. Only the owner or a manager can see this figure.
+ask: Advise(of=NEXT_30)
+

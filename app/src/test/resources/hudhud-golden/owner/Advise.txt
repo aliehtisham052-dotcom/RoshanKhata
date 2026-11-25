@@ -1,0 +1,28 @@
+=== Advise(of=CHASE)
+mood: CARE
+label: Whom to chase first
+line: By age, as “Dues by age” counts it (0–30, 31–60, 61–90, over 90 days): the oldest band first; in one band, those the Payment Radar calls late first, then the larger amount. Nothing is sent from here.
+row: party=1 | Ali Raza | Rs 17,000 | Oldest unpaid amount has waited 75 days · Often pays late
+row: party=2 | Bashir Ahmad | Rs 3,000 | Oldest unpaid amount has waited 90 days · Often pays late
+open: FollowUpActivity
+money: true
+speech: Whom to chase first. By age, as “Dues by age” counts it (0–30, 31–60, 61–90, over 90 days): the oldest band first; in one band, those the Payment Radar calls late first, then the larger amount. Nothing is sent from here. Ali Raza, Rs 17,000, Oldest unpaid amount has waited 75 days, Often pays late. Bashir Ahmad, Rs 3,000, Oldest unpaid amount has waited 90 days, Often pays late.
+speechHidden: Whom to chase first. By age, as “Dues by age” counts it (0–30, 31–60, 61–90, over 90 days): the oldest band first; in one band, those the Payment Radar calls late first, then the larger amount. Nothing is sent from here. Ali Raza, Oldest unpaid amount has waited 75 days, Often pays late. Bashir Ahmad, Oldest unpaid amount has waited 90 days, Often pays late. [an amount left out]
+ask: Advise(of=CHASE)
+
+=== Advise(of=NEXT_30)
+mood: CARE
+label: Next 30 days · Coming in
+figure: Rs 4,500
+line: Going out: Rs 164,000
+line: Net: −Rs 159,500
+line: Week of <date>: Rs 164,000 more is due to go out than is promised in by then.
+line: Only what has a date is counted: instalment plans, pending cheques and supplier bills with a due date. A promise is not money in hand, so promises already broken are not counted on; late bills are due now.
+row: party=1 | Ali Raza | Rs 2,500 | <date> · Cheque to receive
+row: party=1 | Ali Raza | Rs 2,000 | <date> · Instalment
+open: CashFlowActivity
+money: true
+speech: Next 30 days, Coming in: Rs 4,500. Going out: Rs 164,000. Net: −Rs 159,500. Week of <date>: Rs 164,000 more is due to go out than is promised in by then. Only what has a date is counted: instalment plans, pending cheques and supplier bills with a due date. A promise is not money in hand, so promises already broken are not counted on; late bills are due now. Ali Raza, Rs 2,500, <date>, Cheque to receive. Ali Raza, Rs 2,000, <date>, Instalment.
+speechHidden: Next 30 days, Coming in. Only what has a date is counted: instalment plans, pending cheques and supplier bills with a due date. A promise is not money in hand, so promises already broken are not counted on; late bills are due now. Ali Raza, <date>, Cheque to receive. Ali Raza, <date>, Instalment. [an amount left out]
+ask: Advise(of=NEXT_30)
+

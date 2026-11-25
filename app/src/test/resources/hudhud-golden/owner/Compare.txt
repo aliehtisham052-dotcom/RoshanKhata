@@ -28,7 +28,7 @@ line: Sale · <date>: Rs 13,200
 line: Sale · <date>: Rs 0
 line: Difference: +Rs 13,200
 money: true
-speech: Comparison: +Rs 13,200. Sale <date>: Rs 13,200. Sale <date>: Rs 0. Difference: +Rs 13,200.
+speech: Comparison: +Rs 13,200. Sale, <date>: Rs 13,200. Sale, <date>: Rs 0. Difference: +Rs 13,200.
 ask: Compare(first=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[]), second=OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[]))
 
 === Compare(first=Drawer, second=Drawer)

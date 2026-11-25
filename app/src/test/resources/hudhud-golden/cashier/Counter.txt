@@ -2,24 +2,24 @@
 mood: CALM
 label: Biggest bills · Today
 line: Only the owner or a manager can see this figure.
-speech: Biggest bills Today. Only the owner or a manager can see this figure.
-speechHidden: Biggest bills Today. Only the owner or a manager can see this figure.
+speech: Biggest bills, Today. Only the owner or a manager can see this figure.
+speechHidden: Biggest bills, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=BIGGEST, window=null, ids=[])
 
 === Counter(facet=BIGGEST, window=TODAY, ids=[])
 mood: CALM
 label: Biggest bills · Today
 line: Only the owner or a manager can see this figure.
-speech: Biggest bills Today. Only the owner or a manager can see this figure.
-speechHidden: Biggest bills Today. Only the owner or a manager can see this figure.
+speech: Biggest bills, Today. Only the owner or a manager can see this figure.
+speechHidden: Biggest bills, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=BIGGEST, window=TODAY, ids=[])
 
 === Counter(facet=BIGGEST, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Biggest bills · This month
 line: Only the owner or a manager can see this figure.
-speech: Biggest bills This month. Only the owner or a manager can see this figure.
-speechHidden: Biggest bills This month. Only the owner or a manager can see this figure.
+speech: Biggest bills, This month. Only the owner or a manager can see this figure.
+speechHidden: Biggest bills, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=BIGGEST, window=THIS_MONTH, ids=[])
 
 === Counter(facet=LAST_TICKET, window=null, ids=[])
@@ -50,264 +50,264 @@ ask: Counter(facet=LAST_TICKET, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Sales by cashier · Today
 line: Only the owner or a manager can see this figure.
-speech: Sales by cashier Today. Only the owner or a manager can see this figure.
-speechHidden: Sales by cashier Today. Only the owner or a manager can see this figure.
+speech: Sales by cashier, Today. Only the owner or a manager can see this figure.
+speechHidden: Sales by cashier, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=BY_CASHIER, window=null, ids=[])
 
 === Counter(facet=BY_CASHIER, window=TODAY, ids=[])
 mood: CALM
 label: Sales by cashier · Today
 line: Only the owner or a manager can see this figure.
-speech: Sales by cashier Today. Only the owner or a manager can see this figure.
-speechHidden: Sales by cashier Today. Only the owner or a manager can see this figure.
+speech: Sales by cashier, Today. Only the owner or a manager can see this figure.
+speechHidden: Sales by cashier, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=BY_CASHIER, window=TODAY, ids=[])
 
 === Counter(facet=BY_CASHIER, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Sales by cashier · This month
 line: Only the owner or a manager can see this figure.
-speech: Sales by cashier This month. Only the owner or a manager can see this figure.
-speechHidden: Sales by cashier This month. Only the owner or a manager can see this figure.
+speech: Sales by cashier, This month. Only the owner or a manager can see this figure.
+speechHidden: Sales by cashier, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=BY_CASHIER, window=THIS_MONTH, ids=[])
 
 === Counter(facet=DISCOUNTS, window=null, ids=[])
 mood: CALM
 label: Discounts given · Today
 line: Only the owner or a manager can see this figure.
-speech: Discounts given Today. Only the owner or a manager can see this figure.
-speechHidden: Discounts given Today. Only the owner or a manager can see this figure.
+speech: Discounts given, Today. Only the owner or a manager can see this figure.
+speechHidden: Discounts given, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=DISCOUNTS, window=null, ids=[])
 
 === Counter(facet=DISCOUNTS, window=TODAY, ids=[])
 mood: CALM
 label: Discounts given · Today
 line: Only the owner or a manager can see this figure.
-speech: Discounts given Today. Only the owner or a manager can see this figure.
-speechHidden: Discounts given Today. Only the owner or a manager can see this figure.
+speech: Discounts given, Today. Only the owner or a manager can see this figure.
+speechHidden: Discounts given, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=DISCOUNTS, window=TODAY, ids=[])
 
 === Counter(facet=DISCOUNTS, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Discounts given · This month
 line: Only the owner or a manager can see this figure.
-speech: Discounts given This month. Only the owner or a manager can see this figure.
-speechHidden: Discounts given This month. Only the owner or a manager can see this figure.
+speech: Discounts given, This month. Only the owner or a manager can see this figure.
+speechHidden: Discounts given, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=DISCOUNTS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=TAX, window=null, ids=[])
 mood: CALM
 label: Tax and round-off · Today
 line: Only the owner or a manager can see this figure.
-speech: Tax and round-off Today. Only the owner or a manager can see this figure.
-speechHidden: Tax and round-off Today. Only the owner or a manager can see this figure.
+speech: Tax and round-off, Today. Only the owner or a manager can see this figure.
+speechHidden: Tax and round-off, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=TAX, window=null, ids=[])
 
 === Counter(facet=TAX, window=TODAY, ids=[])
 mood: CALM
 label: Tax and round-off · Today
 line: Only the owner or a manager can see this figure.
-speech: Tax and round-off Today. Only the owner or a manager can see this figure.
-speechHidden: Tax and round-off Today. Only the owner or a manager can see this figure.
+speech: Tax and round-off, Today. Only the owner or a manager can see this figure.
+speechHidden: Tax and round-off, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=TAX, window=TODAY, ids=[])
 
 === Counter(facet=TAX, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Tax and round-off · This month
 line: Only the owner or a manager can see this figure.
-speech: Tax and round-off This month. Only the owner or a manager can see this figure.
-speechHidden: Tax and round-off This month. Only the owner or a manager can see this figure.
+speech: Tax and round-off, This month. Only the owner or a manager can see this figure.
+speechHidden: Tax and round-off, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=TAX, window=THIS_MONTH, ids=[])
 
 === Counter(facet=ON_ACCOUNT, window=null, ids=[])
 mood: CALM
 label: Sold on account · Today
 line: Only the owner or a manager can see this figure.
-speech: Sold on account Today. Only the owner or a manager can see this figure.
-speechHidden: Sold on account Today. Only the owner or a manager can see this figure.
+speech: Sold on account, Today. Only the owner or a manager can see this figure.
+speechHidden: Sold on account, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=ON_ACCOUNT, window=null, ids=[])
 
 === Counter(facet=ON_ACCOUNT, window=TODAY, ids=[])
 mood: CALM
 label: Sold on account · Today
 line: Only the owner or a manager can see this figure.
-speech: Sold on account Today. Only the owner or a manager can see this figure.
-speechHidden: Sold on account Today. Only the owner or a manager can see this figure.
+speech: Sold on account, Today. Only the owner or a manager can see this figure.
+speechHidden: Sold on account, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=ON_ACCOUNT, window=TODAY, ids=[])
 
 === Counter(facet=ON_ACCOUNT, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Sold on account · This month
 line: Only the owner or a manager can see this figure.
-speech: Sold on account This month. Only the owner or a manager can see this figure.
-speechHidden: Sold on account This month. Only the owner or a manager can see this figure.
+speech: Sold on account, This month. Only the owner or a manager can see this figure.
+speechHidden: Sold on account, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=ON_ACCOUNT, window=THIS_MONTH, ids=[])
 
 === Counter(facet=PAY_WAYS, window=null, ids=[])
 mood: CALM
 label: Takings by way of payment · Today
 line: Only the owner or a manager can see this figure.
-speech: Takings by way of payment Today. Only the owner or a manager can see this figure.
-speechHidden: Takings by way of payment Today. Only the owner or a manager can see this figure.
+speech: Takings by way of payment, Today. Only the owner or a manager can see this figure.
+speechHidden: Takings by way of payment, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=PAY_WAYS, window=null, ids=[])
 
 === Counter(facet=PAY_WAYS, window=TODAY, ids=[])
 mood: CALM
 label: Takings by way of payment · Today
 line: Only the owner or a manager can see this figure.
-speech: Takings by way of payment Today. Only the owner or a manager can see this figure.
-speechHidden: Takings by way of payment Today. Only the owner or a manager can see this figure.
+speech: Takings by way of payment, Today. Only the owner or a manager can see this figure.
+speechHidden: Takings by way of payment, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=PAY_WAYS, window=TODAY, ids=[])
 
 === Counter(facet=PAY_WAYS, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Takings by way of payment · This month
 line: Only the owner or a manager can see this figure.
-speech: Takings by way of payment This month. Only the owner or a manager can see this figure.
-speechHidden: Takings by way of payment This month. Only the owner or a manager can see this figure.
+speech: Takings by way of payment, This month. Only the owner or a manager can see this figure.
+speechHidden: Takings by way of payment, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=PAY_WAYS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=VOIDED, window=null, ids=[])
 mood: CALM
 label: Cancelled bills · Today
 line: Only the owner or a manager can see this figure.
-speech: Cancelled bills Today. Only the owner or a manager can see this figure.
-speechHidden: Cancelled bills Today. Only the owner or a manager can see this figure.
+speech: Cancelled bills, Today. Only the owner or a manager can see this figure.
+speechHidden: Cancelled bills, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=VOIDED, window=null, ids=[])
 
 === Counter(facet=VOIDED, window=TODAY, ids=[])
 mood: CALM
 label: Cancelled bills · Today
 line: Only the owner or a manager can see this figure.
-speech: Cancelled bills Today. Only the owner or a manager can see this figure.
-speechHidden: Cancelled bills Today. Only the owner or a manager can see this figure.
+speech: Cancelled bills, Today. Only the owner or a manager can see this figure.
+speechHidden: Cancelled bills, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=VOIDED, window=TODAY, ids=[])
 
 === Counter(facet=VOIDED, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Cancelled bills · This month
 line: Only the owner or a manager can see this figure.
-speech: Cancelled bills This month. Only the owner or a manager can see this figure.
-speechHidden: Cancelled bills This month. Only the owner or a manager can see this figure.
+speech: Cancelled bills, This month. Only the owner or a manager can see this figure.
+speechHidden: Cancelled bills, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=VOIDED, window=THIS_MONTH, ids=[])
 
 === Counter(facet=RETURN_REASONS, window=null, ids=[])
 mood: CALM
 label: Why goods came back · Today
 line: Only the owner or a manager can see this figure.
-speech: Why goods came back Today. Only the owner or a manager can see this figure.
-speechHidden: Why goods came back Today. Only the owner or a manager can see this figure.
+speech: Why goods came back, Today. Only the owner or a manager can see this figure.
+speechHidden: Why goods came back, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=RETURN_REASONS, window=null, ids=[])
 
 === Counter(facet=RETURN_REASONS, window=TODAY, ids=[])
 mood: CALM
 label: Why goods came back · Today
 line: Only the owner or a manager can see this figure.
-speech: Why goods came back Today. Only the owner or a manager can see this figure.
-speechHidden: Why goods came back Today. Only the owner or a manager can see this figure.
+speech: Why goods came back, Today. Only the owner or a manager can see this figure.
+speechHidden: Why goods came back, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=RETURN_REASONS, window=TODAY, ids=[])
 
 === Counter(facet=RETURN_REASONS, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Why goods came back · This month
 line: Only the owner or a manager can see this figure.
-speech: Why goods came back This month. Only the owner or a manager can see this figure.
-speechHidden: Why goods came back This month. Only the owner or a manager can see this figure.
+speech: Why goods came back, This month. Only the owner or a manager can see this figure.
+speechHidden: Why goods came back, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=RETURN_REASONS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=RETURN_WAYS, window=null, ids=[])
 mood: CALM
 label: How returns were paid back · Today
 line: Only the owner or a manager can see this figure.
-speech: How returns were paid back Today. Only the owner or a manager can see this figure.
-speechHidden: How returns were paid back Today. Only the owner or a manager can see this figure.
+speech: How returns were paid back, Today. Only the owner or a manager can see this figure.
+speechHidden: How returns were paid back, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=RETURN_WAYS, window=null, ids=[])
 
 === Counter(facet=RETURN_WAYS, window=TODAY, ids=[])
 mood: CALM
 label: How returns were paid back · Today
 line: Only the owner or a manager can see this figure.
-speech: How returns were paid back Today. Only the owner or a manager can see this figure.
-speechHidden: How returns were paid back Today. Only the owner or a manager can see this figure.
+speech: How returns were paid back, Today. Only the owner or a manager can see this figure.
+speechHidden: How returns were paid back, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=RETURN_WAYS, window=TODAY, ids=[])
 
 === Counter(facet=RETURN_WAYS, window=THIS_MONTH, ids=[])
 mood: CALM
 label: How returns were paid back · This month
 line: Only the owner or a manager can see this figure.
-speech: How returns were paid back This month. Only the owner or a manager can see this figure.
-speechHidden: How returns were paid back This month. Only the owner or a manager can see this figure.
+speech: How returns were paid back, This month. Only the owner or a manager can see this figure.
+speechHidden: How returns were paid back, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=RETURN_WAYS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=RETURN_GOODS, window=null, ids=[])
 mood: CALM
 label: Goods that came back · Today
 line: Only the owner or a manager can see this figure.
-speech: Goods that came back Today. Only the owner or a manager can see this figure.
-speechHidden: Goods that came back Today. Only the owner or a manager can see this figure.
+speech: Goods that came back, Today. Only the owner or a manager can see this figure.
+speechHidden: Goods that came back, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=RETURN_GOODS, window=null, ids=[])
 
 === Counter(facet=RETURN_GOODS, window=TODAY, ids=[])
 mood: CALM
 label: Goods that came back · Today
 line: Only the owner or a manager can see this figure.
-speech: Goods that came back Today. Only the owner or a manager can see this figure.
-speechHidden: Goods that came back Today. Only the owner or a manager can see this figure.
+speech: Goods that came back, Today. Only the owner or a manager can see this figure.
+speechHidden: Goods that came back, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=RETURN_GOODS, window=TODAY, ids=[])
 
 === Counter(facet=RETURN_GOODS, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Goods that came back · This month
 line: Only the owner or a manager can see this figure.
-speech: Goods that came back This month. Only the owner or a manager can see this figure.
-speechHidden: Goods that came back This month. Only the owner or a manager can see this figure.
+speech: Goods that came back, This month. Only the owner or a manager can see this figure.
+speechHidden: Goods that came back, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=RETURN_GOODS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=SHIFTS, window=null, ids=[])
 mood: CALM
 label: Shifts · This week
 line: Only the owner or a manager can see this figure.
-speech: Shifts This week. Only the owner or a manager can see this figure.
-speechHidden: Shifts This week. Only the owner or a manager can see this figure.
+speech: Shifts, This week. Only the owner or a manager can see this figure.
+speechHidden: Shifts, This week. Only the owner or a manager can see this figure.
 ask: Counter(facet=SHIFTS, window=null, ids=[])
 
 === Counter(facet=SHIFTS, window=TODAY, ids=[])
 mood: CALM
 label: Shifts · Today
 line: Only the owner or a manager can see this figure.
-speech: Shifts Today. Only the owner or a manager can see this figure.
-speechHidden: Shifts Today. Only the owner or a manager can see this figure.
+speech: Shifts, Today. Only the owner or a manager can see this figure.
+speechHidden: Shifts, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=SHIFTS, window=TODAY, ids=[])
 
 === Counter(facet=SHIFTS, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Shifts · This month
 line: Only the owner or a manager can see this figure.
-speech: Shifts This month. Only the owner or a manager can see this figure.
-speechHidden: Shifts This month. Only the owner or a manager can see this figure.
+speech: Shifts, This month. Only the owner or a manager can see this figure.
+speechHidden: Shifts, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=SHIFTS, window=THIS_MONTH, ids=[])
 
 === Counter(facet=SHIFT_SHORT, window=null, ids=[])
 mood: CALM
 label: Shifts · This week
 line: Only the owner or a manager can see this figure.
-speech: Shifts This week. Only the owner or a manager can see this figure.
-speechHidden: Shifts This week. Only the owner or a manager can see this figure.
+speech: Shifts, This week. Only the owner or a manager can see this figure.
+speechHidden: Shifts, This week. Only the owner or a manager can see this figure.
 ask: Counter(facet=SHIFT_SHORT, window=null, ids=[])
 
 === Counter(facet=SHIFT_SHORT, window=TODAY, ids=[])
 mood: CALM
 label: Shifts · Today
 line: Only the owner or a manager can see this figure.
-speech: Shifts Today. Only the owner or a manager can see this figure.
-speechHidden: Shifts Today. Only the owner or a manager can see this figure.
+speech: Shifts, Today. Only the owner or a manager can see this figure.
+speechHidden: Shifts, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=SHIFT_SHORT, window=TODAY, ids=[])
 
 === Counter(facet=SHIFT_SHORT, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Shifts · This month
 line: Only the owner or a manager can see this figure.
-speech: Shifts This month. Only the owner or a manager can see this figure.
-speechHidden: Shifts This month. Only the owner or a manager can see this figure.
+speech: Shifts, This month. Only the owner or a manager can see this figure.
+speechHidden: Shifts, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=SHIFT_SHORT, window=THIS_MONTH, ids=[])
 
 === Counter(facet=DAY_COUNT, window=null, ids=[])
@@ -322,88 +322,88 @@ ask: Counter(facet=DAY_COUNT, window=null, ids=[])
 mood: CALM
 label: Drawer count · Today
 line: Only the owner or a manager can see this figure.
-speech: Drawer count Today. Only the owner or a manager can see this figure.
-speechHidden: Drawer count Today. Only the owner or a manager can see this figure.
+speech: Drawer count, Today. Only the owner or a manager can see this figure.
+speechHidden: Drawer count, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=DAY_COUNT, window=TODAY, ids=[])
 
 === Counter(facet=DAY_COUNT, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Drawer count · This month
 line: Only the owner or a manager can see this figure.
-speech: Drawer count This month. Only the owner or a manager can see this figure.
-speechHidden: Drawer count This month. Only the owner or a manager can see this figure.
+speech: Drawer count, This month. Only the owner or a manager can see this figure.
+speechHidden: Drawer count, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=DAY_COUNT, window=THIS_MONTH, ids=[])
 
 === Counter(facet=LOYALTY, window=null, ids=[])
 mood: CALM
 label: Loyalty points · This month
 line: Only the owner or a manager can see this figure.
-speech: Loyalty points This month. Only the owner or a manager can see this figure.
-speechHidden: Loyalty points This month. Only the owner or a manager can see this figure.
+speech: Loyalty points, This month. Only the owner or a manager can see this figure.
+speechHidden: Loyalty points, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=LOYALTY, window=null, ids=[])
 
 === Counter(facet=LOYALTY, window=TODAY, ids=[])
 mood: CALM
 label: Loyalty points · Today
 line: Only the owner or a manager can see this figure.
-speech: Loyalty points Today. Only the owner or a manager can see this figure.
-speechHidden: Loyalty points Today. Only the owner or a manager can see this figure.
+speech: Loyalty points, Today. Only the owner or a manager can see this figure.
+speechHidden: Loyalty points, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=LOYALTY, window=TODAY, ids=[])
 
 === Counter(facet=LOYALTY, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Loyalty points · This month
 line: Only the owner or a manager can see this figure.
-speech: Loyalty points This month. Only the owner or a manager can see this figure.
-speechHidden: Loyalty points This month. Only the owner or a manager can see this figure.
+speech: Loyalty points, This month. Only the owner or a manager can see this figure.
+speechHidden: Loyalty points, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=LOYALTY, window=THIS_MONTH, ids=[])
 
 === Counter(facet=WRITTEN_OFF, window=null, ids=[])
 mood: CALM
 label: Goods written off · This month
 line: Only the owner or a manager can see this figure.
-speech: Goods written off This month. Only the owner or a manager can see this figure.
-speechHidden: Goods written off This month. Only the owner or a manager can see this figure.
+speech: Goods written off, This month. Only the owner or a manager can see this figure.
+speechHidden: Goods written off, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=WRITTEN_OFF, window=null, ids=[])
 
 === Counter(facet=WRITTEN_OFF, window=TODAY, ids=[])
 mood: CALM
 label: Goods written off · Today
 line: Only the owner or a manager can see this figure.
-speech: Goods written off Today. Only the owner or a manager can see this figure.
-speechHidden: Goods written off Today. Only the owner or a manager can see this figure.
+speech: Goods written off, Today. Only the owner or a manager can see this figure.
+speechHidden: Goods written off, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=WRITTEN_OFF, window=TODAY, ids=[])
 
 === Counter(facet=WRITTEN_OFF, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Goods written off · This month
 line: Only the owner or a manager can see this figure.
-speech: Goods written off This month. Only the owner or a manager can see this figure.
-speechHidden: Goods written off This month. Only the owner or a manager can see this figure.
+speech: Goods written off, This month. Only the owner or a manager can see this figure.
+speechHidden: Goods written off, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=WRITTEN_OFF, window=THIS_MONTH, ids=[])
 
 === Counter(facet=STOCK_CHANGES, window=null, ids=[])
 mood: CALM
 label: Stock changes · This month
 line: Only the owner or a manager can see this figure.
-speech: Stock changes This month. Only the owner or a manager can see this figure.
-speechHidden: Stock changes This month. Only the owner or a manager can see this figure.
+speech: Stock changes, This month. Only the owner or a manager can see this figure.
+speechHidden: Stock changes, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=STOCK_CHANGES, window=null, ids=[])
 
 === Counter(facet=STOCK_CHANGES, window=TODAY, ids=[])
 mood: CALM
 label: Stock changes · Today
 line: Only the owner or a manager can see this figure.
-speech: Stock changes Today. Only the owner or a manager can see this figure.
-speechHidden: Stock changes Today. Only the owner or a manager can see this figure.
+speech: Stock changes, Today. Only the owner or a manager can see this figure.
+speechHidden: Stock changes, Today. Only the owner or a manager can see this figure.
 ask: Counter(facet=STOCK_CHANGES, window=TODAY, ids=[])
 
 === Counter(facet=STOCK_CHANGES, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Stock changes · This month
 line: Only the owner or a manager can see this figure.
-speech: Stock changes This month. Only the owner or a manager can see this figure.
-speechHidden: Stock changes This month. Only the owner or a manager can see this figure.
+speech: Stock changes, This month. Only the owner or a manager can see this figure.
+speechHidden: Stock changes, This month. Only the owner or a manager can see this figure.
 ask: Counter(facet=STOCK_CHANGES, window=THIS_MONTH, ids=[])
 
 === Counter(facet=LAST_COUNT, window=null, ids=[])
@@ -434,7 +434,7 @@ ask: Counter(facet=LAST_COUNT, window=THIS_MONTH, ids=[])
 mood: CALM
 label: Loyalty points · All time
 line: Only the owner or a manager can see this figure.
-speech: Loyalty points All time. Only the owner or a manager can see this figure.
-speechHidden: Loyalty points All time. Only the owner or a manager can see this figure.
+speech: Loyalty points, All time. Only the owner or a manager can see this figure.
+speechHidden: Loyalty points, All time. Only the owner or a manager can see this figure.
 ask: Counter(facet=LOYALTY, window=null, ids=[1])
 

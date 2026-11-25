@@ -5,8 +5,8 @@ figure: <date>
 line: Last bought
 line: Price: Rs 4,000 / bag
 openParty: 2
-speech: Bashir Ahmad Urea: <date>. Last bought. Price: Rs 4,000 / bag.
-speechHidden: Bashir Ahmad Urea: <date>. Last bought. [an amount left out]
+speech: Bashir Ahmad, Urea: <date>. Last bought. Price: Rs 4,000 / bag.
+speechHidden: Bashir Ahmad, Urea: <date>. Last bought. [an amount left out]
 ask: Took(ids=[2], goods=[1], window=null)
 
 === Took(ids=[2], goods=[1], window=THIS_MONTH)
@@ -16,8 +16,8 @@ figure: <date>
 line: Last bought
 line: Price: Rs 4,000 / bag
 openParty: 2
-speech: Bashir Ahmad Urea This month: <date>. Last bought. Price: Rs 4,000 / bag.
-speechHidden: Bashir Ahmad Urea This month: <date>. Last bought. [an amount left out]
+speech: Bashir Ahmad, Urea, This month: <date>. Last bought. Price: Rs 4,000 / bag.
+speechHidden: Bashir Ahmad, Urea, This month: <date>. Last bought. [an amount left out]
 ask: Took(ids=[2], goods=[1], window=THIS_MONTH)
 
 === Took(ids=[2], goods=[1, 2], window=null)

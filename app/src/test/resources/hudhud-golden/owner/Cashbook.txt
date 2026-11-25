@@ -11,8 +11,8 @@ row: party=0 | Return | −Rs 50 | Today <time> · R-000001 | open=CashbookActiv
 row: party=0 | Sale | +Rs 200 | Today <time> · S-000001 | open=CashbookActivity
 open: CashbookActivity
 money: true
-speech: Cashbook Today: Rs 1,650. Net. Money in: Rs 2,200. Money out: Rs 550. Rent, −Rs 500, Today <time> Other, +Rs 2,000, Today <time> Owner's own money. Return, −Rs 50, Today <time> R-000001. Sale, +Rs 200, Today <time> S-000001.
-speechHidden: Cashbook Today. Net. Rent, Today <time> Other, Today <time> Owner's own money. Return, Today <time> R-000001. Sale, Today <time> S-000001. [an amount left out]
+speech: Cashbook, Today: Rs 1,650. Net. Money in: Rs 2,200. Money out: Rs 550. Rent, −Rs 500, Today <time> Other, +Rs 2,000, Today <time>, Owner's own money. Return, −Rs 50, Today <time>, R-000001. Sale, +Rs 200, Today <time>, S-000001.
+speechHidden: Cashbook, Today. Net. Rent, Today <time> Other, Today <time>, Owner's own money. Return, Today <time>, R-000001. Sale, Today <time>, S-000001. [an amount left out]
 ask: Cashbook(window=null)
 
 === Cashbook(window=TODAY)
@@ -28,8 +28,8 @@ row: party=0 | Return | −Rs 50 | Today <time> · R-000001 | open=CashbookActiv
 row: party=0 | Sale | +Rs 200 | Today <time> · S-000001 | open=CashbookActivity
 open: CashbookActivity
 money: true
-speech: Cashbook Today: Rs 1,650. Net. Money in: Rs 2,200. Money out: Rs 550. Rent, −Rs 500, Today <time> Other, +Rs 2,000, Today <time> Owner's own money. Return, −Rs 50, Today <time> R-000001. Sale, +Rs 200, Today <time> S-000001.
-speechHidden: Cashbook Today. Net. Rent, Today <time> Other, Today <time> Owner's own money. Return, Today <time> R-000001. Sale, Today <time> S-000001. [an amount left out]
+speech: Cashbook, Today: Rs 1,650. Net. Money in: Rs 2,200. Money out: Rs 550. Rent, −Rs 500, Today <time> Other, +Rs 2,000, Today <time>, Owner's own money. Return, −Rs 50, Today <time>, R-000001. Sale, +Rs 200, Today <time>, S-000001.
+speechHidden: Cashbook, Today. Net. Rent, Today <time> Other, Today <time>, Owner's own money. Return, Today <time>, R-000001. Sale, Today <time>, S-000001. [an amount left out]
 ask: Cashbook(window=TODAY)
 
 === Cashbook(window=YESTERDAY)
@@ -37,8 +37,8 @@ mood: CALM
 label: Cashbook · Yesterday
 line: Nothing was written in the cashbook in this time.
 open: CashbookActivity
-speech: Cashbook Yesterday. Nothing was written in the cashbook in this time.
-speechHidden: Cashbook Yesterday. Nothing was written in the cashbook in this time.
+speech: Cashbook, Yesterday. Nothing was written in the cashbook in this time.
+speechHidden: Cashbook, Yesterday. Nothing was written in the cashbook in this time.
 ask: Cashbook(window=YESTERDAY)
 
 === Cashbook(window=THIS_WEEK)
@@ -54,8 +54,8 @@ row: party=0 | Return | −Rs 50 | Today <time> · R-000001 | open=CashbookActiv
 row: party=0 | Sale | +Rs 200 | Today <time> · S-000001 | open=CashbookActivity
 open: CashbookActivity
 money: true
-speech: Cashbook This week: Rs 1,650. Net. Money in: Rs 2,200. Money out: Rs 550. Rent, −Rs 500, Today <time> Other, +Rs 2,000, Today <time> Owner's own money. Return, −Rs 50, Today <time> R-000001. Sale, +Rs 200, Today <time> S-000001.
-speechHidden: Cashbook This week. Net. Rent, Today <time> Other, Today <time> Owner's own money. Return, Today <time> R-000001. Sale, Today <time> S-000001. [an amount left out]
+speech: Cashbook, This week: Rs 1,650. Net. Money in: Rs 2,200. Money out: Rs 550. Rent, −Rs 500, Today <time> Other, +Rs 2,000, Today <time>, Owner's own money. Return, −Rs 50, Today <time>, R-000001. Sale, +Rs 200, Today <time>, S-000001.
+speechHidden: Cashbook, This week. Net. Rent, Today <time> Other, Today <time>, Owner's own money. Return, Today <time>, R-000001. Sale, Today <time>, S-000001. [an amount left out]
 ask: Cashbook(window=THIS_WEEK)
 
 === Cashbook(window=LAST_WEEK)
@@ -63,8 +63,8 @@ mood: CALM
 label: Cashbook · Last week
 line: Nothing was written in the cashbook in this time.
 open: CashbookActivity
-speech: Cashbook Last week. Nothing was written in the cashbook in this time.
-speechHidden: Cashbook Last week. Nothing was written in the cashbook in this time.
+speech: Cashbook, Last week. Nothing was written in the cashbook in this time.
+speechHidden: Cashbook, Last week. Nothing was written in the cashbook in this time.
 ask: Cashbook(window=LAST_WEEK)
 
 === Cashbook(window=THIS_MONTH)
@@ -80,8 +80,8 @@ row: party=0 | Return | −Rs 50 | Today <time> · R-000001 | open=CashbookActiv
 row: party=0 | Sale | +Rs 200 | Today <time> · S-000001 | open=CashbookActivity
 open: CashbookActivity
 money: true
-speech: Cashbook This month: Rs 1,650. Net. Money in: Rs 2,200. Money out: Rs 550. Rent, −Rs 500, Today <time> Other, +Rs 2,000, Today <time> Owner's own money. Return, −Rs 50, Today <time> R-000001. Sale, +Rs 200, Today <time> S-000001.
-speechHidden: Cashbook This month. Net. Rent, Today <time> Other, Today <time> Owner's own money. Return, Today <time> R-000001. Sale, Today <time> S-000001. [an amount left out]
+speech: Cashbook, This month: Rs 1,650. Net. Money in: Rs 2,200. Money out: Rs 550. Rent, −Rs 500, Today <time> Other, +Rs 2,000, Today <time>, Owner's own money. Return, −Rs 50, Today <time>, R-000001. Sale, +Rs 200, Today <time>, S-000001.
+speechHidden: Cashbook, This month. Net. Rent, Today <time> Other, Today <time>, Owner's own money. Return, Today <time>, R-000001. Sale, Today <time>, S-000001. [an amount left out]
 ask: Cashbook(window=THIS_MONTH)
 
 === Cashbook(window=LAST_MONTH)
@@ -89,8 +89,8 @@ mood: CALM
 label: Cashbook · Last month
 line: Nothing was written in the cashbook in this time.
 open: CashbookActivity
-speech: Cashbook Last month. Nothing was written in the cashbook in this time.
-speechHidden: Cashbook Last month. Nothing was written in the cashbook in this time.
+speech: Cashbook, Last month. Nothing was written in the cashbook in this time.
+speechHidden: Cashbook, Last month. Nothing was written in the cashbook in this time.
 ask: Cashbook(window=LAST_MONTH)
 
 === Cashbook(window=LAST_6_MONTHS)

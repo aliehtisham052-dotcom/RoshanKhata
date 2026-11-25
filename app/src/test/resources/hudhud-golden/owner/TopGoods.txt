@@ -6,8 +6,8 @@ row: party=0 | Paracetamol | 4 packet | - | open=InsightsActivity
 row: party=0 | DAP | 1 bag | - | open=InsightsActivity
 row: party=0 | Urea | 1 bag | - | open=InsightsActivity
 open: InsightsActivity
-speech: Best sellers This month: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
-speechHidden: Best sellers This month: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
+speech: Best sellers, This month: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
+speechHidden: Best sellers, This month: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
 ask: TopGoods(window=null)
 
 === TopGoods(window=TODAY)
@@ -18,8 +18,8 @@ row: party=0 | Paracetamol | 4 packet | - | open=InsightsActivity
 row: party=0 | DAP | 1 bag | - | open=InsightsActivity
 row: party=0 | Urea | 1 bag | - | open=InsightsActivity
 open: InsightsActivity
-speech: Best sellers Today: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
-speechHidden: Best sellers Today: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
+speech: Best sellers, Today: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
+speechHidden: Best sellers, Today: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
 ask: TopGoods(window=TODAY)
 
 === TopGoods(window=YESTERDAY)
@@ -27,8 +27,8 @@ mood: CALM
 label: Best sellers · Yesterday
 line: Nothing was sold in these days.
 open: InsightsActivity
-speech: Best sellers Yesterday. Nothing was sold in these days.
-speechHidden: Best sellers Yesterday. Nothing was sold in these days.
+speech: Best sellers, Yesterday. Nothing was sold in these days.
+speechHidden: Best sellers, Yesterday. Nothing was sold in these days.
 ask: TopGoods(window=YESTERDAY)
 
 === TopGoods(window=THIS_WEEK)
@@ -39,8 +39,8 @@ row: party=0 | Paracetamol | 4 packet | - | open=InsightsActivity
 row: party=0 | DAP | 1 bag | - | open=InsightsActivity
 row: party=0 | Urea | 1 bag | - | open=InsightsActivity
 open: InsightsActivity
-speech: Best sellers This week: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
-speechHidden: Best sellers This week: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
+speech: Best sellers, This week: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
+speechHidden: Best sellers, This week: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
 ask: TopGoods(window=THIS_WEEK)
 
 === TopGoods(window=LAST_WEEK)
@@ -48,8 +48,8 @@ mood: CALM
 label: Best sellers · Last week
 line: Nothing was sold in these days.
 open: InsightsActivity
-speech: Best sellers Last week. Nothing was sold in these days.
-speechHidden: Best sellers Last week. Nothing was sold in these days.
+speech: Best sellers, Last week. Nothing was sold in these days.
+speechHidden: Best sellers, Last week. Nothing was sold in these days.
 ask: TopGoods(window=LAST_WEEK)
 
 === TopGoods(window=THIS_MONTH)
@@ -60,8 +60,8 @@ row: party=0 | Paracetamol | 4 packet | - | open=InsightsActivity
 row: party=0 | DAP | 1 bag | - | open=InsightsActivity
 row: party=0 | Urea | 1 bag | - | open=InsightsActivity
 open: InsightsActivity
-speech: Best sellers This month: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
-speechHidden: Best sellers This month: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
+speech: Best sellers, This month: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
+speechHidden: Best sellers, This month: Paracetamol. Paracetamol, 4 packet. DAP, 1 bag. Urea, 1 bag.
 ask: TopGoods(window=THIS_MONTH)
 
 === TopGoods(window=LAST_MONTH)
@@ -69,8 +69,8 @@ mood: CALM
 label: Best sellers · Last month
 line: Nothing was sold in these days.
 open: InsightsActivity
-speech: Best sellers Last month. Nothing was sold in these days.
-speechHidden: Best sellers Last month. Nothing was sold in these days.
+speech: Best sellers, Last month. Nothing was sold in these days.
+speechHidden: Best sellers, Last month. Nothing was sold in these days.
 ask: TopGoods(window=LAST_MONTH)
 
 === TopGoods(window=LAST_6_MONTHS)
@@ -81,8 +81,8 @@ row: party=0 | Paracetamol | 4 packet | - | open=InsightsActivity
 row: party=0 | Urea | 3 bag | - | open=InsightsActivity
 row: party=0 | DAP | 1 bag | - | open=InsightsActivity
 open: InsightsActivity
-speech: Best sellers Last 6 months: Paracetamol. Paracetamol, 4 packet. Urea, 3 bag. DAP, 1 bag.
-speechHidden: Best sellers Last 6 months: Paracetamol. Paracetamol, 4 packet. Urea, 3 bag. DAP, 1 bag.
+speech: Best sellers, Last 6 months: Paracetamol. Paracetamol, 4 packet. Urea, 3 bag. DAP, 1 bag.
+speechHidden: Best sellers, Last 6 months: Paracetamol. Paracetamol, 4 packet. Urea, 3 bag. DAP, 1 bag.
 ask: TopGoods(window=LAST_6_MONTHS)
 
 === TopGoods(window=ALL_TIME)
@@ -93,7 +93,7 @@ row: party=0 | Paracetamol | 4 packet | - | open=InsightsActivity
 row: party=0 | Urea | 3 bag | - | open=InsightsActivity
 row: party=0 | DAP | 1 bag | - | open=InsightsActivity
 open: InsightsActivity
-speech: Best sellers All time: Paracetamol. Paracetamol, 4 packet. Urea, 3 bag. DAP, 1 bag.
-speechHidden: Best sellers All time: Paracetamol. Paracetamol, 4 packet. Urea, 3 bag. DAP, 1 bag.
+speech: Best sellers, All time: Paracetamol. Paracetamol, 4 packet. Urea, 3 bag. DAP, 1 bag.
+speechHidden: Best sellers, All time: Paracetamol. Paracetamol, 4 packet. Urea, 3 bag. DAP, 1 bag.
 ask: TopGoods(window=ALL_TIME)
 

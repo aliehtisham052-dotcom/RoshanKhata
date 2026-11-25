@@ -5,7 +5,7 @@ figure: 1
 line: Cheques you got: 1 · Rs 2,500
 line: Cheques you gave: 0
 open: ChequesActivity
-speech: Cheques: 1. Cheques you got: 1 Rs 2,500. Cheques you gave: 0.
+speech: Cheques: 1. Cheques you got: 1, Rs 2,500. Cheques you gave: 0.
 speechHidden: Cheques: 1. Cheques you gave: 0. [an amount left out]
 ask: Status(of=CHEQUES, cheques=null)
 
@@ -77,8 +77,8 @@ figure: 1
 line: Still to come: Rs 8,000
 row: party=0 | Ali Raza | Rs 8,000 | INV-000001 · <weekday> | open=InvoicesActivity
 open: InvoicesActivity
-speech: Invoices with money still due: 1. Still to come: Rs 8,000. Ali Raza, Rs 8,000, INV-000001 <weekday>.
-speechHidden: Invoices with money still due: 1. Ali Raza, INV-000001 <weekday>. [an amount left out]
+speech: Invoices with money still due: 1. Still to come: Rs 8,000. Ali Raza, Rs 8,000, INV-000001, <weekday>.
+speechHidden: Invoices with money still due: 1. Ali Raza, INV-000001, <weekday>. [an amount left out]
 ask: Status(of=INVOICES, cheques=null)
 
 === Status(of=CHEQUES, cheques=PENDING)
@@ -86,8 +86,8 @@ mood: CALM
 label: Cheques · Cleared
 line: No cheque has cleared.
 open: ChequesActivity
-speech: Cheques Cleared. No cheque has cleared.
-speechHidden: Cheques Cleared. No cheque has cleared.
+speech: Cheques, Cleared. No cheque has cleared.
+speechHidden: Cheques, Cleared. No cheque has cleared.
 ask: Status(of=CHEQUES, cheques=PENDING)
 
 === Status(of=CHEQUES, cheques=BOUNCED)
@@ -98,8 +98,8 @@ line: Cheques you got: 1 · Rs 1,000
 line: Cheques you gave: 0
 row: party=2 | Bashir Ahmad | Rs 1,000 | 000222 · Test Bank · Due <date> · Written <date> · Bounced · Settled <date>
 open: ChequesActivity
-speech: Cheques Bounced: 1. Cheques you got: 1 Rs 1,000. Cheques you gave: 0. Bashir Ahmad, Rs 1,000, 000222 Test Bank Due <date> Written <date> Bounced Settled <date>
-speechHidden: Cheques Bounced: 1. Cheques you gave: 0. Bashir Ahmad, 000222 Test Bank Due <date> Written <date> Bounced Settled <date> [an amount left out]
+speech: Cheques, Bounced: 1. Cheques you got: 1, Rs 1,000. Cheques you gave: 0. Bashir Ahmad, Rs 1,000, 000222, Test Bank, Due <date>, Written <date>, Bounced, Settled <date>
+speechHidden: Cheques, Bounced: 1. Cheques you gave: 0. Bashir Ahmad, 000222, Test Bank, Due <date>, Written <date>, Bounced, Settled <date> [an amount left out]
 ask: Status(of=CHEQUES, cheques=BOUNCED)
 
 === Status(of=CHEQUES, cheques=CLEARED)
@@ -107,7 +107,7 @@ mood: CALM
 label: Cheques · Cleared
 line: No cheque has cleared.
 open: ChequesActivity
-speech: Cheques Cleared. No cheque has cleared.
-speechHidden: Cheques Cleared. No cheque has cleared.
+speech: Cheques, Cleared. No cheque has cleared.
+speechHidden: Cheques, Cleared. No cheque has cleared.
 ask: Status(of=CHEQUES, cheques=CLEARED)
 

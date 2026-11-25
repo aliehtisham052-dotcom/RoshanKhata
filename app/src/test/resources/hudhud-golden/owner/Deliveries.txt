@@ -3,8 +3,8 @@ mood: CALM
 label: Goods that came in
 row: party=3 | Tariq Butt | Rs 264,000 | <date> · Urea, DAP…
 open: BillsActivity
-speech: Goods that came in. Tariq Butt, Rs 264,000, <date> Urea, DAP…
-speechHidden: Goods that came in. Tariq Butt, <date> Urea, DAP… [an amount left out]
+speech: Goods that came in. Tariq Butt, Rs 264,000, <date>, Urea, DAP…
+speechHidden: Goods that came in. Tariq Butt, <date>, Urea, DAP… [an amount left out]
 ask: Deliveries(window=null)
 
 === Deliveries(window=TODAY)
@@ -12,8 +12,8 @@ mood: CALM
 label: Goods that came in · Today
 line: No goods came in on a supplier bill in this time.
 open: BillsActivity
-speech: Goods that came in Today. No goods came in on a supplier bill in this time.
-speechHidden: Goods that came in Today. No goods came in on a supplier bill in this time.
+speech: Goods that came in, Today. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in, Today. No goods came in on a supplier bill in this time.
 ask: Deliveries(window=TODAY)
 
 === Deliveries(window=YESTERDAY)
@@ -21,8 +21,8 @@ mood: CALM
 label: Goods that came in · Yesterday
 line: No goods came in on a supplier bill in this time.
 open: BillsActivity
-speech: Goods that came in Yesterday. No goods came in on a supplier bill in this time.
-speechHidden: Goods that came in Yesterday. No goods came in on a supplier bill in this time.
+speech: Goods that came in, Yesterday. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in, Yesterday. No goods came in on a supplier bill in this time.
 ask: Deliveries(window=YESTERDAY)
 
 === Deliveries(window=THIS_WEEK)
@@ -30,8 +30,8 @@ mood: CALM
 label: Goods that came in · This week
 line: No goods came in on a supplier bill in this time.
 open: BillsActivity
-speech: Goods that came in This week. No goods came in on a supplier bill in this time.
-speechHidden: Goods that came in This week. No goods came in on a supplier bill in this time.
+speech: Goods that came in, This week. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in, This week. No goods came in on a supplier bill in this time.
 ask: Deliveries(window=THIS_WEEK)
 
 === Deliveries(window=LAST_WEEK)
@@ -39,8 +39,8 @@ mood: CALM
 label: Goods that came in · Last week
 line: No goods came in on a supplier bill in this time.
 open: BillsActivity
-speech: Goods that came in Last week. No goods came in on a supplier bill in this time.
-speechHidden: Goods that came in Last week. No goods came in on a supplier bill in this time.
+speech: Goods that came in, Last week. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in, Last week. No goods came in on a supplier bill in this time.
 ask: Deliveries(window=LAST_WEEK)
 
 === Deliveries(window=THIS_MONTH)
@@ -48,8 +48,8 @@ mood: CALM
 label: Goods that came in · This month
 line: No goods came in on a supplier bill in this time.
 open: BillsActivity
-speech: Goods that came in This month. No goods came in on a supplier bill in this time.
-speechHidden: Goods that came in This month. No goods came in on a supplier bill in this time.
+speech: Goods that came in, This month. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in, This month. No goods came in on a supplier bill in this time.
 ask: Deliveries(window=THIS_MONTH)
 
 === Deliveries(window=LAST_MONTH)
@@ -57,8 +57,8 @@ mood: CALM
 label: Goods that came in · Last month
 line: No goods came in on a supplier bill in this time.
 open: BillsActivity
-speech: Goods that came in Last month. No goods came in on a supplier bill in this time.
-speechHidden: Goods that came in Last month. No goods came in on a supplier bill in this time.
+speech: Goods that came in, Last month. No goods came in on a supplier bill in this time.
+speechHidden: Goods that came in, Last month. No goods came in on a supplier bill in this time.
 ask: Deliveries(window=LAST_MONTH)
 
 === Deliveries(window=LAST_6_MONTHS)

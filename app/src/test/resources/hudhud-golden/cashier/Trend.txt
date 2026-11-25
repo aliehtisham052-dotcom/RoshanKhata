@@ -1,0 +1,64 @@
+=== Trend(window=TODAY)
+mood: CALM
+label: Sales trend
+line: Only the owner or a manager can see this figure.
+speech: Sales trend. Only the owner or a manager can see this figure.
+speechHidden: Sales trend. Only the owner or a manager can see this figure.
+ask: Trend(window=TODAY)
+
+=== Trend(window=YESTERDAY)
+mood: CALM
+label: Sales trend
+line: Only the owner or a manager can see this figure.
+speech: Sales trend. Only the owner or a manager can see this figure.
+speechHidden: Sales trend. Only the owner or a manager can see this figure.
+ask: Trend(window=YESTERDAY)
+
+=== Trend(window=THIS_WEEK)
+mood: CALM
+label: Sales trend
+line: Only the owner or a manager can see this figure.
+speech: Sales trend. Only the owner or a manager can see this figure.
+speechHidden: Sales trend. Only the owner or a manager can see this figure.
+ask: Trend(window=THIS_WEEK)
+
+=== Trend(window=LAST_WEEK)
+mood: CALM
+label: Sales trend
+line: Only the owner or a manager can see this figure.
+speech: Sales trend. Only the owner or a manager can see this figure.
+speechHidden: Sales trend. Only the owner or a manager can see this figure.
+ask: Trend(window=LAST_WEEK)
+
+=== Trend(window=THIS_MONTH)
+mood: CALM
+label: Sales trend
+line: Only the owner or a manager can see this figure.
+speech: Sales trend. Only the owner or a manager can see this figure.
+speechHidden: Sales trend. Only the owner or a manager can see this figure.
+ask: Trend(window=THIS_MONTH)
+
+=== Trend(window=LAST_MONTH)
+mood: CALM
+label: Sales trend
+line: Only the owner or a manager can see this figure.
+speech: Sales trend. Only the owner or a manager can see this figure.
+speechHidden: Sales trend. Only the owner or a manager can see this figure.
+ask: Trend(window=LAST_MONTH)
+
+=== Trend(window=LAST_6_MONTHS)
+mood: CALM
+label: Sales trend
+line: Only the owner or a manager can see this figure.
+speech: Sales trend. Only the owner or a manager can see this figure.
+speechHidden: Sales trend. Only the owner or a manager can see this figure.
+ask: Trend(window=LAST_6_MONTHS)
+
+=== Trend(window=ALL_TIME)
+mood: CALM
+label: Sales trend
+line: Only the owner or a manager can see this figure.
+speech: Sales trend. Only the owner or a manager can see this figure.
+speechHidden: Sales trend. Only the owner or a manager can see this figure.
+ask: Trend(window=ALL_TIME)
+
