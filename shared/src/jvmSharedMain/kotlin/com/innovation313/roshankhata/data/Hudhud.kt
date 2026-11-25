@@ -1007,7 +1007,11 @@ object Hudhud {
      * "bazaar mein mera kitna paisa hai" for the privacy page and only the app's one shuffle of the sense set it right).
      */
     private fun sideShaped(heard: String, ruled: Ask): Ask {
-        if (ruled != Ask.Unknown && ruled != Ask.About(AboutTopic.PRIVACY)) return ruled
+        // A supplier's money asked outright (25 Nov 2026, BC-240): where the rules found a count of suppliers, a help page or nothing.
+        val paying = ruled == Ask.Unknown || ruled == Ask.About(AboutTopic.PRIVACY) || ruled == Ask.Count(Thing.SUPPLIERS) ||
+            (ruled is Ask.Help && !asksTheWay(heard))
+        if (paying && VoiceQuestion.payableAsked(heard)) return Ask.Figure(VoiceQuestion.Kind.TO_GIVE)
+        if (ruled != Ask.Unknown && ruled != Ask.About(AboutTopic.PRIVACY) && !(ruled is Ask.Help && !asksTheWay(heard))) return ruled
         if (!VoiceQuestion.sideStated(heard)) return ruled
         val k = VoiceQuestion.classify(heard) ?: return ruled
         return if (k == VoiceQuestion.Kind.TO_GET || k == VoiceQuestion.Kind.TO_GIVE) Ask.Figure(k) else ruled
@@ -1732,6 +1736,11 @@ object Hudhud {
         // The shop's to pay, said outright (16 Nov 2026, audit T10): "kis supplier ko nahi diya", "sab se zyada kis ko dena hai",
         // "kis kis ka paisa mere paas hai". The rules read these as TO_GIVE ([VoiceQuestion.classify]); the sense's receivable
         // reading never turns one, and an unrelated rules' reading with a receivable guess goes to the shop's payables.
+        // Seed safety (25 Nov 2026, BC-240, lesson 163): what the rules say about the money side or an entry is never turned by a shuffle of the
+        // sense. The shop's payables asked outright; an entry said as a fact ("Ali Raza ne paanch sau diye" was his promised day under one
+        // shuffle). (A side the rules read from a word of giving or getting needs no guard: the sense must be 0.95 sure to turn it.)
+        if (ruled == Ask.Figure(VoiceQuestion.Kind.TO_GIVE) && VoiceQuestion.payableAsked(heard)) return ruled
+        if (ruled is Ask.Entry) return ruled
         val first = guesses.firstOrNull() ?: return ruled
         if (first.label in RECEIVABLE_LABELS && VoiceQuestion.payableSaid(heard) &&
             namedBy(ruled).isEmpty() && ruled !is Ask.Goods

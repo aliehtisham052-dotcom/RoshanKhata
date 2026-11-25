@@ -293,6 +293,8 @@ object VoiceQuestion {
         // 17 Nov 2026 (the lead's retrain check): the feminine of "dena" ("kis ki raqam deni hai" is whom the shop pays).
         "deni", "دینی", "देनी")
     private val TO_GET = listOf("lena", "lene", "to get", "receive", "collect", "piutang", "tagih", "لینا", "لینے", "وٺڻا",
+        // 25 Nov 2026 (BC-240, seed safety): Farsi "I must get" ("چقدر باید بگیرم" was a customer's balance under one shuffle).
+        "باید بگیرم", "باید بگیریم", "بگیرم",
         "وٺڻو", "لي عند", "طلبکار", "دریافت", "लेना", "लेने", "পাওনা", "পেতে",
         // 12 Nov 2026 (Hudhud), from the app's own chips: Arabic "what is mine", Indonesian "what must be received".
         "ما لي", "harus diterima",
@@ -829,7 +831,9 @@ object VoiceQuestion {
         "customers ke paas", "customer ke paas", "gahakon ke paas", "grahakon ke paas", "bazaar mein", "bazar mein", "baazar mein",
         "market mein", "market me",
         "لوگوں کے پاس", "لوگوں پر", "لوگوں کی طرف", "گاہکوں کے پاس", "بازار میں", "مارکیٹ میں",
-        "लोगों के पास", "लोगों पर", "लोगों की तरफ", "ग्राहकों के पास", "बाजार में", "बाज़ार में", "मार्केट में"
+        "लोगों के पास", "लोगों पर", "लोगों की तरफ", "ग्राहकों के पास", "बाजार में", "बाज़ार में", "मार्केट में",
+        // 25 Nov 2026: "my money is stuck outside" — the holder is "outside", somebody else.
+        "bahar phansa", "bahar phansi", "bahar laga", "bahar lagi", "باہر پھنسا", "باہر پھنسی", "باہر لگا", "باہر لگی", "बाहर फंसा", "बाहर फंसी", "बाहर लगा", "बाहर लगी"
     )
     private val MINE = listOf("mera", "mere", "meri", "میرا", "میرے", "میری", "मेरा", "मेरे", "मेरी")
     private val MONEY_WORDS = listOf("paisa", "paise", "pese", "paisay", "raqam", "rakam", "پیسہ", "پیسے", "رقم", "पैसा", "पैसे", "रकम", "रक़म")
@@ -895,6 +899,24 @@ object VoiceQuestion {
         val t = normalise(heard)
         if (t.isEmpty()) return false
         return supplierOwed(t) || (saysAny(t, MY_DEBT) && !owedToTheShop(t)) || (saysAny(t, NOT_PAID) && unpaidByTheShop(t))
+    }
+
+    /** Words of paying, owing and money that make a supplier sentence a question of the shop's payables and not of its suppliers. */
+    private val PAY_CUES = listOf("payable", "payables", "bayar", "dibayar", "membayar", "utang", "paisa", "paise", "pese", "raqam", "پیسے", "پیسہ", "رقم",
+        "پے ایبل", "بدهم", "بدهیم", "بدهکارم", "بدهکار", "بدهی", "টাকা", "পয়সা", "बकाया", "पैसे", "पैसा", "ادا", "ادائیگی", "أدفع", "ادفع", "أسدد", "اسدد", "دفع", "سدد", "دینا", "دینے", "دیں", "ڏيڻا", "ڏيڻو")
+
+    /** Money coming FROM a supplier or a company ("company se scheme ka paisa kab aayega") is the shop's to get, never its payable. */
+    private val COMING_IN = listOf("aayega", "aaega", "ayega", "aayegi", "aaye", "aane", "milega", "milegi", "mile", "ملے گا", "ملے گی", "ملے", "آئے گا", "آئے گی", "آئے", "آنے",
+        "आएगा", "आएगी", "मिलेगा", "मिलेगी", "receive", "get back", "refund", "ڏيندا", "ملندا")
+
+    /**
+     * A supplier's money asked outright (25 Nov 2026, BC-240): [payableSaid] with a word of paying, owing or money beside it. "Kitne suppliers hain" says
+     * a supplier and nothing of money and stays a count; "چقدر باید به تامین کننده ها بدهم", "pemasok mana yang belum saya bayar", Bengali
+     * "কোন সাপ্লায়ারকে টাকা দেওয়া হয়নি" and "سپلائر پے ایبل کتنا ہے" are the shop's payables whichever shuffle the sense was learnt with.
+     */
+    fun payableAsked(heard: String): Boolean {
+        val t = normalise(heard)
+        return payableSaid(heard) && saysAny(t, PAY_CUES) && !saysAny(t, COMING_IN)
     }
 
     /** The doer's mark in Urdu, Hindi and Roman Urdu ("ne"), normalised. */
