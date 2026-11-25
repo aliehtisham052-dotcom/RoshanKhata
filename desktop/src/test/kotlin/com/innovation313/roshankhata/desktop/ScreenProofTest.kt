@@ -1009,6 +1009,14 @@ class ScreenProofTest {
             }
             // The counter's sign-in window (a book with no staff and no owner PIN: the owner's row).
             dialog("dialog-laptop-signin-en") { SignInDialog(dao) {} }
+            // A cashbook line corrected (C4, 17 Nov 2026): never drawn until 25 Nov. Its amount, category, note, day and
+            // way of paying, in English by day and in Urdu by night (the made-up book's own row, not written to it).
+            val cashLine = com.innovation313.roshankhata.data.CashEntry(
+                id = 1, amount = 1250.0, isIncome = false, category = "Electricity", note = "Shop meter, October",
+                timestamp = now - 2 * 60 * 60 * 1000, paymentMethod = "bank", paymentRef = "TID 4417"
+            )
+            dialog("dialog-laptop-cash-edit-en") { CashEditDialog(dao, cashLine, by = null, onClose = {}, onRefused = {}) }
+            dialog("dialog-laptop-cash-edit-ur", lang = "ur", dark = true) { CashEditDialog(dao, cashLine, by = null, onClose = {}, onRefused = {}) }
             for (f in shots) assertTrue("${f.name} was not written", f.exists() && f.length() > 8_000)
 
             // The first-run tour is a window of its own in Main; its content is drawn at that window's size.
