@@ -64,7 +64,7 @@ Result: 2 CERTAIN (both fixed), 10 PLAUSIBLE rows (6 in section 5, 4 commit() gr
    Notification-listener callbacks run on the service's main thread; each notice asks PackageManager (binder) up to
    three times. Bounded and fast normally, but a busy system_server stretches it, and a burst of notices queues. A
    short cache would fix it, but `neverRead` is the privacy rule that keeps SMS apps unread: not relaxed here.
-2. **NOT CHANGED (round 2) -- Businesses.switchTo on main (data/Businesses.kt:172-195; callers BusinessSwitchActivity:226, BackupActivity:2224,
+2. **FIXED (25 Nov 2026, BC-246, CI first) -- the three callers now call `Businesses.switchOffMain` (switchTo on Dispatchers.IO, every step in its order; only startActivity on main; a double tap guarded). Original finding: Businesses.switchTo on main (data/Businesses.kt:172-195; callers BusinessSwitchActivity:226, BackupActivity:2224,
    :2259).** Does `commit()`, `closeActive` (Room close under the global DB lock) and `cancelAll()` on main. If a
    daily copy or live-sync round holds the lock, the switch waits on main. Not moved inside `switchTo`: the order
    commit -> afterLeaving -> closeActive -> bookChanged -> dropCaches -> cancelAll is what every caller relies on (each

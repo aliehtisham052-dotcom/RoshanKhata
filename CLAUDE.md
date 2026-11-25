@@ -3,7 +3,9 @@
 A Kotlin-native Android ledger for a Pakistani shopkeeper, specifically an
 agri-chemical dealer (pesticides, seeds, feed). Brand: Innovation-313.
 
-No account, no server, no ads. Everything stays on the phone.
+No account, no ads. The book stays on the device: what leaves it does so only by the owner's choice and is named in
+the privacy policy's section 24 (Google Drive backup, sealed live-sync parcels through the relays, a customer's khata
+page, the seal's time stamps, Google's speech recogniser after the owner's yes).
 
 > This repository is **public**. Never commit tokens, keystores, API keys,
 > customer data, phone numbers or personal email addresses to it — including

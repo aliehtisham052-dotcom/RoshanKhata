@@ -17,8 +17,8 @@ this Worker has no key and cannot read a single figure or name.
 - Optional wake-up push through FCM HTTP v1 (data-only, no content) when the
   secrets `FCM_SERVICE_ACCOUNT` and `FCM_PROJECT_ID` are set.
 
-Not deployed yet. `.github/workflows/cloud-worker.yml` type-checks and smoke
-tests it on every push; it deploys only when run by hand with
+Deployed (22 Oct 2026, with the review's fixes; LiveCloud.RELAY is its address). `.github/workflows/cloud-worker.yml`
+type-checks and smoke tests it on every push; it deploys only when run by hand with
 `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in the repository secrets.
 Workers Free supports SQLite-backed Durable Objects (Cloudflare docs, checked
 22 Oct 2026).
