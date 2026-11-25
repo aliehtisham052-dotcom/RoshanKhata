@@ -24,6 +24,11 @@
       UTF-8, else Windows-1252: Excel's "CSV (Comma delimited)"), never readText() or a reader
       that assumes UTF-8.
 
+  test_names_are_jvm_names (BC-287): a test written as a backtick name may hold none of
+      : . ; [ ] / < > and backslash — the JVM refuses them in a method name and the module's tests do not
+      compile (lesson 38). It slipped through on 25 Nov 2026 ("the first-use question: ...") and
+      the Windows and Android builds both failed at :desktop:compileTestKotlin.
+
     python3 scripts/check_repo_guards.py         # exit 1 and a line per fault
 """
 import pathlib, re, subprocess, sys
@@ -135,15 +140,32 @@ def left_margins_name_their_side(root=ROOT):
     return faults
 
 
+TEST_NAME = re.compile(r"fun\s+`([^`]+)`")
+JVM_REFUSED = re.compile(r"[:.;\[\]/<>\\]")
+
+
+def test_names_are_jvm_names(root=ROOT):
+    faults = []
+    for base in ("app/src/test", "app/src/androidTest", "shared/src", "desktop/src/test"):
+        for p in sorted((root / base).rglob("*.kt")):
+            for i, l in enumerate(p.read_text().splitlines()):
+                for m in TEST_NAME.finditer(l):
+                    bad = JVM_REFUSED.search(m.group(1))
+                    if bad:
+                        faults.append("%s:%d a test name holds '%s', which the JVM refuses in a method name"
+                                      % (p.relative_to(root), i + 1, bad.group(0)))
+    return faults
+
+
 def main():
     faults = (publish_jobs_hold_no_secrets() + no_tracked_ignored_files() + csv_reads_are_decoded()
-              + shown_bitmaps_never_recycled() + left_margins_name_their_side())
+              + shown_bitmaps_never_recycled() + left_margins_name_their_side() + test_names_are_jvm_names())
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
     print("repo guards: release jobs hold no secrets, nothing ignored is tracked, every CSV read is decoded, "
-          "no bitmap a view was given is recycled, every left margin names its side")
+          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name")
 
 
 if __name__ == "__main__":

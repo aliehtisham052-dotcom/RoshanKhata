@@ -116,7 +116,7 @@ class BackupProtectionDesktopTest {
                 db.khataDao().insertParty(Party(name = "Bashir Ahmad", phone = null, isCustomer = true))
                 DailyCopies.makeToday(db.khataDao(), settings, home.resolve("usb"), refresh = true, password = pw, hint = "first customer")
             }!!
-            val before = LiveSync.fingerprint(db.syncSql())
+            val before = runBlocking { LiveSync.fingerprint(db.syncSql()) }
             var shown: String? = "unset"
             var got: Pair<BackupCodec.ImportResult, BackupCodec.ParsedBackup?>? = null
             runBlocking {
@@ -134,11 +134,11 @@ class BackupProtectionDesktopTest {
             val (result, data) = got!!
             assertEquals(BackupCodec.ImportResult.Why.WRONG_PASSWORD, (result as BackupCodec.ImportResult.Failed).why)
             assertNull("nothing is handed over to restore", data)
-            assertEquals("the book is as it was", before, LiveSync.fingerprint(db.syncSql()))
+            assertEquals("the book is as it was", before, runBlocking { LiveSync.fingerprint(db.syncSql()) })
         } finally { db.close(); home.deleteRecursively() }
     }
 
-    @Test fun `the first-use question: nobody to ask means cancelled, a cancel writes nothing, no question is needed when open`() {
+    @Test fun `the first-use question, nobody to ask means cancelled, a cancel writes nothing, no question is needed when open`() {
         val home = home()
         try {
             // No window hosts the question: it does not wait, and nothing is kept.

@@ -3049,6 +3049,12 @@ Each of these cost a build or a bug.
      move at a retrain and is re-checked then, row by row. Before any retrain: measure two other seeds first, so the change
      the data makes is not mistaken for the change the shuffle makes.
 
+164. **A scripted insert is placed by structure, then compiled.** A new function was put "before the doc comment above
+     `fun items(`" by searching backwards for `/**`; the nearest one was a field's comment inside a data class, and both
+     builds failed (25 Nov 2026, CashFlow.load). Anchor an insert on a declaration line (`    private const val`, `fun`,
+     `object`), and compile the file before the push (lesson 93: a single shared file compiles here with stand-ins for
+     the DAO in seconds, as `/tmp/cfstub` did).
+
 ## Working with the owner
 
 - **Reply in Roman Urdu** unless English is asked for.
