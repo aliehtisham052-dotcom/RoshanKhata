@@ -92,8 +92,18 @@ object DuplicateDetector {
             byIds[ids] = if (byIds.containsKey(ids)) Reason.BOTH else Reason.PHONE
         }
 
+        // Where each party id stands in the book, read once (25 Nov 2026, the ANR audit, item 6). A group's members
+        // were found by reading the whole book again for every group (`all.filter { it.partyId in ids }`): a book of
+        // 10,000 with a few thousand shared names read it a few thousand times. The same members, in the book's own
+        // order, every record of an id included, now come from a few lookups per member.
+        val placesById = HashMap<Long, MutableList<Int>>(all.size * 2)
+        all.forEachIndexed { i, c -> placesById.getOrPut(c.partyId) { ArrayList(1) }.add(i) }
+
         return byIds.map { (ids, reason) ->
-            Group(all.filter { it.partyId in ids }, reason)
+            val places = ArrayList<Int>(ids.size)
+            for (id in ids) placesById[id]?.let { places.addAll(it) }
+            places.sort()
+            Group(places.map { all[it] }, reason)
         }.filter { groupKey(it.members) !in dismissedKeys }
             .sortedByDescending { it.members.size }
     }
@@ -108,9 +118,7 @@ object DuplicateDetector {
      */
     fun caution(group: Group): Caution {
         val phones = group.members.mapNotNull { normalisedPhone(it.phone) }
-        for (i in phones.indices) for (j in i + 1 until phones.size) {
-            if (oneDigitApart(phones[i], phones[j])) return Caution.ONE_DIGIT
-        }
+        if (anyOneDigitApart(phones)) return Caution.ONE_DIGIT
         if (group.reason == Reason.NAME && phones.size >= 2 && phones.toSet().size == phones.size) return Caution.NUMBERS_DIFFER
         return Caution.NONE
     }
@@ -118,6 +126,28 @@ object DuplicateDetector {
     /** Same length, exactly one place different. */
     internal fun oneDigitApart(a: String, b: String): Boolean =
         a.length == b.length && a.indices.count { a[it] != b[it] } == 1
+
+    /**
+     * Whether any two of [phones] are [oneDigitApart] (25 Nov 2026, the ANR audit, item 6): the card asked it of
+     * every pair, on the main thread as the card was drawn — a group of 3,000 parties under the shop's own number was
+     * 4.5 million comparisons. Two numbers one place apart agree everywhere else, so with that place covered they read
+     * the same: each number is filed once per place under its text with that place covered, and a file that already
+     * holds a different number is the answer. The same number twice is never one digit apart, as before.
+     */
+    internal fun anyOneDigitApart(phones: List<String>): Boolean {
+        val distinct = LinkedHashSet(phones)
+        if (distinct.size < 2) return false
+        val filed = HashMap<String, String>(distinct.size * 12)
+        for (p in distinct) {
+            for (i in p.indices) {
+                // U+0000 is never a digit, so a covered place cannot be mistaken for a typed one.
+                val covered = p.substring(0, i) + '\u0000' + p.substring(i + 1)
+                // Two different numbers under one covered text: one place apart (a number is filed once per place).
+                if (filed.putIfAbsent(covered, p) != null) return true
+            }
+        }
+        return false
+    }
 
     /**
      * A number in one shape for every card (6 Nov 2026: "+92 300 0000001", "0300 0000002" and "+923000000003"

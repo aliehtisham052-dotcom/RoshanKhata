@@ -20,6 +20,7 @@ import com.innovation313.roshankhata.ui.DuplicateGroupAdapter
 import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.ui.ScreenInsets
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,8 +58,7 @@ class DuplicateCustomersActivity : BaseActivity() {
         val rv: RecyclerView = findViewById(R.id.rvDuplicates)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
-
-        refresh()
+        // The first look is onResume's, which always follows: asked here too, the book was read and grouped twice.
     }
 
     /** A merge just run, or an entry added elsewhere, changes what is left to find. */
@@ -67,21 +67,32 @@ class DuplicateCustomersActivity : BaseActivity() {
         refresh()
     }
 
+    /** The look under way: a newer one (after a merge or a dismissal) takes its place, and never lands after it. */
+    private var looking: Job? = null
+
+    /**
+     * Reads the book and groups it, all of it off the main thread (24-25 Nov 2026, the ANR audit, item 6): the
+     * candidates, the dismissed keys and [DuplicateDetector.find] run on Dispatchers.Default; only the list is set
+     * on the main thread. In [lifecycleScope], so a screen that is gone stops it; one at a time, so an older look
+     * that finishes late cannot show a group a merge just removed.
+     */
     private fun refresh() {
-        lifecycleScope.launch {
+        looking?.cancel()
+        looking = lifecycleScope.launch {
             val parties = dao.observePartiesWithBalance().first()
-            val candidates = parties.map {
-                DuplicateDetector.Candidate(
-                    partyId = it.id,
-                    name = it.name,
-                    phone = it.phone,
-                    isCustomer = it.isCustomer,
-                    balance = it.balance
-                )
-            }
             val dismissedKeys = dao.getDismissedDuplicateKeys().toSet()
-            // Grouped off the main thread (24 Nov 2026, the ANR audit): the whole book on a big shop.
-            val groups = withContext(Dispatchers.Default) { DuplicateDetector.find(candidates, dismissedKeys) }
+            val groups = withContext(Dispatchers.Default) {
+                val candidates = parties.map {
+                    DuplicateDetector.Candidate(
+                        partyId = it.id,
+                        name = it.name,
+                        phone = it.phone,
+                        isCustomer = it.isCustomer,
+                        balance = it.balance
+                    )
+                }
+                DuplicateDetector.find(candidates, dismissedKeys)
+            }
             adapter.submitList(groups)
             tvEmpty.visibility = if (groups.isEmpty()) View.VISIBLE else View.GONE
         }
