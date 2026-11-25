@@ -1148,7 +1148,7 @@
     <string name="hudhud_trend_none">Nothing was sold in either period.</string>
     <string name="hudhud_trend_from_nothing">Nothing was sold in the period before, so there is no percentage.</string>
     <string name="hudhud_t_chase">Whom to chase first</string>
-    <string name="hudhud_chase_note">Longest-waiting dues come first, with those the Payment Radar calls late. Nothing is sent from here.</string>
+    <string name="hudhud_chase_note">By age, as “Dues by age” counts it (0–30, 31–60, 61–90, over 90 days): the oldest band first; in one band, those the Payment Radar calls late first, then the larger amount. Nothing is sent from here.</string>
     <string name="hudhud_t_next30">Next 30 days</string>
     <string name="hudhud_today_promise">%1$s promised to pay today (%2$s).</string>
     <string name="hudhud_today_cover">%1$s should last about %2$s at its recent pace.</string>

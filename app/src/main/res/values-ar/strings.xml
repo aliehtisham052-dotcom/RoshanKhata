@@ -1194,7 +1194,7 @@
     <string name="hudhud_trend_none">لم يُبع شيء في أي من الفترتين.</string>
     <string name="hudhud_trend_from_nothing">لم يُبع شيء في الفترة السابقة، فلا أستطيع إعطاء نسبة.</string>
     <string name="hudhud_t_chase">من تطالب أولًا</string>
-    <string name="hudhud_chase_note">الأقدم استحقاقًا أولًا، مع من يعدّه رادار الدفع متأخرًا. لا يُرسل شيء من هنا.</string>
+    <string name="hudhud_chase_note">حسب العمر، كما تعدّه «المستحقات حسب العمر» (0–30، 31–60، 61–90، أكثر من 90 يومًا): الفئة الأقدم أولًا؛ وفي الفئة الواحدة من يعدّه رادار الدفع متأخرًا أولًا، ثم المبلغ الأكبر. لا يُرسل شيء من هنا.</string>
     <string name="hudhud_t_next30">الثلاثون يومًا القادمة</string>
     <string name="hudhud_today_promise">وعد %1$s بالدفع اليوم (%2$s).</string>
     <string name="hudhud_today_cover">%1$s سيكفي نحو %2$s بوتيرته الأخيرة.</string>

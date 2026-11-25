@@ -1106,7 +1106,7 @@
     <string name="hudhud_trend_none">دونوں مدتوں میں کچھ نہیں بکا۔</string>
     <string name="hudhud_trend_from_nothing">پچھلی مدت میں کچھ نہیں بکا، اس لیے فیصد نہیں بتا سکتا۔</string>
     <string name="hudhud_t_chase">پہلے کس سے وصولی کریں</string>
-    <string name="hudhud_chase_note">سب سے پرانے بقایا پہلے، ساتھ وہ جنہیں پیمنٹ ریڈار دیر سے دینے والا کہتا ہے۔ یہاں سے کچھ بھیجا نہیں جاتا۔</string>
+    <string name="hudhud_chase_note">مدت کے حساب سے، جیسے «باقی رقم، مدت کے حساب سے» گنتا ہے (0–30، 31–60، 61–90، 90 دن سے زیادہ): سب سے پرانا حصہ پہلے؛ ایک حصے میں پہلے وہ جنہیں پیمنٹ ریڈار دیر سے دینے والا کہتا ہے، پھر بڑی رقم۔ یہاں سے کچھ بھیجا نہیں جاتا۔</string>
     <string name="hudhud_t_next30">اگلے 30 دن</string>
     <string name="hudhud_today_promise">%1$s نے آج ادا کرنے کا وعدہ کیا ہے (%2$s)۔</string>
     <string name="hudhud_today_cover">%1$s اپنی حالیہ رفتار سے تقریباً %2$s چلے گا۔</string>

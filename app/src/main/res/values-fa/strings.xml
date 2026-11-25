@@ -1134,7 +1134,7 @@
     <string name="hudhud_trend_none">در هیچ‌کدام از دو دوره چیزی فروخته نشده.</string>
     <string name="hudhud_trend_from_nothing">در دوره قبل چیزی فروخته نشده، پس درصدی نمی‌توانم بگویم.</string>
     <string name="hudhud_t_chase">اول از چه کسی وصول کنم</string>
-    <string name="hudhud_chase_note">قدیمی‌ترین بدهی‌ها اول، همراه با کسانی که رادار پرداخت دیرپرداز می‌داند. از اینجا چیزی فرستاده نمی‌شود.</string>
+    <string name="hudhud_chase_note">بر اساس مدت، همان‌طور که «بدهی‌ها بر اساس مدت» می‌شمارد (0–30، 31–60، 61–90، بیش از 90 روز): قدیمی‌ترین بازه اول؛ در هر بازه اول کسانی که رادار پرداخت دیرپرداز می‌داند، سپس مبلغ بیشتر. از اینجا چیزی فرستاده نمی‌شود.</string>
     <string name="hudhud_t_next30">30 روز آینده</string>
     <string name="hudhud_today_promise">%1$s قول داده امروز بپردازد (%2$s).</string>
     <string name="hudhud_today_cover">%1$s با روند اخیرش حدود %2$s کافی است.</string>

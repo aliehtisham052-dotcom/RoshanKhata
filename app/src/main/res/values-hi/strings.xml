@@ -1146,7 +1146,7 @@
     <string name="hudhud_trend_none">दोनों अवधियों में कुछ नहीं बिका।</string>
     <string name="hudhud_trend_from_nothing">पिछली अवधि में कुछ नहीं बिका, इसलिए प्रतिशत नहीं बता सकता।</string>
     <string name="hudhud_t_chase">पहले किससे वसूली करें</string>
-    <string name="hudhud_chase_note">सबसे पुराने बकाया पहले, साथ में वे जिन्हें पेमेंट रडार देर से देने वाला कहता है। यहाँ से कुछ भेजा नहीं जाता।</string>
+    <string name="hudhud_chase_note">अवधि के हिसाब से, जैसे «बाकी रकम, अवधि के हिसाब से» गिनता है (0–30, 31–60, 61–90, 90 दिन से ज्यादा): सबसे पुराना हिस्सा पहले; एक हिस्से में पहले वे जिन्हें पेमेंट रडार देर से देने वाला कहता है, फिर बड़ी रकम। यहाँ से कुछ भेजा नहीं जाता।</string>
     <string name="hudhud_t_next30">अगले 30 दिन</string>
     <string name="hudhud_today_promise">%1$s ने आज देने का वादा किया है (%2$s)।</string>
     <string name="hudhud_today_cover">%1$s अपनी हाल की रफ़्तार से लगभग %2$s चलेगा।</string>

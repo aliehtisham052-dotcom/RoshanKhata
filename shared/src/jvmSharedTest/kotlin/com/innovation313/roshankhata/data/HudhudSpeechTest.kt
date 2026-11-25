@@ -24,6 +24,15 @@ class HudhudSpeechTest {
         )
     }
 
+    @Test fun `a mark between two words is a pause, a list mark is only taken out`() {
+        assertEquals("Oldest unpaid amount has waited 75 days, Often pays late",
+            HudhudSpeech.clean("Oldest unpaid amount has waited 75 days \u00B7 Often pays late"))
+        assertEquals("Next 30 days, Coming in", HudhudSpeech.clean("Next 30 days\u00B7Coming in"))
+        assertEquals("Ali Raza, Rs 141,768", HudhudSpeech.clean("\u2068Ali Raza\u2069 \u2022 Rs 141,768"))
+        assertEquals("Bashir: 300", HudhudSpeech.clean("\u2022 Bashir: 300"))
+        assertEquals("Bashir: 300", HudhudSpeech.clean("Bashir: 300 \u00B7"))
+    }
+
     @Test fun `a long page is said up to whole sentences, then where the rest is`() {
         val page = "One two three. Four five six. Seven eight nine."
         assertEquals("One two three. Four five six. More on screen.", HudhudSpeech.upTo(page, 30, "More on screen."))

@@ -1146,7 +1146,7 @@
     <string name="hudhud_trend_none">দুটি সময়েই কিছু বিক্রি হয়নি।</string>
     <string name="hudhud_trend_from_nothing">আগের সময়ে কিছু বিক্রি হয়নি, তাই শতকরা হার বলতে পারছি না।</string>
     <string name="hudhud_t_chase">আগে কার কাছ থেকে আদায় করবেন</string>
-    <string name="hudhud_chase_note">সবচেয়ে পুরোনো বাকি আগে, সঙ্গে যাদের পেমেন্ট রাডার দেরিতে পরিশোধকারী বলে। এখান থেকে কিছু পাঠানো হয় না।</string>
+    <string name="hudhud_chase_note">সময় অনুযায়ী, যেমন «বকেয়া, সময় অনুযায়ী» গোনে (0–30, 31–60, 61–90, 90 দিনের বেশি): সবচেয়ে পুরোনো ভাগ আগে; একই ভাগে আগে যাদের পেমেন্ট রাডার দেরিতে পরিশোধকারী বলে, তারপর বড় অঙ্ক। এখান থেকে কিছু পাঠানো হয় না।</string>
     <string name="hudhud_t_next30">আগামী 30 দিন</string>
     <string name="hudhud_today_promise">%1$s আজ দেওয়ার কথা দিয়েছেন (%2$s)।</string>
     <string name="hudhud_today_cover">%1$s সাম্প্রতিক গতিতে প্রায় %2$s চলবে।</string>

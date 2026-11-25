@@ -14,6 +14,13 @@ object HudhudSpeech {
     /** Marks that list things on the screen and mean nothing said aloud. */
     private val BULLETS = Regex("[\u2022\u00B7\u25AA\u25CF]")
 
+    /**
+     * A mark that stands BETWEEN two words on the screen ("75 days · Often pays late", "Next 30 days · Coming in") is a pause
+     * to the ear: said as a comma, never dropped, or the voice runs the two into one phrase (25 Nov 2026, the golden answers).
+     * A mark at a line's start or end is a list mark and is only taken out.
+     */
+    private val BETWEEN_WORDS = Regex("(?<=\\S)[ \t\u00A0]*[\u2022\u00B7\u25AA\u25CF][ \t\u00A0]*(?=\\S)")
+
     private val SPACES = Regex("[ \t\u00A0]+")
 
     /** A sentence ends here when a space or the end follows: "1.5" and "Rs.500" stay whole. */
@@ -21,7 +28,7 @@ object HudhudSpeech {
 
     /** [text] without the marks the eye needs and the ear does not, its spaces made single. */
     fun clean(text: String): String =
-        text.replace(CONTROLS, "").replace(BULLETS, " ").lines()
+        text.replace(CONTROLS, "").replace(BETWEEN_WORDS, ", ").replace(BULLETS, " ").lines()
             .joinToString("\n") { it.replace(SPACES, " ").trim() }
             .trim()
 

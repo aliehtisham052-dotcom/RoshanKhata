@@ -1124,7 +1124,7 @@
     <string name="hudhud_trend_none">Tidak ada yang terjual di kedua periode.</string>
     <string name="hudhud_trend_from_nothing">Tidak ada yang terjual di periode sebelumnya, jadi tidak ada persentase.</string>
     <string name="hudhud_t_chase">Tagih siapa dulu</string>
-    <string name="hudhud_chase_note">Tagihan terlama didahulukan, bersama yang disebut terlambat oleh Radar Pembayaran. Tidak ada yang dikirim dari sini.</string>
+    <string name="hudhud_chase_note">Menurut umur, seperti dihitung «Tagihan menurut umur» (0–30, 31–60, 61–90, lebih dari 90 hari): kelompok terlama dulu; dalam satu kelompok, yang disebut terlambat oleh Radar Pembayaran lebih dulu, lalu jumlah terbesar. Tidak ada yang dikirim dari sini.</string>
     <string name="hudhud_t_next30">30 hari ke depan</string>
     <string name="hudhud_today_promise">%1$s berjanji membayar hari ini (%2$s).</string>
     <string name="hudhud_today_cover">%1$s akan cukup sekitar %2$s dengan kecepatan terbarunya.</string>

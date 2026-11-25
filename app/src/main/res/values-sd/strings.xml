@@ -1134,7 +1134,7 @@
     <string name="hudhud_trend_none">ٻنهي مدي ۾ ڪجهه نه وڪاميو.</string>
     <string name="hudhud_trend_from_nothing">اڳئين مدي ۾ ڪجهه نه وڪاميو، تنهن ڪري سيڪڙو ٻڌائي نٿو سگهان.</string>
     <string name="hudhud_t_chase">پهرين ڪنهن کان وصولي ڪجي</string>
-    <string name="hudhud_chase_note">سڀ کان پراڻا بقايا پهرين، ساڻ اهي جن کي پيمينٽ ريڊار دير سان ڏيندڙ چوي ٿو. هتان ڪجهه موڪليو نٿو وڃي.</string>
+    <string name="hudhud_chase_note">مدت موجب، جيئن «باقي رقم، مدت جي حساب سان» ڳڻي ٿو (0–30، 31–60، 61–90، 90 ڏينهن کان وڌيڪ): سڀ کان پراڻو حصو پهرين؛ هڪ حصي ۾ پهرين اهي جن کي پيمينٽ ريڊار دير سان ڏيندڙ چوي ٿو، پوءِ وڏي رقم. هتان ڪجهه موڪليو نٿو وڃي.</string>
     <string name="hudhud_t_next30">ايندڙ 30 ڏينهن</string>
     <string name="hudhud_today_promise">%1$s اڄ ادا ڪرڻ جو واعدو ڪيو آهي (%2$s).</string>
     <string name="hudhud_today_cover">%1$s پنهنجي تازي رفتار سان لڳ ڀڳ %2$s هلندو.</string>
