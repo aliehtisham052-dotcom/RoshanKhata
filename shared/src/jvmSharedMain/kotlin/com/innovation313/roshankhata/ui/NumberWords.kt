@@ -59,10 +59,16 @@ object NumberWords {
         "Ikyanwe", "Banwe", "Tiranwe", "Chauranwe", "Pachanwe", "Chhiyanwe", "Sattanwe", "Athanwe", "Ninyanwe"
     )
 
+    /**
+     * 26 is چھبیس (25 Nov 2026: it was printed چھببیس, with a doubled ب that no dictionary writes — Rekhta's
+     * چَھّبِیس, CLDR's ur spellout). The other words CLDR spells otherwise (23 تیئس, 53 ترپن, 63 ترسٹھ, 64 چوسٹھ,
+     * 79 اناسی) are spellings in common use (Rekhta lists both چوسٹھ and چونسٹھ), kept for an Urdu reader to
+     * judge; NumberWordsIcuTest names each.
+     */
     private val urduOnes = arrayOf(
         "صفر", "ایک", "دو", "تین", "چار", "پانچ", "چھ", "سات", "آٹھ", "نو", "دس",
         "گیارہ", "بارہ", "تیرہ", "چودہ", "پندرہ", "سولہ", "سترہ", "اٹھارہ", "انیس", "بیس",
-        "اکیس", "بائیس", "تیئس", "چوبیس", "پچیس", "چھببیس", "ستائیس", "اٹھائیس", "انتیس", "تیس",
+        "اکیس", "بائیس", "تیئس", "چوبیس", "پچیس", "چھبیس", "ستائیس", "اٹھائیس", "انتیس", "تیس",
         "اکتیس", "بتیس", "تینتیس", "چونتیس", "پینتیس", "چھتیس", "سینتیس", "اڑتیس", "انتالیس", "چالیس",
         "اکتالیس", "بیالیس", "تینتالیس", "چوالیس", "پینتالیس", "چھیالیس", "سینتالیس", "اڑتالیس", "انچاس", "پچاس",
         "اکیاون", "باون", "ترپن", "چون", "پچپن", "چھپن", "ستاون", "اٹھاون", "انسٹھ", "ساٹھ",
