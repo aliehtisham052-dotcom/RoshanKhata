@@ -18,7 +18,9 @@ _spec = importlib.util.spec_from_file_location("hudhud_checklog", HERE / "hudhud
 cl = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cl)
 
+# The eight-field header of a log written before 25 Nov 2026; HEADER9 the app's own since (with `input`).
 HEADER = "no\ttime\tlanguage\tquestion\ttaken_as\tanswer\tmark\tbusiness"
+HEADER9 = HEADER + "\tinput"
 
 # A small vocabulary, so the masking tests do not move when the bank grows.
 SENTENCES = [
@@ -32,8 +34,9 @@ PER, VOCAB = cl.vocabulary(SENTENCES, names={"ali"})
 
 
 def row(no, question, taken_as="person: BALANCE [12]", answer="Zarnosh Traders · Rs 4,321 · owes you", mark="wrong",
-        language="ur-PK", business="1"):
-    return "\t".join([str(no), "2026-11-27 10:00", language, question, taken_as, answer, mark, business])
+        language="ur-PK", business="1", input=None):
+    fields = [str(no), "2026-11-25 10:00", language, question, taken_as, answer, mark, business]
+    return "\t".join(fields + ([input] if input is not None else []))
 
 
 def log_text(*rows, header=HEADER):
@@ -77,6 +80,39 @@ class ReadingTheAppsFile(unittest.TestCase):
         # A ninth column with no heading is read the same way.
         rows, _ = cl.parse(log_text(row(1, "aaj ki sale kitni hui") + "\tbalance"))
         self.assertEqual("balance", rows[0]["expected"])
+
+    def test_the_ninth_field_is_how_the_question_came_in(self):
+        rows, malformed = cl.parse(log_text(row(1, "aaj ki sale kitni hui", input="voice"),
+                                            row(2, "aaj ki sale kitni hui", input="typed"),
+                                            row(3, "aaj ki sale kitni hui", input="chip"),
+                                            row(4, "aaj ki sale kitni hui", input=""), header=HEADER9))
+        self.assertEqual(0, malformed)
+        self.assertEqual(["voice", "typed", "chip", "unknown"], [r["input"] for r in rows])
+        self.assertEqual(["", "", "", ""], [r["expected"] for r in rows])
+
+    def test_an_eight_field_row_under_the_new_header_has_no_input(self):
+        # The app writes its new header over an older list and leaves the old rows as they were.
+        rows, malformed = cl.parse(log_text(row(1, "aaj ki sale kitni hui"),
+                                            row(2, "aaj ki sale kitni hui", input="voice"), header=HEADER9))
+        self.assertEqual(0, malformed)
+        self.assertEqual(["unknown", "voice"], [r["input"] for r in rows])
+        self.assertEqual(["1", "1"], [r["business"] for r in rows])
+
+    def test_an_eight_field_log_still_reads(self):
+        rows, malformed = cl.parse(log_text(row(1, "aaj ki sale kitni hui"), row(2, "kal ki sale", mark="right")))
+        self.assertEqual(0, malformed)
+        self.assertEqual(["unknown", "unknown"], [r["input"] for r in rows])
+        self.assertEqual(["wrong", "right"], [r["mark"] for r in rows])
+
+    def test_the_expected_column_comes_after_the_input(self):
+        rows, _ = cl.parse(log_text(row(1, "aaj ki sale kitni hui", input="voice") + "\tbalance", header=HEADER9))
+        self.assertEqual(("voice", "balance"), (rows[0]["input"], rows[0]["expected"]))
+        rows, _ = cl.parse(log_text(row(1, "aaj ki sale kitni hui", input="chip") + "\tsale",
+                                    header=HEADER9 + "\texpected"))
+        self.assertEqual(("chip", "sale"), (rows[0]["input"], rows[0]["expected"]))
+        # Without a header, a ninth field is the input only when it is one of the three words.
+        rows, _ = cl.parse("\n".join([row(1, "q", input="typed") + "\tsale", row(2, "q") + "\tbalance"]))
+        self.assertEqual([("typed", "sale"), ("unknown", "balance")], [(r["input"], r["expected"]) for r in rows])
 
     def test_a_spreadsheets_unicode_text_is_read(self):
         raw = (HEADER + "\n" + row(1, "Zarnosh ka kitna baqaya hai") + "\n").encode("utf-16")
@@ -203,7 +239,7 @@ class Triage(unittest.TestCase):
     def test_one_reading_is_one_class(self):
         written, classes = cl.triage(self.rows, PER, VOCAB)
         top_key, top = next(iter(classes.items()))
-        self.assertEqual(("-", "person: BALANCE"), top_key)
+        self.assertEqual(("-", "person: BALANCE", "unknown"), top_key)
         self.assertEqual(2, top["count"])
         self.assertEqual(["1", "2"], top["rows"])
         # Row 2: Hudhud gave Zarnosh's card for a question about somebody else — the question's name is not on the
@@ -219,7 +255,21 @@ class Triage(unittest.TestCase):
         rows, _ = cl.parse(log_text(row(1, "aaj ki sale kitni hui") + "\tsale", row(2, "aaj ki sale kitni hui") + "\t",
                                     header=header))
         _, classes = cl.triage(rows, PER, VOCAB)
-        self.assertEqual({("sale", "person: BALANCE"), ("-", "person: BALANCE")}, set(classes))
+        self.assertEqual({("sale", "person: BALANCE", "unknown"), ("-", "person: BALANCE", "unknown")}, set(classes))
+
+    def test_voice_and_typed_mistakes_are_classes_apart(self):
+        rows, _ = cl.parse(log_text(row(1, "aaj ki sale kitni hui", input="voice"),
+                                    row(2, "aaj ki sale kitni hui", input="voice"),
+                                    row(3, "aaj ki sale kitni hui", input="typed"),
+                                    row(4, "aaj ki sale kitni hui", input="chip", mark="right"), header=HEADER9))
+        written, classes = cl.triage(rows, PER, VOCAB, all_marked=True)
+        self.assertEqual(["voice", "voice", "typed", "chip"], [r["input"] for r in written])
+        self.assertEqual([("-", "person: BALANCE", "voice"), ("-", "person: BALANCE", "chip"),
+                          ("-", "person: BALANCE", "typed")], list(classes))
+        self.assertEqual(2, classes[("-", "person: BALANCE", "voice")]["count"])
+        self.assertEqual(["voice 2 (0 right, 2 wrong, 0 not marked)", "typed 1 (0 right, 1 wrong, 0 not marked)",
+                          "chip 1 (1 right, 0 wrong, 0 not marked)"], cl.by_input(rows))
+        self.assertEqual(["none"], cl.by_input([]))
 
     def test_the_real_question_is_written_only_when_asked(self):
         written, _ = cl.triage(self.rows, PER, VOCAB)
@@ -273,6 +323,23 @@ class TheCommand(unittest.TestCase):
             self.assertNotIn("Taimoorzai", written)
             self.assertNotIn("1234567", written)
             self.assertEqual(5, len(written.strip().splitlines()))  # header + four marked rows
+            self.assertIn("by input (all rows read): unknown 5 (1 right, 3 wrong, 1 not marked)", said)
+            self.assertEqual("input", written.splitlines()[0].split("\t")[2])
+            self.assertEqual("input", classes_file.read_text(encoding="utf-8").splitlines()[0].split("\t")[2])
+
+    def test_a_nine_field_log_is_counted_by_input(self):
+        with tempfile.TemporaryDirectory() as d:
+            log = Path(d) / "in" / "hudhud_check_20261125_1000.tsv"
+            log.parent.mkdir()
+            log.write_text(log_text(row(1, "aaj ki sale kitni hui", input="voice"),
+                                    row(2, "aaj ki sale kitni hui", input="typed", mark="right"),
+                                    row(3, "aaj ki sale kitni hui", input="chip", mark=""), header=HEADER9),
+                           encoding="utf-8")
+            code, said = self.run_main([str(log), "--out", str(Path(d) / "out")])
+            self.assertEqual(0, code)
+            self.assertIn("by input (all rows read): voice 1 (0 right, 1 wrong, 0 not marked), "
+                          "typed 1 (1 right, 0 wrong, 0 not marked), chip 1 (0 right, 0 wrong, 1 not marked)", said)
+            self.assertIn("written by input: voice 1", said)
 
     def test_a_name_that_is_also_a_word_is_the_known_limit_and_is_flagged(self):
         # "qeemat" (price) is a word of the bank: as a customer's name it is not masked by the vocabulary. When Hudhud

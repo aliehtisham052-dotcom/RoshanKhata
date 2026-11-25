@@ -64,11 +64,14 @@ object HudhudCheck {
         }
     }
 
-    /** Writes one answered question; its row number, for [mark]. Off the screen's thread. */
+    /**
+     * Writes one answered question; its row number, for [mark]. Off the screen's thread. [input]: how the question came
+     * in — spoken, typed or a chip (25 Nov 2026), so the recogniser's mistakes are counted apart from Hudhud's own.
+     */
     @Synchronized
-    fun record(context: Context, heard: String, takenAs: String, heading: String, language: String): Int {
+    fun record(context: Context, heard: String, takenAs: String, heading: String, language: String, input: CheckLog.Input?): Int {
         val business = runCatching { Businesses.active(context).id }.getOrNull()
-        val (lines, row) = CheckLog.add(read(context), stamp(), language, heard, takenAs, heading, business)
+        val (lines, row) = CheckLog.add(read(context), stamp(), language, heard, takenAs, heading, business, input)
         write(context, lines)
         return row
     }
@@ -175,14 +178,33 @@ object HudhudCheck {
 /**
  * The check list's own arithmetic, kept apart so a test holds it: a header, then one row per answer —
  * number, time, language, question, taken as, answer, mark ("right", "wrong" or empty), business (the id of the shop it
- * was asked in; empty in rows written before 16 Nov 2026). Tabs and line breaks in a field become spaces, so a row is
- * always one line of eight fields; an older row of seven is read as one with no business.
+ * was asked in; empty in rows written before 16 Nov 2026), input ("voice", "typed" or "chip" — [Input]; empty in rows
+ * written before 25 Nov 2026). Tabs and line breaks in a field become spaces, so a row is always one line of nine
+ * fields; an older row of seven is read as one with no business, and one of seven or eight as one with no input.
  */
 object CheckLog {
 
-    const val HEADER = "no\ttime\tlanguage\tquestion\ttaken_as\tanswer\tmark\tbusiness"
+    const val HEADER = "no\ttime\tlanguage\tquestion\ttaken_as\tanswer\tmark\tbusiness\tinput"
     /** Fields in a row: [HEADER]'s. */
-    const val FIELDS = 8
+    const val FIELDS = 9
+
+    /**
+     * How a question came in (25 Nov 2026, Marhala 2 of the master plan: a recogniser's mistake is not an understanding
+     * mistake, so a log that cannot tell them apart cannot measure either). [word] is what the row says;
+     * scripts/hudhud_checklog.py reads the same three words.
+     */
+    enum class Input(val word: String) {
+        /** Spoken: the question is what the recogniser heard. */
+        VOICE("voice"),
+        /** Typed in the box (or handed to the sheet as words). */
+        TYPED("typed"),
+        /** A chip or a row tapped: its question was known already. */
+        CHIP("chip");
+
+        companion object {
+            fun of(word: String?): Input? = values().firstOrNull { it.word == word?.trim() }
+        }
+    }
     const val RIGHT = "right"
     const val WRONG = "wrong"
     /** The oldest rows go first past this many, so the file never grows without end. */
@@ -212,22 +234,24 @@ object CheckLog {
 
     fun clean(s: String): String = s.replace(Regex("[\\t\\r\\n]+"), " ").trim()
 
-    /** A header line, this one's or an older list's (seven fields): never counted as a row. */
+    /** A header line, this one's or an older list's (seven or eight fields): never counted as a row. */
     private fun isHeader(l: String): Boolean = l.startsWith("no\t")
 
     private fun rows(lines: List<String>): List<String> = lines.filter { it.isNotBlank() && !isHeader(it) }
 
     /**
      * [lines] with one row added, and the new row's number (one past the highest so far). [business]: the shop it was asked
-     * in. An older list's header is written again as this one's.
+     * in; [input]: how the question came in (null writes an empty field, as an older row reads). An older list's header
+     * is written again as this one's; its rows stay as they were (shorter, read as having no business or input).
      */
     fun add(
-        lines: List<String>, time: String, language: String, heard: String, takenAs: String, answer: String, business: Long? = null
+        lines: List<String>, time: String, language: String, heard: String, takenAs: String, answer: String,
+        business: Long? = null, input: Input? = null
     ): Pair<List<String>, Int> {
         val old = rows(lines)
         val next = (old.mapNotNull { it.substringBefore('\t').toIntOrNull() }.maxOrNull() ?: 0) + 1
         val row = listOf(next.toString(), clean(time), clean(language), clean(heard), clean(takenAs), clean(answer), "",
-            business?.toString().orEmpty())
+            business?.toString().orEmpty(), input?.word.orEmpty())
             .joinToString("\t")
         val kept = (old + row).takeLast(MAX_ROWS)
         return (listOf(HEADER) + kept) to next
@@ -246,6 +270,9 @@ object CheckLog {
 
     /** The shop a row was asked in; null for a row written before rows said it. */
     fun businessOf(row: String): Long? = row.split('\t').getOrNull(7)?.toLongOrNull()
+
+    /** How a row's question came in; null for a row written before rows said it (seven or eight fields). */
+    fun inputOf(row: String): Input? = Input.of(row.split('\t').getOrNull(8))
 
     /** [lines] without the rows asked in business [id] (rows that name no business stay). */
     fun withoutBusiness(lines: List<String>, id: Long): List<String> {

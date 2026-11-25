@@ -431,7 +431,9 @@ object HudhudSheet {
             breathe()
             when {
                 // The screen was rebuilt by a change to the look: the card of that change, with its Undo.
-                reopen != null -> chip(reopen.heard, Hudhud.Ask.LookDone(reopen.made))
+                // The question that made the change came in on the sheet the rebuild took; how is not carried over.
+                reopen != null -> chip(reopen.heard, Hudhud.Ask.LookDone(reopen.made), input = null)
+                // Words handed to the sheet (the proofs, a question from elsewhere) are logged as typed.
                 ask != null -> question(listOf(ask), spoken = false)
                 today -> chip(ctx.getString(R.string.hudhud_chip_today), Hudhud.Ask.Today)
                 listenNow -> listen()
@@ -717,15 +719,20 @@ object HudhudSheet {
         private fun question(candidates: List<String>, spoken: Boolean) {
             // The recogniser's language, so a Persian or Indonesian amount is read its own way (voice entry's rule).
             val language = Locale.getDefault().toLanguageTag()
-            answer(candidates.first(), spoken) { names, products, staff ->
+            val input = if (spoken) CheckLog.Input.VOICE else CheckLog.Input.TYPED
+            answer(candidates.first(), spoken, input) { names, products, staff ->
                 Hudhud.understand(candidates, names, topics, language, products, before, staff)
             }
         }
 
-        /** A chip: its question is known already, and its own words are what was asked. */
-        private fun chip(words: String, ask: Hudhud.Ask) {
+        /**
+         * A chip: its question is known already, and its own words are what was asked. [input]: how the check log files it
+         * — a chip, unless the card stands for a question asked otherwise (a change to the look made in place keeps how
+         * that question came in; null when it is not known).
+         */
+        private fun chip(words: String, ask: Hudhud.Ask, input: CheckLog.Input? = CheckLog.Input.CHIP) {
             endConversation()
-            answer(words, spoken = false) { _, _, _ -> words to ask }
+            answer(words, spoken = false, input = input) { _, _, _ -> words to ask }
         }
 
         /**
@@ -736,8 +743,9 @@ object HudhudSheet {
         private fun asked(words: String, spoken: Boolean): String =
             ctx.getString(if (spoken) R.string.vq_heard else R.string.hudhud_you_asked, Format.isolate(words))
 
+        /** [input]: how the question came in, for the check log ([offerCheck]); null when it is not known. */
         private fun answer(
-            heardFirst: String, spoken: Boolean,
+            heardFirst: String, spoken: Boolean, input: CheckLog.Input?,
             understand: (List<Hudhud.Name>, List<Hudhud.Name>, List<Hudhud.Name>) -> Pair<String, Hudhud.Ask>
         ) {
             job?.cancel()
@@ -787,7 +795,7 @@ object HudhudSheet {
                 // A change to the look (text size, theme) rebuilds this screen and takes this sheet with it: it is made
                 // through the door, and the new screen's sheet shows the card and its Undo (14 Nov 2026).
                 result.answer.look?.let { made ->
-                    applyLook(made, result.heard)
+                    applyLook(made, result.heard, input)
                     return@launch
                 }
                 // "Bas", "chup", "khuda hafiz": the talk is over — he answers and does not listen again.
@@ -796,7 +804,7 @@ object HudhudSheet {
                 } || (result.ask as? Hudhud.Ask.Chat)?.talk == Hudhud.Talk.BYE
                 if (stops) endConversation()
                 show(result.answer, speak = true)
-                offerCheck(result.heard, result.ask, result.answer)
+                offerCheck(result.heard, result.ask, result.answer, input)
                 // What the talk is about now, so "uska number?" or "aur kal?" carry on: a guess counts as what it was
                 // taken for; a list of names offered ("whose?") keeps the one before. A matter of faith or his own story
                 // is a detour: the shop's talk goes on from where it was, not from it.
@@ -818,7 +826,7 @@ object HudhudSheet {
          * The owner's check of a test build (14 Nov 2026, [HudhudCheck]): with it on, the answer is written down on this
          * phone and he marks it right or wrong under the card; off, the row is never shown and nothing is written.
          */
-        private fun offerCheck(heard: String, ask: Hudhud.Ask?, answer: HudhudBook.Answer) {
+        private fun offerCheck(heard: String, ask: Hudhud.Ask?, answer: HudhudBook.Answer, input: CheckLog.Input?) {
             checkRow.visibility = View.GONE
             // Matters of faith and his own story are not written into the check log: personal things stay personal.
             if (answer.reverent) return
@@ -826,7 +834,7 @@ object HudhudSheet {
             val language = ctx.resources.configuration.locales[0].toLanguageTag()
             host.lifecycleScope.launch {
                 val row = withContext(Dispatchers.IO) {
-                    runCatching { HudhudCheck.record(ctx, heard, HudhudCheck.describe(ask), HudhudCheck.heading(answer), language) }
+                    runCatching { HudhudCheck.record(ctx, heard, HudhudCheck.describe(ask), HudhudCheck.heading(answer), language, input) }
                         .getOrNull()
                 } ?: return@launch
                 if (closed) return@launch
@@ -889,12 +897,12 @@ object HudhudSheet {
          * The sheet stops speaking and listening first: the screen under it is about to be rebuilt, and the sheet that
          * opens on the new one says the card. [inPlace] is the card on this very sheet, for a change that rebuilds nothing.
          */
-        private fun applyLook(made: HudhudLook.Made, heard: String) {
+        private fun applyLook(made: HudhudLook.Made, heard: String, input: CheckLog.Input?) {
             endConversation()
             speakJob?.cancel()
             voiceJob?.cancel()
             voice.stop()
-            HudhudLookDoor.apply(host, made, heard, speakAllowed) { if (!closed) chip(heard, Hudhud.Ask.LookDone(made)) }
+            HudhudLookDoor.apply(host, made, heard, speakAllowed) { if (!closed) chip(heard, Hudhud.Ask.LookDone(made), input) }
         }
 
         private fun show(a: HudhudBook.Answer, speak: Boolean) {
@@ -1000,7 +1008,7 @@ object HudhudSheet {
             btnOpen.setOnClickListener {
                 when {
                     // The change just made, taken back: made through the same door, told as taken back on the new screen.
-                    undo != null -> applyLook(undo, ctx.getString(R.string.undo))
+                    undo != null -> applyLook(undo, ctx.getString(R.string.undo), CheckLog.Input.CHIP)
                     a.voiceSettings -> HudhudVoiceSheet.show(host)
                     a.automations -> AutomationsDialog.show(host)
                     a.doIt != null -> a.doIt.invoke()

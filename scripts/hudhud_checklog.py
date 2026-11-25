@@ -5,15 +5,18 @@ What it reads: the list the app shares from More -> Hudhud's voice -> Testing to
 (`HudhudCheck.share`, `CheckLog` in app/src/main/java/com/innovation313/roshankhata/ui/HudhudCheck.kt), exactly as it
 comes off the phone: UTF-8 with a byte-order mark, tab-separated, a header and one row per answer —
 
-    no  time  language  question  taken_as  answer  mark  business
+    no  time  language  question  taken_as  answer  mark  business  input
 
 `language` is the APP's display language (a locale tag such as "ur-PK"), not the language of the question; `question`
 is what was asked (for a spoken question, what the recogniser heard); `taken_as` is `HudhudCheck.describe` of the
 reading ("person: BALANCE [12]", "guessed > help: faq_backup", "error"); `answer` is the card's heading (its label —
 a customer's NAME when the answer is about a customer — its figure and first line); `mark` is "right", "wrong" or
-empty. A row of seven fields (before 16 Nov 2026) has no business. The log has no "what was meant" column: when the
-owner adds one in a spreadsheet (a column headed expected / meant / should_be / sahi, or a ninth column with no
-heading), it is read as the expected meaning. A file Excel saved again as "Unicode Text" (UTF-16) is read too.
+empty; `input` is how the question came in — "voice" (what the recogniser heard), "typed" or "chip" — so a
+recogniser's mistake is counted apart from an understanding mistake. A row of seven fields (before 16 Nov 2026) has no
+business, and one of seven or eight (before 25 Nov 2026) no input: it is counted as "unknown". The log has no "what
+was meant" column: when the owner adds one in a spreadsheet (a column headed expected / meant / should_be / sahi, or a
+column with no heading after the last of the app's own — the ninth of an eight-field log, the tenth of a nine-field
+one), it is read as the expected meaning. A file Excel saved again as "Unicode Text" (UTF-16) is read too.
 
 What it writes, into a folder OUTSIDE the repository (refused inside it, as hudhud_sets.py --sealed is; the input
 file is refused inside it too — a real log must never sit in a git working tree):
@@ -23,8 +26,9 @@ file is refused inside it too — a real log must never sit in a git working tre
                             out), the expected meaning when the owner gave one, the question and the card's heading
                             with names, phone numbers and long numbers replaced by placeholders, and why a row needs a
                             human look;
-    <log name>.classes.tsv  the rows grouped by (expected meaning, what Hudhud read): count, right/wrong, row numbers,
-                            languages, one masked example — so a class of mistakes is visible at a glance.
+    <log name>.classes.tsv  the rows grouped by (expected meaning, what Hudhud read, input): count, right/wrong, row
+                            numbers, languages, one masked example — so a class of mistakes is visible at a glance,
+                            and a voice-only class (the recogniser's) apart from one typed questions share.
 
 The placeholders: {NAME1}.. / {ITEM1}.. a word of the customer's / product's name on the card (Hudhud found it);
 {PHONE} a phone number; {NUM} a number of five digits or more (amounts of four digits or fewer stay: a reading of
@@ -37,8 +41,8 @@ and writes the class with INVENTED names (docs/hudhud-annotation-guide.md). The 
 proof: a real name that is also an ordinary word Hudhud knows ("Noor", "Barkat", "Qeemat") is not masked unless the
 card named it (a row whose card names somebody the question does not is flagged for a look). Nothing written here ever goes into the repository; only classes with invented names do.
 
-What it prints: counts only (rows read, right, wrong, unmarked, malformed lines, rows that need a look, classes, rows
-per guessed language and per reading). Never a sentence, never a name, never the expected text.
+What it prints: counts only (rows read, right, wrong, unmarked, malformed lines, right/wrong per input, rows that need
+a look, classes, rows per guessed language, per reading and per input). Never a sentence, never a name, never the expected text.
 
     python3 scripts/hudhud_checklog.py LOG.tsv --out /private/folder            # wrong answers only
     python3 scripts/hudhud_checklog.py LOG.tsv --out /private/folder --all-marked
@@ -60,10 +64,14 @@ ROOT = Path(__file__).resolve().parent.parent
 BANK_DIRS = [ROOT / "shared/hudhud", ROOT / "shared/hudhud/more"]
 HELDOUT = ROOT / "shared/src/jvmSharedTest/resources/hudhud/heldout.tsv"
 
-# CheckLog's own words (HudhudCheck.kt): the header's first field, the two marks, the field count.
+# CheckLog's own words (HudhudCheck.kt): the header's first field, the two marks, the fields, CheckLog.Input's words.
 HEADER_START = "no\t"
 RIGHT, WRONG = "right", "wrong"
-FIELDS = ["no", "time", "language", "question", "taken_as", "answer", "mark", "business"]
+FIELDS = ["no", "time", "language", "question", "taken_as", "answer", "mark", "business", "input"]
+# A log written before 25 Nov 2026: eight fields, no input (and before 16 Nov seven rows' worth, no business).
+OLD_FIELDS = FIELDS[:8]
+INPUTS = ("voice", "typed", "chip")
+UNKNOWN_INPUT = "unknown"
 EXPECTED_HEADS = {"expected", "meant", "should_be", "shouldbe", "sahi", "correct", "expected_meaning"}
 
 # Words of the bank that are the app's own, kept in the vocabulary although the bank writes them capitalised.
@@ -104,26 +112,37 @@ def decode(raw):
 
 
 def parse(text, quoted=False):
-    """Rows as dicts (the eight fields, plus `expected`), and the count of lines that are not a row."""
+    """Rows as dicts (the nine fields, plus `expected`), and the count of lines that are not a row. A log whose header
+    has no `input` (eight fields, before 25 Nov 2026) is read as one: its rows' input is "unknown", and a column the
+    owner added after its eighth is still the expected meaning. Without a header, a row's ninth field is its input only
+    when it is one of CheckLog.Input's words."""
     reader = csv.reader(io.StringIO(text), delimiter="\t",
                         quoting=csv.QUOTE_MINIMAL if quoted else csv.QUOTE_NONE)
     expected_at = None
+    has_input = None  # None: no header seen, decided row by row
     rows, malformed = [], 0
     for fields in reader:
         if not fields or all(not f.strip() for f in fields):
             continue
-        fields = [f.lstrip("﻿") for f in fields]
+        fields = [f.lstrip("\ufeff") for f in fields]
         if (fields[0].strip() == "no") and len(fields) > 1:
             heads = [h.strip().lower() for h in fields]
+            has_input = len(heads) > len(OLD_FIELDS) and heads[len(OLD_FIELDS)] == "input"
+            own = len(FIELDS) if has_input else len(OLD_FIELDS)
             expected_at = next((i for i, h in enumerate(heads) if h in EXPECTED_HEADS), None)
-            if expected_at is None and len(heads) > len(FIELDS) and heads[len(FIELDS)] == "":
-                expected_at = len(FIELDS)
+            if expected_at is None and len(heads) > own and heads[own] == "":
+                expected_at = own
             continue
         if len(fields) < 7 or not fields[0].strip().isdigit():
             malformed += 1
             continue
-        row = {name: (fields[i] if i < len(fields) else "") for i, name in enumerate(FIELDS)}
-        at = expected_at if expected_at is not None else (len(FIELDS) if len(fields) > len(FIELDS) else None)
+        row_has_input = has_input if has_input is not None else (
+            len(fields) > len(OLD_FIELDS) and fields[len(OLD_FIELDS)].strip().lower() in INPUTS)
+        names = FIELDS if row_has_input else OLD_FIELDS
+        row = {name: (fields[i] if i < len(fields) else "") for i, name in enumerate(names)}
+        word = row.get("input", "").strip().lower()
+        row["input"] = word if word in INPUTS else UNKNOWN_INPUT
+        at = expected_at if expected_at is not None else (len(names) if len(fields) > len(names) else None)
         row["expected"] = fields[at].strip() if at is not None and at < len(fields) else ""
         row["mark"] = row["mark"].strip().lower()
         rows.append(row)
@@ -405,7 +424,8 @@ def triage(rows, per_lang, vocab, shop_marks=frozenset(), all_marked=False, with
         if look_e:
             look.add("expected text masked")
         row = OrderedDict([
-            ("no", r["no"].strip()), ("mark", r["mark"]), ("app_language", r["language"].strip()),
+            ("no", r["no"].strip()), ("mark", r["mark"]), ("input", r.get("input") or UNKNOWN_INPUT),
+            ("app_language", r["language"].strip()),
             ("script", script), ("language_guess", lang), ("read_as", read_class(r["taken_as"])),
             ("expected", expected), ("question_masked", question), ("answer_masked", answer),
             ("needs_look", "; ".join(sorted(look))),
@@ -415,7 +435,7 @@ def triage(rows, per_lang, vocab, shop_marks=frozenset(), all_marked=False, with
         out.append(row)
     classes = OrderedDict()
     for row in out:
-        k = (row["expected"] or "-", row["read_as"])
+        k = (row["expected"] or "-", row["read_as"], row["input"])
         c = classes.setdefault(k, {"count": 0, RIGHT: 0, WRONG: 0, "rows": [], "langs": Counter(), "look": 0,
                                    "example": row["question_masked"]})
         c["count"] += 1
@@ -434,18 +454,18 @@ def _clean(field):
 def write(out_dir, stem, rows, classes):
     out_dir.mkdir(parents=True, exist_ok=True)
     rows_path = out_dir / f"{stem}.rows.tsv"
-    heads = list(rows[0].keys()) if rows else ["no", "mark", "app_language", "script", "language_guess", "read_as",
-                                                "expected", "question_masked", "answer_masked", "needs_look"]
+    heads = list(rows[0].keys()) if rows else ["no", "mark", "input", "app_language", "script", "language_guess",
+                                                "read_as", "expected", "question_masked", "answer_masked", "needs_look"]
     with rows_path.open("w", encoding="utf-8", newline="") as f:
         f.write("\t".join(heads) + "\n")
         for r in rows:
             f.write("\t".join(_clean(r[h]) for h in heads) + "\n")
     classes_path = out_dir / f"{stem}.classes.tsv"
     with classes_path.open("w", encoding="utf-8", newline="") as f:
-        f.write("expected\tread_as\tcount\twrong\tright\tneeds_look\tlanguages\trows\texample_masked\n")
-        for (expected, read), c in classes.items():
+        f.write("expected\tread_as\tinput\tcount\twrong\tright\tneeds_look\tlanguages\trows\texample_masked\n")
+        for (expected, read, kind), c in classes.items():
             langs = ",".join(f"{lang}:{n}" for lang, n in c["langs"].most_common())
-            f.write("\t".join(_clean(x) for x in (expected, read, c["count"], c[WRONG], c[RIGHT], c["look"], langs,
+            f.write("\t".join(_clean(x) for x in (expected, read, kind, c["count"], c[WRONG], c[RIGHT], c["look"], langs,
                                                   ",".join(c["rows"]), c["example"])) + "\n")
     return rows_path, classes_path
 
@@ -456,6 +476,7 @@ def summary(rows, malformed, written, classes):
     lines = [
         f"hudhud_checklog: {len(rows)} answers read, {marks[RIGHT]} right, {marks[WRONG]} wrong, "
         f"{len(rows) - marks[RIGHT] - marks[WRONG]} not marked, {malformed} lines that are not a row",
+        "  by input (all rows read): " + ", ".join(by_input(rows)),
         f"  written: {len(written)} rows, {len(classes)} classes, "
         f"{sum(1 for r in written if r['needs_look'])} rows need a look in the owner's own file",
     ]
@@ -465,7 +486,24 @@ def summary(rows, malformed, written, classes):
     kinds = Counter(r["read_as"].split(":")[0].split(" >")[0] for r in written)
     if kinds:
         lines.append("  by kind of reading: " + ", ".join(f"{k} {v}" for k, v in kinds.most_common()))
+    inputs = Counter(r["input"] for r in written)
+    if inputs:
+        lines.append("  written by input: " + ", ".join(f"{k} {inputs[k]}" for k in INPUTS + (UNKNOWN_INPUT,)
+                                                        if inputs[k]))
     return "\n".join(lines)
+
+
+def by_input(rows):
+    """Per input kind (voice, typed, chip, then unknown for older rows): "voice 5 (2 right, 3 wrong, 0 not marked)".
+    The kinds with no row are left out; a log with no rows says "none"."""
+    out = []
+    for kind in INPUTS + (UNKNOWN_INPUT,):
+        marks = Counter(r["mark"] for r in rows if r.get("input", UNKNOWN_INPUT) == kind)
+        n = sum(marks.values())
+        if n:
+            out.append(f"{kind} {n} ({marks[RIGHT]} right, {marks[WRONG]} wrong, "
+                       f"{n - marks[RIGHT] - marks[WRONG]} not marked)")
+    return out or ["none"]
 
 
 def _inside_repo(path):

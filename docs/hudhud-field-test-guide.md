@@ -12,6 +12,8 @@ phone (Oppo Reno 11F) and marks every wrong answer. Claude reads the marks **by 
 
 Not written: answers about matters of faith and Hudhud's own story (personal things stay personal). The list keeps the
 newest 3,000 answers, one file for every shop on the phone (each row says which shop); deleting a shop deletes its rows.
+Since 25 Nov 2026 each row also says how the question came in (`input`: voice, typed or chip), so the triage counts the
+recogniser's mistakes apart from Hudhud's own; rows written before say nothing there and are counted as "unknown".
 
 Optional: if the owner opens the shared file in a spreadsheet and adds a column headed `expected` with what he meant
 ("Ali ka baqaya", "aaj ki sale"), the triage groups by it too. Nothing else needs to be added.
@@ -45,8 +47,8 @@ python3 scripts/hudhud_checklog.py /private/hudhud_check_20261127_2100.tsv --out
   script and language guessed from the question, what Hudhud read (`read_as`, the book's ids removed), and the
   question and card with names → `{NAME1}`/`{ITEM1}`, phone numbers → `{PHONE}`, numbers of 5+ digits → `{NUM}`,
   the shop → `{SHOP}`, any word Hudhud's sentences never use → `{X1}`.
-- `<name>.classes.tsv`: rows grouped by (expected, what Hudhud read), largest first, with row numbers and one masked
-  example.
+- `<name>.classes.tsv`: rows grouped by (expected, what Hudhud read, input), largest first, with row numbers and one
+  masked example; the printed summary also says right/wrong per input (voice, typed, chip, unknown).
 - `needs_look`: a masked word may be a name, a product, a typo or a recogniser's garble; or the card named somebody the
   question did not. Claude opens that row number in the owner's own file, decides, and writes nothing from it.
 
@@ -55,9 +57,9 @@ with invented sentences, the fix, and the training cycle's gates (plan, ten step
 and a test (Marhala 2's exit gate). The masking is a safety net, not proof: a name that is also an everyday word
 ("Barkat", "Qeemat") stays unmasked unless the card named it, so the rows file is private too.
 
-Voice is measured apart: the log's question is what the recogniser **heard**, and the log does not yet say whether a
-question was spoken, typed or a chip tap, nor what was meant. Until the app records that, a voice miss is told from a
-reading miss by the owner's `expected` column or by asking him.
+Voice is measured apart: the log's question is what the recogniser **heard**, and the `input` field (since 25 Nov
+2026) says whether it was spoken, typed or a chip tap — a class only voice rows share is the recogniser's, not
+Hudhud's reading. What was meant is still the owner's `expected` column or his answer when asked.
 
 ## 5. The speed table
 
