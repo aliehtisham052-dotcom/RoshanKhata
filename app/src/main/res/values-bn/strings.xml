@@ -1529,6 +1529,7 @@
     <string name="voice_no_party">আপনার খাতায় এখনো কোনো গ্রাহক নেই। আগে গ্রাহক যোগ করুন।</string>
     <string name="voice_no_amount">এতে কোনো অঙ্ক নেই। অঙ্কটিও বলুন।</string>
     <string name="voice_future_promise">এটা পরে দেওয়ার টাকা মনে হচ্ছে, পাওয়া টাকা নয়। তার পাতায় কথা দেওয়া দিনটি লিখুন।</string>
+    <string name="voice_not_moved">এই বাক্যে টাকা আসেনি বা যায়নি (দেয়নি, বা এখনও বাকি), তাই কোনো এন্ট্রি হয়নি। তার বাকি তার পাতায় আছে।</string>
     <string name="voice_open_entry">এন্ট্রি খুলুন</string>
     <string name="voice_which_party">%1$s — কোন গ্রাহক?</string>
     <plurals name="delete_parties_title">

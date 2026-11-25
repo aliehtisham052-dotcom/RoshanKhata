@@ -307,7 +307,7 @@ object VoiceEntry {
     }
 
     /**
-     * The figures of [text] that are no amount of money, blanked out before an amount is looked for (Marhala 1, 26 Nov 2026):
+     * The figures of [text] that are no amount of money, blanked out before an amount is looked for (Marhala 1, 25 Nov 2026):
      *
      * - a phone number (BC-324): "Ali Raza ko 03001234567 diye" was an entry of Rs 3,001,234,567, "0300 1234567" of Rs 300 and
      *   "+92 300 1234567" of Rs 92 — on the Khata microphone as in Hudhud. A number with a country code ("+92 …", "0092 …"), a

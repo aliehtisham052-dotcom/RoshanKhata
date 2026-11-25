@@ -300,7 +300,7 @@ class HudhudEntityMetricsTest {
             // 16 Nov 2026, the payable class fixed (BC-097): supplier and "kis ko … nahi diya" questions, "mere paas", "dene
             // wala kaun", the Farsi and Bengali debtor. What is left reads both ways and is not turned: "Kis ki payment late ho
             // gayi" (customers' late payments too), "Kitna qarz baqi hai", "Kis ka maal ka paisa baqi hai".
-            // 26 Nov 2026, Marhala 1 (BC-318, BC-319): the last four read both ways and are now asked first (D15, "lene hain ya dene?",
+            // 25 Nov 2026, Marhala 1 (BC-318, BC-319): the last four read both ways and are now asked first (D15, "lene hain ya dene?",
             // counted as a choice): "Kis ki payment late ho gayi" twice, "Kitna qarz baqi hai", "Kis ka maal ka paisa baqi hai". Zero
             // everywhere — the master plan's hard-zero gate. A zero here is "0 in these sets", never "never wrong".
             "heldout" to (0 to 0),

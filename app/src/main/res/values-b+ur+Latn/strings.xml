@@ -1489,6 +1489,7 @@
     <string name="voice_no_party">Aap ke khate mein abhi koi gahak nahi. Pehle ek gahak shamil karein.</string>
     <string name="voice_no_amount">Is mein raqam nahi thi. Adad bhi kahein.</string>
     <string name="voice_future_promise">Yeh baad mein di jaane wali raqam lagti hai, aayi hui raqam nahi. Waade ka din us ke page par likhein.</string>
+    <string name="voice_not_moved">Is jumle mein paisa aaya ya gaya nahi (nahi diye, ya abhi baqi hai), is liye entry nahi bani. Us ka baqaya us ke page par hai.</string>
     <string name="voice_open_entry">Indiraaj kholein</string>
     <string name="voice_which_party">%1$s — kaun sa gahak?</string>
     <plurals name="delete_parties_title">

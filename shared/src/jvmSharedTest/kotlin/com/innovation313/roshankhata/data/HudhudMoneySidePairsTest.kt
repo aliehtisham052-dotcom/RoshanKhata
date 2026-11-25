@@ -193,7 +193,7 @@ class HudhudMoneySidePairsTest {
             Row("sd", "Ali Raza مون کي 500 ڏنا", Side.GOT),
             Row("sd", "Ali Raza مونکي 500 ڏنا", Side.GOT),
             Row("sd", "Ali Raza مون کي 500 ڏنا ۽ Bashir Ahmad کي 300 ڏنا", Side.GOT_THEN_GAVE),
-            // Marhala 1 (26 Nov 2026): the reversed pairs of "ne / ko / se" and "diye / nahi diye / dunga / dene hai" in each language.
+            // Marhala 1 (25 Nov 2026): the reversed pairs of "ne / ko / se" and "diye / nahi diye / dunga / dene hai" in each language.
             // "Ali ne 500 diye" is money in, "Ali ko 500 diye" money out (above); "Ali se 500 lene hain" is what he owes (his account),
             // "Ali ne 500 nahi diye" no money at all (his account), "Kal Ali ko 500 dunga" the shop's own promise (his account, never
             // an entry dated yesterday). Sindhi, Bengali, Farsi and Arabic rows need a native read.

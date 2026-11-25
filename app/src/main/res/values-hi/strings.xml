@@ -1529,6 +1529,7 @@
     <string name="voice_no_party">आपके खाते में अभी कोई ग्राहक नहीं। पहले ग्राहक जोड़ें।</string>
     <string name="voice_no_amount">इसमें रकम नहीं है। रकम भी बोलें।</string>
     <string name="voice_future_promise">यह बाद में दी जाने वाली रकम लगती है, आई हुई रकम नहीं। वादे का दिन उसके पेज पर लिखें।</string>
+    <string name="voice_not_moved">इस वाक्य में पैसा आया या गया नहीं (नहीं दिए, या अभी बाकी है), इसलिए एंट्री नहीं बनी। उसका बकाया उसके पेज पर है।</string>
     <string name="voice_open_entry">एंट्री खोलें</string>
     <string name="voice_which_party">%1$s — कौन-सा ग्राहक?</string>
     <plurals name="delete_parties_title">

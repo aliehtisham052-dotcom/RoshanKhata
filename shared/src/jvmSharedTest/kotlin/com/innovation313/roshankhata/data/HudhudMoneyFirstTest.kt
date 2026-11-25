@@ -9,7 +9,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Marhala 1, "money first" (26 Nov 2026, docs/hudhud-master-plan-v1.md): the money's side, its amount and its person are said by the
+ * Marhala 1, "money first" (25 Nov 2026, docs/hudhud-master-plan-v1.md): the money's side, its amount and its person are said by the
  * rules, never left to the learnt sense (lesson 163). One class per block, each in the nine languages, through the whole pipeline with
  * the shipped sense (lesson 145), and one direct test per guard where only that guard can decide (lesson 129):
  *

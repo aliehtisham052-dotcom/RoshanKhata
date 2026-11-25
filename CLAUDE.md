@@ -3064,6 +3064,22 @@ Each of these cost a build or a bug.
      that changes the model's kind (an ensemble, another learner, another feature set) measures its certainty-to-accuracy
      table on the held-out set again and re-derives every threshold from it (`SENSE_FIRM_TURN` 0.99, BC-289), and is
      compared sentence by sentence with HEAD on the owner's lists (`comm` of the two miss lists), not only by count.
+166. **A sum with a "not" or a "still to" is no movement, and a side nobody said is asked.** The entry readers took any
+     amount with a verb as money that moved ("nahi diye", "lene hain", "dunga" opened entries, one dated yesterday), and the
+     side default answered sentences that run both ways ("Kitna qarz baqi hai"). `VoiceQuestion.moneyNotMoved`, `saysFuture`,
+     `shopWillPay` and `sideUnsure` decide by words in nine languages, on Hudhud and the Khata microphone alike (Marhala 1,
+     25 Nov 2026, BC-318..325). A class is kept the same in every language even when one set's label disagrees, and the
+     disagreement is reported to the owner, not fitted.
+167. **A threshold is judged by what it changes on the owner's lists, not by its precision on the bank.** Out-of-fold
+     calibration (`scripts/hudhud_calibrate.sh`, folds by paraphrase family across scripts) proposed per-meaning gates that
+     cut the owner's 1,000 list from 812 to 801-804 and fixed none of the four wrong money sides; a wrong side the sense is
+     0.997 sure of is a rule's job (BC-330, BC-336). A tool that measures a change to `decide` patches a copy in build/,
+     never the source.
+168. **A data file is listed with where it came from before it is used.** `scripts/hudhud_manifest.py --check` finds
+     Hudhud's data by location, refuses a file with no stated origin, fails when one moves without its row, and holds the
+     rights register and the decision log; what the repository cannot prove is written "unknown", an unread licence
+     "verify" (BC-340..342). Helpers that work in parallel get their own worktree and their own files; only the session
+     that started them merges and pushes (25 Nov 2026: four helpers, no conflict).
 
 ## Working with the owner
 

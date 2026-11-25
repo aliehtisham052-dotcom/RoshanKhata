@@ -1517,6 +1517,7 @@
     <string name="voice_no_party">هنوز مشتری‌ای در دفتر شما نیست. اول یک مشتری اضافه کنید.</string>
     <string name="voice_no_amount">مبلغی در آن نبود. عدد را هم بگویید.</string>
     <string name="voice_future_promise">این مبلغی به نظر می‌رسد که بعداً پرداخت می‌شود، نه مبلغی که رسیده. روز قول را در صفحهٔ او ثبت کنید.</string>
+    <string name="voice_not_moved">به نظر می‌رسد در این جمله پولی جابه‌جا نشده (پرداخت نشده، یا هنوز مانده)، پس ثبتی انجام نشد. مانده‌اش در صفحهٔ او است.</string>
     <string name="voice_open_entry">باز کردن ثبت</string>
     <string name="voice_which_party">%1$s — کدام مشتری؟</string>
     <plurals name="delete_parties_title">

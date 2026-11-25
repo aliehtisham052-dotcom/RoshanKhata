@@ -296,11 +296,11 @@ object VoiceQuestion {
         "باید بدم", "باید بدهم", "باید بپردازم", "باید بدیم", "باید بدهیم", "باید بپردازیم", "देनदारी",
         // 17 Nov 2026 (the lead's retrain check): the feminine of "dena" ("kis ki raqam deni hai" is whom the shop pays).
         "deni", "دینی", "देनी",
-        // 26 Nov 2026 (BC-336, Marhala 1, from Agent B's out-of-fold measure): Arabic's "we / I pay, settle, owe" — "كم باقي ندفع" was the shop's
+        // 25 Nov 2026 (BC-336, Marhala 1, from Agent B's out-of-fold measure): Arabic's "we / I pay, settle, owe" — "كم باقي ندفع" was the shop's
         // to GET by the bare "باقي", and the sense read "كم باقي علينا ندفع" as to get at 0.9966; only "علينا" held it. Native read.
         "ندفع", "ندفعه", "ندفعها", "ندفعهم", "نسدد", "نسدده", "نسددها", "أدفع", "أدفعه", "أسدد", "أسدده", "ندين")
     private val TO_GET = listOf("lena", "lene", "to get",
-        // Marhala 1 (26 Nov 2026, BC-322): the feminine of "lena", as "deni" is of "dena" ("Ali se 500 leni hai": he owes the shop).
+        // Marhala 1 (25 Nov 2026, BC-322): the feminine of "lena", as "deni" is of "dena" ("Ali se 500 leni hai": he owes the shop).
         "leni", "لینی", "लेनी", "receive", "collect", "piutang", "tagih", "لینا", "لینے", "وٺڻا",
         // 25 Nov 2026 (BC-240, seed safety): Farsi "I must get" ("چقدر باید بگیرم" was a customer's balance under one shuffle).
         "باید بگیرم", "باید بگیریم", "بگیرم",
@@ -534,7 +534,7 @@ object VoiceQuestion {
     /** The future of the verb: "parson" is then the day after tomorrow, never a day of the book. */
     private val FUTURE_WORDS = listOf("will", "tomorrow", "گا", "گی", "گے", "گیں", "akan", "besok", "lusa", "سوف", "خواهد",
         "হবে", "দেবে", "পাবে", "আসবে",
-        // Marhala 1 (26 Nov 2026, BC-323): the shop's own "I will" in the languages whose future the list did not hold — "Kal Ali ko 500
+        // Marhala 1 (25 Nov 2026, BC-323): the shop's own "I will" in the languages whose future the list did not hold — "Kal Ali ko 500
         // dunga" opened "I gave 500" dated yesterday. English "I'll"/"we'll" (the apostrophe is a space by then); Bengali's first person
         // ("দেব", "নেব"); Arabic's "I/we will pay, give" (سأ…/سن…, the hamza goes in normalise) and "tomorrow"; Farsi's "I/we will" and
         // "tomorrow"; Sindhi's "tomorrow"; Indonesian's "later". Each needs a native read (sd, bn, ar, fa).
@@ -710,7 +710,7 @@ object VoiceQuestion {
     }
 
     /**
-     * Money that has NOT moved, though the sentence carries an amount (Marhala 1, 26 Nov 2026): never an entry of money that came
+     * Money that has NOT moved, though the sentence carries an amount (Marhala 1, 25 Nov 2026): never an entry of money that came
      * or went, whoever reads it.
      *
      * - A giving or taking that is denied (BC-321): "Ali ne 500 nahi diye", "Ali Raza did not pay 500", "Ali Raza 500 نداد",
@@ -950,7 +950,7 @@ object VoiceQuestion {
 
     /**
      * "Mere hisse ka kitna baqi hai": what is left of my share is money owed to the shop (25 Nov 2026, H4: a retrained sense put it on the
-     * other side). The side is what the sentence says (Marhala 1, 26 Nov 2026, BC-320): with a word of giving ("mere hisse ka kitna dena
+     * other side). The side is what the sentence says (Marhala 1, 25 Nov 2026, BC-320): with a word of giving ("mere hisse ka kitna dena
      * baqi hai", "how much of my share do I still have to pay") it is the shop's to give — the share read it as to get, whatever the
      * sentence said ([owedToMe]). Sindhi, Bengali, Arabic, Farsi and Indonesian said the same bare share with the sense alone, and two
      * of them the other way; their words need a native read.
@@ -1069,7 +1069,7 @@ object VoiceQuestion {
     }
 
     /**
-     * Which way the money runs is not said (D15, Marhala 1, 26 Nov 2026; BC-318, BC-319): Hudhud asks "lene hain ya dene?" first.
+     * Which way the money runs is not said (D15, Marhala 1, 25 Nov 2026; BC-318, BC-319): Hudhud asks "lene hain ya dene?" first.
      *
      * - A bare loan (BC-318): "Kitna qarz baqi hai", "qarz kitna hai", "کتنا قرض باقی ہے", "कितना क़र्ज़ बाकी है", "how much loan is
      *   left". A loan runs both ways in a shop (the owner's own lists: "Mera qarz kitna hai" is his to give, "Aaj kis ne mera qarz wapas
@@ -1175,7 +1175,7 @@ object VoiceQuestion {
         "utang aku", "hutang aku", "utangku", "hutangku", "utang kami", "hutang kami", "علينا",
         // 24 Nov 2026 (A1): Arabic "I owe" (أدين / ادين) and Indonesian "to whom do I owe" (the payable side).
         "أدين", "ادين", "berutang kepada siapa", "berhutang kepada siapa", "utang ke siapa", "hutang ke siapa",
-        // Marhala 1 (26 Nov 2026, BC-318): "on me" said as "upon me" ("mere upar kitna qarza hai", the held-out set's own): a loan with
+        // Marhala 1 (25 Nov 2026, BC-318): "on me" said as "upon me" ("mere upar kitna qarza hai", the held-out set's own): a loan with
         // its side said, never one to ask.
         "mere upar", "mere oopar", "meray upar", "hamare upar", "humare upar", "میرے اوپر", "ہمارے اوپر", "मेरे ऊपर", "हमारे ऊपर"
     )

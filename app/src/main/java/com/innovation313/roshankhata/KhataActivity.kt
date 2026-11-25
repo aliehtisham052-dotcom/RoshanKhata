@@ -1872,6 +1872,12 @@ class KhataActivity : BaseActivity() {
             showSpokenProblem(heard, getString(R.string.voice_future_promise))
             return
         }
+        // Money that did not move is no entry either (Marhala 1, BC-321/BC-322, the Khata microphone as Hudhud): "Ali ne 500
+        // nahi diye" opened "I got 500", "Ali se 500 lene hain" an entry on the wrong side. The same rule Hudhud reads by.
+        if (com.innovation313.roshankhata.data.VoiceQuestion.moneyNotMoved(heard)) {
+            showSpokenProblem(heard, getString(R.string.voice_not_moved))
+            return
+        }
 
         if (party == null) {
             // The figure was heard but the name was not. Offer the list rather

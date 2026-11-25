@@ -1499,6 +1499,7 @@
     <string name="voice_no_party">Buku Anda belum memiliki pelanggan. Tambahkan pelanggan dulu.</string>
     <string name="voice_no_amount">Tidak ada jumlah di dalamnya. Sebutkan juga angkanya.</string>
     <string name="voice_future_promise">Ini terdengar seperti uang yang akan dibayar nanti, bukan uang yang sudah masuk. Catat hari janjinya di halamannya.</string>
+    <string name="voice_not_moved">Sepertinya tidak ada uang yang berpindah (belum dibayar, atau masih terutang), jadi tidak ada catatan. Saldonya ada di halamannya.</string>
     <string name="voice_open_entry">Buka catatan</string>
     <string name="voice_which_party">%1$s — pelanggan yang mana?</string>
     <plurals name="delete_parties_title">
