@@ -127,8 +127,8 @@ class StaffActivity : BaseActivity() {
                 getString(R.string.staff_money, Format.moneyLtr(m.earned), Format.moneyLtr(m.advances), Format.moneyLtr(m.paid))
             val due = card.findViewById<TextView>(R.id.tvStaffDue)
             when {
-                m.due > 0.004 -> { due.text = getString(R.string.staff_due, Format.moneyLtr(m.due)); due.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me)) }
-                m.due < -0.004 -> { due.text = getString(R.string.staff_overpaid, Format.moneyLtr(-m.due)); due.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe)) }
+                m.due > com.innovation313.roshankhata.data.Money.halfCoin -> { due.text = getString(R.string.staff_due, Format.moneyLtr(m.due)); due.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me)) }
+                m.due < -com.innovation313.roshankhata.data.Money.halfCoin -> { due.text = getString(R.string.staff_overpaid, Format.moneyLtr(-m.due)); due.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe)) }
                 else -> { due.text = getString(R.string.staff_settled); due.setTextColor(ContextCompat.getColor(this, R.color.ink)) }
             }
             card.findViewById<View>(R.id.btnStaffAttendance).setOnClickListener { markDay(person, mine, from, to) }
@@ -389,8 +389,8 @@ class StaffActivity : BaseActivity() {
     /** The month's slip as text, to WhatsApp or anywhere: every figure on its own line. */
     private fun sendSlip(person: Staff, m: Payroll.Month, from: Long) {
         val due = when {
-            m.due > 0.004 -> getString(R.string.staff_due, Format.moneyLtr(m.due))
-            m.due < -0.004 -> getString(R.string.staff_overpaid, Format.moneyLtr(-m.due))
+            m.due > com.innovation313.roshankhata.data.Money.halfCoin -> getString(R.string.staff_due, Format.moneyLtr(m.due))
+            m.due < -com.innovation313.roshankhata.data.Money.halfCoin -> getString(R.string.staff_overpaid, Format.moneyLtr(-m.due))
             else -> getString(R.string.staff_settled)
         }
         val shop = BusinessProfile.businessName(this)?.trim().orEmpty()

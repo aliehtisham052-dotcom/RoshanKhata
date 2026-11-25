@@ -254,7 +254,7 @@ object Access {
      * nothing to measure on and went through with no PIN.
      */
     fun discountNeedsOverride(discount: Double, gross: Double): Boolean =
-        !can(Permission.DISCOUNT_ANY) && discount > 0.005 && discount > gross.coerceAtLeast(0.0) * CASHIER_DISCOUNT_CAP + 0.005
+        !can(Permission.DISCOUNT_ANY) && discount > Money.halfCoin && discount > gross.coerceAtLeast(0.0) * CASHIER_DISCOUNT_CAP + Money.halfCoin
 
     // ---- The owner's PIN (in the book) ----
 

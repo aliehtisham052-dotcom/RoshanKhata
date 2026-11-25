@@ -327,7 +327,7 @@ class CashbookActivity : BaseActivity() {
                 } else {
                     val d = DayCloseMath.difference(counted, expected)
                     // A difference needs its reason: the note box says so before Save is pressed (R155).
-                    etNote.hint = getString(if (kotlin.math.abs(d) >= 0.005) R.string.z_variance_reason else R.string.dayclose_note_hint)
+                    etNote.hint = getString(if (kotlin.math.abs(d) >= com.innovation313.roshankhata.data.Money.halfCoin) R.string.z_variance_reason else R.string.dayclose_note_hint)
                     // Matches in green, short in red, more than the books in gold: the line the owner acts on,
                     // each on its own wash with its mark (a check, a minus, a plus).
                     val glyph = when {
@@ -400,7 +400,7 @@ class CashbookActivity : BaseActivity() {
                         // a figure with no story is one nobody can answer for next week.
                         val openingNow = com.innovation313.roshankhata.ui.CalcPad.figure(etOpening.text) ?: 0.0
                         val expectedNow = DayCloseMath.expected(openingNow, cashIn, cashOut)
-                        if (kotlin.math.abs(DayCloseMath.difference(counted, expectedNow)) >= 0.005 && etNote.text.toString().isBlank()) {
+                        if (kotlin.math.abs(DayCloseMath.difference(counted, expectedNow)) >= com.innovation313.roshankhata.data.Money.halfCoin && etNote.text.toString().isBlank()) {
                             Toast.makeText(this@CashbookActivity, R.string.z_variance_reason, Toast.LENGTH_LONG).show()
                             // The box it wants sits below the whole pad: brought on screen and given the focus.
                             etNote.requestFocus()

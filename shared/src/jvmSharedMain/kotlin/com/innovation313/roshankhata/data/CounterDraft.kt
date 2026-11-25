@@ -204,9 +204,9 @@ class CounterDraft {
     val change: Double
         get() {
             val over = LineMath.round(paid - totals.grandTotal)
-            if (over <= 0.005) return 0.0
+            if (over <= Money.halfCoin) return 0.0
             val cash = LineMath.round(payments.filter { it.method == PaymentMethod.CASH }.sumOf { it.amountValue })
-            return if (cash + 0.005 >= over) over else 0.0
+            return if (cash + Money.halfCoin >= over) over else 0.0
         }
 
     /** A ticket being posted right now: the buttons and keys wait, so one sale is never written twice. */
@@ -235,7 +235,7 @@ class CounterDraft {
     fun creditOver(balanceNow: Double?, creditLimit: Double?): Pair<Double, Double>? {
         if (!hasParty || creditLimit == null || balanceNow == null) return null
         val after = LineMath.round(balanceNow + remaining)
-        return if (after > creditLimit + 0.005) creditLimit to after else null
+        return if (after > creditLimit + Money.halfCoin) creditLimit to after else null
     }
 
     /** The ticket's lines that would sell more than the shelf holds. */
@@ -250,7 +250,7 @@ class CounterDraft {
         // walk-in, the credit price on an account): a customer chosen after the scanning is the
         // usual order at a counter, and a line left at the walk-in price would read as repriced.
         for ((l, old) in before) {
-            if (old != null && kotlin.math.abs(l.rateValue - old) <= 0.005) listRate(l)?.let { new ->
+            if (old != null && kotlin.math.abs(l.rateValue - old) <= Money.halfCoin) listRate(l)?.let { new ->
                 l.rate = Calc.trim(new)
                 // A weighed line's label shelf follows its list price, or the re-price reads as a manual price change.
                 if (l.weighed && l.labelShelf != null) l.labelShelf = new
@@ -277,7 +277,7 @@ class CounterDraft {
                 val shelf = l.labelShelf ?: listRate(l) ?: return@filter true
                 kotlin.math.abs(l.qtyValue * (l.rateValue - shelf)) > shelf * 0.0005 + 0.01
             } else {
-                listRate(l)?.let { kotlin.math.abs(l.rateValue - it) > 0.005 } ?: true
+                listRate(l)?.let { kotlin.math.abs(l.rateValue - it) > Money.halfCoin } ?: true
             }
         }
 
@@ -375,7 +375,7 @@ class CounterDraft {
         Counter.Ticket(
             sale = toSale(createdBy, now), items = toItems(), payments = toPayments(), roundToWhole = roundToWhole,
             pointsUsed = pointsSpent, heldId = heldId, lines = lines.toList(), notes = notes, now = now,
-            due = due?.takeIf { hasParty && remaining > 0.005 }
+            due = due?.takeIf { hasParty && remaining > Money.halfCoin }
         )
 
     /** After a ticket is posted: cleared, but for the lines rung up while it was being written — the next customer's. */
@@ -463,7 +463,7 @@ class CounterDraft {
         val list = payments.map { it.toPayment() }.filter { it.amount > 0.0 }.toMutableList()
         var give = change
         for (i in list.indices.reversed()) {
-            if (give <= 0.005) break
+            if (give <= Money.halfCoin) break
             val p = list[i]
             if (p.method != PaymentMethod.CASH) continue
             val take = minOf(p.amount, give)

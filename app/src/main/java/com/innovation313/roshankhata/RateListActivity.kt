@@ -286,7 +286,7 @@ class RateListActivity : BaseActivity() {
         val credit = p.creditPrice?.takeIf { it > 0 }
         fun money(v: Double) = Format.ltr(Format.money(v))
         return when {
-            cash != null && credit != null && kotlin.math.abs(cash - credit) < 0.005 -> money(cash)
+            cash != null && credit != null && kotlin.math.abs(cash - credit) < com.innovation313.roshankhata.data.Money.halfCoin -> money(cash)
             else -> listOfNotNull(
                 cash?.let { getString(R.string.rate_type_cash) + " " + money(it) },
                 credit?.let { getString(R.string.rate_type_credit) + " " + money(it) }

@@ -435,7 +435,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                     FluentButton(word(W.save), {
                         val n = count ?: run { problem = needCount; return@FluentButton }
                         // A drawer that does not match the books needs its reason written down (POS Phase 4).
-                        if (kotlin.math.abs(com.innovation313.roshankhata.data.DayCloseMath.difference(n, expected)) >= 0.005 && note.isBlank()) {
+                        if (kotlin.math.abs(com.innovation313.roshankhata.data.DayCloseMath.difference(n, expected)) >= com.innovation313.roshankhata.data.Money.halfCoin && note.isBlank()) {
                             problem = needReason; return@FluentButton
                         }
                         val row = com.innovation313.roshankhata.data.DayClose(

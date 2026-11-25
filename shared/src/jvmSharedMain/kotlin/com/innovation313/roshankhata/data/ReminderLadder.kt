@@ -38,7 +38,7 @@ object ReminderLadder {
     fun reset(state: State?, balanceNow: Double, now: Long): Boolean =
         state == null ||
             now - state.lastAt > RESET_DAYS * DAY ||
-            balanceNow < state.balanceAtLast - 0.004
+            balanceNow < state.balanceAtLast - Money.halfCoin
 
     /**
      * The step after which this customer last paid: the last reminder's, when he paid something since it and
@@ -46,7 +46,7 @@ object ReminderLadder {
      */
     fun learned(state: State?, balanceNow: Double, now: Long): Int = when {
         state == null -> 0
-        balanceNow < state.balanceAtLast - 0.004 && now - state.lastAt <= RESET_DAYS * DAY -> state.count.coerceIn(GENTLE, SERIOUS)
+        balanceNow < state.balanceAtLast - Money.halfCoin && now - state.lastAt <= RESET_DAYS * DAY -> state.count.coerceIn(GENTLE, SERIOUS)
         else -> state.worked
     }
 

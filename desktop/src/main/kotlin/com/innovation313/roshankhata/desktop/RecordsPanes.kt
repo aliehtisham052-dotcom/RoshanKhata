@@ -174,7 +174,7 @@ fun BillsPane(
             val owed = bills.distinctBy { it.partyId }.sumOf { (-it.supplierBalance).coerceAtLeast(0.0) }
             if (bills.isNotEmpty()) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 FigureCard(word(W.stat_bills), "%,d".format(com.innovation313.roshankhata.data.Digits.FIGURES, bills.size), c.ink, Modifier.weight(1f), icon = "ic_tile_bills", tint = Look.subtle)
-                FigureCard(word(W.stat_you_owe), Format.money(owed), if (owed > 0.005) c.owedToMe else c.ink, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
+                FigureCard(word(W.stat_you_owe), Format.money(owed), if (owed > com.innovation313.roshankhata.data.Money.halfCoin) c.owedToMe else c.ink, Modifier.weight(1f), icon = "ic_arrow_gave", tint = Look.getTint)
                 FigureCard(word(W.stat_expiring), "%,d".format(com.innovation313.roshankhata.data.Digits.FIGURES, expiring), if (expiring > 0) Look.warn else c.ink,
                     Modifier.weight(1f).clip(Look.card).press(Look.card, onClick = onExpiry), icon = "ic_calendar", tint = Look.warnTint)
             }
@@ -1243,8 +1243,8 @@ fun SupplierRatesPane(dao: KhataDao, reload: Int) {
                     Text(word(W.sr_last, Format.money(r.last.rate), r.last.supplierName, com.innovation313.roshankhata.data.DateWords.format("d MMM yyyy", r.last.date)),
                         color = c.inkSoft, fontSize = 13.sp)
                     val pct = String.format(java.util.Locale.US, "%.1f%%", kotlin.math.abs(r.percent))
-                    if (r.previous != null && r.change > 0.004) Text(word(W.sr_up, Format.money(r.change), pct), color = c.owedToMe, fontSize = 13.sp)
-                    if (r.previous != null && r.change < -0.004) Text(word(W.sr_down, Format.money(-r.change), pct), color = c.iOwe, fontSize = 13.sp)
+                    if (r.previous != null && r.change > com.innovation313.roshankhata.data.Money.halfCoin) Text(word(W.sr_up, Format.money(r.change), pct), color = c.owedToMe, fontSize = 13.sp)
+                    if (r.previous != null && r.change < -com.innovation313.roshankhata.data.Money.halfCoin) Text(word(W.sr_down, Format.money(-r.change), pct), color = c.iOwe, fontSize = 13.sp)
                     r.cheaperElsewhere?.let { q ->
                         Text(word(W.sr_cheaper, q.supplierName, Format.money(q.rate), com.innovation313.roshankhata.data.DateWords.format("d MMM yyyy", q.date)),
                             color = c.brandGreenText, fontSize = 13.sp, fontWeight = FontWeight.Bold)

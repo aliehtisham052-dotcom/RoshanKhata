@@ -296,18 +296,49 @@ def day_ends_by_the_calendar(root=ROOT):
     return faults
 
 
+# BC-301 (25 Nov 2026): a zero test written as a literal half paisa (0.004 / 0.005) is wrong for every other coin: a dinar's
+# 0.004 reads as nothing, a rupiah's 0.3 as money. Kotlin code asks the money contract (Money.halfCoin, isZero,
+# isPositive). Left alone: Money.kt itself, comments, Room's SQL text (it cannot call Kotlin), a price ratio. The
+# assistant's answer files wait in HALF_COIN_WAITING until their round ends (a file listed here must still hold one).
+HALF_COIN_LITERAL = re.compile(r"(?<![\w.])-?0\.00[45](?![\d\w])")
+HALF_COIN_WAITING = {"AnswerFacts.kt", "AnswerRecordFacts.kt"}
+
+
+def zero_tests_by_the_money_contract(root=ROOT):
+    faults = []
+    for base in ("app/src/main/java", "desktop/src/main", "shared/src/jvmSharedMain"):
+        for p in sorted((root / base).rglob("*.kt")):
+            if p.name == "Money.kt" or p.name in HALF_COIN_WAITING:
+                continue
+            in_sql = False
+            for i, l in enumerate(p.read_text().splitlines()):
+                quotes = l.count('"""')
+                code = l.split("//")[0] if "://" not in l else l
+                stripped = code.lstrip()
+                sql_line = in_sql or quotes or ('"' in code and re.search(r"ABS\(|SUM\(|HAVING|SELECT|WHERE", code))
+                if quotes % 2 == 1:
+                    in_sql = not in_sql
+                if sql_line or stripped.startswith("*") or stripped.startswith("/*") or "shelf * 0.0005" in code:
+                    continue
+                if HALF_COIN_LITERAL.search(code):
+                    faults.append("%s:%d tests money against a literal half paisa: use Money.halfCoin / isZero / isPositive"
+                                  % (p.relative_to(root), i + 1))
+    return faults
+
+
 def main():
     faults = (publish_jobs_hold_no_secrets() + no_tracked_ignored_files() + csv_reads_are_decoded()
               + shown_bitmaps_never_recycled() + left_margins_name_their_side() + test_names_are_jvm_names()
               + gradle_cache_on_except_release()
               + windows_cancel_asks_first() + duplicates_off_the_screen_thread()
-              + payment_voice_asks_off_main() + day_ends_by_the_calendar())
+              + payment_voice_asks_off_main() + day_ends_by_the_calendar()
+              + zero_tests_by_the_money_contract())
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
     print("repo guards: release jobs hold no secrets, nothing ignored is tracked, every CSV read is decoded, "
-          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first, the duplicate scan and the payment-voice screen's system questions run off the main thread, every day ends by the calendar")
+          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first, the duplicate scan and the payment-voice screen's system questions run off the main thread, every day ends by the calendar, every zero test asks the money contract")
 
 
 if __name__ == "__main__":

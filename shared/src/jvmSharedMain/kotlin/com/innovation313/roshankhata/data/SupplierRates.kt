@@ -31,7 +31,7 @@ object SupplierRates {
         val change: Double get() = previous?.let { last.rate - it.rate } ?: 0.0
         val percent: Double get() = previous?.takeIf { it.rate > 0 }?.let { change / it.rate * 100 } ?: 0.0
         /** Got dearer than the bill before, or another supplier was cheaper lately. */
-        val needsLook: Boolean get() = change > 0.004 || cheaperElsewhere != null
+        val needsLook: Boolean get() = change > Money.halfCoin || cheaperElsewhere != null
     }
 
     private fun key(l: Line): String =
@@ -46,7 +46,7 @@ object SupplierRates {
             val prev = ordered.firstOrNull { it.billId != l.billId }?.let { Quote(it.supplierId, it.supplierName, it.rate, it.billDate) }
             val bySupplier = ordered.distinctBy { it.supplierId }
             val cheaper = bySupplier
-                .filter { it.supplierId != l.supplierId && it.billDate >= now - FRESH_DAYS * DAY && it.rate < l.rate - 0.004 }
+                .filter { it.supplierId != l.supplierId && it.billDate >= now - FRESH_DAYS * DAY && it.rate < l.rate - Money.halfCoin }
                 .minByOrNull { it.rate }
                 ?.let { Quote(it.supplierId, it.supplierName, it.rate, it.billDate) }
             Row(l.productName.trim(), l.unit?.trim()?.takeIf { it.isNotEmpty() }, last, prev, cheaper)

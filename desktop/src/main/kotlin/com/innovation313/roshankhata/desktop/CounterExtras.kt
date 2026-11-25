@@ -175,7 +175,7 @@ fun CustomerScreen(draft: CounterDraft, shopName: String, qr: androidx.compose.u
                 Text(Format.money(t.grandTotal), color = c.ink, fontSize = 48.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
             }
             val rest = draft.remaining
-            if (draft.paid > 0.0 && rest < -0.005) Text(word(W.cd_change, Format.money(-rest)), Modifier.fillMaxWidth(), color = Look.accent, fontSize = 30.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
+            if (draft.paid > 0.0 && rest < -com.innovation313.roshankhata.data.Money.halfCoin) Text(word(W.cd_change, Format.money(-rest)), Modifier.fillMaxWidth(), color = Look.accent, fontSize = 30.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
         }
         if (qr != null) Column(Modifier.width(300.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(word(W.cd_scan), color = c.ink, fontSize = 24.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)

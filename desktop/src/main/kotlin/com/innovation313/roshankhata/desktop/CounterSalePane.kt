@@ -557,7 +557,7 @@ fun CounterSalePane(
                     parties.firstOrNull { it.id == draft.partyId }?.let { p ->
                         Text(Format.customerBalance(p.balance), color = c.inkSoft, fontSize = 12.sp)
                     }
-                    if (draft.remaining > 0.005) {
+                    if (draft.remaining > com.innovation313.roshankhata.data.Money.halfCoin) {
                         Text(words.text(W.pos_customer_pays_later, Format.name(name)), color = c.inkSoft, fontSize = 12.sp)
                         // When the rest will be paid, as a khata entry asks (24 Oct 2026): it becomes his promised day.
                         Text(
@@ -582,7 +582,7 @@ fun CounterSalePane(
                     if (advanced || draft.taxPercent.isNotBlank()) FluentField(draft.taxPercent, { draft.taxPercent = it }, Modifier.weight(1f), label = word(W.pos_tax), placeholder = "0", calc = com.innovation313.roshankhata.screens.CalcKind.PERCENT)
                 }
                 // The ticket's discount in money (25 Oct 2026, the audit: "10%" typed showed no figure anywhere).
-                if (draft.handDiscount > 0.005) FigureRow(word(W.pos_discount), "−" + Format.money(draft.handDiscount), Look.accent)
+                if (draft.handDiscount > com.innovation313.roshankhata.data.Money.halfCoin) FigureRow(word(W.pos_discount), "−" + Format.money(draft.handDiscount), Look.accent)
                 if (draft.pointsValue > 0.0) FigureRow(words.text(W.loyalty_used, Calc.trim(draft.pointsUsed), Format.money(draft.pointsValue)), "−" + Format.money(draft.pointsValue), Look.accent)
                 if (draft.totals.tax > 0.0) FigureRow(word(W.pos_tax_total), Format.money(draft.totals.tax))
                 if (draft.totals.taxIncluded > 0.0) FigureRow(word(W.pos_tax_included), Format.money(draft.totals.taxIncluded))
@@ -609,15 +609,15 @@ fun CounterSalePane(
                     Rule()
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FluentButton(word(W.pos_pay_full_cash), { draft.payRestInCash() }, kind = ButtonKind.STANDARD, enabled = draft.remaining > 0.005)
+                    FluentButton(word(W.pos_pay_full_cash), { draft.payRestInCash() }, kind = ButtonKind.STANDARD, enabled = draft.remaining > com.innovation313.roshankhata.data.Money.halfCoin)
                     FluentButton(word(W.pos_add_payment), { draft.addPayment(PaymentMethod.CASH) }, kind = ButtonKind.SUBTLE, icon = "ic_add_plain")
                 }
                 val rest = draft.remaining
                 when {
-                    rest > 0.005 && draft.hasParty -> FigureRow(word(W.pos_to_account), Format.money(rest), c.owedToMe)
+                    rest > com.innovation313.roshankhata.data.Money.halfCoin && draft.hasParty -> FigureRow(word(W.pos_to_account), Format.money(rest), c.owedToMe)
                     // A walk-in has no account to put it on: it is still to be taken (25 Oct 2026, the audit: "To account").
-                    rest > 0.005 -> FigureRow(word(W.pos_still_due), Format.money(rest), c.owedToMe)
-                    rest < -0.005 -> FigureRow(word(W.pos_change), Format.money(-rest), c.iOwe)
+                    rest > com.innovation313.roshankhata.data.Money.halfCoin -> FigureRow(word(W.pos_still_due), Format.money(rest), c.owedToMe)
+                    rest < -com.innovation313.roshankhata.data.Money.halfCoin -> FigureRow(word(W.pos_change), Format.money(-rest), c.iOwe)
                 }
             } }
         }
@@ -873,7 +873,7 @@ private fun SavedSaleNote(saved: SavedSale?) {
                 word(W.pos_posted, s.number), Modifier.weight(1f), color = c.ink, fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis
             )
-            if (s.change > 0.005) {
+            if (s.change > com.innovation313.roshankhata.data.Money.halfCoin) {
                 val chip = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                 Row(
                     Modifier.background(Look.warnTint, chip).border(1.dp, Look.goldEdge, chip).padding(horizontal = 10.dp, vertical = 4.dp),
@@ -1047,12 +1047,12 @@ object SaleReceipt {
         out += ThermalReceipt.Line(words.text(W.pos_grand_total) + "  " + Format.money(sale.grandTotal), 30f, bold = true, centre = true)
         // Tax that was inside the prices (schema 36): said, not added.
         val inside = s.items.filter { it.taxIncluded == true }.sumOf { it.taxAmount ?: 0.0 }
-        if (inside > 0.004) out += ThermalReceipt.Line(words.text(W.pos_tax_included) + ": " + Format.money(inside), 18f, centre = true)
+        if (inside > com.innovation313.roshankhata.data.Money.halfCoin) out += ThermalReceipt.Line(words.text(W.pos_tax_included) + ": " + Format.money(inside), 18f, centre = true)
         for (p in s.payments) {
             val m = PaymentMethod.label(words, p.method)
             out += ThermalReceipt.Line(m + ": " + Format.money(p.amount) + (p.reference?.let { "  $it" } ?: ""), 18f)
         }
-        if (sale.creditAmount > 0.005) out += ThermalReceipt.Line(words.text(W.pos_to_account) + ": " + Format.money(sale.creditAmount), 20f, bold = true)
+        if (sale.creditAmount > com.innovation313.roshankhata.data.Money.halfCoin) out += ThermalReceipt.Line(words.text(W.pos_to_account) + ": " + Format.money(sale.creditAmount), 20f, bold = true)
         // The balance in the customer's words, its side said, as the phone's receipt says it (3 Nov 2026).
         balance?.let { out += ThermalReceipt.Line(words.text(W.net_balance) + ": " + (sale.customerName?.let { n -> com.innovation313.roshankhata.data.ReceiptBalance.named(words, it, shop, n) } ?: com.innovation313.roshankhata.data.ReceiptBalance.text(words, it)), 18f) } // L85: named, as the phone's slip
         // Loyalty (21 Oct 2026): spent, earned, held now.

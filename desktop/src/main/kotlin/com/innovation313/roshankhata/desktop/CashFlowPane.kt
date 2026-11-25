@@ -116,7 +116,7 @@ fun CashFlowPane(dao: KhataDao, reload: Int) {
 private fun WeekRow(title: String, partial: String?, coming: Double, going: Double, short: Boolean) {
     val c = LocalRoshanColors.current
     val net = coming - going
-    val empty = coming <= 0.004 && going <= 0.004
+    val empty = coming <= com.innovation313.roshankhata.data.Money.halfCoin && going <= com.innovation313.roshankhata.data.Money.halfCoin
     Row(
         Modifier.fillMaxWidth().alpha(if (empty) 0.45f else 1f).padding(horizontal = 16.dp, vertical = 9.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -125,11 +125,11 @@ private fun WeekRow(title: String, partial: String?, coming: Double, going: Doub
             Text(title, color = if (short) c.owedToMe else c.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             partial?.let { Text(it, color = c.textMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
         }
-        WeekFigure(word(W.cf_in), (if (coming > 0.004) "+" else "") + Format.money(coming), Look.accent)
-        WeekFigure(word(W.cf_out), (if (going > 0.004) "\u2212" else "") + Format.money(going), c.owedToMe)
+        WeekFigure(word(W.cf_in), (if (coming > com.innovation313.roshankhata.data.Money.halfCoin) "+" else "") + Format.money(coming), Look.accent)
+        WeekFigure(word(W.cf_out), (if (going > com.innovation313.roshankhata.data.Money.halfCoin) "\u2212" else "") + Format.money(going), c.owedToMe)
         WeekFigure(
-            word(W.cf_net), (if (net > 0.004) "+" else if (net < -0.004) "\u2212" else "") + Format.money(kotlin.math.abs(net)),
-            if (net > 0.004) Look.accent else if (net < -0.004) c.owedToMe else c.inkSoft
+            word(W.cf_net), (if (net > com.innovation313.roshankhata.data.Money.halfCoin) "+" else if (net < -com.innovation313.roshankhata.data.Money.halfCoin) "\u2212" else "") + Format.money(kotlin.math.abs(net)),
+            if (net > com.innovation313.roshankhata.data.Money.halfCoin) Look.accent else if (net < -com.innovation313.roshankhata.data.Money.halfCoin) c.owedToMe else c.inkSoft
         )
     }
     Rule()

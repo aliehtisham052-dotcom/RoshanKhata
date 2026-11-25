@@ -4490,8 +4490,8 @@ interface KhataDao {
             val rule = Loyalty.rule(this)
             if (pointsUsed > 0.0) {
                 require(rule != null) { "sale refused: loyalty is off" }
-                require(pointsUsed <= loyaltyBalance(partyId) + 0.005) { "sale refused: not enough points" }
-                require(rule.value(pointsUsed) <= totals.discount + 0.005) { "sale refused: the points are not in the discount" }
+                require(pointsUsed <= loyaltyBalance(partyId) + Money.halfCoin) { "sale refused: not enough points" }
+                require(rule.value(pointsUsed) <= totals.discount + Money.halfCoin) { "sale refused: the points are not in the discount" }
                 insertLoyalty(LoyaltyEntry(partyId = partyId, saleId = saleId, points = -LineMath.round(pointsUsed), timestamp = sale.timestamp, note = number))
             }
             rule?.earned(totals.grandTotal)?.takeIf { it > 0.0 }?.let {

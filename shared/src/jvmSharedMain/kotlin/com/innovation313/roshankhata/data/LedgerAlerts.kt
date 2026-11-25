@@ -72,7 +72,7 @@ object LedgerAlerts {
         // Cheques by the one rule ([ChequesDue]) the bell and the Cheque reminders automation also use.
         val endToday = ChequesDue.endOfToday(System.currentTimeMillis())
         val cheques = dao.pendingChequesOnce().count { ChequesDue.isDue(it, endToday) }
-        val plans = dao.openPlansOnce().count { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > 0.004 }
+        val plans = dao.openPlansOnce().count { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > Money.halfCoin }
         // A shelf that could not be read is no "nothing expiring" (24 Nov 2026, BC-256): the exception goes up, so a daily sweep
         // that cannot count leaves yesterday's notice standing instead of cancelling it for a count of nought.
         val low = Stock.of(dao)
@@ -107,7 +107,7 @@ object LedgerAlerts {
                 words.text(if (c.isReceived) W.na_cheque_in else W.na_cheque_out),
                 (names[c.partyId] ?: "") + " · " + money(c.amount), words.text(if (ChequesDue.isLate(c, now)) W.na_tag_late else W.na_tag_today))
         }
-        dao.openPlansOnce().filter { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > 0.004 }.forEach { p ->
+        dao.openPlansOnce().filter { (it.nextDueDate ?: Long.MAX_VALUE) < t1 && it.totalAmount - it.paidSoFar > Money.halfCoin }.forEach { p ->
             val late = p.nextDueDate!! < t0
             val next = minOf(p.installmentAmount ?: (p.totalAmount - p.paidSoFar), p.totalAmount - p.paidSoFar)
             out += Alert(Kind.PLAN, words.text(if (late) W.na_plan_late else W.na_plan_due),

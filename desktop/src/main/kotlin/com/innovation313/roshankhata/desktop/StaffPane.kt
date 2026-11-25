@@ -126,11 +126,11 @@ fun StaffPane(dao: KhataDao) {
                             Text(word(W.staff_money, Format.money(m.earned), Format.money(m.advances), Format.money(m.paid)), color = c.inkSoft, fontSize = 13.sp)
                             Text(
                                 when {
-                                    m.due > 0.004 -> word(W.staff_due, Format.money(m.due))
-                                    m.due < -0.004 -> word(W.staff_overpaid, Format.money(-m.due))
+                                    m.due > com.innovation313.roshankhata.data.Money.halfCoin -> word(W.staff_due, Format.money(m.due))
+                                    m.due < -com.innovation313.roshankhata.data.Money.halfCoin -> word(W.staff_overpaid, Format.money(-m.due))
                                     else -> word(W.staff_settled)
                                 },
-                                color = when { m.due > 0.004 -> c.owedToMe; m.due < -0.004 -> Look.accent; else -> c.ink },
+                                color = when { m.due > com.innovation313.roshankhata.data.Money.halfCoin -> c.owedToMe; m.due < -com.innovation313.roshankhata.data.Money.halfCoin -> Look.accent; else -> c.ink },
                                 fontSize = 15.sp, fontWeight = FontWeight.Bold
                             )
                             PillRow(Modifier.fillMaxWidth()) {

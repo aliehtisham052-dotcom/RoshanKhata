@@ -31,7 +31,7 @@ object SaleSavedSheet {
         val titleView = view.findViewById<TextView>(R.id.tvSaleTitle).apply { text = title }
         val receiptView = view.findViewById<TextView>(R.id.tvSaleReceipt).apply { text = receipt }
         val chip = view.findViewById<View>(R.id.saleChange)
-        val giveBack = change > 0.005
+        val giveBack = change > com.innovation313.roshankhata.data.Money.halfCoin
         if (giveBack) {
             chip.visibility = View.VISIBLE
             view.findViewById<TextView>(R.id.tvSaleChange).text = Format.ltr(Format.money(change))

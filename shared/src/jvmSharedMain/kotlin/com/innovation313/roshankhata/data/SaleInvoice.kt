@@ -45,7 +45,7 @@ object SaleInvoice {
             receivedAmount = s.paidTotal,
             note = listOfNotNull(
                 s.saleNumber, s.note,
-                inside.takeIf { it > 0.004 }?.let { words.text(W.pos_tax_included) + ": " + Format.money(it) }
+                inside.takeIf { it > Money.halfCoin }?.let { words.text(W.pos_tax_included) + ": " + Format.money(it) }
             ).joinToString(" · ")
         )
         val items = full.items.map { InvoiceItem(invoiceId = 0, itemName = it.itemName, quantity = it.quantity, unit = it.unit, rate = it.rate) }

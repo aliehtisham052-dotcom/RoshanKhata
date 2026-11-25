@@ -332,22 +332,22 @@ fun CounterSaleScreen(
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     // Half the row each, the words allowed two lines: in Urdu or Sindhi on a small phone the
                     // second button was pushed off the edge (21 Oct 2026).
-                    OutlinedButton(onClick = { draft.payRestInCash() }, enabled = draft.remaining > 0.005, modifier = Modifier.weight(1f).testTag("posAllCash")) { Text(word(W.pos_pay_full_cash), color = c.ink, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
+                    OutlinedButton(onClick = { draft.payRestInCash() }, enabled = draft.remaining > com.innovation313.roshankhata.data.Money.halfCoin, modifier = Modifier.weight(1f).testTag("posAllCash")) { Text(word(W.pos_pay_full_cash), color = c.ink, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
                     OutlinedButton(onClick = { draft.addPayment(PaymentMethod.CASH) }, modifier = Modifier.weight(1f)) { Text(word(W.pos_add_payment), color = c.ink, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
                 }
                 val rest = draft.remaining
                 // When the rest will be paid, as a khata entry asks (24 Oct 2026): it becomes the customer's promised day.
-                if (rest > 0.005 && draft.hasParty && onChooseDue != null) {
+                if (rest > com.innovation313.roshankhata.data.Money.halfCoin && draft.hasParty && onChooseDue != null) {
                     TextButton(onClick = onChooseDue, modifier = Modifier.testTag("posDue")) {
                         Text(draft.due?.let { word(W.entry_due_set, Format.dateOnly(it)) } ?: word(W.entry_due_none), color = c.brandGreenText, fontSize = 14.sp)
                     }
                 }
                 when {
-                    rest > 0.005 && draft.hasParty -> Figure(word(W.pos_to_account), Format.money(rest), c.owedToMe)
-                    rest > 0.005 -> Text(word(W.pos_err_walk_in_unpaid), color = c.owedToMe, fontSize = 13.sp)
+                    rest > com.innovation313.roshankhata.data.Money.halfCoin && draft.hasParty -> Figure(word(W.pos_to_account), Format.money(rest), c.owedToMe)
+                    rest > com.innovation313.roshankhata.data.Money.halfCoin -> Text(word(W.pos_err_walk_in_unpaid), color = c.owedToMe, fontSize = 13.sp)
                     // Change is handed back only out of cash; a wallet or bank payment over the ticket is refused,
                     // and says so below instead (8 Nov review L118: "Change Rs 150" beside a greyed button).
-                    rest < -0.005 && draft.problem != SaleMath.Problem.OVERPAID -> Figure(word(W.pos_change), Format.money(-rest), c.iOwe)
+                    rest < -com.innovation313.roshankhata.data.Money.halfCoin && draft.problem != SaleMath.Problem.OVERPAID -> Figure(word(W.pos_change), Format.money(-rest), c.iOwe)
                 }
                 message?.let { Text(it, color = c.inkSoft, fontSize = 13.sp) }
                 Spacer(Modifier.height(8.dp))

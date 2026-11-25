@@ -81,11 +81,11 @@ class SupplierRatesActivity : BaseActivity() {
             val pct = String.format(Locale.US, "%.1f%%", kotlin.math.abs(r.percent))
             when {
                 r.previous == null -> change.visibility = View.GONE
-                r.change > 0.004 -> {
+                r.change > com.innovation313.roshankhata.data.Money.halfCoin -> {
                     change.text = getString(R.string.sr_up, Format.moneyLtr(r.change), pct)
                     change.setTextColor(ContextCompat.getColor(this, R.color.bal_owed_to_me))
                 }
-                r.change < -0.004 -> {
+                r.change < -com.innovation313.roshankhata.data.Money.halfCoin -> {
                     change.text = getString(R.string.sr_down, Format.moneyLtr(-r.change), pct)
                     change.setTextColor(ContextCompat.getColor(this, R.color.bal_i_owe))
                 }

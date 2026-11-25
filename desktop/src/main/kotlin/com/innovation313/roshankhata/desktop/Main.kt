@@ -1400,12 +1400,12 @@ private fun Book(
                                 } else {
                                     KhataInfoRow(
                                         shown, partySort,
-                                        canStatements = parties.any { kotlin.math.abs(it.balance) >= 0.005 },
+                                        canStatements = parties.any { kotlin.math.abs(it.balance) >= com.innovation313.roshankhata.data.Money.halfCoin },
                                         canExport = parties.isNotEmpty(),
                                         // Every statement with money on it as one print job (Phase 9b).
                                         onStatements = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.EXPORT) {
                                     scope.launch {
-                                        val owing = com.innovation313.roshankhata.data.NameOrder.sortedBy(parties.filter { kotlin.math.abs(it.balance) >= 0.005 }) { it.name }
+                                        val owing = com.innovation313.roshankhata.data.NameOrder.sortedBy(parties.filter { kotlin.math.abs(it.balance) >= com.innovation313.roshankhata.data.Money.halfCoin }) { it.name }
                                         val sheets = withContext(Dispatchers.IO) {
                                             val shopLogo = images.file(com.innovation313.roshankhata.desktop.invoice.ProfileImages.Kind.LOGO).takeIf { it.isFile }?.let { runCatching { javax.imageio.ImageIO.read(it) }.getOrNull() }
                                             owing.map { p ->

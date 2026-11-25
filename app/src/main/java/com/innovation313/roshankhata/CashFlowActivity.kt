@@ -122,16 +122,16 @@ class CashFlowActivity : BaseActivity() {
                     visibility = View.VISIBLE
                 }
             }
-            v.findViewById<TextView>(R.id.tvWeekIn).text = (if (w.coming > 0.004) "+" else "") + Format.moneyLtr(w.coming)
-            v.findViewById<TextView>(R.id.tvWeekOut).text = (if (w.going > 0.004) "\u2212" else "") + Format.moneyLtr(w.going)
+            v.findViewById<TextView>(R.id.tvWeekIn).text = (if (w.coming > com.innovation313.roshankhata.data.Money.halfCoin) "+" else "") + Format.moneyLtr(w.coming)
+            v.findViewById<TextView>(R.id.tvWeekOut).text = (if (w.going > com.innovation313.roshankhata.data.Money.halfCoin) "\u2212" else "") + Format.moneyLtr(w.going)
             val net = w.coming - w.going
             v.findViewById<TextView>(R.id.tvWeekNet).apply {
-                text = (if (net > 0.004) "+" else if (net < -0.004) "\u2212" else "") + Format.moneyLtr(kotlin.math.abs(net))
+                text = (if (net > com.innovation313.roshankhata.data.Money.halfCoin) "+" else if (net < -com.innovation313.roshankhata.data.Money.halfCoin) "\u2212" else "") + Format.moneyLtr(kotlin.math.abs(net))
                 setTextColor(ContextCompat.getColor(this@CashFlowActivity,
-                    if (net > 0.004) R.color.bal_i_owe else if (net < -0.004) R.color.bal_owed_to_me else R.color.ink_soft))
+                    if (net > com.innovation313.roshankhata.data.Money.halfCoin) R.color.bal_i_owe else if (net < -com.innovation313.roshankhata.data.Money.halfCoin) R.color.bal_owed_to_me else R.color.ink_soft))
             }
             // A week with nothing in it fades back, so the weeks that matter stand out.
-            if (w.coming <= 0.004 && w.going <= 0.004) v.alpha = 0.45f
+            if (w.coming <= com.innovation313.roshankhata.data.Money.halfCoin && w.going <= com.innovation313.roshankhata.data.Money.halfCoin) v.alpha = 0.45f
             weeks.addView(v)
         }
 
