@@ -3461,7 +3461,7 @@
     <string name="z_cash_out">Kas keluar (buku + kas)</string>
     <string name="z_expected">Seharusnya di laci</string>
     <string name="z_variance">Selisih</string>
-    <string name="z_profit">Laba (penjualan − biaya)</string>
+    <string name="z_profit">Laba kasir (penjualan − biaya)</string>
     <string name="dc_opening">Kas awal</string>
     <string name="dc_counted">Dihitung</string>
     <string name="z_no_close">Hari belum ditutup — hitung laci untuk melihat selisih</string>
@@ -3554,7 +3554,7 @@
     <string name="srep_col_count">Penjualan</string>
     <string name="srep_col_revenue">Pendapatan</string>
     <string name="srep_col_profit">Laba</string>
-    <string name="srep_revenue">Pendapatan</string>
+    <string name="srep_revenue">Pendapatan (tanpa pajak)</string>
     <string name="srep_returns">Retur</string>
     <string name="srep_cost">Harga pokok penjualan</string>
     <string name="srep_cost_known">biaya diketahui untuk %1$s pendapatan</string>

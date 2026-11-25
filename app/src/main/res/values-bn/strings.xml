@@ -3513,7 +3513,7 @@
     <string name="z_cash_out">নগদ গেছে (খাতা + ক্যাশবুক)</string>
     <string name="z_expected">ক্যাশে থাকার কথা</string>
     <string name="z_variance">পার্থক্য</string>
-    <string name="z_profit">লাভ (বিক্রি − খরচ)</string>
+    <string name="z_profit">কাউন্টারের লাভ (বিক্রি − খরচ)</string>
     <string name="dc_opening">শুরুর নগদ</string>
     <string name="dc_counted">গণনা</string>
     <string name="z_no_close">দিন বন্ধ হয়নি — পার্থক্য দেখতে ক্যাশ গুনুন</string>
@@ -3606,7 +3606,7 @@
     <string name="srep_col_count">বিক্রি</string>
     <string name="srep_col_revenue">আয়</string>
     <string name="srep_col_profit">লাভ</string>
-    <string name="srep_revenue">আয়</string>
+    <string name="srep_revenue">আয় (কর ছাড়া)</string>
     <string name="srep_returns">ফেরত</string>
     <string name="srep_cost">বিক্রিত পণ্যের খরচ</string>
     <string name="srep_cost_known">আয়ের %1$s-এর খরচ জানা</string>

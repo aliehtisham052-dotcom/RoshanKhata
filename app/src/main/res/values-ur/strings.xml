@@ -3465,7 +3465,7 @@
     <string name="z_cash_out">نقد اخراج (کھاتہ + کیش بک)</string>
     <string name="z_expected">گلے میں ہونا چاہیے</string>
     <string name="z_variance">فرق</string>
-    <string name="z_profit">منافع (سیل − لاگت)</string>
+    <string name="z_profit">کاؤنٹر کا منافع (سیل − لاگت)</string>
     <string name="dc_opening">ابتدائی نقد</string>
     <string name="dc_counted">گنا گیا</string>
     <string name="z_no_close">دن بند نہیں ہوا — فرق دیکھنے کے لیے گلا گنیں</string>
@@ -3558,7 +3558,7 @@
     <string name="srep_col_count">سیلز</string>
     <string name="srep_col_revenue">آمدن</string>
     <string name="srep_col_profit">منافع</string>
-    <string name="srep_revenue">آمدن</string>
+    <string name="srep_revenue">آمدن (ٹیکس کے بغیر)</string>
     <string name="srep_returns">واپسیاں</string>
     <string name="srep_cost">بکے مال کی لاگت</string>
     <string name="srep_cost_known">آمدن کے %1$s کی لاگت معلوم</string>

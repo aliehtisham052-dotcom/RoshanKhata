@@ -3673,7 +3673,7 @@
     <string name="z_cash_out">نقد خارج (الدفتر + الصندوق)</string>
     <string name="z_expected">المفترض في الدرج</string>
     <string name="z_variance">الفرق</string>
-    <string name="z_profit">الربح (المبيعات − التكلفة)</string>
+    <string name="z_profit">ربح الكاشير (المبيعات − التكلفة)</string>
     <string name="dc_opening">النقد الافتتاحي</string>
     <string name="dc_counted">المعدود</string>
     <string name="z_no_close">لم يُغلق اليوم — عدّ الدرج لرؤية الفرق</string>
@@ -3766,7 +3766,7 @@
     <string name="srep_col_count">المبيعات</string>
     <string name="srep_col_revenue">الإيراد</string>
     <string name="srep_col_profit">الربح</string>
-    <string name="srep_revenue">الإيراد</string>
+    <string name="srep_revenue">الإيراد (دون الضريبة)</string>
     <string name="srep_returns">المرتجعات</string>
     <string name="srep_cost">تكلفة البضاعة المباعة</string>
     <string name="srep_cost_known">التكلفة معروفة لـ %1$s من الإيراد</string>

@@ -3493,7 +3493,7 @@
     <string name="z_cash_out">نقد خروجی (دفتر + صندوق)</string>
     <string name="z_expected">باید در صندوق باشد</string>
     <string name="z_variance">اختلاف</string>
-    <string name="z_profit">سود (فروش − هزینه)</string>
+    <string name="z_profit">سود صندوق (فروش − هزینه)</string>
     <string name="dc_opening">نقد ابتدایی</string>
     <string name="dc_counted">شمرده‌شده</string>
     <string name="z_no_close">روز بسته نشده — برای دیدن اختلاف صندوق را بشمارید</string>
@@ -3586,7 +3586,7 @@
     <string name="srep_col_count">فروش‌ها</string>
     <string name="srep_col_revenue">درآمد</string>
     <string name="srep_col_profit">سود</string>
-    <string name="srep_revenue">درآمد</string>
+    <string name="srep_revenue">درآمد (بدون مالیات)</string>
     <string name="srep_returns">مرجوعی‌ها</string>
     <string name="srep_cost">بهای کالای فروخته‌شده</string>
     <string name="srep_cost_known">هزینه %1$s از درآمد مشخص است</string>

@@ -3677,7 +3677,7 @@
     <string name="z_cash_out">Cash out (khata + cashbook)</string>
     <string name="z_expected">Should be in drawer</string>
     <string name="z_variance">Difference</string>
-    <string name="z_profit">Profit (sales − cost)</string>
+    <string name="z_profit">Counter profit (sales − cost)</string>
     <string name="dc_opening">Opening cash</string>
     <string name="dc_counted">Counted</string>
     <string name="z_no_close">The day was not closed — count the drawer to see the difference</string>
@@ -3770,7 +3770,7 @@
     <string name="srep_col_count">Sales</string>
     <string name="srep_col_revenue">Revenue</string>
     <string name="srep_col_profit">Profit</string>
-    <string name="srep_revenue">Revenue</string>
+    <string name="srep_revenue">Revenue (without tax)</string>
     <string name="srep_returns">Returns</string>
     <string name="srep_cost">Cost of goods sold</string>
     <string name="srep_cost_known">cost known for %1$s of revenue</string>

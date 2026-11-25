@@ -3513,7 +3513,7 @@
     <string name="z_cash_out">नकद गया (खाता + कैशबुक)</string>
     <string name="z_expected">गल्ले में होना चाहिए</string>
     <string name="z_variance">अंतर</string>
-    <string name="z_profit">मुनाफ़ा (बिक्री − लागत)</string>
+    <string name="z_profit">काउंटर का मुनाफ़ा (बिक्री − लागत)</string>
     <string name="dc_opening">शुरुआती नकद</string>
     <string name="dc_counted">गिना गया</string>
     <string name="z_no_close">दिन बंद नहीं हुआ — अंतर देखने के लिए गल्ला गिनें</string>
@@ -3606,7 +3606,7 @@
     <string name="srep_col_count">बिक्री</string>
     <string name="srep_col_revenue">आय</string>
     <string name="srep_col_profit">मुनाफ़ा</string>
-    <string name="srep_revenue">आय</string>
+    <string name="srep_revenue">आय (कर के बिना)</string>
     <string name="srep_returns">वापसी</string>
     <string name="srep_cost">बिके माल की लागत</string>
     <string name="srep_cost_known">आय के %1$s की लागत पता</string>

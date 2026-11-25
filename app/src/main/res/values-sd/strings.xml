@@ -3493,7 +3493,7 @@
     <string name="z_cash_out">نقد خرچ (کاتو + ڪيش بڪ)</string>
     <string name="z_expected">گلي ۾ هجڻ گهرجي</string>
     <string name="z_variance">فرق</string>
-    <string name="z_profit">نفعو (وڪرو − لاڳت)</string>
+    <string name="z_profit">ڪائونٽر جو نفعو (وڪرو − لاڳت)</string>
     <string name="dc_opening">شروعاتي نقد</string>
     <string name="dc_counted">ڳڻيو ويو</string>
     <string name="z_no_close">ڏينهن بند نه ٿيو — فرق ڏسڻ لاءِ گلو ڳڻيو</string>
@@ -3586,7 +3586,7 @@
     <string name="srep_col_count">وڪرا</string>
     <string name="srep_col_revenue">آمدني</string>
     <string name="srep_col_profit">نفعو</string>
-    <string name="srep_revenue">آمدني</string>
+    <string name="srep_revenue">آمدني (ٽيڪس کان سواءِ)</string>
     <string name="srep_returns">واپسيون</string>
     <string name="srep_cost">وڪريل مال جي لاڳت</string>
     <string name="srep_cost_known">آمدني جي %1$s جي لاڳت معلوم</string>
