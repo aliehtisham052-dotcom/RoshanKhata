@@ -42,5 +42,6 @@ scripts/shared_harness/mutate.sh <file> <name> <old> <new>  # one deliberate bre
 | `stubs/Words.kt` | The `Words` interface without its Compose parts. |
 | `stubs/Hijri.kt` | The `expect fun hijriUmmAlQura` filled with `java.time`'s Hijrah calendar (the desktop's own way). |
 | `mutate.sh` | One deliberate breakage at a time. |
+| `speed.sh`, `HudhudSpeed.kt` | Hudhud's reading timed on the computer over the on-device speed test's sample and books (9 and 1,000 names, or any sizes), with an optional file of every reading so two builds can be held to the same answers. Report only; the computer's figures, not the phone's. |
 
 The Strings workflow runs `run.sh --lists-only`, so a file moved or renamed fails there and not only on the next local run.
