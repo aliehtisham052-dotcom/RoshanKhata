@@ -296,6 +296,8 @@ internal object HudhudGoldenAsks {
             a += Hudhud.Ask.Why(of, VoiceQuestion.Window.TODAY, down = true)
             a += Hudhud.Ask.Why(of, VoiceQuestion.Window.THIS_MONTH)
         }
+        for (w in WINDOWS) a += Hudhud.Ask.Trend(w)
+        Hudhud.AdviseOf.values().forEach { a += Hudhud.Ask.Advise(it) }
         // Two entries in one sentence: offered one at a time, nothing written.
         a += Hudhud.Ask.Entries(
             listOf(

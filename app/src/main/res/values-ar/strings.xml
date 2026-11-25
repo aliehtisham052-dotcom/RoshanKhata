@@ -1187,6 +1187,18 @@
     <string name="hudhud_why_part">%1$s: %2$s (الآن %3$s، قبل %4$s)</string>
     <string name="hudhud_why_no_cost">بنود بيع بلا سعر تكلفة: الآن %1$d، قبل %2$d. ربحها غير محسوب.</string>
     <string name="hudhud_why_only_book">هذه أرقام الدفتر نفسه. أي سبب خارج الدفتر (السوق، الطقس) ليس فيه.</string>
+    <string name="hudhud_t_trend">اتجاه المبيعات</string>
+    <string name="hudhud_trend_up">المبيعات في ارتفاع.</string>
+    <string name="hudhud_trend_down">المبيعات في انخفاض.</string>
+    <string name="hudhud_trend_flat">المبيعات تقريبًا كما كانت.</string>
+    <string name="hudhud_trend_none">لم يُبع شيء في أي من الفترتين.</string>
+    <string name="hudhud_trend_from_nothing">لم يُبع شيء في الفترة السابقة، فلا أستطيع إعطاء نسبة.</string>
+    <string name="hudhud_t_chase">من تطالب أولًا</string>
+    <string name="hudhud_chase_note">الأقدم استحقاقًا أولًا، مع من يعدّه رادار الدفع متأخرًا. لا يُرسل شيء من هنا.</string>
+    <string name="hudhud_t_next30">الثلاثون يومًا القادمة</string>
+    <string name="hudhud_today_promise">وعد %1$s بالدفع اليوم (%2$s).</string>
+    <string name="hudhud_today_cover">%1$s سيكفي نحو %2$s بوتيرته الأخيرة.</string>
+    <string name="hudhud_today_cover_now">%1$s لن يكفي اليوم بوتيرته الأخيرة.</string>
     <string name="hudhud_entry_one_at_a_time">قيدان في جملة واحدة. أملؤهما واحدًا تلو الآخر: اضغط على كل منهما لفتح نموذجه وراجعه واحفظه.</string>
     <string name="hudhud_sales_on">المبيعات · %1$s</string>
     <string name="hudhud_profit_on">الربح · %1$s</string>
@@ -1204,7 +1216,7 @@
     <string name="hudhud_quiet">الرصيد مخفي في الشاشة الرئيسية، لذا أكتب المبالغ هنا ولا أنطقها.</string>
     <string name="hudhud_no_voice">لا يوجد في هذا الهاتف صوت لهذه اللغة. الإجابة مكتوبة هنا؛ ويمكن تنزيل صوت من إعدادات الصوت.</string>
     <string name="hudhud_listen_local_switch">الاستماع على هذا الهاتف فقط (لا عبر الإنترنت أبدًا)</string>
-    <string name="hudhud_listen_local_help">عند التشغيل: يحوّل هذا الهاتف وحده كلامك إلى كلمات، ولا تُستخدم أي خدمة عبر الإنترنت أبدًا. عند الإيقاف: قد تساعد خدمة الكلام عبر الإنترنت في الهاتف ما دام الإنترنت موجودًا.</string>
+    <string name="hudhud_listen_local_help">عند التشغيل: يحوّل هذا الهاتف وحده كلامك إلى كلمات، ولا تُستخدم أي خدمة عبر الإنترنت أبدًا. عند الإيقاف: حيث لا يفهم هذا الهاتف لغتك وحده، يسألك هُدهُد مرة واحدة هل يستخدم خدمة Google عبر الإنترنت؛ وبموافقتك يذهب صوتك إلى Google أثناء الكلام.</string>
     <string name="hudhud_listen_local_pack">على هذا الهاتف فقط: نزّل لغتك ليستطيع هُدهُد الاستماع.</string>
     <string name="hudhud_listen_local_none">على هذا الهاتف فقط: لا يسمع هذا الهاتف هذه اللغة بنفسه. اكتب سؤالك، أو أوقف هذا الإعداد.</string>
     <string name="hudhud_voice_on">صوت هُدهُد يعمل</string>
@@ -5098,4 +5110,36 @@
         <item quantity="many">عدد من عليهم ردّه: %1$d</item>
         <item quantity="other">عدد من عليهم ردّه: %1$d</item>
     </plurals>
+
+    <!-- 25 Nov 2026: the voice choice (D10), the tie button (D8), backup protection (D14) -->
+    <string name="hudhud_listen_ask_title">أين يستمع هُدهُد؟</string>
+    <string name="hudhud_listen_ask_body">لا يفهم هذا الهاتف لغتك بنفسه. يمكن أن يستخدم هُدهُد بدلًا من ذلك خدمة Google للتعرّف على الكلام عبر الإنترنت: عندها يذهب صوتك إلى Google أثناء الكلام. أو يبقى على هذا الهاتف فقط وتكتب أنت.</string>
+    <string name="hudhud_listen_ask_online">استخدام خدمة Google عبر الإنترنت: يذهب صوتك إلى Google</string>
+    <string name="hudhud_listen_ask_type">اكتب بدلًا من ذلك</string>
+    <string name="hudhud_listen_ask_keep">أبقِه على هذا الهاتف فقط</string>
+    <string name="audit_goods_linked">تم ربط البضاعة بالمنتجات</string>
+    <string name="backup_prot_explain">كل ملف نسخة احتياطية تحفظه أو تشاركه أو ترسله خارج التطبيق يُقفل بكلمة المرور الخاصة بك. النسخ التي يحتفظ بها التطبيق لنفسه ونسخة Google Drive الاحتياطية لا تُقفل.</string>
+    <string name="backup_prot_switch">قفل ملفات النسخ الاحتياطية بكلمة المرور الخاصة بي</string>
+    <string name="backup_prot_status_on">محمي بكلمة المرور الخاصة بك: كل ملف نسخة احتياطية تحفظه أو تشاركه أو ترسله مقفل.</string>
+    <string name="backup_prot_status_needs">الحماية مفعّلة. سيُطلب منك تعيين كلمة مرور عند إنشاء ملف النسخة الاحتياطية التالي.</string>
+    <string name="backup_prot_status_off">مفتوح: يمكن لأي شخص لديه هذا الملف قراءة دفترك.</string>
+    <string name="backup_prot_off_title">إيقاف الحماية؟</string>
+    <string name="backup_prot_off_body">ستُكتب ملفات النسخ الاحتياطية مفتوحة. أي شخص يحصل على ملف، عبر واتساب أو فلاش أو هاتف مفقود أو بريد إلكتروني، يمكنه قراءة دفترك كاملاً مع عملائك وأرصدتهم. أوقف الحماية فقط إذا كنت متأكدًا.</string>
+    <string name="backup_prot_turn_off">إيقاف</string>
+    <string name="backup_prot_on_done">تم تفعيل الحماية. ستُقفل ملفات النسخ الاحتياطية.</string>
+    <string name="backup_prot_off_done">تم إيقاف الحماية. ملفات النسخ الاحتياطية الآن مفتوحة: يمكن لأي شخص لديه ملف قراءة دفترك.</string>
+    <string name="backup_prot_first_title">احمِ ملفات النسخ الاحتياطية</string>
+    <string name="backup_prot_first_body">ملف النسخة الاحتياطية يغادر جهازك، ومن يحصل عليه يمكنه قراءة دفترك. عيّن كلمة مرور الآن. تُطلب مرة واحدة، والملفات اللاحقة تستخدمها دون سؤال. إذا نسيتها فلن تُفتح الملفات المقفلة أبدًا، ولا حتى من قِبلنا.</string>
+    <string name="backup_prot_hint_hint">تلميح (اختياري)</string>
+    <string name="backup_prot_hint_note">تُعرض التلميح لكل من يفتح ملفًا مقفلاً قبل أن تُطلب كلمة المرور. لا تكتب كلمة المرور فيه.</string>
+    <string name="backup_prot_hint_gives_away">يجب ألا يحتوي التلميح على كلمة المرور.</string>
+    <string name="backup_prot_hint_is">التلميح: %1$s</string>
+    <string name="backup_prot_saved">تم تعيين كلمة المرور. ستُقفل ملفات النسخ الاحتياطية من الآن فصاعدًا.</string>
+    <string name="backup_prot_remove_body">ستُزال كلمة المرور. سيطلب ملف النسخة الاحتياطية التالي كلمة مرور جديدة ما لم توقف الحماية. الملفات المقفلة سابقًا ما زالت تحتاج هذه الكلمة لفتحها.</string>
+    <string name="backup_prot_removed">تمت إزالة كلمة المرور.</string>
+    <string name="backup_prot_first_cancelled">لم تُعيَّن كلمة مرور، لذلك لم يُنشأ ملف نسخة احتياطية.</string>
+    <string name="backup_prot_done_locked">محمي بكلمة المرور الخاصة بك. يحتاج الملف إليها ليُفتح.</string>
+    <string name="backup_prot_done_open">مفتوح: يمكن لأي شخص لديه هذا الملف قراءة دفترك.</string>
+    <string name="audit_backup_files_open">تم جعل ملفات النسخ الاحتياطية مفتوحة (بلا كلمة مرور)</string>
+    <string name="audit_backup_files_protected">تم جعل ملفات النسخ الاحتياطية محمية (بكلمة مرور)</string>
 </resources>

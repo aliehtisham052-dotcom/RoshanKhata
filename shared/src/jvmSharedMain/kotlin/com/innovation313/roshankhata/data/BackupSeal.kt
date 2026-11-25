@@ -41,12 +41,20 @@ import javax.crypto.spec.SecretKeySpec
  * streamed as before. Records, not one GCM over the file, because the JDK's GCM keeps the whole text until it has
  * checked the tag — a wholesaler's book would be held in memory to be read.
  *
+ * "RKX2" (25 Nov 2026, D14) is this file with the owner's hint after the nonce prefix — its length (2 bytes, at most
+ * [MAX_HINT_BYTES]) and its UTF-8 — so a restore on a new phone can show it before the password is asked. The hint is
+ * PLAIN in the file (the screen that takes it says so, and refuses one that holds the password); it is part of the header
+ * every record authenticates, so an edited hint makes the file not open. The records are the same, under the label
+ * "rk-backup-seal-v2|". A file with no hint is still written as "RKX1", which every older build reads.
+ *
  * Its own records, not [SealedChunks]': that is a WiFi protocol free to change between versions; a backup is a file
  * that must still open in ten years.
  */
 object BackupSeal {
-    /** "RKX1". */
+    /** "RKX1": the file as first written, no hint. Read for ever. */
     private val MAGIC = byteArrayOf(0x52, 0x4B, 0x58, 0x31)
+    /** "RKX2": the same file with the owner's hint after the nonce prefix (25 Nov 2026, D14). Written only when there is a hint. */
+    private val MAGIC2 = byteArrayOf(0x52, 0x4B, 0x58, 0x32)
     const val KDF_PBKDF2_SHA256 = 1
     /** OWASP's 2023 figure for PBKDF2-HMAC-SHA256 — five times the PIN's 120,000: a backup file can be attacked at leisure. */
     const val ITERATIONS = 600_000
@@ -58,10 +66,14 @@ object BackupSeal {
     private const val SALT = 16
     private const val PREFIX = 8
     private const val TAG = 16
-    /** The header's length: mark, kdf, iterations, salt length, salt, nonce prefix. */
+    /** The header's length without a hint: mark, kdf, iterations, salt length, salt, nonce prefix. */
     const val HEADER = 4 + 1 + 4 + 1 + SALT + PREFIX
+    /** A hint's longest, in letters and in bytes of its UTF-8 (a file may not make a reader hold more). */
+    const val MAX_HINT_CHARS = 100
+    const val MAX_HINT_BYTES = 400
     private val CHECK = "RKX1 Roshan Khata backup".toByteArray(Charsets.US_ASCII)
     private val LABEL = "rk-backup-seal-v1|".toByteArray(Charsets.US_ASCII)
+    private val LABEL2 = "rk-backup-seal-v2|".toByteArray(Charsets.US_ASCII)
 
     /** A sealed file that stopped opening part way (changed, cut short, bytes added): never a book read in part. */
     class Damaged(why: String) : IOException(why)
@@ -74,7 +86,46 @@ object BackupSeal {
 
     /** Whether the first [length] bytes of [head] are a locked backup's mark. */
     fun isSealed(head: ByteArray, length: Int = head.size): Boolean =
-        length >= MAGIC.size && head.size >= MAGIC.size && (MAGIC.indices).all { head[it] == MAGIC[it] }
+        length >= MAGIC.size && head.size >= MAGIC.size &&
+            ((MAGIC.indices).all { head[it] == MAGIC[it] } || (MAGIC2.indices).all { head[it] == MAGIC2[it] })
+
+    /**
+     * The hint as it is written and shown: line breaks and other control characters become spaces, spaces at the ends
+     * and runs of spaces go, the letters are in one Unicode form, at most [MAX_HINT_CHARS] letters; null when nothing is left.
+     */
+    fun cleanHint(text: String?): String? {
+        if (text == null) return null
+        val flat = text.map { if (it.isISOControl()) ' ' else it }.joinToString("")
+        val one = Normalizer.normalize(flat, Normalizer.Form.NFC).trim().replace(Regex(" {2,}"), " ")
+        if (one.isEmpty()) return null
+        val cut = if (one.codePointCount(0, one.length) > MAX_HINT_CHARS) one.substring(0, one.offsetByCodePoints(0, MAX_HINT_CHARS)).trim() else one
+        return cut.takeIf { it.isNotEmpty() }
+    }
+
+    /** Whether [hint] gives the password away: it holds [password] (as the key reads it), in any case. A hint that does is not kept. */
+    fun hintGivesAway(hint: String?, password: String): Boolean {
+        val h = cleanHint(hint) ?: return false
+        val p = normalize(password)
+        return p.isNotEmpty() && h.lowercase().contains(p.lowercase())
+    }
+
+    /** The owner's hint out of the first bytes of a locked file ([head] from its first byte), null when it has none or is not one. */
+    fun hintOf(head: ByteArray, length: Int = head.size): String? {
+        val n = minOf(length, head.size)
+        if (n < HEADER + 2 || !(MAGIC2.indices).all { head[it] == MAGIC2[it] }) return null
+        val len = ((head[HEADER].toInt() and 0xFF) shl 8) or (head[HEADER + 1].toInt() and 0xFF)
+        if (len == 0 || len > MAX_HINT_BYTES || n < HEADER + 2 + len) return null
+        return cleanHint(String(head, HEADER + 2, len, Charsets.UTF_8))
+    }
+
+    /** The hint of the locked backup in [input] (at its first byte; read to the end of its header only), else null. */
+    fun hintOf(input: InputStream): String? = try {
+        val b = ByteArray(HEADER + 2 + MAX_HINT_BYTES)
+        hintOf(b, fill(input, b))
+    } catch (e: IOException) { null }
+
+    /** The hint of the locked backup [file]; null when it is plain, has none or cannot be read. */
+    fun hintOf(file: File): String? = runCatching { file.inputStream().use { hintOf(it) } }.getOrNull()
 
     /** Whether [file] is a locked backup (false when it cannot be read). */
     fun isSealed(file: File): Boolean = runCatching {
@@ -95,15 +146,17 @@ object BackupSeal {
     fun key(password: String, salt: ByteArray, iterations: Int): SecretKeySpec =
         SecretKeySpec(PinHash.pbkdf2(normalize(password).toByteArray(Charsets.UTF_8), salt, iterations, 32), "AES")
 
-    private fun header(iterations: Int, salt: ByteArray, prefix: ByteArray): ByteArray {
+    /** The header; with a [hint] it is "RKX2" and the hint follows the prefix (its length in 2 bytes, then its UTF-8). */
+    private fun header(iterations: Int, salt: ByteArray, prefix: ByteArray, hint: ByteArray? = null): ByteArray {
         val b = ByteArrayOutputStream(HEADER)
         DataOutputStream(b).apply {
-            write(MAGIC)
+            write(if (hint == null) MAGIC else MAGIC2)
             writeByte(KDF_PBKDF2_SHA256)
             writeInt(iterations)
             writeByte(salt.size)
             write(salt)
             write(prefix)
+            if (hint != null) { writeShort(hint.size); write(hint) }
             flush()
         }
         return b.toByteArray()
@@ -113,28 +166,36 @@ object BackupSeal {
         prefix + byteArrayOf((i ushr 24).toByte(), (i ushr 16).toByte(), (i ushr 8).toByte(), i.toByte())
 
     private fun aad(header: ByteArray, i: Int, last: Boolean): ByteArray =
-        LABEL + header + ("|" + i + "|" + (if (last) "1" else "0")).toByteArray(Charsets.US_ASCII)
+        (if (header[3] == MAGIC2[3]) LABEL2 else LABEL) + header + ("|" + i + "|" + (if (last) "1" else "0")).toByteArray(Charsets.US_ASCII)
 
     /**
      * Where the plain backup is written to be sealed onto [out]: the header and the check go at once, the rest a record
      * at a time; [OutputStream.close] writes the last record and closes [out]. Nothing is sealed until close for a
      * book under [CHUNK] bytes. [iterations] other than [ITERATIONS] are for tests.
      */
-    fun sealing(out: OutputStream, password: String, iterations: Int = ITERATIONS, random: SecureRandom = SecureRandom()): OutputStream {
+    fun sealing(
+        out: OutputStream,
+        password: String,
+        iterations: Int = ITERATIONS,
+        random: SecureRandom = SecureRandom(),
+        /** The owner's hint, shown before the password is asked; written plain in the header ([cleanHint] first). Null: an "RKX1" file as before. */
+        hint: String? = null
+    ): OutputStream {
         require(iterations in MIN_ITERATIONS..MAX_ITERATIONS) { "iterations" }
         val salt = ByteArray(SALT).also { random.nextBytes(it) }
         val prefix = ByteArray(PREFIX).also { random.nextBytes(it) }
-        val head = header(iterations, salt, prefix)
+        val hintBytes = cleanHint(hint)?.toByteArray(Charsets.UTF_8)?.takeIf { it.size <= MAX_HINT_BYTES }
+        val head = header(iterations, salt, prefix, hintBytes)
         val sealer = Sealer(DataOutputStream(out), key(password, salt, iterations), prefix, head)
         sealer.start()
         return sealer
     }
 
     /** [plain] copied into [into], sealed with [password]; [into] is the sealed file. */
-    fun sealFile(plain: File, into: File, password: String, iterations: Int = ITERATIONS): File {
+    fun sealFile(plain: File, into: File, password: String, iterations: Int = ITERATIONS, hint: String? = null): File {
         into.parentFile?.mkdirs()
         plain.inputStream().buffered(CHUNK).use { input ->
-            sealing(into.outputStream().buffered(CHUNK), password, iterations).use { input.copyTo(it, CHUNK) }
+            sealing(into.outputStream().buffered(CHUNK), password, iterations, hint = hint).use { input.copyTo(it, CHUNK) }
         }
         return into
     }
@@ -143,8 +204,8 @@ object BackupSeal {
      * A writer for a backup's text into [out]: sealed with [password] when one is given, else plain as it always was.
      * Closing it finishes the file.
      */
-    fun writer(out: OutputStream, password: String?, iterations: Int = ITERATIONS): java.io.Writer {
-        val to = if (password == null) out else sealing(out, password, iterations)
+    fun writer(out: OutputStream, password: String?, iterations: Int = ITERATIONS, hint: String? = null): java.io.Writer {
+        val to = if (password == null) out else sealing(out, password, iterations, hint = hint)
         return java.io.BufferedWriter(java.io.OutputStreamWriter(to, Charsets.UTF_8), CHUNK)
     }
 
@@ -231,8 +292,18 @@ object BackupSeal {
     fun open(input: InputStream, passwords: List<String>): Open {
         val data = DataInputStream(input)
         return try {
-            val head = ByteArray(HEADER)
-            if (fill(data, head) < HEADER || !isSealed(head)) return Open.Damaged("header")
+            val fixed = ByteArray(HEADER)
+            if (fill(data, fixed) < HEADER || !isSealed(fixed)) return Open.Damaged("header")
+            // "RKX2": the hint follows the prefix, and is part of the header the records authenticate.
+            val head = if (fixed[3] == MAGIC2[3]) {
+                val size = ByteArray(2)
+                if (fill(data, size) < 2) return Open.Damaged("hint")
+                val hintLength = ((size[0].toInt() and 0xFF) shl 8) or (size[1].toInt() and 0xFF)
+                if (hintLength > MAX_HINT_BYTES) return Open.Damaged("hint")
+                val hint = ByteArray(hintLength)
+                if (fill(data, hint) < hintLength) return Open.Damaged("hint")
+                fixed + size + hint
+            } else fixed
             val kdf = head[4].toInt() and 0xFF
             val iterations = ((head[5].toInt() and 0xFF) shl 24) or ((head[6].toInt() and 0xFF) shl 16) or
                 ((head[7].toInt() and 0xFF) shl 8) or (head[8].toInt() and 0xFF)
@@ -369,6 +440,9 @@ object BackupPassword {
     const val AUDIT_SET = "backup_pw_set"
     const val AUDIT_CHANGED = "backup_pw_changed"
     const val AUDIT_REMOVED = "backup_pw_removed"
+    /** The switch for backup files that leave the device (D14, 25 Nov 2026): turned off (files are open) and on again. */
+    const val AUDIT_FILES_OPEN = "backup_files_open"
+    const val AUDIT_FILES_PROTECTED = "backup_files_protected"
 
     /** The device's lock: [wrap] null when the device has none (then nothing is kept); [unwrap] null when not this device's. */
     interface Lock {

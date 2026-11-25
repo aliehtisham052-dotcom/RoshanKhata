@@ -380,13 +380,37 @@ object HudhudVoiceSheet {
 
         private fun appTag(): String = Locale.getDefault().toLanguageTag()
 
-        /** "Only listen on this phone (never online)" (audit T14, [HudhudPrefs.listenOnPhoneOnly]); the line above follows it. */
+        /**
+         * "Only listen on this phone (never online)" (audit T14); the line above follows it. Since D10 (25 Nov 2026) it
+         * shows the phone's remembered choice ([ListenChoiceStore]): on until the owner has said yes to Google's online
+         * recogniser. Turning it ON keeps listening on this phone; turning it OFF is that yes, so it is asked first, in the
+         * same words as at the microphone ([ListenAsk]) — never a silent switch to online. Not answered: it stays on.
+         */
         private fun startLocalEars() {
-            building { swLocalEars.isChecked = HudhudPrefs.listenOnPhoneOnly(ctx) }
+            building { swLocalEars.isChecked = HudhudEars.phoneOnly(ctx) }
             swLocalEars.setOnCheckedChangeListener { _, on ->
                 if (building) return@setOnCheckedChangeListener
-                HudhudPrefs.setListenOnPhoneOnly(ctx, on)
-                refreshListening()
+                if (on) {
+                    ListenChoiceStore.set(ctx, ListenChoice.afterSwitch(true))
+                    refreshListening()
+                    return@setOnCheckedChangeListener
+                }
+                val keep = { if (!closed) building { swLocalEars.isChecked = HudhudEars.phoneOnly(ctx) } }
+                val asked = ListenAsk.show(
+                    host,
+                    typeWords = R.string.hudhud_listen_ask_keep,
+                    onYes = {
+                        ListenChoiceStore.set(ctx, ListenChoice.afterSwitch(false))
+                        if (!closed) refreshListening()
+                    },
+                    onNo = {
+                        ListenChoiceStore.set(ctx, ListenChoice.afterSwitch(true))
+                        keep()
+                        if (!closed) refreshListening()
+                    },
+                    onCancel = { keep() }
+                )
+                if (asked == null) keep()
             }
         }
 
@@ -401,7 +425,7 @@ object HudhudVoiceSheet {
 
         private fun showListening(status: HudhudEars.Status) {
             // On this phone only, a phone without the language says so, never "with internet" (audit T14).
-            if (HudhudPrefs.listenOnPhoneOnly(ctx)) {
+            if (HudhudEars.phoneOnly(ctx)) {
                 when (status) {
                     HudhudEars.Status.NEEDS_PACK -> {
                         tvListen.setText(R.string.hudhud_listen_local_pack)

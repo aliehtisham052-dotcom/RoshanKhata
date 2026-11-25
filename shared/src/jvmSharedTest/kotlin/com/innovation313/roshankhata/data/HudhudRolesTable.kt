@@ -75,6 +75,8 @@ object HudhudRolesTable {
         "Both" to Row(Held.WRAP), "Compare" to Row(Held.GATED, Gate.REPORTS), "SpanLimit" to Row(Held.WRAP),
         "Now" to Row(Held.WRAP), "Guessed" to Row(Held.WRAP), "DidYouMean" to Row(Held.WRAP),
         "Why" to Row(Held.GATED, Gate.REPORTS, "facts about a figure, never a cause the book cannot show"),
+        "Trend" to Row(Held.GATED, Gate.REPORTS, "the sales of a span against the span before it: the same figures as Why"),
+        "Advise" to Row(Held.GATED, Gate.REPORTS, "whom to chase first (dues by age, the Radar) and the next 30 days (Cash flow): money owed and due"),
         "Took" to Row(Held.OPEN, why = "what one named customer took: his own Khata page, as Moved"),
         "NoHistory" to Row(Held.OPEN)
     )

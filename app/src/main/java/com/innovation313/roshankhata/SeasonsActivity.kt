@@ -60,7 +60,8 @@ class SeasonsActivity : BaseActivity() {
             // balance on the first day carried in, so the figures are the
             // same as reading the whole book and a long book costs nothing.
             val first = SeasonBook.window(System.currentTimeMillis())
-            val since = SeasonBook.seasonStart(first)
+            // From the window's first day, or earlier for a credit tagged to a season shown (E1, SeasonBook.readFrom).
+            val since = SeasonBook.readFrom(first, dao.seasonTagStarts(SeasonBook.seasonStart(first)))
             dao.observeSeasonLinesSince(since)
                 .combine(dao.observeSeasonCarriedIn(since)) { lines, carried ->
                     SeasonBook.book(lines, carriedIn = carried.associate { it.partyId to it.net })

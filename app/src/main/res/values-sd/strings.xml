@@ -1127,6 +1127,18 @@
     <string name="hudhud_why_part">%1$s: %2$s (هاڻي %3$s، اڳ %4$s)</string>
     <string name="hudhud_why_no_cost">خريد جي قيمت کان سواءِ وڪري جون لائينون: هاڻي %1$d، اڳ %2$d. انهن جو منافعو شامل ناهي.</string>
     <string name="hudhud_why_only_book">هي کاتي جا پنهنجا انگ آهن. کاتي کان ٻاهر جو سبب (مارڪيٽ، موسم) هن ۾ ناهي.</string>
+    <string name="hudhud_t_trend">وڪري جو رجحان</string>
+    <string name="hudhud_trend_up">وڪرو وڌي رهيو آهي.</string>
+    <string name="hudhud_trend_down">وڪرو گهٽجي رهيو آهي.</string>
+    <string name="hudhud_trend_flat">وڪرو لڳ ڀڳ اڳي جيترو ئي آهي.</string>
+    <string name="hudhud_trend_none">ٻنهي مدي ۾ ڪجهه نه وڪاميو.</string>
+    <string name="hudhud_trend_from_nothing">اڳئين مدي ۾ ڪجهه نه وڪاميو، تنهن ڪري سيڪڙو ٻڌائي نٿو سگهان.</string>
+    <string name="hudhud_t_chase">پهرين ڪنهن کان وصولي ڪجي</string>
+    <string name="hudhud_chase_note">سڀ کان پراڻا بقايا پهرين، ساڻ اهي جن کي پيمينٽ ريڊار دير سان ڏيندڙ چوي ٿو. هتان ڪجهه موڪليو نٿو وڃي.</string>
+    <string name="hudhud_t_next30">ايندڙ 30 ڏينهن</string>
+    <string name="hudhud_today_promise">%1$s اڄ ادا ڪرڻ جو واعدو ڪيو آهي (%2$s).</string>
+    <string name="hudhud_today_cover">%1$s پنهنجي تازي رفتار سان لڳ ڀڳ %2$s هلندو.</string>
+    <string name="hudhud_today_cover_now">%1$s پنهنجي تازي رفتار سان اڄ جو ڏينهن نه هلندو.</string>
     <string name="hudhud_entry_one_at_a_time">هڪ جملي ۾ ٻه داخلائون آهن. آئون هڪ هڪ ڪري ڀريان ٿو: هر هڪ تي ٽيپ ڪريو، فارم ڏسو ۽ محفوظ ڪريو.</string>
     <string name="hudhud_sales_on">وڪرو · %1$s</string>
     <string name="hudhud_profit_on">نفعو · %1$s</string>
@@ -1144,7 +1156,7 @@
     <string name="hudhud_quiet">هوم تي بيلنس لڪيل آهي، تنهن ڪري مان رقم هتي لکان ٿو، ٻڌايان نٿو.</string>
     <string name="hudhud_no_voice">هن فون ۾ هن ٻوليءَ جو آواز ناهي. جواب هتي لکيل آهي؛ آواز جي سيٽنگن مان آواز وٺي سگهجي ٿو.</string>
     <string name="hudhud_listen_local_switch">صرف هن فون تي ٻڌو (ڪڏهن به آن لائن نه)</string>
-    <string name="hudhud_listen_local_help">آن: توهان جي ڳالهه کي صرف هي فون لفظن ۾ بدلائي ٿو، ڪڏهن به ڪا آن لائن سروس نه. بند: انٽرنيٽ هجي ته فون جي آن لائن آواز جي سروس مدد ڪري سگهي ٿي.</string>
+    <string name="hudhud_listen_local_help">آن: توهان جي ڳالهه کي صرف هي فون لفظن ۾ بدلائي ٿو، ڪڏهن به ڪا آن لائن سروس نه. بند: جتي هي فون توهان جي ٻولي پاڻ نه سمجهي سگهي، هُدهُد هڪ ڀيرو پڇي ٿو ته ڇا Google جي آن لائن سروس استعمال ڪجي؛ توهان جي ها تي ڳالهائڻ وقت توهان جو آواز Google ڏانهن وڃي ٿو.</string>
     <string name="hudhud_listen_local_pack">صرف هن فون تي: پنهنجي ٻولي ڊائونلوڊ ڪريو ته هُدهُد ٻڌي سگهندو.</string>
     <string name="hudhud_listen_local_none">صرف هن فون تي: هي فون هن ٻولي کي پاڻ ٻڌي نٿو سگهي. پنهنجو سوال لکي ڇڏيو، يا هي سيٽنگ بند ڪريو.</string>
     <string name="hudhud_voice_on">هُدهُد جو آواز چالو آهي</string>
@@ -4825,4 +4837,36 @@
         <item quantity="one">%1$d ماڻهوءَ کي اڃا واپس ڪرڻو آهي</item>
         <item quantity="other">%1$d ماڻهن کي اڃا واپس ڪرڻو آهي</item>
     </plurals>
+
+    <!-- 25 Nov 2026: the voice choice (D10), the tie button (D8), backup protection (D14) -->
+    <string name="hudhud_listen_ask_title">هُدهُد ڪٿي ٻڌي؟</string>
+    <string name="hudhud_listen_ask_body">هي فون توهان جي ٻولي پاڻ سمجهي نٿو سگهي. هُدهُد ان جي بدران گوگل جي آن لائن آواز سڃاڻڻ واري سروس استعمال ڪري سگهي ٿو: پوءِ ڳالهائڻ وقت توهان جو آواز گوگل ڏانهن ويندو آهي. يا هو صرف هن فون تي رهي، ۽ توهان لکو.</string>
+    <string name="hudhud_listen_ask_online">گوگل جي آن لائن سروس استعمال ڪريو: توهان جو آواز گوگل ڏانهن ويندو</string>
+    <string name="hudhud_listen_ask_type">لکي پڇو</string>
+    <string name="hudhud_listen_ask_keep">صرف هن فون تي رکو</string>
+    <string name="audit_goods_linked">سامان پراڊڪٽس سان ڳنڍيو ويو</string>
+    <string name="backup_prot_explain">ايپ کان ٻاهر محفوظ ڪيل، شيئر ڪيل يا موڪليل هر بيڪ اپ فائل توهانجي پاس ورڊ سان لاڪ ٿيندي آهي. ايپ جون پنهنجيون رکيل ڪاپيون ۽ گوگل ڊرائيو بيڪ اپ لاڪ نه ٿيندا آهن.</string>
+    <string name="backup_prot_switch">بيڪ اپ فائلون منهنجي پاس ورڊ سان لاڪ ڪريو</string>
+    <string name="backup_prot_status_on">توهانجي پاس ورڊ سان محفوظ: توهان جي محفوظ ڪيل، شيئر ڪيل يا موڪليل هر بيڪ اپ فائل لاڪ آهي.</string>
+    <string name="backup_prot_status_needs">تحفظ آن آهي. ايندڙ بيڪ اپ فائل ٺاهڻ وقت پاس ورڊ مقرر ڪرڻ لاءِ چيو ويندو.</string>
+    <string name="backup_prot_status_off">کليل: جنهن وٽ هي فائل هجي سو توهانجو کاتو پڙهي سگهي ٿو.</string>
+    <string name="backup_prot_off_title">تحفظ بند ڪجي؟</string>
+    <string name="backup_prot_off_body">بيڪ اپ فائلون کليل لکجنديون. جنهن کي به فائل ملي، واٽس ايپ، يو ايس بي، گم ٿيل فون يا اي ميل ذريعي، سو توهانجو سڄو کاتو، گراهڪن ۽ سندن بقايا سميت، پڙهي سگهي ٿو. رڳو تڏهن بند ڪريو جڏهن پڪ هجي.</string>
+    <string name="backup_prot_turn_off">بند ڪريو</string>
+    <string name="backup_prot_on_done">تحفظ آن ٿي ويو. بيڪ اپ فائلون لاڪ ٿينديون.</string>
+    <string name="backup_prot_off_done">تحفظ بند ٿي ويو. بيڪ اپ فائلون هاڻي کليل آهن: جنهن وٽ فائل هجي سو توهانجو کاتو پڙهي سگهي ٿو.</string>
+    <string name="backup_prot_first_title">پنهنجون بيڪ اپ فائلون محفوظ ڪريو</string>
+    <string name="backup_prot_first_body">بيڪ اپ فائل توهانجي ڊوائيس کان ٻاهر وڃي ٿي ۽ جنهن کي ملي سو توهانجو کاتو پڙهي سگهي ٿو. هاڻي پاس ورڊ مقرر ڪريو. اهو هڪ ڀيرو پڇيو ويندو، پوءِ جون فائلون بنا پڇڻ ساڳيو استعمال ڪنديون. جيڪڏهن وساري ڇڏيو ته لاڪ ٿيل فائلون ڪڏهن به نه کلنديون، اسان کان به نه.</string>
+    <string name="backup_prot_hint_hint">اشارو (اختياري)</string>
+    <string name="backup_prot_hint_note">اشارو هر ان شخص کي ڏيکاريو ويندو جيڪو لاڪ ٿيل فائل کوليندو، پاس ورڊ پڇڻ کان اڳ. ان ۾ پاس ورڊ نه لکو.</string>
+    <string name="backup_prot_hint_gives_away">اشاري ۾ پاس ورڊ نه هجڻ گهرجي.</string>
+    <string name="backup_prot_hint_is">اشارو: %1$s</string>
+    <string name="backup_prot_saved">پاس ورڊ مقرر ٿي ويو. هاڻي کان بيڪ اپ فائلون لاڪ ٿينديون.</string>
+    <string name="backup_prot_remove_body">پاس ورڊ هٽايو ويندو. ايندڙ بيڪ اپ فائل نئون پاس ورڊ گهرندي، جيستائين توهان تحفظ بند نه ڪيو. جيڪي فائلون اڳ ۾ لاڪ ٿي چڪيون آهن انهن کي کولڻ لاءِ ساڳيو پاس ورڊ گهرجندو.</string>
+    <string name="backup_prot_removed">پاس ورڊ هٽايو ويو.</string>
+    <string name="backup_prot_first_cancelled">پاس ورڊ مقرر نه ٿيو، تنهن ڪري ڪا بيڪ اپ فائل نه ٺهي.</string>
+    <string name="backup_prot_done_locked">توهانجي پاس ورڊ سان محفوظ. فائل کولڻ لاءِ اهو گهرجي.</string>
+    <string name="backup_prot_done_open">کليل: جنهن وٽ هي فائل هجي سو توهانجو کاتو پڙهي سگهي ٿو.</string>
+    <string name="audit_backup_files_open">بيڪ اپ فائلون کليل ڪيون ويون (بنا پاس ورڊ)</string>
+    <string name="audit_backup_files_protected">بيڪ اپ فائلون محفوظ ڪيون ويون (پاس ورڊ سان)</string>
 </resources>

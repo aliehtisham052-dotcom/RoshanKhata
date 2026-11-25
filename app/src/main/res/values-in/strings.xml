@@ -1117,6 +1117,18 @@
     <string name="hudhud_why_part">%1$s: %2$s (sekarang %3$s, sebelumnya %4$s)</string>
     <string name="hudhud_why_no_cost">Baris penjualan tanpa harga pokok: sekarang %1$d, sebelumnya %2$d. Labanya tidak dihitung.</string>
     <string name="hudhud_why_only_book">Ini angka buku itu sendiri. Alasan di luar buku (pasar, cuaca) tidak ada di dalamnya.</string>
+    <string name="hudhud_t_trend">Tren penjualan</string>
+    <string name="hudhud_trend_up">Penjualan naik.</string>
+    <string name="hudhud_trend_down">Penjualan turun.</string>
+    <string name="hudhud_trend_flat">Penjualan hampir sama.</string>
+    <string name="hudhud_trend_none">Tidak ada yang terjual di kedua periode.</string>
+    <string name="hudhud_trend_from_nothing">Tidak ada yang terjual di periode sebelumnya, jadi tidak ada persentase.</string>
+    <string name="hudhud_t_chase">Tagih siapa dulu</string>
+    <string name="hudhud_chase_note">Tagihan terlama didahulukan, bersama yang disebut terlambat oleh Radar Pembayaran. Tidak ada yang dikirim dari sini.</string>
+    <string name="hudhud_t_next30">30 hari ke depan</string>
+    <string name="hudhud_today_promise">%1$s berjanji membayar hari ini (%2$s).</string>
+    <string name="hudhud_today_cover">%1$s akan cukup sekitar %2$s dengan kecepatan terbarunya.</string>
+    <string name="hudhud_today_cover_now">%1$s tidak akan cukup untuk hari ini dengan kecepatan terbarunya.</string>
     <string name="hudhud_entry_one_at_a_time">Ada dua catatan dalam satu kalimat. Saya mengisinya satu per satu: ketuk masing-masing, periksa formulirnya, lalu simpan.</string>
     <string name="hudhud_sales_on">Penjualan · %1$s</string>
     <string name="hudhud_profit_on">Laba · %1$s</string>
@@ -1134,7 +1146,7 @@
     <string name="hudhud_quiet">Saldo disembunyikan di Beranda, jadi jumlahnya saya tulis di sini tanpa diucapkan.</string>
     <string name="hudhud_no_voice">Ponsel ini tidak punya suara untuk bahasa ini. Jawabannya tertulis di sini; suara bisa diunduh di Pengaturan suara.</string>
     <string name="hudhud_listen_local_switch">Hanya mendengar di ponsel ini (tidak pernah online)</string>
-    <string name="hudhud_listen_local_help">Aktif: ucapan Anda diubah menjadi kata hanya oleh ponsel ini, tidak pernah oleh layanan online. Nonaktif: layanan ucapan online ponsel boleh membantu selama ada internet.</string>
+    <string name="hudhud_listen_local_help">Aktif: ucapan Anda diubah menjadi kata hanya oleh ponsel ini, tidak pernah oleh layanan online. Nonaktif: jika ponsel ini tidak memahami bahasa Anda sendiri, Hudhud bertanya sekali apakah memakai layanan online Google; dengan persetujuan Anda, suara Anda dikirim ke Google selama Anda berbicara.</string>
     <string name="hudhud_listen_local_pack">Hanya di ponsel ini: unduh bahasa Anda agar Hudhud bisa mendengar.</string>
     <string name="hudhud_listen_local_none">Hanya di ponsel ini: ponsel ini tidak bisa mendengar bahasa ini sendiri. Ketik pertanyaan Anda, atau matikan pengaturan ini.</string>
     <string name="hudhud_voice_on">Suara Hudhud aktif</string>
@@ -4770,4 +4782,36 @@
     <plurals name="hudhud_qarz_people">
         <item quantity="other">%1$d orang masih harus mengembalikan</item>
     </plurals>
+
+    <!-- 25 Nov 2026: the voice choice (D10), the tie button (D8), backup protection (D14) -->
+    <string name="hudhud_listen_ask_title">Di mana Hudhud mendengar?</string>
+    <string name="hudhud_listen_ask_body">Ponsel ini tidak bisa memahami bahasa Anda sendiri. Hudhud bisa memakai pengenal ucapan online Google sebagai gantinya: suara Anda lalu dikirim ke Google saat Anda berbicara. Atau ia tetap hanya di ponsel ini, dan Anda mengetik.</string>
+    <string name="hudhud_listen_ask_online">Pakai layanan online Google: suara Anda dikirim ke Google</string>
+    <string name="hudhud_listen_ask_type">Ketik saja</string>
+    <string name="hudhud_listen_ask_keep">Tetap hanya di ponsel ini</string>
+    <string name="audit_goods_linked">Barang dikaitkan ke produk</string>
+    <string name="backup_prot_explain">Setiap berkas cadangan yang Anda simpan, bagikan, atau kirim keluar dari aplikasi dikunci dengan kata sandi Anda. Salinan yang disimpan aplikasi untuk dirinya sendiri dan cadangan Google Drive tidak dikunci.</string>
+    <string name="backup_prot_switch">Kunci berkas cadangan dengan kata sandi saya</string>
+    <string name="backup_prot_status_on">Dilindungi dengan kata sandi Anda: setiap berkas cadangan yang Anda simpan, bagikan, atau kirim terkunci.</string>
+    <string name="backup_prot_status_needs">Perlindungan aktif. Berkas cadangan berikutnya akan meminta Anda membuat kata sandi.</string>
+    <string name="backup_prot_status_off">Terbuka: siapa pun yang memegang berkas ini dapat membaca buku Anda.</string>
+    <string name="backup_prot_off_title">Matikan perlindungan?</string>
+    <string name="backup_prot_off_body">Berkas cadangan akan ditulis terbuka. Siapa pun yang mendapat berkas, dari WhatsApp, flashdisk, ponsel hilang, atau email, dapat membaca seluruh buku Anda beserta pelanggan dan saldo mereka. Matikan hanya jika Anda yakin.</string>
+    <string name="backup_prot_turn_off">Matikan</string>
+    <string name="backup_prot_on_done">Perlindungan aktif. Berkas cadangan akan dikunci.</string>
+    <string name="backup_prot_off_done">Perlindungan mati. Berkas cadangan kini terbuka: siapa pun yang memegang berkas dapat membaca buku Anda.</string>
+    <string name="backup_prot_first_title">Lindungi berkas cadangan Anda</string>
+    <string name="backup_prot_first_body">Berkas cadangan keluar dari perangkat Anda, dan siapa pun yang mendapatkannya dapat membaca buku Anda. Buat kata sandi sekarang. Ditanyakan sekali; berkas berikutnya memakainya tanpa bertanya. Jika Anda lupa, berkas terkunci tidak akan pernah bisa dibuka, bahkan oleh kami.</string>
+    <string name="backup_prot_hint_hint">Petunjuk (opsional)</string>
+    <string name="backup_prot_hint_note">Petunjuk ditampilkan kepada siapa pun yang membuka berkas terkunci, sebelum kata sandi ditanyakan. Jangan menulis kata sandi di dalamnya.</string>
+    <string name="backup_prot_hint_gives_away">Petunjuk tidak boleh berisi kata sandi.</string>
+    <string name="backup_prot_hint_is">Petunjuk: %1$s</string>
+    <string name="backup_prot_saved">Kata sandi diatur. Berkas cadangan mulai sekarang dikunci.</string>
+    <string name="backup_prot_remove_body">Kata sandi akan dihapus. Berkas cadangan berikutnya akan meminta kata sandi baru, kecuali Anda mematikan perlindungan. Berkas yang sudah terkunci tetap memerlukan kata sandi ini untuk dibuka.</string>
+    <string name="backup_prot_removed">Kata sandi dihapus.</string>
+    <string name="backup_prot_first_cancelled">Kata sandi tidak diatur, jadi tidak ada berkas cadangan yang dibuat.</string>
+    <string name="backup_prot_done_locked">Dilindungi dengan kata sandi Anda. Berkas ini memerlukannya untuk dibuka.</string>
+    <string name="backup_prot_done_open">Terbuka: siapa pun yang memegang berkas ini dapat membaca buku Anda.</string>
+    <string name="audit_backup_files_open">Berkas cadangan dibuat terbuka (tanpa kata sandi)</string>
+    <string name="audit_backup_files_protected">Berkas cadangan dilindungi (dengan kata sandi)</string>
 </resources>

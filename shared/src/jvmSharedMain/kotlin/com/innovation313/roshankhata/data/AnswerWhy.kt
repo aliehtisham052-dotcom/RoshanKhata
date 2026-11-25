@@ -188,13 +188,13 @@ object AnswerWhy {
     }
 
     /** The days of a span as [from, to): "1 Nov – 16 Nov", or one day. */
-    private fun days(from: Long, to: Long): String {
+    internal fun days(from: Long, to: Long): String {
         val first = Format.dateOnly(from)
         val last = Format.dateOnly(to - 1)
         return Format.ltr(if (first == last) first else "$first – $last")
     }
 
-    private fun signed(v: Double): String = (if (Money.isPositive(v)) "+" else "") + AnswerBook.money(v)
+    internal fun signed(v: Double): String = (if (Money.isPositive(v)) "+" else "") + AnswerBook.money(v)
 
     private fun shown(v: Double?): String = v?.let { AnswerBook.money(it) } ?: "—"
 }

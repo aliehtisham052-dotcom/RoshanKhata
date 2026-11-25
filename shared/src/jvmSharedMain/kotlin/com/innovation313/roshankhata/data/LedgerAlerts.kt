@@ -150,14 +150,8 @@ object LedgerAlerts {
             out += Alert(Kind.DRAWER, words.text(W.z_yesterday_open), "")
         }
 
-        val plans = dao.openPlansOnce().map { CashFlow.Plan(it.partyId, it.partyName, it.totalAmount - it.paidSoFar, it.installmentAmount, it.nextDueDate) }
-        val cheques = dao.pendingChequesOnce().filter { it.status == ChequeStatus.PENDING && names.containsKey(it.partyId) }
-            .map { CashFlow.Cheque(it.partyId, names.getValue(it.partyId), it.amount, it.dueDate, it.isReceived) }
-        // Promised payments count, as on the Cash flow page the row opens (3 Nov 2026 audit, L13: the bell said
-        // "short" for a week the page showed covered by a promise).
-        val balance = parties.associate { it.id to it.balance }
-        val harvests = dao.cashFlowHarvestsOnce().map { it.copy(balance = balance[it.partyId] ?: 0.0) }
-        val (all, undated) = CashFlow.items(plans, cheques, harvests, dao.cashFlowBillsOnce(), owed)
+        // The Cash flow page's own loader (BC-285): promised payments count, as on the page the row opens (3 Nov 2026 audit, L13).
+        val (all, undated) = CashFlow.load(dao, parties)
         val o = CashFlow.outlook(all, undated, t0, 30)
         o.gapWeek?.let { out += Alert(Kind.CASHFLOW, words.text(W.na_gap, DateWords.format("d MMM", it.from), money(o.gap)), "") }
         return out

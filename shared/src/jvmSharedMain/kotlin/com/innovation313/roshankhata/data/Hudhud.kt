@@ -290,6 +290,22 @@ object Hudhud {
          * past conversations; the card says so (AnswerQ.noHistory), where the day's activity was told before.
          */
         object NoHistory : Ask()
+
+        /**
+         * Whether the sales are going up or down (25 Nov 2026, plan H5): "is my sale going up or down", "kya sale barh rahi hai",
+         * "sales trend this week". The sales over [window] beside the span before it (the same length of time while the span is
+         * still running, [HudhudWhyAsk.spans]), said as up, down or about the same, with both figures and the change. Read by
+         * [HudhudAdviceAsk] alone, never by the sense; REPORTS ([AnswerAdvisor.trend]). It carries over a span like the figures do
+         * ("aur pichle mahine?").
+         */
+        data class Trend(val window: VoiceQuestion.Window) : Ask()
+
+        /**
+         * The shop's advisor (25 Nov 2026, plan H5): [AdviseOf.CHASE] — whom to chase first, the oldest dues by Dues by age's rule with
+         * the Radar's late payers; [AdviseOf.NEXT_30] — what is promised to come in over the next 30 days, the Cash flow page's own
+         * figure. Read by [HudhudAdviceAsk] alone, never by the sense; REPORTS ([AnswerAdvisor.advise]).
+         */
+        data class Advise(val of: AdviseOf) : Ask()
     }
 
     /** What a day or a month named outright is asked of ([Ask.OnDays]). */
@@ -297,6 +313,9 @@ object Hudhud {
 
     /** What a "why" is asked about ([Ask.Why]): the sales, the profit, the expenses, the money that came in, the customers' credit. */
     enum class WhyOf { SALES, PROFIT, EXPENSES, COLLECTED, DUES }
+
+    /** What the shop's advisor is asked ([Ask.Advise]): whom to chase first, what will come in over the next 30 days. */
+    enum class AdviseOf { CHASE, NEXT_30 }
 
     /** His little acts. */
     enum class Move { FLY, DANCE, JUMP }
@@ -1363,7 +1382,7 @@ object Hudhud {
      * answer 2 MB at a time, running the query again for each).
      */
     private fun longOk(a: Ask): Boolean =
-        a is Ask.Period || a is Ask.Moved || a is Ask.TopGoods || a is Ask.Took || (a is Ask.Goods && (a.facet == GoodsFacet.SOLD || a.facet == GoodsFacet.BUYERS)) ||
+        a is Ask.Period || a is Ask.Moved || a is Ask.TopGoods || a is Ask.Took || a is Ask.Trend || (a is Ask.Goods && (a.facet == GoodsFacet.SOLD || a.facet == GoodsFacet.BUYERS)) ||
             (a is Ask.Figure && spanMatters(a)) // the sales and profit figures: Period, over any span
 
     /** What a count counts over a span of days; the people, the products and the staff are the same over any span. */
@@ -1374,7 +1393,7 @@ object Hudhud {
         is Ask.Figure -> a.kind == VoiceQuestion.Kind.SALES_TODAY || a.kind == VoiceQuestion.Kind.SALES_MONTH ||
             a.kind == VoiceQuestion.Kind.PROFIT_MONTH
         is Ask.Period, is Ask.Moved, is Ask.Deliveries, is Ask.Activity, is Ask.Collected, is Ask.Cashbook, is Ask.Returns,
-        is Ask.TopGoods, is Ask.Took -> true
+        is Ask.TopGoods, is Ask.Took, is Ask.Trend -> true
         // The counter's books by the day (15 Nov 2026): the last bill, the last count and the last close name no span.
         is Ask.Counter -> a.facet != CounterFacet.LAST_TICKET && a.facet != CounterFacet.LAST_COUNT
         is Ask.Count -> a.thing in COUNTED_OVER_A_SPAN
@@ -1397,6 +1416,7 @@ object Hudhud {
         is Ask.Counter -> a.window
         is Ask.Goods -> a.window
         is Ask.Took -> a.window
+        is Ask.Trend -> a.window
         else -> null
     }
 
@@ -1416,6 +1436,7 @@ object Hudhud {
         is Ask.Counter -> a.copy(window = w)
         is Ask.Goods -> a.copy(window = w)
         is Ask.Took -> a.copy(window = w)
+        is Ask.Trend -> a.copy(window = w)
         else -> a
     }
 
@@ -1442,7 +1463,9 @@ object Hudhud {
         val tooLong = !sums && spanOf(inner)?.isLong == true
         // A day or a month named outright for a question that cannot be asked over one (16 Nov 2026): the spans he tells.
         if (!tooLong && !(heard.isNotEmpty() && (VoiceQuestion.unsupportedSpan(heard) || dateSaid))) return ask
-        val limit = Ask.SpanLimit((if (sums) LONG_SPANS else SHORT_SPANS).map { over(inner, it) }, long = sums)
+        // The whole book has nothing before it: a trend is never offered over it (25 Nov 2026, plan H5).
+        val spans = (if (sums) LONG_SPANS else SHORT_SPANS).filter { !(inner is Ask.Trend && it == VoiceQuestion.Window.ALL_TIME) }
+        val limit = Ask.SpanLimit(spans.map { over(inner, it) }, long = sums)
         return if (ask is Ask.Guessed) Ask.Guessed(limit) else limit
     }
 
@@ -1857,7 +1880,8 @@ object Hudhud {
             has(saidAll, SHOW_WORDS)
         ) return ruled
         if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods ||
-            ruled is Ask.CallMe || ruled is Ask.Look || ruled is Ask.Why || ruled is Ask.Entries
+            ruled is Ask.CallMe || ruled is Ask.Look || ruled is Ask.Why || ruled is Ask.Entries ||
+            ruled is Ask.Trend || ruled is Ask.Advise
         ) {
             return ruled
         }
@@ -2067,7 +2091,7 @@ object Hudhud {
         is Ask.OnDays, is Ask.Both, is Ask.Compare,
         Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
         Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic, is Ask.Why, is Ask.Entries,
-        is Ask.Took, Ask.NoHistory -> null
+        is Ask.Took, Ask.NoHistory, is Ask.Trend, is Ask.Advise -> null
     }
 
     /**
@@ -2214,6 +2238,9 @@ object Hudhud {
         // "Why" about a figure of the book (16 Nov 2026, audit T8): "is mahine sale kam kyun hui", "profit kyun gira". A strict reader
         // (every word its own, a span or a little word); with a name, a figure or any other word the sentence is read as before.
         HudhudWhyAsk.read(heard, isName = { w -> knownName(w, names) || knownName(w, goods) }, calling = { it in VOCATIVE_SET })?.let { return it }
+        // The shop's advisor (25 Nov 2026, plan H5): is the sale going up or down, whom to chase first, what will come in over the next
+        // 30 days. The same strict reading as "why" (every word its own or a little word), read after it, so a "why" is always the why's.
+        HudhudAdviceAsk.read(heard, isName = { w -> knownName(w, names) || knownName(w, goods) }, calling = { it in VOCATIVE_SET })?.let { return it }
         // What a shop says every day (15 Nov 2026, the everyday-phrasing review): who paid and who does not, where the money went,
         // what left the drawer, what sells best. Words alone, only when no name of the book is in the sentence; [decide] keeps it.
         // A total stated by the sentence's shape ("مردم در کل چقدر به من می‌دهند": how much in all will people give me) is that total,
@@ -3518,6 +3545,15 @@ object Hudhud {
                 is Ask.Person -> if (window == null) return Ask.Person(named, before.facet)
                 is Ask.WhenPays -> if (window == null && before.ids.isNotEmpty()) return Ask.WhenPays(named)
                 is Ask.Moved -> return Ask.Moved(named, window ?: before.window, before.got)
+                // "Aur Ali?" after the shop's sales or their trend: what he took in the same days; after the money that came in: what he
+                // paid in them (25 Nov 2026, plan H5). The span is the last answer's own unless the sentence says another.
+                is Ask.Figure -> if (before.kind == VoiceQuestion.Kind.SALES_TODAY || before.kind == VoiceQuestion.Kind.SALES_MONTH) {
+                    val own = if (before.kind == VoiceQuestion.Kind.SALES_TODAY) VoiceQuestion.Window.TODAY else VoiceQuestion.Window.THIS_MONTH
+                    return Ask.Moved(named, window ?: own, false)
+                }
+                is Ask.Period -> if (before.measure == Measure.SALES) return Ask.Moved(named, window ?: before.window, false)
+                is Ask.Trend -> return Ask.Moved(named, window ?: before.window, false)
+                is Ask.Collected -> return Ask.Moved(named, window ?: before.window ?: VoiceQuestion.Window.TODAY, true)
                 else -> {}
             }
         }
@@ -3542,6 +3578,8 @@ object Hudhud {
             if (before.measure == Measure.SALES) VoiceQuestion.Kind.SALES_MONTH else VoiceQuestion.Kind.PROFIT_MONTH, window
         )
         is Ask.Moved -> Ask.Moved(before.ids, window, before.got)
+        // "Aur pichle mahine?" after a trend: the same trend over that month and the one before it (25 Nov 2026, plan H5).
+        is Ask.Trend -> if (window == VoiceQuestion.Window.ALL_TIME) null else Ask.Trend(window)
         is Ask.Count -> Ask.Count(before.thing, window)
         is Ask.Deliveries -> Ask.Deliveries(window)
         is Ask.Activity -> Ask.Activity(window)

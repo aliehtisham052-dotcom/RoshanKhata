@@ -1099,6 +1099,18 @@
     <string name="hudhud_why_part">%1$s: %2$s (اب %3$s، پہلے %4$s)</string>
     <string name="hudhud_why_no_cost">لاگت قیمت کے بغیر سیل لائنیں: اب %1$d، پہلے %2$d۔ ان کا منافع شامل نہیں۔</string>
     <string name="hudhud_why_only_book">یہ کھاتے کے اپنے اعداد ہیں۔ کھاتے سے باہر کی وجہ (مارکیٹ، موسم) اس میں نہیں۔</string>
+    <string name="hudhud_t_trend">سیل کا رجحان</string>
+    <string name="hudhud_trend_up">سیل بڑھ رہی ہے۔</string>
+    <string name="hudhud_trend_down">سیل کم ہو رہی ہے۔</string>
+    <string name="hudhud_trend_flat">سیل تقریباً پہلے جتنی ہی ہے۔</string>
+    <string name="hudhud_trend_none">دونوں مدتوں میں کچھ نہیں بکا۔</string>
+    <string name="hudhud_trend_from_nothing">پچھلی مدت میں کچھ نہیں بکا، اس لیے فیصد نہیں بتا سکتا۔</string>
+    <string name="hudhud_t_chase">پہلے کس سے وصولی کریں</string>
+    <string name="hudhud_chase_note">سب سے پرانے بقایا پہلے، ساتھ وہ جنہیں پیمنٹ ریڈار دیر سے دینے والا کہتا ہے۔ یہاں سے کچھ بھیجا نہیں جاتا۔</string>
+    <string name="hudhud_t_next30">اگلے 30 دن</string>
+    <string name="hudhud_today_promise">%1$s نے آج ادا کرنے کا وعدہ کیا ہے (%2$s)۔</string>
+    <string name="hudhud_today_cover">%1$s اپنی حالیہ رفتار سے تقریباً %2$s چلے گا۔</string>
+    <string name="hudhud_today_cover_now">%1$s اپنی حالیہ رفتار سے آج کا دن نہیں نکالے گا۔</string>
     <string name="hudhud_entry_one_at_a_time">ایک جملے میں دو اندراج ہیں۔ میں ایک ایک کر کے بھرتا ہوں: ہر ایک پر ٹیپ کریں، فارم دیکھیں اور محفوظ کریں۔</string>
     <string name="hudhud_sales_on">بکری · %1$s</string>
     <string name="hudhud_profit_on">منافع · %1$s</string>
@@ -1116,7 +1128,7 @@
     <string name="hudhud_quiet">ہوم پر بیلنس چھپا ہے، اس لیے میں رقم یہاں لکھتا ہوں، بولتا نہیں۔</string>
     <string name="hudhud_no_voice">اس فون میں اس زبان کی آواز نہیں۔ جواب یہاں لکھا ہے؛ آواز کی ترتیبات سے آواز لی جا سکتی ہے۔</string>
     <string name="hudhud_listen_local_switch">صرف اسی فون پر سنیں (کبھی آن لائن نہیں)</string>
-    <string name="hudhud_listen_local_help">آن: آپ کی بات کو صرف یہی فون الفاظ میں بدلتا ہے، کبھی کوئی آن لائن سروس نہیں۔ بند: انٹرنیٹ ہو تو فون کی آن لائن آواز کی سروس مدد کر سکتی ہے۔</string>
+    <string name="hudhud_listen_local_help">آن: آپ کی بات کو صرف یہی فون الفاظ میں بدلتا ہے، کبھی کوئی آن لائن سروس نہیں۔ بند: جہاں یہ فون آپ کی زبان خود نہ سمجھ سکے، ہُدہُد ایک بار پوچھتا ہے کہ کیا Google کی آن لائن سروس استعمال کریں؛ آپ کی ہاں پر بولتے وقت آپ کی آواز Google کو جاتی ہے۔</string>
     <string name="hudhud_listen_local_pack">صرف اسی فون پر: اپنی زبان ڈاؤن لوڈ کریں تو ہُدہُد سن سکے گا۔</string>
     <string name="hudhud_listen_local_none">صرف اسی فون پر: یہ فون اس زبان کو خود نہیں سن سکتا۔ اپنا سوال لکھ دیں، یا یہ ترتیب بند کر دیں۔</string>
     <string name="hudhud_voice_on">ہُدہُد کی آواز چالو ہے</string>
@@ -4797,4 +4809,36 @@
         <item quantity="one">%1$d شخص کو ابھی واپس کرنا ہے</item>
         <item quantity="other">%1$d افراد کو ابھی واپس کرنا ہے</item>
     </plurals>
+
+    <!-- 25 Nov 2026: the voice choice (D10), the tie button (D8), backup protection (D14) -->
+    <string name="hudhud_listen_ask_title">ہُدہُد کہاں سنے؟</string>
+    <string name="hudhud_listen_ask_body">یہ فون آپ کی زبان خود نہیں سمجھ سکتا۔ ہُدہُد اس کی جگہ گوگل کی آن لائن آواز پہچاننے والی سروس استعمال کر سکتا ہے: تب بولتے وقت آپ کی آواز گوگل کو جاتی ہے۔ یا وہ صرف اسی فون پر رہے، اور آپ لکھ دیں۔</string>
+    <string name="hudhud_listen_ask_online">گوگل کی آن لائن سروس استعمال کریں: آپ کی آواز گوگل کو جائے گی</string>
+    <string name="hudhud_listen_ask_type">لکھ کر پوچھیں</string>
+    <string name="hudhud_listen_ask_keep">صرف اسی فون پر رکھیں</string>
+    <string name="audit_goods_linked">سامان کو پروڈکٹس سے جوڑا گیا</string>
+    <string name="backup_prot_explain">ایپ سے باہر محفوظ، شیئر یا بھیجی جانے والی ہر بیک اپ فائل آپ کے پاس ورڈ سے لاک ہوتی ہے۔ ایپ کی اپنی رکھی ہوئی کاپیاں اور گوگل ڈرائیو بیک اپ لاک نہیں ہوتے۔</string>
+    <string name="backup_prot_switch">بیک اپ فائلیں میرے پاس ورڈ سے لاک کریں</string>
+    <string name="backup_prot_status_on">آپ کے پاس ورڈ سے محفوظ: آپ کی محفوظ، شیئر یا بھیجی ہوئی ہر بیک اپ فائل لاک ہے۔</string>
+    <string name="backup_prot_status_needs">تحفظ آن ہے۔ اگلی بیک اپ فائل بنتے وقت پاس ورڈ لگانے کو کہا جائے گا۔</string>
+    <string name="backup_prot_status_off">کھلی: جس کے پاس یہ فائل ہو وہ آپ کی کتاب پڑھ سکتا ہے۔</string>
+    <string name="backup_prot_off_title">تحفظ بند کریں؟</string>
+    <string name="backup_prot_off_body">بیک اپ فائلیں کھلی لکھی جائیں گی۔ جسے بھی فائل مل جائے، واٹس ایپ، یو ایس بی، گم شدہ فون یا ای میل سے، وہ آپ کی پوری کتاب، گاہکوں اور ان کے بقایا سمیت، پڑھ سکتا ہے۔ صرف تبھی بند کریں جب آپ کو یقین ہو۔</string>
+    <string name="backup_prot_turn_off">بند کریں</string>
+    <string name="backup_prot_on_done">تحفظ آن ہو گیا۔ بیک اپ فائلیں لاک ہوں گی۔</string>
+    <string name="backup_prot_off_done">تحفظ بند ہو گیا۔ بیک اپ فائلیں اب کھلی ہیں: جس کے پاس فائل ہو وہ آپ کی کتاب پڑھ سکتا ہے۔</string>
+    <string name="backup_prot_first_title">اپنی بیک اپ فائلیں محفوظ کریں</string>
+    <string name="backup_prot_first_body">بیک اپ فائل آپ کے ڈیوائس سے باہر جاتی ہے اور جسے مل جائے وہ آپ کی کتاب پڑھ سکتا ہے۔ ابھی پاس ورڈ لگائیں۔ یہ ایک بار پوچھا جائے گا، بعد کی فائلیں بغیر پوچھے اسی کو استعمال کریں گی۔ اگر آپ بھول گئے تو لاک فائلیں کبھی نہیں کھل سکیں گی، ہم سے بھی نہیں۔</string>
+    <string name="backup_prot_hint_hint">اشارہ (اختیاری)</string>
+    <string name="backup_prot_hint_note">اشارہ ہر اس شخص کو دکھایا جاتا ہے جو لاک فائل کھولے، پاس ورڈ پوچھنے سے پہلے۔ اس میں پاس ورڈ نہ لکھیں۔</string>
+    <string name="backup_prot_hint_gives_away">اشارے میں پاس ورڈ نہیں ہونا چاہیے۔</string>
+    <string name="backup_prot_hint_is">اشارہ: %1$s</string>
+    <string name="backup_prot_saved">پاس ورڈ لگ گیا۔ اب سے بیک اپ فائلیں لاک ہوں گی۔</string>
+    <string name="backup_prot_remove_body">پاس ورڈ ہٹا دیا جائے گا۔ اگلی بیک اپ فائل نیا پاس ورڈ مانگے گی، جب تک آپ تحفظ بند نہ کریں۔ جو فائلیں پہلے لاک ہو چکی ہیں انہیں کھولنے کے لیے یہی پاس ورڈ چاہیے ہوگا۔</string>
+    <string name="backup_prot_removed">پاس ورڈ ہٹا دیا گیا۔</string>
+    <string name="backup_prot_first_cancelled">پاس ورڈ نہیں لگا، اس لیے کوئی بیک اپ فائل نہیں بنی۔</string>
+    <string name="backup_prot_done_locked">آپ کے پاس ورڈ سے محفوظ۔ فائل کھولنے کے لیے یہی چاہیے۔</string>
+    <string name="backup_prot_done_open">کھلی: جس کے پاس یہ فائل ہو وہ آپ کی کتاب پڑھ سکتا ہے۔</string>
+    <string name="audit_backup_files_open">بیک اپ فائلیں کھلی کر دی گئیں (بغیر پاس ورڈ)</string>
+    <string name="audit_backup_files_protected">بیک اپ فائلیں محفوظ کر دی گئیں (پاس ورڈ سے)</string>
 </resources>

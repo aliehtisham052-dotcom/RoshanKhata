@@ -530,13 +530,22 @@ private suspend fun backup(
     db: com.innovation313.roshankhata.data.KhataDatabase,
     settings: FileShopSettings,
     /** How far the book is written, a whole percent (the header's backup chip, 3 Nov 2026). */
-    progress: (Int) -> Unit = {}
+    progress: (Int) -> Unit = {},
+    /** Where this file goes (D14, 25 Nov 2026): the plan says whether it is locked. */
+    way: com.innovation313.roshankhata.data.BackupProtection.Way = com.innovation313.roshankhata.data.BackupProtection.Way.BACK_UP_NOW
 ): Long = withContext(Dispatchers.IO) {
-    // Locked with the owner's backup password when one is set (17 Nov 2026); set and unreadable: no file, never plain.
-    val password = DeskBackupPassword.forSealing()
+    // Locked with the owner's backup password by default (D14: every file that leaves the computer; the switch turns it
+    // off). Protection on and the password unreadable: no file, never an open one. Protection on and none set yet: the
+    // caller asked first (BackupPasswordPrompt.first) — reaching here without one writes nothing.
+    val seal = when (val plan = DeskBackupPassword.plan(way)) {
+        com.innovation313.roshankhata.data.BackupProtection.Plan.Plain -> null
+        com.innovation313.roshankhata.data.BackupProtection.Plan.NeedFirstPassword -> throw com.innovation313.roshankhata.data.BackupProtection.NeedsPassword()
+        is com.innovation313.roshankhata.data.BackupProtection.Plan.Unavailable -> throw com.innovation313.roshankhata.data.BackupPassword.Unavailable(plan.why)
+        is com.innovation313.roshankhata.data.BackupProtection.Plan.Seal -> plan
+    }
     val local = File.createTempFile("rk-backup-", ".tmp")
     try {
-        com.innovation313.roshankhata.data.BackupSeal.writer(local.outputStream(), password).use {
+        com.innovation313.roshankhata.data.BackupSeal.writer(local.outputStream(), seal?.password, hint = seal?.hint).use {
             BackupCodec.exportTo(db.khataDao(), settings.businessName(), BackupCodec.profileToJson(settings), it, progress = progress)
         }
         java.nio.file.Files.copy(local.toPath(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
@@ -1065,16 +1074,28 @@ private fun Book(
           // written ended the first one's ring and showed its check while the second still wrote (3 Nov 2026).
           if (backingUp != null) return
           Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) backup@{
-            if (backingUp != null) return@backup
+            if (backingUp != null || BackupPasswordPrompt.creating.value != null) return@backup
+            // D14 (25 Nov 2026): a file that leaves the computer is locked by default — the first one asks for the
+            // password and a hint (nothing is written before it is set); later ones use it without asking.
+            scope.launch first@{
+            when (BackupPasswordPrompt.first(com.innovation313.roshankhata.data.BackupProtection.Way.BACK_UP_NOW, dao)) {
+                BackupPasswordPrompt.First.READY -> Unit
+                BackupPasswordPrompt.First.CANCELLED -> { backedUp = words.text(W.backup_prot_first_cancelled); return@first }
+                BackupPasswordPrompt.First.NO_LOCK -> { backedUp = words.text(W.backup_pw_no_lock); return@first }
+                BackupPasswordPrompt.First.FAILED -> { backedUp = words.text(W.save_failed_not_saved); return@first }
+            }
+            val plan = withContext(Dispatchers.IO) { DeskBackupPassword.plan(com.innovation313.roshankhata.data.BackupProtection.Way.BACK_UP_NOW) }
+            if (plan is com.innovation313.roshankhata.data.BackupProtection.Plan.Unavailable) { backedUp = words.text(W.backup_pw_unavailable); return@first }
+            val locked = plan is com.innovation313.roshankhata.data.BackupProtection.Plan.Seal
             val dialog = FileDialog(null as Frame?, words.text(W.save_backup), FileDialog.SAVE)
             // The phone's file name and .txt (WhatsApp sends .txt; the content is JSON).
             // Documents, not the program's own folder: an update or uninstall must not take the backup with it.
             startIn(dialog, "Documents")
             dialog.file = "RoshanKhata_Backup_" +
                 java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.ENGLISH).format(java.util.Date()) +
-                (if (DeskBackupPassword.state() is com.innovation313.roshankhata.data.BackupPassword.State.Set) "_locked" else "") + ".txt"
+                (if (locked) "_locked" else "") + ".txt"
             dialog.isVisible = true
-            val name = dialog.file ?: return@backup
+            val name = dialog.file ?: return@first
             val file = File(dialog.directory, name)
             // The header's chip shows how far the book is written, then its check (3 Nov 2026); set before the work
             // starts, so a click meanwhile finds one running.
@@ -1089,9 +1110,12 @@ private fun Book(
                         // Kept, so the header and the week-old reminder still know after a restart.
                         runCatching { appPrefs.setLastSavedBackup(activeBusiness, lastBackupAt!!) }
                         withContext(Dispatchers.IO) { runCatching { dao.log(com.innovation313.roshankhata.data.AuditAction.EXPORT, com.innovation313.roshankhata.data.Access.userName, detail = file.name) } }
-                        words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt())
+                        // Says plainly whether the file is locked or open (D14).
+                        words.text(W.backup_saved_at, file.absolutePath, (size / 1024).toInt()) + "\n\n" +
+                            words.text(if (locked) W.backup_prot_done_locked else W.backup_prot_done_open)
                     }
                     .getOrElse { e -> words.text(if (e is com.innovation313.roshankhata.data.BackupPassword.Unavailable) W.backup_pw_unavailable else W.backup_failed) }
+            }
             }
           }
         }
@@ -1133,7 +1157,18 @@ private fun Book(
             backupProgress = backingUp,
             backupDone = backupDone,
             onBackup = { if (backingUp == null) backupNow() },
-            onPhone = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) { phoneSync = true } },
+            onPhone = { Gates.need(com.innovation313.roshankhata.data.Access.Permission.BACKUP) {
+                // D14: the copy given to a phone is locked too, so the first time asks for the password (and a hint) here,
+                // before the window that makes the book for the phone opens.
+                scope.launch {
+                    when (BackupPasswordPrompt.first(com.innovation313.roshankhata.data.BackupProtection.Way.FOR_PHONE, dao)) {
+                        BackupPasswordPrompt.First.READY -> phoneSync = true
+                        BackupPasswordPrompt.First.CANCELLED -> backedUp = words.text(W.backup_prot_first_cancelled)
+                        BackupPasswordPrompt.First.NO_LOCK -> backedUp = words.text(W.backup_pw_no_lock)
+                        BackupPasswordPrompt.First.FAILED -> backedUp = words.text(W.save_failed_not_saved)
+                    }
+                }
+            } },
             // The late payers' row counts as Home counts it (3 Nov 2026 audit, L50: Home said 4 while the bell said 3).
             alerts = bookAlerts.size + extraAlerts.size + (if (late > 0) 1 else 0),
             onAlerts = { showAlerts = true },
@@ -2194,7 +2229,15 @@ private fun Book(
                 try {
                     // secrets = false (8 Nov 2026, M30): the first device to scan this QR gets the book, so it gets no PIN hashes,
                     // server passes or Waris keys; the phone keeps its own.
-                    f.bufferedWriter(Charsets.UTF_8).use { out ->
+                    // D14: locked with the owner's password like any file that leaves the computer; one that cannot be
+                    // locked (an unreadable password, none set) gives nothing — never an open book instead.
+                    val seal = when (val plan = DeskBackupPassword.plan(com.innovation313.roshankhata.data.BackupProtection.Way.FOR_PHONE)) {
+                        com.innovation313.roshankhata.data.BackupProtection.Plan.Plain -> null
+                        com.innovation313.roshankhata.data.BackupProtection.Plan.NeedFirstPassword -> error("backup password needed")
+                        is com.innovation313.roshankhata.data.BackupProtection.Plan.Unavailable -> error("backup password unavailable")
+                        is com.innovation313.roshankhata.data.BackupProtection.Plan.Seal -> plan
+                    }
+                    com.innovation313.roshankhata.data.BackupSeal.writer(f.outputStream(), seal?.password, hint = seal?.hint).use { out ->
                         kotlinx.coroutines.runBlocking { BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), out, secrets = false) }
                     }
                     f
@@ -2519,7 +2562,9 @@ private fun Book(
             cloudOffer = null
             scope.launch {
                 val folder = offer.target()
+                // D14: copies in this folder are locked, so the first one asks for the password (and a hint) before it is kept.
                 val ok = withContext(Dispatchers.IO) { runCatching { folder.mkdirs(); folder.isDirectory }.getOrDefault(false) } &&
+                    BackupPasswordPrompt.first(com.innovation313.roshankhata.data.BackupProtection.Way.OUTSIDE_FOLDER, dao) == BackupPasswordPrompt.First.READY &&
                     runCatching { DailyCopies.makeOutside(dao, settings, DailyCopies.outside(folder, activeBusiness)) }.getOrNull() != null
                 if (ok) {
                     onBackupFolder(folder)

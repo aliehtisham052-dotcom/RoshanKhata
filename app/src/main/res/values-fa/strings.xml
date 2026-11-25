@@ -1127,6 +1127,18 @@
     <string name="hudhud_why_part">%1$s: %2$s (اکنون %3$s، قبل %4$s)</string>
     <string name="hudhud_why_no_cost">ردیف‌های فروش بدون قیمت تمام‌شده: اکنون %1$d، قبل %2$d. سود آن‌ها حساب نشده است.</string>
     <string name="hudhud_why_only_book">این‌ها ارقام خود دفتر است. دلیلی بیرون از دفتر (بازار، آب و هوا) در آن نیست.</string>
+    <string name="hudhud_t_trend">روند فروش</string>
+    <string name="hudhud_trend_up">فروش در حال افزایش است.</string>
+    <string name="hudhud_trend_down">فروش در حال کاهش است.</string>
+    <string name="hudhud_trend_flat">فروش تقریباً مثل قبل است.</string>
+    <string name="hudhud_trend_none">در هیچ‌کدام از دو دوره چیزی فروخته نشده.</string>
+    <string name="hudhud_trend_from_nothing">در دوره قبل چیزی فروخته نشده، پس درصدی نمی‌توانم بگویم.</string>
+    <string name="hudhud_t_chase">اول از چه کسی وصول کنم</string>
+    <string name="hudhud_chase_note">قدیمی‌ترین بدهی‌ها اول، همراه با کسانی که رادار پرداخت دیرپرداز می‌داند. از اینجا چیزی فرستاده نمی‌شود.</string>
+    <string name="hudhud_t_next30">30 روز آینده</string>
+    <string name="hudhud_today_promise">%1$s قول داده امروز بپردازد (%2$s).</string>
+    <string name="hudhud_today_cover">%1$s با روند اخیرش حدود %2$s کافی است.</string>
+    <string name="hudhud_today_cover_now">%1$s با روند اخیرش امروز را دوام نمی‌آورد.</string>
     <string name="hudhud_entry_one_at_a_time">دو ثبت در یک جمله است. یکی‌یکی پر می‌کنم: روی هر کدام بزنید، فرمش را ببینید و ذخیره کنید.</string>
     <string name="hudhud_sales_on">فروش · %1$s</string>
     <string name="hudhud_profit_on">سود · %1$s</string>
@@ -1144,7 +1156,7 @@
     <string name="hudhud_quiet">مانده در صفحه اصلی پنهان است، پس مبلغ را اینجا می‌نویسم و بلند نمی‌گویم.</string>
     <string name="hudhud_no_voice">این گوشی برای این زبان صدایی ندارد. پاسخ اینجا نوشته شده؛ از تنظیمات صدا می‌توان صدایی گرفت.</string>
     <string name="hudhud_listen_local_switch">شنیدن فقط روی همین گوشی (هرگز آنلاین نه)</string>
-    <string name="hudhud_listen_local_help">روشن: گفته‌های شما را فقط همین گوشی به کلمه تبدیل می‌کند و هرگز سرویس آنلاینی به کار نمی‌رود. خاموش: تا اینترنت هست، سرویس گفتار آنلاین گوشی می‌تواند کمک کند.</string>
+    <string name="hudhud_listen_local_help">روشن: گفته‌های شما را فقط همین گوشی به کلمه تبدیل می‌کند و هرگز سرویس آنلاینی به کار نمی‌رود. خاموش: جایی که این گوشی زبان شما را خودش نمی‌فهمد، هدهد یک بار می‌پرسد که آیا از سرویس آنلاین Google استفاده شود؛ با تأیید شما، صدایتان هنگام صحبت به Google می‌رود.</string>
     <string name="hudhud_listen_local_pack">فقط روی همین گوشی: زبانتان را دانلود کنید تا هدهد بتواند بشنود.</string>
     <string name="hudhud_listen_local_none">فقط روی همین گوشی: این گوشی این زبان را خودش نمی‌شنود. سؤالتان را بنویسید یا این تنظیم را خاموش کنید.</string>
     <string name="hudhud_voice_on">صدای هدهد روشن است</string>
@@ -4825,4 +4837,36 @@
         <item quantity="one">%1$d نفر هنوز باید برگرداند</item>
         <item quantity="other">%1$d نفر هنوز باید برگردانند</item>
     </plurals>
+
+    <!-- 25 Nov 2026: the voice choice (D10), the tie button (D8), backup protection (D14) -->
+    <string name="hudhud_listen_ask_title">هدهد کجا گوش کند؟</string>
+    <string name="hudhud_listen_ask_body">این گوشی زبان شما را خودش نمی‌فهمد. هدهد می‌تواند به‌جای آن از سرویس تشخیص گفتار آنلاین گوگل استفاده کند: در این صورت صدای شما هنگام صحبت به گوگل فرستاده می‌شود. یا فقط روی همین گوشی بماند و شما بنویسید.</string>
+    <string name="hudhud_listen_ask_online">استفاده از سرویس آنلاین گوگل: صدای شما به گوگل فرستاده می‌شود</string>
+    <string name="hudhud_listen_ask_type">به‌جای آن بنویسم</string>
+    <string name="hudhud_listen_ask_keep">فقط روی همین گوشی بماند</string>
+    <string name="audit_goods_linked">کالاها به محصولات وصل شد</string>
+    <string name="backup_prot_explain">هر فایل پشتیبان که خارج از برنامه ذخیره، به اشتراک گذاشته یا ارسال کنید با رمز عبور شما قفل می‌شود. نسخه‌هایی که برنامه برای خودش نگه می‌دارد و پشتیبان Google Drive قفل نمی‌شوند.</string>
+    <string name="backup_prot_switch">قفل کردن فایل‌های پشتیبان با رمز عبور من</string>
+    <string name="backup_prot_status_on">محافظت‌شده با رمز عبور شما: هر فایل پشتیبانی که ذخیره، به اشتراک یا ارسال کنید قفل است.</string>
+    <string name="backup_prot_status_needs">محافظت روشن است. هنگام ساخت فایل پشتیبان بعدی از شما خواسته می‌شود رمز عبور تعیین کنید.</string>
+    <string name="backup_prot_status_off">باز: هر کس این فایل را داشته باشد می‌تواند دفتر شما را بخواند.</string>
+    <string name="backup_prot_off_title">محافظت خاموش شود؟</string>
+    <string name="backup_prot_off_body">فایل‌های پشتیبان باز نوشته می‌شوند. هر کسی که فایلی را از واتس‌اپ، فلش، گوشی گمشده یا ایمیل به دست آورد می‌تواند کل دفتر شما را با مشتری‌ها و مانده‌حساب‌هایشان بخواند. فقط در صورت اطمینان خاموش کنید.</string>
+    <string name="backup_prot_turn_off">خاموش کن</string>
+    <string name="backup_prot_on_done">محافظت روشن شد. فایل‌های پشتیبان قفل می‌شوند.</string>
+    <string name="backup_prot_off_done">محافظت خاموش شد. فایل‌های پشتیبان اکنون باز هستند: هر کس فایلی داشته باشد می‌تواند دفتر شما را بخواند.</string>
+    <string name="backup_prot_first_title">از فایل‌های پشتیبان خود محافظت کنید</string>
+    <string name="backup_prot_first_body">فایل پشتیبان از دستگاه شما خارج می‌شود و هر کس آن را به دست آورد می‌تواند دفتر شما را بخواند. همین حالا رمز عبور تعیین کنید. فقط یک بار پرسیده می‌شود و فایل‌های بعدی بدون پرسش از آن استفاده می‌کنند. اگر آن را فراموش کنید فایل‌های قفل‌شده هرگز باز نمی‌شوند، حتی توسط ما.</string>
+    <string name="backup_prot_hint_hint">راهنما (اختیاری)</string>
+    <string name="backup_prot_hint_note">راهنما پیش از پرسیدن رمز عبور به هر کسی که فایل قفل‌شده را باز کند نشان داده می‌شود. رمز عبور را در آن ننویسید.</string>
+    <string name="backup_prot_hint_gives_away">راهنما نباید رمز عبور را در بر داشته باشد.</string>
+    <string name="backup_prot_hint_is">راهنما: %1$s</string>
+    <string name="backup_prot_saved">رمز عبور تعیین شد. از این پس فایل‌های پشتیبان قفل می‌شوند.</string>
+    <string name="backup_prot_remove_body">رمز عبور حذف می‌شود. فایل پشتیبان بعدی رمز جدید می‌خواهد، مگر اینکه محافظت را خاموش کنید. فایل‌هایی که پیش‌تر قفل شده‌اند همچنان برای باز شدن به این رمز نیاز دارند.</string>
+    <string name="backup_prot_removed">رمز عبور حذف شد.</string>
+    <string name="backup_prot_first_cancelled">رمز عبور تعیین نشد، بنابراین فایل پشتیبانی ساخته نشد.</string>
+    <string name="backup_prot_done_locked">محافظت‌شده با رمز عبور شما. برای باز کردن فایل به آن نیاز است.</string>
+    <string name="backup_prot_done_open">باز: هر کس این فایل را داشته باشد می‌تواند دفتر شما را بخواند.</string>
+    <string name="audit_backup_files_open">فایل‌های پشتیبان باز شدند (بدون رمز عبور)</string>
+    <string name="audit_backup_files_protected">فایل‌های پشتیبان محافظت شدند (با رمز عبور)</string>
 </resources>

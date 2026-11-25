@@ -1756,14 +1756,63 @@ class KhataActivity : BaseActivity() {
             ).show()
         }
 
-        try {
-            com.innovation313.roshankhata.ui.Motion.pulse(findViewById(R.id.btnVoiceEntry))
-            listen.launch(intent)
-        } catch (e: android.content.ActivityNotFoundException) {
-            com.innovation313.roshankhata.ui.Motion.stopPulse(findViewById(R.id.btnVoiceEntry))
-            // Some phones ship without a recogniser at all. Say so rather than
-            // leaving a button that does nothing.
-            Toast.makeText(this, R.string.voice_unavailable, Toast.LENGTH_LONG).show()
+        val openBox = {
+            try {
+                com.innovation313.roshankhata.ui.Motion.pulse(findViewById(R.id.btnVoiceEntry))
+                listen.launch(intent)
+            } catch (e: android.content.ActivityNotFoundException) {
+                com.innovation313.roshankhata.ui.Motion.stopPulse(findViewById(R.id.btnVoiceEntry))
+                // Some phones ship without a recogniser at all. Say so rather than
+                // leaving a button that does nothing.
+                Toast.makeText(this, R.string.voice_unavailable, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        // Where the words are made out (25 Nov 2026, the owner's decision D10): this box is the phone's speech service,
+        // which listens online unless the phone has the language's pack. So: the pack is there — the box is asked to
+        // prefer it, silently; no pack and nothing chosen yet — the owner is asked once, in the same words as the
+        // assistant's microphone (Google's online recogniser, "your voice goes to Google", or type instead), and the
+        // answer is the phone's for both; a "type instead" (or a phone that has said so in the voice settings) opens
+        // nothing, so the entry is typed. Audio never goes online without that yes. ListenChoice is the one rule.
+        val mode = com.innovation313.roshankhata.ui.ListenChoiceStore.mode(this)
+        com.innovation313.roshankhata.ui.HudhudEars.hasPack(this, chosenTag) { packInstalled ->
+            if (isFinishing || isDestroyed) return@hasPack
+            val noVoice = { Toast.makeText(this, R.string.hudhud_listen_local_none, Toast.LENGTH_LONG).show() }
+            when (
+                com.innovation313.roshankhata.ui.ListenChoice.box(
+                    packInstalled, mode,
+                    com.innovation313.roshankhata.ui.HudhudEars.networkUp(this),
+                    com.innovation313.roshankhata.ui.HudhudEars.canHear(this)
+                )
+            ) {
+                com.innovation313.roshankhata.ui.ListenChoice.Box.LOCAL -> {
+                    intent.putExtra(android.speech.RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+                    openBox()
+                }
+                com.innovation313.roshankhata.ui.ListenChoice.Box.ONLINE -> openBox()
+                com.innovation313.roshankhata.ui.ListenChoice.Box.ASK -> {
+                    val asked = com.innovation313.roshankhata.ui.ListenAsk.show(
+                        this,
+                        onYes = {
+                            com.innovation313.roshankhata.ui.ListenChoiceStore.set(
+                                this, com.innovation313.roshankhata.ui.ListenChoice.answered(yesOnline = true)
+                            )
+                            openBox()
+                        },
+                        onNo = {
+                            com.innovation313.roshankhata.ui.ListenChoiceStore.set(
+                                this, com.innovation313.roshankhata.ui.ListenChoice.answered(yesOnline = false)
+                            )
+                            noVoice()
+                        },
+                        onCancel = {}
+                    )
+                    if (asked == null) noVoice()
+                }
+                // A yes already given but no network: the box says so itself, as it always did.
+                com.innovation313.roshankhata.ui.ListenChoice.Box.TYPE ->
+                    if (mode == com.innovation313.roshankhata.ui.ListenChoice.Mode.ONLINE) openBox() else noVoice()
+            }
         }
     }
 

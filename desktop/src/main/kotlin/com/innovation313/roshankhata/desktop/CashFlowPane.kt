@@ -47,19 +47,8 @@ fun CashFlowPane(dao: KhataDao, reload: Int) {
     var data by remember { mutableStateOf<Pair<List<CashFlow.Item>, Int>?>(null) }
     LaunchedEffect(reload) {
         data = withContext(Dispatchers.IO) {
-            val parties = dao.partiesWithBalanceOnce()
-            val names = parties.associate { it.id to it.name }
-            val balance = parties.associate { it.id to it.balance }
-            val plans = dao.openPlansOnce().map {
-                CashFlow.Plan(it.partyId, it.partyName, it.totalAmount - it.paidSoFar, it.installmentAmount, it.nextDueDate)
-            }
-            val cheques = dao.pendingChequesOnce().filter { it.status == ChequeStatus.PENDING && names.containsKey(it.partyId) }.map {
-                CashFlow.Cheque(it.partyId, names.getValue(it.partyId), it.amount, it.dueDate, it.isReceived)
-            }
-            val harvests = dao.cashFlowHarvestsOnce().map { it.copy(balance = balance[it.partyId] ?: 0.0) }
-            // Negative balance = the shop owes that party.
-            val owed = parties.filter { it.balance < 0 }.associate { it.id to -it.balance }
-            CashFlow.items(plans, cheques, harvests, dao.cashFlowBillsOnce(), owed)
+            // One loader with the bell and the assistant (CashFlow.load, BC-285).
+            CashFlow.load(dao, dao.partiesWithBalanceOnce())
         }
     }
     FluentPage(word(W.cf_title), word(W.cf_subtitle)) {

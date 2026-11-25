@@ -28,6 +28,13 @@ object AnswerGate {
     fun settings() = Access.can(Access.Permission.SETTINGS)
 
     /**
+     * A counter in use (25 Nov 2026, the owner's decision D8 on T39): counter mode on, or somebody signed in. A customer's
+     * private note is then written on the card and never said aloud: the customer may be standing at the counter. The
+     * owner's own phone, counter mode off, keeps the voice.
+     */
+    fun atCounter(): Boolean = Access.counterMode || Access.userName != null
+
+    /**
      * The signed-in staff member who may hear only his OWN counter sales (17 Nov 2026, the owner's T5): somebody signed in
      * at a counter without REPORTS. Null for the owner, a manager, or a phone with counter mode off (they see the shop's).
      */

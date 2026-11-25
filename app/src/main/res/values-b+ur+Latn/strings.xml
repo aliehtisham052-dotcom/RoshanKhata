@@ -1099,6 +1099,18 @@
     <string name="hudhud_why_part">%1$s: %2$s (ab %3$s, pehle %4$s)</string>
     <string name="hudhud_why_no_cost">Laagat qeemat ke baghair sale lines: ab %1$d, pehle %2$d. Un ka munafa shamil nahi.</string>
     <string name="hudhud_why_only_book">Ye khaate ke apne figures hain. Khaate se bahar ki wajah (market, mausam) is mein nahi.</string>
+    <string name="hudhud_t_trend">Sale ka rujhan</string>
+    <string name="hudhud_trend_up">Sale barh rahi hai.</string>
+    <string name="hudhud_trend_down">Sale kam ho rahi hai.</string>
+    <string name="hudhud_trend_flat">Sale taqreeban pehle jitni hi hai.</string>
+    <string name="hudhud_trend_none">Dono muddaton mein kuch nahi bika.</string>
+    <string name="hudhud_trend_from_nothing">Pehle wali muddat mein kuch nahi bika, is liye faisad nahi bata sakta.</string>
+    <string name="hudhud_t_chase">Pehle kis se wusooli karein</string>
+    <string name="hudhud_chase_note">Sab se purane baqaye pehle, saath woh jinhein Payment Radar late kehta hai. Yahan se kuch bheja nahi jata.</string>
+    <string name="hudhud_t_next30">Agle 30 din</string>
+    <string name="hudhud_today_promise">%1$s ne aaj ada karne ka wada kiya hai (%2$s).</string>
+    <string name="hudhud_today_cover">%1$s apni haali raftaar se taqreeban %2$s chalega.</string>
+    <string name="hudhud_today_cover_now">%1$s apni haali raftaar se aaj ka din nahi nikalega.</string>
     <string name="hudhud_entry_one_at_a_time">Ek jumle mein do indiraaj hain. Main ek ek kar ke bharta hoon: har ek par tap karein, form check karein aur save karein.</string>
     <string name="hudhud_sales_on">Bikri · %1$s</string>
     <string name="hudhud_profit_on">Munafa · %1$s</string>
@@ -1116,7 +1128,7 @@
     <string name="hudhud_quiet">Home par balance chhupa hai, is liye main raqam yahan likhta hoon, bolta nahi.</string>
     <string name="hudhud_no_voice">Is phone mein is zaban ki awaaz nahi. Jawab yahan likha hai; awaaz ki settings se awaaz li ja sakti hai.</string>
     <string name="hudhud_listen_local_switch">Sirf isi phone par sunein (kabhi online nahi)</string>
-    <string name="hudhud_listen_local_help">On: aap ki baat ko sirf yahi phone alfaaz mein badalta hai, kabhi koi online service nahi. Band: internet ho to phone ki online awaaz ki service madad kar sakti hai.</string>
+    <string name="hudhud_listen_local_help">On: aap ki baat ko sirf yahi phone alfaaz mein badalta hai, kabhi koi online service nahi. Band: jahan yeh phone aap ki zaban khud na samajh sake, Hudhud ek baar poochhta hai ke kya Google ki online service istemal karein; aap ki haan par bolte waqt aap ki awaaz Google ko jati hai.</string>
     <string name="hudhud_listen_local_pack">Sirf isi phone par: apni zaban download karein to Hudhud sun sakega.</string>
     <string name="hudhud_listen_local_none">Sirf isi phone par: yeh phone is zaban ko khud nahi sun sakta. Apna sawal likh dein, ya yeh setting band kar dein.</string>
     <string name="hudhud_voice_on">Hudhud ki awaaz chalu hai</string>
@@ -4797,4 +4809,36 @@
         <item quantity="one">%1$d shakhs ko abhi wapas karna hai</item>
         <item quantity="other">%1$d afraad ko abhi wapas karna hai</item>
     </plurals>
+
+    <!-- 25 Nov 2026: the voice choice (D10), the tie button (D8), backup protection (D14) -->
+    <string name="hudhud_listen_ask_title">Hudhud kahan sune?</string>
+    <string name="hudhud_listen_ask_body">Yeh phone aap ki zaban khud nahi samajh sakta. Hudhud is ki jagah Google ki online awaaz pehchanne wali service istemaal kar sakta hai: tab bolte waqt aap ki awaaz Google ko jati hai. Ya woh sirf isi phone par rahe, aur aap likh dein.</string>
+    <string name="hudhud_listen_ask_online">Google ki online service istemaal karein: aap ki awaaz Google ko jayegi</string>
+    <string name="hudhud_listen_ask_type">Likh kar poochhein</string>
+    <string name="hudhud_listen_ask_keep">Sirf isi phone par rakhein</string>
+    <string name="audit_goods_linked">Saman products se joda gaya</string>
+    <string name="backup_prot_explain">App se bahar mehfooz, share ya bheji jane wali har backup file aap ke password se lock hoti hai. App ki apni rakhi hui copies aur Google Drive backup lock nahi hote.</string>
+    <string name="backup_prot_switch">Backup files mere password se lock karein</string>
+    <string name="backup_prot_status_on">Aap ke password se mehfooz: aap ki mehfooz, share ya bheji hui har backup file lock hai.</string>
+    <string name="backup_prot_status_needs">Tahaffuz on hai. Agli backup file banate waqt password lagane ko kaha jaye ga.</string>
+    <string name="backup_prot_status_off">Khuli: jis ke paas yeh file ho woh aap ki kitab parh sakta hai.</string>
+    <string name="backup_prot_off_title">Tahaffuz band karein?</string>
+    <string name="backup_prot_off_body">Backup files khuli likhi jayein gi. Jise bhi file mil jaye, WhatsApp, USB, gum shuda phone ya email se, woh aap ki poori kitab, gahakon aur un ke baqaya samet, parh sakta hai. Sirf tabhi band karein jab aap ko yaqeen ho.</string>
+    <string name="backup_prot_turn_off">Band karein</string>
+    <string name="backup_prot_on_done">Tahaffuz on ho gaya. Backup files lock hon gi.</string>
+    <string name="backup_prot_off_done">Tahaffuz band ho gaya. Backup files ab khuli hain: jis ke paas file ho woh aap ki kitab parh sakta hai.</string>
+    <string name="backup_prot_first_title">Apni backup files mehfooz karein</string>
+    <string name="backup_prot_first_body">Backup file aap ke device se bahar jati hai aur jise mil jaye woh aap ki kitab parh sakta hai. Abhi password lagayein. Yeh ek baar poocha jaye ga, baad ki files baghair poochhe isi ko istemal karein gi. Agar aap bhool gaye to lock files kabhi nahi khul sakein gi, hum se bhi nahi.</string>
+    <string name="backup_prot_hint_hint">Ishara (ikhtiyari)</string>
+    <string name="backup_prot_hint_note">Ishara har us shakhs ko dikhaya jata hai jo lock file khole, password poochhne se pehle. Is mein password na likhein.</string>
+    <string name="backup_prot_hint_gives_away">Ishare mein password nahi hona chahiye.</string>
+    <string name="backup_prot_hint_is">Ishara: %1$s</string>
+    <string name="backup_prot_saved">Password lag gaya. Ab se backup files lock hon gi.</string>
+    <string name="backup_prot_remove_body">Password hata diya jaye ga. Agli backup file naya password mange gi, jab tak aap tahaffuz band na karein. Jo files pehle lock ho chuki hain unhein kholne ke liye yahi password chahiye ho ga.</string>
+    <string name="backup_prot_removed">Password hata diya gaya.</string>
+    <string name="backup_prot_first_cancelled">Password nahi laga, is liye koi backup file nahi bani.</string>
+    <string name="backup_prot_done_locked">Aap ke password se mehfooz. File kholne ke liye yahi chahiye.</string>
+    <string name="backup_prot_done_open">Khuli: jis ke paas yeh file ho woh aap ki kitab parh sakta hai.</string>
+    <string name="audit_backup_files_open">Backup files khuli kar di gayin (baghair password)</string>
+    <string name="audit_backup_files_protected">Backup files mehfooz kar di gayin (password se)</string>
 </resources>

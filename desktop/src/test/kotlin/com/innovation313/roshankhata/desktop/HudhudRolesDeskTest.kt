@@ -140,6 +140,8 @@ class HudhudRolesDeskTest {
             a += Hudhud.Ask.Cashbook(it); a += Hudhud.Ask.Returns(it); a += Hudhud.Ask.TopGoods(it)
         }
         Hudhud.WhyOf.values().forEach { a += Hudhud.Ask.Why(it, today, true) }
+        a += Hudhud.Ask.Trend(VoiceQuestion.Window.THIS_MONTH)
+        Hudhud.AdviseOf.values().forEach { a += Hudhud.Ask.Advise(it) }
         a += Hudhud.Ask.Today; a += Hudhud.Ask.Drawer; a += Hudhud.Ask.Qarz; a += Hudhud.Ask.Automations
         a += Hudhud.Ask.BackupStatus; a += Hudhud.Ask.Abilities
         return a

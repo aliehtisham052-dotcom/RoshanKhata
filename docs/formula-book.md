@@ -642,7 +642,7 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Function: `data/SeasonBook.kt::SeasonBook.seasonOf`, `data/SeasonBook.kt::SeasonBook.book`, `data/SeasonBook.kt::SeasonBook.summaries`
 - Reads: customers' entries by day or tagged season, payments
 - Window: Oct-Dec Rabi that year, Jan-Mar Rabi of the year before, Apr-Sep Kharif; window = this and the previous season
-- Left out: entries dated outside the window but tagged to a season inside it are missing from the screen's given (E1)
+- Left out: a Qarz-e-Hasna loan and an imported OPENING balance are owed but are no season's credit (Line.seasonal); the reading starts at SeasonBook.readFrom so a credit written before the window but tagged to a shown season is that season's (E1 fixed 25 Nov 2026, BC-284)
 - Rounding: money in whole paisa (Long); a payment clears the oldest credit first (FIFO)
 - Gate: none found
 - Shown on: Seasons page, customer page season chips
@@ -667,4 +667,4 @@ Line numbers are as read on 24 Nov 2026. Examples use made-up figures. D1 was fi
 
 ## Not done
 
-Gates and screens for several rows are INFERRED. F53-F64 (lots, units, cost, bell rows, seasons) were added 25 Nov 2026. Faults found by those rows and fixed: cost of a batch-tagged line (BC-279), three copies of the late-payers count (BC-280), two ends of the 60-day expiry window (BC-281), two copies of the low-stock test (BC-282). Season edge (E1): entries dated before the window but tagged to a season inside it are missing from the Seasons screen's given, and OPENING and Qarz-e-Hasna count as season credit; not changed. The other balance queries (KhataDao ~152, 849, 1675) have no row of their own. The checker proves names exist, not that a row's text is true.
+Gates and screens for several rows are INFERRED. F53-F64 (lots, units, cost, bell rows, seasons) were added 25 Nov 2026. Faults found by those rows and fixed: cost of a batch-tagged line (BC-279), three copies of the late-payers count (BC-280), two ends of the 60-day expiry window (BC-281), two copies of the low-stock test (BC-282). Season edge (E1), fixed 25 Nov 2026 (BC-284): the reading starts at the first credit tagged to a shown season, and a loan or an opening balance is no season's credit. The other balance queries (KhataDao ~152, 849, 1675) have no row of their own. The checker proves names exist, not that a row's text is true.

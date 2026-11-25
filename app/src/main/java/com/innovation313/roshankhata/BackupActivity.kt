@@ -249,10 +249,31 @@ class BackupActivity : BaseActivity() {
      */
     private val typedPasswords = ArrayList<String>()
 
+    /** The switch that locks the backup files leaving this phone (D14, 25 Nov 2026), added to the card in code; set by [setupBackupPassword]. */
+    private var protectSwitch: com.google.android.material.switchmaterial.SwitchMaterial? = null
+    private var refreshingSwitch = false
+
     private fun setupBackupPassword() {
         val card = findViewById<View>(R.id.backupPasswordCard)
         // A helper's read-only phone takes no backup out and writes nothing: the card is not offered there.
         if (com.innovation313.roshankhata.data.ViewerMode.isOn(this)) { card.visibility = View.GONE; return }
+        // D14: the layout's card text still names the old optional password; the card says what the app does now —
+        // files that leave the phone are protected by default, Google Drive is not.
+        val group = card as android.widget.LinearLayout
+        val status = findViewById<android.widget.TextView>(R.id.tvBackupPasswordStatus)
+        (group.getChildAt(group.indexOfChild(status) - 1) as? android.widget.TextView)?.setText(R.string.backup_prot_explain)
+        val toggle = com.google.android.material.switchmaterial.SwitchMaterial(this).apply {
+            setText(R.string.backup_prot_switch)
+            textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+            setTextColor(androidx.core.content.ContextCompat.getColor(this@BackupActivity, R.color.ink))
+            textSize = 14f
+            layoutParams = android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = (10 * resources.displayMetrics.density).toInt() }
+        }
+        group.addView(toggle, group.indexOfChild(status) + 1)
+        protectSwitch = toggle
+        toggle.setOnCheckedChangeListener { _, on -> if (!refreshingSwitch) onProtectSwitch(on) }
         findViewById<MaterialButton>(R.id.btnBackupPassword).setOnClickListener {
             com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.backup_pw_title)) { askNewBackupPassword() }
         }
@@ -261,32 +282,72 @@ class BackupActivity : BaseActivity() {
         }
     }
 
-    /** The card says where the password stands: on, off, or set and unreadable (then no backup leaves the phone). */
+    /**
+     * The card says plainly where the files stand (D14): "Protected with your password", "Open: anyone with this file
+     * can read your book", the first file will ask for a password, or the password cannot be read (then no file is made).
+     */
     private fun showBackupPassword() {
         if (com.innovation313.roshankhata.data.ViewerMode.isOn(this)) return
+        val app = applicationContext
         lifecycleScope.launch {
-            val state = withContext(Dispatchers.IO) { Backup.passwordState(this@BackupActivity) }
+            val (filesOn, state) = withContext(Dispatchers.IO) { Backup.filesProtected(app) to Backup.passwordState(app) }
             if (isFinishing || isDestroyed) return@launch
             val status = findViewById<android.widget.TextView>(R.id.tvBackupPasswordStatus)
             val button = findViewById<MaterialButton>(R.id.btnBackupPassword)
             val remove = findViewById<MaterialButton>(R.id.btnBackupPasswordRemove)
-            when (state) {
-                com.innovation313.roshankhata.data.BackupPassword.State.None -> {
-                    status.setText(R.string.backup_pw_status_off)
-                    button.setText(R.string.backup_pw_set)
-                    remove.visibility = View.GONE
-                }
-                is com.innovation313.roshankhata.data.BackupPassword.State.Set -> {
-                    status.setText(R.string.backup_pw_status_on)
-                    button.setText(R.string.backup_pw_change)
-                    remove.visibility = View.VISIBLE
-                }
-                is com.innovation313.roshankhata.data.BackupPassword.State.Unreadable -> {
-                    status.setText(R.string.backup_pw_status_unreadable)
-                    button.setText(R.string.backup_pw_set)
-                    remove.visibility = View.VISIBLE
-                }
+            refreshingSwitch = true
+            protectSwitch?.isChecked = filesOn
+            refreshingSwitch = false
+            val shown = com.innovation313.roshankhata.data.BackupProtection.status(filesOn, state)
+            val (words, colour) = when (shown) {
+                com.innovation313.roshankhata.data.BackupProtection.Status.PROTECTED -> R.string.backup_prot_status_on to R.color.brand_green_text
+                com.innovation313.roshankhata.data.BackupProtection.Status.NEEDS_PASSWORD -> R.string.backup_prot_status_needs to R.color.ink
+                com.innovation313.roshankhata.data.BackupProtection.Status.UNREADABLE -> R.string.backup_pw_status_unreadable to R.color.red_gave_text
+                com.innovation313.roshankhata.data.BackupProtection.Status.OPEN -> R.string.backup_prot_status_off to R.color.red_gave_text
             }
+            status.setText(words)
+            status.setTextColor(androidx.core.content.ContextCompat.getColor(this@BackupActivity, colour))
+            button.setText(if (state is com.innovation313.roshankhata.data.BackupPassword.State.Set) R.string.backup_pw_change else R.string.backup_pw_set)
+            remove.visibility = if (state is com.innovation313.roshankhata.data.BackupPassword.State.None) View.GONE else View.VISIBLE
+        }
+    }
+
+    /** The owner's switch: turning protection on needs nothing, turning it off asks the owner's PIN and says what it means. */
+    private fun onProtectSwitch(on: Boolean) {
+        if (on) { setFilesProtected(true); return }
+        // Until the owner has answered, the switch shows what is kept.
+        showBackupPassword()
+        com.innovation313.roshankhata.ui.AccessUi.ownerFirst(this, dao, getString(R.string.backup_prot_switch)) { confirmTurnOffProtection() }
+    }
+
+    private fun confirmTurnOffProtection() {
+        if (isFinishing || isDestroyed) return
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.backup_prot_off_title)
+            .setMessage(R.string.backup_prot_off_body)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.backup_prot_turn_off) { _, _ -> setFilesProtected(false) }
+            .show()
+    }
+
+    /** Keeps the switch and writes who did it (never a password). */
+    private fun setFilesProtected(on: Boolean) {
+        val app = applicationContext
+        lifecycleScope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                runCatching {
+                    Backup.setFilesProtected(app, on)
+                    runCatching {
+                        dao.log(
+                            if (on) com.innovation313.roshankhata.data.BackupPassword.AUDIT_FILES_PROTECTED else com.innovation313.roshankhata.data.BackupPassword.AUDIT_FILES_OPEN,
+                            com.innovation313.roshankhata.data.Access.userName
+                        )
+                    }
+                }.isSuccess
+            }
+            if (isFinishing || isDestroyed) return@launch
+            Toast.makeText(this@BackupActivity, if (!ok) R.string.save_failed_not_saved else if (on) R.string.backup_prot_on_done else R.string.backup_prot_off_done, Toast.LENGTH_LONG).show()
+            showBackupPassword()
         }
     }
 
@@ -323,31 +384,41 @@ class BackupActivity : BaseActivity() {
      * Set or change the password: typed twice, its rule and the warning said before it is kept (a forgotten password
      * opens nothing, not even for us), and a tick that the owner understood. The dialog stays open over a mistake.
      */
-    private fun askNewBackupPassword() {
-        if (isFinishing || isDestroyed) return
+    private fun askNewBackupPassword(firstFile: Boolean = false, onDone: ((Boolean) -> Unit)? = null) {
+        if (isFinishing || isDestroyed) { onDone?.invoke(false); return }
         val first = passwordBox(R.string.backup_pw_new_hint)
         val again = passwordBox(R.string.backup_pw_again_hint)
+        // The hint (D14): plain in every locked file, so the screen says so and refuses one that holds the password.
+        val hint = com.innovation313.roshankhata.ui.FormBox.style(android.widget.EditText(this).apply {
+            setHint(R.string.backup_prot_hint_hint)
+            inputType = android.text.InputType.TYPE_CLASS_TEXT
+            isSingleLine = true
+            filters = arrayOf(android.text.InputFilter.LengthFilter(com.innovation313.roshankhata.data.BackupSeal.MAX_HINT_CHARS))
+        })
         val error = note(R.string.backup_pw_mismatch).apply {
             setTextColor(androidx.core.content.ContextCompat.getColor(this@BackupActivity, R.color.red_gave_text))
             visibility = View.GONE
         }
         val agree = android.widget.CheckBox(this).apply { setText(R.string.backup_pw_agree) }
-        val body = com.innovation313.roshankhata.ui.FormBox.column(
-            this, first, again, showToggle(first, again), note(R.string.backup_pw_rule), error,
-            note(R.string.backup_pw_warning, bold = true),
-            // A helper's phone reading the owner's Drive cannot open a locked backup: said before the password is set (17 Nov 2026).
-            note(R.string.backup_pw_rule).apply { text = getString(R.string.backup_pw_helper_note, getString(R.string.viewer_menu)) },
-            agree
-        )
+        val views = mutableListOf<View>()
+        if (firstFile) views.add(note(R.string.backup_prot_first_body, bold = true))
+        views.addAll(listOf(
+            first, again, showToggle(first, again), note(R.string.backup_pw_rule), hint, note(R.string.backup_prot_hint_note), error,
+            note(R.string.backup_pw_warning, bold = true), agree
+        ))
+        val body = com.innovation313.roshankhata.ui.FormBox.column(this, *views.toTypedArray())
         val scroll = android.widget.ScrollView(this).apply { addView(body) }
         com.innovation313.roshankhata.ui.TextFit.relax(scroll)
         val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.backup_pw_title)
+            .setTitle(if (firstFile) R.string.backup_prot_first_title else R.string.backup_pw_title)
             .setView(scroll)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.backup_pw_set, null)
             .show()
         com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
+        // Cancelled or closed without a password: whoever asked (the first backup file) is told, and makes nothing.
+        var saved = false
+        dialog.setOnDismissListener { if (!saved) onDone?.invoke(false) }
         val set = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
         set.isEnabled = false
         agree.setOnCheckedChangeListener { _, on -> set.isEnabled = on }
@@ -361,23 +432,27 @@ class BackupActivity : BaseActivity() {
                     else -> 0
                 }
             }
-            if (problem != 0) {
-                error.setText(problem)
+            val hintText = com.innovation313.roshankhata.data.BackupSeal.cleanHint(hint.text.toString())
+            val problemNow = if (problem == 0 && !com.innovation313.roshankhata.data.BackupProtection.hintAllowed(hintText, typed)) R.string.backup_prot_hint_gives_away else problem
+            if (problemNow != 0) {
+                error.setText(problemNow)
                 error.visibility = View.VISIBLE
                 return@setOnClickListener
             }
             set.isEnabled = false
-            saveBackupPassword(typed) { done -> if (done) dialog.dismiss() else set.isEnabled = agree.isChecked }
+            saveBackupPassword(typed, hintText) { done ->
+                if (done) { saved = true; dialog.dismiss(); onDone?.invoke(true) } else set.isEnabled = agree.isChecked
+            }
         }
     }
 
     /** Keeps [password] off the main thread (the Keystore), writes who did it, and says what happened. */
-    private fun saveBackupPassword(password: String, after: (Boolean) -> Unit) {
+    private fun saveBackupPassword(password: String, hint: String?, after: (Boolean) -> Unit) {
         val app = applicationContext
         lifecycleScope.launch {
             val outcome = withContext(Dispatchers.IO) {
                 val had = Backup.passwordState(app) !is com.innovation313.roshankhata.data.BackupPassword.State.None
-                val saved = runCatching { Backup.savePassword(app, password) }.getOrNull()
+                val saved = runCatching { Backup.savePassword(app, password, hint) }.getOrNull()
                 if (saved == com.innovation313.roshankhata.data.BackupPassword.Saved.OK) {
                     runCatching {
                         dao.log(
@@ -390,7 +465,7 @@ class BackupActivity : BaseActivity() {
             }
             if (isFinishing || isDestroyed) return@launch
             val message = when (outcome) {
-                com.innovation313.roshankhata.data.BackupPassword.Saved.OK -> R.string.backup_pw_saved
+                com.innovation313.roshankhata.data.BackupPassword.Saved.OK -> R.string.backup_prot_saved
                 com.innovation313.roshankhata.data.BackupPassword.Saved.NO_LOCK -> R.string.backup_pw_no_lock
                 com.innovation313.roshankhata.data.BackupPassword.Saved.TOO_SHORT -> R.string.backup_pw_too_short
                 com.innovation313.roshankhata.data.BackupPassword.Saved.TOO_LONG -> R.string.backup_pw_too_long
@@ -406,7 +481,7 @@ class BackupActivity : BaseActivity() {
         if (isFinishing || isDestroyed) return
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.backup_pw_remove)
-            .setMessage(R.string.backup_pw_remove_body)
+            .setMessage(R.string.backup_prot_remove_body)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.backup_pw_remove) { _, _ ->
                 val app = applicationContext
@@ -418,7 +493,7 @@ class BackupActivity : BaseActivity() {
                         }.isSuccess
                     }
                     if (isFinishing || isDestroyed) return@launch
-                    Toast.makeText(this@BackupActivity, if (ok) R.string.backup_pw_removed else R.string.save_failed_not_saved, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@BackupActivity, if (ok) R.string.backup_prot_removed else R.string.save_failed_not_saved, Toast.LENGTH_LONG).show()
                     showBackupPassword()
                 }
             }
@@ -433,6 +508,8 @@ class BackupActivity : BaseActivity() {
         if (isFinishing || isDestroyed) return
         val box = passwordBox(R.string.backup_pw_new_hint).apply { setHint(R.string.backup_pw_ask_title) }
         val views = mutableListOf<View>(note(R.string.backup_pw_ask_body), box, showToggle(box))
+        // The hint the owner chose when he locked the file (D14), read from the file itself before any password is tried.
+        lockedHint?.let { h -> views.add(1, note(R.string.backup_prot_hint_is).apply { text = getString(R.string.backup_prot_hint_is, h) }) }
         if (wrong) views.add(1, note(R.string.backup_pw_wrong, bold = true).apply {
             setTextColor(androidx.core.content.ContextCompat.getColor(this@BackupActivity, R.color.red_gave_text))
         })
@@ -454,6 +531,9 @@ class BackupActivity : BaseActivity() {
         com.innovation313.roshankhata.ui.KeyboardFollow.dialog(dialog)
         box.requestFocus()
     }
+
+    /** The hint of the locked file now being asked for (null: it has none, or it is not one with a hint). Set where the file is read. */
+    private var lockedHint: String? = null
 
     /** What to try on a locked backup now: the password typed in this screen, then this phone's own. */
     private fun backupPasswords(): List<String> = Backup.passwordsToTry(applicationContext, typedPasswords.toList())
@@ -587,7 +667,26 @@ class BackupActivity : BaseActivity() {
     /** Back up now is writing (3 Nov 2026): a second tap waits for this one. */
     private var backingUp = false
 
+    /**
+     * Back up now (D14, 25 Nov 2026): the copies that leave the phone — Downloads and the share — are protected with
+     * the owner's password unless he turned that off. The first one asks him for a password (and a hint) before a
+     * single byte is written; he cancels, nothing is made, and it is never made open in its place.
+     */
     private fun createBackup() {
+        if (backingUp) return
+        val app = applicationContext
+        lifecycleScope.launch {
+            val plan = withContext(Dispatchers.IO) { Backup.protectionPlan(app, com.innovation313.roshankhata.data.BackupProtection.Way.DOWNLOADS) }
+            if (isFinishing || isDestroyed) return@launch
+            if (plan is com.innovation313.roshankhata.data.BackupProtection.Plan.NeedFirstPassword) {
+                askNewBackupPassword(firstFile = true) { saved ->
+                    if (saved) createBackupNow() else Toast.makeText(this@BackupActivity, R.string.backup_prot_first_cancelled, Toast.LENGTH_LONG).show()
+                }
+            } else createBackupNow()
+        }
+    }
+
+    private fun createBackupNow() {
         if (backingUp) return
         backingUp = true
         // The button itself shows how far the book is written (3 Nov 2026; a "Creating backup…" toast before).
@@ -609,7 +708,7 @@ class BackupActivity : BaseActivity() {
                 var unavailable = false
                 val shareFile = plain?.let { p ->
                     try {
-                        Backup.lockedCopy(this@BackupActivity, p)?.also { p.delete() } ?: p
+                        Backup.lockedCopy(this@BackupActivity, p, com.innovation313.roshankhata.data.BackupProtection.Way.DOWNLOADS)?.also { p.delete() } ?: p
                     } catch (e: com.innovation313.roshankhata.data.BackupPassword.Unavailable) {
                         p.delete(); unavailable = true; null
                     } catch (e: Exception) {
@@ -648,7 +747,7 @@ class BackupActivity : BaseActivity() {
                             getString(R.string.backup_done_saved, downloadPath)
                         } else {
                             getString(R.string.backup_done_internal)
-                        }) + (if (locked) "\n\n" + getString(R.string.backup_pw_locked_note) else "")
+                        }) + "\n\n" + getString(if (locked) R.string.backup_prot_done_locked else R.string.backup_prot_done_open)
                     )
                     .setNegativeButton(R.string.ok, null)
                     .setPositiveButton(R.string.share_copy) { _, _ ->
@@ -685,21 +784,53 @@ class BackupActivity : BaseActivity() {
             }
     }
 
+    /**
+     * The book to the computer (D14): a file that leaves the phone, so it is protected like the others — the computer
+     * asks the password (and shows the hint) when it reads it. The first file asks for a password before anything is sent.
+     */
     private fun sendToComputer(pairing: WifiSync.Pairing) {
+        val app = applicationContext
+        lifecycleScope.launch {
+            val plan = withContext(Dispatchers.IO) { Backup.protectionPlan(app, com.innovation313.roshankhata.data.BackupProtection.Way.TO_COMPUTER) }
+            if (isFinishing || isDestroyed) return@launch
+            if (plan is com.innovation313.roshankhata.data.BackupProtection.Plan.NeedFirstPassword) {
+                askNewBackupPassword(firstFile = true) { saved ->
+                    if (saved) sendToComputerNow(pairing) else Toast.makeText(this@BackupActivity, R.string.backup_prot_first_cancelled, Toast.LENGTH_LONG).show()
+                }
+            } else sendToComputerNow(pairing)
+        }
+    }
+
+    private fun sendToComputerNow(pairing: WifiSync.Pairing) {
         Toast.makeText(this, R.string.wifi_send_sending, Toast.LENGTH_SHORT).show()
         lifecycleScope.launch {
+            var unavailable = false
+            var locked = false
             val outcome = withContext(Dispatchers.IO) {
                 // The same streamed backup file every other path uses (P6), sent as it is read:
                 // never held whole (22 Oct 2026, the review).
-                val file = try { Backup.exportToCache(this@BackupActivity, dao) } catch (e: Exception) { null }
+                val plain = try { Backup.exportToCache(this@BackupActivity, dao) } catch (e: Exception) { null }
                     ?: return@withContext null
-                if (file.length() > WifiSync.MAX_BYTES) return@withContext WifiSync.Outcome.Refused(WifiSync.TOO_BIG)
-                try { WifiSync.sendFile(pairing, file) } catch (e: Exception) { WifiSync.Outcome.Unreachable }
+                val file = try {
+                    Backup.lockedCopy(this@BackupActivity, plain, com.innovation313.roshankhata.data.BackupProtection.Way.TO_COMPUTER)?.also { plain.delete(); locked = true } ?: plain
+                } catch (e: com.innovation313.roshankhata.data.BackupPassword.Unavailable) {
+                    plain.delete(); unavailable = true; return@withContext null
+                } catch (e: Exception) {
+                    plain.delete(); return@withContext null
+                }
+                try {
+                    if (file.length() > WifiSync.MAX_BYTES) return@withContext WifiSync.Outcome.Refused(WifiSync.TOO_BIG)
+                    try { WifiSync.sendFile(pairing, file) } catch (e: Exception) { WifiSync.Outcome.Unreachable }
+                } finally {
+                    // A locked copy is this send's own; the plain one stays for the cache's sweep as it always did.
+                    if (locked) file.delete()
+                }
             }
             if (isFinishing || isDestroyed) return@launch
+            val protection = getString(if (locked) R.string.backup_prot_done_locked else R.string.backup_prot_done_open)
             val message = when (outcome) {
-                null -> getString(R.string.backup_failed)
-                is WifiSync.Outcome.Sent -> getString(R.string.wifi_send_done)
+                null -> getString(if (unavailable) R.string.backup_pw_unavailable else R.string.backup_failed)
+                is WifiSync.Outcome.Sent -> getString(R.string.wifi_send_done) + "\n\n" + protection
                 is WifiSync.Outcome.Refused -> getString(R.string.wifi_send_refused)
                 WifiSync.Outcome.Unreachable -> getString(R.string.wifi_send_unreachable)
             }
@@ -731,19 +862,30 @@ class BackupActivity : BaseActivity() {
             }
             if (isFinishing || isDestroyed) return@launch
             when (pulled) {
-                is WifiSync.Pulled.Got -> {
-                    val parsed = withContext(Dispatchers.IO) {
-                        try { BackupCodec.parseFile(pulled.file) }
-                        catch (e: kotlinx.coroutines.CancellationException) { throw e }
-                        catch (e: OutOfMemoryError) { null }
-                    }
-                    if (parsed == null) tell(R.string.wifi_take_too_big)
-                    else handleParseResult(parsed.first, parsed.second)
-                }
+                is WifiSync.Pulled.Got -> readPulled(pulled.file)
                 WifiSync.Pulled.TooBig -> tell(R.string.wifi_take_too_big)
                 WifiSync.Pulled.Refused -> tell(R.string.wifi_take_refused)
                 WifiSync.Pulled.Unreachable -> tell(R.string.wifi_send_unreachable)
             }
+        }
+    }
+
+    /**
+     * The computer's book as it arrived: a locked one (D14: the computer protects the copy it gives out) asks its
+     * password, showing the hint, then is read again; nothing is replaced before the read is Ok.
+     */
+    private fun readPulled(file: File, tries: Int = 0) {
+        lifecycleScope.launch {
+            val passwords = withContext(Dispatchers.IO) { backupPasswords() }
+            val parsed = withContext(Dispatchers.IO) {
+                try { BackupCodec.parseFile(file, passwords) }
+                catch (e: kotlinx.coroutines.CancellationException) { throw e }
+                catch (e: OutOfMemoryError) { null }
+            }
+            if (isFinishing || isDestroyed) return@launch
+            if (parsed == null) { tell(R.string.wifi_take_too_big); return@launch }
+            lockedHint = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.BackupSeal.hintOf(file) }
+            handleParseResult(parsed.first, parsed.second, tries = tries, again = { n -> readPulled(file, n) })
         }
     }
 
@@ -1235,6 +1377,7 @@ class BackupActivity : BaseActivity() {
                 return@launch
             }
             val (result, data) = parsed
+            lockedHint = withContext(Dispatchers.IO) { Backup.hintOf(this@BackupActivity, uri) }
 
             // A locked backup asks its password, then the same file is read again (17 Nov 2026).
             handleParseResult(result, data, tries = tries, again = { n -> beginRestore(uri, n) })
@@ -1651,6 +1794,7 @@ class BackupActivity : BaseActivity() {
             val (result, data) = withContext(Dispatchers.IO) {
                 Backup.parseFile(file, backupPasswords())
             }
+            lockedHint = withContext(Dispatchers.IO) { com.innovation313.roshankhata.data.BackupSeal.hintOf(file) }
             handleParseResult(result, data, tries = tries, again = { n -> restoreFromFile(file, n) })
         }
     }
@@ -2116,6 +2260,7 @@ class BackupActivity : BaseActivity() {
             // weighed or replaced from a copy that could not be opened.
             plans.firstOrNull { it.locked }?.let { _ ->
                 plans.forEach { it.file?.delete() }
+                lockedHint = null
                 // After the last try the copies are left, and said to be locked: no going round until Cancel.
                 if (!askOrGiveUp(tries) { planDrive(account, businesses, tries + 1) }) {
                     MaterialAlertDialogBuilder(this@BackupActivity)

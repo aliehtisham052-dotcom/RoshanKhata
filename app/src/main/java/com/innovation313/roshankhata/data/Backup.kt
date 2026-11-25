@@ -369,29 +369,92 @@ object Backup {
     /** Where this phone's backup password stands; never throws. */
     fun passwordState(context: Context): BackupPassword.State = BackupPassword.state(passwordKeep(context), DeviceBackupLock)
 
-    /** Keeps [password] for this phone's backups (the owner's own act, gated and audited by the screen). */
-    fun savePassword(context: Context, password: String): BackupPassword.Saved =
-        BackupPassword.save(passwordKeep(context), DeviceBackupLock, password)
+    /**
+     * Keeps [password] for this phone's backup files (the owner's own act, gated and audited by the screen), with the
+     * [hint] he chose (plain: it goes into every locked file; one that holds the password is not kept). The hint is
+     * written only once the password is: a failed password leaves the old pair as it was.
+     */
+    fun savePassword(context: Context, password: String, hint: String? = null): BackupPassword.Saved {
+        val saved = BackupPassword.save(passwordKeep(context), DeviceBackupLock, password)
+        if (saved == BackupPassword.Saved.OK) {
+            val kept = hint?.takeIf { BackupProtection.hintAllowed(it, password) }
+            try { BackupProtection.setHint(protectionStore(context), kept) }
+            catch (e: Exception) { runCatching { BackupProtection.setHint(protectionStore(context), null) } }
+        }
+        return saved
+    }
 
-    fun removePassword(context: Context) = BackupPassword.remove(passwordKeep(context))
+    /** Removes the password and its hint. */
+    fun removePassword(context: Context) {
+        BackupPassword.remove(passwordKeep(context))
+        runCatching { BackupProtection.setHint(protectionStore(context), null) }
+    }
 
     /** What to try on a locked backup: the passwords just typed (newest first), then this phone's own. */
     fun passwordsToTry(context: Context, typed: List<String>): List<String> =
         (typed.filter { it.isNotBlank() } + listOfNotNull((passwordState(context) as? BackupPassword.State.Set)?.password)).distinct()
 
-    /** The password's mark for "has the Drive copy changed" ([BackupPassword.mark]): "" with none. */
-    fun passwordMark(context: Context): String = BackupPassword.mark(passwordState(context))
+    /**
+     * What the Drive copy's "has anything changed" signature adds for the password: nothing since 25 Nov 2026 (D14) —
+     * the Drive backup is never locked, so a password set or changed re-sends nothing. ("" also matches the signatures
+     * older builds wrote with no password; one written with a password differs once, and the next upload is plain.)
+     */
+    @Suppress("UNUSED_PARAMETER")
+    fun passwordMark(context: Context): String = ""
+
+    // ---------- File protection (25 Nov 2026, D14; BackupProtection) ----------
+
+    /** The switch and the hint, beside the password in this phone's private preferences (not secret; the hint is in every file). */
+    private fun protectionStore(context: Context): BackupProtection.Store = object : BackupProtection.Store {
+        private val prefs = context.applicationContext.getSharedPreferences(PASSWORD_PREFS, Context.MODE_PRIVATE)
+        override fun read(key: String): String? = prefs.getString("p_$key", null)
+        override fun write(key: String, value: String?) {
+            val e = prefs.edit()
+            if (value == null) e.remove("p_$key") else e.putString("p_$key", value)
+            if (!e.commit()) throw java.io.IOException("backup protection not kept")
+        }
+    }
+
+    /** Whether backup files that leave this phone are locked (on unless the owner turned it off). */
+    fun filesProtected(context: Context): Boolean = BackupProtection.filesProtected(protectionStore(context))
+
+    /** The owner's switch (his own act: gated and audited by the screen). Throws when it cannot be kept. */
+    fun setFilesProtected(context: Context, on: Boolean) = BackupProtection.setFilesProtected(protectionStore(context), on)
+
+    /** The hint kept with the password, or null. */
+    fun protectionHint(context: Context): String? = BackupProtection.hint(protectionStore(context))
+
+    /** What the screens say about files that leave the phone. Reads the Keystore: not on the main thread. */
+    fun protectionStatus(context: Context): BackupProtection.Status =
+        BackupProtection.status(filesProtected(context), passwordState(context))
+
+    /** What to do with a backup going [way]: [BackupProtection.plan] over this phone's switch, hint and password. */
+    fun protectionPlan(context: Context, way: BackupProtection.Way): BackupProtection.Plan {
+        // The Drive backup and the app's own copies never touch the Keystore.
+        if (!BackupProtection.wanted(way, true)) return BackupProtection.Plan.Plain
+        return BackupProtection.planFor(way, protectionStore(context), passwordState(context))
+    }
+
+    /** The owner's hint of a locked file at [uri] (read from its first bytes only), null when it is plain or has none. */
+    fun hintOf(context: Context, uri: Uri): String? =
+        runCatching { context.contentResolver.openInputStream(uri)?.use { BackupSeal.hintOf(it) } }.getOrNull()
 
     /**
-     * [plain]'s locked copy beside it, for a backup about to leave the phone (Downloads, a share, Drive), or null when
-     * no password is set (then [plain] goes as it always did). Throws [BackupPassword.Unavailable] when a password is
-     * set and cannot be read: the backup is not made rather than made plain. [plain] is left for the caller.
+     * [plain]'s locked copy beside it, for a backup about to go [way], or null when it goes open (then [plain] is the
+     * file to use). The Drive backup is always open (D14). Throws [BackupPassword.Unavailable] when a password is set and
+     * cannot be read, and [BackupProtection.NeedsPassword] when protection is on and none is set yet — the screen asks
+     * first ([protectionPlan]); neither ever makes the file open instead. [plain] is left for the caller.
      */
-    fun lockedCopy(context: Context, plain: File): File? {
-        val password = BackupPassword.forSealing(passwordState(context)) ?: return null
+    fun lockedCopy(context: Context, plain: File, way: BackupProtection.Way = BackupProtection.Way.DRIVE): File? {
+        val seal = when (val plan = protectionPlan(context, way)) {
+            BackupProtection.Plan.Plain -> return null
+            BackupProtection.Plan.NeedFirstPassword -> throw BackupProtection.NeedsPassword()
+            is BackupProtection.Plan.Unavailable -> throw BackupPassword.Unavailable(plan.why)
+            is BackupProtection.Plan.Seal -> plan
+        }
         val into = File(plain.parentFile, lockedName(plain.name))
         return try {
-            BackupSeal.sealFile(plain, into, password)
+            BackupSeal.sealFile(plain, into, seal.password, hint = seal.hint)
         } catch (e: Exception) {
             into.delete()
             throw e

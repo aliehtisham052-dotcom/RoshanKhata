@@ -83,6 +83,21 @@ object SeasonBook {
     /** A customer's net balance before a date: what they owed (+) or had paid ahead (-). */
     data class Carried(val partyId: Long, val net: Double)
 
+    /** A season some credit was tagged to, and the first moment such a credit was written ([KhataDao.seasonTagStarts]). */
+    data class TagStart(val season: String?, val firstAt: Long)
+
+    /**
+     * Where the Seasons screen starts reading (25 Nov 2026, E1): the window's first day, or the first day a credit was
+     * written that the owner TAGGED to a season the screen shows ([first] or later). Read from there with the balance
+     * carried in, the figures are the whole book's for every shown season: a credit written in March and tagged to this
+     * Kharif is this Kharif's, not "owed from before".
+     */
+    fun readFrom(first: Season, tags: List<TagStart>, tz: TimeZone = TimeZone.getDefault()): Long {
+        val since = seasonStart(first, tz)
+        val earliest = tags.filter { t -> Season.fromKey(t.season)?.let { it >= first } == true }.minOfOrNull { it.firstAt }
+        return if (earliest != null && earliest < since) earliest else since
+    }
+
     /** Stands in front of the queue for everything owed from before the window. */
     private val BEFORE = Season(Crop.RABI, Int.MIN_VALUE)
 
@@ -106,7 +121,12 @@ object SeasonBook {
         val seasonKey: String? = null,
         /** The entry and the other half of its cash sale (8 Nov 2026 review, M11): netted before the queue is run. */
         val id: Long = 0,
-        val pairedEntryId: Long? = null
+        val pairedEntryId: Long? = null,
+        /**
+         * Crop credit (25 Nov 2026, E1): false for a Qarz-e-Hasna loan and an imported OPENING balance. Still owed, and paid
+         * in the queue's order, but never reported as any season's credit (it goes in with what is owed from before).
+         */
+        val seasonal: Boolean = true
     )
 
     /** One customer in one season. Amounts in rupees, rounded to the paisa. */
@@ -163,7 +183,7 @@ object SeasonBook {
                 val paisa = Math.round(l.amount * 100)
                 if (paisa <= 0) continue
                 if (l.isGiven) {
-                    val s = Season.fromKey(l.seasonKey) ?: seasonOf(l.timestamp, tz)
+                    val s = if (!l.seasonal) BEFORE else Season.fromKey(l.seasonKey) ?: seasonOf(l.timestamp, tz)
                     given[s] = (given[s] ?: 0L) + paisa
                     val fromAdvance = minOf(advance, paisa)
                     if (fromAdvance > 0) { advance -= fromAdvance; settle(s, fromAdvance, l.timestamp) }

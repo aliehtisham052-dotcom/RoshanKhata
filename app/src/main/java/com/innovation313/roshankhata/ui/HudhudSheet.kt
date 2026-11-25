@@ -511,7 +511,7 @@ object HudhudSheet {
                 !HudhudEars.canHear(ctx) -> boxOrLocal()
                 HudhudEars.micGranted(ctx) -> hearMyself()
                 HudhudPrefs.micDenied(ctx) ->
-                    if (HudhudEars.online(ctx)) googleBox() else heardNothing(HudhudEars.Trouble.OFFLINE)
+                    boxIfAllowed()
                 else -> askForMic()
             }
         }
@@ -529,8 +529,35 @@ object HudhudSheet {
                     hearMyself()
                 } else {
                     HudhudPrefs.setMicDenied(ctx, true)
-                    if (HudhudEars.online(ctx)) googleBox() else heardNothing(HudhudEars.Trouble.OFFLINE)
+                    boxIfAllowed()
                 }
+            }
+        }
+
+        /**
+         * The microphone is refused, so the phone's voice-search box is the way — and that box is the online recogniser:
+         * used after the owner's yes (D10, [ListenChoice]); nothing chosen yet and internet — asked once, in the ears' words
+         * ([ListenAsk]); a "no", or no internet — said as before. Typing is never blocked.
+         */
+        private fun boxIfAllowed() {
+            when (ListenChoice.box(false, ListenChoiceStore.mode(ctx), HudhudEars.networkUp(ctx), HudhudEars.canHear(ctx))) {
+                ListenChoice.Box.ONLINE -> googleBox()
+                ListenChoice.Box.ASK -> {
+                    val asked = ListenAsk.show(
+                        host,
+                        onYes = {
+                            ListenChoiceStore.set(ctx, ListenChoice.answered(yesOnline = true))
+                            if (!closed) googleBox()
+                        },
+                        onNo = {
+                            ListenChoiceStore.set(ctx, ListenChoice.answered(yesOnline = false))
+                            if (!closed) heardNothing(HudhudEars.Trouble.NOT_OFFLINE_HERE)
+                        },
+                        onCancel = { if (!closed) heardNothing(HudhudEars.Trouble.NOT_OFFLINE_HERE) }
+                    )
+                    if (asked == null) heardNothing(HudhudEars.Trouble.NOT_OFFLINE_HERE)
+                }
+                else -> heardNothing(HudhudEars.Trouble.OFFLINE)
             }
         }
 
@@ -644,12 +671,12 @@ object HudhudSheet {
          * phone's online recogniser, so with the switch on he says why he cannot hear instead.
          */
         private fun boxOrLocal() {
-            if (HudhudPrefs.listenOnPhoneOnly(ctx)) heardNothing(HudhudEars.Trouble.NOT_OFFLINE_HERE) else googleBox()
+            if (HudhudEars.phoneOnly(ctx)) heardNothing(HudhudEars.Trouble.NOT_OFFLINE_HERE) else googleBox()
         }
 
         /** The phone's voice-search box (RecognizerIntent), as voice entry asks it: without the microphone permission. */
         private fun googleBox() {
-            if (HudhudPrefs.listenOnPhoneOnly(ctx)) { heardNothing(HudhudEars.Trouble.NOT_OFFLINE_HERE); return }
+            if (HudhudEars.phoneOnly(ctx)) { heardNothing(HudhudEars.Trouble.NOT_OFFLINE_HERE); return }
             val launcher = listenLauncher ?: host.activityResultRegistry.register(
                 "hudhud-" + System.nanoTime(), ActivityResultContracts.StartActivityForResult()
             ) { result ->

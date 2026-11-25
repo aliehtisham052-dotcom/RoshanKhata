@@ -226,6 +226,8 @@ class HudhudRolesMatrixTest {
         a += Hudhud.Ask.Both(Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY), Hudhud.Ask.Drawer)
         a += Hudhud.Ask.Compare(Hudhud.Ask.Period(Hudhud.Measure.SALES, today), Hudhud.Ask.Period(Hudhud.Measure.SALES, VoiceQuestion.Window.YESTERDAY))
         Hudhud.WhyOf.values().forEach { a += Hudhud.Ask.Why(it, today, down = true) }
+        a += Hudhud.Ask.Trend(VoiceQuestion.Window.THIS_MONTH)
+        Hudhud.AdviseOf.values().forEach { a += Hudhud.Ask.Advise(it) }
         a += Hudhud.Ask.Took(ali, listOf(ids.urea))
         a += Hudhud.Ask.NoHistory
         return a
@@ -385,6 +387,31 @@ class HudhudRolesMatrixTest {
         assertFalse("the helper's copy holds no private note", flat(textOf(note)).contains(flat(marker("private note"))))
         val list = AnswerBook.answer(env, dao, Hudhud.Ask.NeedName(Hudhud.Facet.NOTE), parties)
         assertTrue("the helper is told it holds no notes", env.words.text(W.hudhud_note_helper) in textOf(list))
+    }
+
+    @Test
+    fun aPrivateNoteIsWrittenButNeverSaidAtACounter() = runBlocking {
+        // The owner's decision D8 on T39 (25 Nov 2026): at a counter (counter mode on, or somebody signed in) the customer
+        // may be standing there, so his private note is on the card and never said aloud; the owner's own phone says it.
+        val now = System.currentTimeMillis()
+        assumeTrue("too close to midnight", clockIsSafe(now))
+        val owner = book("note-counter")
+        val ids = seed(owner.khataDao(), now)
+        val dao = owner.khataDao()
+        val ask = Hudhud.Ask.Person(listOf(ids.bashir), Hudhud.Facet.NOTE)
+        for (role in listOf(HudhudRolesTable.Role.OWNER, HudhudRolesTable.Role.MANAGER, HudhudRolesTable.Role.CASHIER)) {
+            become(role, ids)
+            val env = HudhudRolesEnv(now, viewer = false)
+            val card = AnswerBook.answer(env, dao, ask, dao.partiesWithBalanceOnce())
+            assertTrue("$role: the note is on the card", flat(textOf(card)).contains(flat(marker("private note"))))
+            val said = AnswerBook.speech(env, card, hideMoney = false)?.text
+            if (role == HudhudRolesTable.Role.OWNER) {
+                assertTrue("the owner's phone says the note", said != null && flat(said).contains(flat(marker("private note"))))
+            } else {
+                assertTrue("$role: the note is not said at a counter: $said", said == null || !flat(said).contains(flat(marker("private note"))))
+            }
+        }
+        Access.resetForTest()
     }
 
     @Test

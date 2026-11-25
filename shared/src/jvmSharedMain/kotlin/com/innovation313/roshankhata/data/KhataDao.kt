@@ -137,10 +137,12 @@ interface KhataDao {
      * Fasal ka Hisaab: the live lines of live CUSTOMERS (suppliers are not
      * crop credit) from [since] on - the Seasons screen reads its window
      * only (9 Oct), with [observeSeasonCarriedIn] for what came before.
+     * [since] is [SeasonBook.readFrom]'s: the window's first day, or earlier when a credit was tagged to a shown season.
      */
     @Query(
         "SELECT t.partyId AS partyId, t.timestamp AS timestamp, t.amount AS amount, " +
-            "t.isGiven AS isGiven, t.season AS seasonKey, t.id AS id, t.pairedEntryId AS pairedEntryId FROM transactions t " +
+            "t.isGiven AS isGiven, t.season AS seasonKey, t.id AS id, t.pairedEntryId AS pairedEntryId, " +
+            "CASE WHEN t.isQarzeHasna = 1 OR t.entryKind = 'OPENING' THEN 0 ELSE 1 END AS seasonal FROM transactions t " +
             "JOIN parties p ON p.id = t.partyId " +
             "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.timestamp >= :since"
     )
@@ -156,9 +158,23 @@ interface KhataDao {
     )
     fun observeSeasonCarriedIn(since: Long): Flow<List<SeasonBook.Carried>>
 
+    /**
+     * Each season a customer's credit was TAGGED to, with the first day such a credit was written (25 Nov 2026, E1): the
+     * Seasons screen starts its reading early enough to take in a credit written before its window but tagged to a
+     * season it shows ([SeasonBook.readFrom]).
+     */
+    @Query(
+        "SELECT t.season AS season, MIN(t.timestamp) AS firstAt FROM transactions t " +
+            "JOIN parties p ON p.id = t.partyId " +
+            "WHERE t.isDeleted = 0 AND p.isDeleted = 0 AND p.isCustomer = 1 AND t.isGiven = 1 " +
+            "AND t.season IS NOT NULL AND t.timestamp < :before GROUP BY t.season"
+    )
+    suspend fun seasonTagStarts(before: Long): List<SeasonBook.TagStart>
+
     @Query(
         "SELECT t.partyId AS partyId, t.timestamp AS timestamp, t.amount AS amount, " +
-            "t.isGiven AS isGiven, t.season AS seasonKey, t.id AS id, t.pairedEntryId AS pairedEntryId FROM transactions t " +
+            "t.isGiven AS isGiven, t.season AS seasonKey, t.id AS id, t.pairedEntryId AS pairedEntryId, " +
+            "CASE WHEN t.isQarzeHasna = 1 OR t.entryKind = 'OPENING' THEN 0 ELSE 1 END AS seasonal FROM transactions t " +
             "WHERE t.isDeleted = 0 AND t.partyId = :partyId"
     )
     suspend fun seasonLinesOf(partyId: Long): List<SeasonBook.Line>

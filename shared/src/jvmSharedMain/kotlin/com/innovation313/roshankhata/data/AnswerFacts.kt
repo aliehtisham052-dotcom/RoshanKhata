@@ -254,7 +254,9 @@ object AnswerFacts {
                 when {
                     note.isNotEmpty() -> AnswerCard(Mood.CALM, label = name,
                         lines = listOf(c.getString(W.party_note_label)) + HudhudNote.linesOf(note).map { Format.isolate(it) },
-                        openParty = p.id, secrets = HudhudNote.secretsIn(note))
+                        openParty = p.id, secrets = HudhudNote.secretsIn(note),
+                        // At a counter the note is written, never said: the customer may be standing there (D8, T39).
+                        quiet = AnswerGate.atCounter())
                     // A helper's copy of the book carries no private note at all: "none saved" would not be true there.
                     c.viewer() -> AnswerCard(Mood.CALM, label = name,
                         lines = listOf(c.getString(W.hudhud_note_helper)), openParty = p.id)

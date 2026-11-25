@@ -47,7 +47,24 @@ object CashFlow {
         val gapWeek: Week?,
         /** By how much, at the end of [gapWeek]. */
         val gap: Double,
-        /** Credit bills with money still owed but no due date: left out, counted so the screen can say so. */
+        /**
+     * THE ONE LOADER (25 Nov 2026, BC-285): the instalments, pending cheques of a party still in the book, promised days, credit
+     * bills and what the shop owes each supplier, read from the book and handed to [items]. The phone's and the computer's
+     * Cash flow page, the bell's cash gap and the assistant's "next 30 days" each kept their own copy of these lines.
+     * [parties] is [KhataDao.partiesWithBalanceOnce]: a negative balance is what the shop owes that party.
+     */
+    suspend fun load(dao: KhataDao, parties: List<PartyWithBalance>): Pair<List<Item>, Int> {
+        val names = parties.associate { it.id to it.name }
+        val balance = parties.associate { it.id to it.balance }
+        val plans = dao.openPlansOnce().map { Plan(it.partyId, it.partyName, it.totalAmount - it.paidSoFar, it.installmentAmount, it.nextDueDate) }
+        val cheques = dao.pendingChequesOnce().filter { it.status == ChequeStatus.PENDING && names.containsKey(it.partyId) }
+            .map { Cheque(it.partyId, names.getValue(it.partyId), it.amount, it.dueDate, it.isReceived) }
+        val harvests = dao.cashFlowHarvestsOnce().map { it.copy(balance = balance[it.partyId] ?: 0.0) }
+        val owed = parties.filter { it.balance < 0 }.associate { it.id to -it.balance }
+        return items(plans, cheques, harvests, dao.cashFlowBillsOnce(), owed)
+    }
+
+    /** Credit bills with money still owed but no due date: left out, counted so the screen can say so. */
         val undatedBills: Int
     )
 

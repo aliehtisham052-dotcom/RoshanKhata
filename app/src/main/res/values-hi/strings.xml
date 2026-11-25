@@ -1139,6 +1139,18 @@
     <string name="hudhud_why_part">%1$s: %2$s (अब %3$s, पहले %4$s)</string>
     <string name="hudhud_why_no_cost">बिना लागत कीमत वाली बिक्री की लाइनें: अब %1$d, पहले %2$d। उनका मुनाफा शामिल नहीं।</string>
     <string name="hudhud_why_only_book">ये खाते के अपने आंकड़े हैं। खाते के बाहर की वजह (बाज़ार, मौसम) इसमें नहीं है।</string>
+    <string name="hudhud_t_trend">बिक्री का रुझान</string>
+    <string name="hudhud_trend_up">बिक्री बढ़ रही है।</string>
+    <string name="hudhud_trend_down">बिक्री घट रही है।</string>
+    <string name="hudhud_trend_flat">बिक्री लगभग पहले जितनी ही है।</string>
+    <string name="hudhud_trend_none">दोनों अवधियों में कुछ नहीं बिका।</string>
+    <string name="hudhud_trend_from_nothing">पिछली अवधि में कुछ नहीं बिका, इसलिए प्रतिशत नहीं बता सकता।</string>
+    <string name="hudhud_t_chase">पहले किससे वसूली करें</string>
+    <string name="hudhud_chase_note">सबसे पुराने बकाया पहले, साथ में वे जिन्हें पेमेंट रडार देर से देने वाला कहता है। यहाँ से कुछ भेजा नहीं जाता।</string>
+    <string name="hudhud_t_next30">अगले 30 दिन</string>
+    <string name="hudhud_today_promise">%1$s ने आज देने का वादा किया है (%2$s)।</string>
+    <string name="hudhud_today_cover">%1$s अपनी हाल की रफ़्तार से लगभग %2$s चलेगा।</string>
+    <string name="hudhud_today_cover_now">%1$s अपनी हाल की रफ़्तार से आज का दिन नहीं निकालेगा।</string>
     <string name="hudhud_entry_one_at_a_time">एक वाक्य में दो एंट्री हैं। मैं एक-एक करके भरता हूँ: हर एक पर टैप करें, फ़ॉर्म देखें और सेव करें।</string>
     <string name="hudhud_sales_on">बिक्री · %1$s</string>
     <string name="hudhud_profit_on">मुनाफ़ा · %1$s</string>
@@ -1156,7 +1168,7 @@
     <string name="hudhud_quiet">होम पर बैलेंस छुपा है, इसलिए मैं रकम यहाँ लिखता हूँ, बोलता नहीं।</string>
     <string name="hudhud_no_voice">इस मोबाइल में इस भाषा की आवाज नहीं है। जवाब यहाँ लिखा है; आवाज की सेटिंग से आवाज ली जा सकती है।</string>
     <string name="hudhud_listen_local_switch">सिर्फ इसी मोबाइल पर सुनें (कभी ऑनलाइन नहीं)</string>
-    <string name="hudhud_listen_local_help">चालू: आपकी बात को सिर्फ यही मोबाइल शब्दों में बदलता है, कभी कोई ऑनलाइन सेवा नहीं। बंद: इंटरनेट हो तो मोबाइल की ऑनलाइन आवाज सेवा मदद कर सकती है।</string>
+    <string name="hudhud_listen_local_help">चालू: आपकी बात को सिर्फ यही मोबाइल शब्दों में बदलता है, कभी कोई ऑनलाइन सेवा नहीं। बंद: जहाँ यह मोबाइल आपकी भाषा खुद न समझ सके, हुदहुद एक बार पूछता है कि क्या Google की ऑनलाइन सेवा इस्तेमाल करें; आपकी हाँ पर बोलते समय आपकी आवाज़ Google को जाती है।</string>
     <string name="hudhud_listen_local_pack">सिर्फ इसी मोबाइल पर: अपनी भाषा डाउनलोड करें तो हुदहुद सुन सकेगा।</string>
     <string name="hudhud_listen_local_none">सिर्फ इसी मोबाइल पर: यह मोबाइल इस भाषा को खुद नहीं सुन सकता। अपना सवाल लिख दें, या यह सेटिंग बंद कर दें।</string>
     <string name="hudhud_voice_on">हुदहुद की आवाज चालू है</string>
@@ -4845,4 +4857,36 @@
         <item quantity="one">%1$d व्यक्ति को अभी लौटाना है</item>
         <item quantity="other">%1$d लोगों को अभी लौटाना है</item>
     </plurals>
+
+    <!-- 25 Nov 2026: the voice choice (D10), the tie button (D8), backup protection (D14) -->
+    <string name="hudhud_listen_ask_title">हुदहुद कहाँ सुने?</string>
+    <string name="hudhud_listen_ask_body">यह मोबाइल आपकी भाषा खुद नहीं समझ सकता। हुदहुद इसकी जगह Google की ऑनलाइन आवाज़ पहचानने वाली सेवा इस्तेमाल कर सकता है: तब बोलते समय आपकी आवाज़ Google को जाती है। या वह सिर्फ इसी मोबाइल पर रहे, और आप लिखें।</string>
+    <string name="hudhud_listen_ask_online">Google की ऑनलाइन सेवा इस्तेमाल करें: आपकी आवाज़ Google को जाएगी</string>
+    <string name="hudhud_listen_ask_type">इसके बदले लिखें</string>
+    <string name="hudhud_listen_ask_keep">सिर्फ इसी मोबाइल पर रखें</string>
+    <string name="audit_goods_linked">सामान प्रोडक्ट से जोड़ा गया</string>
+    <string name="backup_prot_explain">ऐप से बाहर सेव, शेयर या भेजी जाने वाली हर बैकअप फ़ाइल आपके पासवर्ड से लॉक होती है। ऐप की अपनी रखी हुई कॉपियाँ और Google Drive बैकअप लॉक नहीं होते।</string>
+    <string name="backup_prot_switch">बैकअप फ़ाइलें मेरे पासवर्ड से लॉक करें</string>
+    <string name="backup_prot_status_on">आपके पासवर्ड से सुरक्षित: आपकी सेव, शेयर या भेजी हुई हर बैकअप फ़ाइल लॉक है।</string>
+    <string name="backup_prot_status_needs">सुरक्षा चालू है। अगली बैकअप फ़ाइल बनाते समय पासवर्ड लगाने को कहा जाएगा।</string>
+    <string name="backup_prot_status_off">खुली: जिसके पास यह फ़ाइल हो वह आपकी बही पढ़ सकता है।</string>
+    <string name="backup_prot_off_title">सुरक्षा बंद करें?</string>
+    <string name="backup_prot_off_body">बैकअप फ़ाइलें खुली लिखी जाएँगी। जिसे भी फ़ाइल मिल जाए, व्हाट्सऐप, यूएसबी, खोए फ़ोन या ईमेल से, वह आपकी पूरी बही, ग्राहकों और उनके बकाया सहित, पढ़ सकता है। तभी बंद करें जब आपको पक्का यक़ीन हो।</string>
+    <string name="backup_prot_turn_off">बंद करें</string>
+    <string name="backup_prot_on_done">सुरक्षा चालू हो गई। बैकअप फ़ाइलें लॉक होंगी।</string>
+    <string name="backup_prot_off_done">सुरक्षा बंद हो गई। बैकअप फ़ाइलें अब खुली हैं: जिसके पास फ़ाइल हो वह आपकी बही पढ़ सकता है।</string>
+    <string name="backup_prot_first_title">अपनी बैकअप फ़ाइलें सुरक्षित करें</string>
+    <string name="backup_prot_first_body">बैकअप फ़ाइल आपके डिवाइस से बाहर जाती है और जिसे मिल जाए वह आपकी बही पढ़ सकता है। अभी पासवर्ड लगाएँ। यह एक बार पूछा जाएगा, बाद की फ़ाइलें बिना पूछे इसी का उपयोग करेंगी। अगर आप भूल गए तो लॉक फ़ाइलें कभी नहीं खुलेंगी, हमसे भी नहीं।</string>
+    <string name="backup_prot_hint_hint">संकेत (वैकल्पिक)</string>
+    <string name="backup_prot_hint_note">संकेत हर उस व्यक्ति को दिखाया जाता है जो लॉक फ़ाइल खोले, पासवर्ड पूछने से पहले। इसमें पासवर्ड न लिखें।</string>
+    <string name="backup_prot_hint_gives_away">संकेत में पासवर्ड नहीं होना चाहिए।</string>
+    <string name="backup_prot_hint_is">संकेत: %1$s</string>
+    <string name="backup_prot_saved">पासवर्ड लग गया। अब से बैकअप फ़ाइलें लॉक होंगी।</string>
+    <string name="backup_prot_remove_body">पासवर्ड हटा दिया जाएगा। अगली बैकअप फ़ाइल नया पासवर्ड माँगेगी, जब तक आप सुरक्षा बंद न करें। जो फ़ाइलें पहले लॉक हो चुकी हैं उन्हें खोलने के लिए यही पासवर्ड चाहिए होगा।</string>
+    <string name="backup_prot_removed">पासवर्ड हटा दिया गया।</string>
+    <string name="backup_prot_first_cancelled">पासवर्ड नहीं लगा, इसलिए कोई बैकअप फ़ाइल नहीं बनी।</string>
+    <string name="backup_prot_done_locked">आपके पासवर्ड से सुरक्षित। फ़ाइल खोलने के लिए यही चाहिए।</string>
+    <string name="backup_prot_done_open">खुली: जिसके पास यह फ़ाइल हो वह आपकी बही पढ़ सकता है।</string>
+    <string name="audit_backup_files_open">बैकअप फ़ाइलें खुली कर दी गईं (बिना पासवर्ड)</string>
+    <string name="audit_backup_files_protected">बैकअप फ़ाइलें सुरक्षित कर दी गईं (पासवर्ड से)</string>
 </resources>

@@ -261,6 +261,10 @@ fun auditActionName(words: Words, a: AuditLog, names: AuditNames = AuditNames.No
     com.innovation313.roshankhata.data.BackupPassword.AUDIT_SET -> words.text(W.audit_backup_pw_set)
     com.innovation313.roshankhata.data.BackupPassword.AUDIT_CHANGED -> words.text(W.audit_backup_pw_changed)
     com.innovation313.roshankhata.data.BackupPassword.AUDIT_REMOVED -> words.text(W.audit_backup_pw_removed)
+    // Whether backup files that leave the device are locked (D14, 25 Nov 2026).
+    com.innovation313.roshankhata.data.BackupPassword.AUDIT_FILES_PROTECTED -> words.text(W.audit_backup_files_protected)
+    com.innovation313.roshankhata.data.BackupPassword.AUDIT_FILES_OPEN -> words.text(W.audit_backup_files_open)
+    AuditAction.GOODS_LINKED -> words.text(W.audit_goods_linked)
     else -> a.action
 }
 

@@ -53,7 +53,8 @@ fun SeasonsPane(dao: KhataDao, parties: List<PartyWithBalance>, reload: Int,
         rows = withContext(Dispatchers.IO) {
             // Only the two seasons' lines, with each balance on the first day carried in (as the phone).
             val first = SeasonBook.window(System.currentTimeMillis())
-            val since = SeasonBook.seasonStart(first)
+            // From the window's first day, or earlier for a credit tagged to a season shown (E1, SeasonBook.readFrom).
+            val since = SeasonBook.readFrom(first, dao.seasonTagStarts(SeasonBook.seasonStart(first)))
             val lines = dao.observeSeasonLinesSince(since).first()
             val carried = dao.observeSeasonCarriedIn(since).first()
             SeasonBook.book(lines, carriedIn = carried.associate { it.partyId to it.net }).filter { it.season >= first }

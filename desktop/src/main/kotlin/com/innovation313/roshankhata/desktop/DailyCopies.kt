@@ -147,7 +147,9 @@ object DailyCopies {
         refresh: Boolean = false,
         now: Long = System.currentTimeMillis(),
         /** Locks the copy with the owner's backup password ([BackupSeal]); null writes it plain as always. */
-        password: String? = null
+        password: String? = null,
+        /** Shown before the password is asked, when this copy is locked ([BackupSeal.cleanHint]); null for none. */
+        hint: String? = null
     ): File? = withContext(Dispatchers.IO) {
         writing.withLock {
             dir.mkdirs()
@@ -167,7 +169,7 @@ object DailyCopies {
                 runCatching {
                     // Read back with the password it was locked with, if any: a copy that does not open with it is no copy.
                     val opens = listOfNotNull(password)
-                    BackupSeal.writer(local.outputStream(), password).use {
+                    BackupSeal.writer(local.outputStream(), password, hint = hint).use {
                         BackupCodec.exportTo(dao, settings.businessName(), BackupCodec.profileToJson(settings), it)
                     }
                     BackupCodec.parseFile(local, opens).first is BackupCodec.ImportResult.Ok && run {
@@ -198,17 +200,23 @@ object DailyCopies {
 
     /**
      * Today's copy in the owner's outside folder ([outside]: a USB stick, Google Drive for Desktop), rewritten: locked
-     * with the backup password when one is set (17 Nov 2026) — this copy leaves the computer. A password set and
-     * unreadable writes nothing ([BackupPassword.Unavailable] is null here), never the book in plain: the folder's
-     * newest copy then grows old and the week-old reminder says so.
+     * with the backup password BY DEFAULT (D14, 25 Nov 2026; before it, only when one was set) — this copy leaves the
+     * computer. A password set and unreadable writes nothing and returns null — never the book in plain: the folder's
+     * newest copy then grows old and the week-old reminder says so. Protection on and no password set yet happens only
+     * for a folder chosen before D14 (a new folder is kept only after [BackupPasswordPrompt.first] has asked): that copy
+     * goes on plain, as it did, until the owner sets a password — stopping it would leave the shop with no outside copy
+     * for days to protect a file that was already open; the password card says "set a password" meanwhile. The owner's
+     * switch for files turns the lock off, then the copy is plain as before. The hint travels in the file's header.
      */
     suspend fun makeOutside(dao: KhataDao, settings: FileShopSettings, dir: File): File? {
-        val password = try {
-            withContext(Dispatchers.IO) { DeskBackupPassword.forSealing() }
-        } catch (e: BackupPassword.Unavailable) {
-            return null
+        val plan = withContext(Dispatchers.IO) { DeskBackupPassword.plan(com.innovation313.roshankhata.data.BackupProtection.Way.OUTSIDE_FOLDER) }
+        return when (plan) {
+            com.innovation313.roshankhata.data.BackupProtection.Plan.Plain,
+            com.innovation313.roshankhata.data.BackupProtection.Plan.NeedFirstPassword -> makeToday(dao, settings, dir, refresh = true)
+            is com.innovation313.roshankhata.data.BackupProtection.Plan.Seal ->
+                makeToday(dao, settings, dir, refresh = true, password = plan.password, hint = plan.hint)
+            is com.innovation313.roshankhata.data.BackupProtection.Plan.Unavailable -> null
         }
-        return makeToday(dao, settings, dir, refresh = true, password = password)
     }
 }
 
@@ -267,7 +275,7 @@ fun DailyCopiesPane(
 
     FluentPage(word(W.snapshots_title), word(W.snapshots_subtitle), scroll = false) {
         Text(word(W.auto_backup_note), color = c.textMuted, fontSize = 13.sp)
-        OutsideFolderCard(outsideFolder, outsideDir, onFolder)
+        OutsideFolderCard(outsideFolder, outsideDir, onFolder, dao)
         BackupPasswordCard(dao)
         if (copies.isEmpty() && outside.isEmpty()) {
             EmptyState("ic_feature_backup", word(W.snapshots_empty), null, Modifier.weight(1f))
@@ -384,8 +392,13 @@ private fun CopiesHead(text: String) {
  * there, or that the folder cannot be reached (the stick is out).
  */
 @Composable
-private fun OutsideFolderCard(folder: File?, dir: File?, onFolder: (File?) -> Unit) {
+private fun OutsideFolderCard(folder: File?, dir: File?, onFolder: (File?) -> Unit, dao: KhataDao) {
     val c = LocalRoshanColors.current
+    val scope = rememberCoroutineScope()
+    var told by remember { mutableStateOf<String?>(null) }
+    val cancelledWord = word(W.backup_prot_first_cancelled)
+    val noLockWord = word(W.backup_pw_no_lock)
+    val failedWord = word(W.save_failed_not_saved)
     val chooseTitle = word(W.auto_folder_choose)
     // Swing's chooser has no words of its own in the app's languages (R57, 23 Oct 2026): ours are handed to it.
     val chooserWords = ChooserWords(
@@ -419,11 +432,23 @@ private fun OutsideFolderCard(folder: File?, dir: File?, onFolder: (File?) -> Un
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FillButton(chooseTitle, c.brandGreen) {
-                chooseFolder(chooseTitle, folder, chooserWords)?.let(onFolder)
+                // D14: copies in this folder leave the computer, so they are locked: the first time asks for the password
+                // (and a hint) before the folder is kept; cancelled, the folder is not set and nothing is written.
+                chooseFolder(chooseTitle, folder, chooserWords)?.let { chosen ->
+                    scope.launch {
+                        when (BackupPasswordPrompt.first(com.innovation313.roshankhata.data.BackupProtection.Way.OUTSIDE_FOLDER, dao)) {
+                            BackupPasswordPrompt.First.READY -> onFolder(chosen)
+                            BackupPasswordPrompt.First.CANCELLED -> told = cancelledWord
+                            BackupPasswordPrompt.First.NO_LOCK -> told = noLockWord
+                            BackupPasswordPrompt.First.FAILED -> told = failedWord
+                        }
+                    }
+                }
             }
             if (folder != null) FluentButton(word(W.auto_folder_stop), { onFolder(null) }, kind = ButtonKind.DANGER)
         }
     }
+    told?.let { TellDialog(word(W.auto_folder_title), it, { told = null }) }
 }
 
 /** The folder picker's own words in the app's language, and its direction. */

@@ -182,7 +182,7 @@ object AnswerBook {
             is Hudhud.Ask.Moved -> moved(context, dao, ask.ids, ask.window, ask.got, parties)
             is Hudhud.Ask.Entry -> entry(context, ask, parties)
             is Hudhud.Ask.WhenPays -> whenPays(context, dao, ask.ids, parties)
-            Hudhud.Ask.Today -> today(context, dao)
+            Hudhud.Ask.Today -> today(context, dao, parties)
             is Hudhud.Ask.Parties -> named(context, ask.ids, parties)
             is Hudhud.Ask.Help -> help(context, ask.key)
             Hudhud.Ask.BackupStatus -> sealNote(context, dao, backup(context))
@@ -225,6 +225,9 @@ object AnswerBook {
             is Hudhud.Ask.Compare -> compare(context, dao, ask)
             // "Why" about a figure of the book (16 Nov 2026, audit T8): facts only, by the figures' own rules.
             is Hudhud.Ask.Why -> AnswerWhy.answer(context, dao, ask)
+            // The business advisor (25 Nov 2026, plan H5): the sales trend, whom to chase first, the next 30 days — REPORTS.
+            is Hudhud.Ask.Trend -> AnswerAdvisor.trend(context, dao, ask)
+            is Hudhud.Ask.Advise -> AnswerAdvisor.advise(context, dao, ask, parties)
             is Hudhud.Ask.Entries -> entries(context, ask, parties)
             // A customer and a product in one question, and talk about past chats (17 Nov 2026, audit L004).
             is Hudhud.Ask.Took -> AnswerQ.took(context, dao, ask, parties)
@@ -445,6 +448,7 @@ object AnswerBook {
         is Hudhud.Ask.Counter -> AnswerCounterFacts.titleOf(c, a.facet)
         is Hudhud.Ask.Moved -> c.getString(if (a.got) W.i_got else W.i_gave)
         is Hudhud.Ask.Goods -> if (a.facet == Hudhud.GoodsFacet.SOLD) c.getString(W.hudhud_l_sold) else null
+        is Hudhud.Ask.Trend -> c.getString(W.hudhud_t_trend)
         else -> null
     }
 
@@ -1024,7 +1028,7 @@ object AnswerBook {
      * the owner's to see) and the bell's own rows (HomeAlerts, less "the app was updated"). Said aloud, it is the
      * greeting and one line of counts — never an amount.
      */
-    private suspend fun today(context: AnswerEnv, dao: KhataDao): AnswerCard {
+    private suspend fun today(context: AnswerEnv, dao: KhataDao, parties: List<PartyWithBalance>): AnswerCard {
         val now = context.now()
         val radar = AnswerGate.reports() && context.radarOn()
         // Neither read is caught (stage 7, F2): a bell that failed to compute is not "nothing is waiting", and a failed list of whom
@@ -1032,8 +1036,11 @@ object AnswerBook {
         val collect = if (context.viewer()) null else Automations.collect(dao, context.remindedToday(now), now, radar = radar)
         val alerts = context.alerts(dao).filter { it.kind != AnswerAlert.Kind.UPDATED }
         val remind = collect?.count ?: 0
+        // What needs the owner today beyond the bell (25 Nov 2026, plan H5): a promised payment due, a shelf running out; two at most.
+        val advice = AnswerAdvisor.needsToday(context, dao, parties, now)
         val lines = ArrayList<String>()
         if (remind > 0) lines += context.quantity(WP.hudhud_greet_remind, remind, remind)
+        advice.forEach { lines += "• " + it }
         alerts.forEach { lines += "• " + it.title }
         if (lines.isEmpty()) lines += context.getString(W.hudhud_greet_clear)
         val likely = collect?.likelyIds.orEmpty()
@@ -1041,7 +1048,7 @@ object AnswerBook {
             Row(it.id, it.name, money(it.balance), if (it.id in likely) context.getString(W.radar_likely_now) else null)
         }
         return AnswerCard(
-            if (remind == 0 && alerts.isEmpty()) Mood.GOOD else Mood.CALM,
+            if (remind == 0 && alerts.isEmpty() && advice.isEmpty()) Mood.GOOD else Mood.CALM,
             label = greeting(context, now),
             lines = lines,
             rows = rows,
@@ -1238,6 +1245,8 @@ object AnswerBook {
     fun chipLabel(c: AnswerEnv, ask: Hudhud.Ask): String? = when (ask) {
         is Hudhud.Ask.Figure -> c.getString(labelOf(ask.kind))
         is Hudhud.Ask.Period -> c.getString(periodLabel(ask.measure, ask.window))
+        is Hudhud.Ask.Trend -> c.getString(W.hudhud_t_trend)
+        is Hudhud.Ask.Advise -> c.getString(if (ask.of == Hudhud.AdviseOf.CHASE) W.hudhud_t_chase else W.hudhud_t_next30)
         Hudhud.Ask.Abilities -> c.getString(W.hudhud_chip_abilities)
         Hudhud.Ask.Today -> c.getString(W.hudhud_chip_today)
         Hudhud.Ask.BackupStatus -> c.getString(W.hudhud_chip_backup)
@@ -1507,6 +1516,14 @@ object AnswerBook {
                 Hudhud.StatusOf.INVOICES -> listOf(Hudhud.Ask.Count(Hudhud.Thing.INVOICES), Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
             }
             is Hudhud.Ask.Deliveries -> listOf(Hudhud.Ask.Status(Hudhud.StatusOf.BILLS), Hudhud.Ask.Status(Hudhud.StatusOf.LOW_STOCK))
+            // The advisor's three lead to each other and to the figure behind them (the filter below leaves the REPORTS ones to REPORTS).
+            is Hudhud.Ask.Trend -> listOf(Hudhud.Ask.Why(Hudhud.WhyOf.SALES, ask.window), Hudhud.Ask.TopGoods(ask.window),
+                Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE))
+            is Hudhud.Ask.Advise -> if (ask.of == Hudhud.AdviseOf.CHASE) {
+                listOf(Hudhud.Ask.WhenPays(emptyList()), Hudhud.Ask.Advise(Hudhud.AdviseOf.NEXT_30), Hudhud.Ask.Trend(VoiceQuestion.Window.THIS_MONTH))
+            } else {
+                listOf(Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE), Hudhud.Ask.Status(Hudhud.StatusOf.CHEQUES), Hudhud.Ask.Trend(VoiceQuestion.Window.THIS_MONTH))
+            }
             is Hudhud.Ask.Activity -> listOf(Hudhud.Ask.Collected(today), Hudhud.Ask.Deliveries(today), Hudhud.Ask.Count(Hudhud.Thing.INVOICES, today))
             is Hudhud.Ask.Collected -> listOf(Hudhud.Ask.Activity(today), Hudhud.Ask.Drawer, Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))
             Hudhud.Ask.Clock -> listOf(Hudhud.Ask.Today, Hudhud.Ask.Activity(today))
@@ -1566,7 +1583,7 @@ object AnswerBook {
         is Hudhud.Ask.Goods -> a.facet == Hudhud.GoodsFacet.COST || a.facet == Hudhud.GoodsFacet.SUPPLIERS || a.facet == Hudhud.GoodsFacet.SOLD || a.facet == Hudhud.GoodsFacet.COVER
         is Hudhud.Ask.Now -> needsReports(a.ask)
         is Hudhud.Ask.OnDays -> a.of != Hudhud.DatedOf.PAID && a.of != Hudhud.DatedOf.TOOK
-        is Hudhud.Ask.Compare, is Hudhud.Ask.Why -> true
+        is Hudhud.Ask.Compare, is Hudhud.Ask.Why, is Hudhud.Ask.Trend, is Hudhud.Ask.Advise -> true
         is Hudhud.Ask.Both -> needsReports(a.first) || needsReports(a.second)
         else -> false
     }

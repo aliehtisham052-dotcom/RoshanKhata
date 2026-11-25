@@ -1141,6 +1141,18 @@
     <string name="hudhud_why_part">%1$s: %2$s (now %3$s, before %4$s)</string>
     <string name="hudhud_why_no_cost">Sale lines with no cost price: %1$d now, %2$d before. Their profit is not counted.</string>
     <string name="hudhud_why_only_book">These are the book\'s own figures. A reason outside the book (the market, the weather) is not in it.</string>
+    <string name="hudhud_t_trend">Sales trend</string>
+    <string name="hudhud_trend_up">Sales are going up.</string>
+    <string name="hudhud_trend_down">Sales are going down.</string>
+    <string name="hudhud_trend_flat">Sales are about the same.</string>
+    <string name="hudhud_trend_none">Nothing was sold in either period.</string>
+    <string name="hudhud_trend_from_nothing">Nothing was sold in the period before, so there is no percentage.</string>
+    <string name="hudhud_t_chase">Whom to chase first</string>
+    <string name="hudhud_chase_note">Longest-waiting dues come first, with those the Payment Radar calls late. Nothing is sent from here.</string>
+    <string name="hudhud_t_next30">Next 30 days</string>
+    <string name="hudhud_today_promise">%1$s promised to pay today (%2$s).</string>
+    <string name="hudhud_today_cover">%1$s should last about %2$s at its recent pace.</string>
+    <string name="hudhud_today_cover_now">%1$s will not last the day at its recent pace.</string>
     <string name="hudhud_entry_one_at_a_time">Two entries in one sentence. I fill them one at a time: tap each to open its form, check it and save.</string>
     <string name="hudhud_sales_on">Sale · %1$s</string>
     <string name="hudhud_profit_on">Profit · %1$s</string>
@@ -1158,7 +1170,7 @@
     <string name="hudhud_quiet">Balances are hidden on Home, so I write amounts here and do not say them aloud.</string>
     <string name="hudhud_no_voice">This phone has no voice for this language. The answer is written here; Voice settings can get one.</string>
     <string name="hudhud_listen_local_switch">Only listen on this phone (never online)</string>
-    <string name="hudhud_listen_local_help">On: what you say is turned into words by this phone alone, never by an online service. Off: the phone\'s online speech service may help while there\'s internet.</string>
+    <string name="hudhud_listen_local_help">On: what you say is turned into words by this phone alone, never by an online service. Off: where this phone cannot understand your language by itself, Hudhud asks you once whether to use Google\'s online recogniser; with your yes, your voice goes to Google while you speak.</string>
     <string name="hudhud_listen_local_pack">Only on this phone: download your language and he can listen.</string>
     <string name="hudhud_listen_local_none">Only on this phone: this phone can\'t hear this language by itself. Type your question, or turn this setting off.</string>
     <string name="hudhud_voice_on">Hudhud\'s voice is on</string>
@@ -5010,4 +5022,36 @@
         <item quantity="one">%1$d person still has it to return</item>
         <item quantity="other">%1$d people still have it to return</item>
     </plurals>
+
+    <!-- 25 Nov 2026: the voice choice (D10), the tie button (D8), backup protection (D14) -->
+    <string name="hudhud_listen_ask_title">Where should he listen?</string>
+    <string name="hudhud_listen_ask_body">This phone can\'t understand your language by itself. Hudhud can use Google\'s online speech recogniser instead: your voice then goes to Google while you speak. Or he stays on this phone only, and you type.</string>
+    <string name="hudhud_listen_ask_online">Use Google\'s online recogniser: your voice goes to Google</string>
+    <string name="hudhud_listen_ask_type">Type instead</string>
+    <string name="hudhud_listen_ask_keep">Keep it on this phone only</string>
+    <string name="audit_goods_linked">Goods tied to products</string>
+    <string name="backup_prot_explain">Every backup file you save, share or send out of the app is locked with your password. Copies the app keeps for itself and the Google Drive backup are not locked.</string>
+    <string name="backup_prot_switch">Lock backup files with my password</string>
+    <string name="backup_prot_status_on">Protected with your password: every backup file you save, share or send out is locked.</string>
+    <string name="backup_prot_status_needs">Protection is on. The next backup file will ask you to set a password.</string>
+    <string name="backup_prot_status_off">Open: anyone with this file can read your book.</string>
+    <string name="backup_prot_off_title">Turn off protection?</string>
+    <string name="backup_prot_off_body">Backup files will be written open. Anyone who gets a file, from WhatsApp, a USB stick, a lost phone or an email, can read your whole book with your customers and their balances. Turn it off only if you are sure.</string>
+    <string name="backup_prot_turn_off">Turn off</string>
+    <string name="backup_prot_on_done">Protection is on. Backup files will be locked.</string>
+    <string name="backup_prot_off_done">Protection is off. Backup files are now open: anyone with a file can read your book.</string>
+    <string name="backup_prot_first_title">Protect your backup files</string>
+    <string name="backup_prot_first_body">A backup file leaves your device, and anyone who gets it could read your book. Set a password now. It is asked once; later files use it without asking. If you forget it, locked files can never be opened, not even by us.</string>
+    <string name="backup_prot_hint_hint">Hint (optional)</string>
+    <string name="backup_prot_hint_note">The hint is shown to anyone who opens a locked file, before the password is asked. Do not write the password in it.</string>
+    <string name="backup_prot_hint_gives_away">The hint must not contain the password.</string>
+    <string name="backup_prot_hint_is">Hint: %1$s</string>
+    <string name="backup_prot_saved">Password set. Backup files from now on are locked.</string>
+    <string name="backup_prot_remove_body">The password will be removed. The next backup file will ask for a new one, unless you turn protection off. Files already locked still need this password to open.</string>
+    <string name="backup_prot_removed">Password removed.</string>
+    <string name="backup_prot_first_cancelled">No password was set, so no backup file was made.</string>
+    <string name="backup_prot_done_locked">Protected with your password. The file needs it to open.</string>
+    <string name="backup_prot_done_open">Open: anyone with this file can read your book.</string>
+    <string name="audit_backup_files_open">Backup files set to open (no password)</string>
+    <string name="audit_backup_files_protected">Backup files set to protected (password)</string>
 </resources>
