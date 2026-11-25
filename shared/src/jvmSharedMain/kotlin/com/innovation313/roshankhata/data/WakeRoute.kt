@@ -6,8 +6,9 @@ package com.innovation313.roshankhata.data
  * Until now a wake-up ran rounds for the open shop alone, so a parcel for a shop that was not open waited until the
  * owner opened it.
  *
- * The relay knows its own book; when its message names it ([named], the "k" field), only that shop is woken. A relay
- * that does not name it yet (the Worker as deployed on 16 Nov 2026) leaves the phone to guess: the open shop first
+ * The relay knows its own book; when its message names it ([named], the "k" field), only that shop is woken: the
+ * Worker names it since 25 Nov 2026 (its deploy that day). A relay that does not (an older deploy, or a book from before
+ * 23 Oct that has not said hello since) leaves the phone to guess: the open shop first
  * (as before), then the shops that are not open and whose owner turned the relay on — at most [MAX_OTHERS], since
  * Firebase gives a message about twenty seconds. Every decision here is pure; the phone opens each shop's own file
  * ([PushWake]) one shop at a time.

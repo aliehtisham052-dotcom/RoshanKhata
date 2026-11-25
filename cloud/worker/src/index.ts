@@ -1283,6 +1283,11 @@ export class Daakiya extends DurableObject<Env> {
       `SELECT device, fcm, woke FROM devices WHERE device != ? AND fcm IS NOT NULL`, sender,
     ).toArray();
     const b64 = parcel ? toBase64(parcel.body) : null;
+    // The book this message is for ("k"), so a phone with several shops wakes only that one (WakeRoute.named; the app
+    // reads it since 17 Nov 2026). Its random 32-letter id, nothing the owner wrote; a book from before 23 Oct that has
+    // not said hello since keeps no id here and its message names none (the phone then guesses, as before).
+    const k = this.meta("book");
+    const named: Record<string, string> = k && HEX32.test(k) ? { k } : {};
     for (const r of rows) {
       if (live.has(r.device)) continue;
       // The parcel itself, when it fits and the device is not being sent too many this minute: every parcel goes
@@ -1293,9 +1298,9 @@ export class Daakiya extends DurableObject<Env> {
       let data: Record<string, string> | null = null;
       if (parcel && b64 && b64.length <= CARRY_MAX_B64 && n < CARRY_PER_MINUTE) {
         this.carried.set(r.device, { minute, n: n + 1 });
-        data = { t: "rk-parcel", s: String(parcel.seq), f: sender, b: b64 };
+        data = { t: "rk-parcel", s: String(parcel.seq), f: sender, b: b64, ...named };
       } else if (now - r.woke >= WAKE_GAP_MS) {
-        data = { t: "rk-wake" };
+        data = { t: "rk-wake", ...named };
       }
       if (!data) continue;
       this.sql.exec(`UPDATE devices SET woke = ? WHERE device = ?`, now, r.device);

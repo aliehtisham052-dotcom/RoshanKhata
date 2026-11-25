@@ -292,7 +292,9 @@
   sent to a relay. While the app is closed, the relay may ask Google's Firebase
   Cloud Messaging to deliver a message to your phone: either one word
   ("rk-wake"), so the phone picks up what is waiting, or a small change itself,
-  still sealed with the book's key, which Google carries but cannot read. For
+  still sealed with the book's key, which Google carries but cannot read. Each
+  such message also carries the book's random identifier (32 letters and digits,
+  not your shop's name), so a phone that keeps several shops wakes the right one. For
   this, Firebase gives the phone a token, and Google receives a Firebase
   installation ID, the app's version and basic device information. No name,
   figure or other part of the book is sent to Google in a form it can read.

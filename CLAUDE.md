@@ -4477,7 +4477,7 @@ merge ran the harness (765 shared tests) and all 19 Strings steps; CI green on A
 - **Wake-up for shops that are not open** (`WakeRoute`, shared, pure; `PushWake.roundNow`/`takeCarried`): a message that
   names its book wakes that shop only; an unnamed one wakes the open shop, then up to 3 shops that are not open with the
   relay on, each through `openOther` under a Mutex, never NumberMark from another shop, nothing on a helper's phone. The
-  Worker does not yet put the book id ("k") in its FCM messages: that is a Worker deploy, the owner's word.
+  Worker puts the book id ("k") in both FCM messages since 25 Nov 2026 (the owner's yes; privacy policy section 17 says so).
 - **Whole deadlines** (`LiveControl.fetchFrom`: 8 s, User-Agent "RoshanKhata", 16 KB cap, one read at a time;
   `Rfc3161.cut` disconnects off the caller's thread — lesson 154).
 - **The seal's CA chain** (`Rfc3161.chain`, the JDK's PKIX at the token's genTime; `pinned` trusts a root only by a SHA-256
