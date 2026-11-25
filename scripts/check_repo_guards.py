@@ -29,6 +29,11 @@
       compile (lesson 38). It slipped through on 25 Nov 2026 ("the first-use question: ...") and
       the Windows and Android builds both failed at :desktop:compileTestKotlin.
 
+  gradle_cache_on_except_release (BC-290): every workflow that sets up Gradle keeps its dependency
+      cache on (cache-read-only for anything but main and kmp-* pushes), except aab.yml, the Play
+      bundle, which is built from fresh downloads. With the cache off every run fetched every jar
+      from Maven Central, and Sonatype's rate limit (429) failed the Android build twice on 25 Nov 2026.
+
     python3 scripts/check_repo_guards.py         # exit 1 and a line per fault
 """
 import pathlib, re, subprocess, sys
@@ -157,15 +162,36 @@ def test_names_are_jvm_names(root=ROOT):
     return faults
 
 
+RELEASE_UNCACHED = {"aab.yml"}
+
+
+def gradle_cache_on_except_release(root=ROOT):
+    faults = []
+    for p in sorted((root / ".github/workflows").glob("*.yml")):
+        jobs = (yaml.safe_load(p.read_text()) or {}).get("jobs") or {}
+        for name, job in jobs.items():
+            for step in job.get("steps") or []:
+                if "setup-gradle" not in str(step.get("uses", "")):
+                    continue
+                off = str((step.get("with") or {}).get("cache-disabled", "false")).lower() == "true"
+                if p.name in RELEASE_UNCACHED and not off:
+                    faults.append("%s job %s: the Play bundle must be built with the Gradle cache off" % (p.name, name))
+                if p.name not in RELEASE_UNCACHED and off:
+                    faults.append("%s job %s turns the Gradle cache off: every run then downloads every jar from "
+                                  "Maven Central, which answers 429 (keep cache-read-only for other branches)" % (p.name, name))
+    return faults
+
+
 def main():
     faults = (publish_jobs_hold_no_secrets() + no_tracked_ignored_files() + csv_reads_are_decoded()
-              + shown_bitmaps_never_recycled() + left_margins_name_their_side() + test_names_are_jvm_names())
+              + shown_bitmaps_never_recycled() + left_margins_name_their_side() + test_names_are_jvm_names()
+              + gradle_cache_on_except_release())
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
     print("repo guards: release jobs hold no secrets, nothing ignored is tracked, every CSV read is decoded, "
-          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name")
+          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle")
 
 
 if __name__ == "__main__":

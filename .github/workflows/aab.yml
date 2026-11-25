@@ -82,6 +82,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
         with:
+          # The Play bundle alone is built from fresh downloads, never from a cache another run wrote (BC-290).
           cache-disabled: true
           gradle-version: 8.14.3
 
