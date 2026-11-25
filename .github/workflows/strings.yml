@@ -42,6 +42,11 @@ on:
       # any data file of his in any module (the model in the assets too), the script and the hash helper it shares.
       - '**/hudhud/**'
       - 'scripts/hudhud_manifest.py'
+      # Marhala 2 tools: the check-log triage's tests and the on-device speed sample (hudhud_speed_sample.py --check).
+      - 'scripts/hudhud_checklog.py'
+      - 'scripts/test_hudhud_checklog.py'
+      - 'scripts/hudhud_speed_sample.py'
+      - 'app/src/androidTest/assets/hudhud/**'
       - 'scripts/hudhud_model_card.py'
       - 'scripts/gen_viewer_dao.py'
       # Hudhud's catalog: every stored column, screen, tile and More entry has a decision (gen_hudhud_catalog.py --check).
@@ -108,6 +113,11 @@ on:
       # any data file of his in any module (the model in the assets too), the script and the hash helper it shares.
       - '**/hudhud/**'
       - 'scripts/hudhud_manifest.py'
+      # Marhala 2 tools: the check-log triage's tests and the on-device speed sample (hudhud_speed_sample.py --check).
+      - 'scripts/hudhud_checklog.py'
+      - 'scripts/test_hudhud_checklog.py'
+      - 'scripts/hudhud_speed_sample.py'
+      - 'app/src/androidTest/assets/hudhud/**'
       - 'scripts/hudhud_model_card.py'
       - 'scripts/gen_viewer_dao.py'
       # Hudhud's catalog: every stored column, screen, tile and More entry has a decision (gen_hudhud_catalog.py --check).
@@ -185,6 +195,10 @@ jobs:
       # docs/hudhud-rights-register.tsv, and docs/decision-log.md lists every D-decision of docs/decisions-*.md. Names only (lesson 125).
       - name: Hudhud's data manifest, rights register and decision log are current
         run: python3 scripts/hudhud_manifest.py --check
+      # Marhala 2: the check log's triage masks every name and number and never writes inside the repository (test_hudhud_checklog.py);
+      # the speed test's sample is the held-out file's every fourth row, never stale (hudhud_speed_sample.py --check).
+      - name: Hudhud's field-test tools (check-log triage tests, the speed sample current)
+        run: python3 scripts/test_hudhud_checklog.py && python3 scripts/hudhud_speed_sample.py --check
       # The owner's rule: Hudhud's reach is the app's own map, not a list somebody remembered. A new table, column, screen, Home tile
       # or More entry fails here until shared/hudhud/catalog/decisions.tsv says what Hudhud does with it, and every claim that he
       # tells something is held to the code that tells it and to the gate its own screen asks (scripts/gen_hudhud_catalog.py).
