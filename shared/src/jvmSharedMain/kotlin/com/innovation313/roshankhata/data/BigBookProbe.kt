@@ -119,7 +119,7 @@ object BigBookProbe {
         time("  stock: back over the counter") { dao.walkInReturnedPerProductUnit() }
         time("  stock: counted and adjusted") { dao.adjustedPerProductUnit() }
         time("Stock value") { Valuation.compute(dao) }
-        time("Expiring batches", { "${it.size} batches" }) { Fefo.expiring(dao, now + ExpiryWindow.WARN_MS) }
+        time("Expiring batches", { "${it.size} batches" }) { Fefo.expiring(dao, ExpiryWindow.cutoff(now)) }
         time("Stock register", { "${it.size} batches" }) { Fefo.register(dao) }
         time("Reorder list") { Automations.reorder(dao, now) }
         time("Counter: tickets of 60 days", { "${it.size} tickets" }) { dao.salesBetween(now - 60 * DAY, now + 60_000) }

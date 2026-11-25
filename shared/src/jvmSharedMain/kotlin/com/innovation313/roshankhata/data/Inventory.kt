@@ -141,7 +141,7 @@ object OrderNumber {
 data class Valuation(val rows: List<Row>) {
     data class Row(val productId: Long, val name: String, val onHand: Double?, val unit: String?, val cost: Double?, val lowStockLevel: Double?) {
         val value: Double? get() = if (onHand != null && cost != null) Cost.value(onHand, cost) else null // L73: oversold stock is not negative value
-        val isLow: Boolean get() = onHand != null && lowStockLevel != null && onHand <= lowStockLevel
+        val isLow: Boolean get() = Valuation.isLow(onHand, lowStockLevel)
 
         companion object {
             /**
@@ -161,6 +161,13 @@ data class Valuation(val rows: List<Row>) {
     val low: List<Row> get() = rows.filter { it.isLow }
 
     companion object {
+        /**
+         * THE ONE "LOW" TEST (25 Nov 2026, BC-282): the shelf is known and the owner set a level and the shelf is AT or UNDER it.
+         * The Products list, the stock page, "Order the low stock", Hudhud and the bell's low-stock row all say it; the bell
+         * once kept a second copy of this comparison beside the first.
+         */
+        fun isLow(onHand: Double?, level: Double?): Boolean = onHand != null && level != null && onHand <= level
+
         suspend fun compute(dao: KhataDao): Valuation {
             val products = dao.productsOnce().associateBy { it.id }
             val stock = Stock.of(dao)

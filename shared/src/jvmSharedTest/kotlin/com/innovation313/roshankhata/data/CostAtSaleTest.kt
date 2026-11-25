@@ -90,7 +90,7 @@ class CostAtSaleTest {
         val lines = purchases.mapIndexed { i, d -> Profit.PurchaseLine(i + 1L, 1L, d.qty, d.unit, d.rate, d.boughtAt) }
         val sale = Profit.SaleLine(1L, "Urea", 1.0, unit, 100.0, false, batch, at, true, costPrice = p.costPrice, productUnit = p.defaultUnit,
             packUnit = p.packUnit, packSize = p.packSize)
-        return Profit.costFor(sale, lines.associateBy { it.id }, lines.groupBy { it.productId!! })
+        return Profit.costFor(sale, lines.groupBy { it.productId!! })
     }
 
     @Test fun `Insights and the sales report cost the same khata sale at the same figure`() {
@@ -120,10 +120,29 @@ class CostAtSaleTest {
         assertNull(insightsCost(product(), 5 * day, later))
     }
 
-    @Test fun `a batch the owner chose is still costed on its own rate in Insights`() {
+    /**
+     * BC-279 (25 Nov 2026): Insights alone costed a line on the batch the owner tagged (200), the sales report, the counter and
+     * the shelf's value on the contract's average (130): the same sale, two profits. Now the tag changes nothing in the cost.
+     */
+    @Test fun `a batch the owner chose changes no cost, in Insights or in the report`() {
         val purchases = listOf(bought(10.0, 60.0, 1 * day), bought(10.0, 200.0, 2 * day))
-        assertEquals(200.0, insightsCost(product(), 10 * day, purchases, batch = 2L)!!, 0.0)
-        assertNotNull(reportCost(product(), 10 * day, purchases))
+        assertEquals(130.0, insightsCost(product(), 10 * day, purchases, batch = 2L)!!, 0.0)
+        assertEquals(130.0, reportCost(product(), 10 * day, purchases)!!, 0.0)
+        assertEquals(insightsCost(product(), 10 * day, purchases, batch = null), insightsCost(product(), 10 * day, purchases, batch = 2L))
+        // with the owner's own cost price: that, tagged or not
+        val priced = product(cost = 90.0)
+        assertEquals(90.0, insightsCost(priced, 10 * day, purchases, batch = 2L)!!, 0.0)
+        assertEquals(90.0, reportCost(priced, 10 * day, purchases)!!, 0.0)
+        // a tagged line with no purchase by the sale's day has no cost (the batch's later rate is not it)
+        assertNull(insightsCost(product(), 0, purchases, batch = 2L))
+    }
+
+    @Test fun `a tagged line in another unit is costed like an untagged one, never on the batch`() {
+        val bags = listOf(bought(10.0, 100.0, 1 * day, unit = "bag"), bought(10.0, 5.0, 1 * day, unit = "kg"))
+        for (unit in listOf("kg", "bag", "tola", null)) {
+            assertEquals("unit $unit", insightsCost(product(unit = null), 5 * day, bags, unit, batch = null), insightsCost(product(unit = null), 5 * day, bags, unit, batch = 1L))
+            assertEquals("unit $unit", reportCost(product(unit = null), 5 * day, bags, unit), insightsCost(product(unit = null), 5 * day, bags, unit, batch = 1L))
+        }
     }
 
     // ---- the guard: the old second rule is gone ----------------------------------------------------------------
@@ -143,5 +162,8 @@ class CostAtSaleTest {
         assertEquals(false, "unitsAgree" in profit)
         assertEquals(false, "Cost.perUnit(dao" in report)
         assertEquals(false, "perUnit * base / qty" in report)
+        // BC-279: the chosen batch's rate is no cost rule of Insights any more
+        assertEquals(false, "purchasesById" in profit)
+        assertEquals(false, "batch.rate" in profit)
     }
 }

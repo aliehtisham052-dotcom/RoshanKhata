@@ -232,7 +232,7 @@ object Automations {
     /** The batches still holding something inside the warning window, soonest first. */
     suspend fun expiring(dao: KhataDao, now: Long): List<ExpiringBatch> =
         // No catch: a shelf that could not be read is no "nothing expiring", and the notice must not mark itself said (BC-256).
-        Fefo.expiring(dao, DayMath.startOfDay(now) + ExpiryWindow.WARN_MS).sortedBy { it.expiryDate }
+        Fefo.expiring(dao, ExpiryWindow.cutoff(now)).sortedBy { it.expiryDate }
 
     /**
      * The cheques due today or past their day and still pending, by [ChequesDue] — the very rule the bell rows

@@ -43,13 +43,14 @@ class ProfitTest {
     }
 
     @Test
-    fun `a chosen batch is costed at that batch's own rate, not the average`() {
+    fun `a chosen batch does not change the cost - the weighted average is the cost (BC-279)`() {
         val purchases = listOf(
             buy(1, qty = 10.0, rate = 100.0),
             buy(2, qty = 10.0, rate = 200.0)
         )
-        val cost = Profit.costFor(sale(batch = 2L), purchases.associateBy { it.id }, purchases.groupBy { it.productId!! })
-        assertEquals(200.0, cost!!, 0.001)
+        val cost = Profit.costFor(sale(batch = 2L), purchases.groupBy { it.productId!! })
+        assertEquals(150.0, cost!!, 0.001)
+        assertEquals(cost, Profit.costFor(sale(batch = null), purchases.groupBy { it.productId!! })!!, 0.0)
     }
 
     @Test
@@ -59,7 +60,7 @@ class ProfitTest {
             buy(2, qty = 30.0, rate = 200.0, on = 2 * day)
         )
         // (10*100 + 30*200) / 40 = 175
-        val cost = Profit.costFor(sale(at = 5 * day), purchases.associateBy { it.id }, purchases.groupBy { it.productId!! })
+        val cost = Profit.costFor(sale(at = 5 * day), purchases.groupBy { it.productId!! })
         assertEquals(175.0, cost!!, 0.001)
     }
 
@@ -69,31 +70,31 @@ class ProfitTest {
             buy(1, qty = 10.0, rate = 100.0, on = 1 * day),
             buy(2, qty = 10.0, rate = 900.0, on = 20 * day)
         )
-        val cost = Profit.costFor(sale(at = 5 * day), purchases.associateBy { it.id }, purchases.groupBy { it.productId!! })
+        val cost = Profit.costFor(sale(at = 5 * day), purchases.groupBy { it.productId!! })
         assertEquals(100.0, cost!!, 0.001)
     }
 
     @Test
     fun `bought in bags and sold in kilos is not costed - no guess`() {
         val purchases = listOf(buy(1, qty = 10.0, rate = 100.0, unit = "bag"))
-        val cost = Profit.costFor(sale(unit = "kg"), purchases.associateBy { it.id }, purchases.groupBy { it.productId!! })
+        val cost = Profit.costFor(sale(unit = "kg"), purchases.groupBy { it.productId!! })
         assertNull(cost)
     }
 
     @Test
     fun `a blank unit on either side disagrees with nothing`() {
         val purchases = listOf(buy(1, qty = 10.0, rate = 100.0, unit = null))
-        val cost = Profit.costFor(sale(unit = "kg"), purchases.associateBy { it.id }, purchases.groupBy { it.productId!! })
+        val cost = Profit.costFor(sale(unit = "kg"), purchases.groupBy { it.productId!! })
         assertEquals(100.0, cost!!, 0.001)
     }
 
     @Test
-    fun `a chosen batch in a different unit falls back to the average, not the batch`() {
+    fun `a chosen batch in a different unit is not the cost either`() {
         val purchases = listOf(
             buy(1, qty = 10.0, rate = 100.0, unit = "bag"),
             buy(2, qty = 10.0, rate = 5.0, unit = "kg")
         )
-        val cost = Profit.costFor(sale(unit = "kg", batch = 1L), purchases.associateBy { it.id }, purchases.groupBy { it.productId!! })
+        val cost = Profit.costFor(sale(unit = "kg", batch = 1L), purchases.groupBy { it.productId!! })
         assertEquals(5.0, cost!!, 0.001)
     }
 

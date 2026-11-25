@@ -1054,7 +1054,7 @@ private fun Book(
         val now = remember { System.currentTimeMillis() }
         val dueCheques by remember { dao.observeDueChequeCount(now) }.collectAsState(0)
         // Batches that still hold something, by the one rule (Marhala 3): a sold-out or written-off lot no longer counts.
-        val expiring by remember { com.innovation313.roshankhata.data.Fefo.observeExpiringCount(dao, now + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
+        val expiring by remember { com.innovation313.roshankhata.data.Fefo.observeExpiringCount(dao, com.innovation313.roshankhata.data.ExpiryWindow.cutoff(now)) }.collectAsState(0)
         // The whole book out is gated wherever it is asked for — the header, Home's quick action,
         // the bell's row (21 Oct 2026: only the header's button asked a cashier for the PIN) — and
         // the audit log says who took it. Owner-only BACKUP, as the phone's BackupActivity (R33,
@@ -2785,14 +2785,8 @@ private fun lateCount(dao: KhataDao): kotlinx.coroutines.flow.Flow<Int> =
         // The owing customers' lines a slice at a time, from these same parties (LedgerLines, 3 Nov 2026).
         .mapLatest { parties -> parties to com.innovation313.roshankhata.data.LedgerLines.owingOf(dao, parties) }
         .combine(dao.observePromises()) { (parties, points), promiseRows ->
-            val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
-            val habits = com.innovation313.roshankhata.data.PaymentHabit.forAll(points)
-            val promises = promiseRows.associate { it.partyId to it.due }
-            val now = System.currentTimeMillis()
-            val tz = java.util.TimeZone.getDefault()
-            habits.keys.count { id ->
-                id in owing && com.innovation313.roshankhata.data.FollowUpRank.lateByHabit(id, habits, promises, now, tz)
-            }
+            // One count on every screen (FollowUpRank.lateCount, BC-280).
+            com.innovation313.roshankhata.data.FollowUpRank.lateCount(parties, points, promiseRows.associate { it.partyId to it.due })
         }
         .flowOn(Dispatchers.Default)
 

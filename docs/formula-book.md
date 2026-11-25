@@ -146,7 +146,7 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Rounding: unit cost times qty
 - Gate: REPORTS
 - Shown on: Insights profit
-- Confidence: VERIFIED; differs from F15 (see D1)
+- Confidence: VERIFIED; since 25 Nov 2026 one rule with F15 (F57, BC-279)
 
 ### F15 Cost of a khata sale (sales report)
 - Function: `data/Cost.kt::Cost.perUnit; data/SalesReport.kt::KhataSales.costRate`
@@ -156,7 +156,7 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Rounding: 6 decimals per unit (L21)
 - Gate: REPORTS
 - Shown on: Sales report, Z report profit
-- Confidence: VERIFIED; differs from F14 (see D1)
+- Confidence: VERIFIED; since 25 Nov 2026 one rule with F14 (F57, BC-279)
 
 ### F16 Cost of a counter ticket line
 - Function: `data/CounterDraft.kt::Counter.costOf`
@@ -528,11 +528,131 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Shown on: everywhere
 - Confidence: VERIFIED
 
+### F53 What is left of a batch (lot)
+- Function: `data/Fefo.kt::Fefo.lotsOf`, `data/Fefo.kt::Fefo.capByShelf`
+- Reads: bill_items (qty, unit, expiryDate), entry_items, sale_items, return lines, write-offs (movements per batch), products.defaultUnit
+- Window: all time to now
+- Left out: a lot with nothing left; a binned party's goods are not left out (D11)
+- Rounding: quantity in the product's own unit via Units.toBase, Units.roundQty 6 places; never more than the shelf (capByShelf)
+- Gate: none found
+- Shown on: counter, Expiry, stock register, Home chip, bell, bills banner, batch picker
+- Confidence: VERIFIED
+
+### F54 Soonest batch / expiring list
+- Function: `data/Fefo.kt::Fefo.expiring`, `data/ExpiryWindow.kt::ExpiryWindow.cutoff`
+- Reads: lots (F53), bill_items.expiryDate
+- Window: batches with stock and a day, expiryDate <= cutoff = end of day 60 from today (calendar, not +60x24h)
+- Left out: batches with no expiry day; empty lots
+- Rounding: day arithmetic by DaySpans.dayStartAfter
+- Gate: none found
+- Shown on: Expiry page, bell row, Home chip, 10:00 automation, bills banner
+- Confidence: VERIFIED
+
+### F55 Unit contract (packs and other units)
+- Function: `data/Units.kt::Units.toBase`, `data/Units.kt::Units.agree`, `data/Units.kt::Units.fromBase`
+- Reads: products.defaultUnit, packUnit, pack size
+- Window: n/a
+- Left out: a mixed unit with no conversion gives null, never a guessed figure
+- Rounding: Units.roundQty 6 places
+- Gate: n/a
+- Shown on: every stock, cost and line figure
+- Confidence: VERIFIED
+
+### F56 Cost of one unit of a product
+- Function: `data/Cost.kt::Cost.rule`, `data/Cost.kt::Cost.average`, `data/Cost.kt::Cost.forUnit`, `data/Cost.kt::Cost.value`
+- Reads: products.costPrice, purchase lines (bill_items)
+- Window: cost price, else weighted average of purchases, else last rate
+- Left out: a pack or other unit with no factor gives null
+- Rounding: 6 decimals per unit (RATE_DECIMALS); value once to the coin by LineMath
+- Gate: none
+- Shown on: valuation, sales report, Insights, counter
+- Confidence: VERIFIED
+
+### F57 Cost of a khata sale line (one rule)
+- Function: `data/Cost.kt::Cost.forSale`, `data/Profit.kt::Profit.costFor`
+- Reads: products.costPrice, purchases dated <= the sale
+- Window: as the sale's day
+- Left out: a line with no product gives no cost
+- Rounding: as F56
+- Gate: REPORTS
+- Shown on: Insights profit, sales report, Z report
+- Confidence: VERIFIED
+
+### F58 Bell: cheques due
+- Function: `data/ChequesDue.kt::ChequesDue.isDue`, `data/ChequesDue.kt::ChequesDue.endOfToday`, `data/ChequesDue.kt::ChequesDue.isLate`
+- Reads: cheques status and dueDate
+- Window: pending with dueDate before the end of today (calendar day)
+- Left out: cleared, bounced, cancelled
+- Rounding: none
+- Gate: none found
+- Shown on: bell, Home chip, 9:00 cheque notice
+- Confidence: VERIFIED
+
+### F59 Bell: batches expiring
+- Function: `data/LedgerAlerts.kt::LedgerAlerts.compute`, `data/ExpiryWindow.kt::ExpiryWindow.cutoff`
+- Reads: as F54
+- Window: 60 days, one cutoff on every page and in the bell
+- Left out: as F54
+- Rounding: count
+- Gate: none found
+- Shown on: bell, Home chip, automation
+- Confidence: VERIFIED
+
+### F60 Bell: low stock
+- Function: `data/Inventory.kt::Valuation.isLow`, `data/LedgerAlerts.kt::LedgerAlerts.compute`
+- Reads: stock on hand (F31), products.lowStockLevel
+- Window: now
+- Left out: shelf unknown or no level set
+- Rounding: comparison on hand <= level
+- Gate: none found
+- Shown on: bell, Products, Order the low stock, Hudhud
+- Confidence: VERIFIED
+
+### F61 Bell: yesterday's drawer not counted
+- Function: `data/LedgerAlerts.kt::LedgerAlerts.yesterdaysDrawer`, `data/DayClose.kt::DayCloseMath.businessDayOf`
+- Reads: day_close, cash moved yesterday
+- Window: working day [from,to)
+- Left out: a day with no cash moved
+- Rounding: none
+- Gate: none found
+- Shown on: bell
+- Confidence: VERIFIED
+
+### F62 Bell: cash-flow gap
+- Function: `data/CashFlow.kt::CashFlow.outlook`, `data/LedgerAlerts.kt::LedgerAlerts.compute`
+- Reads: promises, cheques, plans, bills
+- Window: next 30 days
+- Left out: as F49
+- Rounding: as F49
+- Gate: none found
+- Shown on: bell
+- Confidence: VERIFIED
+
+### F63 Late payers (count)
+- Function: `data/FollowUpRank.kt::FollowUpRank.lateCount`
+- Reads: customers' balances, ledger lines, promised days
+- Window: habit from paid lines; owing customers only
+- Left out: settled customers, customers with no lines, a promised day still ahead
+- Rounding: count; Money.isPositive on the balance
+- Gate: none found
+- Shown on: Home line, phone bell row, desktop bell row and badge (not inside LedgerAlerts)
+- Confidence: VERIFIED
+
+### F64 Season of an entry and the season book
+- Function: `data/SeasonBook.kt::SeasonBook.seasonOf`, `data/SeasonBook.kt::SeasonBook.book`, `data/SeasonBook.kt::SeasonBook.summaries`
+- Reads: customers' entries by day or tagged season, payments
+- Window: Oct-Dec Rabi that year, Jan-Mar Rabi of the year before, Apr-Sep Kharif; window = this and the previous season
+- Left out: entries dated outside the window but tagged to a season inside it are missing from the screen's given (E1)
+- Rounding: money in whole paisa (Long); a payment clears the oldest credit first (FIFO)
+- Gate: none found
+- Shown on: Seasons page, customer page season chips
+- Confidence: VERIFIED
+
 ## Disagreements between two places computing one figure
 
-Line numbers are as read on 24 Nov 2026. Examples use made-up figures. Nothing was fixed.
+Line numbers are as read on 24 Nov 2026. Examples use made-up figures. D1 was fixed on 25 Nov 2026; the others stand.
 
-- **D1 Cost of a khata sale.** `data/Profit.kt:144-158` (Profit.costFor) takes the average of purchases dated up to the sale; `data/Cost.kt:38-43` via `data/SalesReport.kt:147-157` (KhataSales.costRate) takes the average of all purchases. Example: no cost price, 10 bought at 60 on 1 Oct, 10 at 80 on 15 Nov, sold 1 Nov: Insights cost 60, sales report cost 70. VERIFIED.
+- **D1 Cost of a khata sale (FIXED 25 Nov 2026, BC-279).** Cause found: Insights alone costed a line tagged to a batch at that bill line's rate (100 and 200 purchases: Insights 200, report 150). `Profit.costFor` now calls `Cost.forSale` like every other figure. Older text:  `data/Profit.kt:144-158` (Profit.costFor) takes the average of purchases dated up to the sale; `data/Cost.kt:38-43` via `data/SalesReport.kt:147-157` (KhataSales.costRate) takes the average of all purchases. Example: no cost price, 10 bought at 60 on 1 Oct, 10 at 80 on 15 Nov, sold 1 Nov: Insights cost 60, sales report cost 70. VERIFIED.
 - **D2 Sales total against sales report revenue.** `KhataDao.kt` ~3268 (salesTotalBetween) uses the grand total with tax and round-off; `data/SalesReport.kt:46-53,286` revenue is ex tax. Example: Rs 1,000 plus 18% tax: 1,180 against 1,000. ReportsAgreeTest covers only no-tax books. VERIFIED.
 - **D3 Returned line revenue.** `data/SalesReport.kt:222-230` (ReturnedLine.revenue) ignores the ticket spread that `SoldLines.spread` applied. Example: Rs 100 off three lines of 1,000 spreads 966.67/966.67/966.66; returning line 3 reverses 966.67, 0.01 off gross profit. VERIFIED.
 - **D4 Zero tests.** `data/LedgerLines.kt:27,49` hard-code 0.005 where `data/Money.kt` uses half the coin (0.5/10^decimals); other literals: CashFlow.kt:55, ZReport.kt:138-154, SaleReturn.kt:179-180. Example (KWD): a 0.004 balance is in Aging.receivable but has no moves, so `data/Aging.kt:70` puts it in day 0. Code VERIFIED, consequence INFERRED.
@@ -547,4 +667,4 @@ Line numbers are as read on 24 Nov 2026. Examples use made-up figures. Nothing w
 
 ## Not done
 
-Gates and screens for several rows are INFERRED. Fefo lots, units, LedgerAlerts bell rows, season figures and the other balance queries (KhataDao ~152, 849, 1675) have no row of their own. The checker proves names exist, not that a row's text is true.
+Gates and screens for several rows are INFERRED. F53-F64 (lots, units, cost, bell rows, seasons) were added 25 Nov 2026. Faults found by those rows and fixed: cost of a batch-tagged line (BC-279), three copies of the late-payers count (BC-280), two ends of the 60-day expiry window (BC-281), two copies of the low-stock test (BC-282). Season edge (E1): entries dated before the window but tagged to a season inside it are missing from the Seasons screen's given, and OPENING and Qarz-e-Hasna count as season credit; not changed. The other balance queries (KhataDao ~152, 849, 1675) have no row of their own. The checker proves names exist, not that a row's text is true.

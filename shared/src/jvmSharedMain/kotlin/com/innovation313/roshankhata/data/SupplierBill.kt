@@ -363,16 +363,3 @@ data class PurchaseRegisterRow(
     /** Quantity times rate, or null when no rate was ever entered. */
     val lineAmount: Double? get() = rate?.let { quantity * it }
 }
-
-object ExpiryWindow {
-    /**
-     * How far ahead to warn.
-     *
-     * Sixty days is chosen to be useful rather than merely truthful: a warning
-     * a week before expiry tells the dealer they have already lost the stock.
-     * Two months is long enough to discount it, move it, or get it back to the
-     * supplier while they will still accept a return.
-     */
-    const val WARN_DAYS = 60
-    const val WARN_MS = WARN_DAYS * 24L * 60 * 60 * 1000
-}

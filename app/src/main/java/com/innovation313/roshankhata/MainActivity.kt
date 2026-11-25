@@ -19,7 +19,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.innovation313.roshankhata.data.Businesses
 import com.innovation313.roshankhata.data.Digits
 import com.innovation313.roshankhata.data.Money
-import com.innovation313.roshankhata.data.PaymentHabit
 import com.innovation313.roshankhata.data.KhataDatabase
 import com.innovation313.roshankhata.data.BalancePrivacy
 import com.innovation313.roshankhata.ui.CoachMarkController
@@ -826,16 +825,10 @@ class MainActivity : BaseActivity() {
                     // in one answer they took 10.8 s on CI's emulator for a wholesaler's book).
                     .mapLatest { parties -> parties to com.innovation313.roshankhata.data.LedgerLines.owingOf(dao, parties) }
                     .combine(dao.observePromises()) { (parties, points), promiseRows ->
-                        val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
-                        val habits = PaymentHabit.forAll(points)
-                        val promises = promiseRows.associate { it.partyId to it.due }
-                        val now = System.currentTimeMillis()
-                        val tz = java.util.TimeZone.getDefault()
-                        // A customer who named a day still ahead ("after the
-                        // harvest") is not counted late — same rule as Follow-up.
-                        habits.keys.count { id ->
-                            id in owing && com.innovation313.roshankhata.data.FollowUpRank.lateByHabit(id, habits, promises, now, tz)
-                        }
+                        // One count for Home, the phone's bell and the computer (FollowUpRank.lateCount, BC-280): a customer
+                        // who named a day still ahead ("after the harvest") is not counted late — same rule as Follow-up.
+                        com.innovation313.roshankhata.data.FollowUpRank.lateCount(
+                            parties, points, promiseRows.associate { it.partyId to it.due })
                     }
                     .flowOn(Dispatchers.Default)
                     .collectLatest { late ->

@@ -53,12 +53,8 @@ object HomeAlerts {
         // Home's own line and Follow-up use the same rule (FollowUpRank.lateByHabit); a named day ahead is not late.
         runCatching {
             val points = LedgerLines.owingOf(dao, parties)
-            val habits = PaymentHabit.forAll(points)
             val promises = dao.observePromises().first().associate { it.partyId to it.due }
-            val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
-            val now = System.currentTimeMillis()
-            val tz = java.util.TimeZone.getDefault()
-            habits.keys.count { id -> id in owing && FollowUpRank.lateByHabit(id, habits, promises, now, tz) }
+            FollowUpRank.lateCount(parties, points, promises)
         }.getOrDefault(0).takeIf { it > 0 }?.let { late ->
             out += Alert(Kind.LATE, Digits.quantity(context.resources, R.plurals.home_paying_late, late, late), "")
         }

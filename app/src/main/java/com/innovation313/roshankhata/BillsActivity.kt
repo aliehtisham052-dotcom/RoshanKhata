@@ -267,7 +267,7 @@ class BillsActivity : BaseActivity() {
         // The expiry banner only appears when there is something to act on. A
         // permanent red button that usually means nothing would train the owner
         // to ignore it — and then it would be ignored on the day it mattered.
-        val cutoff = System.currentTimeMillis() + ExpiryWindow.WARN_MS
+        val cutoff = ExpiryWindow.cutoff(System.currentTimeMillis())
         lifecycleScope.launch {
             // Batches that still hold something, by the one rule (Marhala 3): a sold-out or written-off lot no longer counts.
             com.innovation313.roshankhata.data.Fefo.observeExpiringCount(dao, cutoff).collectLatest { count ->

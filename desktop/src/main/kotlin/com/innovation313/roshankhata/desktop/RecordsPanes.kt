@@ -84,7 +84,7 @@ fun BillsPane(
     val bills by remember { dao.observeBills() }.collectAsState(emptyList())
     // The phone's figures above the list (Marhala 4): how many bills, what is owed to the suppliers — each
     // supplier's live balance counted once, as the phone counts it — and the batches expiring in the window.
-    val expiring by remember { com.innovation313.roshankhata.data.Fefo.observeExpiringCount(dao, System.currentTimeMillis() + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS) }.collectAsState(0)
+    val expiring by remember { com.innovation313.roshankhata.data.Fefo.observeExpiringCount(dao, com.innovation313.roshankhata.data.ExpiryWindow.cutoff(System.currentTimeMillis())) }.collectAsState(0)
     var open by remember { mutableStateOf<Long?>(null) }
     var adding by remember { mutableStateOf(false) }
     androidx.compose.runtime.LaunchedEffect(startAdding) { if (startAdding) { adding = true; onStarted() } }
@@ -938,7 +938,7 @@ private fun RecordList(
 fun ExpiryPane(dao: KhataDao) {
     val c = LocalRoshanColors.current
     val words = com.innovation313.roshankhata.words.LocalWords.current
-    val cutoff = remember { System.currentTimeMillis() + com.innovation313.roshankhata.data.ExpiryWindow.WARN_MS }
+    val cutoff = remember { com.innovation313.roshankhata.data.ExpiryWindow.cutoff(System.currentTimeMillis()) }
     var buyersOf by remember { mutableStateOf<Long?>(null) }
     buyersOf?.let { BatchBuyersDialog(dao, it) { buyersOf = null } }
     val scope = rememberCoroutineScope()

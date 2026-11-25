@@ -55,6 +55,25 @@ object FollowUpRank {
         return isDue(promise, now, tz)
     }
 
+    /**
+     * HOW MANY CUSTOMERS PAY LATE: the one count Home's line, the phone's bell row and the computer's bell row and rail badge
+     * show (25 Nov 2026, BC-280 — three hand-written copies of this rule stood in MainActivity, HomeAlerts and the computer's
+     * Main.kt). A customer is counted when he owes ([Money.isPositive] of his balance in [parties]), has a habit
+     * ([PaymentHabit.forAll] of [points], his own lines) that says late, and has not named a day still ahead
+     * ([lateByHabit]). A party with no lines in [points] (no habit yet) is never counted.
+     */
+    fun lateCount(
+        parties: List<PartyWithBalance>,
+        points: List<LedgerPoint>,
+        promises: Map<Long, Long>,
+        now: Long = System.currentTimeMillis(),
+        tz: TimeZone = TimeZone.getDefault()
+    ): Int {
+        val owing = parties.filter { Money.isPositive(it.balance) }.map { it.id }.toSet()
+        val habits = PaymentHabit.forAll(points, now, tz)
+        return habits.keys.count { id -> id in owing && lateByHabit(id, habits, promises, now, tz) }
+    }
+
     fun order(
         debtors: List<PartyWithBalance>,
         habits: Map<Long, PaymentHabit.Habit>,

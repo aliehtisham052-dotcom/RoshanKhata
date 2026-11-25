@@ -9,14 +9,14 @@ import java.util.Calendar
  * rate is on the line itself. The purchase rate is the part that has to be
  * found, and this object is honest about where it finds it:
  *
- * 1. If the owner picked a BATCH when writing the sale (the line carries a
- *    [billItemId]), that bill line's rate is the cost. No estimate at all.
- * 2. Otherwise the cost is the weighted average of every purchase of that
- *    product dated ON OR BEFORE the sale — the price the shop had actually
- *    paid by the time it sold. A purchase recorded after the sale cannot have
+ * 1. The cost is the owner's cost price on the product, else the weighted
+ *    average of every purchase of that product dated ON OR BEFORE the sale —
+ *    the price the shop had actually paid by the time it sold. A batch the
+ *    owner tagged on the line does not change the figure (BC-279): it decides
+ *    which stock is left, not what a unit cost. A purchase recorded after the sale cannot have
  *    been its cost, so it does not count. The sales report's khata lines cost
  *    a sale by the very same call ([Cost.forSale], BC-261).
- * 3. A line whose product has no priced purchase by then, whose unit does not
+ * 2. A line whose product has no priced purchase by then, whose unit does not
  *    match the purchases (bought in "bag", sold in "kg" — see [Stock]), or
  *    which carries no product or no sale rate at all, has NO cost. It is left
  *    out, counted in [ProfitReport.skippedLines], and the report says what
@@ -132,29 +132,23 @@ object Profit {
      * The purchase rate for one sale line, or null when there is none to be
      * had honestly. Exposed for the tests; [compute] is the caller.
      *
-     * One cost rule with the sales report (BC-261, 24 Nov 2026): the owner's cost price, else the weighted average of the
-     * purchases dated on or before the sale, else the newest rate that can be said — [Cost.forSale], the call the report's
-     * khata lines make too, with packs and units by [Units] ([Cost.forUnit]). Only a batch the owner chose for the line
-     * is costed on its own rate, ahead of the average.
+     * ONE cost rule for a sold line, on every screen (BC-261, BC-279): [Cost.forSale] — the owner's cost price, else the
+     * weighted average of the purchases dated on or before the sale, else the newest rate that can be said, with packs and
+     * units by [Units] ([Cost.forUnit]). The sales report's khata lines, the counter ([Counter.costOf]) and the shelf's
+     * value ([Cost.perUnit]) read the same rule. A batch the owner tagged on the line ([SaleLine.billItemId]) is NOT costed
+     * on its own rate: Insights alone did that, so the same sale showed one profit here and another on the sales report
+     * (a batch bought at 200 against an average of 150: 50 a unit apart). The batch still decides which stock is left
+     * ([Fefo]); what a unit cost is the contract's one figure.
      */
     internal fun costFor(
         line: SaleLine,
-        purchasesById: Map<Long, PurchaseLine>,
         purchasesByProduct: Map<Long, List<PurchaseLine>>
     ): Double? {
-        val productId = line.productId
+        val productId = line.productId ?: return null
         val product = Product(
-            id = productId ?: 0L, name = line.itemName.orEmpty(), nameKey = "", normalisedName = "",
+            id = productId, name = line.itemName.orEmpty(), nameKey = "", normalisedName = "",
             defaultUnit = line.productUnit, packUnit = line.packUnit, packSize = line.packSize, costPrice = line.costPrice
         )
-        // 0. The cost the owner wrote on the product, as the sales report's rule puts it first (said for the line's own unit).
-        line.costPrice?.let { own -> Cost.forUnit(product, line.unit, own)?.let { return it } }
-        // 1. The batch the owner chose, when its unit does not contradict the line.
-        line.billItemId?.let { purchasesById[it] }?.let { batch ->
-            if (Units.agree(batch.unit, line.unit)) return batch.rate
-        }
-        // 2. What was bought by the day of the sale: the one rule of the sales report.
-        if (productId == null) return null
         val bought = purchasesByProduct[productId].orEmpty()
             .sortedWith(compareByDescending<PurchaseLine> { it.billDate }.thenByDescending { it.id })
             .map { Cost.Dated(it.quantity, it.unit, it.rate, it.billDate) }
@@ -182,7 +176,6 @@ object Profit {
         /** Goods back from walk-in tickets: the margin their sale made comes off again, where its cost was known. */
         walkInReturns: List<ReturnedLine> = emptyList()
     ): ProfitReport {
-        val byId = purchases.associateBy { it.id }
         val byProduct = purchases.filter { it.productId != null }.groupBy { it.productId!! }
 
         var gross = 0.0
@@ -197,7 +190,7 @@ object Profit {
             // A bonus line has no price by definition; any other line needs one.
             val rate = if (line.isBonus) 0.0 else line.rate
             if (rate == null) { skipped++; continue }
-            val cost = costFor(line, byId, byProduct)
+            val cost = costFor(line, byProduct)
             if (cost == null) { skipped++; continue }
 
             val sign = if (line.isGiven) 1.0 else -1.0

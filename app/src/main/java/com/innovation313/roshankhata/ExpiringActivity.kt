@@ -51,7 +51,7 @@ class ExpiringActivity : BaseActivity() {
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
 
-        val cutoff = System.currentTimeMillis() + ExpiryWindow.WARN_MS
+        val cutoff = ExpiryWindow.cutoff(System.currentTimeMillis())
 
         // Each batch with what is left of it by the one rule (Fefo.expiring, Marhala 3, 25 Oct 2026: sold at the
         // counter or on the khata, back, written off, never more than the shelf), read again whenever stock
