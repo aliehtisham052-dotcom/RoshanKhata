@@ -220,6 +220,22 @@ jobs:
           # filled the list (3 Nov 2026). Room for the probe's list (BigBookProbe, ~32 reads).
           perf=$(grep "/BigBookPerf" /tmp/poster3d_log.txt 2>/dev/null | sed 's/^.*BigBookPerf[^:]*: //' | head -80 | tr -d '\r' | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
           [ -n "$perf" ] && echo "::notice title=Big book timings::$perf"
+          # Hudhud's reading speed (HudhudSpeedOnDeviceTest, Marhala 2): p50/p95/p99/max of Hudhud.understand and the
+          # heap, report only. Read by its own tag, never by the class name (the runner's lines name the class too):
+          # from the device-check log when its logcat filter carries the tag, else from the per-test logcat files the
+          # test platform writes under androidTest-results. EMULATOR figures: never the owner's phone (the test's first
+          # line says which device it was).
+          speed=$(grep -E "I/HudhudSpeed\(" /tmp/poster3d_log.txt 2>/dev/null | sed 's/^.*HudhudSpeed[^:]*: //')
+          if [ -z "$speed" ]; then
+            speed=$(grep -rhIE "(I/HudhudSpeed\(|[[:space:]]I[[:space:]]+HudhudSpeed[[:space:]]*:)" app/build/outputs/androidTest-results 2>/dev/null \
+              | sed 's/^.*HudhudSpeed[^:]*: //' | awk '!seen[$0]++')
+          fi
+          speed=$(echo "$speed" | head -20 | tr -d '\r' | sed 's/%/%25/g' | awk 'NF {printf "%s%%0A", $0}')
+          if [ -n "$speed" ]; then
+            echo "::notice title=Hudhud speed (emulator, not the owner's phone)::$speed"
+          else
+            echo "::notice title=Hudhud speed::no HudhudSpeed lines found (the test did not run, or its log was not kept)"
+          fi
           # The failure MESSAGES, not just the count: the assertion text lives
           # in the JUnit XML, which (like the log) is otherwise unreachable
           # through the API. Deduplicated, so twelve cases failing for one
