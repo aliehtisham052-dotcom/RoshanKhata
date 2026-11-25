@@ -42,6 +42,10 @@ on:
       # any data file of his in any module (the model in the assets too), the script and the hash helper it shares.
       - '**/hudhud/**'
       - 'scripts/hudhud_manifest.py'
+      # Hudhud's glossary: the engine's concept words by concept and language, for a native read (hudhud_glossary.py --check;
+      # Marhala 11 item 5). HudhudMind.kt itself is under shared/src/**.
+      - 'scripts/hudhud_glossary.py'
+      - 'docs/hudhud-glossary.tsv'
       # Marhala 2 tools: the check-log triage's tests and the on-device speed sample (hudhud_speed_sample.py --check).
       - 'scripts/hudhud_checklog.py'
       - 'scripts/test_hudhud_checklog.py'
@@ -113,6 +117,10 @@ on:
       # any data file of his in any module (the model in the assets too), the script and the hash helper it shares.
       - '**/hudhud/**'
       - 'scripts/hudhud_manifest.py'
+      # Hudhud's glossary: the engine's concept words by concept and language, for a native read (hudhud_glossary.py --check;
+      # Marhala 11 item 5). HudhudMind.kt itself is under shared/src/**.
+      - 'scripts/hudhud_glossary.py'
+      - 'docs/hudhud-glossary.tsv'
       # Marhala 2 tools: the check-log triage's tests and the on-device speed sample (hudhud_speed_sample.py --check).
       - 'scripts/hudhud_checklog.py'
       - 'scripts/test_hudhud_checklog.py'
@@ -195,6 +203,10 @@ jobs:
       # docs/hudhud-rights-register.tsv, and docs/decision-log.md lists every D-decision of docs/decisions-*.md. Names only (lesson 125).
       - name: Hudhud's data manifest, rights register and decision log are current
         run: python3 scripts/hudhud_manifest.py --check
+      # Plan v1, Marhala 11 item 5: docs/hudhud-glossary.tsv is HudhudMind.kt's LEXICON by concept and language (the language
+      # read from the letters, never guessed), with a reviewed_by column a native reader fills; stale against the code = fail.
+      - name: Hudhud's glossary is current against HudhudMind.kt
+        run: python3 scripts/hudhud_glossary.py --check
       # Marhala 2: the check log's triage masks every name and number and never writes inside the repository (test_hudhud_checklog.py);
       # the speed test's sample is the held-out file's every fourth row, never stale (hudhud_speed_sample.py --check).
       - name: Hudhud's field-test tools (check-log triage tests, the speed sample current)

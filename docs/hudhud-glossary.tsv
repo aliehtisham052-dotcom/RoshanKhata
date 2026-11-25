@@ -1,0 +1,474 @@
+# Hudhud's glossary (plan v1, Marhala 11 item 5): the engine's concept words, by concept and language, for a native read.
+# Written by scripts/hudhud_glossary.py from HudhudMind.kt's LEXICON; --check (Strings CI) fails when it is stale. Do not edit
+# the words here: change HudhudMind.kt and run the script. language comes from the letters only (see the script's notes):
+# hi, bn, sd, ur, ar are decided by script or by a letter only that language writes; 'ur|sd|fa|ar' and 'en|ur-Latn|in' are
+# words the letters cannot place. reviewed_by: empty = AI-written, read by no person (all rows on 26 Nov 2026: the
+# repository records no native read); a reviewer writes 'native' by hand and it stays while the row's words are unchanged.
+concept	language	words	reviewed_by
+YOU	en|ur-Latn|in	aap | ap | aapka | apka | aapki | apki | aapke | apke | aapko | apko | tum | tumhara | tumhari | tumhare | tumhe | tumhein | tumko | tu | tera | teri | tere | tujhe | tujhko | you | your | yours | ur | u | yourself | kamu | anda | kau | engkau | dirimu | hudhud | hoopoe	
+YOU	ur	آپکے | تمہارا | تمہاری | تمہارے | تمہیں | تیرے | تجھے | ہدہد	
+YOU	ur|sd|fa|ar	آپ | آپکا | آپکی | آپکو | تم | تیرا | تیری | أنت | انت | شما | توهان | تون | تنهنجو | توهانجو | هدهد | الهدهد	
+YOU	hi	आप | आपका | आपकी | आपके | आपको | तुम | तुम्हारा | तुम्हारी | तुम्हारे | तुम्हें | तू | तेरा | तेरी | तेरे | तुझे | हुदहुद	
+YOU	bn	তুমি | তোমার | তোমাকে | আপনি | আপনার | আপনাকে | তুই | তোর | হুদহুদ	
+OWN	en|ur-Latn|in	apna | apni | apne	
+OWN	ur	اپنے	
+OWN	ur|sd|fa|ar	اپنا | اپنی | خودت | پنهنجو	
+OWN	hi	अपना | अपनी | अपने	
+OWN	bn	নিজের	
+ME	en|ur-Latn|in	main | mai | mera | meri | mere | mujhe | muje | mjhe | mujhko | hum | hamara | hamari | hamare | humara | humari | humare | hame | hamein | my | me | mine | i | im | saya | aku	
+ME	ur	میرے | مجھے | ہمارا | ہماری | ہمارے | ہمیں	
+ME	ur|sd|fa|ar	اسم من | نام من | دفتر من | حساب من | شماره من | مغازه من | اطلاعات من | داده من | میرا | میری | أنا | انا | اسمي | مرا | منهنجو | مان | آئون | مون	
+ME	hi	मैं | मेरा | मेरी | मेरे | मुझे | हम | हमारा | हमारी | हमारे | हमें	
+ME	bn	আমি | আমার | আমাকে | আমাদের	
+THIS	en|ur-Latn|in	ye | yeh | yah | this | ini	
+THIS	ur	یہ	
+THIS	ur|sd|fa|ar	هذا | هذه | این	
+THIS	hi	यह | ये	
+THIS	bn	এই | এটা	
+HIS	en|ur-Latn|in	wo | woh | uska | uski | uske | usko | iska | iski | iske | isko | unka | unki | unke | unko | inka | inki | inke | his | her | its | him | their | them | us ka | us ki | us ke | is ka | is ki | is ke | un ka | un ki | un ke | dia	
+HIS	ur	وہ | اسکے | انکے | اس کے | ان کے	
+HIS	ur|sd|fa|ar	اسکا | اسکی | اسکو | انکا | انکی | اس کا | اس کی | ان کا | ان کی | له | لها | اونجو | هن جو	
+HIS	hi	वह | वो | उसका | उसकी | उसके | उसको | उसे | इसका | इसकी | इसके | उनका | उनकी | उनके | उस का | उस की | इस का	
+HIS	bn	তার | ওর | ওনার | তাঁর	
+AND	en|ur-Latn|in	aur | or | and | also | bhi | phir | dan | juga | lalu	
+AND	sd	۽	
+AND	ur|sd|fa|ar	اور | بھی | هم	
+AND	hi	और | भी	
+AND	bn	আর | আরও	
+WHAT	en|ur-Latn|in	kya | kia | kyaa | what | whats | apa	
+WHAT	sd	ڇا	
+WHAT	ur|sd|fa|ar	کیا | ما | ماذا | چه | چی | چیست	
+WHAT	hi	क्या	
+WHAT	bn	কী | কি	
+WHO	en|ur-Latn|in	kaun | kon | kis | kisne | kis ne | who | whom | whose | siapa	
+WHO	ur	کسنے | کس نے	
+WHO	sd	ڪير | ڪنهن	
+WHO	ur|sd|fa|ar	کون | کس | من | چه کسی	
+WHO	hi	कौन | किस | किसने | किस ने	
+WHO	bn	কে | কারা | কার | কে কে	
+HOW_MANY	en|ur-Latn|in	jumlah | kitna | kitni | kitne | kitnay | ktna | ktni | ktne | how much | how many | count | berapa	
+HOW_MANY	ur	کتنے	
+HOW_MANY	sd	ڪيترو | ڪيترا | ڪيتري	
+HOW_MANY	ar	كم	
+HOW_MANY	ur|sd|fa|ar	عدد | تعداد | کتنا | کتنی | چقدر | چند | چندتا	
+HOW_MANY	hi	कितना | कितनी | कितने	
+HOW_MANY	bn	কতজন | কয়টি | কতবার | কত | কতটা | কতগুলো	
+WHEN	en|ur-Latn|in	kab | kb | when | kapan	
+WHEN	sd	ڪڏهن	
+WHEN	ar	متى	
+WHEN	ur|sd|fa|ar	کب | چه وقت | چه زمانی	
+WHEN	hi	कब	
+WHEN	bn	কবে | কখন	
+WHERE	en|ur-Latn|in	kahan | kahaan | kidhar | kaha | where | dimana | di mana	
+WHERE	ur	کہاں	
+WHERE	sd	ڪٿي	
+WHERE	ur|sd|fa|ar	کدھر | أين | اين | کجا	
+WHERE	hi	कहाँ | कहां | किधर	
+WHERE	bn	কোথায়	
+WHICH	en|ur-Latn|in	kaunsa | konsa | kaunsi | konsi | kaunse | konse | kaun sa | kon sa | kaun si | kon si | which | yang mana | mana	
+WHICH	ur	کونسے	
+WHICH	sd	ڪهڙو | ڪهڙي	
+WHICH	ur|sd|fa|ar	کونسا | کونسی | کون سا | کون سی | أي | اي | کدام	
+WHICH	hi	कौनसा | कौनसी | कौनसे | कौन सा | कौन सी	
+WHICH	bn	কোন | কোনটা	
+SINCE_WHEN	en|ur-Latn|in	kab se | kb se | since when | since | sejak kapan | sejak	
+SINCE_WHEN	ur	کب سے	
+SINCE_WHEN	sd	ڪڏهن کان	
+SINCE_WHEN	ar	منذ متى	
+SINCE_WHEN	ur|sd|fa|ar	از کی	
+SINCE_WHEN	hi	कब से	
+SINCE_WHEN	bn	কবে থেকে	
+NAME	en|ur-Latn|in	naam | nam | name | names | nama | namamu | namaku | namanya	
+NAME	ar	اسمك	
+NAME	ur|sd|fa|ar	نام | اسم | اسمي | اسمت | اسمم | نالو	
+NAME	hi	नाम	
+NAME	bn	নাম	
+PHONE	en|ur-Latn|in	phone | fone | number | nambar | numbar | nmbr | mobile | mobail | contact | rabta | raabta | telepon | nomor | nomornya | ponsel	
+PHONE	ur	رابطہ	
+PHONE	ur|sd|fa|ar	فون | نمبر | موبائل | هاتف | الهاتف | جوال | تلفن | شماره | موبایل	
+PHONE	hi	फोन | नंबर | नम्बर | मोबाइल	
+PHONE	bn	ফোন | নম্বর | নাম্বার | মোবাইল	
+ADDRESS	en|ur-Latn|in	address | adress | ka pata | ki pata | ke pata | alamat | rehta | rehte | rehti	
+ADDRESS	ur	کا پتہ | ایڈریس | رہتا	
+ADDRESS	ur|sd|fa|ar	کا پتا | عنوان | العنوان | آدرس | پتو	
+ADDRESS	hi	का पता | एड्रेस | रहता	
+ADDRESS	bn	ঠিকানা	
+VILLAGE	en|ur-Latn|in	gaon | gaun | gaoon | village | goth | desa | kampung	
+VILLAGE	ur	گاؤں	
+VILLAGE	sd	ڳوٺ	
+VILLAGE	ar	قرية | القرية	
+VILLAGE	ur|sd|fa|ar	گاؤ | روستا	
+VILLAGE	hi	गाँव | गांव	
+VILLAGE	bn	গ্রাম	
+FATHER	en|ur-Latn|in	walid | waalid | wald | father | baap | abba | abbu | son of | s o | ayah | bapak	
+FATHER	ur|sd|fa|ar	والد | ولد | باپ | أب | الأب | الاب | پدر | پيءُ	
+FATHER	hi	पिता | वालिद | बाप	
+FATHER	bn	বাবা | পিতা	
+LIMIT	en|ur-Latn|in	limit | hadd | batas	
+LIMIT	ur	لمٹ	
+LIMIT	ur|sd|fa|ar	حد | سقف	
+LIMIT	hi	सीमा | लिमिट	
+LIMIT	bn	সীমা | লিমিট	
+PROMISE	en|ur-Latn|in	wada | waada | wadah | waadah | wade | waade | promise | promised | due date | payment day | janji	
+PROMISE	ur	وعدہ | وعدے	
+PROMISE	ur|sd|fa|ar	وعد | موعد | وعده | واعدو | واعدي	
+PROMISE	hi	वादा | वादे	
+PROMISE	bn	প্রতিশ্রুতি | প্রতিশ্রুত	
+LAST	en|ur-Latn|in	aakhri | akhri | aakhiri | akhiri | akhir | aakhir | last | latest | recent | recently | pichli | terakhir	
+LAST	ur|sd|fa|ar	آخری | آخر | پچھلی | اخر | الأخير | الاخير | آخرین | آخري	
+LAST	hi	आखिरी | आख़िरी | अंतिम | पिछली	
+LAST	bn	শেষ | সর্বশেষ | শেষবার	
+FIRST	en|ur-Latn|in	pehli | pehla | pahli | pahla | first | shuru | start | pertama	
+FIRST	ur	پہلی | پہلا	
+FIRST	ur|sd|fa|ar	شروع | أول | اول | اولین | نخستین | پهريون | پهرين	
+FIRST	hi	पहली | पहला | शुरू	
+FIRST	bn	প্রথম	
+PAYMENT	en|ur-Latn|in	pay | payment | paymant | payments | adaigi | adayegi | adaygi | wasooli | wasuli | wusooli | vasooli | recovery | paid | diye | diya | dia | jama | pembayaran | bayaran | membayar	
+PAYMENT	ur	دیے | دیئے	
+PAYMENT	sd	ڏنا | ڏنو	
+PAYMENT	ar	دفعة	
+PAYMENT	ur|sd|fa|ar	ادائیگی | وصولی | ادا | دیا | سداد | دفع | پرداخت | ادائيگي | وصولي | تحصيل | تحصل	
+PAYMENT	hi	जमा | भुगतान | अदायगी | वसूली | दिए | दिया	
+PAYMENT	bn	পেমেন্ট | পরিশোধ | দিয়েছে	
+ENTRY	en|ur-Latn|in	entry | entries | indiraj | indraj | len den | lain dain | lein dein | lena dena | transaction | transactions | sauda | saude | entri | transaksi | catatan	
+ENTRY	ur	انٹری	
+ENTRY	ar	معاملة	
+ENTRY	ur|sd|fa|ar	اندراج | لین دین | سودا | معاملات | قيد | قيود | تراکنش | معامله | ثبت | اندراجات | داخلا | داخلائون	
+ENTRY	hi	एंट्री | लेन देन | लेनदेन	
+ENTRY	bn	লেনদেন | এন্ট্রি	
+CREDIT	en|ur-Latn|in	credit | udhaar | udhar | udhaari | utang | kredit	
+CREDIT	sd	اڌار | اڌاري	
+CREDIT	ur|sd|fa|ar	ادھار | ادھاری | ائتمان | آجل | نسیه	
+CREDIT	hi	उधार	
+SHOP	en|ur-Latn|in	dukaan | dukan | dokan | shop | store | business | karobar | kaarobaar | firm | toko | usaha | bisnis	
+SHOP	sd	دڪان	
+SHOP	ur|sd|fa|ar	دکان | دوکان | کاروبار | متجر | المتجر | محل | المحل | مغازه | فروشگاه	
+SHOP	hi	दुकान | कारोबार | बिजनेस	
+SHOP	bn	দোকান | ব্যবসা	
+OWNER	en|ur-Latn|in	malik | maalik | owner | seth | pemilik	
+OWNER	sd	مالڪ	
+OWNER	ar	مالك	
+OWNER	ur|sd|fa|ar	مالک	
+OWNER	hi	मालिक	
+OWNER	bn	মালিক	
+EMAIL	en|ur-Latn|in	email | e mail | surel	
+EMAIL	ur|sd|fa|ar	ای میل | بريد | ایمیل | اي ميل	
+EMAIL	hi	ईमेल	
+EMAIL	bn	ইমেইল | ইমেল	
+TAX	en|ur-Latn|in	tax | ntn | strn | gst | vat | pajak | npwp	
+TAX	ur	ٹیکس	
+TAX	sd	ٽيڪس	
+TAX	ar	ضريبة | الضريبة	
+TAX	ur|sd|fa|ar	مالیات	
+TAX	hi	टैक्स	
+TAX	bn	ট্যাক্স	
+BANK	en|ur-Latn|in	bank | iban | rekening	
+BANK	sd	بئنڪ	
+BANK	ar	بنك	
+BANK	ur|sd|fa|ar	بینک | بنک | بانک	
+BANK	hi	बैंक	
+BANK	bn	ব্যাংক	
+CURRENCY	en|ur-Latn|in	currency | karansi | mata uang	
+CURRENCY	sd	ڪرنسي	
+CURRENCY	ar	عملة | العملة	
+CURRENCY	ur|sd|fa|ar	کرنسی | ارز | واحد پول	
+CURRENCY	hi	मुद्रा | करेंसी	
+CURRENCY	bn	মুদ্রা	
+COUNTRY	en|ur-Latn|in	mulk | country | negara	
+COUNTRY	sd	ملڪ	
+COUNTRY	ar	دولة	
+COUNTRY	ur|sd|fa|ar	ملک | بلد | کشور	
+COUNTRY	hi	देश	
+COUNTRY	bn	দেশ	
+TRADE	en|ur-Latn|in	trade | qisam | kisam | qism | type | jenis	
+TRADE	ur|sd|fa|ar	قسم | نوع	
+TRADE	hi	किस्म | प्रकार	
+TRADE	bn	টাইপ | ধরন	
+GOODS	en|ur-Latn|in	maal | mal | saman | samaan | cheez | cheezein | item | items | goods | product | products | barang | produk	
+GOODS	ur	چیزیں | آئٹم | پروڈکٹ | پروڈکٹس	
+GOODS	sd	پراڊڪٽس	
+GOODS	ar	بضاعة | سلعة	
+GOODS	ur|sd|fa|ar	کالایی | مال | سامان | چیز | البضائع | منتج | منتجات | کالا | جنس | محصول | محصولات	
+GOODS	hi	माल | सामान | चीज | चीजें | प्रोडक्ट	
+GOODS	bn	পণ্য | মাল | জিনিস | আইটেম	
+PRICE	en|ur-Latn|in	rate | ret | rates | qeemat | keemat | qimat | kimat | price | prices | daam | bhao | bhaao | bhav | harga	
+PRICE	ur	ریٹ	
+PRICE	sd	ريٽ	
+PRICE	ur|sd|fa|ar	قیمت | دام | بھاؤ | سعر | أسعار | اسعار | ثمن | نرخ | قيمت	
+PRICE	hi	भाव | दाम | कीमत | रेट | मूल्य	
+PRICE	bn	দাম | দর | মূল্য | রেট	
+STOCK	en|ur-Latn|in	stock | stok | maujood | mojood | majood | available | inventory | persediaan	
+STOCK	ur	اسٹاک | سٹاک	
+STOCK	sd	اسٽاڪ	
+STOCK	ur|sd|fa|ar	موجود | مخزون | المخزون | موجودی | انبار	
+STOCK	hi	स्टॉक | मौजूद	
+STOCK	bn	স্টক | মজুদ	
+LEFT	en|ur-Latn|in	bacha | bachi | bache | remaining | left | sisa | tersisa	
+LEFT	ur	بچے	
+LEFT	ar	تبقى	
+LEFT	ur|sd|fa|ar	بچا | بچی | متبقي	
+LEFT	hi	बचा | बची | बचे	
+LEFT	bn	অবশিষ্ট	
+COST	en|ur-Latn|in	cost | khareed | kharid | purchase | lagat | laagat | beli | modal	
+COST	ar	تكلفة	
+COST	ur|sd|fa|ar	خرید | لاگت | شراء | الشراء | هزینه | خريد	
+COST	hi	खरीद | लागत	
+COST	bn	কেনা | কেনার | ক্রয় | ক্রয়মূল্য	
+CHEAP	en|ur-Latn|in	sasta | sasti | saste | sastaa | cheap | cheaper | cheapest | lowest | murah | termurah	
+CHEAP	ur	سستے	
+CHEAP	ur|sd|fa|ar	سستا | سستی | رخيص | أرخص | ارخص | ارزان | ارزانتر | سستو	
+CHEAP	hi	सस्ता | सस्ती | सस्ते	
+CHEAP	bn	সস্তা	
+DEAR	en|ur-Latn|in	mehnga | mehenga | mahenga | mahanga | mehngi | mehange | mehnge | expensive | costly | dearest | mahal | termahal	
+DEAR	ur	مہنگا | مہنگی | مہنگے	
+DEAR	ar	أغلى | اغلى	
+DEAR	ur|sd|fa|ar	غالي | گران | گرانتر | مهانگو	
+DEAR	hi	महंगा | महंगी | महंगे	
+DEAR	bn	দামি | দামী	
+SUPPLIER	en|ur-Latn|in	supplier | suplier | supplyer | suppliers | vendor | dealer | company | kampani | distributor | pemasok	
+SUPPLIER	ur	ڈیلر	
+SUPPLIER	sd	ڪمپني	
+SUPPLIER	ar	شركة	
+SUPPLIER	ur|sd|fa|ar	سپلائر | کمپنی | مورد | المورد | الموردين | موردين | تامین کننده | تأمین کننده | شرکت | سپلائرز | سپلائرن | تأمین کنندگان | تامین کنندگان | الموردون	
+SUPPLIER	hi	सप्लायर | कंपनी | डीलर | सप्लायरों	
+SUPPLIER	bn	সাপ্লায়ার | সরবরাহকারী | সরবরাহকারীর | কোম্পানি	
+CUSTOMER	en|ur-Latn|in	customer | customers | gahak | gaahak | grahak | client | clients | khareedar | pelanggan	
+CUSTOMER	ur	گاہک | گاہکوں | کسٹمر | کسٹمرز	
+CUSTOMER	sd	گراهڪ	
+CUSTOMER	ur|sd|fa|ar	عميل | عملاء | زبون | زبائن | مشتری | مشتریان	
+CUSTOMER	hi	ग्राहक | गाहक | कस्टमर	
+CUSTOMER	bn	কাস্টমার | গ্রাহক | ক্রেতা	
+CAME	en|ur-Latn|in	mila | mile | mili | masuk | delivered | aaya | aya | aayi | aai | ayi | aaye | aye | delivery | deliveries | pohncha | pahuncha | arrived | came | datang | tiba | kiriman | money in	
+CAME	ur	آئے | پہنچا | ڈلیوری	
+CAME	ur|sd|fa|ar	آيا | رسیده | آیا | آئی | وصل | وصلت | آمد | آيو | توريد | ورود	
+CAME	hi	आया | आई | आए | पहुंचा | डिलीवरी	
+CAME	bn	এসেছে | এল | ডেলিভারি	
+BOUGHT	en|ur-Latn|in	liya | liye | li | khareeda | kharida | khareedi | bought | took | purchased | membeli | dibeli	
+BOUGHT	ur	لیے | لئے	
+BOUGHT	sd	خريد ڪيو	
+BOUGHT	ar	اشترى	
+BOUGHT	ur|sd|fa|ar	لیا | خریدا | خریدی | اشتراه | خریده | ورتو	
+BOUGHT	hi	लिया | लिए | खरीदा	
+BOUGHT	bn	খরিদ | কিনেছে | নিয়েছে	
+FROM_WHOM	en|ur-Latn|in	kahan se | kis se | kidhar se | where from | dari mana	
+FROM_WHOM	ur	کہاں سے | کس سے	
+FROM_WHOM	ur|sd|fa|ar	من أين | از کجا	
+FROM_WHOM	hi	कहाँ से | कहां से | किस से	
+FROM_WHOM	bn	কোথা থেকে	
+BILL	en|ur-Latn|in	bill | bills | bil | parchi | tagihan | nota	
+BILL	ur|sd|fa|ar	بل | بلز | پرچی	
+BILL	hi	बिल	
+BILL	bn	বিল	
+INVOICE	en|ur-Latn|in	invoice | invoices | anvoice | document | documents | faktur	
+INVOICE	ar	فاتورة | الفاتورة	
+INVOICE	ur|sd|fa|ar	انوائس | فواتير | فاکتور	
+INVOICE	hi	इनवॉइस | इनवॉयस	
+INVOICE	bn	ইনভয়েস	
+CHEQUE	en|ur-Latn|in	cheque | cheques | chek | cek	
+CHEQUE	sd	چيڪ	
+CHEQUE	ar	شيك | شيكات | الشيكات	
+CHEQUE	ur|sd|fa|ar	چیک | چک	
+CHEQUE	hi	चेक	
+CHEQUE	bn	চেক	
+PLAN	en|ur-Latn|in	qist | qisht | kist | qistein | qiston | installment | installments | instalment | plan | plans | cicilan | angsuran	
+PLAN	ur	قسطیں | قسطوں	
+PLAN	sd	رٿا | رٿائون	
+PLAN	ar	خطة	
+PLAN	ur|sd|fa|ar	قسط | أقساط | اقساط	
+PLAN	hi	किस्त | किस्तें	
+PLAN	bn	প্ল্যান | কিস্তি	
+STAFF	en|ur-Latn|in	staff | mulazim | mulazmeen | mulazmin | worker | workers | employee | employees | naukar | karigar | kaarigar | salesman | karyawan | pegawai	
+STAFF	ur	اسٹاف | سٹاف	
+STAFF	sd	اسٽاف	
+STAFF	ur|sd|fa|ar	ملازم | ملازمین | موظف | موظفين | الموظفون | الموظفين | کارمند | کارکنان | کارکن	
+STAFF	hi	कर्मचारी | स्टाफ	
+STAFF	bn	কর্মী | কর্মচারী | স্টাফ	
+TICKET	en|ur-Latn|in	ticket | tickets | counter | pos | receipt | receipts | kasir | struk	
+TICKET	ur	کاؤنٹر	
+TICKET	sd	ڪائونٽر	
+TICKET	ar	الكاونتر	
+TICKET	ur|sd|fa|ar	پیشخوان	
+TICKET	hi	काउंटर	
+TICKET	bn	কাউন্টার	
+CALCULATOR	en|ur-Latn|in	calculator | calculater | calcolator | kalkulator | calc | calculation | calculations | hitungan	
+CALCULATOR	ur	کیلکولیٹر | کیلکیولیٹر	
+CALCULATOR	sd	ڪئلڪوليٽر	
+CALCULATOR	ar	حاسبة | الحاسبة | آلة حاسبة	
+CALCULATOR	ur|sd|fa|ar	ماشین حساب	
+CALCULATOR	hi	कैलकुलेटर	
+CALCULATOR	bn	ক্যালকুলেটর	
+APP	en|ur-Latn|in	app | application | roshan khata | aplikasi	
+APP	ur	روشن کھاتہ	
+APP	ur|sd|fa|ar	ایپ | تطبيق | التطبيق | اپلیکیشن | ايپ	
+APP	hi	ऐप | एप	
+APP	bn	রোশন খাতা | অ্যাপ	
+OPEN	en|ur-Latn|in	khuli | khula | khola | kholi | khole | khulti | open | opened | opens | chali | buka | dibuka	
+OPEN	ur|sd|fa|ar	کليو | کھلی | کھولا | کھولی | کھلا | فتح | فتحت | باز | کھلي	
+OPEN	hi	खुली | खोला | खुला | खोली	
+OPEN	bn	খোলা | খুলেছে	
+TIMES	en|ur-Latn|in	dafa | dafaa | dafah | martaba | marataba | baar | bar | times | kali	
+TIMES	ur	دفعہ | مرتبہ	
+TIMES	sd	ڀيرا | ڀيرو	
+TIMES	ar	مرة	
+TIMES	ur|sd|fa|ar	بار | مرات | دفعو | دفعا	
+TIMES	hi	बार | दफा | मर्तबा	
+TIMES	bn	কতবার | বার	
+MADE	en|ur-Latn|in	bani | bana | bane | banai | banaya | banayi | banaye | created | made | generated | dibuat | membuat	
+MADE	ur	بنیں | بنے | بنائے	
+MADE	sd	ٺهيا | ٺهيو | ٺهي | ٺاهيو	
+MADE	ur|sd|fa|ar	ساخت | صادر | بنی | بنا | بنائی | بنایا | صنع | صنعت | أنشأ | أنشئت | إنشاء | ساخته	
+MADE	hi	बनीं | बनी | बना | बने | बनाई | बनाया | बनाए	
+MADE	bn	বানিয়েছে | তৈরি | বানানো	
+PENDING	en|ur-Latn|in	pending | clear nahi | uncleared | due | baqi | baaqi | baki | tertunda | belum	
+PENDING	ur	پینڈنگ	
+PENDING	sd	پينڊنگ	
+PENDING	ar	المعلقة	
+PENDING	ur|sd|fa|ar	بقایا | باقی | معلق | منتظر | در انتظار	
+PENDING	hi	पेंडिंग | बाकी	
+PENDING	bn	পেন্ডিং | বাকি	
+LOW	en|ur-Latn|in	low | kam | khatam | khatm | finish | finished | out of stock | rendah | habis | menipis	
+LOW	sd	گهٽ	
+LOW	ur|sd|fa|ar	کم | ختم | قليل | نفد | منخفض	
+LOW	hi	कम | खत्म	
+LOW	bn	কম	
+CASHBOOK	en|ur-Latn|in	cashbook | cash book | buku kas	
+CASHBOOK	sd	روڪڙ	
+CASHBOOK	ur|sd|fa|ar	کیش بک | کیشبک | دفتر النقد | سجل النقد | دفتر الصندوق | دفتر صندوق	
+CASHBOOK	hi	कैशबुक | कैश बुक	
+CASHBOOK	bn	ক্যাশবুক | ক্যাশ বুক	
+RETURN	en|ur-Latn|in	wapsi | wapasi | return | returns | returned | retur	
+RETURN	ur|sd|fa|ar	واپسی | مرتجع | مرتجعات | المرتجعات | مرجوعی | برگشتی | واپسي	
+RETURN	hi	वापसी	
+RETURN	bn	ফেরত	
+HAPPENED	en|ur-Latn|in	hua | hui | hue | hoa | huwa | happened | happen | going on | terjadi	
+HAPPENED	ur	ہوا | ہوئی | ہوئے	
+HAPPENED	sd	ٿيو | ٿي	
+HAPPENED	ar	جرى	
+HAPPENED	ur|sd|fa|ar	اتفاقی | افتاد | حدث | صار | يجري | حصل | شد | گذشت | اتفاق	
+HAPPENED	hi	हुआ | हुई | हुए	
+HAPPENED	bn	ঘটেছে | হয়েছে | হলো | হল	
+EDITED	en|ur-Latn|in	edit | edited | badla | badli | badle | tabdeel | change | changed | ubah | diubah	
+EDITED	ur	ایڈٹ	
+EDITED	ur|sd|fa|ar	بدلا | بدلی | تبدیل | تعديل | عدل | ویرایش | تغییر	
+EDITED	hi	बदला | बदली | एडिट	
+EDITED	bn	বদল | এডিট	
+DELETED	en|ur-Latn|in	delete | deleted | mitaya | mitayi | hataya | hatayi | remove | removed | hapus | dihapus	
+DELETED	ur	ڈیلیٹ | مٹایا | ہٹایا	
+DELETED	sd	ڊليٽ	
+DELETED	ur|sd|fa|ar	حذف	
+DELETED	hi	हटाया | मिटाया | डिलीट	
+DELETED	bn	মুছে | ডিলিট	
+REPORT	en|ur-Latn|in	report | riport | reporting | laporan	
+REPORT	ur	رپورٹ	
+REPORT	sd	رپورٽ	
+REPORT	ur|sd|fa|ar	تقرير | گزارش	
+REPORT	hi	रिपोर्ट	
+REPORT	bn	রিপোর্ট	
+INFO	en|ur-Latn|in	maloomat | malumat | maalumaat | information | info | details | detail | tafseel | tafsil | informasi | rincian	
+INFO	ur|sd|fa|ar	معلومات | تفصیل | اطلاعات | جزئیات | تفاصيل | مشخصات	
+INFO	hi	जानकारी | मालूमात | तफसील	
+INFO	bn	তথ্য | বিস্তারিত	
+DATA	en|ur-Latn|in	data | deta | record | records	
+DATA	ur	ڈیٹا | ریکارڈ	
+DATA	sd	ڊيٽا	
+DATA	ur|sd|fa|ar	بيانات | البيانات | داده	
+DATA	hi	डेटा | डाटा | रिकॉर्ड	
+DATA	bn	ডেটা | ডাটা	
+SAFE	en|ur-Latn|in	bahar | bhejte | bhejta | send | sends | safe | secure | privacy | private | mehfooz | mahfooz | mehfuz | aman | privasi	
+SAFE	ur	باہر | بھیجتے	
+SAFE	ar	آمنة | خصوصية	
+SAFE	ur|sd|fa|ar	محفوظ | آمن | امن | حریم	
+SAFE	hi	बाहर | भेजते | सुरक्षित | प्राइवेसी	
+SAFE	bn	নিরাপদ | গোপনীয়তা	
+USED	en|ur-Latn|in	use | used | istemal | istemaal | istamal | pakai | dipakai | gunakan | digunakan	
+USED	ur|sd|fa|ar	استعمال | استخدام | استفاده	
+USED	hi	इस्तेमाल	
+USED	bn	ব্যবহার	
+SALARY	en|ur-Latn|in	tankhwah | tankhah | tankha | tankhwa | salary | salaries | wages | pagar | gaji	
+SALARY	ur	تنخواہ	
+SALARY	ur|sd|fa|ar	راتب | رواتب | حقوق | پگهار	
+SALARY	hi	तनख्वाह | वेतन	
+SALARY	bn	বেতন	
+MONEY	en|ur-Latn|in	paise | paisa | pese | paisay | raqam | rupay | rupaye | rupees | rupee | money | uang | duit	
+MONEY	ur	پیسے | پیسہ | روپے	
+MONEY	ur|sd|fa|ar	فلوس | پول | پئسا | پئسو	
+MONEY	hi	रुपये | पैसे | पैसा | रकम	
+MONEY	bn	টাকা	
+ACCOUNT	en|ur-Latn|in	hisaab | hisab | khata | khaata | khate | account | balance | saldo | book | ledger | buku	
+ACCOUNT	ur	کھاتہ | کھاتے	
+ACCOUNT	ur|sd|fa|ar	حساب | کھاتا | کاتو | دفتر | بیلنس | بيلنس | رصيد | مانده	
+ACCOUNT	hi	हिसाब | खाता | खाते | बैलेंस	
+ACCOUNT	bn	হিসাব | খাতা | ব্যালেন্স	
+MAKER	en|ur-Latn|in	developer | maker | creator | innovation | pembuat | pengembang	
+MAKER	ur	ڈیولپر	
+MAKER	sd	ڊولپر	
+MAKER	ur|sd|fa|ar	مطور | سازنده	
+MAKER	hi	डेवलपर	
+MAKER	bn	ডেভেলপার	
+LANGUAGE	en|ur-Latn|in	zuban | zaban | zubaan | zubanein | zabanein | bhasha | language | languages | bahasa	
+LANGUAGE	ur	زبانیں	
+LANGUAGE	sd	ٻولي | ٻوليون	
+LANGUAGE	ar	لغة	
+LANGUAGE	ur|sd|fa|ar	زبان | اللغات | لغات	
+LANGUAGE	hi	भाषा | भाषाएं | भाषाएँ	
+LANGUAGE	bn	জবান | ভাষা	
+VERSION	en|ur-Latn|in	version | versi	
+VERSION	ur|sd|fa|ar	ورژن | إصدار | الإصدار | الاصدار | نسخه | ورزن	
+VERSION	hi	वर्जन | संस्करण	
+VERSION	bn	ভার্সন | সংস্করণ	
+DATE	en|ur-Latn|in	tareekh | tarikh | tareek | date | hijri | islami | chand | tanggal	
+DATE	ur	ہجری	
+DATE	ur|sd|fa|ar	چندم | تاریخ | اسلامی | تاريخ | التاريخ | هجري	
+DATE	hi	तारीख | दिनांक | हिजरी	
+DATE	bn	তারিখ | হিজরি	
+DAY	en|ur-Latn|in	din | day | weekday | hari	
+DAY	sd	ڏينهن	
+DAY	ur|sd|fa|ar	دن | يوم | روز	
+DAY	hi	दिन | वार	
+DAY	bn	দিন	
+TIME	en|ur-Latn|in	waqt | time | taim | baje | bajay | clock | jam | waktu	
+TIME	ur	ٹائم | بجے	
+TIME	ar	الساعة	
+TIME	ur|sd|fa|ar	وقت | الوقت | ساعت	
+TIME	hi	बजे | समय | टाइम	
+TIME	bn	সময় | কয়টা	
+ALL	en|ur-Latn|in	sab | saari | sari | saara | sara | poori | puri | pura | poora | tamam | all | everything | overview | semua | seluruh	
+ALL	sd	سڀ	
+ALL	ur|sd|fa|ar	سب | ساری | سارا | پوری | پورا | تمام | جميع | همه	
+ALL	hi	सब | सारी | सारा | पूरी | पूरा	
+ALL	bn	সব | সমস্ত	
+HEALTH	en|ur-Latn|in	haal | khairiyat | khair | mizaj | tabiyat | kabar	
+HEALTH	ar	كيفك | حالك	
+HEALTH	ur|sd|fa|ar	حال | خیریت | مزاج | طبیعت	
+HEALTH	hi	हाल | खैरियत | मिजाज	
+HEALTH	bn	খবর	
+HOW_IS	en|ur-Latn|in	kaisa | kaisi | kaise | kesa | kesi | kese | kaisay | kesay | bagaimana | gimana	
+HOW_IS	ur	کیسے	
+HOW_IS	sd	ڪيئن	
+HOW_IS	ar	كيف	
+HOW_IS	ur|sd|fa|ar	کیسا | کیسی | چطور	
+HOW_IS	hi	कैसा | कैसी | कैसे	
+HOW_IS	bn	কেমন	
+ABLE	en|ur-Latn|in	sakte | sakta | sakti | sakty | sakoge | sakogay | can | could | bisa | dapat	
+ABLE	ur	سکتے	
+ABLE	ar	يمكنك	
+ABLE	ur|sd|fa|ar	سکتا | سکتی | تستطيع | توانی | میتونی | سگهو | سگهين	
+ABLE	hi	सकते | सकता | सकती	
+ABLE	bn	পারেন | পারো | পারবে	
+TELL	en|ur-Latn|in	bata | batao | bta | btao | tell | say | beritahu	
+TELL	sd	ٻڌائي	
+TELL	ur|sd|fa|ar	بتا | بتاؤ | تخبر | أخبر | بگو	
+TELL	hi	बता | बताओ	
+TELL	bn	বলতে | বলো	
+DO	en|ur-Latn|in	kar | kr | karte | do | lakukan	
+DO	ur	کرتے	
+DO	sd	ڪري	
+DO	ur|sd|fa|ar	کر | تفعل | بکنی	
+DO	hi	कर | करते	
+DO	bn	করতে	
+KNOW	en|ur-Latn|in	samajhte | samajhta | samajh | understand | mengerti | paham | bolte | bolta | speak | pata | aata | aati | maloom | malum | know | knows | tahu	
+KNOW	ur	سمجھتے | بولتے | پتہ	
+KNOW	sd	ڄاڻو	
+KNOW	ur|sd|fa|ar	سمجھتا | تفهم | سمجهو | آتا | آتی | معلوم | تعرف | بلدی | میدانی	
+KNOW	hi	समझते | समझता | बोलते | पता | आता | आती | मालूम	
+KNOW	bn	বোঝো | বোঝেন | জানো | জানেন	
