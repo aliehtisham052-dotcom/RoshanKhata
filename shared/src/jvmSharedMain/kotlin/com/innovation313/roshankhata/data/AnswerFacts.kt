@@ -111,7 +111,8 @@ object AnswerFacts {
                     AnswerCard(Mood.CALM, label = name, lines = listOf(c.getString(W.hudhud_no_phone, name)), openParty = p.id)
                 } else {
                     AnswerCard(Mood.CALM, label = name, figure = Format.ltr(phone), lines = listOf(c.getString(W.hudhud_l_phone)),
-                        openParty = p.id, spoken = { w -> name + ": " + w.getString(W.hudhud_on_screen) })
+                        openParty = p.id, secrets = listOf(phone),
+                        spoken = { w -> name + ": " + w.getString(W.hudhud_on_screen) })
                 }
             }
             Hudhud.Facet.DETAILS -> {
