@@ -66,8 +66,10 @@ class VoiceAmountWordsTest {
     }
 
     @Test fun `a scale after a number word the list lacks is never a bare thousand`() {
-        assertNull(amount("pachees hazar diye"))
-        assertNull(amount("پچیس ہزار دیے"))
+        // "pachees" and پچیس are read since 25 Nov 2026 (BC-316, VoiceUrduTensTest); "sattar" (70) is left out on purpose
+        // (also a name), so it stands for a number word the list lacks.
+        assertNull(amount("sattar hazar diye"))
+        assertNull(amount("Ali ko sattar hazar diye"))
         // After grammar, a verb or nothing it is one thousand, as before.
         assertEquals(1000.0, amount("Ali Raza ko hazar diye")!!, 0.0)
         assertEquals(1000.0, amount("hazar diye")!!, 0.0)

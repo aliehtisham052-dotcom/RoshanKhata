@@ -1,5 +1,7 @@
 package com.innovation313.roshankhata.data
 
+import com.innovation313.roshankhata.ui.NumberWords
+
 /**
  * Reads a spoken sentence and works out what entry it describes.
  *
@@ -109,6 +111,20 @@ object VoiceEntry {
         "twenty" to 20.0, "thirty" to 30.0, "forty" to 40.0, "fifty" to 50.0,
         "sixty" to 60.0, "seventy" to 70.0, "eighty" to 80.0, "ninety" to 90.0
     )
+
+    /**
+     * 11 to 99 spoken in Urdu, both scripts, from NumberWords' own table (25 Nov 2026, BC-316), with the common second
+     * spellings of the round ones. Left out on purpose, because each is also an everyday word or a name and this reader
+     * adds every number word of the sentence: "saath" (with), "sattar" (the name Sattar), اسی (that very), چون
+     * (Farsi "because"); "bara" (big) is never added as 12. Such a number is typed by the owner, as before.
+     */
+    private val URDU_TENS: Map<String, Double> = run {
+        val skip = setOf("saath", "sattar", "اسی", "چون")
+        NumberWords.urduTensSpoken().filterKeys { it !in skip } + mapOf(
+            "pachis" to 25.0, "pachchees" to 25.0, "gyara" to 11.0, "pandra" to 15.0,
+            "tis" to 30.0, "chalis" to 40.0, "pachpan" to 55.0, "assi" to 80.0, "nabbe" to 90.0, "nawe" to 90.0
+        )
+    }
 
     private val MULTIPLIERS = mapOf(
         "sau" to 100.0, "سو" to 100.0,
@@ -786,7 +802,7 @@ object VoiceEntry {
                 pending = mod
                 continue
             }
-            val unit = UNITS[w] ?: if (persian) PERSIAN_UNITS[w] else null
+            val unit = UNITS[w] ?: (if (persian) PERSIAN_UNITS[w] else URDU_TENS[w])
             if (unit != null) {
                 current += unit + pending
                 pending = 0.0

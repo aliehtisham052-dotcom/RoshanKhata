@@ -78,6 +78,20 @@ object NumberWords {
         "اکیانوے", "بانوے", "ترانوے", "چورانوے", "پچانوے", "چھیانوے", "ستانوے", "اٹھانوے", "ننانوے"
     )
 
+    /**
+     * The spoken Urdu words for 11 to 99, in both scripts, for voice entry (25 Nov 2026, BC-316): it knew only 1 to 10,
+     * 20 and 50, so "pachees hazar" and "پچیس ہزار" gave no amount at all. One table with the printed words, so the two
+     * cannot drift. Words that are also everyday words or names are left out by the caller.
+     */
+    internal fun urduTensSpoken(): Map<String, Double> {
+        val m = LinkedHashMap<String, Double>()
+        for (n in 11..99) {
+            m[urduOnes[n]] = n.toDouble()
+            m[romanUrduOnes[n].lowercase()] = n.toDouble()
+        }
+        return m
+    }
+
     // Hindi and Bengali (4 Oct 2026): 0-99 are lookup tables for the same
     // reason as Urdu — the names are irregular all the way up — and both
     // count in lakh and crore, so they fit [spell] as it stands.
