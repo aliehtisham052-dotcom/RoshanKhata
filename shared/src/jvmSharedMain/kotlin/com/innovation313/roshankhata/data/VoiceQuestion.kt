@@ -743,6 +743,7 @@ object VoiceQuestion {
 
     private val SHOP_WILL_PAY = listOf(
         "i will pay", "i will give", "i ll pay", "i ll give", "we will pay", "we will give", "we ll pay", "we ll give", "i shall pay",
+        "will i pay", "will i give", "will we pay", "will we give", "shall i pay", "should i pay",
         "dunga", "dungi", "doonga", "doongi", "dun ga", "doon ga", "dun gi", "doon gi", "chukaunga", "chukaungi", "bhejunga", "bhejungi",
         "دوں گا", "دوں گی", "دونگا", "دونگی", "दूंगा", "दूंगी", "दूँगा", "दूँगी", "दे दूंगा",
         "سأدفع", "سأعطي", "سأسدد", "سندفع", "سنعطي", "سنسدد",

@@ -220,8 +220,14 @@ class HudhudMoneyFirstTest {
         assertFalse(VoiceQuestion.saysFuture("Ali ko kal 500 diye"))
         assertTrue(VoiceQuestion.shopWillPay("I will pay Ali tomorrow"))
         assertTrue(VoiceQuestion.shopWillPay("مان Ali کي ڏيندس"))
+        // Bengali's "I will give" is the whole word; "দেবে" (he will give) is the customer's (lesson 129: only this guard decides).
+        assertTrue(VoiceQuestion.shopWillPay("আমি কাল Ali কে 500 দেব"))
+        assertFalse(VoiceQuestion.shopWillPay("Ali কবে দেবে"))
         assertFalse(VoiceQuestion.shopWillPay("Ali will pay me tomorrow"))
         assertFalse(VoiceQuestion.shopWillPay("Ali kal dega"))
+        // The rules' own "when … pay" with the shop as the payer (only the willPay guard decides it).
+        for ((lang, said) in listOf("en" to "when will I pay Ali Raza", "ur-Latn" to "Ali Raza ko kab dunga"))
+            assertFalse("[$lang] $said -> ${read(lang, said)}", inner(read(lang, said)) is Ask.WhenPays)
         // The date of a promise is no day of the book.
         assertNull(VoiceQuestion.entryDay("Kal Ali ko 500 dunga"))
     }
@@ -263,6 +269,9 @@ class HudhudMoneyFirstTest {
         assertFalse("1234" in VoiceEntry.withoutOtherNumbers("invoice 1234 ke 500"))
         assertFalse("77" in VoiceEntry.withoutOtherNumbers("receipt no 77"))
         assertEquals("ali ko 500 diye", VoiceEntry.withoutOtherNumbers("ali ko 500 diye"))
+        // An app series with no leading zero (only the series guard blanks it).
+        assertFalse("1234" in VoiceEntry.withoutOtherNumbers("inv-1234 ke 500"))
+        assertFalse("77" in VoiceEntry.withoutOtherNumbers("s-77 wala bill"))
     }
     // ------------------------------------------------------------------------------------------------ BC-318, BC-319, D15's question
 
