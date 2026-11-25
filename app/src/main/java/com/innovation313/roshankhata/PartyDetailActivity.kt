@@ -3394,7 +3394,8 @@ class PartyDetailActivity : BaseActivity() {
                 set(java.util.Calendar.MILLISECOND, 0)
             }
             val start = day.timeInMillis
-            val end = start + 24L * 60 * 60 * 1000 - 1
+            // The calendar day, not 24 hours (25 Nov 2026, BC-299): a day the clocks move is 23 or 25 hours long.
+            val end = com.innovation313.roshankhata.data.DaySpans.calendarDay(entry.timestamp).second - 1
 
             val twin = withContext(Dispatchers.IO) {
                 dao.sameDayTwin(entry.partyId, entry.amount, entry.isGiven, start, end)

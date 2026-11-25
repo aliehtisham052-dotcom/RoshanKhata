@@ -1914,7 +1914,7 @@ private fun Book(
                             val e = d.entry
                             val dayStart = com.innovation313.roshankhata.data.Payroll.dayOf(e.timestamp)
                             val (twin, party) = withContext(Dispatchers.IO) {
-                                dao.sameDayTwin(e.partyId, e.amount, e.isGiven, dayStart, dayStart + 24L * 60 * 60 * 1000 - 1) to dao.getParty(e.partyId)
+                                dao.sameDayTwin(e.partyId, e.amount, e.isGiven, dayStart, com.innovation313.roshankhata.data.DaySpans.calendarDay(e.timestamp).second - 1) to dao.getParty(e.partyId)
                             }
                             val limit = party?.creditLimit
                             // A sale paid now (its cash "I got" is written with it) leaves the balance where it was (M21).

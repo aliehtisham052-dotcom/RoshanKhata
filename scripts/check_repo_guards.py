@@ -279,18 +279,35 @@ def payment_voice_asks_off_main(root=ROOT):
     return faults
 
 
+# BC-299 (25 Nov 2026): a day's last moment written as its start + 24 hours - 1 is an hour wrong on a day the clocks
+# move (23 or 25 hours long). The calendar decides: DaySpans.calendarDay(t).second - 1.
+FIXED_DAY_END = re.compile(r"\+\s*(24L?\s*\*\s*60\s*\*\s*60\s*\*\s*1000L?|86_?400_?000L?)\s*-\s*1\b")
+
+
+def day_ends_by_the_calendar(root=ROOT):
+    faults = []
+    for base in ("app/src/main", "desktop/src/main", "shared/src/jvmSharedMain"):
+        for p in sorted((root / base).rglob("*.kt")):
+            for i, l in enumerate(p.read_text().splitlines()):
+                code = l.split("//")[0]
+                if FIXED_DAY_END.search(code):
+                    faults.append("%s:%d ends a day at its start + 24 hours - 1: use DaySpans.calendarDay(t).second - 1"
+                                  % (p.relative_to(root), i + 1))
+    return faults
+
+
 def main():
     faults = (publish_jobs_hold_no_secrets() + no_tracked_ignored_files() + csv_reads_are_decoded()
               + shown_bitmaps_never_recycled() + left_margins_name_their_side() + test_names_are_jvm_names()
               + gradle_cache_on_except_release()
               + windows_cancel_asks_first() + duplicates_off_the_screen_thread()
-              + payment_voice_asks_off_main())
+              + payment_voice_asks_off_main() + day_ends_by_the_calendar())
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
     print("repo guards: release jobs hold no secrets, nothing ignored is tracked, every CSV read is decoded, "
-          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first, the duplicate scan and the payment-voice screen's system questions run off the main thread")
+          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first, the duplicate scan and the payment-voice screen's system questions run off the main thread, every day ends by the calendar")
 
 
 if __name__ == "__main__":

@@ -398,5 +398,6 @@ class SchemesActivity : BaseActivity() {
 
     private fun startOfDay(t: Long): Long = DayMath.startOfDay(t)
 
-    private fun endOfDay(t: Long): Long = startOfDay(t) + 24L * 60 * 60 * 1000 - 1
+    // The calendar day's last moment, not start + 24 hours (25 Nov 2026, BC-299): a day the clocks move is 23 or 25 hours.
+    private fun endOfDay(t: Long): Long = com.innovation313.roshankhata.data.DaySpans.calendarDay(t).second - 1
 }
