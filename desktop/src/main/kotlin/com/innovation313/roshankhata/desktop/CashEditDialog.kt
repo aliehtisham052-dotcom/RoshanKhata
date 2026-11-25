@@ -97,7 +97,7 @@ fun CashEditDialog(
                 onClose = close,
                 footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
                 footer = {
-                    FluentButton(word(W.cancel), close, enabled = !saving)
+                    CancelButton(close, enabled = !saving)
                     FluentButton(word(W.save), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = !saving, onClick = {
                         when {
                             amount == null -> problem = needAmount

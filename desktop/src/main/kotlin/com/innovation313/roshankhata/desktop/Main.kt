@@ -1675,7 +1675,7 @@ private fun Book(
                 if (p.live == null) FluentButton(word(W.merge_button), { merging = p.data; picked = null; letGo() }, kind = ButtonKind.STANDARD, enabled = !busy)
             },
             footer = {
-                FluentButton(word(W.cancel), cancel, kind = ButtonKind.STANDARD, enabled = !busy)
+                CancelButton(cancel, kind = ButtonKind.STANDARD, enabled = !busy)
                 // The business that already keeps this book, opened (R29); nothing here is joined or replaced.
                 if (heldBy != null) FluentButton(word(W.business_switch_open), {
                     LiveDesk.offers.value = null
@@ -2107,7 +2107,7 @@ private fun Book(
         }
         AppDialog(onCloseRequest = { halves = null }, title = word(W.delete_pair_title), state = rememberDialogState(width = fitW(520.dp), height = fitH(300.dp))) {
             DialogFrame(word(W.delete_pair_title), onClose = { halves = null }, footer = {
-                FluentButton(word(W.cancel), { halves = null }, kind = ButtonKind.STANDARD)
+                CancelButton({ halves = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.delete_pair_one), { deleteHalves(both = false) }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.delete_pair_both), { deleteHalves(both = true) }, kind = ButtonKind.DANGER)
             }) {
@@ -2175,7 +2175,7 @@ private fun Book(
                 entryWay = gave
             }
             DialogFrame(title, subtitle = Format.money(amount), onClose = close, footer = {
-                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                CancelButton(close, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.you_got), { open(false) }, kind = ButtonKind.STANDARD, enabled = pickedFor != null)
                 FluentButton(word(W.you_gave), { open(true) }, kind = ButtonKind.ACCENT, enabled = pickedFor != null)
             }) {
@@ -2188,7 +2188,7 @@ private fun Book(
         val title = word(pick.word)
         AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(520.dp))) {
             DialogFrame(title, onClose = close, footer = {
-                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                CancelButton(close, kind = ButtonKind.STANDARD)
                 FluentButton(title, {
                     val id = pickedFor
                     if (id != null) {
@@ -2710,7 +2710,7 @@ private fun StatementRangeDialog(
             // Back to the whole ledger.
             FluentButton(word(W.range_all), { from = null; till = null }, kind = ButtonKind.SUBTLE, enabled = from != null || till != null)
         }, footer = {
-            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+            CancelButton(onCancel, kind = ButtonKind.STANDARD)
             FluentButton(word(W.ledger_pdf_button), {
                 val w = window
                 if (w == null) onPrint(null, null) else onPrint(w.first, w.last)

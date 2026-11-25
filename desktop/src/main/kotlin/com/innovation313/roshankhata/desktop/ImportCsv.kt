@@ -46,7 +46,7 @@ fun ImportPreviewDialog(
     // In the app's frame (Marhala 4): the figures and the sign's choice first, Import the one accent button.
     AppDialog(onCloseRequest = onCancel, title = title, state = rememberDialogState(width = fitW(560.dp), height = fitH(600.dp))) {
         DialogFrame(title, onClose = onCancel, footer = {
-            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+            CancelButton(onCancel, kind = ButtonKind.STANDARD)
             FluentButton(word(W.import_csv_go), { onImport(rows) }, kind = ButtonKind.ACCENT, enabled = rows.isNotEmpty())
         }) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

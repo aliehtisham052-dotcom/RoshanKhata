@@ -173,7 +173,7 @@ fun ProductEditDialog(dao: KhataDao, product: Product, onClose: () -> Unit) {
             product.name.ifBlank { word(W.product_add) }, subtitle = word(if (product.id == 0L) W.product_add else W.edit), onClose = onClose,
             footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
             footer = {
-                FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+                CancelButton(onClose, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
             }
         ) {

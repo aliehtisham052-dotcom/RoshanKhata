@@ -86,7 +86,7 @@ fun BillEditDialog(dao: KhataDao, words: Words, billId: Long, supplierName: Stri
             Text(word(W.edit_bill_cash_locked), color = c.textMuted, fontSize = 12.sp)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Spacer(Modifier.weight(1f))
-                FluentButton(word(W.cancel), onDone, kind = ButtonKind.STANDARD)
+                CancelButton(onDone, kind = ButtonKind.STANDARD)
                 FillButton(word(W.save), c.brandGreen, enabled = amount != null && amount > 0) {
                     val a = amount ?: return@FillButton
                     val num = number.trim().ifEmpty { null }
@@ -126,7 +126,7 @@ fun BillLineDialog(dao: KhataDao, billId: Long, existing: BillItem?, onDone: () 
                     onDone()
                 }
             }
-            FluentButton(word(W.cancel), onDone, kind = ButtonKind.STANDARD)
+            CancelButton(onDone, kind = ButtonKind.STANDARD)
         }
     }
 }
@@ -267,7 +267,7 @@ fun BatchReturnDialog(dao: KhataDao, billItemId: Long, onClose: () -> Unit, onDo
             onClose = onClose,
             footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
             footer = {
-                FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+                CancelButton(onClose, kind = ButtonKind.STANDARD)
                 if (f != null && f.left > 0.0) FluentButton(word(W.save), {
                     when {
                         q == null || q <= 0.0 || q > f.left + 1e-9 -> problem = words.text(W.return_bad_qty)

@@ -296,7 +296,7 @@ fun InvoiceForm(
             else Text(word(W.invoice_items_label) + "  " + lines.size, color = c.ink, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
         },
         footer = {
-            FluentButton(word(W.cancel), onCancel)
+            CancelButton(onCancel)
             FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
         }
     ) {

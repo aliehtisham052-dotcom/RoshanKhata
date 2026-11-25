@@ -363,7 +363,7 @@ fun DailyCopiesPane(
         AppDialog(onCloseRequest = { asking = null }, onPreviewKeyEvent = escCloses { asking = null }, title = title,
             state = rememberDialogState(width = fitW(560.dp), height = fitH(520.dp))) {
             DialogFrame(title, subtitle = Format.dateTime(f.lastModified()), onClose = { asking = null }, footer = {
-                FluentButton(word(W.cancel), { asking = null }, kind = ButtonKind.STANDARD)
+                CancelButton({ asking = null }, kind = ButtonKind.STANDARD)
                 // A copy that does not read is still offered: the restore says it is damaged.
                 FluentButton(word(W.snapshot_restore_action), { restore() }, kind = ButtonKind.DANGER, enabled = parsed == null || mayReplace(loss, agreed))
             }) {

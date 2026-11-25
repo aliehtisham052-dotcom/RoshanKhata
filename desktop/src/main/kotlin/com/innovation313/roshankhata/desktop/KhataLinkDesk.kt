@@ -242,7 +242,7 @@ fun KhataLinkDialog(
         LinkStage.Loading, LinkStage.Busy ->
             AppDialog(onCloseRequest = onClose, title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(240.dp))) {
                 DialogFrame(title, subtitle = party.name, onClose = onClose, footer = {
-                    FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+                    CancelButton(onClose, kind = ButtonKind.STANDARD)
                 }) {
                     Text(word(W.clink_sending), color = c.textMuted, fontSize = 14.sp)
                 }
@@ -252,7 +252,7 @@ fun KhataLinkDialog(
                 DialogFrame(title, subtitle = party.name, onClose = onClose, footerStart = {
                     if (s.sent) FluentButton(word(W.clink_stop), { stage = LinkStage.Stopping(s.uid) }, kind = ButtonKind.DANGER)
                 }, footer = {
-                    FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+                    CancelButton(onClose, kind = ButtonKind.STANDARD)
                     FluentButton(word(if (s.sent) W.clink_send_again else W.clink_send), { send(s.uid, claim = false) },
                         kind = ButtonKind.ACCENT, icon = "ic_action_whatsapp")
                 }) {

@@ -66,6 +66,15 @@ import com.innovation313.roshankhata.words.word
 enum class ButtonKind { ACCENT, STANDARD, SUBTLE, DANGER }
 
 /**
+ * The Cancel of a form or a question (25 Nov 2026, the owner's yes: as the phone's FormGuard asks). It closes through
+ * the dialog's guard ([guardedClose]): at once when nothing was typed, else after "Discard what you typed?". A Cancel
+ * that is not a close (the entry form's "put the line back") stays a plain [FluentButton].
+ */
+@Composable
+fun CancelButton(onClick: () -> Unit, modifier: Modifier = Modifier, kind: ButtonKind = ButtonKind.STANDARD, enabled: Boolean = true) =
+    FluentButton(word(W.cancel), guardedClose(onClick), modifier, kind = kind, enabled = enabled)
+
+/**
  * A button: 32 tall (40 [tall]), the phone's 8 dp corners, bold 14 sp words,
  * an optional glyph ([icon], one of the phone's white glyphs) before them. The
  * accent one is the phone's deep green with a gold edge.

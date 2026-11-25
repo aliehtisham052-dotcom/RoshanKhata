@@ -330,7 +330,7 @@ private fun ReceiptRow(label: String, value: String) {
 fun PickDialog(title: String, labels: List<String>, chosen: Int = -1, onPick: (Int) -> Unit, onDismiss: () -> Unit, textSizes: List<Float>? = null) {
     val c = LocalRoshanColors.current
     AppDialog(onCloseRequest = onDismiss, title = title, state = rememberDialogState(width = fitW(440.dp), height = fitH((190 + 49 * labels.size).dp))) {
-        DialogFrame(title, onClose = onDismiss, footer = { FluentButton(word(W.cancel), onDismiss, kind = ButtonKind.STANDARD) }) {
+        DialogFrame(title, onClose = onDismiss, footer = { CancelButton(onDismiss, kind = ButtonKind.STANDARD) }) {
             Column {
                 labels.forEachIndexed { i, label ->
                     val on = i == chosen
@@ -357,7 +357,7 @@ private fun AdviceDialog(item: EntryItem, onDismiss: () -> Unit, onSave: (String
     val title = word(W.advice_title, item.itemName.orEmpty())
     AppDialog(onCloseRequest = onDismiss, title = title, state = rememberDialogState(width = fitW(480.dp), height = fitH(420.dp))) {
         DialogFrame(title, onClose = onDismiss, footer = {
-            FluentButton(word(W.cancel), onDismiss, kind = ButtonKind.STANDARD)
+            CancelButton(onDismiss, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), { onSave(crop.trim().ifEmpty { null }, pest.trim().ifEmpty { null }, dose.trim().ifEmpty { null }) }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
         }) {
             FluentField(crop, { crop = it }, Modifier.fillMaxWidth(), placeholder = word(W.advice_crop_hint))

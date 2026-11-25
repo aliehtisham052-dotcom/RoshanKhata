@@ -125,7 +125,7 @@ fun BillForm(
         onClose = onCancel,
         footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
         footer = {
-            FluentButton(word(W.cancel), onCancel)
+            CancelButton(onCancel)
             FluentButton(word(W.save), { saveNow() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
         }
     ) {

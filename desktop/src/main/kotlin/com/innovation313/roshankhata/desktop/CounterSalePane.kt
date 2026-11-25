@@ -661,7 +661,7 @@ fun CounterSalePane(
     if (showHeld) {
         AppDialog(onCloseRequest = { showHeld = false }, onPreviewKeyEvent = escCloses { showHeld = false }, title = words.text(W.pos_held_tickets, held.size), state = rememberDialogState(width = fitW(560.dp), height = fitH(480.dp))) {
             DialogFrame(words.text(W.pos_held_tickets, held.size), onClose = { showHeld = false }, footer = {
-                FluentButton(word(W.cancel), { showHeld = false }, kind = ButtonKind.STANDARD)
+                CancelButton({ showHeld = false }, kind = ButtonKind.STANDARD)
             }) {
                 held.forEachIndexed { i, h ->
                     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -702,7 +702,7 @@ fun CounterSalePane(
         AppDialog(onCloseRequest = { dropping = null }, onPreviewKeyEvent = escCloses { dropping = null }, title = word(W.pos_drop_held), state = rememberDialogState(width = fitW(460.dp), height = fitH(260.dp))) {
             DialogFrame(word(W.pos_drop_held), subtitle = (h.customerName?.let { Format.name(it) } ?: word(W.pos_walk_in)) + " · " + Format.money(h.grandTotal),
                 onClose = { dropping = null }, footer = {
-                    FluentButton(word(W.cancel), { dropping = null }, kind = ButtonKind.STANDARD)
+                    CancelButton({ dropping = null }, kind = ButtonKind.STANDARD)
                     FluentButton(word(W.pos_drop_held), {
                         dropping = null
                         scope.launch {
@@ -777,7 +777,7 @@ fun CounterSalePane(
         var reason by remember(r.id) { mutableStateOf("") }
         AppDialog(onCloseRequest = { voidingReturn = null }, onPreviewKeyEvent = escCloses { voidingReturn = null }, title = word(W.pos_void_return), state = rememberDialogState(width = fitW(480.dp), height = fitH(300.dp))) {
             DialogFrame(word(W.pos_void_return), subtitle = r.returnNumber, onClose = { voidingReturn = null }, footer = {
-                FluentButton(word(W.cancel), { voidingReturn = null }, kind = ButtonKind.STANDARD)
+                CancelButton({ voidingReturn = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.pos_void_return), {
                     scope.launch {
                         val refusal = withContext(Dispatchers.IO) { runCatching { dao.returnVoidRefusal(r.id) }.getOrNull() }
@@ -830,7 +830,7 @@ fun CounterSalePane(
         }
         AppDialog(onCloseRequest = { voiding = null }, onPreviewKeyEvent = escCloses { voiding = null }, title = word(W.pos_void), state = rememberDialogState(width = fitW(560.dp), height = fitH(300.dp))) {
             DialogFrame(word(W.pos_void), subtitle = words.text(W.pos_void_confirm, s.saleNumber), onClose = { voiding = null }, footer = {
-                FluentButton(word(W.cancel), { voiding = null }, kind = ButtonKind.STANDARD)
+                CancelButton({ voiding = null }, kind = ButtonKind.STANDARD)
                 // Onto an empty counter only: the ticket being rung up is never cleared to make room.
                 if (draft.isEmpty) FluentButton(word(W.pos_void_correct), { runVoid(correct = true) }, kind = ButtonKind.STANDARD, enabled = reason.isNotBlank())
                 FluentButton(word(W.pos_void), { runVoid(correct = false) }, kind = ButtonKind.DANGER, enabled = reason.isNotBlank())

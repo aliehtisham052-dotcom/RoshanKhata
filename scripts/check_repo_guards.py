@@ -34,6 +34,11 @@
       bundle, which is built from fresh downloads. With the cache off every run fetched every jar
       from Maven Central, and Sonatype's rate limit (429) failed the Android build twice on 25 Nov 2026.
 
+  windows_cancel_asks_first (BC-292): on the computer every Cancel that closes a form is a CancelButton, which asks
+      "Discard what you typed?" when the form holds typing, as the phone's FormGuard does (the owner's yes, 25 Nov
+      2026). Only two Cancels are plain buttons, by name: the entry form's "put the line back" and the Cancel of the
+      discard question itself (AskDialog).
+
     python3 scripts/check_repo_guards.py         # exit 1 and a line per fault
 """
 import pathlib, re, subprocess, sys
@@ -182,16 +187,34 @@ def gradle_cache_on_except_release(root=ROOT):
     return faults
 
 
+PLAIN_CANCEL_OK = {("EntryEditor.kt", "goods.putBack()"), ("Fluent.kt", "onDismiss, kind = ButtonKind.STANDARD)"),
+                   ("Fluent.kt", "guardedClose(onClick)")}  # the last is CancelButton's own body
+
+
+def windows_cancel_asks_first(root=ROOT):
+    faults = []
+    for p in sorted((root / "desktop/src/main/kotlin").rglob("*.kt")):
+        for i, l in enumerate(p.read_text().splitlines()):
+            if "FluentButton(word(W.cancel)" not in l:
+                continue
+            if any(p.name == f and mark in l for f, mark in PLAIN_CANCEL_OK):
+                continue
+            faults.append("%s:%d a Cancel that closes a form is a CancelButton, so typing is never thrown away unasked"
+                          % (p.relative_to(root), i + 1))
+    return faults
+
+
 def main():
     faults = (publish_jobs_hold_no_secrets() + no_tracked_ignored_files() + csv_reads_are_decoded()
               + shown_bitmaps_never_recycled() + left_margins_name_their_side() + test_names_are_jvm_names()
-              + gradle_cache_on_except_release())
+              + gradle_cache_on_except_release()
+              + windows_cancel_asks_first())
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
     print("repo guards: release jobs hold no secrets, nothing ignored is tracked, every CSV read is decoded, "
-          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle")
+          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first")
 
 
 if __name__ == "__main__":

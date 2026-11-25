@@ -112,7 +112,7 @@ fun PartyForm(existing: Party?, book: List<PartyWithBalance>, onSave: (Party) ->
             )
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
-            FluentButton(word(W.cancel), onCancel)
+            CancelButton(onCancel)
             FluentButton(word(W.save), kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = name.isNotBlank(), onClick = {
                 fun typed(v: String) = v.trim().ifEmpty { null }
                 val base = existing ?: Party(name = name.trim(), isCustomer = customer)

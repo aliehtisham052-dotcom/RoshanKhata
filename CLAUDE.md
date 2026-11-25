@@ -4530,9 +4530,10 @@ broken once more on purpose and failed. Nothing below was compiled here except w
   how the form opened (`rememberOpened`/`typedSince`); a typed form's Esc asks even when the caller passed its own key
   handler, and DialogFrame's ✕ (and the entry form's own) asks too (`guardedClose`). Wired: entry, invoice/documents (a
   line typed but not added counts), cheque, plan and its payment, scheme and its claim, purchase order (OrderDraft.snapshot)
-  and receiving goods, add/edit party. **A new form inside a dialog says FormTyped** (or passes dirty). Cancel still closes
-  at once (an explicit word; the phone's FormGuard asks there too — the owner's to decide). DialogCloseGuardTest (run here
-  against a stand-in for Compose's state).
+  and receiving goods, add/edit party. **A new form inside a dialog says FormTyped** (or passes dirty). Cancel asks too since 25 Nov
+  2026 (the owner's yes, as the phone's FormGuard): every closing Cancel is a `CancelButton`, held by
+  `check_repo_guards.py::windows_cancel_asks_first` (BC-292). DialogCloseGuardTest (run here against a stand-in for
+  Compose's state).
 - **The bell once per change of the book (L027, BC-207):** Main worked LedgerAlerts out on every page switch. Now on
   `KhataDao.observeBellSources` (a read like observeBatchMoves over every table the bell reads; first answer dropped,
   800 ms settle), a reload, the day turning and a five-minute tick for live sync's conflicts (not Room's tables).

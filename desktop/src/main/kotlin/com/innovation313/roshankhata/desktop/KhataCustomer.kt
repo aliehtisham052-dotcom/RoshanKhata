@@ -343,7 +343,7 @@ fun CustomerQrDialog(dao: KhataDao, partyId: Long, name: String, onClose: () -> 
             subtitle = Format.name(name),
             onClose = onClose,
             footer = {
-                FluentButton(word(W.cancel), onClose, kind = ButtonKind.SUBTLE)
+                CancelButton(onClose, kind = ButtonKind.SUBTLE)
                 FluentButton(saveTitle, {
                     val img = picture ?: return@FluentButton
                     val dialog = FileDialog(null as Frame?, saveTitle, FileDialog.SAVE)

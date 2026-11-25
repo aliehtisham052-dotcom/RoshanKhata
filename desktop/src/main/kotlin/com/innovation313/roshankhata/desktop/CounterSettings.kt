@@ -83,7 +83,7 @@ fun CounterSettingsDialog(
     val title = word(W.counter_settings)
     AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(600.dp), height = fitH(720.dp))) {
         DialogFrame(title, onClose = onClose, footer = {
-            FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+            CancelButton(onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {
                 scope.launch {
                     withContext(Dispatchers.IO) {

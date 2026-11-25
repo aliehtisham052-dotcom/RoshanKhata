@@ -326,7 +326,7 @@ fun ProductsPane(
         // In the app's frame (Marhala 4, the audit: Material's dialogs remained on this page).
         AppDialog(onCloseRequest = { importPlan = null }, title = word(W.products_import), state = rememberDialogState(width = fitW(480.dp), height = fitH(300.dp))) {
             DialogFrame(word(W.products_import), onClose = { importPlan = null }, footer = {
-                FluentButton(word(W.cancel), { importPlan = null }, kind = ButtonKind.STANDARD)
+                CancelButton({ importPlan = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.save), {
                     importPlan = null
                     scope.launch {
@@ -1065,7 +1065,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
         }
         AppDialog(onCloseRequest = { acting = null }, title = word(W.plan_actions), state = rememberDialogState(width = fitW(440.dp), height = fitH((190 + 49 * actions.size).dp))) {
             DialogFrame(word(W.plan_actions), subtitle = Format.name(p.partyName), onClose = { acting = null }, footer = {
-                FluentButton(word(W.cancel), { acting = null }, kind = ButtonKind.STANDARD)
+                CancelButton({ acting = null }, kind = ButtonKind.STANDARD)
             }) {
                 Column {
                     actions.forEachIndexed { i, (label, removes, go) ->
@@ -1117,7 +1117,7 @@ fun PlansPane(dao: KhataDao, parties: List<PartyWithBalance>, words: Words, onLe
         val openedAmount = remember(p.id) { amountText }
         AppDialog(onCloseRequest = { paying = null }, dirty = { amountText != openedAmount || note.isNotEmpty() }, title = word(W.record_payment_title), state = rememberDialogState(width = fitW(480.dp), height = fitH(440.dp))) {
             DialogFrame(word(W.record_payment_title), subtitle = Format.name(p.partyName), onClose = { paying = null }, footer = {
-                FluentButton(word(W.cancel), { paying = null }, kind = ButtonKind.STANDARD)
+                CancelButton({ paying = null }, kind = ButtonKind.STANDARD)
                 FluentButton(word(if (over) W.proceed_anyway else W.save), { pay() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain", enabled = amount != null)
             }) {
                 Text(word(W.record_payment_help, p.partyName), color = c.textMuted, fontSize = 13.sp)
@@ -1350,7 +1350,7 @@ private fun PlanAddDialog(parties: List<PartyWithBalance>, onSave: (com.innovati
     AppDialog(onCloseRequest = onCancel, dirty = { partyId != null || total.isNotEmpty() || each.isNotEmpty() || due != null || note.isNotEmpty() },
         title = word(W.add_plan), state = rememberDialogState(width = fitW(560.dp), height = fitH(700.dp))) {
         DialogFrame(word(W.add_plan), onClose = onCancel, footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } }, footer = {
-            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+            CancelButton(onCancel, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
         }) {
             Text(word(W.plan_dialog_help), color = c.textMuted, fontSize = 12.sp)

@@ -206,7 +206,7 @@ fun TradePicker(
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End), verticalAlignment = Alignment.CenterVertically) {
-            if (!mandatory) FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+            if (!mandatory) CancelButton(onCancel, kind = ButtonKind.STANDARD)
             val pick = chosen
             FillButton(word(W.save), c.brandGreen, enabled = pick != null && (pick != "OTHER" || name.isNotBlank())) {
                 if (pick != null) onPick(pick, name.trim().ifEmpty { null }, items.trim().ifEmpty { null })

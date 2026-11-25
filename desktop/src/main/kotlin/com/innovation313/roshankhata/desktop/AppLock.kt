@@ -157,7 +157,7 @@ fun AppLockSettings(prefs: AppPrefs, onDone: () -> Unit) {
         }
         problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) }
         androidx.compose.foundation.layout.Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)) {
-            FluentButton(word(W.cancel), onDone, kind = ButtonKind.STANDARD)
+            CancelButton(onDone, kind = ButtonKind.STANDARD)
             FillButton(word(if (on) W.app_lock_turn_off else W.app_lock_turn_on), if (on) c.gaveFill else c.brandGreen) { go() }
         }
     }

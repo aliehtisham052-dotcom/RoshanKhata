@@ -137,7 +137,7 @@ fun ReminderDialog(
             subtitle = name,
             onClose = onClose,
             footer = {
-                FluentButton(word(W.cancel), onClose, kind = ButtonKind.SUBTLE)
+                CancelButton(onClose, kind = ButtonKind.SUBTLE)
                 FluentButton(word(W.open_whatsapp), {
                     if (number == null) { trouble = words.text(W.no_phone_number); return@FluentButton }
                     val opened = runCatching {

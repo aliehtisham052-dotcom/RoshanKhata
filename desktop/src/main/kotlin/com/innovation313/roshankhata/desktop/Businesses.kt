@@ -324,7 +324,7 @@ fun BusinessesDialog(
         AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = word(W.business_rename),
             state = rememberDialogState(width = fitW(460.dp), height = fitH(280.dp))) {
             DialogFrame(word(W.business_rename), onClose = close, footer = {
-                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                CancelButton(close, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.save), {
                     businesses.rename(b.id, name)
                     settingsOf(b.id).setBusinessName(name)
@@ -345,7 +345,7 @@ fun BusinessesDialog(
         AppDialog(onCloseRequest = close, onPreviewKeyEvent = escCloses(close), title = title,
             state = rememberDialogState(width = fitW(520.dp), height = fitH(420.dp))) {
             DialogFrame(title, onClose = close, footer = {
-                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD, enabled = !busy)
+                CancelButton(close, kind = ButtonKind.STANDARD, enabled = !busy)
                 FluentButton(word(W.delete_forever), {
                     // Off the window's thread (R43/R75): it may open the book and say goodbye to the relays.
                     busy = true

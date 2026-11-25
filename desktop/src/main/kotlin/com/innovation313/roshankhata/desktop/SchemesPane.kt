@@ -129,7 +129,7 @@ fun SchemesPane(dao: KhataDao, reload: Int) {
         val title = word(W.scheme_mark_claimed)
         AppDialog(onCloseRequest = close, dirty = { amount.isNotEmpty() }, title = title, state = rememberDialogState(width = fitW(460.dp), height = fitH(300.dp))) {
             DialogFrame(title, subtitle = s.name, onClose = close, footer = {
-                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                CancelButton(close, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.save), save, kind = ButtonKind.ACCENT, enabled = value != null)
             }) {
                 FluentField(amount, { amount = it }, Modifier.fillMaxWidth(), label = word(W.scheme_claim_hint), big = true,
@@ -272,7 +272,7 @@ private fun SchemeForm(title: String, existing: Scheme?, suppliers: List<Party>,
     DialogFrame(title, onClose = onCancel, footerStart = {
         problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp, maxLines = 2, overflow = TextOverflow.Ellipsis) }
     }, footer = {
-        FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+        CancelButton(onCancel, kind = ButtonKind.STANDARD)
         FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT)
     }) {
         // What a scheme is, in one line (8 Nov 2026, the owner's test: "I cannot understand this form").

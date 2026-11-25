@@ -191,7 +191,7 @@ fun PrinterChoiceDialog(names: List<String>, onCancel: () -> Unit, onSavePicture
         state = androidx.compose.ui.window.rememberDialogState(width = fitW(480.dp), height = fitH((210 + 49 * shown.size.coerceAtLeast(1)).dp))) {
         DialogFrame(title, onClose = onCancel, footerStart = {
             if (onSavePicture != null) FluentButton(word(W.receipt_save_picture), onSavePicture, kind = ButtonKind.STANDARD, icon = "ic_download")
-        }, footer = { FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD) }) {
+        }, footer = { CancelButton(onCancel, kind = ButtonKind.STANDARD) }) {
             if (shown.isEmpty()) Text(word(W.print_failed), color = c.owedToMe, fontSize = 14.sp)
             Column {
                 shown.forEachIndexed { i, n ->

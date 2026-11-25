@@ -340,7 +340,7 @@ private fun CashForm(dao: KhataDao, income: Boolean, typed: androidx.compose.run
         onClose = onCancel,
         footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
         footer = {
-            FluentButton(word(W.cancel), onCancel)
+            CancelButton(onCancel)
             FluentButton(word(W.save), kind = ButtonKind.ACCENT, icon = "ic_check_plain", onClick = {
                 when {
                     amount == null -> problem = needAmount
@@ -417,7 +417,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
     AppDialog(onCloseRequest = close, title = word(W.dayclose_title), state = rememberDialogState(width = fitW(520.dp), height = fitH(640.dp))) {
         val f = figures
         if (f == null) {
-            DialogFrame(word(W.dayclose_title), onClose = close, footer = { FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD) }) {
+            DialogFrame(word(W.dayclose_title), onClose = close, footer = { CancelButton(close, kind = ButtonKind.STANDARD) }) {
                 Text("…", color = c.textMuted)
             }
         } else {
@@ -429,7 +429,7 @@ fun DayCloseDialog(dao: KhataDao, onClose: () -> Unit) {
                 onClose = close,
                 footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
                 footer = {
-                    FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD, enabled = !saving)
+                    CancelButton(close, kind = ButtonKind.STANDARD, enabled = !saving)
                     FluentButton(word(W.save), {
                         val n = count ?: run { problem = needCount; return@FluentButton }
                         // A drawer that does not match the books needs its reason written down (POS Phase 4).
@@ -549,7 +549,7 @@ fun CorrectCountDialog(dao: KhataDao, close: com.innovation313.roshankhata.data.
             word(W.dayclose_count_correct), onClose = { if (!saving) onClose() },
             footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
             footer = {
-                FluentButton(word(W.cancel), { if (!saving) onClose() }, kind = ButtonKind.STANDARD, enabled = !saving)
+                CancelButton({ if (!saving) onClose() }, kind = ButtonKind.STANDARD, enabled = !saving)
                 FluentButton(word(W.save), {
                     val n = Calc.evalPad(figure) ?: run { problem = needCount; return@FluentButton }
                     if (why.isBlank()) { problem = needReason; return@FluentButton }

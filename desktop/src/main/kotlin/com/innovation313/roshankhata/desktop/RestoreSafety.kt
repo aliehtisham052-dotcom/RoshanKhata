@@ -106,7 +106,7 @@ fun MergeDialog(
     // In the app's frame (Marhala 4); nothing closes it while the merge runs.
     AppDialog(onCloseRequest = close, title = title, state = androidx.compose.ui.window.rememberDialogState(width = fitW(560.dp), height = fitH(480.dp))) {
         DialogFrame(title, onClose = close, footer = {
-            FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD, enabled = !busy)
+            CancelButton(close, kind = ButtonKind.STANDARD, enabled = !busy)
             if (p != null && !p.none && refused == null) FluentButton(word(W.merge_button), {
                 busy = true
                 scope.launch {

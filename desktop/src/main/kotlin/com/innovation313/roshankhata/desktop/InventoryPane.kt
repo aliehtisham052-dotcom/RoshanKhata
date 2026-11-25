@@ -191,7 +191,7 @@ private fun AdjustDialog(dao: KhataDao, words: Words, allowedBy: String?, onClos
     var problem by remember { mutableStateOf<String?>(null) }
     AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(520.dp), height = fitH(560.dp))) {
         DialogFrame(title, onClose = onClose, footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 12.sp) } }, footer = {
-            FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+            CancelButton(onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {
                 val p = chosen ?: return@FluentButton
                 val a = amount ?: return@FluentButton
@@ -257,7 +257,7 @@ private fun TransferDialog(dao: KhataDao, words: Words, businesses: Businesses, 
     val title = word(W.transfer_title)
     AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(620.dp), height = fitH(680.dp))) {
         DialogFrame(title, onClose = onClose, footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 12.sp) } }, footer = {
-            FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+            CancelButton(onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.transfer_title), {
                 val target = to ?: return@FluentButton
                 busy = true

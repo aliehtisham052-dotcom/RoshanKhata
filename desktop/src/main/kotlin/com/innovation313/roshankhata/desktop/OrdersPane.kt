@@ -202,7 +202,7 @@ private fun OrderDialog(dao: KhataDao, draft: OrderDraft, suppliers: List<PartyW
     val opened = remember(draft) { draft.snapshot() }
     AppDialog(onCloseRequest = onClose, dirty = { draft.snapshot() != opened }, title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(760.dp))) {
         DialogFrame(title, onClose = onClose, footer = {
-            FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+            CancelButton(onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {
                 scope.launch {
                     val order = PurchaseOrder(id = draft.existing?.order?.id ?: 0, partyId = draft.partyId!!, note = draft.note.trim().ifBlank { null }, createdBy = Access.userName)
@@ -261,7 +261,7 @@ private fun ReceiveDialog(dao: KhataDao, o: PurchaseOrderWithLines, words: Words
     val opened = remember { formNow() }
     AppDialog(onCloseRequest = onClose, dirty = { formNow() != opened }, title = title, state = rememberDialogState(width = fitW(720.dp), height = fitH(640.dp))) {
         DialogFrame(title, subtitle = o.order.orderNumber, onClose = onClose, footer = {
-            FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+            CancelButton(onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.save), {
                 scope.launch {
                     val items = got.mapNotNull { g ->

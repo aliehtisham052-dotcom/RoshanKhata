@@ -617,7 +617,7 @@ fun EntryEditor(
             // The saved entry on the thermal printer (Phase 9e); a new one is printed once saved.
             if (onPrint != null) FluentButton(word(W.print_receipt), onPrint, icon = "ic_print")
             Spacer(Modifier.weight(1f))
-            FluentButton(word(W.cancel), onCancel)
+            CancelButton(onCancel)
             FillButton(word(W.save), if (isGiven) c.gaveFill else Look.accent, enabled = amount != null) { trySave() }
         }
     }
@@ -660,7 +660,7 @@ fun TimeOfDayDialog(at: Long, onPick: (Long) -> Unit, onDismiss: () -> Unit) {
     )
     AppDialog(onCloseRequest = onDismiss, title = word(W.pick_time), state = rememberDialogState(width = fitW(380.dp), height = fitH(560.dp))) {
         DialogFrame(word(W.pick_time), onClose = onDismiss, footer = {
-            FluentButton(word(W.cancel), onDismiss, kind = ButtonKind.STANDARD)
+            CancelButton(onDismiss, kind = ButtonKind.STANDARD)
             FluentButton(word(W.ok), {
                 val picked = Calendar.getInstance().apply {
                     timeInMillis = at
@@ -690,7 +690,7 @@ fun SignatureDialog(title: String, subtitle: String?, onDone: (java.awt.image.Bu
         DialogFrame(title, subtitle = subtitle, onClose = onCancel, scroll = false, footerStart = {
             FluentButton(word(W.sig_clear), { strokes.clear(); current = emptyList() }, kind = ButtonKind.SUBTLE)
         }, footer = {
-            FluentButton(word(W.cancel), onCancel, kind = ButtonKind.STANDARD)
+            CancelButton(onCancel, kind = ButtonKind.STANDARD)
             FluentButton(word(W.sig_done), {
                 if (strokes.isEmpty()) { empty = true; return@FluentButton }
                 onDone(EntrySignatures.picture(strokes.map { s -> s.map { it.x to it.y } }, size.width, size.height, ink = 2.6f * density))
@@ -759,7 +759,7 @@ internal fun DueDialog(partyName: String, current: Long?, onPick: (Long?) -> Uni
         DialogFrame(title, onClose = onDismiss, footerStart = {
             if (current != null) FluentButton(word(W.harvest_promise_remove), { onPick(null) }, kind = ButtonKind.DANGER)
         }, footer = {
-            FluentButton(word(W.cancel), onDismiss, kind = ButtonKind.STANDARD)
+            CancelButton(onDismiss, kind = ButtonKind.STANDARD)
             FluentButton(word(W.harvest_promise_other_date), { other = true }, icon = "ic_calendar")
         }) {
             Column {

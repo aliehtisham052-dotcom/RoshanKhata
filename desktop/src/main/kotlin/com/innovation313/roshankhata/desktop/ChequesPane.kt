@@ -202,7 +202,7 @@ fun ChequesPane(
         val canReopen = ch.status == ChequeStatus.BOUNCED || ch.status == ChequeStatus.CANCELLED
         AppDialog(onCloseRequest = { acting = null }, title = word(W.cheque_actions), state = rememberDialogState(width = fitW(460.dp), height = fitH(540.dp))) {
             DialogFrame(Format.name(ch.partyName), subtitle = chequeLine(ch), onClose = { acting = null },
-                footer = { FluentButton(word(W.cancel), { acting = null }, kind = ButtonKind.STANDARD) }) {
+                footer = { CancelButton({ acting = null }, kind = ButtonKind.STANDARD) }) {
                 Column {
                     val Action: @Composable (String, Color, () -> Unit) -> Unit = { text, color, onClick ->
                         ActionRow(text, color) { acting = null; onClick() }
@@ -483,7 +483,7 @@ private fun ChequeEditor(
         onClose = onCancel,
         footerStart = { problem?.let { Text(it, color = c.owedToMe, fontSize = 13.sp) } },
         footer = {
-            FluentButton(word(W.cancel), onCancel)
+            CancelButton(onCancel)
             FluentButton(word(W.save), kind = ButtonKind.ACCENT, icon = "ic_check_plain", onClick = {
                 val pid = partyId
                 val date = due

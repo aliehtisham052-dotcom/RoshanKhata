@@ -121,7 +121,7 @@ fun DuplicatesPane(
                     }
                 }, kind = ButtonKind.SUBTLE)
             }, footer = {
-                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                CancelButton(close, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.duplicate_next), { confirming = true }, kind = ButtonKind.ACCENT)
             }) {
                 Text(word(W.duplicate_pick_primary_message), color = c.inkSoft, fontSize = 13.sp)

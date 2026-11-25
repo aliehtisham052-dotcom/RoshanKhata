@@ -265,7 +265,7 @@ fun OverrideDialog(dao: KhataDao, what: String, ownerOnly: Boolean = false, onCl
     val title = word(if (ownerOnly) W.access_owner_needed_title else W.access_override_title)
     AppDialog(onCloseRequest = onClose, onPreviewKeyEvent = escCloses(onClose), title = title, state = rememberDialogState(width = fitW(460.dp), height = fitH(420.dp))) {
         DialogFrame(title, subtitle = what, onClose = onClose, footer = {
-            FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+            CancelButton(onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.access_sign_in), ::go, kind = ButtonKind.ACCENT, enabled = !busy && !nobody && pin.isNotEmpty())
         }) {
             if (nobody) {
@@ -352,8 +352,8 @@ private fun OwnerPinFrame(dao: KhataDao, start: OwnerPinStart, onClose: () -> Un
         footerStart = { if (step == 0 && !recover) FluentButton(word(W.access_forgot_pin), { recover = true; proof = ""; problem = null }, kind = ButtonKind.SUBTLE) },
         footer = {
             when (step) {
-                0 -> { FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD); FluentButton(word(W.ok), ::prove, kind = ButtonKind.ACCENT, enabled = !busy && proof.isNotBlank()) }
-                1 -> { FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD); FluentButton(word(W.save), ::save, kind = ButtonKind.ACCENT, enabled = !busy && first.isNotEmpty() && second.isNotEmpty()) }
+                0 -> { CancelButton(onClose, kind = ButtonKind.STANDARD); FluentButton(word(W.ok), ::prove, kind = ButtonKind.ACCENT, enabled = !busy && proof.isNotBlank()) }
+                1 -> { CancelButton(onClose, kind = ButtonKind.STANDARD); FluentButton(word(W.save), ::save, kind = ButtonKind.ACCENT, enabled = !busy && first.isNotEmpty() && second.isNotEmpty()) }
                 else -> FluentButton(word(W.access_recovery_written), onSet, kind = ButtonKind.ACCENT)
             }
         }
@@ -434,7 +434,7 @@ fun CounterModeDialog(dao: KhataDao, turnOn: Boolean, onClose: () -> Unit) {
             }
         }
         DialogFrame(title, onClose = onClose, footer = {
-            FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+            CancelButton(onClose, kind = ButtonKind.STANDARD)
             if (loaded && owner == null) FluentButton(word(W.access_owner_pin_set), { settingPin = true }, kind = ButtonKind.ACCENT)
             else FluentButton(word(if (turnOn) W.access_counter_turn_on else W.access_counter_turn_off), ::go, kind = ButtonKind.ACCENT, enabled = !busy && pin.isNotEmpty())
         }) {

@@ -194,7 +194,7 @@ fun StaffPane(dao: KhataDao) {
         }, title = title,
             state = androidx.compose.ui.window.rememberDialogState(width = fitW(520.dp), height = fitH(if (mayEditLogin) 620.dp else 420.dp))) {
             DialogFrame(title, onClose = close, footer = {
-                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                CancelButton(close, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.save), { save() }, kind = ButtonKind.ACCENT, icon = "ic_check_plain")
             }) {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -233,7 +233,7 @@ fun StaffPane(dao: KhataDao) {
         AppDialog(onCloseRequest = close, dirty = { amount.isNotEmpty() || note.isNotEmpty() }, title = title,
             state = androidx.compose.ui.window.rememberDialogState(width = fitW(460.dp), height = fitH(380.dp))) {
             DialogFrame(title, subtitle = person.name, onClose = close, footer = {
-                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                CancelButton(close, kind = ButtonKind.STANDARD)
                 FluentButton(word(W.save), {
                     val v = Calc.evalAmount(amount)
                     if (v == null) bad = true
@@ -272,7 +272,7 @@ fun StaffPane(dao: KhataDao) {
             state = androidx.compose.ui.window.rememberDialogState(width = fitW(440.dp), height = fitH(420.dp))) {
             DialogFrame(title, onClose = close, footer = {
                 FluentButton(word(W.staff_change_date), { picking = true }, kind = ButtonKind.STANDARD, icon = "ic_calendar")
-                FluentButton(word(W.cancel), close, kind = ButtonKind.STANDARD)
+                CancelButton(close, kind = ButtonKind.STANDARD)
             }) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     listOf(

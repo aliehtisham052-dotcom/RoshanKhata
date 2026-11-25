@@ -257,7 +257,7 @@ fun BackupPasswordHost() {
     AppDialog(onCloseRequest = { done(null) }, onPreviewKeyEvent = escCloses { done(null) }, title = title,
         state = rememberDialogState(width = fitW(480.dp), height = fitH(330.dp))) {
         DialogFrame(title, onClose = { done(null) }, footer = {
-            FluentButton(word(W.cancel), { done(null) }, kind = ButtonKind.STANDARD)
+            CancelButton({ done(null) }, kind = ButtonKind.STANDARD)
             FluentButton(word(W.ok), { if (typed.isNotBlank()) done(typed) }, kind = ButtonKind.ACCENT, enabled = typed.isNotBlank())
         }) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -427,7 +427,7 @@ private fun NewBackupPasswordDialog(onClose: () -> Unit, firstFile: Boolean = fa
         state = rememberDialogState(width = fitW(560.dp), height = fitH(680.dp)),
         dirty = { first.isNotEmpty() || again.isNotEmpty() || hint.isNotEmpty() }) {
         DialogFrame(title, onClose = onClose, footer = {
-            FluentButton(word(W.cancel), onClose, kind = ButtonKind.STANDARD)
+            CancelButton(onClose, kind = ButtonKind.STANDARD)
             FluentButton(word(W.backup_pw_set), { set() }, kind = ButtonKind.ACCENT, enabled = agreed && !busy && first.isNotEmpty())
         }) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
