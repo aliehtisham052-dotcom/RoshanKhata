@@ -220,7 +220,16 @@ blanked as `check_hudhud_readonly.py` does. The allow-list is empty. Wired into 
 the read-only check) and `scripts/run_release_checks.sh`. It is a code check, not a run: it proves the closure names no
 network, not that a phone made no call.
 
-BREAKAGE_PROOF
+**Proof by deliberate breakage** (on the committed tree 06edd0f, one change at a time, each put back with `git checkout`,
+the tree clean after; lesson 153):
+
+| change | result |
+|---|---|
+| `import java.net.URL` added to `HudhudSense.kt` | FAILS: `HudhudSense.kt:4: java.net` |
+| `private val offlineProbe = WifiSync::class` added to `HudhudSay.kt` (same package, no import) | FAILS: `HudhudSay.kt:111: WifiSync (a network file's, …/WifiSync.kt)` |
+| `java.net.URL("https://example.invalid").openStream()` added to `Digits.kt` (a deps.txt file) | FAILS: `Digits.kt:175: java.net` and `openStream()` |
+| a comment naming `java.net.URL` and `HttpURLConnection` added to `HudhudSay.kt` | passes (comments are not code) |
+| put back | passes: 36 engine files, 10 network-file names watched |
 
 ## Files
 
