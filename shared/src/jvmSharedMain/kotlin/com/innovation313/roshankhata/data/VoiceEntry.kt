@@ -558,7 +558,7 @@ object VoiceEntry {
         if (sk.length >= 2) {
             if (runsSkeleton.any { it == sk }) return 1000 + sk.length
             // Part of a long stored name was spoken: "Abdul Rahman" standing
-            // in for "Abdul Rahman Chacha Kareem Mallay Wali".
+            // in for "Abdul Rahman Chacha Kareem Tallay Wali".
             val partial = runsSkeleton
                 .filter { it.length >= 3 && sk.startsWith(it) }
                 .maxByOrNull { it.length }

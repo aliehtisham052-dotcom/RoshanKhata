@@ -215,7 +215,7 @@ class BillScanTest {
     /** The shop's own name is printed as the CUSTOMER; it must never become the supplier. */
     @Test
     fun `the customer line is never taken for the supplier`() {
-        val b = BillScan.parseRows(listOf("Customer Name: BHATTI TRADERS", "Date: 20-07-2026"), now = now, tz = utc)
+        val b = BillScan.parseRows(listOf("Customer Name: NOOR TRADERS", "Date: 20-07-2026"), now = now, tz = utc)
         assertNull(b.supplierName)
     }
 

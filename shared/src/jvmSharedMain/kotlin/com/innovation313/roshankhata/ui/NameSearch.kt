@@ -71,7 +71,7 @@ object NameSearch {
      * 1 — a word in the name begins with it: "ali" finds "Muhammad Ali",
      *     which is how half the names in a Pakistani ledger are recalled.
      * 2 — the name begins with it once both are folded: "bila" finds
-     *     "Billa College", "bhati" finds "Bhatti Trader".
+     *     "Billa College", "bhati" finds "Bhatti Sons".
      * 3 — a folded word begins with it: "bila" finds "Awais Billa Ramky".
      * 4 — it appears mid-word: "ali" inside "Wali". A real match, and low,
      *     because it is almost never the one meant.
@@ -120,7 +120,7 @@ object NameSearch {
         // search box only ever answered an exact fragment of the stored
         // spelling. The owner reported the consequence himself: the village
         // names half his book is known by would not come up at all. "Khurpa"
-        // typed as "Kurpa" is nothing; "Mallay Wali" typed as "malewali" is
+        // typed as "Kurpa" is nothing; "Tallay Wali" typed as "talewali" is
         // nothing, because the space is in the query and not in the name.
         //
         // [fold] already evens out both — the silent h, the doubled letter,
@@ -318,14 +318,14 @@ object NameSearch {
      * A stored name cut into folded words — and those words joined in pairs.
      *
      * The joins are here because a recogniser does not put the spaces where
-     * the book does. "Mallay Wali" is two words on the customer's row and came
-     * back as one, "malewali", and word-against-word matching had nothing to
+     * the book does. "Tallay Wali" is two words on the customer's row and came
+     * back as one, "talewali", and word-against-word matching had nothing to
      * compare it to: neither stored half is that word, and neither is near
      * enough to it to count. The customer sat at position five in a list of
      * eleven hundred while the sentence naming them was heard perfectly.
      *
      * Folding the two halves and running them together gives exactly
-     * "malewali", so the name answers what was said.
+     * "talewali", so the name answers what was said.
      */
     private fun partsOf(name: String): List<String> {
         val words = name.split(*SEPARATORS).map { fold(it) }.filter { it.isNotEmpty() }

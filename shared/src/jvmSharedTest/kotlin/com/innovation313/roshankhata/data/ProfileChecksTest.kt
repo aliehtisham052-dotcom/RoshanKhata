@@ -34,7 +34,7 @@ class ProfileChecksTest {
     }
 
     @Test fun initials() {
-        assertEquals("BT", ProfileChecks.initials("Bhatti Traders"))
+        assertEquals("NT", ProfileChecks.initials("Noor Traders"))
         assertEquals("R", ProfileChecks.initials("roshan"))
         assertEquals("AB", ProfileChecks.initials("  al   bhatti  and sons "))
     }

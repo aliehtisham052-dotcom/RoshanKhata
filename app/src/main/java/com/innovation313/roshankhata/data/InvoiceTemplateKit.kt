@@ -60,7 +60,7 @@ object InvoiceTemplateKit {
      * left-to-right unit on a right-to-left page ([PdfRtl.asOne]).
      */
     /**
-     * The name round the top of the seal: the shop's own (11 Nov 2026, the owner: "Bhatti Traders" in the seal, not
+     * The name round the top of the seal: the shop's own (11 Nov 2026, the owner: "Noor Traders" in the seal, not
      * "Roshan Khata"), in capitals. Only a name in Latin letters goes round the rim - joined scripts (Urdu, Arabic,
      * Hindi, Bengali) break apart when their letters are turned one by one - so a shop named only in those, or not
      * named at all, keeps "ROSHAN KHATA".

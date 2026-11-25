@@ -389,7 +389,7 @@ class LogoMakerActivity : BaseActivity() {
 /**
  * A logo made here while the shop had no name carries no name of its own (or the app's, before 11 Nov 2026). When
  * the profile then saves a name, the same design, colour and trade are drawn again with it and kept in its place,
- * so the shop's logo says its own name without the owner remaking it (the owner's photos: "Bhatti Traders" beside a
+ * so the shop's logo says its own name without the owner remaking it (the owner's photos: "Noor Traders" beside a
  * logo reading ROSHAN KHATA). A logo made with a name, or a picture from the phone, is left as it is.
  */
 object LogoRename {

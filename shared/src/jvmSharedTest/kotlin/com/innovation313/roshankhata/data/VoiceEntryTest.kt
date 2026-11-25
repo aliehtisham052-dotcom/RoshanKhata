@@ -116,9 +116,9 @@ class VoiceEntryTest {
     fun `part of a long stored name is enough`() {
         val p = VoiceEntry.parse(
             "عبدالرحمان کو 5 ہزار دیے",
-            listOf("Abdul Rahman Chacha Kareem Mallay Wali")
+            listOf("Abdul Rahman Chacha Kareem Tallay Wali")
         )
-        assertEquals("Abdul Rahman Chacha Kareem Mallay Wali", p.partyName)
+        assertEquals("Abdul Rahman Chacha Kareem Tallay Wali", p.partyName)
         assertEquals(5000.0, p.amount!!, 0.0)
     }
 

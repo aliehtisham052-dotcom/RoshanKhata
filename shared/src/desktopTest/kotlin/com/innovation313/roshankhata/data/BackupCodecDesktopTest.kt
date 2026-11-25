@@ -32,13 +32,13 @@ class BackupCodecDesktopTest {
         assertEquals("Urea", line.itemName)
         assertEquals(2.5, line.quantity!!, 0.0)
         assertEquals(1839.2, line.rate!!, 0.0)
-        assertEquals("Bhatti Traders", data.businessName)
+        assertEquals("Noor Traders", data.businessName)
         val p = data.businessProfile!!
-        assertEquals("Mallay Wali", p.businessAddress)
+        assertEquals("Tallay Wali", p.businessAddress)
         assertNull(p.bankName)
         assertEquals("hijri", p.calendar)
         assertTrue(p.photoOnStatement)
-        assertEquals("Bhatti Traders", BackupCodec.businessNameOf(v7))
+        assertEquals("Noor Traders", BackupCodec.businessNameOf(v7))
     }
 
     @Test
@@ -64,8 +64,8 @@ class BackupCodecDesktopTest {
 
             // A fresh read of the file: what a restart of the app would see.
             val again = FileShopSettings(file)
-            assertEquals("Bhatti Traders", again.businessName())
-            assertEquals("Mallay Wali", again.businessAddress())
+            assertEquals("Noor Traders", again.businessName())
+            assertEquals("Tallay Wali", again.businessAddress())
             assertNull(again.bankName())
             assertEquals(ShopCalendar.Kind.HIJRI, again.calendar())
             assertEquals("Rs", again.currency())
@@ -74,7 +74,7 @@ class BackupCodecDesktopTest {
             assertEquals(ShopCalendar.Kind.HIJRI, ShopCalendar.current)
 
             val out = BackupCodec.profileToJson(again)
-            assertEquals("Bhatti Traders", out.getString("businessName"))
+            assertEquals("Noor Traders", out.getString("businessName"))
             assertTrue(out.isNull("bankName"))
             assertEquals("hijri", out.getString("calendar"))
             assertEquals("Rs", out.getString("currency"))

@@ -35,7 +35,7 @@ class SalesAndNumberingTest {
     @Test
     fun payingASupplierIsNotASale() = runBlocking {
         val ahmad = dao.insertParty(Party(name = "Ahmad"))
-        val supplier = dao.insertParty(Party(name = "Bhatti Traders", isCustomer = false))
+        val supplier = dao.insertParty(Party(name = "Noor Traders", isCustomer = false))
 
         dao.insertEntryWithItems(
             LedgerEntry(partyId = ahmad, amount = 19200.0, isGiven = true, entryNumber = "", timestamp = 1_000L),

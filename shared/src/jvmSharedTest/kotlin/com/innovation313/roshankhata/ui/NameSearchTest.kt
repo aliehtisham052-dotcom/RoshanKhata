@@ -21,7 +21,7 @@ class NameSearchTest {
     /** Shaped like the real book: messy, multi-word, and long. */
     private val book = listOf(
         "A Bilal",
-        "(Pappu)Touseef Ahmed Mallay Wali",
+        "(Pappu)Touseef Ahmed Tallay Wali",
         "Nadir Bhaee",
         "Abbas Sabzi Mandi Pasrur Dokandar",
         "Abbas Loader",
@@ -31,7 +31,7 @@ class NameSearchTest {
         "Yaseen Bhai",
         "Tehseen Sahib",
         "Masood Ahmad",
-        "Abdul Rahman Chacha Kareem Mallay Wali",
+        "Abdul Rahman Chacha Kareem Tallay Wali",
         "Bilal Khan"
     ) + (1..200).map { "Filler Customer $it" }
 
@@ -68,8 +68,8 @@ class NameSearchTest {
      */
     @Test
     fun `a word anywhere in the name counts`() {
-        assertNear("touseef", "(Pappu)Touseef Ahmed Mallay Wali")
-        assertNear("rahman", "Abdul Rahman Chacha Kareem Mallay Wali")
+        assertNear("touseef", "(Pappu)Touseef Ahmed Tallay Wali")
+        assertNear("rahman", "Abdul Rahman Chacha Kareem Tallay Wali")
         assertNear("dokandar", "Abbas Sabzi Mandi Pasrur Dokandar", within = 4)
         assertNear("khan", "Bilal Khan")
     }
@@ -106,7 +106,7 @@ class NameSearchTest {
     fun `a word the whole book shares counts for little`() {
         val shop = listOf(
             "Asghar Kotlaay (Spray Wala)",
-            "Asghar Painter Mallay Wali",
+            "Asghar Painter Tallay Wali",
             "Abdul Latif Spray Wala",
             "Ismail Spray Wala",
             "Anwar Spray Wala Noor Wali Bangla"
@@ -115,18 +115,18 @@ class NameSearchTest {
         val ranked = NameSearch.rankSpoken(shop, listOf("asghar", "spray", "wala")) { it }
 
         assertEquals("Asghar Kotlaay (Spray Wala)", ranked[0])
-        assertEquals("Asghar Painter Mallay Wali", ranked[1])
+        assertEquals("Asghar Painter Tallay Wali", ranked[1])
         assertEquals("every customer is still listed", shop.size, ranked.size)
     }
 
     /** The same, with the spelling the recogniser actually produced. */
     @Test
     fun `rarity survives a misspelling of the rare word`() {
-        val shop = listOf("Asghar Painter Mallay Wali", "Abdul Latif Spray Wala") +
+        val shop = listOf("Asghar Painter Tallay Wali", "Abdul Latif Spray Wala") +
             (1..40).map { "Customer $it Spray Wala" }
 
         val ranked = NameSearch.rankSpoken(shop, listOf("asgar", "spray", "wala")) { it }
-        assertEquals("Asghar Painter Mallay Wali", ranked.first())
+        assertEquals("Asghar Painter Tallay Wali", ranked.first())
     }
 
     /**
@@ -256,8 +256,8 @@ class NameSearchTest {
      */
     @Test
     fun `a stored name said as one word is still found`() {
-        assertNear("malewali", "Abdul Rahman Chacha Kareem Mallay Wali")
-        assertNear("malewali", "(Pappu)Touseef Ahmed Mallay Wali")
+        assertNear("talewali", "Abdul Rahman Chacha Kareem Tallay Wali")
+        assertNear("talewali", "(Pappu)Touseef Ahmed Tallay Wali")
     }
 
     /** And the other way: one stored word arriving as two. */
@@ -287,7 +287,7 @@ class NameSearchTest {
     @Test
     fun `typing a name the way it is said still finds it`() {
         assertTrue(NameSearch.matches("Abdul Aziz Khurpa", null, "kurpa"))
-        assertTrue(NameSearch.matches("Abdullah Bhatti Mallay Wali", null, "malewali"))
+        assertTrue(NameSearch.matches("Abdullah Bhatti Tallay Wali", null, "talewali"))
         assertTrue(NameSearch.matches("Asghar Ali", null, "asgar"))
         assertTrue(NameSearch.matches("Yaseen Bhai", null, "yasin"))
     }

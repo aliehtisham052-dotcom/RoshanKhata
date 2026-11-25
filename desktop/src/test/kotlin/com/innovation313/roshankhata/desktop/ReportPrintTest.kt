@@ -37,7 +37,7 @@ class ReportPrintTest {
         val locale = Locale.forLanguageTag(tag)
         Locale.setDefault(locale)
         try {
-            val r = ReportPrint(desktopWords(locale), tag == "ur", "Bhatti Traders", "All", rows)
+            val r = ReportPrint(desktopWords(locale), tag == "ur", "Noor Traders", "All", rows)
             val pages = ArrayList<BufferedImage>()
             var i = 0
             while (true) {
@@ -76,7 +76,7 @@ class ReportPrintTest {
         val previous = Locale.getDefault()
         Locale.setDefault(Locale.ENGLISH)
         try {
-            val r = ReportPrint(desktopWords(Locale.ENGLISH), false, "Bhatti Traders", "All", entries(90))
+            val r = ReportPrint(desktopWords(Locale.ENGLISH), false, "Noor Traders", "All", entries(90))
             assertEquals(render("en", entries(90)).size, r.pageCount())
             assertEquals(r.pageCount(), Sheets.of(r).count)
         } finally {

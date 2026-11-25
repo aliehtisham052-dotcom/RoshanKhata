@@ -7,11 +7,11 @@ object BackupFixtures {
           "format": "RoshanKhata",
           "version": 7,
           "exportedAt": 1760770000000,
-          "businessName": "Bhatti Traders",
+          "businessName": "Noor Traders",
           "cheques": [],
           "cashbook": [{"id": 1, "amount": 500.0, "isIncome": true, "category": "Sale", "note": null, "timestamp": 1760770000000}],
           "businessProfile": {
-            "businessName": "Bhatti Traders", "businessNameUrdu": null, "businessAddress": "Mallay Wali",
+            "businessName": "Noor Traders", "businessNameUrdu": null, "businessAddress": "Tallay Wali",
             "businessPhone": null, "businessEmail": null, "bankName": null, "bankAccountTitle": null,
             "bankIban": null, "bankJazzCash": null, "termsAndConditions": null, "strn": null,
             "currency": "Rs", "calendar": "hijri", "trade": null, "tradeOtherName": null,

@@ -632,7 +632,7 @@ class BusinessSettingsActivity : BaseActivity() {
         )
         tvPreviewInitials.text = ProfileChecks.initials(name.ifEmpty { getString(R.string.app_name) })
         // The seal in the preview carries the name as it is being typed, not only once saved (11 Nov 2026, the
-        // owner's photo: "Bhatti Traders" in the box, ROSHAN KHATA on the seal until Save).
+        // owner's photo: "Noor Traders" in the box, ROSHAN KHATA on the seal until Save).
         if (::ivPreviewStampThumb.isInitialized && sealPreviewName != name) {
             sealPreviewName = name
             showSealInPreview()

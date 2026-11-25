@@ -38,7 +38,7 @@ class DesktopBookTest {
         val db = DesktopDatabase.open(dir.resolve("khata.db"))
         try {
             val settings = FileShopSettings(dir.resolve("shop.properties"))
-            settings.setBusinessName("Bhatti Traders")
+            settings.setBusinessName("Noor Traders")
             settings.setCalendar(ShopCalendar.Kind.HIJRI)
             val text = runBlocking {
                 val dao = db.khataDao()
@@ -54,7 +54,7 @@ class DesktopBookTest {
             assertEquals("Bilal", data.parties.single().name)
             assertEquals("urea", data.entries.single().note)
             assertEquals("RK-000001", data.entries.single().entryNumber)
-            assertEquals("Bhatti Traders", data.businessName)
+            assertEquals("Noor Traders", data.businessName)
             assertEquals("hijri", data.businessProfile!!.calendar)
         } finally {
             db.close()

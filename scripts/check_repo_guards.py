@@ -341,6 +341,31 @@ def robolectric_jars_cached(root=ROOT):
     return faults
 
 
+# BC-307 (25 Nov 2026): the owner's real shop name and village stood in test data and comments of this public repository
+# (lesson 80). The phrases are kept here only as SHA-256 fingerprints of two lower-case words, so the guard itself names
+# nothing; a two-word run in any tracked text file that hashes to one of them fails. CLAUDE.md is left out: it records
+# the 31 Oct decision in its own words.
+OWN_PHRASES = {"e6ddc0e6e3b76c4e", "41e3d19c6c3665c7", "e5c715e3751f8ee5", "8df7991edb45fa72"}
+
+
+def no_real_shop_names(root=ROOT):
+    import hashlib, subprocess
+    faults = []
+    files = subprocess.run(["git", "ls-files"], cwd=root, capture_output=True, text=True).stdout.split()
+    for rel in files:
+        if rel == "CLAUDE.md" or not rel.endswith((".kt", ".kts", ".py", ".tsv", ".xml", ".md", ".json", ".yml", ".html", ".js", ".php", ".txt")):
+            continue
+        try:
+            words = re.findall(r"[a-z]+", (root / rel).read_text(errors="ignore").lower())
+        except OSError:
+            continue
+        for a, b in zip(words, words[1:]):
+            if hashlib.sha256((a + " " + b).encode()).hexdigest()[:16] in OWN_PHRASES:
+                faults.append("%s names the owner's real shop or village (lesson 80): use an invented name" % rel)
+                break
+    return faults
+
+
 def main():
     faults = (publish_jobs_hold_no_secrets() + no_tracked_ignored_files() + csv_reads_are_decoded()
               + shown_bitmaps_never_recycled() + left_margins_name_their_side() + test_names_are_jvm_names()
@@ -348,13 +373,14 @@ def main():
               + windows_cancel_asks_first() + duplicates_off_the_screen_thread()
               + payment_voice_asks_off_main() + day_ends_by_the_calendar()
               + zero_tests_by_the_money_contract()
-              + robolectric_jars_cached())
+              + robolectric_jars_cached()
+              + no_real_shop_names())
     for f in faults:
         print("FAIL " + f)
     if faults:
         sys.exit(1)
     print("repo guards: release jobs hold no secrets, nothing ignored is tracked, every CSV read is decoded, "
-          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first, the duplicate scan and the payment-voice screen's system questions run off the main thread, every day ends by the calendar, every zero test asks the money contract, Robolectric's jars are cached")
+          "no bitmap a view was given is recycled, every left margin names its side, every test name is a JVM name, the Gradle cache is on except for the Play bundle, every Windows Cancel asks first, the duplicate scan and the payment-voice screen's system questions run off the main thread, every day ends by the calendar, every zero test asks the money contract, Robolectric's jars are cached, no real shop name is written")
 
 
 if __name__ == "__main__":

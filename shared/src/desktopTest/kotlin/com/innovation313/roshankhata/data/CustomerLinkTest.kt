@@ -31,7 +31,7 @@ import java.nio.file.Files
 class CustomerLinkTest {
 
     private val root = "https://x.test/khata/"
-    private val look = CustomerLink.Look("Bhatti Traders", "Rs", "ur")
+    private val look = CustomerLink.Look("Noor Traders", "Rs", "ur")
     private val key = "ab".repeat(32)
 
     /** The server's rules, as web/khata/api.php keeps them, in a few lines. */
@@ -126,7 +126,7 @@ class CustomerLinkTest {
         assertEquals(CustomerLink.VERSION, page.getInt("v"))
         assertEquals(1_000_000L, page.getLong("q"))
         assertEquals("Ali Raza Qureshi", page.getString("n"))
-        assertEquals("Bhatti Traders", page.getString("s"))
+        assertEquals("Noor Traders", page.getString("s"))
         assertEquals("c", page.getString("p"))
         assertEquals("ur", page.getString("l"))
         assertEquals(2, page.getInt("k"))
@@ -169,7 +169,7 @@ class CustomerLinkTest {
         val b = CustomerLink.page(look, "Ali", false, 10.55, 7L, lines, CustomerLink.Mode.LAST3, 0L)
         assertEquals(a, b)
         assertEquals(
-            "{\"v\":3,\"s\":\"Bhatti Traders\",\"n\":\"Ali\",\"p\":\"c\",\"b\":10.55,\"c\":\"Rs\",\"k\":2,\"l\":\"ur\",\"t\":7,\"r\":0," +
+            "{\"v\":3,\"s\":\"Noor Traders\",\"n\":\"Ali\",\"p\":\"c\",\"b\":10.55,\"c\":\"Rs\",\"k\":2,\"l\":\"ur\",\"t\":7,\"r\":0," +
                 "\"e\":[{\"d\":5,\"a\":1500.5,\"g\":0,\"m\":0}]}",
             a
         )

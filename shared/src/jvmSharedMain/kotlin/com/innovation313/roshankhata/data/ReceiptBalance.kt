@@ -38,12 +38,12 @@ object ReceiptBalance {
     /** The paper's own name: a credit slip when the shop gave, a payment receipt when it got. */
     fun title(words: Words, isGiven: Boolean): String = words.text(if (isGiven) W.receipt_credit_slip else W.payment_receipt)
 
-    /** "Bhatti Traders gave Aslam" / "Received from Aslam" — over the amount. */
+    /** "Noor Traders gave Aslam" / "Received from Aslam" — over the amount. */
     fun way(words: Words, isGiven: Boolean, shop: String, party: String): String =
         if (isGiven) words.text(W.receipt_line_gave, Format.isolate(shop), Format.isolate(party))
         else words.text(W.receipt_line_got, Format.isolate(party))
 
-    /** "Rs 2,800 · Aslam owes Bhatti Traders", "Rs 300 · Bhatti Traders owes Aslam", or the settled words alone. */
+    /** "Rs 2,800 · Aslam owes Noor Traders", "Rs 300 · Noor Traders owes Aslam", or the settled words alone. */
     fun named(words: Words, balance: Double, shop: String, party: String, sign: String = Currency.symbol): String {
         if (Money.isZero(balance)) return words.text(W.receipt_settled)
         val (who, whom) = if (Money.isPositive(balance)) party to shop else shop to party
