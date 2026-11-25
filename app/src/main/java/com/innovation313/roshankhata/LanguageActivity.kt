@@ -102,6 +102,9 @@ class LanguageActivity : BaseActivity() {
         val ui = tagOf(resources.configuration.locales[0])
         val phone = phoneTag()
         for (lang in langs) bindRow(lang, ui, phone)
+        // The line that says what "Beta" means, only while some language still wears it.
+        findViewById<View>(R.id.tvLangBetaHelp).visibility =
+            if (langs.any { com.innovation313.roshankhata.data.LanguageStatus.isBeta(it.tag) }) View.VISIBLE else View.GONE
 
         continueBtn = findViewById(R.id.btnLangContinue)
         continueBtn.setOnClickListener { marked?.let { choose(it) } }
@@ -163,8 +166,12 @@ class LanguageActivity : BaseActivity() {
         }
         val isPhone = lang.tag == phone
         row.findViewById<View>(R.id.tvLangPhone).visibility = if (isPhone) View.VISIBLE else View.GONE
+        // A language no native speaker has read yet says so (D17): one rule with the computer's list.
+        val beta = com.innovation313.roshankhata.data.LanguageStatus.isBeta(lang.tag)
+        row.findViewById<View>(R.id.tvLangBeta).visibility = if (beta) View.VISIBLE else View.GONE
         row.contentDescription = listOfNotNull(
-            lang.native, gloss.takeIf { showGloss }, getString(R.string.lang_phone_language).takeIf { isPhone }
+            lang.native, gloss.takeIf { showGloss }, getString(R.string.lang_beta).takeIf { beta },
+            getString(R.string.lang_phone_language).takeIf { isPhone }
         ).joinToString(", ")
         // Read by TalkBack as a radio button: "Urdu, selected".
         row.setAccessibilityDelegate(object : View.AccessibilityDelegate() {

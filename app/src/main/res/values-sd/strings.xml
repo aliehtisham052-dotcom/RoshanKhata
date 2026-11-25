@@ -1517,6 +1517,7 @@
     <string name="voice_no_party">اوهان جي کاتي ۾ اڃا ڪو گراهڪ ناهي. پهرين هڪ گراهڪ شامل ڪريو.</string>
     <string name="voice_no_amount">ان ۾ ڪا رقم ناهي. انگ به چئو.</string>
     <string name="voice_future_promise">هي بعد ۾ ڏني ويندڙ رقم لڳي ٿي، آيل رقم نه. واعدي جو ڏينهن هن جي صفحي تي لکو.</string>
+    <string name="voice_future_shop">هي اوهان جي بعد ۾ ڏني ويندڙ رقم لڳي ٿي، تنهنڪري ڪا داخلا نه ٺهي. جڏهن ڏيو تڏهن لکو.</string>
     <string name="voice_not_moved">هن جملي ۾ پئسا آيا يا ويا ناهن (نه ڏنا، يا اڃا باقي آهن)، تنهنڪري داخلا نه ٺهي. هن جو بقايو هن جي صفحي تي آهي.</string>
     <string name="voice_open_entry">اندراج کوليو</string>
     <string name="voice_which_party">%1$s — ڪهڙو گراهڪ؟</string>
@@ -4272,6 +4273,8 @@
 
     <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
     <string name="lang_phone_language">فون جي ٻولي</string>
+    <string name="lang_beta">آزمائشي</string>
+    <string name="lang_beta_help">آزمائشي ٻوليون اڃا ڪنهن مادري ٻولي ڳالهائيندڙ نه پڙهيون آهن. ڪو لفظ غلط لڳي ته اسان کي ٻڌايو.</string>
     <string name="lang_gloss_en">انگريزي</string>
     <string name="lang_gloss_ur_latn">انگريزي اکرن ۾ اردو</string>
     <string name="lang_gloss_ur">اردو</string>

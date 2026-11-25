@@ -2448,7 +2448,10 @@ private fun Book(
             word(W.language), AppLanguages.ALL.map { it.nativeName },
             chosen = AppLanguages.ALL.indexOfFirst { it.tag == inUse || (it.tag == "id" && inUse == "in") },
             onPick = { k -> choosingLanguage = false; onLanguage(AppLanguages.ALL[k].tag) },
-            onDismiss = { choosingLanguage = false }
+            onDismiss = { choosingLanguage = false },
+            // A language no native speaker has read yet says so (D17): the phone's language page's own rule.
+            tags = AppLanguages.ALL.map { if (com.innovation313.roshankhata.data.LanguageStatus.isBeta(it.tag)) word(W.lang_beta) else null },
+            note = word(W.lang_beta_help).takeIf { AppLanguages.ALL.any { com.innovation313.roshankhata.data.LanguageStatus.isBeta(it.tag) } }
         )
     }
     // The phone's first-run question (ShopNameActivity): until a name is written the app shows its

@@ -1532,6 +1532,7 @@
     <string name="voice_no_party">Your ledger has no customers yet. Add a customer first.</string>
     <string name="voice_no_amount">No amount in that. Say the figure too.</string>
     <string name="voice_future_promise">That sounds like money still to be paid, not money that came. Set the day he promised on his page.</string>
+    <string name="voice_future_shop">That sounds like money you will pay later, so no entry is made. Write it when you pay.</string>
     <string name="voice_not_moved">That sounds like money that did not move (not paid, or still owed), so no entry is made. His balance is on his page.</string>
     <string name="voice_open_entry">Open entry</string>
     <string name="voice_which_party">%1$s — which customer?</string>
@@ -4457,6 +4458,8 @@
     <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
     <string name="brand_tagline" translatable="false">Har Hisaab Roshan</string>
     <string name="lang_phone_language">Phone\'s language</string>
+    <string name="lang_beta">Beta</string>
+    <string name="lang_beta_help">Languages marked Beta have not yet been checked by a native speaker. If a word reads wrong, please tell us.</string>
     <string name="lang_gloss_en">English</string>
     <string name="lang_gloss_ur_latn">Urdu in English letters</string>
     <string name="lang_gloss_ur">Urdu</string>

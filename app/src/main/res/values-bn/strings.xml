@@ -1529,6 +1529,7 @@
     <string name="voice_no_party">আপনার খাতায় এখনো কোনো গ্রাহক নেই। আগে গ্রাহক যোগ করুন।</string>
     <string name="voice_no_amount">এতে কোনো অঙ্ক নেই। অঙ্কটিও বলুন।</string>
     <string name="voice_future_promise">এটা পরে দেওয়ার টাকা মনে হচ্ছে, পাওয়া টাকা নয়। তার পাতায় কথা দেওয়া দিনটি লিখুন।</string>
+    <string name="voice_future_shop">এটা মনে হচ্ছে আপনি পরে টাকা দেবেন, তাই কোনো এন্ট্রি হয়নি। যখন দেবেন তখন লিখুন।</string>
     <string name="voice_not_moved">এই বাক্যে টাকা আসেনি বা যায়নি (দেয়নি, বা এখনও বাকি), তাই কোনো এন্ট্রি হয়নি। তার বাকি তার পাতায় আছে।</string>
     <string name="voice_open_entry">এন্ট্রি খুলুন</string>
     <string name="voice_which_party">%1$s — কোন গ্রাহক?</string>
@@ -4292,6 +4293,8 @@
 
     <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
     <string name="lang_phone_language">ফোনের ভাষা</string>
+    <string name="lang_beta">বিটা</string>
+    <string name="lang_beta_help">বিটা চিহ্নিত ভাষাগুলো এখনো কোনো মাতৃভাষী পড়ে দেখেননি। কোনো শব্দ ভুল মনে হলে আমাদের জানান।</string>
     <string name="lang_gloss_en">ইংরেজি</string>
     <string name="lang_gloss_ur_latn">ইংরেজি অক্ষরে উর্দু</string>
     <string name="lang_gloss_ur">উর্দু</string>

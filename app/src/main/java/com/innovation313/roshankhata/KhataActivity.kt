@@ -1869,7 +1869,10 @@ class KhataActivity : BaseActivity() {
         // A promise is no entry (16 Nov 2026, BC-113 on the Khata microphone too): "Ali kal 500 dega" is money he will pay,
         // not money that came, and it opened "I got 500" on today's page. Hudhud reads the same sentence by the same rule.
         if (com.innovation313.roshankhata.data.VoiceQuestion.saysFuture(heard)) {
-            showSpokenProblem(heard, getString(R.string.voice_future_promise))
+            // The shop's own payment still to make ("Kal Ali ko 500 dunga", "I will pay Ali tomorrow") is not the
+            // customer's promise: no promised day to set on his page, only an entry to write when the shop pays (BC-361).
+            val shopPays = com.innovation313.roshankhata.data.VoiceQuestion.shopWillPay(heard)
+            showSpokenProblem(heard, getString(if (shopPays) R.string.voice_future_shop else R.string.voice_future_promise))
             return
         }
         // Money that did not move is no entry either (Marhala 1, BC-321/BC-322, the Khata microphone as Hudhud): "Ali ne 500

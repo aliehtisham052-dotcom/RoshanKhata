@@ -1489,6 +1489,7 @@
     <string name="voice_no_party">آپ کے کھاتے میں ابھی کوئی گاہک نہیں۔ پہلے ایک گاہک شامل کریں۔</string>
     <string name="voice_no_amount">اس میں رقم نہیں تھی۔ عدد بھی کہیں۔</string>
     <string name="voice_future_promise">یہ بعد میں دی جانے والی رقم لگتی ہے، آئی ہوئی رقم نہیں۔ وعدے کا دن اس کے صفحے پر لکھیں۔</string>
+    <string name="voice_future_shop">یہ آپ کی بعد میں دی جانے والی رقم لگتی ہے، اس لیے کوئی اندراج نہیں بنا۔ جب دیں تب لکھیں۔</string>
     <string name="voice_not_moved">اس جملے میں پیسہ آیا یا گیا نہیں (نہیں دیے، یا ابھی باقی ہے)، اس لیے اندراج نہیں بنا۔ اس کا بقایا اس کے صفحے پر ہے۔</string>
     <string name="voice_open_entry">اندراج کھولیں</string>
     <string name="voice_which_party">%1$s — کون سا گاہک؟</string>
@@ -4244,6 +4245,8 @@
 
     <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
     <string name="lang_phone_language">فون کی زبان</string>
+    <string name="lang_beta">آزمائشی</string>
+    <string name="lang_beta_help">آزمائشی زبانیں ابھی کسی اہلِ زبان نے نہیں پڑھیں۔ کوئی لفظ غلط لگے تو ہمیں بتائیں۔</string>
     <string name="lang_gloss_en">انگریزی</string>
     <string name="lang_gloss_ur_latn">انگریزی حروف میں اردو</string>
     <string name="lang_gloss_ur">اردو</string>

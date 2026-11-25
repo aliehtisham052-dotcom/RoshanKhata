@@ -979,7 +979,13 @@ class ScreenProofTest {
             dialog("dialog-laptop-radar-settings-en") { RadarSettingsDialog {} }
             // The three display lists, each with the one in use marked; the language in Urdu by night.
             dialog("dialog-laptop-language-ur", lang = "ur", dark = true) {
-                PickDialog(word(com.innovation313.roshankhata.words.W.language), com.innovation313.roshankhata.words.AppLanguages.ALL.map { it.nativeName }, chosen = 2, onPick = {}, onDismiss = {})
+                val all = com.innovation313.roshankhata.words.AppLanguages.ALL
+                PickDialog(
+                    word(com.innovation313.roshankhata.words.W.language), all.map { it.nativeName }, chosen = 2, onPick = {}, onDismiss = {},
+                    // D17: the four unread languages wear Beta, as Main passes them.
+                    tags = all.map { if (com.innovation313.roshankhata.data.LanguageStatus.isBeta(it.tag)) word(com.innovation313.roshankhata.words.W.lang_beta) else null },
+                    note = word(com.innovation313.roshankhata.words.W.lang_beta_help)
+                )
             }
             dialog("dialog-laptop-theme-en") {
                 PickDialog(word(com.innovation313.roshankhata.words.W.theme), ThemeChoice.entries.map { word(it.word) }, chosen = 0, onPick = {}, onDismiss = {})

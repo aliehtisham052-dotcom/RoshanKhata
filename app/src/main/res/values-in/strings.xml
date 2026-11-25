@@ -1499,6 +1499,7 @@
     <string name="voice_no_party">Buku Anda belum memiliki pelanggan. Tambahkan pelanggan dulu.</string>
     <string name="voice_no_amount">Tidak ada jumlah di dalamnya. Sebutkan juga angkanya.</string>
     <string name="voice_future_promise">Ini terdengar seperti uang yang akan dibayar nanti, bukan uang yang sudah masuk. Catat hari janjinya di halamannya.</string>
+    <string name="voice_future_shop">Ini terdengar seperti uang yang akan Anda bayar nanti, jadi tidak ada catatan yang dibuat. Catat saat Anda membayar.</string>
     <string name="voice_not_moved">Sepertinya tidak ada uang yang berpindah (belum dibayar, atau masih terutang), jadi tidak ada catatan. Saldonya ada di halamannya.</string>
     <string name="voice_open_entry">Buka catatan</string>
     <string name="voice_which_party">%1$s — pelanggan yang mana?</string>
@@ -4223,6 +4224,8 @@
 
     <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
     <string name="lang_phone_language">Bahasa ponsel</string>
+    <string name="lang_beta">Beta</string>
+    <string name="lang_beta_help">Bahasa bertanda Beta belum diperiksa oleh penutur asli. Jika ada kata yang terasa salah, beri tahu kami.</string>
     <string name="lang_gloss_en">Inggris</string>
     <string name="lang_gloss_ur_latn">Urdu dengan huruf Latin</string>
     <string name="lang_gloss_ur">Urdu</string>

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -324,12 +325,17 @@ private fun ReceiptRow(label: String, value: String) {
 
 /**
  * One choice from a short list (the phone's ChoiceSheet), in the app's frame; [chosen] marked. [textSizes], when
- * given, draws each line in its own size (the text size choice shows what each will look like).
+ * given, draws each line in its own size (the text size choice shows what each will look like). [tags], when given,
+ * puts a small tag after a line's words (the language list's "Beta", D17); [note] is a line under the list.
  */
 @Composable
-fun PickDialog(title: String, labels: List<String>, chosen: Int = -1, onPick: (Int) -> Unit, onDismiss: () -> Unit, textSizes: List<Float>? = null) {
+fun PickDialog(
+    title: String, labels: List<String>, chosen: Int = -1, onPick: (Int) -> Unit, onDismiss: () -> Unit,
+    textSizes: List<Float>? = null, tags: List<String?>? = null, note: String? = null
+) {
     val c = LocalRoshanColors.current
-    AppDialog(onCloseRequest = onDismiss, title = title, state = rememberDialogState(width = fitW(440.dp), height = fitH((190 + 49 * labels.size).dp))) {
+    val noteRoom = if (note != null) 60 else 0
+    AppDialog(onCloseRequest = onDismiss, title = title, state = rememberDialogState(width = fitW(440.dp), height = fitH((190 + 49 * labels.size + noteRoom).dp))) {
         DialogFrame(title, onClose = onDismiss, footer = { CancelButton(onDismiss, kind = ButtonKind.STANDARD) }) {
             Column {
                 labels.forEachIndexed { i, label ->
@@ -338,10 +344,21 @@ fun PickDialog(title: String, labels: List<String>, chosen: Int = -1, onPick: (I
                         Modifier.fillMaxWidth().clip(Look.ctl).background(if (on) Look.accentTint else Color.Transparent).press(Look.ctl) { onPick(i) }.padding(horizontal = 8.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(label, Modifier.weight(1f), color = c.ink, fontSize = (textSizes?.getOrNull(i) ?: 15f).sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal)
+                        // The words keep their width and the tag sits right after them (never pushed to the far side).
+                        Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                            Text(label, Modifier.weight(1f, fill = false), color = c.ink, fontSize = (textSizes?.getOrNull(i) ?: 15f).sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal)
+                            tags?.getOrNull(i)?.let { tag ->
+                                Spacer(Modifier.width(8.dp))
+                                Tag(tag, c.inkSoft, Look.subtle)
+                            }
+                        }
                         if (on) Glyph("ic_check_plain", Look.accent, 16)
                     }
                     if (i < labels.lastIndex) Rule()
+                }
+                note?.let {
+                    Spacer(Modifier.height(10.dp))
+                    Text(it, Modifier.padding(horizontal = 8.dp), color = c.textMuted, fontSize = 12.sp)
                 }
             }
         }

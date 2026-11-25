@@ -1529,6 +1529,7 @@
     <string name="voice_no_party">आपके खाते में अभी कोई ग्राहक नहीं। पहले ग्राहक जोड़ें।</string>
     <string name="voice_no_amount">इसमें रकम नहीं है। रकम भी बोलें।</string>
     <string name="voice_future_promise">यह बाद में दी जाने वाली रकम लगती है, आई हुई रकम नहीं। वादे का दिन उसके पेज पर लिखें।</string>
+    <string name="voice_future_shop">यह आपकी बाद में दी जाने वाली रकम लगती है, इसलिए कोई एंट्री नहीं बनी। जब दें तब लिखें।</string>
     <string name="voice_not_moved">इस वाक्य में पैसा आया या गया नहीं (नहीं दिए, या अभी बाकी है), इसलिए एंट्री नहीं बनी। उसका बकाया उसके पेज पर है।</string>
     <string name="voice_open_entry">एंट्री खोलें</string>
     <string name="voice_which_party">%1$s — कौन-सा ग्राहक?</string>
@@ -4292,6 +4293,8 @@
 
     <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
     <string name="lang_phone_language">फ़ोन की भाषा</string>
+    <string name="lang_beta">बीटा</string>
+    <string name="lang_beta_help">बीटा वाली भाषाएँ अभी किसी मूल वक्ता ने नहीं जाँची हैं। कोई शब्द गलत लगे तो हमें बताएँ।</string>
     <string name="lang_gloss_en">अंग्रेज़ी</string>
     <string name="lang_gloss_ur_latn">अंग्रेज़ी अक्षरों में उर्दू</string>
     <string name="lang_gloss_ur">उर्दू</string>

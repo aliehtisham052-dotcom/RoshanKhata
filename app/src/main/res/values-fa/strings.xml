@@ -1517,6 +1517,7 @@
     <string name="voice_no_party">هنوز مشتری‌ای در دفتر شما نیست. اول یک مشتری اضافه کنید.</string>
     <string name="voice_no_amount">مبلغی در آن نبود. عدد را هم بگویید.</string>
     <string name="voice_future_promise">این مبلغی به نظر می‌رسد که بعداً پرداخت می‌شود، نه مبلغی که رسیده. روز قول را در صفحهٔ او ثبت کنید.</string>
+    <string name="voice_future_shop">این مبلغی به نظر می‌رسد که خودتان بعداً می‌پردازید، پس چیزی ثبت نشد. هنگام پرداخت آن را ثبت کنید.</string>
     <string name="voice_not_moved">به نظر می‌رسد در این جمله پولی جابه‌جا نشده (پرداخت نشده، یا هنوز مانده)، پس ثبتی انجام نشد. مانده‌اش در صفحهٔ او است.</string>
     <string name="voice_open_entry">باز کردن ثبت</string>
     <string name="voice_which_party">%1$s — کدام مشتری؟</string>
@@ -4272,6 +4273,8 @@
 
     <!-- The setup, redrawn (5 Nov 2026): the language list, the shop's details, the country page. -->
     <string name="lang_phone_language">زبان گوشی</string>
+    <string name="lang_beta">آزمایشی</string>
+    <string name="lang_beta_help">زبان‌های آزمایشی هنوز توسط یک گویشور بومی بررسی نشده‌اند. اگر واژه‌ای نادرست به نظر می‌رسد، به ما بگویید.</string>
     <string name="lang_gloss_en">انگلیسی</string>
     <string name="lang_gloss_ur_latn">اردو با حروف لاتین</string>
     <string name="lang_gloss_ur">اردو</string>

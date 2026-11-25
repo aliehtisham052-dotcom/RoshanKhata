@@ -30,15 +30,42 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvLangNative"
+        <!-- The own name, and beside it the "Beta" tag of a language no native speaker has read yet
+             (D17, LanguageStatus). The name is measured first and keeps its width: the four names are
+             short in their own script, so the tag always has room after it at 150% on 360 dp. -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/google_sans_medium"
-            android:includeFontPadding="true"
-            android:textAlignment="viewStart"
-            android:textColor="@color/ink"
-            android:textSize="17sp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvLangNative"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/google_sans_medium"
+                android:includeFontPadding="true"
+                android:textAlignment="viewStart"
+                android:textColor="@color/ink"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/tvLangBeta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_lang_tag"
+                android:maxLines="1"
+                android:paddingStart="8dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="2dp"
+                android:text="@string/lang_beta"
+                android:textColor="@color/gold_ink"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
