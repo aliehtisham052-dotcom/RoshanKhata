@@ -2869,7 +2869,12 @@ interface KhataDao {
      * "Urea" and "urea " are not two decisions.
      */
     @Transaction
-    suspend fun linkGoodsToProducts(): Int {
+    suspend fun linkGoodsToProducts(allowedBy: String? = null): Int {
+        // The last write of the gate check's waiting list (25 Nov 2026, the owner's D8): a sweep over every entry and
+        // bill line of the book is EDIT_BOOK -- a cashier needs a manager's or the owner's PIN ([allowedBy]), checked
+        // here and not only on the screen -- and leaves one Who did what row (GOODS_LINKED, detail the number of lines
+        // tied) in the same transaction. A sweep that ties nothing changes nothing and writes nothing.
+        Access.requireAllowed(Access.Permission.EDIT_BOOK, allowedBy)
         var linked = 0
         for (name in unlinkedEntryNames()) {
             val product = findOrCreateProduct(name)
@@ -2879,6 +2884,7 @@ interface KhataDao {
             val product = findOrCreateProduct(name)
             linked += linkBillItemsNamed(name, product.id)
         }
+        if (linked > 0) log(AuditAction.GOODS_LINKED, Access.userName, "entry_items", null, linked.toString() + Access.allowedNote(allowedBy))
         return linked
     }
 

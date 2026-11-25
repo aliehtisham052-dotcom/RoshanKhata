@@ -500,7 +500,11 @@ class ProductsActivity : BaseActivity() {
             .setTitle(R.string.link_goods)
             .setMessage(R.string.link_goods_explain)
             .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.link_goods_go) { _, _ -> runLink() }
+            .setPositiveButton(R.string.link_goods_go) { _, _ ->
+                // EDIT_BOOK (D8, 25 Nov 2026): a cashier needs a manager's or the owner's PIN; the DAO checks it again.
+                val perm = com.innovation313.roshankhata.data.Access.Permission.EDIT_BOOK
+                com.innovation313.roshankhata.ui.AccessUi.allowed(this, dao, perm, com.innovation313.roshankhata.ui.AccessUi.what(this, perm)) { by -> runLink(by) }
+            }
             .show()
     }
 
@@ -518,11 +522,11 @@ class ProductsActivity : BaseActivity() {
      * is still there. The tying happens regardless; only the telling depends
      * on someone being present to be told.
      */
-    private fun runLink() {
+    private fun runLink(allowedBy: String?) {
         btnLink.isEnabled = false
         AppScope.launch {
             val linked = try {
-                dao.linkGoodsToProducts()
+                dao.linkGoodsToProducts(allowedBy)
             } catch (e: Exception) {
                 // Nothing partial can have happened — the whole thing is one
                 // transaction. Say it plainly rather than leaving the owner

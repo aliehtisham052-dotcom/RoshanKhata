@@ -512,6 +512,8 @@ object AuditAction {
     /** Added from a screen, without a PIN, with who did it (17 Nov 2026, the owner's yes). */
     const val PARTY_ADDED = "party_added"
     const val PRODUCT_ADDED = "product_added"
+    /** The tie button ([KhataDao.linkGoodsToProducts], D8, 25 Nov 2026): goods lines tied to products; detail the count (then " . who allowed it"). */
+    const val GOODS_LINKED = "goods_linked"
     const val BILL_ADDED = "bill_added"
     const val PLAN_ADDED = "plan_added"
     /** A plan's next payment day changed or cleared; detail the day's millis or nothing. */

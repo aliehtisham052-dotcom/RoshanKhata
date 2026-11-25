@@ -251,7 +251,7 @@ def on_the_path(code, start, pos):
 # on any OTHER uncovered write, on a new bare path of one of these, and on one that became covered and
 # was not taken out -- so gates only ever tighten. A Strings step.
 WAITING = {
-    "linkGoodsToProducts": (1, "the tie button: the owner's call"),
+    # empty since 25 Nov 2026: the tie button (linkGoodsToProducts) got EDIT_BOOK and a GOODS_LINKED row (D8)
 }
 
 
