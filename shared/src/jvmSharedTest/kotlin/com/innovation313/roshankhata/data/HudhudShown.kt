@@ -9,7 +9,8 @@ object HudhudShown {
         is Hudhud.Ask.Guessed -> of(a.ask)
         // "As it stands now" (15 Nov 2026) only adds a note to the card; what was understood is the ask inside it.
         is Hudhud.Ask.Now -> of(a.ask)
-        is Hudhud.Ask.DidYouMean -> a.options.firstOrNull()?.let { of(it) } ?: "DidYouMean"
+        // A question asked first (D15) answers nothing: it is spelt as what it asks ("Unsure:SIDE"), never as its first chip.
+        is Hudhud.Ask.DidYouMean -> a.unsure?.let { "Unsure:$it" } ?: a.options.firstOrNull()?.let { of(it) } ?: "DidYouMean"
         is Hudhud.Ask.Help -> "Help:" + a.key
         is Hudhud.Ask.Figure -> "Figure:" + a.kind
         is Hudhud.Ask.Count -> "Count:" + a.thing + ":" + a.window

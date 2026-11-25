@@ -4945,6 +4945,7 @@
     <string name="hudhud_chip_collected">كم تحصّل اليوم</string>
     <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
     <string name="hudhud_took_as">فهمتُ السؤال: %1$s</string>
+    <string name="hudhud_ask_side">هل المال لك عند الناس أم عليك للناس؟</string>
     <string name="hudhud_act_fly">شاهدني أطير.</string>
     <string name="hudhud_act_dance">شاهدني أرقص.</string>
     <string name="hudhud_act_jump">شاهدني أقفز.</string>

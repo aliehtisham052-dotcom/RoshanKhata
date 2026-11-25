@@ -4676,6 +4676,7 @@
     <string name="hudhud_chip_collected">اڄ ڪيتري رقم آئي</string>
     <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
     <string name="hudhud_took_as">سمجهيو: %1$s</string>
+    <string name="hudhud_ask_side">پئسا وٺڻا آهن يا ڏيڻا؟</string>
     <string name="hudhud_act_fly">ڏسو، مان اڏامان ٿو.</string>
     <string name="hudhud_act_dance">ڏسو، منهنجو ناچ.</string>
     <string name="hudhud_act_jump">ڏسو، مان ٽپا ڏيان ٿو.</string>

@@ -4622,6 +4622,7 @@
     <string name="hudhud_chip_collected">Uang masuk hari ini</string>
     <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
     <string name="hudhud_took_as">Saya pahami sebagai: %1$s</string>
+    <string name="hudhud_ask_side">Uang yang harus diterima atau dibayar?</string>
     <string name="hudhud_act_fly">Lihat, saya terbang.</string>
     <string name="hudhud_act_dance">Lihat, saya menari.</string>
     <string name="hudhud_act_jump">Lihat, saya melompat.</string>

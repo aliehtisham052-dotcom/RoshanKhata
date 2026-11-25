@@ -4696,6 +4696,7 @@
     <string name="hudhud_chip_collected">আজ কত টাকা এল</string>
     <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
     <string name="hudhud_took_as">যা বুঝেছি: %1$s</string>
+    <string name="hudhud_ask_side">টাকা পাবেন, না দেবেন?</string>
     <string name="hudhud_act_fly">দেখুন, আমি উড়ছি।</string>
     <string name="hudhud_act_dance">দেখুন, আমার নাচ।</string>
     <string name="hudhud_act_jump">দেখুন, আমি লাফাচ্ছি।</string>

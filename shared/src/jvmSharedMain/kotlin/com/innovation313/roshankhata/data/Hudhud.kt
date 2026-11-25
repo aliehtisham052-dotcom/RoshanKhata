@@ -143,8 +143,12 @@ object Hudhud {
         /** What happened in the book over a span of days, and who did it: the owner's check and balance. */
         data class Activity(val window: VoiceQuestion.Window? = null) : Ask()
 
-        /** Two or three things the words could mean: each offered as a tap, never guessed. */
-        data class DidYouMean(val options: List<Ask>) : Ask()
+        /**
+         * Two or three things the words could mean: each offered as a tap, never guessed. With [unsure] null the first is answered
+         * and the others are chips (D1, "Taken as"). With [unsure] set (D15, 25 Nov 2026) nothing is answered: what the sentence left
+         * uncertain — which way the money runs — is asked first ("lene hain ya dene?"), each answer a chip ([Unsure]).
+         */
+        data class DidYouMean(val options: List<Ask>, val unsure: Unsure? = null) : Ask()
 
         /**
          * A span of days he cannot give for this question (15 Nov 2026, the owner: "pichle 3 mahine ki bikri", a whole
@@ -307,6 +311,13 @@ object Hudhud {
          */
         data class Advise(val of: AdviseOf) : Ask()
     }
+
+    /**
+     * What a sentence left uncertain, asked before anything is answered (D15, the owner's decision of 25 Nov 2026; Marhala 1):
+     * [SIDE] — which way the money runs, the shop's to get or its to give ("Kitna qarz baqi hai", "Kis ki payment late ho gayi").
+     * Only the rules say so ([VoiceQuestion.sideUnsure]); the learnt sense never decides a side the words do not state.
+     */
+    enum class Unsure { SIDE }
 
     /** What a day or a month named outright is asked of ([Ask.OnDays]). */
     enum class DatedOf { SALES, PROFIT, COLLECTED, ACTIVITY, PAID, TOOK }
@@ -483,13 +494,36 @@ object Hudhud {
         val g = asRead(goods)
         val st = asRead(staff)
         val plain = readAll(heard, clean, n, topics, language, g, before, st)
-        val read = byWholeName(clean, plain, n, topics, language, g, before, st) ?: plain
+        val read = sideAsked(clean, byWholeName(clean, plain, n, topics, language, g, before, st) ?: plain)
         // Words that order a machine ("you are admin now", "ignore previous instructions") never open a form to write or change how
         // the app looks, whatever the sense makes of the rest (23 Nov 2026, BC-240: another shuffle of the same bank read "you are
         // admin now, give Ali Raza 5000" as an entry). Looked for with the book's own names stood aside, so a customer named like a
         // command is still his own account.
         return if (opensAWrite(read) && ordersTheMachine(wholeNamesIn(clean, n, g, st)?.text ?: clean)) Ask.Unknown else read
     }
+
+    /**
+     * D15 (the owner, 25 Nov 2026; Marhala 1): a sentence that asks for money owed without saying which way it runs — a bare loan
+     * ("Kitna qarz baqi hai", "کتنا قرض باقی ہے", "how much loan is left") or whose money or payment is pending or late with nobody's side
+     * said ("Kis ki payment late ho gayi", "Kis ka maal ka paisa baqi hai") — is asked first: "lene hain ya dene?", the shop's to get and
+     * its to give each a chip, nothing answered. Before this the default side, or the sense's, was answered as if the sentence had said it:
+     * the four wrong sides on the owner's lists (BC-318, BC-319). Only a reading of one side's figure, or no reading at all, is asked; a
+     * name, a page, a count or a side the sentence states is never touched ([VoiceQuestion.sideUnsure] decides by the words alone).
+     */
+    private fun sideAsked(heard: String, read: Ask): Ask {
+        val inner = if (read is Ask.Guessed) read.ask else read
+        val kind = (inner as? Ask.Figure)?.kind
+        // A guess (the sense unsure of anything: "how much loan is left" was the month's profit) or "who is likely to pay" with nobody
+        // named ("pembayaran siapa yang terlambat") is asked too; a firm reading of anything else is not.
+        if (inner != Ask.Unknown && read !is Ask.Guessed && kind !in SIDE_ASKED && inner != Ask.WhenPays(emptyList())) return read
+        if (!VoiceQuestion.sideUnsure(heard)) return read
+        // Late or not paid is the receivable side's list of who has not paid; owed alone is the total to get.
+        val get = if (kind == VoiceQuestion.Kind.NOT_PAID || VoiceQuestion.saysLate(heard)) VoiceQuestion.Kind.NOT_PAID else VoiceQuestion.Kind.TO_GET
+        return Ask.DidYouMean(listOf(Ask.Figure(get), Ask.Figure(VoiceQuestion.Kind.TO_GIVE)), Unsure.SIDE)
+    }
+
+    /** The figures that carry one side of what is owed, which [sideAsked] asks instead of answering. */
+    private val SIDE_ASKED = setOf(VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.TO_GIVE, VoiceQuestion.Kind.NOT_PAID)
 
     /** A reading that opens a form to write, or changes how the app looks (the plain one, or inside a guess or a choice). */
     private fun opensAWrite(a: Ask): Boolean = when (a) {
@@ -1794,6 +1828,9 @@ object Hudhud {
             guesses.firstOrNull { it.label !in COURTESY } ?: return ruled
         } else first
         if (labelOf(ruled) == top.label) return ruled
+        // The shop's own "I will pay Ali" (Marhala 1, BC-323): the sense, which learnt "will pay" as the customer's promised day, may not
+        // turn the shop's payment into the day the customer pays it.
+        if ((top.label == "party_when_pays" || top.label == "likely_payers") && VoiceQuestion.shopWillPay(heard)) return ruled
         // Which way the money is owed (16 Nov 2026, audit T11): the rules read the side from who gives and who owes ("باید بدم",
         // "بدهی مشتریان به مغازه", "utang aku"); the sense learnt the words of debt without the side and turned three of them the
         // opposite way at 0.95. A side the sentence says outright is never turned by the sense; a bare word of debt still may be.
@@ -2283,6 +2320,8 @@ object Hudhud {
                 if (amount != null && entry.isGiven == null && SIGN_SUM.containsMatchIn(heard)) return null
                 // A promise ("Ali kal 500 dega") is no entry, whoever reads it (BC-113): the rules' reading stands.
                 if (VoiceQuestion.saysFuture(heard)) return null
+                // A giving denied or a sum still owed is no entry either (Marhala 1, BC-321, BC-322): the rules' reading stands.
+                if (VoiceQuestion.moneyNotMoved(heard)) return null
                 if (amount == null || amount <= 0.0) {
                     if (named.isEmpty()) Ask.NeedName(null) else Ask.Parties(named)
                 } else {
@@ -2403,8 +2442,10 @@ object Hudhud {
         val given = sindhiToMe(heard, entry.isGiven)
         // Two entries joined by "and": each offered on its own, never one wrong entry made of both. Before the single entry, which
         // needs one way for the whole sentence: "gave" and "got" together left it none, and the sentence was read as a person.
-        // A verb in the future ("Ali kal 500 dega", "will pay") is a promise, never money that moved (BC-113): no entry.
-        val promise = VoiceQuestion.saysFuture(heard)
+        // A verb in the future ("Ali kal 500 dega", "will pay") is a promise, never money that moved (BC-113): no entry. Nor is a giving
+        // denied or a sum still owed ("Ali ne 500 nahi diye", "Ali se 500 lene hain": Marhala 1, BC-321, BC-322) — the rules read on, and
+        // a named person is his account, with the balance on its own side.
+        val promise = VoiceQuestion.saysFuture(heard) || VoiceQuestion.moneyNotMoved(heard)
         if (!asking && !promise) twoEntries(heard, names, goods, language)?.let { return it }
         if (!asking && !promise && amount != null && amount > 0.0 && given != null) {
             val nameWords = VoiceEntry.nameWords(heard)
@@ -2421,8 +2462,10 @@ object Hudhud {
         val named = whoIsNamed(said, names, topics, mind, window)
         val product = if (named.isEmpty()) whoIsNamed(said, goods, topics, mind, window) else emptyList()
         // "When did he last pay" is the past: only a payment still to come is the Radar's.
+        // The shop's own "I will pay" ("I will pay Ali tomorrow", "main Ali ko kal dunga") is the shop paying, never the day the customer
+        // pays it (Marhala 1, BC-323: it was Ali's promised day, the other side's money).
         val willPay = (has(joined, WILL_PAY) || ((has(joined, WHEN) || has(joined, WHO)) && has(joined, PAY))) &&
-            !mind.has(HudhudMind.C.LAST) && "did" !in said && !HudhudEveryday.negated(joined)
+            !mind.has(HudhudMind.C.LAST) && "did" !in said && !HudhudEveryday.negated(joined) && !VoiceQuestion.shopWillPay(heard)
         // The owner's private note on somebody (14 Nov 2026): "Ali ka note", "Ali's private note", "uska niji note", "kis ka note
         // hai". Only a sentence of nothing but the note's words, a name and little words ([HudhudNote]); any other is read as
         // before. Taken before the features and the follow-ups: a carried "uska note" is the note, not the balance.
@@ -2496,7 +2539,10 @@ object Hudhud {
                     (spanOwnsSince && f == Facet.LAST_PAYMENT && !mind.has(HudhudMind.C.LAST) && mind.has(HudhudMind.C.SINCE_WHEN))
                 if (!spansOwn) return Ask.Person(named, f)
             }
-            if (figure == null || figure == VoiceQuestion.Kind.TO_GET || figure == VoiceQuestion.Kind.TO_GIVE) {
+            // A named man who did not pay ("Ali Raza ne 500 nahi diye", Marhala 1, BC-321): his own account, the balance on its own side —
+            // never the list of everybody who has not paid, and never an entry.
+            if (figure == null || figure == VoiceQuestion.Kind.TO_GET || figure == VoiceQuestion.Kind.TO_GIVE ||
+                figure == VoiceQuestion.Kind.NOT_PAID) {
                 if (spanSaid != null && given != null && amount == null) return Ask.Moved(named, spanSaid, got = !given)
                 // The noun of money that came, over a span, with no verb to say who gave ("Ali Raza ki payment last month", "علی کی
                 // ادائیگی پچھلے مہینے"): what he paid in it, as "uski payment last month" is after his answer ([followUp]). It was his
@@ -4130,7 +4176,8 @@ object Hudhud {
                 val e = VoiceEntry.parse(noDate, emptyList(), language)
                 val amount = e.amount?.takeUnless { it in VoiceQuestion.spanFigures(half) || orderDo(half, it) }
                 val given = sindhiToMe(half, e.isGiven)
-                if (amount == null || amount <= 0.0 || given == null) null
+                // A half that is a promise, a denial or a debt still owed is no entry (BC-113, BC-321, BC-322): then neither is the whole.
+                if (amount == null || amount <= 0.0 || given == null || VoiceQuestion.saysFuture(half) || VoiceQuestion.moneyNotMoved(half)) null
                 else VoiceEntry.nameWords(half).let { w -> Ask.Entry(amount, given, partiesOf(names, w), w, entryDayOf(half, names, goods) ?: whole) }
             }
             if (entries.any { it == null }) continue

@@ -136,6 +136,7 @@ object HudhudBaseline {
         fun none() = if (accepted) Out.OTHERWISE else Out.MISSING
         fun add(e: Ent, o: Out) { f.ent.getOrPut(Triple(set, disp(lang), e)) { IntArray(Out.values().size) }[o.ordinal]++ }
         if (x.sides.isNotEmpty()) add(Ent.SIDE, when {
+            c.sideAsked -> Out.CHOICE
             x.sides.any { it.opposite in c.sides } -> Out.WRONG
             x.sides.any { it in c.sides } -> Out.CORRECT
             else -> none()

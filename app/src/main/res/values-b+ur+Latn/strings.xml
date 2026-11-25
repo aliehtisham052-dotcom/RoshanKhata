@@ -4648,6 +4648,7 @@
     <string name="hudhud_chip_collected">Aaj kitni raqam aayi</string>
     <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
     <string name="hudhud_took_as">Samjha: %1$s</string>
+    <string name="hudhud_ask_side">Paise lene hain ya dene?</string>
     <string name="hudhud_act_fly">Dekhiye, main udta hoon.</string>
     <string name="hudhud_act_dance">Dekhiye, mera raqs.</string>
     <string name="hudhud_act_jump">Dekhiye, main phudakta hoon.</string>

@@ -4648,6 +4648,7 @@
     <string name="hudhud_chip_collected">آج کتنی رقم آئی</string>
     <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
     <string name="hudhud_took_as">سمجھا: %1$s</string>
+    <string name="hudhud_ask_side">پیسے لینے ہیں یا دینے؟</string>
     <string name="hudhud_act_fly">دیکھیے، میں اڑتا ہوں۔</string>
     <string name="hudhud_act_dance">دیکھیے، میرا رقص۔</string>
     <string name="hudhud_act_jump">دیکھیے، میں پھدکتا ہوں۔</string>
