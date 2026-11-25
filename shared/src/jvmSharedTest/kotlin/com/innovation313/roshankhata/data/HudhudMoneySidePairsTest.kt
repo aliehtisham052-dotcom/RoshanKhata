@@ -19,7 +19,12 @@ class HudhudMoneySidePairsTest {
 
     private val names = listOf("Ali Raza", "Bashir Ahmad").mapIndexed { i, n -> Hudhud.Name(i + 1L, n) }
 
-    enum class Side { CUSTOMER, SUPPLIER, GAVE, GOT, COUNT_C, COUNT_S, GOT_THEN_GAVE }
+    /**
+     * [ACCOUNT]: money that did not move — a giving denied, a sum still owed, the shop's own "I will" (Marhala 1, BC-321 to BC-323):
+     * Ali Raza's own account (or one of his facts), never an entry and never anybody else. [ASKED]: no side said, so the side is asked
+     * first (D15, BC-318, BC-319).
+     */
+    enum class Side { CUSTOMER, SUPPLIER, GAVE, GOT, COUNT_C, COUNT_S, GOT_THEN_GAVE, ACCOUNT, ASKED }
 
     data class Row(val lang: String, val said: String, val side: Side)
 
@@ -42,6 +47,11 @@ class HudhudMoneySidePairsTest {
             Side.COUNT_S -> if (x is Hudhud.Ask.Count && x.thing == Hudhud.Thing.SUPPLIERS) null else "$x"
             Side.GOT_THEN_GAVE ->
                 if (x is Hudhud.Ask.Entries && x.entries.map { it.isGiven } == listOf(false, true)) null else "$x"
+            Side.ACCOUNT -> {
+                val y = if (x is Hudhud.Ask.Now) x.ask else x
+                if ((y is Hudhud.Ask.Parties && y.ids == listOf(1L)) || (y is Hudhud.Ask.Person && y.ids == listOf(1L))) null else "$x"
+            }
+            Side.ASKED -> if (x is Hudhud.Ask.DidYouMean && x.unsure == Hudhud.Unsure.SIDE) null else "$x"
         }
     }
 
@@ -183,6 +193,45 @@ class HudhudMoneySidePairsTest {
             Row("sd", "Ali Raza مون کي 500 ڏنا", Side.GOT),
             Row("sd", "Ali Raza مونکي 500 ڏنا", Side.GOT),
             Row("sd", "Ali Raza مون کي 500 ڏنا ۽ Bashir Ahmad کي 300 ڏنا", Side.GOT_THEN_GAVE),
+            // Marhala 1 (26 Nov 2026): the reversed pairs of "ne / ko / se" and "diye / nahi diye / dunga / dene hai" in each language.
+            // "Ali ne 500 diye" is money in, "Ali ko 500 diye" money out (above); "Ali se 500 lene hain" is what he owes (his account),
+            // "Ali ne 500 nahi diye" no money at all (his account), "Kal Ali ko 500 dunga" the shop's own promise (his account, never
+            // an entry dated yesterday). Sindhi, Bengali, Farsi and Arabic rows need a native read.
+            Row("ur-Latn", "Ali Raza se 500 lene hain", Side.ACCOUNT),
+            Row("ur-Latn", "Ali Raza ko 500 dene hain", Side.ACCOUNT),
+            Row("ur-Latn", "Ali Raza ne 500 nahi diye", Side.ACCOUNT),
+            Row("ur-Latn", "Kal Ali Raza ko 500 dunga", Side.ACCOUNT),
+            Row("ur", "Ali Raza سے 500 لینے ہیں", Side.ACCOUNT),
+            Row("ur", "Ali Raza نے 500 نہیں دیے", Side.ACCOUNT),
+            Row("ur", "میں کل Ali Raza کو 500 دوں گا", Side.ACCOUNT),
+            Row("hi", "Ali Raza से 500 लेने हैं", Side.ACCOUNT),
+            Row("hi", "Ali Raza ने 500 नहीं दिए", Side.ACCOUNT),
+            Row("hi", "मैं कल Ali Raza को 500 दूँगा", Side.ACCOUNT),
+            Row("en", "I have to get 500 from Ali Raza", Side.ACCOUNT),
+            Row("en", "Ali Raza did not pay 500", Side.ACCOUNT),
+            Row("en", "I will pay Ali Raza 500 tomorrow", Side.ACCOUNT),
+            Row("in", "saya harus terima 500 dari Ali Raza", Side.ACCOUNT),
+            Row("in", "Ali Raza tidak bayar 500", Side.ACCOUNT),
+            Row("in", "besok saya akan bayar Ali Raza 500", Side.ACCOUNT),
+            Row("sd", "Ali Raza کان 500 وٺڻا آهن", Side.ACCOUNT),
+            Row("sd", "مان سڀاڻي Ali Raza کي 500 ڏيندس", Side.ACCOUNT),
+            Row("bn", "Ali Raza এর কাছে 500 পাওনা", Side.ACCOUNT),
+            Row("fa", "از Ali Raza 500 طلب دارم", Side.ACCOUNT),
+            Row("fa", "Ali Raza 500 نداد", Side.ACCOUNT),
+            Row("fa", "فردا به Ali Raza 500 می‌دهم", Side.ACCOUNT),
+            Row("ar", "لي عند Ali Raza 500", Side.ACCOUNT),
+            Row("ar", "سأدفع لـ Ali Raza 500 غدا", Side.ACCOUNT),
+            // No side said (D15): asked, in each language.
+            Row("ur-Latn", "Kitna qarz baqi hai", Side.ASKED),
+            Row("ur-Latn", "Kis ki payment late ho gayi", Side.ASKED),
+            Row("ur", "کتنا قرض باقی ہے", Side.ASKED),
+            Row("hi", "कितना क़र्ज़ बाकी है", Side.ASKED),
+            Row("en", "whose payment is pending", Side.ASKED),
+            Row("in", "pembayaran siapa yang terlambat", Side.ASKED),
+            Row("sd", "ڪيترو قرض باقي آهي", Side.ASKED),
+            Row("bn", "কত ঋণ বাকি আছে", Side.ASKED),
+            Row("ar", "كم القرض المتبقي", Side.ASKED),
+            Row("fa", "چقدر وام مانده است", Side.ASKED),
 
         )
 

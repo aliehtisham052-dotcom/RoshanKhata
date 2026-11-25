@@ -286,7 +286,7 @@ object VoiceEntry {
         val dotGroups = lang.startsWith("id") || lang.startsWith("in")
         return Parsed(
             partyName = findParty(text, knownNames),
-            amount = findAmount(text, persian, dotGroups),
+            amount = findAmount(withoutOtherNumbers(text), persian, dotGroups),
             isGiven = findDirection(text),
             day = VoiceQuestion.entryDay(spoken, isName)
         )
@@ -305,6 +305,69 @@ object VoiceEntry {
         )
         return sb.toString()
     }
+
+    /**
+     * The figures of [text] that are no amount of money, blanked out before an amount is looked for (Marhala 1, 26 Nov 2026):
+     *
+     * - a phone number (BC-324): "Ali Raza ko 03001234567 diye" was an entry of Rs 3,001,234,567, "0300 1234567" of Rs 300 and
+     *   "+92 300 1234567" of Rs 92 — on the Khata microphone as in Hudhud. A number with a country code ("+92 …", "0092 …"), a
+     *   number that starts with 0 and runs to nine digits or more, written whole or in groups ("0300 1234567", "042-35761234"),
+     *   an identity card's 5-7-1 ("35202-1234567-1"), any run of ten digits or more, and a figure of four digits or more with a
+     *   leading 0 ("0300"): none is ever a sum a shop says.
+     * - a document's own number (BC-325): "Ali Raza ko invoice 1234 diya" was Rs 1,234, "Ali Raza ne invoice 1234 ke 500 diye"
+     *   Rs 1,234 instead of 500, "receipt no 77" Rs 77. The figure after a document's word (invoice, bill, receipt, challan,
+     *   order, cheque… in the nine languages), after "no / number / #", or an app series written whole ("INV-1234", "RK-000013").
+     *   "Bill 500 ka" is still 500: after a document's word alone, the only figure of the sentence followed by "ka / of" is the
+     *   bill's sum.
+     *
+     * Figures are only blanked (a space), never moved, so the amount reader reads the rest as before. All numbers in tests are
+     * invented (lesson 80).
+     */
+    internal fun withoutOtherNumbers(text: String): String {
+        var t = text
+        for (rx in PHONE_LIKE) t = rx.replace(t) { m -> " ".repeat(m.value.length) }
+        t = SERIES.replace(t) { m -> " ".repeat(m.value.length) }
+        // The word for "number" goes with its figure: Roman Urdu's "no" is also nine ("no sau"), and "receipt no 77" read Rs 9.
+        t = NUMBERED.replace(t) { m -> " ".repeat(m.value.length) }
+        val figures = FIGURE_RUN.findAll(t).count()
+        t = AFTER_DOC.replace(t) { m ->
+            val fig = m.groups[1]!!
+            val after = t.substring(fig.range.last + 1).trimStart().split(' ').firstOrNull().orEmpty()
+            val billsSum = figures == 1 && after in OF_WORDS
+            if (billsSum) m.value else m.value.substring(0, fig.range.first - m.range.first) + " ".repeat(fig.value.length)
+        }
+        return t
+    }
+
+    private val PHONE_LIKE = listOf(
+        // A country code, then nine to eleven more digits in any grouping, the shortest that ends a number.
+        Regex("(?<![\\d+])(?:\\+|00)\\d{1,3}(?:[ \\-]?\\d){9,11}?(?!\\d)"),
+        // An identity card's 5-7-1.
+        Regex("(?<![\\d])\\d{5}-\\d{7}-\\d(?!\\d)"),
+        // A leading 0, a code of two to four more digits, six to eight digits: 0300 1234567, 0300-1234567, 03001234567, 042 35761234.
+        Regex("(?<![\\d.,])0\\d{2,4}(?:[ \\-]?\\d){6,8}?(?![\\d])"),
+        // Ten digits or more in one run, and four or more after a leading 0: an account, a phone, a code — never a spoken sum.
+        Regex("(?<![\\d.,])\\d{10,}(?![\\d.,])"),
+        Regex("(?<![\\d.,])0\\d{3,}(?![\\d.,])")
+    )
+
+    /** The app's own document series written whole: RK-000013, INV-12, S-4, R-2, PO-9, Q-1, PI-3, SO-5, DC-7 (with a device letter or not). */
+    private val SERIES = Regex("(?<![\\p{L}\\d])(?:rk|inv|po|so|dc|pi|q|s|r)-\\d+(?:-[a-z])?(?![\\d])")
+
+    /** "no 77", "number 1234", "#1234", "نمبر 12": the figure after a word for a number is a number, not money. */
+    private val NUMBERED = Regex("(?:(?<![\\p{L}])(?:no|no\\.|number|num|nomor|nambar|نمبر|नंबर|नम्बर|নম্বর|شماره)\\s*[:#]?\\s*|#\\s*)(\\d+)")
+
+    private val FIGURE_RUN = Regex("\\d[\\d,]*(\\.\\d+)?")
+
+    /** A document's word, then its figure ("invoice 1234", "bill 4521", "رسید 12", "فاتورة 55"). */
+    private val AFTER_DOC = Regex(
+        "(?<![\\p{L}])(?:invoice|invoices|inv|bill|bil|receipt|raseed|rasid|challan|chalan|voucher|slip|order|cheque|chq|" +
+            "انوائس|بل|رسید|رسيد|چالان|واؤچر|آرڈر|چیک|चालान|इनवॉइस|बिल|रसीद|ऑर्डर|चेक|বিল|ইনভয়েস|রসিদ|চালান|চেক|" +
+            "فاتورة|الفاتورة|إيصال|الإيصال|شيك|الشيك|فاکتور|چک|faktur|nota|kwitansi|struk|cek)\\s*[:#]?\\s*(\\d+)(?![\\d.,]\\d)"
+    )
+
+    /** "Bill 500 ka": the figure is the bill's sum ([withoutOtherNumbers]). */
+    private val OF_WORDS = setOf("ka", "ki", "ke", "kay", "of", "کا", "کی", "کے", "का", "की", "के", "جو", "جي", "جا")
 
     /**
      * Words that are grammar, not names.

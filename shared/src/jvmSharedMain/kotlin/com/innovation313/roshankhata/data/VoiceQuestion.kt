@@ -295,8 +295,13 @@ object VoiceQuestion {
         // accountant's word for payables.
         "باید بدم", "باید بدهم", "باید بپردازم", "باید بدیم", "باید بدهیم", "باید بپردازیم", "देनदारी",
         // 17 Nov 2026 (the lead's retrain check): the feminine of "dena" ("kis ki raqam deni hai" is whom the shop pays).
-        "deni", "دینی", "देनी")
-    private val TO_GET = listOf("lena", "lene", "to get", "receive", "collect", "piutang", "tagih", "لینا", "لینے", "وٺڻا",
+        "deni", "دینی", "देनी",
+        // 26 Nov 2026 (BC-336, Marhala 1, from Agent B's out-of-fold measure): Arabic's "we / I pay, settle, owe" — "كم باقي ندفع" was the shop's
+        // to GET by the bare "باقي", and the sense read "كم باقي علينا ندفع" as to get at 0.9966; only "علينا" held it. Native read.
+        "ندفع", "ندفعه", "ندفعها", "ندفعهم", "نسدد", "نسدده", "نسددها", "أدفع", "أدفعه", "أسدد", "أسدده", "ندين")
+    private val TO_GET = listOf("lena", "lene", "to get",
+        // Marhala 1 (26 Nov 2026, BC-322): the feminine of "lena", as "deni" is of "dena" ("Ali se 500 leni hai": he owes the shop).
+        "leni", "لینی", "लेनी", "receive", "collect", "piutang", "tagih", "لینا", "لینے", "وٺڻا",
         // 25 Nov 2026 (BC-240, seed safety): Farsi "I must get" ("چقدر باید بگیرم" was a customer's balance under one shuffle).
         "باید بگیرم", "باید بگیریم", "بگیرم",
         "وٺڻو", "لي عند", "طلبکار", "دریافت", "लेना", "लेने", "পাওনা", "পেতে",
@@ -528,8 +533,17 @@ object VoiceQuestion {
 
     /** The future of the verb: "parson" is then the day after tomorrow, never a day of the book. */
     private val FUTURE_WORDS = listOf("will", "tomorrow", "گا", "گی", "گے", "گیں", "akan", "besok", "lusa", "سوف", "خواهد",
-        "হবে", "দেবে", "পাবে", "আসবে")
-    private val FUTURE_ENDS = listOf("ega", "egi", "enge", "oga", "ogi", "onge", "गा", "गी", "गे")
+        "হবে", "দেবে", "পাবে", "আসবে",
+        // Marhala 1 (26 Nov 2026, BC-323): the shop's own "I will" in the languages whose future the list did not hold — "Kal Ali ko 500
+        // dunga" opened "I gave 500" dated yesterday. English "I'll"/"we'll" (the apostrophe is a space by then); Bengali's first person
+        // ("দেব", "নেব"); Arabic's "I/we will pay, give" (سأ…/سن…, the hamza goes in normalise) and "tomorrow"; Farsi's "I/we will" and
+        // "tomorrow"; Sindhi's "tomorrow"; Indonesian's "later". Each needs a native read (sd, bn, ar, fa).
+        "i ll", "we ll", "দেব", "দেবো", "দিব", "দিবো", "নেব", "নেবো", "পাঠাব", "পাঠাবো", "আগামীকাল",
+        "سأدفع", "سأعطي", "سأسدد", "سأرسل", "سندفع", "سنعطي", "سنسدد", "سيدفع", "سيعطي", "غدا", "غداً", "بكرة",
+        "خواهم", "خواهیم", "فردا", "سڀاڻي", "nanti")
+    // "-unga" / "-ungi" (Marhala 1, BC-323): the first person of the Roman Urdu future ("dunga", "doongi", "lunga", "bhejunga"), which the
+    // third person's "-ega" did not reach. Sindhi's first person ("ڏيندس", "ڏينداسين": I / we will give) by its ending too.
+    private val FUTURE_ENDS = listOf("ega", "egi", "enge", "oga", "ogi", "onge", "unga", "ungi", "oonga", "oongi", "गा", "गी", "गे", "ندس", "نداسين").map { normalise(it) }
 
     /** The weekdays a "last" may stand before ([WEEKDAYS]' own words). */
     private val WEEKDAY_OF: Map<String, Int> by lazy {
@@ -695,6 +709,89 @@ object VoiceQuestion {
         return saysAny(t, FUTURE_WORDS) || t.split(' ').any { w -> w.length >= 3 && FUTURE_ENDS.any { e -> w.endsWith(e) && w != e } }
     }
 
+    /**
+     * Money that has NOT moved, though the sentence carries an amount (Marhala 1, 26 Nov 2026): never an entry of money that came
+     * or went, whoever reads it.
+     *
+     * - A giving or taking that is denied (BC-321): "Ali ne 500 nahi diye", "Ali Raza did not pay 500", "Ali Raza 500 نداد",
+     *   "Ali Raza tidak bayar 500" — each opened "I got 500" (and the Farsi "I gave 500"): a payment that never came written as one.
+     * - A sum still owed, one way or the other (BC-322): "Ali se 500 lene hain" (he owes the shop), "Ali ko 500 dene hain" (the shop
+     *   owes him), "I owe Ali 500", "Ali owes me 500", "از Ali 500 طلب دارم", "Ali Raza কে 500 দিতে হবে". They opened "I got 500" or
+     *   "I gave 500" — a balance turned into a movement, and for "lene hain" on the side that LOWERS what he owes.
+     *
+     * The words of a balance are the side lists' own ([TO_GIVE], [TO_GET]) with the few that state a debt with its person; the denial
+     * is a word of "not" in the nine languages or a verb that carries it (Farsi's "ن…", Bengali's "…নি").
+     */
+    fun moneyNotMoved(heard: String): Boolean {
+        val t = normalise(Digits.toLatin(heard))
+        return t.isNotEmpty() && (moveDenied(t) || stillOwed(t))
+    }
+
+    /**
+     * The shop itself will pay or give (Marhala 1, BC-323): "I will pay Ali tomorrow", "main kal Ali ko dunga", "میں دوں گا",
+     * "मैं दूँगा", Sindhi "ڏيندس", Bengali "দেব", Arabic "سأدفع", Farsi "می‌دهم" / "خواهم داد", Indonesian "saya akan bayar". The shop's
+     * own payment still to make, never the day a customer pays it (the Radar's question). Sindhi, Bengali, Farsi, Arabic: native read.
+     */
+    fun shopWillPay(heard: String): Boolean {
+        val t = normalise(Digits.toLatin(heard))
+        val said = t.split(' ')
+        // "He keeps saying 'I'll pay next week' — when will he pay?": a customer's own words quoted beside his third person are his promise.
+        if (t.isEmpty() || saysAny(t, HE_WILL_GIVE)) return false
+        return saysAny(t, SHOP_WILL_PAY) || said.any { it in SHOP_WILL_WORDS } ||
+            said.any { w -> SHOP_WILL_ENDS.any { e -> w.endsWith(e) && w.length > e.length } }
+    }
+
+    private val SHOP_WILL_PAY = listOf(
+        "i will pay", "i will give", "i ll pay", "i ll give", "we will pay", "we will give", "we ll pay", "we ll give", "i shall pay",
+        "will i pay", "will i give", "will we pay", "will we give", "shall i pay", "should i pay",
+        "dunga", "dungi", "doonga", "doongi", "dun ga", "doon ga", "dun gi", "doon gi", "chukaunga", "chukaungi", "bhejunga", "bhejungi",
+        "دوں گا", "دوں گی", "دونگا", "دونگی", "दूंगा", "दूंगी", "दूँगा", "दूँगी", "दे दूंगा",
+        "سأدفع", "سأعطي", "سأسدد", "سندفع", "سنعطي", "سنسدد",
+        "میدهم", "می دهم", "می‌دهم", "خواهم داد", "خواهم پرداخت", "میپردازم", "می پردازم", "می‌پردازم",
+        "saya akan bayar", "saya akan membayar", "saya akan kasih", "akan saya bayar", "kami akan bayar"
+    )
+
+    /**
+     * Bengali's "I will give", matched as the whole word: [saysAny] lets a Bengali word carry its endings, and "দেবে" (he will give,
+     * "কবে দেবে?") is "দেব" with one — the customer's promise, not the shop's.
+     */
+    private val SHOP_WILL_WORDS = setOf("দেব", "দেবো", "দিব", "দিবো").map { normalise(it) }.toSet()
+
+    /** The customer's "he / she will give" ([shopWillPay] gives way to it). */
+    private val HE_WILL_GIVE = listOf("dega", "degi", "de ga", "de gi", "देगा", "देगी", "دے گا", "دیگا", "دے گی", "دیگی", "will he pay",
+        "will she pay", "will he give", "he will pay", "she will pay", "ڏيندو", "দেবে", "سيدفع", "سيعطي", "میدهد", "می دهد", "می‌دهد")
+
+    /** Sindhi's "I / we will give, pay, send" by its ending (ڏيندس, ڏينداسين, موڪليندس). */
+    private val SHOP_WILL_ENDS = listOf("يندس", "ينداسين").map { normalise(it) }
+
+    /** A giving or taking denied ([moneyNotMoved], BC-321). */
+    internal fun moveDenied(t: String): Boolean = saysAny(t, NOT_PAID) || saysAny(t, NOT_MOVED)
+
+    /** A sum still owed, either way ([moneyNotMoved], BC-322). */
+    internal fun stillOwed(t: String): Boolean =
+        saysAny(t, TO_GIVE) || saysAny(t, TO_GET) || saysAny(t, OWED_STILL) || saysAny(t, OWES_ME)
+
+    /**
+     * "Not", as it stands beside a verb of giving or taking, and the verbs that carry it (Farsi, Bengali). Not "nai" (Roman Urdu's "new")
+     * nor "tak" (Indonesian's "not", Roman Urdu's "until": "aaj tak 500 diye" moved money). Sindhi, Bengali, Farsi, Arabic: native read.
+     */
+    private val NOT_MOVED = listOf(
+        "nahi", "nahin", "nhi", "na diye", "na diya", "na di", "na liye", "na liya", "na li", "never", "not", "didn t", "didnt",
+        "hasn t", "hasnt", "haven t", "havent", "doesn t", "won t",
+        "نہیں", "نہ", "نه", "ڪونه", "नहीं", "नही", "ना", "না", "tidak", "belum", "gak", "nggak", "لم", "لا",
+        "نداد", "ندادم", "ندادند", "ندادیم", "نداده", "نگرفت", "نگرفتم", "نگرفتند", "نگرفته", "نپرداخت", "نپرداختم", "نپرداختند", "نپرداخته",
+        "দেয়নি", "দেননি", "দিইনি", "দিনি", "নেয়নি", "নেননি", "নিইনি", "পাইনি", "পায়নি", "করেনি"
+    )
+
+    /** A debt said with its person, beyond the side lists' words (BC-322). Sindhi, Bengali, Farsi and Arabic need a native read. */
+    private val OWED_STILL = listOf(
+        "owes", "owe", "owed", "have to pay", "have to give", "have to get", "have to receive", "has to pay", "has to give",
+        "chukana", "chukane", "chukani",
+        "بدهکارم", "بدهکاریم", "بدهکاره", "طلب دارم", "طلب داریم", "طلبکارم", "طلبکاریم",
+        "harus bayar", "harus membayar", "harus terima", "harus menerima", "berutang", "berhutang",
+        "দিতে হবে", "নিতে হবে", "পেতে হবে"
+    )
+
     /** Whether [w] (normalised) is a weekday a "last" may stand before ("jumme" of "pichle jumme"). */
     internal fun isWeekdayWord(w: String): Boolean = w in WEEKDAY_OF
 
@@ -840,7 +937,7 @@ object VoiceQuestion {
         (saysAny(t, TO_ME) && saysAny(t, WILL_GIVE)) || saysAny(t, OWED_TO_ME) ||
             (saysAny(t, listOf("pay me", "pay us", "give me money")) && saysAny(t, listOf("will")))
             || othersHoldMine(t)
-            || (saysAny(t, MY_SHARE) && !saysAny(t, MY_DEBT))
+            || (saysAny(t, MY_SHARE) && !saysAny(t, MY_DEBT) && !saysAny(t, TO_GIVE))
 
     /**
      * My money held by others (23 Nov 2026, BC-240): "logon ke paas mere kitne paise hain", "mera kitna paisa logon ke paas phansa hua
@@ -851,8 +948,16 @@ object VoiceQuestion {
     private fun othersHoldMine(t: String): Boolean =
         saysAny(t, OTHERS_HOLD) && saysAny(t, MINE) && saysAny(t, MONEY_WORDS) && !saysAny(t, MY_DEBT)
 
-    /** "Mere hisse ka kitna baqi hai": what is left of my share is money owed to the shop (25 Nov 2026, H4: a retrained sense put it on the other side). */
-    private val MY_SHARE = listOf("mere hisse", "mera hissa", "my share", "میرے حصے", "میرا حصہ", "मेरे हिस्से", "मेरा हिस्सा")
+    /**
+     * "Mere hisse ka kitna baqi hai": what is left of my share is money owed to the shop (25 Nov 2026, H4: a retrained sense put it on the
+     * other side). The side is what the sentence says (Marhala 1, 26 Nov 2026, BC-320): with a word of giving ("mere hisse ka kitna dena
+     * baqi hai", "how much of my share do I still have to pay") it is the shop's to give — the share read it as to get, whatever the
+     * sentence said ([owedToMe]). Sindhi, Bengali, Arabic, Farsi and Indonesian said the same bare share with the sense alone, and two
+     * of them the other way; their words need a native read.
+     */
+    private val MY_SHARE = listOf("mere hisse", "mera hissa", "my share", "میرے حصے", "میرا حصہ", "मेरे हिस्से", "मेरा हिस्सा",
+        "منهنجي حصي", "منهنجو حصو", "আমার ভাগের", "আমার ভাগ", "আমার অংশের", "আমার অংশ", "حصتي", "نصيبي", "سهم من", "سهمم",
+        "bagian saya", "bagianku", "jatah saya")
 
     private val OTHERS_HOLD = listOf(
         "logon ke paas", "logo ke paas", "logon ke pas", "logon par", "logo par", "logon pe", "logo pe", "logon ki taraf",
@@ -963,6 +1068,67 @@ object VoiceQuestion {
         return saysAny(t, TO_GIVE) || saysAny(t, TO_GET) || saysAny(t, MY_DEBT) || owedToTheShop(t) || payDue(t)
     }
 
+    /**
+     * Which way the money runs is not said (D15, Marhala 1, 26 Nov 2026; BC-318, BC-319): Hudhud asks "lene hain ya dene?" first.
+     *
+     * - A bare loan (BC-318): "Kitna qarz baqi hai", "qarz kitna hai", "کتنا قرض باقی ہے", "कितना क़र्ज़ बाकी है", "how much loan is
+     *   left". A loan runs both ways in a shop (the owner's own lists: "Mera qarz kitna hai" is his to give, "Aaj kis ne mera qarz wapas
+     *   kiya" money he lent) — unlike "udhaar", "baqaya", Arabic "ديون" or Indonesian "utang", the shop's credit, whose default the
+     *   reviewers held as the shop's to get. Qarz-e-Hasna is its own question, and a debtor ("qarzdar") says his side.
+     * - Whose money or payment is pending or late (BC-319): "Kis ki payment late ho gayi", "Kis ka maal ka paisa baqi hai", "whose
+     *   payment is pending" — "kis ki payment" is the supplier's as often as the customer's ("supplier ki payment" is paid TO him).
+     *   "Kaun si payment late hai" (which payment) and "kis ka paisa phansa hua hai" (stuck: the shop's money held outside) say no
+     *   party or say the side, and keep their reading.
+     *
+     * Never when the sentence says the side: a word of giving or getting ([sideSaid]), the shop's payables ([payableSaid]), the shop's
+     * credit, a customer or a supplier, a collection, money stuck, most or least, a payment denied, or "my share".
+     */
+    fun sideUnsure(heard: String): Boolean {
+        val t = normalise(heard)
+        if (t.isEmpty() || sideSaid(heard) || payableSaid(heard) || saysAny(t, OWES_ME) || saysAny(t, SIDE_CUES) || saysAny(t, SUPPLIER_SIDE)) return false
+        if (saysAny(t, MOST) || saysAny(t, LEAST) || moveDenied(t) || saysAny(t, MY_SHARE) || saysAny(t, OTHERS_HOLD)) return false
+        val loan = saysAny(t, LOAN) && !saysAny(t, LOAN_GOOD)
+        val whosePending = saysAny(t, WHOSE_MONEY) && saysAny(t, MONEY_THING) && (saysAny(t, PENDING) || saysAny(t, LATE))
+        return loan || whosePending
+    }
+
+    /** "Late" in the nine languages: a side asked of lateness offers who has not paid, not the total ([Hudhud]'s side ask). */
+    fun saysLate(heard: String): Boolean = saysAny(normalise(heard), LATE)
+
+    /** A loan, a word that runs both ways ([sideUnsure]). Sindhi, Bengali, Farsi, Arabic: native read. */
+    private val LOAN = listOf("qarz", "qarza", "qarze", "qarzay", "karz", "karza", "karze", "loan", "loans", "قرض", "قرضہ", "قرضے",
+        "क़र्ज़", "कर्ज", "कर्जा", "कर्ज़", "ঋণ", "وام", "pinjaman")
+
+    /** Qarz-e-Hasna, the interest-free loan: its own question ([Hudhud.Ask.Qarz]). */
+    private val LOAN_GOOD = listOf("hasna", "hasana", "hassana", "حسنہ", "حسنه", "الحسنة", "الحسنه", "हसना", "হাসানা", "interest free", "tanpa bunga")
+
+    /** Words that say the side outright, beside the side lists: the shop's credit, a customer, a collection, money stuck outside. */
+    private val SIDE_CUES = listOf(
+        "udhar", "udhaar", "udhari", "ادھار", "उधार", "اڌار", "ধার", "نسیه", "آجل", "بالآجل",
+        "customer", "customers", "gahak", "gahakon", "grahak", "grahakon", "گاہک", "گاہکوں", "ग्राहक", "ग्राहकों", "گراهڪ", "گراهڪن",
+        "গ্রাহক", "عميل", "العميل", "العملاء", "مشتری", "مشتریان", "pelanggan",
+        "wusool", "wasool", "wusooli", "wasooli", "wasuli", "collection", "collect", "وصول", "وصولی", "वसूल", "वसूली", "tagihan",
+        "phansa", "phansi", "phanse", "atka", "atki", "atke", "stuck", "پھنسا", "پھنسی", "اٹکا", "اٹکی", "फंसा", "फंसी", "अटका", "अटकी",
+        "ڦاٿل", "আটকে", "گیر", "tertahan", "macet", "عالق", "عالقة"
+    )
+
+    /** "Whose" (Arabic says it after the money: "دفعة من"). */
+    private val WHOSE_MONEY = listOf("kis ka", "kis ki", "kis ke", "kiska", "kiski", "kiske", "whose", "کس کا", "کس کی", "کس کے",
+        "किसका", "किसकी", "किसके", "किस का", "किस की", "किस के", "ڪنهن جو", "ڪنهن جي", "ڪنهن جا", "কার", "چه کسی", "siapa",
+        "دفعة من", "دفعات من", "مبلغ من", "فلوس من")
+
+    /** Money or a payment, as a thing someone has ([sideUnsure]). */
+    private val MONEY_THING = listOf("payment", "payments", "paisa", "paise", "pese", "paisay", "raqam", "rakam", "money", "amount",
+        "پیمنٹ", "پیسہ", "پیسے", "رقم", "ادائیگی", "पेमेंट", "पैसा", "पैसे", "रकम", "भुगतान", "پيمينٽ", "پئسا", "پئسو", "ادائيگي",
+        "পেমেন্ট", "টাকা", "دفعة", "دفعات", "مبلغ", "فلوس", "پرداخت", "پول", "pembayaran", "uang", "bayaran")
+
+    /** Still to come or late. */
+    private val PENDING = listOf("baqi", "baaqi", "baki", "baaki", "pending", "remaining", "outstanding", "left", "باقی", "बाकी",
+        "باقي", "বাকি", "বকেয়া", "مانده", "المتبقي", "متبقي", "sisa", "tersisa", "tertunda")
+
+    private val LATE = listOf("late", "der", "dair", "deir", "overdue", "لیٹ", "دیر", "लेट", "देर", "دير", "দেরি", "تأخر", "تأخرت",
+        "متأخر", "متأخرة", "المتأخرة", "terlambat", "telat")
+
     /** [otherDoer] for a sentence as it was said (Hudhud keeps a figure the rules read from it; see his `decide`). */
     fun hasOtherDoer(heard: String): Boolean = otherDoer(normalise(heard))
 
@@ -1008,7 +1174,10 @@ object VoiceQuestion {
         // 16 Nov 2026 (audit T11): Indonesian's other "I/we" and the joined "my"; Arabic "on us".
         "utang aku", "hutang aku", "utangku", "hutangku", "utang kami", "hutang kami", "علينا",
         // 24 Nov 2026 (A1): Arabic "I owe" (أدين / ادين) and Indonesian "to whom do I owe" (the payable side).
-        "أدين", "ادين", "berutang kepada siapa", "berhutang kepada siapa", "utang ke siapa", "hutang ke siapa"
+        "أدين", "ادين", "berutang kepada siapa", "berhutang kepada siapa", "utang ke siapa", "hutang ke siapa",
+        // Marhala 1 (26 Nov 2026, BC-318): "on me" said as "upon me" ("mere upar kitna qarza hai", the held-out set's own): a loan with
+        // its side said, never one to ask.
+        "mere upar", "mere oopar", "meray upar", "hamare upar", "humare upar", "میرے اوپر", "ہمارے اوپر", "मेरे ऊपर", "हमारे ऊपर"
     )
 
     /** A supplier's side of the book: what is owed there is the shop's to pay. */

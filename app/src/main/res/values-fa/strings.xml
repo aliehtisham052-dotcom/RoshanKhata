@@ -4676,6 +4676,7 @@
     <string name="hudhud_chip_collected">امروز چقدر پول آمد</string>
     <!-- Hudhud, 13 Nov 2026: whole answers, tell-don't-ask, his acts, his voice's fallback and his name. -->
     <string name="hudhud_took_as">برداشت من: %1$s</string>
+    <string name="hudhud_ask_side">پول را باید بگیرید یا بدهید؟</string>
     <string name="hudhud_act_fly">نگاه کنید، پرواز می‌کنم.</string>
     <string name="hudhud_act_dance">نگاه کنید، می‌رقصم.</string>
     <string name="hudhud_act_jump">نگاه کنید، می‌پرم.</string>

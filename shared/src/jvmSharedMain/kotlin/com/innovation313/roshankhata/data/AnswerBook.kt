@@ -242,8 +242,9 @@ object AnswerBook {
             // Tell, never ask (13 Nov 2026): a guess is answered, with what it was taken as over the card; "did you
             // mean" answers its first meaning the same way and offers the others as chips.
             is Hudhud.Ask.Guessed -> guessed(context, dao, ask.ask, parties, emptyList())
-            is Hudhud.Ask.DidYouMean -> ask.options.firstOrNull()?.let { guessed(context, dao, it, parties, ask.options.drop(1)) }
-                ?: unknown(context)
+            // Asked first, never answered (D15): what the sentence left uncertain — which way the money runs.
+            is Hudhud.Ask.DidYouMean -> if (ask.unsure != null) unsure(context, ask)
+            else ask.options.firstOrNull()?.let { guessed(context, dao, it, parties, ask.options.drop(1)) } ?: unknown(context)
         }
 
     /**
@@ -403,6 +404,33 @@ object AnswerBook {
             options = others,
             ask = ask
         )
+    }
+
+    /**
+     * D15 (the owner, 25 Nov 2026; Marhala 1): which way the money runs was not said ("Kitna qarz baqi hai", "Kis ki payment late
+     * ho gayi"), so he asks one question first — "Paise lene hain ya dene?" — and answers nothing: each side is a chip in the shop's own
+     * words ("Mujhe lene hain" / "Mujhe dene hain"), and a tap asks that side's figure through its own gate. Built as [spanLimit]'s card
+     * and [pick]'s question: a question only the owner or a manager may see is offered to nobody else, and says so.
+     */
+    private fun unsure(context: AnswerEnv, ask: Hudhud.Ask.DidYouMean): AnswerCard {
+        val question = context.getString(W.hudhud_ask_side)
+        if (!AnswerGate.reports() && ask.options.any { needsReports(it) }) {
+            return AnswerCard(Mood.CALM, label = question, lines = listOf(context.getString(W.hudhud_owner_only)))
+        }
+        val labels = LinkedHashMap<Hudhud.Ask, String>()
+        for (a in ask.options) sideChipLabel(context, a)?.let { labels[a] = it }
+        return AnswerCard(
+            Mood.CALM, label = question,
+            options = ask.options.filter { it in labels }, optionLabels = labels,
+            spoken = { w -> w.getString(W.hudhud_ask_side) }
+        )
+    }
+
+    /** A side's chip in the shop's words: the shop's to get (or who has not paid), its to give; null for anything else. */
+    private fun sideChipLabel(c: AnswerEnv, a: Hudhud.Ask): String? = when ((a as? Hudhud.Ask.Figure)?.kind) {
+        VoiceQuestion.Kind.TO_GET, VoiceQuestion.Kind.NOT_PAID -> c.getString(W.i_have_to_get)
+        VoiceQuestion.Kind.TO_GIVE -> c.getString(W.i_have_to_give)
+        else -> null
     }
 
     // ------------------------------------------------------------------------------------------ spans he cannot give

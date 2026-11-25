@@ -10,7 +10,7 @@ import org.junit.Test
  *
  * - **correct**: the reading carries the entity the row names;
  * - **wrong**: it carries another (the other side of the money, another amount, person, product or span);
- * - **choice** (people, goods): the right one among others, offered to pick;
+ * - **choice** (people, goods): the right one among others, offered to pick; (side) the side asked first, both offered (D15);
  * - **missing**: it carries none, and the reading is not one the row accepts;
  * - **otherwise**: it carries none, but the reading is one the row accepts (a help page, the list of people, a
  *   figure whose card uses its own default days) — not an error.
@@ -72,6 +72,7 @@ class HudhudEntityMetricsTest {
 
         if (x.sides.isNotEmpty()) {
             val o = when {
+                c.sideAsked -> Out.CHOICE
                 x.sides.any { it.opposite in c.sides } -> Out.WRONG
                 x.sides.any { it in c.sides } -> Out.CORRECT
                 else -> none()
@@ -299,9 +300,12 @@ class HudhudEntityMetricsTest {
             // 16 Nov 2026, the payable class fixed (BC-097): supplier and "kis ko … nahi diya" questions, "mere paas", "dene
             // wala kaun", the Farsi and Bengali debtor. What is left reads both ways and is not turned: "Kis ki payment late ho
             // gayi" (customers' late payments too), "Kitna qarz baqi hai", "Kis ka maal ka paisa baqi hai".
+            // 26 Nov 2026, Marhala 1 (BC-318, BC-319): the last four read both ways and are now asked first (D15, "lene hain ya dene?",
+            // counted as a choice): "Kis ki payment late ho gayi" twice, "Kitna qarz baqi hai", "Kis ka maal ka paisa baqi hai". Zero
+            // everywhere — the master plan's hard-zero gate. A zero here is "0 in these sets", never "never wrong".
             "heldout" to (0 to 0),
-            "owner_set" to (1 to 0),
-            "owner_1000" to (3 to 0),
+            "owner_set" to (0 to 0),
+            "owner_1000" to (0 to 0),
             "review_d" to (0 to 0),
             "review_o" to (0 to 0),
         )

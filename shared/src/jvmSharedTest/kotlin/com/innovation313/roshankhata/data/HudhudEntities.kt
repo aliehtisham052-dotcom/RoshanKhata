@@ -35,6 +35,8 @@ object HudhudEntities {
         val goods = LinkedHashSet<Long>()
         val windows = LinkedHashSet<VoiceQuestion.Window>()
         val amounts = ArrayList<Double>()
+        /** The side was asked, not taken (D15): both sides offered as a choice, neither answered. */
+        var sideAsked = false
     }
 
     fun of(a: Hudhud.Ask): Carried = Carried().also { add(a, it) }
@@ -43,7 +45,7 @@ object HudhudEntities {
         when (a) {
             is Hudhud.Ask.Guessed -> add(a.ask, c)
             is Hudhud.Ask.Now -> add(a.ask, c)
-            is Hudhud.Ask.DidYouMean -> a.options.firstOrNull()?.let { add(it, c) }
+            is Hudhud.Ask.DidYouMean -> if (a.unsure == Hudhud.Unsure.SIDE) c.sideAsked = true else a.options.firstOrNull()?.let { add(it, c) }
             is Hudhud.Ask.Both -> { add(a.first, c); add(a.second, c) }
             is Hudhud.Ask.Compare -> { add(a.first, c); add(a.second, c) }
             is Hudhud.Ask.Figure -> {
