@@ -79,6 +79,10 @@ object LiveWire {
 
     /** A round's refusal when the other device does not speak this version's wire (24 Nov 2026): both must be updated. */
     const val WIRE_OTHER = "protocol wire"
+    /** The sender's sealed envelope carries a NEWER wire version's mark ([newerWire]): this device is the one to update (BC-272). */
+    const val WIRE_NEWER = "protocol wire newer"
+    /** The reverse, said by the computer to a newer phone whose request it cannot open: the computer is the older one. */
+    const val WIRE_OLDER = "protocol wire older"
 
     /** Pairing since 23 Oct 2026 ([SealedChunks]); "RKA1", one sealed frame, is refused without being read. */
     private val PAIR = "RKA2".toByteArray(Charsets.US_ASCII)
@@ -200,6 +204,25 @@ object LiveWire {
         c.init(Cipher.ENCRYPT_MODE, keyOf(keyHex, road), GCMParameterSpec(TAG_BITS, nonce))
         c.updateAAD(aad(road))
         return nonce + c.doFinal(deflate(plain))
+    }
+
+    /** This build's wire version: "RKL2" ([SEAL_V]). The envelope's own format has no version byte; a newer one may carry [MARK]. */
+    const val WIRE_VERSION = 2
+    /** The plaintext mark a future wire version may put in front of its envelope: "RKW" and one version byte (BC-272). */
+    private val MARK = "RKW".toByteArray(Charsets.US_ASCII)
+
+    /**
+     * The wire version a sealed envelope says it is, when it is NEWER than [WIRE_VERSION] (the mark "RKW" and a version byte
+     * above this build's); null otherwise. Asked only AFTER [open] failed: today's envelope starts with a random nonce, so
+     * a mark can never take an envelope that opens, and a wrong key or a damaged envelope with no mark stays "not mine".
+     * Nothing emits the mark yet: this build can only RECEIVE the word, so that a newer build may one day set it and an
+     * older one then says "update this device" instead of "wrong key".
+     */
+    fun newerWire(sealed: ByteArray): Int? {
+        if (sealed.size < MARK.size + 1) return null
+        for (i in MARK.indices) if (sealed[i] != MARK[i]) return null
+        val v = sealed[MARK.size].toInt() and 0xFF
+        return if (v > WIRE_VERSION) v else null
     }
 
     /** What [sealed] says, or null when it was not sealed with this book's key for [road], or was changed on the way. */
@@ -430,7 +453,8 @@ object LiveWire {
                 } catch (e: IOException) { return Answer.NotHere }
                 if (n <= 0 || n > MAX_ROUND_BYTES) return Answer.NotHere
                 val bytes = try { readUpTo(input, n) } catch (e: IOException) { return Answer.NotHere }
-                val plain = open(keyHex, bytes, Road.REPLY) ?: return Answer.NotHere
+                val plain = open(keyHex, bytes, Road.REPLY)
+                    ?: return if (newerWire(bytes) != null) Answer.Got(JSONObject().put("refused", WIRE_NEWER), host) else Answer.NotHere
                 return runCatching { Answer.Got(JSONObject(String(plain, Charsets.UTF_8)), host) }.getOrElse { Answer.NotHere }
             }
         }
@@ -558,8 +582,10 @@ object LiveWire {
                     // cannot hold the live port for ever.
                     val sealed = readUpTo(input, n, System.currentTimeMillis() + ROUND_BODY_MS)
                     val request = open(key, sealed, Road.REQUEST)?.let { b -> runCatching { JSONObject(String(b, Charsets.UTF_8)) }.getOrNull() }
+                    // A request from a newer wire cannot be opened: say, in this wire's own words, that this computer is the older one.
+                    val tooNew = request == null && newerWire(sealed) != null
                     // A round the book could not answer (a database error) is written down, not only dropped (23 Oct 2026).
-                    val reply = request?.let { r ->
+                    val reply = if (tooNew) JSONObject().put("refused", WIRE_OLDER) else request?.let { r ->
                         try { onRound(r) } catch (e: Exception) { LiveTrouble.note("wifi round", e); null }
                     }
                     if (reply == null) out.writeInt(0)

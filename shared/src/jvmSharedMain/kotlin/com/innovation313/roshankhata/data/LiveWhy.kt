@@ -38,6 +38,9 @@ object LiveWhy {
      */
     fun skew(why: String, ourSchema: Int = KHATA_DB_VERSION, ourProtocol: Int = LiveSync.PROTOCOL): Skew? {
         if (!LiveSync.needsUpdate(why)) return null
+        // The envelope itself came from a newer / older wire (BC-272): no number, but which device is newer is known.
+        if (why == LiveWire.WIRE_NEWER) return Skew(Update.THIS, WIRE, null, null)
+        if (why == LiveWire.WIRE_OLDER) return Skew(Update.OTHER, WIRE, null, null)
         val kind = if (why.startsWith(SCHEMA)) SCHEMA else PROTOCOL
         val theirs = why.substringAfter(' ', "").trim().toIntOrNull()
         val ours = if (kind == SCHEMA) ourSchema else ourProtocol

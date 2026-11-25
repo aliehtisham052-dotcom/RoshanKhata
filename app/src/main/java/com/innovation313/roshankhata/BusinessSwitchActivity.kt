@@ -220,17 +220,25 @@ class BusinessSwitchActivity : BaseActivity() {
                 // switch is in a copy, and a copy still waiting after a sale is not written into the
                 // next shop. Best effort: a copy that fails never stops the switch.
                 runCatching { com.innovation313.roshankhata.data.Snapshots.beforeLeaving(app) }
-                withContext(Dispatchers.Main) {
-                    try {
-                        // Whoever was signed in is signed out by the switch itself (KhataDatabase.closeActive).
-                        Businesses.switchTo(app, id)
+                try {
+                    // Off the main thread: the commit, Room's close and the notices (BC-246, the ANR audit).
+                    // Whoever was signed in is signed out by the switch itself (KhataDatabase.closeActive).
+                    Businesses.switchOffMain(app, id)
+                    withContext(Dispatchers.Main) {
                         val alive = !activity.isFinishing && !activity.isDestroyed
                         val fresh = Intent(if (alive) activity else app, KhataActivity::class.java)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         if (alive) activity.startActivity(fresh) else app.startActivity(fresh)
-                    } finally {
-                        switching = false
                     }
+                } catch (e: kotlinx.coroutines.CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    // Said, never a crash: the shop stays as it was or the next open finds the new one.
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(app, app.getString(R.string.save_failed_not_saved), Toast.LENGTH_LONG).show()
+                    }
+                } finally {
+                    switching = false
                 }
             }
         }

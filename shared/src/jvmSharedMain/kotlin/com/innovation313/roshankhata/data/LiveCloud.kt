@@ -293,7 +293,8 @@ object LiveCloud {
         // switch's last word, not a network read: this runs on Firebase's callback thread.
         if (!allowed(sql) || LiveControl.haltedAfterFirstRead(now)) return Carried.NOT_MINE
         val sealedIn = runCatching { B64.decode(bodyB64) }.getOrNull() ?: return Carried.NOT_MINE
-        val plain = LiveWire.open(id.key, sealedIn, LiveWire.Road.RELAY) ?: return Carried.NOT_MINE
+        val plain = LiveWire.open(id.key, sealedIn, LiveWire.Road.RELAY)
+            ?: return if (LiveWire.newerWire(sealedIn) != null) Carried.ASK else Carried.NOT_MINE   // a newer wire: a round says why (BC-272)
         val msg = runCatching { JSONObject(String(plain, Charsets.UTF_8)) }.getOrNull() ?: return Carried.NOT_MINE
         val dev = msg.optString("dev")
         // The relay's word on the sender must be the sealed message's own (as in a round).
@@ -503,6 +504,8 @@ object LiveCloud {
                 val p = list.optJSONObject(i) ?: continue
                 val sealedIn = runCatching { B64.decode(p.optString("body")) }.getOrNull()
                 val plainBytes = sealedIn?.let { LiveWire.open(id.key, it, LiveWire.Road.RELAY) }
+                // A parcel of a NEWER wire cannot be opened: said as "update this device", not passed over as a wrong key (BC-272).
+                if (plainBytes == null && sealedIn != null && LiveWire.newerWire(sealedIn) != null) refusedWhy = LiveWire.WIRE_NEWER
                 if (plainBytes != null) {
                     val msg = runCatching { JSONObject(String(plainBytes, Charsets.UTF_8)) }.getOrNull()
                     // The relay's word on who sent it must be the sealed message's own: a parcel the relay

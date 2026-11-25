@@ -2224,7 +2224,7 @@ class BackupActivity : BaseActivity() {
                     if (result !is BackupCodec.ImportResult.Ok || data == null) { failed += p.label; steps.failed(i); continue }
                     val target = if (p.asNew) Businesses.create(app, p.biz.name.orEmpty())
                         else Businesses.ensure(app, p.biz.id, p.biz.name)
-                    withContext(Dispatchers.Main) { Businesses.switchTo(app, target.id) }
+                    Businesses.switchOffMain(app, target.id)
 
                     val liveDao = KhataDatabase.get(app).khataDao()
                     // Each shop's own book kept first, as a single restore does; not replaced unless kept.
@@ -2259,7 +2259,7 @@ class BackupActivity : BaseActivity() {
             }
             // Several shops: back to the one that was open. One shop: stay on it, it is what was asked for.
             if (plans.size > 1 && Businesses.list(app).any { it.id == startId } && Businesses.active(app).id != startId) {
-                withContext(Dispatchers.Main) { Businesses.switchTo(app, startId) }
+                Businesses.switchOffMain(app, startId)
             }
 
             // Each shop's tick or cross says which came back; the words name only the ones that did not.

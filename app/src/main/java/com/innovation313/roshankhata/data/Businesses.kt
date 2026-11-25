@@ -174,6 +174,10 @@ object Businesses {
      * [KhataDatabase.get] builds under, so there is no moment where a caller
      * can be handed the old shop's ledger after the switch has been asked
      * for. The next get() opens the new file.
+     *
+     * BLOCKING: a commit, a Room close under a lock, notice cancelling — never call it on the main thread
+     * (BC-246, the ANR audit). Screens call [switchOffMain]; this body stays callable from a thread that is
+     * already off main (tests, workers).
      */
     fun switchTo(context: Context, id: Long) {
         require(list(context).any { it.id == id }) { "unknown business $id" }
@@ -191,6 +195,15 @@ object Businesses {
         // The notices in the shade were the left shop's (3 Nov 2026 audit, M21): its counts, its names, under the
         // other shop's screens. The next sweep says the open shop's own.
         runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancelAll() }
+    }
+
+    /**
+     * [switchTo] on Dispatchers.IO, every step in its own order: the caller (a screen's scope on any
+     * dispatcher) does only its UI step afterwards. Throws what [switchTo] throws, so the caller can say
+     * "not saved" (BC-246).
+     */
+    suspend fun switchOffMain(context: Context, id: Long) {
+        withContext(Dispatchers.IO) { switchTo(context.applicationContext, id) }
     }
 
     /**
