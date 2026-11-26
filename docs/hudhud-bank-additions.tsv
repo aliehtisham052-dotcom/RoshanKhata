@@ -1,0 +1,4 @@
+# Where every sentence the training cycle added to shared/hudhud/more/ came from (scripts/hudhud_cycle.sh --apply).
+# Written only by the cycle; hudhud_cycle.py ledger-check holds each row to a line of its more/ file. Sources:
+# checklog-class (from the CLASS of a check-log mistake, names invented), synthetic, pair (hudhud_pairs.py).
+date	cycle	language	meaning	source	class	sentence

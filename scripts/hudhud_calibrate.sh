@@ -11,6 +11,10 @@
 # Other flags go to the runner: --min-n N (rows a cut needs, 20), --money-target 0.98, --other-target 0.95.
 # stdout = the markdown tables; stderr = progress; per-row predictions and proposals.tsv in build/hudhud-calibrate/out.
 #
+# A CANDIDATE bank (scripts/hudhud_cycle.sh, Marhala 8): CALIB_FOLDS_ARGS go to hudhud_calib_folds.py (--src DIR --bank FILE
+# --recipe N), CALIB_RES is a folder put first on the class path (its hudhud/bank.tsv), CALIB_RUN_DIR is where the runner
+# starts (a folder whose app/src/main/assets/hudhud/sense.bin is the candidate's). Unset: the repository's, as before.
+#
 # Needs what scripts/shared_harness/README.md needs. The compile queues behind the harness lock (HARNESS_LOCK); heaps stay at
 # 2.5 GB so two helpers fit on a 7 GB machine (CALIB_HEAP to change).
 set -u -o pipefail
@@ -30,9 +34,11 @@ naive=0
 for a in "$@"; do [ "$a" = "--naive" ] && naive=1 || pass+=("$a"); done
 
 mkdir -p "$WORK/out"
-python3 -I "$HERE/hudhud_calib_folds.py" --out "$WORK/folds.tsv" >&2 || exit 2
+# shellcheck disable=SC2086
+python3 -I "$HERE/hudhud_calib_folds.py" ${CALIB_FOLDS_ARGS:-} --out "$WORK/folds.tsv" >&2 || exit 2
 if [ $naive = 1 ]; then
-  python3 -I "$HERE/hudhud_calib_folds.py" --by-text --out "$WORK/folds-text.tsv" >&2 || exit 2
+  # shellcheck disable=SC2086
+  python3 -I "$HERE/hudhud_calib_folds.py" ${CALIB_FOLDS_ARGS:-} --by-text --out "$WORK/folds-text.tsv" >&2 || exit 2
   pass+=(--naive-folds "$WORK/folds-text.tsv")
 fi
 python3 -I "$H/patch_gates.py" "$MAIN/Hudhud.kt" "$WORK/patched/Hudhud.kt" >&2 || exit 2
@@ -52,6 +58,6 @@ helpers="$TESTS/HudhudRealPages.kt $TESTS/HudhudShown.kt $TESTS/HudhudEntities.k
     $engine "$H"/stubs/*.kt "$WORK/gen/W.kt" $helpers "$H/HudhudBaseline.kt" "$H/HudhudCalibrate.kt" > "$WORK/clog.txt" 2>&1
 ) 9>"$LOCK" || { grep -E "error:" "$WORK/clog.txt" | head -20; echo "COMPILE FAILED (whole log: $WORK/clog.txt)" >&2; exit 3; }
 
-cd "$ROOT/shared" || exit 2
-exec java -Xmx"$HEAP" -Dstdout.encoding=UTF-8 -cp "$WORK/classes:$ROOT/shared/src/jvmSharedTest/resources:$RUNTIME:$(jar 'hamcrest-core-*.jar')" \
+cd "${CALIB_RUN_DIR:-$ROOT/shared}" || exit 2
+exec java -Xmx"$HEAP" -Dstdout.encoding=UTF-8 -cp "$WORK/classes:${CALIB_RES:+$CALIB_RES:}$ROOT/shared/src/jvmSharedTest/resources:$RUNTIME:$(jar 'hamcrest-core-*.jar')" \
   com.innovation313.roshankhata.data.HudhudCalibrate --folds "$WORK/folds.tsv" --out "$WORK/out" "${pass[@]+"${pass[@]}"}"
