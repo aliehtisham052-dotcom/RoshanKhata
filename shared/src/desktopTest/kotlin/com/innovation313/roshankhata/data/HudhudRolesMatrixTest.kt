@@ -230,6 +230,9 @@ class HudhudRolesMatrixTest {
         Hudhud.AdviseOf.values().forEach { a += Hudhud.Ask.Advise(it) }
         a += Hudhud.Ask.Took(ali, listOf(ids.urea))
         a += Hudhud.Ask.NoHistory
+        a += Hudhud.Ask.Knowledge(KnowKind.GENERAL_GUIDANCE, atom = "K201")
+        a += Hudhud.Ask.Knowledge(KnowKind.CALCULATED, atom = "K201", cost = 800.0, sale = 1000.0, asked = KnowMeasure.MARGIN)
+        a += Hudhud.Ask.Knowledge(KnowKind.UNSUPPORTED, limit = KnowLimit.TAX_RATE)
         return a
     }
 

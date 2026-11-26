@@ -78,7 +78,8 @@ object HudhudRolesTable {
         "Trend" to Row(Held.GATED, Gate.REPORTS, "the sales of a span against the span before it: the same figures as Why"),
         "Advise" to Row(Held.GATED, Gate.REPORTS, "whom to chase first (dues by age, the Radar) and the next 30 days (Cash flow): money owed and due"),
         "Took" to Row(Held.OPEN, why = "what one named customer took: his own Khata page, as Moved"),
-        "NoHistory" to Row(Held.OPEN)
+        "NoHistory" to Row(Held.OPEN),
+        "Knowledge" to Row(Held.OPEN, why = "a meaning or a formula from its source, a sum of the sentence's own figures, or a refusal: no book figure (Marhala 9)")
     )
 
     /** Facet tables: "Enum.ENTRY" to the gate its card asks. An entry not listed is a failure of the table test. */

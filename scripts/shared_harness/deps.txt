@@ -14,3 +14,4 @@ shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/ui/Calc.kt
 shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/DateWords.kt
 shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/Money.kt
 shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/ui/NumberWords.kt
+shared/src/jvmSharedMain/kotlin/com/innovation313/roshankhata/data/PriceMath.kt
