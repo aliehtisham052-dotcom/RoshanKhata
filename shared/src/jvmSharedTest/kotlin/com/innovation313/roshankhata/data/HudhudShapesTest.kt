@@ -88,6 +88,18 @@ class HudhudShapesTest {
         assertNotEquals(Ask.Goods(listOf(100L), GoodsFacet.OVERVIEW), read("الگ رکھو", "ur"))
     }
 
+    @Test fun `the article comes off only a word whose stem is no word of the language and no Urdu word`() {
+        fun cut(w: String) = Hudhud.withoutArticle(Hudhud.norm(w))
+        assertEquals(Hudhud.norm("يوريا"), cut("اليوريا"))
+        // The stem a word of the language: "القرض" (the loan) keeps its article, so "قرض" never names a product or a man.
+        assertEquals(null, cut("القرض"))
+        assertEquals(null, cut("الربح"))
+        // An Urdu word that begins with the letters of the article is no article ("الٹیاں", "الجھن" with Urdu letters).
+        assertEquals(null, cut("الٹیاں"))
+        // Too short a stem: never cut.
+        assertEquals(null, cut("الگ"))
+    }
+
     // ------------------------------------------------------------------------------------------------ BC-356
 
     @Test fun `a bare amount asked after asks which way first, in the nine languages, and never opens an entry`() {
@@ -114,7 +126,12 @@ class HudhudShapesTest {
         assertNotEquals(side, read("what about it", "en"))
         // More than the amount and the phrase: left to the readers that know the rest.
         assertNotEquals(side, read("500 ka kya bana kal", "ur-Latn"))
+        // A verb of giving or getting beside the amount is not this shape: the entry readers' sentence.
+        assertEquals(null, HudhudBareAmount.whose(words("Ali ko 500 diye kya hua")))
+        assertEquals(null, HudhudBareAmount.whose(words("500 mile the uska kya hua")))
     }
+
+    private fun words(s: String) = Hudhud.norm(s).split(' ').filter { it.isNotEmpty() }
 
     // ------------------------------------------------------------------------------------------------ BC-358
 
@@ -127,6 +144,22 @@ class HudhudShapesTest {
             assertFalse("$lang: $s read $a", opensEntry(a))
             assertEquals("$lang: $s", Ask.Parties(listOf(1L)), a)
         }
+        // A word beside his name that is no name ("bhai", "kal", a place) leaves his account his: it was an entry dated yesterday.
+        for ((lang, s) in listOf(
+            "ur-Latn" to "Ali bhai ke 500 ka kya bana", "ur-Latn" to "Ali kal ke 500 ka kya bana", "ur-Latn" to "500 ka kya bana Ali dukan",
+            "en" to "what about Ali and the 500"
+        )) assertEquals("$lang: $s", Ask.Parties(listOf(1L)), read(s, lang))
+        // Two whole names are four words: both men's accounts.
+        assertEquals(Ask.Parties(listOf(1L, 2L)), read("Ali Raza Bashir Ahmad ke 500 ka kya bana", "ur-Latn"))
+    }
+
+    @Test fun `an amount asked after never opens an entry, whatever its other words are`() {
+        for ((lang, s) in listOf(
+            "ur-Latn" to "mera 500 ka kya bana", "ur-Latn" to "dukan ke 500 ka kya bana", "ur-Latn" to "kal ke 500 ka kya hua",
+            "ur-Latn" to "Ali Raza Bashir Ahmad Tariq ke 500 ka kya bana", "en" to "what about yesterday's 500"
+        )) assertFalse("$lang: $s read ${read(s, lang)}", opensEntry(read(s, lang)))
+        // Five words beside the amount: no longer the shape that names a man (the readers decide), but still no entry.
+        assertEquals(null, HudhudBareAmount.whose(words("Ali Raza Bashir Ahmad Tariq ke 500 ka kya bana")))
     }
 
     // ------------------------------------------------------------------------------------------------ BC-357 (Arabic, Farsi: native read)
@@ -139,6 +172,16 @@ class HudhudShapesTest {
             val a = read(s, lang)
             assertNotEquals("$lang: $s", Ask.About(Hudhud.AboutTopic.PRIVACY), a)
             assertEquals("$lang: $s", Ask.NeedGoods(GoodsFacet.STOCK), a)
+        }
+        // Several things at once, joined by "and" (Arabic's "و" joined to the word), and a yes-or-no word in front.
+        for ((lang, s) in listOf("ar" to "هل يوجد سكر وملح وأرز", "ar" to "هل عندنا سكر و ملح", "fa" to "آیا شکر داریم")) {
+            assertEquals("$lang: $s", Ask.NeedGoods(GoodsFacet.STOCK), read(s, lang))
+        }
+        assertEquals(Ask.Goods(listOf(100L), GoodsFacet.STOCK), read("هل يوجد يوريا وسكر", "ar"))
+        assertEquals(null, HudhudInStock.thing(words("is there sugar salt rice tea and flour")))
+        // A word the language knows, or a man of the book, is never "which product?": "do we have cash?", "is Tariq here?".
+        for ((lang, s) in listOf("fa" to "نقدی داریم", "fa" to "فروش داریم", "ar" to "هل يوجد طارق", "ar" to "هل عندنا بشير")) {
+            assertNotEquals("$lang: $s", Ask.NeedGoods(GoodsFacet.STOCK), read(s, lang))
         }
         // A product of the book: its stock, in every language that asks so.
         for ((lang, s) in listOf("ar" to "هل يوجد يوريا", "ar" to "هل يوجد اليوريا", "en" to "is there urea", "fa" to "آیا اوره داریم",

@@ -7,18 +7,21 @@ package com.innovation313.roshankhata.data
  * debt said without its side is ([Hudhud]'s side question): "lene hain ya dene?", the shop's to get and its to give each a chip,
  * nothing answered and never an entry opened.
  *
- * Read only when the sentence is nothing but the amount (digits in any script, with "ال" joined in Arabic), a word of money
- * ("rupay", "روپے", "টাকার", "تومان"…) and one of the phrases below: any other word — a name, a product, a verb of giving, a span —
- * leaves the sentence to the readers that know it. Sindhi, Bengali, Farsi and Arabic phrases: native read.
+ * Read when the sentence is the amount (digits in any script, with "ال" joined in Arabic), a word of money ("rupay", "روپے",
+ * "টাকার", "تومان"…), one of the phrases below and at most four words besides. Nobody named: the side is asked. A name of the book
+ * among the words: his account. Any other word (a product, a span, "bhai"): the readers decide, but never an entry, since "what
+ * became of" says no money moved; a verb of giving or getting beside it is not this shape. Sindhi, Bengali, Farsi and Arabic
+ * phrases: native read.
  */
 internal object HudhudBareAmount {
 
     /**
      * When [said] (normalised words, as [Hudhud] splits a sentence) is an amount asked after: the words left beside the amount, the
      * phrase and the little words of "of" — empty for a bare amount, a name's words for "Ali ke 500 ka kya bana"; null when the
-     * sentence is not this shape (no amount, no phrase, or more than three other words). [Hudhud] decides whose the words are.
+     * sentence is not this shape (no amount, no phrase, a verb of giving or getting, or more than [most] other words). [Hudhud]
+     * decides whose the words are.
      */
-    fun whose(said: List<String>): List<String>? {
+    fun whose(said: List<String>, most: Int = MAX_WORDS): List<String>? {
         var amount = false
         val rest = ArrayList<String>()
         for (w in said) {
@@ -28,7 +31,7 @@ internal object HudhudBareAmount {
                 else -> rest += w
             }
         }
-        if (!amount || rest.isEmpty()) return null
+        if (!amount) return null
         val joined = rest.joinToString(" ")
         val phrase = PHRASES.firstOrNull { p -> joined == p || joined.endsWith(" $p") || joined.startsWith("$p ") } ?: return null
         val left = when {
@@ -37,8 +40,22 @@ internal object HudhudBareAmount {
             else -> joined.removePrefix("$phrase ")
         }
         val who = left.split(' ').filter { it.isNotEmpty() && it !in OF }
-        return who.takeIf { it.size <= 3 }
+        // A verb of giving or getting beside the amount ("Ali ko 500 diye, kya hua?") says money moved: the entry readers' sentence.
+        if (givingSaid(who)) return null
+        // Two whole names ("Ali Raza Bashir Ahmad ke 500 ka kya bana") are four words; more is another sentence.
+        return who.takeIf { it.size <= most }
     }
+
+    private const val MAX_WORDS = 4
+
+    /** Whether [who] holds a word (or a run of words) of giving or getting, as the entry readers know them ([VoiceEntry.directionWords]). */
+    private fun givingSaid(who: List<String>): Boolean {
+        if (who.isEmpty()) return false
+        val joined = " " + who.joinToString(" ") + " "
+        return DIRECTION.any { joined.contains(" $it ") }
+    }
+
+    private val DIRECTION by lazy { VoiceEntry.directionWords().map { VoiceQuestion.normalise(it) }.filter { it.isNotBlank() }.toSet() }
 
     /** Whether [said] is a bare amount asked after, nobody's ([whose] with no words left). */
     fun asked(said: List<String>): Boolean = whose(said)?.isEmpty() == true

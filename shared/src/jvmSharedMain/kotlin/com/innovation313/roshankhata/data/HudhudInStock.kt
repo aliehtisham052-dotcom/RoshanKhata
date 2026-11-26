@@ -23,10 +23,19 @@ internal object HudhudInStock {
         return null
     }
 
+    /**
+     * The thing's words: "any" and the words of "and" left out, and Arabic's "و" (and) joined to a later word taken off it
+     * ("سكر وملح وأرز", sugar and salt and rice: 26 Nov 2026, the three were the privacy page). Up to four words: a list of a few
+     * things, or one thing of two words; more is another sentence.
+     */
     private fun rest(s: String): List<String>? {
         val w = s.split(' ').filter { it.isNotEmpty() && it !in ANY }
-        return w.takeIf { it.size in 1..2 }
+            .mapIndexed { i, x -> if (i > 0 && x.startsWith("و") && x.length >= 3) x.substring(1) else x }
+            .filter { it !in AND }
+        return w.takeIf { it.size in 1..MAX_THINGS }
     }
+
+    private const val MAX_THINGS = 4
 
     /** A yes-or-no word in front of the thing ("kya", "آیا", "ڇا", "क्या", "কি"), which asks nothing more. */
     private fun dropAsk(s: String): String {
@@ -55,6 +64,7 @@ internal object HudhudInStock {
 
     private val ASK = n(listOf("kya", "kia", "کیا", "क्या", "কি", "কী", "آیا", "ڇا", "apakah", "apa")).toSet()
     private val ANY = n(listOf("any", "some", "koi", "کوئی", "कोई", "کوئي", "أي", "اي", "هیچ")).toSet()
+    private val AND = n(listOf("and", "or", "aur", "ya", "اور", "یا", "و", "أو", "او", "और", "या", "আর", "ও", "বা", "dan", "atau", "۽", "يا")).toSet()
     private val HOW_MUCH = n(listOf("كم"))
     private val HAVE_AR = n(listOf("عندنا", "لدينا", "يوجد", "يوجد عندنا", "يوجد لدينا"))
 }
