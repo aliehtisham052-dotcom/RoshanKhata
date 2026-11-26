@@ -655,8 +655,8 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Window: now (the balances given)
 - Left out: balances the shop owes, settled ones, non-finite; a tie keeps the first
 - Rounding: share in decimal arithmetic (0..1); total positive by Money.isPositive (half the smallest coin), else none
-- Gate: not shown yet (D19: the share first, an alert later, Marhala 10); a card of the book will be REPORTS
-- Shown on: Hudhud knowledge atom K104 (explained, with its example); no screen yet
+- Gate: REPORTS (Hudhud's card, Marhala 10, 26 Nov 2026); D19: the share only, no alert or threshold yet
+- Shown on: Hudhud knowledge atom K104 (explained, with its example); Hudhud's concentration card (AnswerAdvisor, Advise CONCENTRATION: the largest party with the next two, by HudhudAdviceRules.owedMost); no screen yet
 - Confidence: VERIFIED (written 26 Nov 2026 with HudhudFormulaGoldenTest)
 
 ### F66 Margin %: (sale - cost) / sale x 100
@@ -666,7 +666,7 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Left out: a sale price of nought or less (no margin); a negative or non-finite figure
 - Rounding: decimal arithmetic, 16 digits; shown to 2 decimals
 - Gate: none (no book figure)
-- Shown on: Hudhud knowledge atoms K201, K203, K206; Hudhud's worked example (CALCULATED)
+- Shown on: Hudhud knowledge atoms K201, K203, K206; Hudhud's worked example (CALCULATED); Hudhud's profit why (Marhala 10: each span's margin over Profit.between's costed lines, cost = coveredRevenue - grossProfit; "sales up, margin down" when the two as shown at 2 decimals differ, HudhudAdviceRules.pricePressure)
 - Confidence: VERIFIED (golden: 800 -> 1,000 is 20)
 
 ### F67 Markup %: (sale - cost) / cost x 100

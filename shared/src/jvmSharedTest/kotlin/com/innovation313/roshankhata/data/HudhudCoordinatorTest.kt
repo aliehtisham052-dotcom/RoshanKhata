@@ -86,6 +86,12 @@ class HudhudCoordinatorTest {
         Triple(Hudhud.Ask.NoHistory, card(W.hudhud_no_history), Outcome.REFUSE),
         Triple(Hudhud.Ask.Trend(w), answered, Outcome.ACCEPT),
         Triple(Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE), answered, Outcome.ACCEPT),
+        // Marhala 10: a customer's three facts, the share, the joke answer; more credit with nobody named asks whose.
+        Triple(Hudhud.Ask.Advise(Hudhud.AdviseOf.MORE_CREDIT, listOf(1L)), answered, Outcome.ACCEPT),
+        Triple(Hudhud.Ask.Advise(Hudhud.AdviseOf.MORE_CREDIT), card(W.hudhud_credit_whose), Outcome.CLARIFY),
+        Triple(Hudhud.Ask.Advise(Hudhud.AdviseOf.CONCENTRATION), answered, Outcome.ACCEPT),
+        Triple(Hudhud.Ask.Advise(Hudhud.AdviseOf.CONCENTRATION), card(W.vq_nobody), Outcome.ACCEPT),
+        Triple(Hudhud.Ask.Advise(Hudhud.AdviseOf.MAGIC), answered, Outcome.ACCEPT),
         // Lane B (Marhala 9): an atom answers, a limit refuses, roles not clear ask back, nothing to say refuses.
         Triple(Hudhud.Ask.Knowledge(KnowKind.GENERAL_GUIDANCE, atom = "K201"), answered, Outcome.ACCEPT),
         Triple(Hudhud.Ask.Knowledge(KnowKind.UNSUPPORTED, limit = KnowLimit.PESTICIDE), answered, Outcome.REFUSE),

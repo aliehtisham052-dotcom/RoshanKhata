@@ -14,3 +14,35 @@ speech: Next 30 days. Only the owner or a manager can see this figure.
 speechHidden: Next 30 days. Only the owner or a manager can see this figure.
 ask: Advise(of=NEXT_30)
 
+=== Advise(of=MORE_CREDIT)
+mood: CALM
+label: More credit
+line: Only the owner or a manager can see this figure.
+speech: More credit. Only the owner or a manager can see this figure.
+speechHidden: More credit. Only the owner or a manager can see this figure.
+ask: Advise(of=MORE_CREDIT)
+
+=== Advise(of=CONCENTRATION)
+mood: CALM
+label: Share of credit with one party
+line: Only the owner or a manager can see this figure.
+speech: Share of credit with one party. Only the owner or a manager can see this figure.
+speechHidden: Share of credit with one party. Only the owner or a manager can see this figure.
+ask: Advise(of=CONCENTRATION)
+
+=== Advise(of=MAGIC)
+mood: CALM
+label: Who owes the most
+line: Only the owner or a manager can see this figure.
+speech: Who owes the most. Only the owner or a manager can see this figure.
+speechHidden: Who owes the most. Only the owner or a manager can see this figure.
+ask: Advise(of=MAGIC)
+
+=== Advise(of=MORE_CREDIT, ids=[1])
+mood: CALM
+label: More credit
+line: Only the owner or a manager can see this figure.
+speech: More credit. Only the owner or a manager can see this figure.
+speechHidden: More credit. Only the owner or a manager can see this figure.
+ask: Advise(of=MORE_CREDIT, ids=[1])
+

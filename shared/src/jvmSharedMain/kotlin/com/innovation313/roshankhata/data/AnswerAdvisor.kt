@@ -6,6 +6,9 @@ import com.innovation313.roshankhata.ui.Format
 import com.innovation313.roshankhata.words.W
 import com.innovation313.roshankhata.words.WP
 import kotlinx.coroutines.flow.first
+import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 import kotlin.math.abs
 
 /**
@@ -78,12 +81,124 @@ object AnswerAdvisor {
 
     /** "Whom to chase first" and "what comes in in the next 30 days": REPORTS, as the figures they are made of. */
     suspend fun advise(c: AnswerEnv, dao: KhataDao, ask: Hudhud.Ask.Advise, parties: List<PartyWithBalance>): AnswerCard {
-        val title = c.getString(if (ask.of == Hudhud.AdviseOf.CHASE) W.hudhud_t_chase else W.hudhud_t_next30)
+        val title = c.getString(titleOf(ask.of))
         if (!AnswerGate.reports()) return AnswerCard(Mood.CALM, label = title, lines = listOf(c.getString(W.hudhud_owner_only)))
         return when (ask.of) {
             Hudhud.AdviseOf.CHASE -> chase(c, dao, parties, title)
             Hudhud.AdviseOf.NEXT_30 -> next30(c, dao, parties, title)
+            Hudhud.AdviseOf.MORE_CREDIT -> moreCredit(c, dao, ask.ids, parties, title)
+            Hudhud.AdviseOf.CONCENTRATION -> concentration(c, parties, title)
+            Hudhud.AdviseOf.MAGIC -> magic(c, parties, title)
         }
+    }
+
+    /** The heading of each of the advisor's cards (and its chip). */
+    fun titleOf(of: Hudhud.AdviseOf): String = when (of) {
+        Hudhud.AdviseOf.CHASE -> W.hudhud_t_chase
+        Hudhud.AdviseOf.NEXT_30 -> W.hudhud_t_next30
+        Hudhud.AdviseOf.MORE_CREDIT -> W.hudhud_t_more_credit
+        Hudhud.AdviseOf.CONCENTRATION -> W.hudhud_t_concentration
+        Hudhud.AdviseOf.MAGIC -> W.vq_who_owes_most
+    }
+
+    // ------------------------------------------------------------------------------------------------ more credit (D8)
+
+    /**
+     * "Aslam ko aur udhaar doon?" (26 Nov 2026, Marhala 10, D8): exactly three facts of the book and the owner's decision — his
+     * balance (F04), his pace by the Payment Radar's own reading (F39: the median days of his last repaid lots, against the shop's;
+     * only where the Radar is on), and whether he is late now by Follow-up's one count ([FollowUpRank.lateCount], F63). Never "yes"
+     * or "no", never the Radar's light or any other risk label: the card says the decision is the owner's. Nothing is written.
+     */
+    private suspend fun moreCredit(
+        c: AnswerEnv, dao: KhataDao, ids: List<Long>, parties: List<PartyWithBalance>, title: String
+    ): AnswerCard {
+        if (ids.isEmpty()) return AnswerCard(Mood.CALM, label = title, lines = listOf(c.getString(W.hudhud_credit_whose)))
+        val found = ids.mapNotNull { id -> parties.firstOrNull { it.id == id } }
+        if (found.isEmpty()) return AnswerBook.unknown(c)
+        if (found.size > 1) {
+            return AnswerCard(
+                Mood.CALM, label = c.getString(W.hudhud_pick_party),
+                rows = found.map {
+                    Row(it.id, it.name, AnswerBook.money(abs(it.balance)), AnswerBook.side(c, it.balance),
+                        ask = Hudhud.Ask.Advise(Hudhud.AdviseOf.MORE_CREDIT, listOf(it.id)))
+                }
+            )
+        }
+        val p = found.first()
+        if (!p.isCustomer) {
+            return AnswerCard(Mood.CALM, label = p.name, figure = AnswerBook.money(abs(p.balance)),
+                lines = listOf(AnswerBook.side(c, p.balance), c.getString(W.hudhud_radar_customers)), openParty = p.id, money = true)
+        }
+        val now = c.now()
+        val points = LedgerLines.of(dao, listOf(p.id))
+        val lines = ArrayList<String>()
+        // 1. The balance, in the Khata list's own words.
+        lines += c.getString(W.hudhud_credit_balance, AnswerBook.money(abs(p.balance)), AnswerBook.side(c, p.balance))
+        // 2. His pace (F39), only where the owner has the Radar on (WhenPays' own rule); the light is never said.
+        lines += if (!c.radarOn()) c.getString(W.radar_state_off) else {
+            val r = PaymentRadar.read(points, now, c.radarShopDays(dao), dao.getParty(p.id)?.harvestPromise,
+                PromiseLog.of(dao.promiseLog(p.id)))
+            val typical = r.typicalDays
+            if (typical == null) c.getString(W.radar_new) else {
+                c.getString(W.radar_typical, c.quantity(WP.radar_days, typical, typical)) +
+                    (r.shopDays?.let { " · " + c.getString(W.radar_shop_typical, c.quantity(WP.radar_days, it, it)) } ?: "")
+            }
+        }
+        // 3. Late now by his own habit: Follow-up's one count (F63) for this one customer, with the days behind it.
+        val promises = dao.observePromises().first().associate { it.partyId to it.due }
+        val habit = PaymentHabit.forAll(points, now)[p.id]
+        lines += when {
+            !Money.isPositive(p.balance) -> c.getString(W.hudhud_credit_not_late)
+            FollowUpRank.lateCount(listOf(p), points, promises, now) > 0 && habit != null ->
+                c.getString(W.hudhud_credit_late, c.quantity(WP.radar_days, habit.waitingDays, habit.waitingDays),
+                    c.quantity(WP.radar_days, habit.typicalDays, habit.typicalDays))
+            habit == null -> c.getString(W.hudhud_credit_late_unknown)
+            else -> c.getString(W.hudhud_credit_not_late)
+        }
+        lines += c.getString(W.hudhud_credit_yours)
+        return AnswerCard(Mood.CALM, label = p.name + " · " + title, figure = AnswerBook.money(abs(p.balance)), lines = lines,
+            openParty = p.id, money = true)
+    }
+
+    // ------------------------------------------------------------------------------------------------ concentration (D19)
+
+    /**
+     * "Kul udhaar ka kitna hissa aik party ke paas hai" (26 Nov 2026, Marhala 10, D19): F65 — the largest balance owed to the shop as a
+     * share of all money owed to it ([PriceMath.concentration]), with his name, and the next two beside it. The share only: no alert,
+     * no threshold and no advice about him (D19: an alert comes later, set by the owner or by measurement).
+     */
+    private fun concentration(c: AnswerEnv, parties: List<PartyWithBalance>, title: String): AnswerCard {
+        val conc = PriceMath.concentration(parties.map { it.balance })
+            ?: return AnswerCard(Mood.GOOD, label = title, lines = listOf(c.getString(W.vq_nobody)))
+        val first = parties[conc.index]
+        val top = HudhudAdviceRules.owedMost(parties, 3) { it.balance }
+        val total = BigDecimal.valueOf(conc.total)
+        fun shareOf(b: Double): String =
+            AnswerKnowledge.percent(BigDecimal.valueOf(b).multiply(BigDecimal(100)).divide(total, MathContext(16, RoundingMode.HALF_UP)).toDouble())
+        val shown = AnswerKnowledge.percent(conc.share * 100.0)
+        return AnswerCard(
+            Mood.CALM, label = title, figure = shown,
+            lines = listOf(c.getString(W.hudhud_conc_line, Format.isolate(first.name), shown),
+                c.getString(W.hudhud_conc_total, AnswerBook.money(conc.total))),
+            rows = top.map { Row(it.id, it.name, AnswerBook.money(it.balance), c.getString(W.hudhud_conc_share, shareOf(it.balance))) },
+            open = ScreenId.KHATA, money = true
+        )
+    }
+
+    // ------------------------------------------------------------------------------------------------ a joke at the dues
+
+    /**
+     * "Jadoo kar ke udhaar wapas la do" (26 Nov 2026, Marhala 10): a light line and the five who owe the most, by who-owes-most's own
+     * rule ([HudhudAdviceRules.owedMost]); the Follow-up page to remind them. One rule, never a joke engine.
+     */
+    private fun magic(c: AnswerEnv, parties: List<PartyWithBalance>, title: String): AnswerCard {
+        val top = HudhudAdviceRules.owedMost(parties, TOP) { it.balance }
+        if (top.isEmpty()) return AnswerCard(Mood.GOOD, label = title, lines = listOf(c.getString(W.vq_nobody)))
+        return AnswerCard(
+            Mood.CALM, label = title, lines = listOf(c.getString(W.hudhud_magic_line)),
+            rows = top.map { Row(it.id, it.name, AnswerBook.money(it.balance), null) },
+            open = ScreenId.FOLLOW_UP, money = true
+        )
     }
 
     // ------------------------------------------------------------------------------------------------ whom to chase

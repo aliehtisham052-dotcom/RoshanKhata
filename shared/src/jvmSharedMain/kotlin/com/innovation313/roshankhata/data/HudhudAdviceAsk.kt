@@ -423,7 +423,8 @@ object HudhudAdviceAsk {
      * word that only calls him ("Hudhud", "bhai").
      */
     fun read(heard: String, isName: (String) -> Boolean = { false }, calling: (String) -> Boolean = { false }): Hudhud.Ask? =
-        trend(heard, isName, calling) ?: chase(heard, isName, calling) ?: nextDays(heard, isName, calling)
+        trend(heard, isName, calling) ?: chase(heard, isName, calling) ?: nextDays(heard, isName, calling) ?:
+            concentration(heard, isName, calling) ?: magic(heard, isName, calling)
 
     /**
      * "Is my sale going up or down", "kya sale barh rahi hai", "sales trend this week": the sales, and a way — up, down or "trend" —
@@ -524,5 +525,222 @@ object HudhudAdviceAsk {
             if (!(NEXT.has(w) || THIRTY.has(w) || INCOMING.has(w) || MONEY.has(w) || WHO.has(w) || LITTLE.has(w))) return null
         }
         return Hudhud.Ask.Advise(Hudhud.AdviseOf.NEXT_30)
+    }
+
+    // ------------------------------------------------------------------------------------------------ Marhala 10 (26 Nov 2026)
+
+    /** Credit: what a customer takes now and pays later. Not "qarz" or "loan": a loan is Qarz-e-Hasna, its own answer. */
+    private val CREDIT = AdviceWords(
+        "credit udhaar udhar udhaar udhaari udhari",
+        "ادھار ادہار",
+        "اڌار اوڌر",
+        "الدين دين بالدين ديون الديون آجل الآجل بالآجل ائتمان الائتمان",
+        "نسیه اعتبار",
+        "उधार उधारी क्रेडिट",
+        "বাকি বাকিতে ধার",
+        "kredit utang hutang piutang bon"
+    )
+
+    /** Giving it (the shop gives): the first person's "shall I give", never a past "diya" (that is an entry). */
+    private val GIVE_CREDIT = AdviceWords(
+        "give extend lend allow",
+        "doon dun du dun dein den dena deni dey de",
+        "دوں دُوں دیں دینا دینی دے",
+        "ڏيان ڏيون ڏيڻ ڏجي",
+        "أعطي اعطي أعطيه اعطيه أمنح امنح أمنحه امنحه أبيع ابيع",
+        "بدهم بدم بدهیم",
+        "दूं दूँ दूं दें दे देना देनी",
+        "দেব দেবো দিব দেওয়া দিই",
+        "beri berikan kasih memberi"
+    )
+
+    /** More of it, again. */
+    private val MORE_OF = AdviceWords(
+        "more further additional extra again",
+        "aur mazeed mazid zyada ziada",
+        "اور مزید زیادہ",
+        "وڌيڪ ٻيو ٻيهر",
+        "المزيد مزيدا مزيد أكثر اكثر",
+        "بیشتر باز دوباره دیگه دیگر",
+        "और ज्यादा ज़्यादा अधिक",
+        "আরও আরো বেশি",
+        "lagi tambah lebih"
+    )
+
+    /** "Should I", "may I": the question is the owner's decision. */
+    private val SHOULD = AdviceWords(
+        "should shall can may",
+        "chahiye chahie kya kia",
+        "چاہیے چاہئے کیا",
+        "گهرجي ڇا",
+        "هل يجب ينبغي",
+        "آیا باید",
+        "चाहिए चाहिये क्या",
+        "উচিত কি কী",
+        "haruskah apakah boleh bolehkah perlu"
+    )
+
+    /** "How much": a credit limit's question ("how much more credit can I give Ali"), never this reader's. */
+    private val HOW_MUCH = AdviceWords(
+        "much many limit",
+        "kitna kitni kitne had hadd limit",
+        "کتنا کتنی کتنے حد",
+        "ڪيترو ڪيتري حد",
+        "كم حد",
+        "چقدر چند سقف",
+        "कितना कितनी कितने हद सीमा",
+        "কত সীমা",
+        "berapa batas"
+    )
+
+    /**
+     * "Aslam ko aur udhaar doon?", "should I give Ali more credit?", "کیا اسلم کو اور ادھار دوں؟": true when every word is a word of the
+     * book's names, a word of credit, of giving, of "more" or "should", or a little word — and credit, giving and "more" or "should" are
+     * all said, with a name. A figure ("Aslam ko 500 udhaar do" is an entry), a past "diya", "how much" (a limit) and any other word: no.
+     * Which customer is the name search's ([Hudhud.byRules]); this only says the sentence asks the question.
+     */
+    fun moreCredit(heard: String, isName: (String) -> Boolean, calling: (String) -> Boolean): Boolean {
+        val said = wordsOf(heard) ?: return false
+        if (said.none { CREDIT.has(it) } || said.none { GIVE_CREDIT.has(it) }) return false
+        if (said.none { MORE_OF.has(it) || SHOULD.has(it) }) return false
+        if (said.any { HOW_MUCH.has(it) }) return false
+        var name = false
+        for (w in said) {
+            if (calling(w)) continue
+            if (CREDIT.has(w) || GIVE_CREDIT.has(w) || MORE_OF.has(w) || SHOULD.has(w) || LITTLE.has(w) || WHO.has(w)) continue
+            // A figure is no word of the lists, so it is refused below like any other word (a deliberate breakage of a separate
+            // digit check survived every test: lesson 129).
+            if (isName(w)) { name = true; continue }
+            return false
+        }
+        return name
+    }
+
+    /** A share, a part of the whole. */
+    private val SHARE = AdviceWords(
+        "share part portion percent percentage proportion",
+        "hissa hissay hisse feesad fisad",
+        "حصہ حصے فیصد",
+        "حصو حصي سيڪڙو",
+        "حصة نسبة النسبة الحصة",
+        "سهم درصد",
+        "हिस्सा हिस्से प्रतिशत फीसद",
+        "অংশ শতাংশ ভাগ",
+        "porsi bagian persen persentase"
+    )
+
+    /** One party: "aik party", "one customer", "a single person". */
+    private val ONE = AdviceWords(
+        "one single",
+        "aik ek akele",
+        "ایک اکیلے",
+        "هڪ",
+        "واحد واحدة شخص",
+        "یک",
+        "एक अकेले",
+        "এক একজন একটি",
+        "satu seorang"
+    )
+
+    /** Concentrated: the whole question in one word. */
+    private val CONCENTRATED = AdviceWords(
+        "concentrated concentration",
+        "concentration",
+        "ارتکاز مرتکز",
+        "تركز تركيز مركز",
+        "تمرکز متمرکز",
+        "केंद्रित संकेंद्रण",
+        "কেন্দ্রীভূত",
+        "terkonsentrasi konsentrasi"
+    )
+
+    /** The parties and the whole, said around the share: party, customer, all, with him. */
+    private val AROUND = AdviceWords(
+        "party customer person all total whole my our of with held holds hold owed owes owe money dues",
+        "party gahak shakhs kul sab poore pura paas pas ke ki ka mera meri",
+        "پارٹی گاہک شخص کل سب پورے پاس",
+        "پارٽي گراهڪ ماڻهو ڪل سڀ وٽ",
+        "طرف عميل كل جميع عند لدى",
+        "طرف مشتری شخص کل همه دست نزد",
+        "पार्टी ग्राहक व्यक्ति कुल सब पूरे पास",
+        "পার্টি গ্রাহক ব্যক্তি মোট সব কাছে",
+        "pihak pelanggan orang total semua seluruh pada di ada"
+    )
+
+    /**
+     * "Kul udhaar ka kitna hissa aik party ke paas hai", "how concentrated is my credit", "what share of my credit is with one
+     * customer": credit, and a share with one party or the word "concentrated". F65's figure (D19: the share only, no alert).
+     */
+    internal fun concentration(heard: String, isName: (String) -> Boolean, calling: (String) -> Boolean): Hudhud.Ask.Advise? {
+        val said = wordsOf(heard) ?: return null
+        if (said.none { CREDIT.has(it) }) return null
+        val concentrated = said.any { CONCENTRATED.has(it) }
+        if (!concentrated && !(said.any { SHARE.has(it) } && said.any { ONE.has(it) })) return null
+        for (w in said) {
+            if (calling(w)) continue
+            // A name first: a customer called Party or Sab is also a word around the share.
+            if (isName(w)) return null
+            if (!(CREDIT.has(w) || SHARE.has(w) || ONE.has(w) || CONCENTRATED.has(w) || AROUND.has(w) || HOW_MUCH.has(w) ||
+                    WHO.has(w) || LITTLE.has(w))
+            ) return null
+        }
+        return Hudhud.Ask.Advise(Hudhud.AdviseOf.CONCENTRATION)
+    }
+
+    /** Magic, a spell: a joke, never a feature. */
+    private val MAGIC = AdviceWords(
+        "magic spell wand miracle",
+        "jadoo jaadu jadu jaadoo jadoo-tona mantar",
+        "جادو منتر",
+        "جادو ڄاڙو",
+        "سحر سحرك سحرا السحر سحري معجزة",
+        "جادو",
+        "जादू जादुई मंतर मंत्र",
+        "জাদু যাদু ম্যাজিক",
+        "sihir sulap ajaib"
+    )
+
+    /** Back: the money brought back. */
+    private val BACK = AdviceWords(
+        "back recover return",
+        "wapas wapis waapas wasool",
+        "واپس وصول",
+        "واپس موٽائي موٽ",
+        "استرجاع استرداد استرد أسترد يرجع ترجع",
+        "برگردان پس",
+        "वापस वसूल",
+        "ফেরত আদায়",
+        "kembali kembalikan"
+    )
+
+    /** The words a joke's order is made of ("kar ke la do", "bring it back with your magic"). */
+    private val JOKE = AdviceWords(
+        "do your use bring get make it them all with by and please",
+        "kar karo karke ke la lao laao le do dijiye apna apne apni se sara saara",
+        "کر کرو کرکے کے لا لاؤ دو دیجیے اپنا اپنے اپنی سے سارا",
+        "ڪري ڪر آڻ آڻي ڏي پنهنجو سڄو",
+        "استخدم بسحرك اجلب أعد اعد كل",
+        "کن بیار بیاور با همه",
+        "कर करो करके ला ले लाओ दो अपना अपने अपनी सारा",
+        "করে করো এনে আনো দাও সব তোমার",
+        "pakai dengan untuk bawa semua"
+    )
+
+    /**
+     * A joke aimed at the dues: "jadoo kar ke udhaar wapas la do", "use your magic to bring my credit back". Magic and the dues (credit
+     * or money owed) with only the joke's own words around them; no name, no figure. Answered with a light line and the five who owe
+     * the most — one rule, never a joke engine.
+     */
+    internal fun magic(heard: String, isName: (String) -> Boolean, calling: (String) -> Boolean): Hudhud.Ask.Advise? {
+        val said = wordsOf(heard) ?: return null
+        if (said.none { MAGIC.has(it) }) return null
+        if (said.none { CREDIT.has(it) || MONEY.has(it) }) return null
+        for (w in said) {
+            if (calling(w)) continue
+            // A name first: a customer called Sara is also the joke's "sara" (all).
+            if (isName(w)) return null
+            if (!(MAGIC.has(w) || CREDIT.has(w) || MONEY.has(w) || BACK.has(w) || JOKE.has(w) || WHO.has(w) || LITTLE.has(w))) return null
+        }
+        return Hudhud.Ask.Advise(Hudhud.AdviseOf.MAGIC)
     }
 }

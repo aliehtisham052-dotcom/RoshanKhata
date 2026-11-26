@@ -1314,6 +1314,22 @@
     <string name="hudhud_t_chase">من تطالب أولًا</string>
     <string name="hudhud_chase_note">حسب العمر، كما تعدّه «المستحقات حسب العمر» (0–30، 31–60، 61–90، أكثر من 90 يومًا): الفئة الأقدم أولًا؛ وفي الفئة الواحدة من يعدّه رادار الدفع متأخرًا أولًا، ثم المبلغ الأكبر. لا يُرسل شيء من هنا.</string>
     <string name="hudhud_t_next30">الثلاثون يومًا القادمة</string>
+    <!-- Marhala 10 (26 Nov 2026): more credit (D8), concentration (D19), the joke at the dues, the reasons of a profit drop. Wording for a native read. -->
+    <string name="hudhud_t_more_credit">مزيد من الدين</string>
+    <string name="hudhud_credit_whose">قل اسم العميل، مثلًا: «هل أعطي علي المزيد من الدين؟»</string>
+    <string name="hudhud_credit_balance">الرصيد الآن: %1$s · %2$s</string>
+    <string name="hudhud_credit_late">متأخر عن دفعاته المعتادة: ينتظر منذ %1$s، وعادةً %2$s</string>
+    <string name="hudhud_credit_not_late">غير متأخر عن دفعاته المعتادة</string>
+    <string name="hudhud_credit_late_unknown">المبالغ المسددة قليلة بعد، فلا يمكن القول إنه يتأخر في الدفع أم لا</string>
+    <string name="hudhud_credit_yours">هذه حقائق دفترك. أما إعطاء المزيد من الدين فقرارك أنت.</string>
+    <string name="hudhud_t_concentration">حصة الدين لدى طرف واحد</string>
+    <string name="hudhud_conc_line">على %1$s ‏%2$s من كل المال المستحق لك.</string>
+    <string name="hudhud_conc_total">كل المال المستحق لك: %1$s</string>
+    <string name="hudhud_conc_share">%1$s من المجموع</string>
+    <string name="hudhud_magic_line">ليس لدي سحر للأسف، لكن التذكير ينفع كثيرًا. هؤلاء عليهم أكبر المبالغ لك:</string>
+    <string name="hudhud_why_buyers">العملاء الذين اشتروا بالدين: الآن %1$d، قبل %2$d</string>
+    <string name="hudhud_why_margin">الهامش على المبيعات معروفة التكلفة: الآن %1$s، قبل %2$s</string>
+    <string name="hudhud_why_price_pressure">ارتفعت المبيعات بينما انخفض الهامش: كل بيعة تركت ربحًا أقل.</string>
     <string name="hudhud_today_promise">وعد %1$s بالدفع اليوم (%2$s).</string>
     <string name="hudhud_today_cover">%1$s سيكفي نحو %2$s بوتيرته الأخيرة.</string>
     <string name="hudhud_today_cover_now">%1$s لن يكفي اليوم بوتيرته الأخيرة.</string>

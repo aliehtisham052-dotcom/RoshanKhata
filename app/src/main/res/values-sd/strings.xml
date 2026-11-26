@@ -1254,6 +1254,22 @@
     <string name="hudhud_t_chase">پهرين ڪنهن کان وصولي ڪجي</string>
     <string name="hudhud_chase_note">مدت موجب، جيئن «باقي رقم، مدت جي حساب سان» ڳڻي ٿو (0–30، 31–60، 61–90، 90 ڏينهن کان وڌيڪ): سڀ کان پراڻو حصو پهرين؛ هڪ حصي ۾ پهرين اهي جن کي پيمينٽ ريڊار دير سان ڏيندڙ چوي ٿو، پوءِ وڏي رقم. هتان ڪجهه موڪليو نٿو وڃي.</string>
     <string name="hudhud_t_next30">ايندڙ 30 ڏينهن</string>
+    <!-- Marhala 10 (26 Nov 2026): more credit (D8), concentration (D19), the joke at the dues, the reasons of a profit drop. Wording for a native read. -->
+    <string name="hudhud_t_more_credit">وڌيڪ اڌار</string>
+    <string name="hudhud_credit_whose">گراهڪ جو نالو ٻڌايو، مثال: «ڇا علي کي وڌيڪ اڌار ڏيان؟»</string>
+    <string name="hudhud_credit_balance">هاڻوڪو باقي: %1$s · %2$s</string>
+    <string name="hudhud_credit_late">پنهنجي عام ادائگي کان دير: %1$s کان انتظار، عام طور %2$s</string>
+    <string name="hudhud_credit_not_late">پنهنجي عام ادائگي کان دير ناهي</string>
+    <string name="hudhud_credit_late_unknown">اڃا ايتريون موٽيل رقمون ناهن جو ٻڌائجي ته هو دير سان ڏئي ٿو يا نه</string>
+    <string name="hudhud_credit_yours">اهي توهان جي کاتي جون ڳالهيون آهن. وڌيڪ اڌار ڏيڻو آهي يا نه، اهو فيصلو توهان جو آهي.</string>
+    <string name="hudhud_t_concentration">هڪ پارٽي وٽ اڌار جو حصو</string>
+    <string name="hudhud_conc_line">%1$s وٽ توهان جي ڪل باقي رقم جو %2$s آهي.</string>
+    <string name="hudhud_conc_total">توهان جي ڪل باقي رقم: %1$s</string>
+    <string name="hudhud_conc_share">ڪل جو %1$s</string>
+    <string name="hudhud_magic_line">جادو ته مون وٽ ناهي، پر ياد ڏياريندڙ اڪثر ڪم ڪري ٿو. سڀ کان وڌيڪ هنن ڏانهن باقي آهي:</string>
+    <string name="hudhud_why_buyers">کاتي تي خريد ڪندڙ گراهڪ: هاڻي %1$d، اڳ %2$d</string>
+    <string name="hudhud_why_margin">جن جي قيمت معلوم آهي انهن جي وڪري تي مارجن: هاڻي %1$s، اڳ %2$s</string>
+    <string name="hudhud_why_price_pressure">وڪرو وڌيو پر مارجن گهٽيو: هر وڪري مان گهٽ نفعو بچيو.</string>
     <string name="hudhud_today_promise">%1$s اڄ ادا ڪرڻ جو واعدو ڪيو آهي (%2$s).</string>
     <string name="hudhud_today_cover">%1$s پنهنجي تازي رفتار سان لڳ ڀڳ %2$s هلندو.</string>
     <string name="hudhud_today_cover_now">%1$s پنهنجي تازي رفتار سان اڄ جو ڏينهن نه هلندو.</string>

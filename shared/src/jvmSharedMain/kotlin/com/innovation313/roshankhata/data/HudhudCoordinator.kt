@@ -73,7 +73,7 @@ object HudhudCoordinator {
         W.hudhud_no_phone_short, W.hudhud_l_no_reason, W.hudhud_l_off, W.hudhud_auto_off, W.hudhud_not_set,
         W.seal_choice_none, W.staff_role_none, W.stock_no_movement, W.plan_next_due_none, W.hudhud_v_off, W.vq_not_paid,
         W.vq_not_paid_body, W.hudhud_why_no_cost, W.hudhud_why_not_down, W.hudhud_why_not_up, W.hudhud_why_only_book,
-        W.hudhud_trend_from_nothing, W.hudhud_t_written_off, W.pos_round_off, W.hudhud_kn_no_figure
+        W.hudhud_trend_from_nothing, W.hudhud_t_written_off, W.pos_round_off, W.hudhud_kn_no_figure, W.hudhud_credit_not_late
     )
 
     /**
@@ -126,7 +126,10 @@ object HudhudCoordinator {
             is Hudhud.Ask.Cashbook, is Hudhud.Ask.Returns, is Hudhud.Ask.Counter, is Hudhud.Ask.Act, is Hudhud.Ask.Voice,
             is Hudhud.Ask.TopGoods, Hudhud.Ask.Qarz, Hudhud.Ask.Automations, is Hudhud.Ask.Paper, is Hudhud.Ask.Look,
             is Hudhud.Ask.LookDone, is Hudhud.Ask.OnDays, is Hudhud.Ask.Both, is Hudhud.Ask.Compare, is Hudhud.Ask.Why,
-            is Hudhud.Ask.Took, is Hudhud.Ask.Trend, is Hudhud.Ask.Advise -> byCard(card, w) { Verdict(Outcome.ACCEPT, "answered") }
+            is Hudhud.Ask.Took, is Hudhud.Ask.Trend -> byCard(card, w) { Verdict(Outcome.ACCEPT, "answered") }
+            // More credit with nobody named (Marhala 10): he asks whose, as for any fact of somebody's.
+            is Hudhud.Ask.Advise -> if (ask.of == Hudhud.AdviseOf.MORE_CREDIT && ask.ids.isEmpty()) Verdict(Outcome.CLARIFY, "whose")
+                else byCard(card, w) { Verdict(Outcome.ACCEPT, "answered") }
         }
     }
 
