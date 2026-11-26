@@ -362,7 +362,7 @@ ar	MISS	ورقمه	حساب علي رضا	Figure:TO_GET
 ar	OK	ما سعر Urea		Goods:PRICE
 ar	OK	كم بقي من Urea		Goods:STOCK
 ar	OK	من اشترى Urea		Goods:BUYERS
-ar	MISS	كم سعر اليوريا		Help:screen_audit
+ar	OK	كم سعر اليوريا		Goods:PRICE
 ar	OK	كم عميل عندي		Count:CUSTOMERS:null
 ar	OK	كم شيك متبقي		Status:CHEQUES
 ar	OK	ما تاريخ اليوم		Clock
