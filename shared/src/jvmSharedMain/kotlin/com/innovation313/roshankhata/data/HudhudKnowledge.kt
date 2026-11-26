@@ -475,7 +475,6 @@ object HudhudKnowledge {
         val marked = AMOUNT.replace(heard) { m -> figures += amountOf(m.value); " $NUMBER${figures.size - 1} " }
         val words = VoiceQuestion.normalise(marked).split(' ').filter { it.isNotEmpty() && !calling(it) }
         if (words.isEmpty() || words.size > MAX_WORDS + 6) return null
-        if (VoiceQuestion.unsupportedSpan(heard) || VoiceQuestion.windowOf(heard) != null) return null
         // Words to tokens, longest phrase first.
         val tokens = ArrayList<String>()
         var i = 0
@@ -556,7 +555,8 @@ object HudhudKnowledge {
         val roles = at.map(::role)
         val cost = roles.indexOf(COST_AFTER)
         val sale = roles.indexOf(SALE_AFTER)
-        if (cost < 0 || sale < 0 || cost == sale || roles.count { it == COST_AFTER } != 1 || roles.count { it == SALE_AFTER } != 1) {
+        // Two figures: one said as the cost and the other as the sale price, or the question goes back.
+        if (cost < 0 || sale < 0 || cost == sale) {
             return Hudhud.Ask.Knowledge(KnowKind.NEEDS_CLARIFICATION, asked = asked)
         }
         val atom = if (asked == KnowMeasure.MARKUP) "K202" else "K201"

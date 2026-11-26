@@ -187,6 +187,21 @@ class HudhudKnowledgeTest {
 
     // ------------------------------------------------------------------------------------------------ each guard alone (lesson 129)
 
+    @Test fun `a topic with no cue says nothing`() {
+        assertNull(HudhudKnowledge.read("markup"))
+        assertNull(HudhudKnowledge.read("break even"))
+        assertNull(HudhudKnowledge.read("discount aur markup"))
+    }
+
+    @Test fun `a topic word that is a product's name is the product's`() {
+        assertNull(HudhudKnowledge.read("margin kya hota hai", isGoods = { it == "margin" }))
+        assertNull(HudhudKnowledge.read("markup kise kehte hain", isPerson = { it == "markup" }))
+    }
+
+    @Test fun `a refusal said beside a word off the book stays a refusal`() {
+        assertEquals(refused(KnowLimit.PESTICIDE), read("ur-Latn", "mausam kaisa hai aur spray ka dose per acre kitna hai"))
+    }
+
     @Test fun `a weak what-is beside a figure the book has is not read, a strong one is`() {
         assertNull(HudhudKnowledge.read("margin kya hai"))
         assertNull(HudhudKnowledge.read("net balance kya hai"))
@@ -203,6 +218,8 @@ class HudhudKnowledgeTest {
         assertNull(HudhudKnowledge.limitOf("is bill mein kitna dalna hai urea"))
         assertNull(HudhudKnowledge.limitOf("dose ka stock kitna hai"))
         assertEquals(KnowLimit.DOSE, HudhudKnowledge.limitOf("dose kitna hai"))
+        assertNull(HudhudKnowledge.limitOf("is bill mein urea kitna dalna hai", isGoods = { it == "urea" }))
+        assertEquals(KnowLimit.DOSE, HudhudKnowledge.limitOf("urea kitna dalna hai", isGoods = { it == "urea" }))
     }
 
     @Test fun `a product named with a tax rate is the book's own tax rate`() {
@@ -213,6 +230,8 @@ class HudhudKnowledgeTest {
 
     @Test fun `halal beside a figure or a book word is not a ruling, a ruling word always is`() {
         assertNull(HudhudKnowledge.limitOf("halal gosht ki sale"))
+        assertNull(HudhudKnowledge.limitOf("halal gosht ka bill"))
+        assertNull(HudhudKnowledge.limitOf("halal maal ka hisaab"))
         assertNull(HudhudKnowledge.limitOf("halal 500"))
         assertEquals(KnowLimit.RULING, HudhudKnowledge.limitOf("kya ye halal hai"))
         assertEquals(KnowLimit.RULING, HudhudKnowledge.limitOf("khata rakhna jaiz hai"))
