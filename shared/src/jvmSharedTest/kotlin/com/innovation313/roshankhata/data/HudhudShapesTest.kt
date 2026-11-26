@@ -178,9 +178,15 @@ class HudhudShapesTest {
             assertEquals("$lang: $s", Ask.NeedGoods(GoodsFacet.STOCK), read(s, lang))
         }
         assertEquals(Ask.Goods(listOf(100L), GoodsFacet.STOCK), read("هل يوجد يوريا وسكر", "ar"))
+        // The joined "و" comes off a later word, so a product said second is still met.
+        assertEquals(Ask.Goods(listOf(100L), GoodsFacet.STOCK), read("هل يوجد سكر ويوريا", "ar"))
+        // Four things with "and" between them and a yes-or-no word in front: still four things, not seven words.
+        assertEquals(Ask.NeedGoods(GoodsFacet.STOCK), read("آیا شکر و نمک و برنج و چای داریم", "fa"))
         assertEquals(null, HudhudInStock.thing(words("is there sugar salt rice tea and flour")))
         // A word the language knows, or a man of the book, is never "which product?": "do we have cash?", "is Tariq here?".
-        for ((lang, s) in listOf("fa" to "نقدی داریم", "fa" to "فروش داریم", "ar" to "هل يوجد طارق", "ar" to "هل عندنا بشير")) {
+        // A word of money or a little word the bank never taught ("تومان", "المبلغ") is no thing either.
+        for ((lang, s) in listOf("fa" to "نقدی داریم", "fa" to "فروش داریم", "ar" to "هل يوجد طارق", "ar" to "هل عندنا بشير",
+            "fa" to "تومان داریم", "ar" to "هل يوجد المبلغ")) {
             assertNotEquals("$lang: $s", Ask.NeedGoods(GoodsFacet.STOCK), read(s, lang))
         }
         // A product of the book: its stock, in every language that asks so.
