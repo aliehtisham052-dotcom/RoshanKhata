@@ -1,0 +1,75 @@
+# Hudhud's label map (Marhala 6, 26 Nov 2026): one row per meaning the learnt sense and the rules know (the bank's labels and
+# the code's: Hudhud.askFor / Hudhud.labelOf). Hand-written: intent, task, facet, action (read, draft, refuse, help, reply, act),
+# figure (yes: the card's figure is worked out by a rule), formula (the Formula Book's F-id, or GAP:<why> for a known gap),
+# screen (the page the answer opens, ScreenId). From the code: in_bank and rules_ask (scripts/check_label_map.py --write),
+# reading and reads_back (HudhudLabelMapTest, LABEL_MAP_WRITE=1): what askFor makes of the label for a sentence naming one
+# customer, one item and an amount, spelt as HudhudShown spells a reading (the owner's lists and review sets use it), and
+# what Hudhud.labelOf gives back for that reading. scripts/check_label_map.py holds it to the code and the Formula Book.
+label	in_bank	intent	task	facet	action	figure	formula	screen	rules_ask	reading	reads_back
+who_are_you	yes	talk	who he is	WHO_ARE_YOU	reply	no	-	-	Ask.Chat(Talk.WHO_ARE_YOU, salaam)	Chat:WHO_ARE_YOU	who_are_you
+abilities	yes	talk	what he can tell	-	help	no	-	-	Ask.Abilities	Abilities	abilities
+how_are_you	yes	talk	how he is	HOW_ARE_YOU	reply	no	-	-	Ask.Chat(Talk.HOW_ARE_YOU, salaam)	Chat:HOW_ARE_YOU	how_are_you
+can_talk	yes	talk	whether he can talk	CAN_TALK	reply	no	-	-	Ask.Chat(Talk.CAN_TALK, salaam)	Chat:CAN_TALK	can_talk
+address	yes	talk	only called by name	ADDRESS	reply	no	-	-	Ask.Chat(Talk.ADDRESS, salaam)	Chat:ADDRESS	address
+salaam	yes	talk	a salaam answered	-	reply	no	-	-	Ask.Salaam	Salaam	salaam
+hello	yes	talk	a hello answered	-	reply	no	-	-	Ask.Hello	Hello	hello
+thanks	yes	talk	thanks answered	THANKS	reply	no	-	-	Ask.Chat(Talk.THANKS, salaam)	Chat:THANKS	thanks
+bye	yes	talk	goodbye answered	BYE	reply	no	-	-	Ask.Chat(Talk.BYE, salaam)	Chat:BYE	bye
+praise	yes	talk	praise answered	PRAISE	reply	no	-	-	Ask.Chat(Talk.PRAISE, salaam)	Chat:PRAISE	praise
+owner_name	yes	about	the name he calls the owner	OWNER_NAME	read	no	-	-	Ask.About(AboutTopic.OWNER_NAME)	About:OWNER_NAME	owner_name
+maker	yes	about	who made the app	MAKER	read	no	-	ABOUT	Ask.About(AboutTopic.MAKER)	About:MAKER	maker
+app_about	yes	about	what the app is	APP	read	no	-	ABOUT	Ask.About(AboutTopic.APP)	About:APP	app_about
+privacy	yes	about	where the book's data goes	PRIVACY	read	no	-	ABOUT	Ask.About(AboutTopic.PRIVACY)	About:PRIVACY	privacy
+languages	yes	about	the app's languages	LANGUAGES	read	no	-	LANGUAGE	Ask.About(AboutTopic.LANGUAGES)	About:LANGUAGES	languages
+name_story	no	about	why he is called Hudhud (code only)	NAME_STORY	read	no	-	-	Ask.About(AboutTopic.NAME_STORY)	About:NAME_STORY	name_story
+date_time	yes	about	today's date and time	-	read	no	-	-	Ask.Clock	Clock	date_time
+today_summary	yes	book	the day's summary: counts and the bell's rows	-	read	no	-	ALERTS	Ask.Today	Today	today_summary
+sales_today	yes	figure	today's sale	SALES_TODAY	read	yes	F07	INSIGHTS	figureOver(VoiceQuestion.Kind.SALES_TODAY, window)	Figure:SALES_TODAY	sales_today
+sales_period	yes	figure	a sale over a span	SALES_MONTH	read	yes	F07	SALES_REPORT	figureOver(VoiceQuestion.Kind.SALES_MONTH, window)	Figure:SALES_MONTH	sales_period
+profit	yes	figure	profit over a span	PROFIT_MONTH	read	yes	F13	INSIGHTS	figureOver(VoiceQuestion.Kind.PROFIT_MONTH, window)	Figure:PROFIT_MONTH	profit
+to_get	yes	figure	what the shop will get	TO_GET	read	yes	F02	KHATA	Ask.Figure(VoiceQuestion.Kind.TO_GET)	Figure:TO_GET	to_get
+to_give	yes	figure	what the shop will give	TO_GIVE	read	yes	F03	KHATA	Ask.Figure(VoiceQuestion.Kind.TO_GIVE)	Figure:TO_GIVE	to_give
+who_owes_most	yes	figure	who owes the most	WHO_OWES_MOST	read	yes	F30	KHATA	Ask.Figure(VoiceQuestion.Kind.WHO_OWES_MOST)	Figure:WHO_OWES_MOST	who_owes_most
+who_owes_least	no	figure	who owes the least (code only)	WHO_OWES_LEAST	read	yes	F30	KHATA	Ask.Figure(VoiceQuestion.Kind.WHO_OWES_LEAST)	Figure:WHO_OWES_LEAST	who_owes_least
+not_paid	yes	figure	who has not paid (the Follow-up page)	NOT_PAID	help	no	-	FOLLOW_UP	Ask.Figure(VoiceQuestion.Kind.NOT_PAID)	Figure:NOT_PAID	not_paid
+expiring	yes	figure	batches expiring (the Expiry page)	EXPIRING	help	no	-	EXPIRING	Ask.Figure(VoiceQuestion.Kind.EXPIRING)	Figure:EXPIRING	expiring
+likely_payers	yes	party	who usually pays around now	-	read	yes	F41	FOLLOW_UP	Ask.WhenPays(emptyList())	WhenPays	likely_payers
+collected	yes	figure	money that came in over a span	-	read	yes	F18	DAY_BOOK	Ask.Collected(window)	Collected	collected
+drawer	yes	figure	cash in the drawer by the books	-	read	yes	F23	CASHBOOK	Ask.Drawer	Drawer	drawer
+low_stock	yes	status	items low on stock	LOW_STOCK	read	yes	F60	PRODUCTS	Ask.Status(StatusOf.LOW_STOCK)	Status:LOW_STOCK	low_stock
+party_balance	yes	party	one party's balance	-	read	yes	F04	KHATA	if (named.isEmpty()) Ask.NeedName(null) else Ask.Parties(named)	Parties	party_balance
+party_phone	yes	party	a party's phone number	PHONE	read	no	-	KHATA	person(Facet.PHONE)	Person:PHONE	party_phone
+party_last_payment	yes	party	a party's last payment	LAST_PAYMENT	read	no	-	KHATA	person(Facet.LAST_PAYMENT)	Person:LAST_PAYMENT	party_last_payment
+party_limit	yes	party	a party's credit limit and its use	LIMIT	read	yes	F04	KHATA	person(Facet.LIMIT)	Person:LIMIT	party_limit
+party_promise	yes	party	a party's promised day	PROMISE	read	no	-	KHATA	person(Facet.PROMISE)	Person:PROMISE	party_promise
+party_details	yes	party	a party's details	DETAILS	read	no	-	KHATA	person(Facet.DETAILS)	Person:DETAILS	party_details
+party_when_pays	yes	party	when a party will pay (the Radar)	-	read	yes	F41	KHATA	Ask.WhenPays(named)	WhenPays	party_when_pays
+entry_gave	yes	entry	an 'I gave' said as a fact: the form filled	-	draft	no	-	KHATA	{	Entry	entry_gave
+entry_got	yes	entry	an 'I got' said as a fact: the form filled	-	draft	no	-	KHATA	{	Entry	entry_got
+goods_price	yes	goods	an item's price	PRICE	read	no	-	PRODUCTS	goodsOf(GoodsFacet.PRICE)	Goods:PRICE	goods_price
+goods_stock	yes	goods	an item's stock (and how long it lasts)	STOCK	read	yes	F31	PRODUCTS	goodsOf(GoodsFacet.STOCK)	Goods:STOCK	goods_stock
+goods_suppliers	yes	goods	an item's suppliers and their last rate	SUPPLIERS	read	yes	F56	SUPPLIER_RATES	goodsOf(GoodsFacet.SUPPLIERS)	Goods:SUPPLIERS	goods_suppliers
+goods_buyers	yes	goods	who bought an item	BUYERS	read	no	-	PRODUCT_CUSTOMERS	goodsOf(GoodsFacet.BUYERS)	Goods:BUYERS	goods_buyers
+goods_sold	yes	goods	how much of an item was sold	SOLD	read	yes	F50	SALES_REPORT	goodsOf(GoodsFacet.SOLD)	Goods:SOLD	goods_sold
+shop_info	yes	about	the shop's profile	-	read	no	-	BUSINESS_SETTINGS	Ask.Shop(	Shop:ALL	shop_info
+count_customers	yes	count	how many customers or suppliers	CUSTOMERS	read	no	-	KHATA	Ask.Count(if (m.has(HudhudMind.C.SUPPLIER) && !m.has(HudhudMind.C.CUSTOMER)) Thing.SUPPLIERS else Thing.CUSTOMERS)	Count:CUSTOMERS:null	count_customers
+count_products	yes	count	how many products	PRODUCTS	read	no	-	PRODUCTS	Ask.Count(Thing.PRODUCTS)	Count:PRODUCTS:null	count_products
+bills_today	yes	count	supplier bills over a span	BILLS	read	no	-	BILLS	Ask.Count(Thing.BILLS, window)	Count:BILLS:null	bills_today
+invoices_today	yes	count	invoices over a span	INVOICES	read	no	-	INVOICES	Ask.Count(Thing.INVOICES, window)	Count:INVOICES:null	invoices_today
+tickets_today	yes	count	counter tickets over a span	TICKETS	read	no	-	COUNTER_SALE	Ask.Count(Thing.TICKETS, window)	Count:TICKETS:null	tickets_today
+entries_today	yes	count	khata entries over a span	ENTRIES	read	no	-	KHATA	Ask.Count(Thing.ENTRIES, window)	Count:ENTRIES:null	entries_today
+calculator_uses	yes	count	calculator sums on this device	CALCULATIONS	read	no	-	CALCULATOR	Ask.Count(Thing.CALCULATIONS, window)	Count:CALCULATIONS:null	calculator_uses
+app_opens	yes	count	app opens on this device	APP_OPENS	read	no	-	-	Ask.Count(Thing.APP_OPENS, window)	Count:APP_OPENS:null	app_opens
+cheques_status	yes	status	cheques pending	CHEQUES	read	no	-	CHEQUES	Ask.Status(StatusOf.CHEQUES)	Status:CHEQUES	cheques_status
+plans_status	yes	status	instalment plans open	PLANS	read	no	-	PLANS	Ask.Status(StatusOf.PLANS)	Status:PLANS	plans_status
+staff_salary	yes	status	staff salaries still to pay	STAFF	read	yes	GAP:Payroll salary due has no Formula Book id	STAFF	Ask.Status(StatusOf.STAFF)	Status:STAFF	staff_salary
+deliveries	yes	book	goods that came in on supplier bills	-	read	no	-	BILLS	Ask.Deliveries(window)	Deliveries	deliveries
+activity	yes	book	what was written and by whom	-	read	no	-	DAY_BOOK	Ask.Activity(window)	Activity	activity
+backup_status	yes	book	when the book was last backed up	-	read	no	-	BACKUP	Ask.BackupStatus	BackupStatus	backup_status
+book_summary	yes	status	the whole book in counts	BOOK	read	no	-	KHATA	Ask.Status(StatusOf.BOOK)	Status:BOOK	book_summary
+cashbook_today	yes	figure	the cashbook's money in and out	-	read	yes	F19	CASHBOOK	Ask.Cashbook(window)	Cashbook	cashbook_today
+returns_today	yes	figure	goods that came back	-	read	yes	F46	COUNTER_SALE	Ask.Returns(window)	Returns	returns_today
+help_howto	yes	help	how to do something: a help page	-	help	no	-	HELP	helpOf(said, topics)?.let { Ask.Help(it) } ?: Ask.Abilities	Abilities	abilities
+act_fly	yes	act	fly	FLY	act	no	-	-	Ask.Act(Move.FLY)	Act	act_fly
+act_dance	yes	act	dance	DANCE	act	no	-	-	Ask.Act(Move.DANCE)	Act	act_dance
+act_jump	yes	act	hop	JUMP	act	no	-	-	Ask.Act(Move.JUMP)	Act	act_jump
