@@ -4888,6 +4888,7 @@
     <string name="hudhud_no_phone_short">No number</string>
     <string name="hudhud_t_cashbook">Cashbook</string>
     <string name="hudhud_cashbook_none">Nothing was written in the cashbook in this time.</string>
+    <string name="hudhud_collected_none">No money came in in this time.</string>
     <string name="hudhud_l_net">Net</string>
     <string name="hudhud_t_returns">Returns</string>
     <string name="hudhud_returns_none">No goods came back in this time.</string>

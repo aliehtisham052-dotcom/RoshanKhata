@@ -11,11 +11,11 @@ ask: OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=0, mo
 === OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
 mood: CALM
 label: Sale · <date>
-figure: Rs 0
+line: Nothing was sold in these days.
 open: SalesReportActivity
 openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
-money: true
-speech: Sale, <date>: Rs 0.
+speech: Sale, <date>. Nothing was sold in these days.
+speechHidden: Sale, <date>. Nothing was sold in these days.
 ask: OnDays(of=SALES, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
 
 === OnDays(of=PROFIT, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
@@ -52,13 +52,11 @@ ask: OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=0
 === OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
 mood: CALM
 label: Money that came in · <date>
-figure: Rs 0
-line: From customers: Rs 0
-line: Walk-in customer: Rs 0
+line: No money came in in this time.
 open: DayBookActivity
 openExtras: day=<millis>
-money: true
-speech: Money that came in, <date>: Rs 0. From customers: Rs 0. Walk-in customer: Rs 0.
+speech: Money that came in, <date>. No money came in in this time.
+speechHidden: Money that came in, <date>. No money came in in this time.
 ask: OnDays(of=COLLECTED, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[])
 
 === OnDays(of=ACTIVITY, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[])
@@ -105,12 +103,11 @@ ask: OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=0, mon
 === OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
 mood: CALM
 label: Ali Raza
-figure: Rs 0
 line: I Got · <date>
+line: Nothing was written in this time.
 openParty: 1
-money: true
-speech: Ali Raza: Rs 0. I Got, <date>.
-speechHidden: Ali Raza. I Got, <date>. [an amount left out]
+speech: Ali Raza. I Got, <date>. Nothing was written in this time.
+speechHidden: Ali Raza. I Got, <date>. Nothing was written in this time.
 ask: OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
 
 === OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
@@ -127,11 +124,10 @@ ask: OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=0, mon
 === OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
 mood: CALM
 label: Ali Raza
-figure: Rs 0
 line: I Gave · <date>
+line: Nothing was written in this time.
 openParty: 1
-money: true
-speech: Ali Raza: Rs 0. I Gave, <date>.
-speechHidden: Ali Raza. I Gave, <date>. [an amount left out]
+speech: Ali Raza. I Gave, <date>. Nothing was written in this time.
+speechHidden: Ali Raza. I Gave, <date>. Nothing was written in this time.
 ask: OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
 

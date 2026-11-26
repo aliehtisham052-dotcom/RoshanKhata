@@ -4972,6 +4972,7 @@
     <string name="hudhud_no_phone_short">لا رقم</string>
     <string name="hudhud_t_cashbook">النقد</string>
     <string name="hudhud_cashbook_none">لم يُسجَّل شيء في النقد خلال هذه المدة.</string>
+    <string name="hudhud_collected_none">لم يُستلم أي مال خلال هذه المدة.</string>
     <string name="hudhud_l_net">الصافي</string>
     <string name="hudhud_t_returns">المرتجعات</string>
     <string name="hudhud_returns_none">لم تُرجَع أي بضاعة خلال هذه المدة.</string>

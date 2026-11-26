@@ -301,7 +301,7 @@ object AnswerBook {
             Hudhud.DatedOf.SALES -> {
                 val label = context.getString(W.hudhud_sales_on, words)
                 if (!AnswerGate.reports()) return AnswerCard(Mood.CALM, label = label, lines = listOf(context.getString(W.hudhud_owner_only)))
-                sum(W.hudhud_sales_on, label, dao.salesTotalBetween(from, to), ScreenId.SALES_REPORT)
+                saleSum(context, dao, W.hudhud_sales_on, label, from, to, ScreenId.SALES_REPORT)
                     .copy(openWith = OpenWith.SalesDays(from, DayMath.startOfDay(to - 1)))
             }
             Hudhud.DatedOf.PROFIT -> {
@@ -714,10 +714,14 @@ object AnswerBook {
         return when (kind) {
             // Opened on Insights, where today's sale and this month's stand by the same sum and windows; the sales
             // report opens on a period of its own and could show another figure.
-            VoiceQuestion.Kind.SALES_TODAY -> sum(labelRes, label, dao.salesTotalBetween(dayStart, dayEnd), ScreenId.INSIGHTS)
-            VoiceQuestion.Kind.SALES_MONTH -> sum(labelRes, label, dao.salesTotalBetween(monthStart, monthEnd), ScreenId.INSIGHTS)
-            VoiceQuestion.Kind.TO_GET -> sum(labelRes, label, PartyTotals.of(parties.map { it.balance }).get, ScreenId.KHATA, calm = true)
-            VoiceQuestion.Kind.TO_GIVE -> sum(labelRes, label, PartyTotals.of(parties.map { it.balance }).give, ScreenId.KHATA, calm = true)
+            VoiceQuestion.Kind.SALES_TODAY -> saleSum(context, dao, labelRes, label, dayStart, dayEnd, ScreenId.INSIGHTS)
+            VoiceQuestion.Kind.SALES_MONTH -> saleSum(context, dao, labelRes, label, monthStart, monthEnd, ScreenId.INSIGHTS)
+            // A book with nobody in it has no record to sum (Marhala 6, BC-375): said in words, never "Rs 0". With people in
+            // it, a sum of nought is the true figure (every account settled).
+            VoiceQuestion.Kind.TO_GET -> if (parties.isEmpty()) noRecord(label, context.getString(W.voice_no_party), ScreenId.KHATA)
+                else sum(labelRes, label, PartyTotals.of(parties.map { it.balance }).get, ScreenId.KHATA, calm = true)
+            VoiceQuestion.Kind.TO_GIVE -> if (parties.isEmpty()) noRecord(label, context.getString(W.voice_no_party), ScreenId.KHATA)
+                else sum(labelRes, label, PartyTotals.of(parties.map { it.balance }).give, ScreenId.KHATA, calm = true)
             VoiceQuestion.Kind.PROFIT_MONTH -> profit(context, labelRes, label, monthProfit(context, dao, VoiceQuestion.Window.THIS_MONTH), ScreenId.INSIGHTS)
             VoiceQuestion.Kind.WHO_OWES_MOST -> {
                 val top = parties.filter { Money.isPositive(it.balance) }.sortedByDescending { it.balance }.take(TOP)
@@ -791,7 +795,7 @@ object AnswerBook {
         }
         val (from, to) = Hudhud.span(window, context.now())
         return when (measure) {
-            Hudhud.Measure.SALES -> sum(labelRes, label, dao.salesTotalBetween(from, to), ScreenId.SALES_REPORT)
+            Hudhud.Measure.SALES -> saleSum(context, dao, labelRes, label, from, to, ScreenId.SALES_REPORT)
                 .copy(openWith = salesReportDays(window, from, to, if (window == VoiceQuestion.Window.ALL_TIME) dao.firstSaleAt() else null))
             Hudhud.Measure.PROFIT -> when (window) {
                 VoiceQuestion.Window.THIS_MONTH -> profit(context, labelRes, label, monthProfit(context, dao, VoiceQuestion.Window.THIS_MONTH), ScreenId.INSIGHTS)
@@ -873,10 +877,18 @@ object AnswerBook {
         if (found.size > 1) return pick(context, found)
         val p = found.first()
         // An opening balance (schema 45) is owed from before the book: nothing he paid or took in these days (17 Nov 2026).
-        val total = LedgerLines.of(dao, listOf(p.id))
+        val moves = LedgerLines.of(dao, listOf(p.id))
             .filter { it.timestamp >= from && it.timestamp < to && it.isGiven == !got && !it.isOpening }
-            .sumOf { it.amount }
         val way = if (got) W.i_got else W.i_gave
+        // Nothing of his in these days (Marhala 6, BC-376): no record, said in words — not "Rs 0".
+        if (moves.isEmpty()) {
+            return AnswerCard(
+                Mood.CALM, label = p.name,
+                lines = listOf(context.getString(way) + " · " + words, context.getString(W.hudhud_activity_none)),
+                openParty = p.id
+            )
+        }
+        val total = moves.sumOf { it.amount }
         return AnswerCard(
             Mood.CALM,
             label = p.name,
@@ -1143,6 +1155,22 @@ object AnswerBook {
             money = true
         )
     }
+
+    /**
+     * A sale over [from, to) by [KhataDao.salesTotalBetween] — or, when the span holds no sale at all
+     * ([KhataDao.salesCountBetween], the same rows), "Nothing was sold in these days" (Marhala 6, NO_DATA, BC-374): a new shop
+     * asking this month's sale is told there is no record, never "Rs 0". A sale written at nought (goods at no price) is a
+     * record, and its "Rs 0" stands.
+     */
+    private suspend fun saleSum(
+        context: AnswerEnv, dao: KhataDao, labelRes: String, label: String, from: Long, to: Long, open: ScreenId
+    ): AnswerCard =
+        if (dao.salesCountBetween(from, to) == 0) noRecord(label, context.getString(W.hudhud_top_goods_none), open)
+        else sum(labelRes, label, dao.salesTotalBetween(from, to), open)
+
+    /** No record of what was asked, said in [words] under its heading — no figure, nothing said as money (NO_DATA). */
+    internal fun noRecord(label: String?, words: String, open: ScreenId?) =
+        AnswerCard(Mood.CALM, label = label, lines = listOf(words), open = open)
 
     private fun sum(labelRes: String, label: String, value: Double, open: ScreenId, calm: Boolean = false) = AnswerCard(
         if (!calm && Money.isPositive(value)) Mood.GOOD else Mood.CALM,

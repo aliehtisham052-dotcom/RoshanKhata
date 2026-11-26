@@ -23,6 +23,7 @@ CHECKS=(
   "check_hudhud_readonly.py"
   "check_hudhud_offline.py"
   "hudhud_manifest.py --check"
+  "check_label_map.py"
   "hudhud_glossary.py --check"
   "test_hudhud_checklog.py"
   "hudhud_speed_sample.py --check"

@@ -4675,6 +4675,7 @@
     <string name="hudhud_no_phone_short">نمبر نہیں</string>
     <string name="hudhud_t_cashbook">کیش بک</string>
     <string name="hudhud_cashbook_none">اس عرصے میں کیش بک میں کچھ نہیں لکھا گیا۔</string>
+    <string name="hudhud_collected_none">اس عرصے میں کوئی رقم وصول نہیں ہوئی۔</string>
     <string name="hudhud_l_net">خالص</string>
     <string name="hudhud_t_returns">واپسی</string>
     <string name="hudhud_returns_none">اس عرصے میں کوئی مال واپس نہیں آیا۔</string>

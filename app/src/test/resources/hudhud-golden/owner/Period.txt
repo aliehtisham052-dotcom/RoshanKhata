@@ -11,11 +11,11 @@ ask: Period(measure=SALES, window=TODAY)
 === Period(measure=SALES, window=YESTERDAY)
 mood: CALM
 label: Yesterday's sale
-figure: Rs 0
+line: Nothing was sold in these days.
 open: SalesReportActivity
 openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
-money: true
-speech: Yesterday's sale: Rs 0.
+speech: Yesterday's sale. Nothing was sold in these days.
+speechHidden: Yesterday's sale. Nothing was sold in these days.
 ask: Period(measure=SALES, window=YESTERDAY)
 
 === Period(measure=SALES, window=THIS_WEEK)
@@ -31,11 +31,11 @@ ask: Period(measure=SALES, window=THIS_WEEK)
 === Period(measure=SALES, window=LAST_WEEK)
 mood: CALM
 label: Last week's sale
-figure: Rs 0
+line: Nothing was sold in these days.
 open: SalesReportActivity
 openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
-money: true
-speech: Last week's sale: Rs 0.
+speech: Last week's sale. Nothing was sold in these days.
+speechHidden: Last week's sale. Nothing was sold in these days.
 ask: Period(measure=SALES, window=LAST_WEEK)
 
 === Period(measure=SALES, window=THIS_MONTH)
@@ -51,11 +51,11 @@ ask: Period(measure=SALES, window=THIS_MONTH)
 === Period(measure=SALES, window=LAST_MONTH)
 mood: CALM
 label: Last month's sale
-figure: Rs 0
+line: Nothing was sold in these days.
 open: SalesReportActivity
 openExtras: sales_report_first_day=<millis>, sales_report_last_day=<millis>
-money: true
-speech: Last month's sale: Rs 0.
+speech: Last month's sale. Nothing was sold in these days.
+speechHidden: Last month's sale. Nothing was sold in these days.
 ask: Period(measure=SALES, window=LAST_MONTH)
 
 === Period(measure=SALES, window=LAST_6_MONTHS)
