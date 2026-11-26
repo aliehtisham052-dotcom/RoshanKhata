@@ -3081,6 +3081,12 @@ Each of these cost a build or a bug.
      "verify" (BC-340..342). Helpers that work in parallel get their own worktree and their own files; only the session
      that started them merges and pushes (25 Nov 2026: four helpers, no conflict).
 
+169. **A merge of two lanes that each add a case to a sealed answer type compiles only when the lane that owns the
+     `when` knows the other's case.** Lane K added `Hudhud.Ask.Knowledge` and lane M6 the Coordinator's exhaustive `when`
+     over every Ask: each branch compiled alone, the merge did not (26 Nov 2026). When two helpers touch a sealed type and its
+     consumers, the lead compiles the merged tree before the push, and a helper's brief names every exhaustive `when` over
+     the type it extends.
+
 ## Working with the owner
 
 - **Reply in Roman Urdu** unless English is asked for.
@@ -4748,4 +4754,29 @@ Importance 6-10 by item. Plain shared Kotlin was compiled and run here (lesson 9
 - **Checked and closed, no change needed:** L006 (aab.yml runs run_release_checks.sh since 17 Nov), L021 (Windows Hudhud opens
   on the card's window: `DeskStart`, and keeps its own counts), L161 ("Imran ka phone number" with no Imran asks whose: right),
   L162 ("Ali Raza se kitna milega" is his balance: right), T19 (Gemma's prohibited-use page read: audit phase_t19).
+
+### 26 Nov 2026 (night): master plan v1, Marhalas 5-10 worked now (kmp-desktop-16; CI only, nothing tried on a real phone)
+
+The owner (25 Nov 03:44 and the night after): no phase kept for 2027; helpers in separate worktrees, the lead merges. D16's
+timing moved, its limits did not; D22 (OpenStax replaced as a source) and D23 (Zakat kept: the page, rulings to a qualified
+Hanafi scholar) recorded.
+
+- **Marhala 5, the model decision** (`docs/hudhud-learners-26nov2026.md`, `scripts/hudhud_learners.sh`): logistic regression
+  and a linear SVM measured beside the perceptron ensemble; **the ensemble stays** (LR's gain on the owner's lists is inside
+  noise and it reads two rows on the opposite money side; the SVM is worse). LR's better calibration is written down for a
+  later round, with what shipping it would need.
+- **Marhala 6** (`HudhudCoordinator`, `HudhudCertainty`, `docs/hudhud-label-map.tsv` + `check_label_map.py`): every reading
+  has one outcome (ACCEPT, CLARIFY, SAFE_GUESS, REFUSE, DRAFT, NO_DATA), a certainty per part, and "no record" is never "Rs 0".
+- **Marhala 7** (`HudhudDialogue`): the talk is one state on both platforms; "no, the other Ali", follow-ups, yes/no/cancel
+  (BC-381..388).
+- **Marhala 8, preparation** (`scripts/hudhud_cycle.sh`, `docs/hudhud-training-cycle.md`): the training cycle as one reviewed
+  command, its self-test in Strings CI. The retrain waits for the owner's check log from his two-day phone test.
+- **Marhala 9, business knowledge** (`HudhudKnowledge`, `AnswerKnowledge`, `PriceMath` F65-F69, `shared/hudhud/knowledge/atoms.tsv`
+  + `check_knowledge_atoms.py`): eight modules, every atom with its source and date, cricket/jokes/general knowledge still refused.
+- **Speed** (S1, BC-353..358): a name index; 1,000 names p50 34 -> 6.4 ms, 10,000 names 387 -> 28 ms.
+- **Figures after the M7 merge:** owner short 159/200, the 1,000 sentences 813, held-out 1,080 strict / 1,096 lenient, review D
+  1,047 and O 1,074 held, wrong side/amount/person/product 0 on every set; 1,006 shared tests; bug register 341 classes, each
+  with its test.
+- **Left:** the owner's two-day phone test and its check log (then Marhala 8's retrain); the sealed set v2 (the owner's and a
+  second writer's); native reads of Sindhi, Bengali, Farsi and Arabic; five rights-register licences a person must verify.
 
