@@ -73,7 +73,7 @@ object HudhudCoordinator {
         W.hudhud_no_phone_short, W.hudhud_l_no_reason, W.hudhud_l_off, W.hudhud_auto_off, W.hudhud_not_set,
         W.seal_choice_none, W.staff_role_none, W.stock_no_movement, W.plan_next_due_none, W.hudhud_v_off, W.vq_not_paid,
         W.vq_not_paid_body, W.hudhud_why_no_cost, W.hudhud_why_not_down, W.hudhud_why_not_up, W.hudhud_why_only_book,
-        W.hudhud_trend_from_nothing, W.hudhud_t_written_off, W.pos_round_off
+        W.hudhud_trend_from_nothing, W.hudhud_t_written_off, W.pos_round_off, W.hudhud_kn_no_figure
     )
 
     /**
@@ -108,6 +108,14 @@ object HudhudCoordinator {
                 else Verdict(Outcome.REFUSE, "off_topic")
             Hudhud.Ask.Unknown -> Verdict(Outcome.REFUSE, "not_understood")
             Hudhud.Ask.NoHistory -> Verdict(Outcome.REFUSE, "no_history")
+            // Lane B (Marhala 9): a limit (dose, tax rate, ruling) is refused with whom to ask; roles not clear ask back;
+            // nothing to say is a refusal; an atom or a worked figure answers.
+            is Hudhud.Ask.Knowledge -> when {
+                ask.limit != null -> Verdict(Outcome.REFUSE, "knowledge_limit")
+                ask.kind == KnowKind.NEEDS_CLARIFICATION -> Verdict(Outcome.CLARIFY, "knowledge_roles")
+                ask.kind == KnowKind.UNSUPPORTED -> Verdict(Outcome.REFUSE, "knowledge_unsupported")
+                else -> Verdict(Outcome.ACCEPT, "knowledge")
+            }
             // "As it stands now" only adds a note: the card is the inner reading's.
             is Hudhud.Ask.Now -> decide(ask.ask, card, w)
             is Hudhud.Ask.Figure, is Hudhud.Ask.Parties, Hudhud.Ask.BackupStatus, Hudhud.Ask.Drawer, is Hudhud.Ask.Help,

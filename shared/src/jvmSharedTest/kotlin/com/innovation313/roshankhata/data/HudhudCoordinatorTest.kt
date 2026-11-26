@@ -85,7 +85,12 @@ class HudhudCoordinatorTest {
         Triple(Hudhud.Ask.Took(listOf(1L), listOf(2L)), card(W.hudhud_took_none), Outcome.NO_DATA),
         Triple(Hudhud.Ask.NoHistory, card(W.hudhud_no_history), Outcome.REFUSE),
         Triple(Hudhud.Ask.Trend(w), answered, Outcome.ACCEPT),
-        Triple(Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE), answered, Outcome.ACCEPT)
+        Triple(Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE), answered, Outcome.ACCEPT),
+        // Lane B (Marhala 9): an atom answers, a limit refuses, roles not clear ask back, nothing to say refuses.
+        Triple(Hudhud.Ask.Knowledge(KnowKind.GENERAL_GUIDANCE, atom = "K201"), answered, Outcome.ACCEPT),
+        Triple(Hudhud.Ask.Knowledge(KnowKind.UNSUPPORTED, limit = KnowLimit.PESTICIDE), answered, Outcome.REFUSE),
+        Triple(Hudhud.Ask.Knowledge(KnowKind.NEEDS_CLARIFICATION, asked = KnowMeasure.MARGIN), answered, Outcome.CLARIFY),
+        Triple(Hudhud.Ask.Knowledge(KnowKind.UNSUPPORTED), answered, Outcome.REFUSE)
     )
 
     @Test
