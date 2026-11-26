@@ -128,6 +128,9 @@ class HudhudAdviceMarhala10Test {
         assertNull("a share with nobody one", HudhudAdviceAsk.concentration("udhaar ka kitna hissa hai", isName, noCall))
         assertNull("a name", HudhudAdviceAsk.concentration("Aslam ke paas udhaar ka kitna hissa hai ek", isName, noCall))
         assertNull("another word", HudhudAdviceAsk.concentration("how concentrated is my credit yesterday", isName, noCall))
+        // Only the name check can refuse this: "party" is also a word around the share (lesson 129).
+        assertNull("a customer called Party", HudhudAdviceAsk.concentration("kitna hissa udhaar ek party ke paas hai",
+            { it == "party" }, noCall))
     }
 
     @Test fun `the joke needs magic and the dues, no name and no figure`() {
@@ -137,6 +140,9 @@ class HudhudAdviceMarhala10Test {
         assertNull("a name", HudhudAdviceAsk.magic("jadoo se Aslam ka udhaar wapas la do", isName, noCall))
         assertNull("a figure", HudhudAdviceAsk.magic("jadoo se 500 udhaar wapas la do", isName, noCall))
         assertNull("another word", HudhudAdviceAsk.magic("jadoo ki film mein udhaar", isName, noCall))
+        // Only the name check can refuse this: "sara" (all) is also the joke's own word (lesson 129).
+        assertNull("a customer called Sara", HudhudAdviceAsk.magic("jadoo se sara udhaar wapas la do", { it == "sara" }, noCall))
+        assertEquals(magic, HudhudAdviceAsk.magic("jadoo se sara udhaar wapas la do", isName, noCall))
     }
 
     // ------------------------------------------------------------------------------------------------ the pure rules

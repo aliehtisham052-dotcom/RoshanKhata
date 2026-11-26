@@ -608,7 +608,8 @@ object HudhudAdviceAsk {
         for (w in said) {
             if (calling(w)) continue
             if (CREDIT.has(w) || GIVE_CREDIT.has(w) || MORE_OF.has(w) || SHOULD.has(w) || LITTLE.has(w) || WHO.has(w)) continue
-            if (w.any { it.isDigit() }) return false
+            // A figure is no word of the lists, so it is refused below like any other word (a deliberate breakage of a separate
+            // digit check survived every test: lesson 129).
             if (isName(w)) { name = true; continue }
             return false
         }
@@ -677,6 +678,7 @@ object HudhudAdviceAsk {
         if (!concentrated && !(said.any { SHARE.has(it) } && said.any { ONE.has(it) })) return null
         for (w in said) {
             if (calling(w)) continue
+            // A name first: a customer called Party or Sab is also a word around the share.
             if (isName(w)) return null
             if (!(CREDIT.has(w) || SHARE.has(w) || ONE.has(w) || CONCENTRATED.has(w) || AROUND.has(w) || HOW_MUCH.has(w) ||
                     WHO.has(w) || LITTLE.has(w))
@@ -735,7 +737,8 @@ object HudhudAdviceAsk {
         if (said.none { CREDIT.has(it) || MONEY.has(it) }) return null
         for (w in said) {
             if (calling(w)) continue
-            if (w.any { it.isDigit() } || isName(w)) return null
+            // A name first: a customer called Sara is also the joke's "sara" (all).
+            if (isName(w)) return null
             if (!(MAGIC.has(w) || CREDIT.has(w) || MONEY.has(w) || BACK.has(w) || JOKE.has(w) || WHO.has(w) || LITTLE.has(w))) return null
         }
         return Hudhud.Ask.Advise(Hudhud.AdviseOf.MAGIC)
