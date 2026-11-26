@@ -76,12 +76,11 @@ ask: OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=0, mon
 === OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
 mood: CALM
 label: Ali Raza
-figure: Rs 0
 line: I Got · <date>
+line: Nothing was written in this time.
 openParty: 1
-money: true
-speech: Ali Raza: Rs 0. I Got, <date>.
-speechHidden: Ali Raza. I Got, <date>. [an amount left out]
+speech: Ali Raza. I Got, <date>. Nothing was written in this time.
+speechHidden: Ali Raza. I Got, <date>. Nothing was written in this time.
 ask: OnDays(of=PAID, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
 
 === OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=0, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
@@ -98,11 +97,10 @@ ask: OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=0, mon
 === OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
 mood: CALM
 label: Ali Raza
-figure: Rs 0
 line: I Gave · <date>
+line: Nothing was written in this time.
 openParty: 1
-money: true
-speech: Ali Raza: Rs 0. I Gave, <date>.
-speechHidden: Ali Raza. I Gave, <date>. [an amount left out]
+speech: Ali Raza. I Gave, <date>. Nothing was written in this time.
+speechHidden: Ali Raza. I Gave, <date>. Nothing was written in this time.
 ask: OnDays(of=TOOK, days=Dated(day=null, month=null, year=null, daysBack=2, monthsBack=null, yearsBack=null, weekday=null), ids=[1])
 

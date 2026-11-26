@@ -4649,6 +4649,7 @@
     <string name="hudhud_no_phone_short">Tanpa nomor</string>
     <string name="hudhud_t_cashbook">Buku Kas</string>
     <string name="hudhud_cashbook_none">Tidak ada yang dicatat di Buku Kas dalam waktu ini.</string>
+    <string name="hudhud_collected_none">Tidak ada uang masuk dalam waktu ini.</string>
     <string name="hudhud_l_net">Bersih</string>
     <string name="hudhud_t_returns">Retur</string>
     <string name="hudhud_returns_none">Tidak ada barang yang dikembalikan dalam waktu ini.</string>

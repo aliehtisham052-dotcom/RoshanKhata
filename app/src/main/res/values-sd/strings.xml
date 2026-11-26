@@ -4703,6 +4703,7 @@
     <string name="hudhud_no_phone_short">نمبر ناهي</string>
     <string name="hudhud_t_cashbook">روڪڙ</string>
     <string name="hudhud_cashbook_none">هن عرصي ۾ روڪڙ ۾ ڪجهه به نه لکيو ويو.</string>
+    <string name="hudhud_collected_none">هن عرصي ۾ ڪا به رقم وصول نه ٿي.</string>
     <string name="hudhud_l_net">خالص</string>
     <string name="hudhud_t_returns">واپسي</string>
     <string name="hudhud_returns_none">هن عرصي ۾ ڪو مال واپس نه آيو.</string>

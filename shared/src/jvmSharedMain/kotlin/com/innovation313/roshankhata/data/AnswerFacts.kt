@@ -1196,6 +1196,10 @@ object AnswerFacts {
             .map { (m, list) -> line(PaymentMethod.label(words, m), AnswerBook.money(list.sumOf { it.amount })) }
         val open = if (oneDay) ScreenId.DAY_BOOK else null
         val extras = if (open != null) OpenWith.Day(from) else null
+        // No payment at all in these days (Marhala 6, NO_DATA, BC-377): said in words, never "Rs 0" with two more "Rs 0" lines.
+        if (rows.isEmpty() && !Money.isPositive(abs(total))) {
+            return AnswerCard(Mood.CALM, label = label, lines = listOf(c.getString(W.hudhud_collected_none)), open = open, openWith = extras)
+        }
         return AnswerCard(if (Money.isPositive(total)) Mood.GOOD else Mood.CALM, label = label, figure = AnswerBook.money(total),
             lines = listOf(line(c, W.hudhud_l_from_customers, AnswerBook.money(khata)), line(c, W.pos_walk_in, AnswerBook.money(counter))) + ways,
             open = open, openWith = extras, money = true)

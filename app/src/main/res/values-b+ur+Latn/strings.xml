@@ -4675,6 +4675,7 @@
     <string name="hudhud_no_phone_short">Number nahi</string>
     <string name="hudhud_t_cashbook">Cashbook</string>
     <string name="hudhud_cashbook_none">Is arse mein cashbook mein kuch nahi likha gaya.</string>
+    <string name="hudhud_collected_none">Is arse mein koi raqam wusool nahi hui.</string>
     <string name="hudhud_l_net">Khalis</string>
     <string name="hudhud_t_returns">Wapsi</string>
     <string name="hudhud_returns_none">Is arse mein koi maal wapas nahi aaya.</string>

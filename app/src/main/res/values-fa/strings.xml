@@ -4703,6 +4703,7 @@
     <string name="hudhud_no_phone_short">بدون شماره</string>
     <string name="hudhud_t_cashbook">صندوق</string>
     <string name="hudhud_cashbook_none">در این مدت چیزی در صندوق نوشته نشد.</string>
+    <string name="hudhud_collected_none">در این مدت هیچ پولی دریافت نشد.</string>
     <string name="hudhud_l_net">خالص</string>
     <string name="hudhud_t_returns">مرجوعی‌ها</string>
     <string name="hudhud_returns_none">در این مدت کالایی برنگشت.</string>

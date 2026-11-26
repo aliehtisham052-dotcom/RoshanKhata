@@ -27,13 +27,11 @@ ask: Collected(window=TODAY)
 === Collected(window=YESTERDAY)
 mood: CALM
 label: Money that came in · Yesterday
-figure: Rs 0
-line: From customers: Rs 0
-line: Walk-in customer: Rs 0
+line: No money came in in this time.
 open: DayBookActivity
 openExtras: day=<millis>
-money: true
-speech: Money that came in, Yesterday: Rs 0. From customers: Rs 0. Walk-in customer: Rs 0.
+speech: Money that came in, Yesterday. No money came in in this time.
+speechHidden: Money that came in, Yesterday. No money came in in this time.
 ask: Collected(window=YESTERDAY)
 
 === Collected(window=THIS_WEEK)
@@ -50,11 +48,9 @@ ask: Collected(window=THIS_WEEK)
 === Collected(window=LAST_WEEK)
 mood: CALM
 label: Money that came in · Last week
-figure: Rs 0
-line: From customers: Rs 0
-line: Walk-in customer: Rs 0
-money: true
-speech: Money that came in, Last week: Rs 0. From customers: Rs 0. Walk-in customer: Rs 0.
+line: No money came in in this time.
+speech: Money that came in, Last week. No money came in in this time.
+speechHidden: Money that came in, Last week. No money came in in this time.
 ask: Collected(window=LAST_WEEK)
 
 === Collected(window=THIS_MONTH)
@@ -71,11 +67,9 @@ ask: Collected(window=THIS_MONTH)
 === Collected(window=LAST_MONTH)
 mood: CALM
 label: Money that came in · Last month
-figure: Rs 0
-line: From customers: Rs 0
-line: Walk-in customer: Rs 0
-money: true
-speech: Money that came in, Last month: Rs 0. From customers: Rs 0. Walk-in customer: Rs 0.
+line: No money came in in this time.
+speech: Money that came in, Last month. No money came in in this time.
+speechHidden: Money that came in, Last month. No money came in in this time.
 ask: Collected(window=LAST_MONTH)
 
 === Collected(window=LAST_6_MONTHS)

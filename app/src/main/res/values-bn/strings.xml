@@ -4723,6 +4723,7 @@
     <string name="hudhud_no_phone_short">নম্বর নেই</string>
     <string name="hudhud_t_cashbook">ক্যাশবুক</string>
     <string name="hudhud_cashbook_none">এই সময়ে ক্যাশবুকে কিছু লেখা হয়নি।</string>
+    <string name="hudhud_collected_none">এই সময়ে কোনো টাকা আসেনি।</string>
     <string name="hudhud_l_net">নিট</string>
     <string name="hudhud_t_returns">ফেরত</string>
     <string name="hudhud_returns_none">এই সময়ে কোনো মাল ফেরত আসেনি।</string>
