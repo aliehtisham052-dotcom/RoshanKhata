@@ -311,6 +311,18 @@ object Hudhud {
          * figure. Read by [HudhudAdviceAsk] alone, never by the sense; REPORTS ([AnswerAdvisor.advise]).
          */
         data class Advise(val of: AdviseOf) : Ask()
+
+        /**
+         * Business knowledge (Marhala 9, lane B, D16; 26 Nov 2026): an atom's meaning or formula ([atom], [HudhudKnowledgeAtoms]),
+         * a margin, markup or profit worked from the sentence's own two figures ([cost], [sale], [asked]; [KnowKind.CALCULATED]),
+         * a worked figure whose roles were not said ([KnowKind.NEEDS_CLARIFICATION]), or one of the plan's limits refused
+         * ([limit]: a dose, a medicine, a tax rate, a ruling). Read by [HudhudKnowledge] alone, never by the sense; no book is
+         * read ([AnswerKnowledge]).
+         */
+        data class Knowledge(
+            val kind: KnowKind, val atom: String? = null, val limit: KnowLimit? = null, val cost: Double? = null,
+            val sale: Double? = null, val asked: KnowMeasure? = null
+        ) : Ask()
     }
 
     /**
@@ -933,7 +945,8 @@ object Hudhud {
     private fun offTopic(heard: String, ask: Ask): Ask {
         // Talk ("kaise ho") is kept unless it carries a topic word: "joke sunao" was taken as "how are you" by the sense.
         if (ask is Ask.Voice || ask is Ask.Look || ask is Ask.CallMe || ask is Ask.Act || ask is Ask.Both || ask is Ask.Compare ||
-            ask is Ask.OnDays || ask is Ask.Abilities || (ask is Ask.About && (ask.topic in STORY_TOPICS || ask.topic in FAITH_TOPICS))
+            ask is Ask.OnDays || ask is Ask.Abilities || (ask is Ask.About && (ask.topic in STORY_TOPICS || ask.topic in FAITH_TOPICS)) ||
+            ask is Ask.Knowledge
         ) return ask
         if (partyOf(ask) != null || goodsOf(ask) != null) return ask
         if (VoiceEntry.parse(heard, emptyList()).isGiven != null) return ask
@@ -990,7 +1003,8 @@ object Hudhud {
         val asksAbility = ask == Ask.Abilities || ask == Ask.Unknown || (ask is Ask.Guessed && ask.ask == Ask.Abilities)
         if (asksAbility && w.size >= 4 && (appCan(w, joined) || ask == Ask.Abilities)) capabilityPage(joined, topics)?.let { return Ask.Help(it) }
         if (ask is Ask.Help || ask == Ask.Unknown || ask is Ask.Chat || ask is Ask.Voice || (ask is Ask.About && ask.topic != AboutTopic.PRIVACY) || ask is Ask.Look ||
-            ask is Ask.CallMe || ask is Ask.Abilities || ask is Ask.DidYouMean || ask is Ask.Entry || ask is Ask.Entries || ask == Ask.NoHistory
+            ask is Ask.CallMe || ask is Ask.Abilities || ask is Ask.DidYouMean || ask is Ask.Entry || ask is Ask.Entries || ask == Ask.NoHistory ||
+            ask is Ask.Knowledge
         ) return ask
         if (partyOf(ask) != null || goodsOf(ask) != null) return ask
         if (w.size < 6) return ask
@@ -2038,7 +2052,7 @@ object Hudhud {
         ) return ruled
         if (ruled is Ask.Voice || ruled is Ask.TopGoods || ruled == Ask.Qarz || ruled == Ask.Automations || ruled is Ask.NeedGoods ||
             ruled is Ask.CallMe || ruled is Ask.Look || ruled is Ask.Why || ruled is Ask.Entries || ruled is Ask.Act ||
-            ruled is Ask.Trend || ruled is Ask.Advise
+            ruled is Ask.Trend || ruled is Ask.Advise || ruled is Ask.Knowledge
         ) {
             return ruled
         }
@@ -2288,7 +2302,7 @@ object Hudhud {
         is Ask.OnDays, is Ask.Both, is Ask.Compare,
         Ask.Unknown, is Ask.DidYouMean, is Ask.SpanLimit, is Ask.NeedName, is Ask.Guessed, is Ask.Now, is Ask.Voice, is Ask.TopGoods, Ask.Qarz,
         Ask.Automations, is Ask.NeedGoods, is Ask.CallMe, is Ask.Look, is Ask.LookDone, is Ask.Paper, is Ask.Record, is Ask.OffTopic, is Ask.Why, is Ask.Entries,
-        is Ask.Took, Ask.NoHistory, is Ask.Trend, is Ask.Advise -> null
+        is Ask.Took, Ask.NoHistory, is Ask.Trend, is Ask.Advise, is Ask.Knowledge -> null
     }
 
     /**
@@ -2423,6 +2437,11 @@ object Hudhud {
         val said = words(heard)
         if (said.isEmpty()) return Ask.Unknown
         val joined = said.joinToString(" ")
+        // Business knowledge and the plan's limits (Marhala 9, 26 Nov 2026): a dose, a medicine, a tax rate or a ruling is refused
+        // before anything else reads the sentence; a margin, markup or break-even is told from its atom or worked from the
+        // sentence's own figures. Strict for the knowledge; by cues, kept off the book's own words, for the limits.
+        HudhudKnowledge.read(heard, isPerson = { knownName(it, names) || knownName(it, staff) }, isGoods = { knownName(it, goods) },
+            calling = { it in VOCATIVE_SET })?.let { return it }
         // How much must I pay the supplier (review D, 16 Nov 2026): what the shop owes, never a count of suppliers.
         if (has(joined, OWE_SUPPLIER)) return Ask.Figure(VoiceQuestion.Kind.TO_GIVE)
         // Which suppliers I have not paid (24 Nov 2026, BC-256, Arabic): the word of a supplier with the shop's own "I have not paid" —

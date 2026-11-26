@@ -648,6 +648,57 @@ Conventions: isGiven=1 is +amount, isGiven=0 is -amount. Windows: [from,to) for 
 - Shown on: Seasons page, customer page season chips
 - Confidence: VERIFIED
 
+<!-- F65-F69: Marhala 9, lane B (26 Nov 2026). The formulas are pure (no book read); sources in shared/hudhud/knowledge/atoms.tsv. -->
+### F65 Concentration: the largest party's share of all money owed to the shop
+- Function: `data/PriceMath.kt::PriceMath.concentration`
+- Reads: parties' balances as F04 (above nought: owed to the shop)
+- Window: now (the balances given)
+- Left out: balances the shop owes, settled ones, non-finite; a tie keeps the first
+- Rounding: share in decimal arithmetic (0..1); total positive by Money.isPositive (half the smallest coin), else none
+- Gate: not shown yet (D19: the share first, an alert later, Marhala 10); a card of the book will be REPORTS
+- Shown on: Hudhud knowledge atom K104 (explained, with its example); no screen yet
+- Confidence: VERIFIED (written 26 Nov 2026 with HudhudFormulaGoldenTest)
+
+### F66 Margin %: (sale - cost) / sale x 100
+- Function: `data/PriceMath.kt::PriceMath.marginPercent`
+- Reads: the cost and the sale price given (a worked example: the sentence's own figures, never the book's)
+- Window: none
+- Left out: a sale price of nought or less (no margin); a negative or non-finite figure
+- Rounding: decimal arithmetic, 16 digits; shown to 2 decimals
+- Gate: none (no book figure)
+- Shown on: Hudhud knowledge atoms K201, K203, K206; Hudhud's worked example (CALCULATED)
+- Confidence: VERIFIED (golden: 800 -> 1,000 is 20)
+
+### F67 Markup %: (sale - cost) / cost x 100
+- Function: `data/PriceMath.kt::PriceMath.markupPercent`
+- Reads: as F66
+- Window: none
+- Left out: a cost of nought or less (no markup); a negative or non-finite figure
+- Rounding: decimal arithmetic, 16 digits; shown to 2 decimals
+- Gate: none (no book figure)
+- Shown on: Hudhud knowledge atoms K202, K203, K206; Hudhud's worked example (CALCULATED)
+- Confidence: VERIFIED (golden: 800 -> 1,000 is 25)
+
+### F68 Contribution per unit: price - variable cost per unit
+- Function: `data/PriceMath.kt::PriceMath.contribution`
+- Reads: a price and a variable cost per unit given
+- Window: none
+- Left out: a negative or non-finite figure (a negative result is kept: each unit loses)
+- Rounding: decimal arithmetic
+- Gate: none (no book figure)
+- Shown on: Hudhud knowledge atom K204
+- Confidence: VERIFIED (golden: 100 - 20 is 80)
+
+### F69 Break-even units: fixed costs / (price - variable cost per unit)
+- Function: `data/PriceMath.kt::PriceMath.breakEvenUnits`
+- Reads: fixed costs, price and variable cost per unit given
+- Window: none
+- Left out: a price not above the variable cost (never breaks even); a negative or non-finite figure
+- Rounding: decimal arithmetic; whole units rounded UP (a part of a unit is not sold)
+- Gate: none (no book figure)
+- Shown on: Hudhud knowledge atom K205
+- Confidence: VERIFIED (golden: 18,000 / 80 is 225)
+
 ## Disagreements between two places computing one figure
 
 Line numbers are as read on 24 Nov 2026. Examples use made-up figures. D1-D12 were read against the code again on 25 Nov 2026: each is FIXED (one figure, one rule, with its bug class and test) or BY DESIGN (two figures that answer two questions; the screen says which, or the string it needs is named). D12 stands.

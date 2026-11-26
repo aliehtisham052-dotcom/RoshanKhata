@@ -228,6 +228,8 @@ object AnswerBook {
             // The business advisor (25 Nov 2026, plan H5): the sales trend, whom to chase first, the next 30 days — REPORTS.
             is Hudhud.Ask.Trend -> AnswerAdvisor.trend(context, dao, ask)
             is Hudhud.Ask.Advise -> AnswerAdvisor.advise(context, dao, ask, parties)
+            // Business knowledge and the plan's limits (Marhala 9, 26 Nov 2026): no book is read.
+            is Hudhud.Ask.Knowledge -> AnswerKnowledge.answer(context, ask)
             is Hudhud.Ask.Entries -> entries(context, ask, parties)
             // A customer and a product in one question, and talk about past chats (17 Nov 2026, audit L004).
             is Hudhud.Ask.Took -> AnswerQ.took(context, dao, ask, parties)
@@ -1303,6 +1305,7 @@ object AnswerBook {
         is Hudhud.Ask.Period -> c.getString(periodLabel(ask.measure, ask.window))
         is Hudhud.Ask.Trend -> c.getString(W.hudhud_t_trend)
         is Hudhud.Ask.Advise -> c.getString(if (ask.of == Hudhud.AdviseOf.CHASE) W.hudhud_t_chase else W.hudhud_t_next30)
+        is Hudhud.Ask.Knowledge -> AnswerKnowledge.chipLabel(c, ask)
         Hudhud.Ask.Abilities -> c.getString(W.hudhud_chip_abilities)
         Hudhud.Ask.Today -> c.getString(W.hudhud_chip_today)
         Hudhud.Ask.BackupStatus -> c.getString(W.hudhud_chip_backup)
@@ -1613,6 +1616,7 @@ object AnswerBook {
             is Hudhud.Ask.Now -> return next(c, ask.ask)
             is Hudhud.Ask.Look -> lookChips(c, ask.request.setting)
             is Hudhud.Ask.LookDone -> lookChips(c, ask.made.setting)
+            is Hudhud.Ask.Knowledge -> AnswerKnowledge.next(ask)
             else -> emptyList()
         }
         val owner = AnswerGate.staff()

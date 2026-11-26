@@ -315,6 +315,18 @@ internal object HudhudGoldenAsks {
         a += Hudhud.Ask.Took(listOf(ids.bashir), listOf(ids.urea), VoiceQuestion.Window.THIS_MONTH)
         a += Hudhud.Ask.Took(listOf(ids.bashir), listOf(ids.urea, ids.dap))
         a += Hudhud.Ask.NoHistory
+        // Business knowledge (Marhala 9, 26 Nov 2026): every atom, the card of an atom asked as checked (it still says what the
+        // atom's own review says), each measure worked from 800 and 1,000, the question back, and every limit refused.
+        for (id in listOf("K101", "K102", "K103", "K104", "K201", "K202", "K203", "K204", "K205", "K206")) {
+            a += Hudhud.Ask.Knowledge(KnowKind.GENERAL_GUIDANCE, atom = id)
+        }
+        a += Hudhud.Ask.Knowledge(KnowKind.VERIFIED, atom = "K201")
+        for (m in KnowMeasure.values()) {
+            a += Hudhud.Ask.Knowledge(KnowKind.CALCULATED, atom = if (m == KnowMeasure.MARKUP) "K202" else "K201", cost = 800.0, sale = 1000.0, asked = m)
+        }
+        a += Hudhud.Ask.Knowledge(KnowKind.CALCULATED, atom = "K201", cost = 800.0, sale = 0.0, asked = KnowMeasure.MARGIN)
+        a += Hudhud.Ask.Knowledge(KnowKind.NEEDS_CLARIFICATION, asked = KnowMeasure.MARGIN)
+        for (l in KnowLimit.values()) a += Hudhud.Ask.Knowledge(KnowKind.UNSUPPORTED, limit = l)
         return a
     }
 

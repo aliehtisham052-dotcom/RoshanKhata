@@ -42,6 +42,7 @@ CHECKS=(
   "check_capability_matrix.py"
   "check_data_flows.py"
   "check_formula_book.py"
+  "check_knowledge_atoms.py"
   "gen_covering_array.py --check"
 )
 

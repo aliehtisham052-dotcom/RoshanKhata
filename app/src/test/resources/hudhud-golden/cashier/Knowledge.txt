@@ -1,0 +1,251 @@
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K101, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: To get (receivable)
+line: Money your customers owe the shop for goods or cash given on credit; accountants call it accounts receivable. In this app it is the total you have to get: the balances of everyone who owes you, added up.
+line: Example: One customer owes 500 and another 300: you have 800 to get.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: OpenStax, Principles of Accounting Vol. 1 (Franklin, Graybeal, Cooper), ch. 2 key terms, read <date> · Formula Book F02
+spoken: Money your customers owe the shop for goods or cash given on credit; accountants call it accounts receivable. In this app it is the total you have to get: the balances of everyone who owes you, added up. Example: One customer owes 500 and another 300: you have 800 to get. General guidance written from the source below; not yet checked by a person.
+speech: Money your customers owe the shop for goods or cash given on credit; accountants call it accounts receivable. In this app it is the total you have to get: the balances of everyone who owes you, added up. Example: One customer owes 500 and another 300: you have 800 to get. General guidance written from the source below; not yet checked by a person.
+speechHidden: Money your customers owe the shop for goods or cash given on credit; accountants call it accounts receivable. In this app it is the total you have to get: the balances of everyone who owes you, added up. Example: One customer owes 500 and another 300: you have 800 to get. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K101, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K102, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: To give (payable)
+line: Money the shop owes for goods or services it will pay for later; accountants call it accounts payable. In this app it is the total you have to give: everything the shop owes, added up.
+line: Example: You owe one supplier 2,000 and another 1,000: you have 3,000 to give.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: OpenStax, Principles of Accounting Vol. 1 (Franklin, Graybeal, Cooper), ch. 2 key terms, read <date> · Formula Book F03
+spoken: Money the shop owes for goods or services it will pay for later; accountants call it accounts payable. In this app it is the total you have to give: everything the shop owes, added up. Example: You owe one supplier 2,000 and another 1,000: you have 3,000 to give. General guidance written from the source below; not yet checked by a person.
+speech: Money the shop owes for goods or services it will pay for later; accountants call it accounts payable. In this app it is the total you have to give: everything the shop owes, added up. Example: You owe one supplier 2,000 and another 1,000: you have 3,000 to give. General guidance written from the source below; not yet checked by a person.
+speechHidden: Money the shop owes for goods or services it will pay for later; accountants call it accounts payable. In this app it is the total you have to give: everything the shop owes, added up. Example: You owe one supplier 2,000 and another 1,000: you have 3,000 to give. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K102, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K103, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Net balance
+line: What you have to get minus what you have to give: where the whole book stands with everyone together. Above nought, more is owed to you than you owe.
+line: Example: 5,000 to get and 3,000 to give: the net balance is 2,000.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: OpenStax, Principles of Accounting Vol. 1 (Franklin, Graybeal, Cooper), ch. 2 key terms, read <date> · Formula Book F01
+spoken: What you have to get minus what you have to give: where the whole book stands with everyone together. Above nought, more is owed to you than you owe. Example: 5,000 to get and 3,000 to give: the net balance is 2,000. General guidance written from the source below; not yet checked by a person.
+speech: What you have to get minus what you have to give: where the whole book stands with everyone together. Above nought, more is owed to you than you owe. Example: 5,000 to get and 3,000 to give: the net balance is 2,000. General guidance written from the source below; not yet checked by a person.
+speechHidden: What you have to get minus what you have to give: where the whole book stands with everyone together. Above nought, more is owed to you than you owe. Example: 5,000 to get and 3,000 to give: the net balance is 2,000. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K103, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K104, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Credit concentration
+line: How much of all the money owed to you is held by the one customer who owes the most: his balance divided by the total to get. A big share means one late payer can hold up much of your cash.
+line: Example: 10,000 to get in all, and the biggest customer owes 6,000: the concentration is 60 percent.
+line: When nobody owes you anything, there is no concentration.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: OCC Comptroller's Handbook, Concentrations of Credit, v3.0 (Sep 2026), read <date> · Formula Book F65
+spoken: How much of all the money owed to you is held by the one customer who owes the most: his balance divided by the total to get. A big share means one late payer can hold up much of your cash. Example: 10,000 to get in all, and the biggest customer owes 6,000: the concentration is 60 percent. When nobody owes you anything, there is no concentration. General guidance written from the source below; not yet checked by a person.
+speech: How much of all the money owed to you is held by the one customer who owes the most: his balance divided by the total to get. A big share means one late payer can hold up much of your cash. Example: 10,000 to get in all, and the biggest customer owes 6,000: the concentration is 60 percent. When nobody owes you anything, there is no concentration. General guidance written from the source below; not yet checked by a person.
+speechHidden: How much of all the money owed to you is held by the one customer who owes the most: his balance divided by the total to get. A big share means one late payer can hold up much of your cash. Example: 10,000 to get in all, and the biggest customer owes 6,000: the concentration is 60 percent. When nobody owes you anything, there is no concentration. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K104, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K201, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Margin
+line: Margin is the part of the sale price left after the cost, as a share of the sale price: (sale − cost) ÷ sale × 100.
+line: Example: Bought for 800 and sold for 1,000: profit 200, margin 20 percent.
+line: There is no margin to work out when the sale price is nought.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: eCampusOntario, Business and Financial Math, 1.<date>, read <date> · Formula Book F66
+spoken: Margin is the part of the sale price left after the cost, as a share of the sale price: (sale − cost) ÷ sale × 100. Example: Bought for 800 and sold for 1,000: profit 200, margin 20 percent. There is no margin to work out when the sale price is nought. General guidance written from the source below; not yet checked by a person.
+speech: Margin is the part of the sale price left after the cost, as a share of the sale price: (sale − cost) ÷ sale × 100. Example: Bought for 800 and sold for 1,000: profit 200, margin 20 percent. There is no margin to work out when the sale price is nought. General guidance written from the source below; not yet checked by a person.
+speechHidden: Margin is the part of the sale price left after the cost, as a share of the sale price: (sale − cost) ÷ sale × 100. Example: Bought for 800 and sold for 1,000: profit 200, margin 20 percent. There is no margin to work out when the sale price is nought. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K201, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K202, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Markup
+line: Markup is the profit as a share of the cost: (sale − cost) ÷ cost × 100. It is what is added on top of the cost to set the price.
+line: Example: Bought for 800 and sold for 1,000: profit 200, markup 25 percent.
+line: There is no markup to work out when the cost is nought.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: eCampusOntario, Business and Financial Math, 1.<date>, read <date> · Formula Book F67
+spoken: Markup is the profit as a share of the cost: (sale − cost) ÷ cost × 100. It is what is added on top of the cost to set the price. Example: Bought for 800 and sold for 1,000: profit 200, markup 25 percent. There is no markup to work out when the cost is nought. General guidance written from the source below; not yet checked by a person.
+speech: Markup is the profit as a share of the cost: (sale − cost) ÷ cost × 100. It is what is added on top of the cost to set the price. Example: Bought for 800 and sold for 1,000: profit 200, markup 25 percent. There is no markup to work out when the cost is nought. General guidance written from the source below; not yet checked by a person.
+speechHidden: Markup is the profit as a share of the cost: (sale − cost) ÷ cost × 100. It is what is added on top of the cost to set the price. Example: Bought for 800 and sold for 1,000: profit 200, markup 25 percent. There is no markup to work out when the cost is nought. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K202, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K203, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Margin and markup
+line: Both start from the same profit, sale − cost. Margin divides it by the sale price and markup by the cost, so when there is a profit the markup is always the bigger number.
+line: Example: From 800 to 1,000: profit 200, margin 20 percent, markup 25 percent.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: eCampusOntario, Business and Financial Math, 1.<date>, read <date> · Formula Book F66, F67
+spoken: Both start from the same profit, sale − cost. Margin divides it by the sale price and markup by the cost, so when there is a profit the markup is always the bigger number. Example: From 800 to 1,000: profit 200, margin 20 percent, markup 25 percent. General guidance written from the source below; not yet checked by a person.
+speech: Both start from the same profit, sale − cost. Margin divides it by the sale price and markup by the cost, so when there is a profit the markup is always the bigger number. Example: From 800 to 1,000: profit 200, margin 20 percent, markup 25 percent. General guidance written from the source below; not yet checked by a person.
+speechHidden: Both start from the same profit, sale − cost. Margin divides it by the sale price and markup by the cost, so when there is a profit the markup is always the bigger number. Example: From 800 to 1,000: profit 200, margin 20 percent, markup 25 percent. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K203, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K204, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Contribution
+line: Contribution is what one unit sold leaves after its variable cost (the cost that comes with each unit): price − variable cost per unit. It pays the fixed costs first; after that it is profit.
+line: Example: Price 100 and variable cost 20: each unit sold leaves 80.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: OpenStax, Principles of Accounting Vol. 2 (Franklin, Graybeal, Cooper), 3.1 Contribution margin, read <date> · Formula Book F68
+spoken: Contribution is what one unit sold leaves after its variable cost (the cost that comes with each unit): price − variable cost per unit. It pays the fixed costs first; after that it is profit. Example: Price 100 and variable cost 20: each unit sold leaves 80. General guidance written from the source below; not yet checked by a person.
+speech: Contribution is what one unit sold leaves after its variable cost (the cost that comes with each unit): price − variable cost per unit. It pays the fixed costs first; after that it is profit. Example: Price 100 and variable cost 20: each unit sold leaves 80. General guidance written from the source below; not yet checked by a person.
+speechHidden: Contribution is what one unit sold leaves after its variable cost (the cost that comes with each unit): price − variable cost per unit. It pays the fixed costs first; after that it is profit. Example: Price 100 and variable cost 20: each unit sold leaves 80. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K204, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K205, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Break-even
+line: Break-even is how many units must be sold to cover all the costs with nothing left over: fixed costs ÷ (price − variable cost per unit). Below it is a loss, above it a profit.
+line: Example: Fixed costs 18,000 a month, price 100, variable cost 20: 18,000 ÷ 80 = 225 units.
+line: If the price is not above the variable cost, no number of sales ever breaks even.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: OpenStax, Principles of Accounting Vol. 2 (Franklin, Graybeal, Cooper), 3.2 Break-even point, read <date> · Formula Book F69
+spoken: Break-even is how many units must be sold to cover all the costs with nothing left over: fixed costs ÷ (price − variable cost per unit). Below it is a loss, above it a profit. Example: Fixed costs 18,000 a month, price 100, variable cost 20: 18,000 ÷ 80 = 225 units. If the price is not above the variable cost, no number of sales ever breaks even. General guidance written from the source below; not yet checked by a person.
+speech: Break-even is how many units must be sold to cover all the costs with nothing left over: fixed costs ÷ (price − variable cost per unit). Below it is a loss, above it a profit. Example: Fixed costs 18,000 a month, price 100, variable cost 20: 18,000 ÷ 80 = 225 units. If the price is not above the variable cost, no number of sales ever breaks even. General guidance written from the source below; not yet checked by a person.
+speechHidden: Break-even is how many units must be sold to cover all the costs with nothing left over: fixed costs ÷ (price − variable cost per unit). Below it is a loss, above it a profit. Example: Fixed costs 18,000 a month, price 100, variable cost 20: 18,000 ÷ 80 = 225 units. If the price is not above the variable cost, no number of sales ever breaks even. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K205, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K206, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Discount and markup
+line: A markup is added on the cost; a discount is taken off the sale price. The same percent does not undo itself, because each is taken from a different base.
+line: Example: A 25 percent markup on 800 gives 1,000, but 25 percent off 1,000 gives 750. To come back to 800 the discount is 20 percent, the margin.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: eCampusOntario, Business and Financial Math, 1.5 Discounts, markup and markdown / eCampusOntario, Business and Financial Math, 1.<date>, read <date> · Formula Book F67, F66
+spoken: A markup is added on the cost; a discount is taken off the sale price. The same percent does not undo itself, because each is taken from a different base. Example: A 25 percent markup on 800 gives 1,000, but 25 percent off 1,000 gives 750. To come back to 800 the discount is 20 percent, the margin. General guidance written from the source below; not yet checked by a person.
+speech: A markup is added on the cost; a discount is taken off the sale price. The same percent does not undo itself, because each is taken from a different base. Example: A 25 percent markup on 800 gives 1,000, but 25 percent off 1,000 gives 750. To come back to 800 the discount is 20 percent, the margin. General guidance written from the source below; not yet checked by a person.
+speechHidden: A markup is added on the cost; a discount is taken off the sale price. The same percent does not undo itself, because each is taken from a different base. Example: A 25 percent markup on 800 gives 1,000, but 25 percent off 1,000 gives 750. To come back to 800 the discount is 20 percent, the margin. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K206, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=VERIFIED, atom=K201, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Margin
+line: Margin is the part of the sale price left after the cost, as a share of the sale price: (sale − cost) ÷ sale × 100.
+line: Example: Bought for 800 and sold for 1,000: profit 200, margin 20 percent.
+line: There is no margin to work out when the sale price is nought.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: eCampusOntario, Business and Financial Math, 1.<date>, read <date> · Formula Book F66
+spoken: Margin is the part of the sale price left after the cost, as a share of the sale price: (sale − cost) ÷ sale × 100. Example: Bought for 800 and sold for 1,000: profit 200, margin 20 percent. There is no margin to work out when the sale price is nought. General guidance written from the source below; not yet checked by a person.
+speech: Margin is the part of the sale price left after the cost, as a share of the sale price: (sale − cost) ÷ sale × 100. Example: Bought for 800 and sold for 1,000: profit 200, margin 20 percent. There is no margin to work out when the sale price is nought. General guidance written from the source below; not yet checked by a person.
+speechHidden: Margin is the part of the sale price left after the cost, as a share of the sale price: (sale − cost) ÷ sale × 100. Example: Bought for 800 and sold for 1,000: profit 200, margin 20 percent. There is no margin to work out when the sale price is nought. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=VERIFIED, atom=K201, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=CALCULATED, atom=K201, limit=null, cost=800.0, sale=1000.0, asked=MARGIN)
+mood: CALM
+label: Worked out from your figures · Margin
+figure: 20%
+line: These are the figures you said, not your book's.
+line: Cost Rs 800 · Sale Rs 1,000
+line: Profit: Rs 200
+line: Margin: 20%
+line: Markup: 25%
+line: Source: eCampusOntario, Business and Financial Math, 1.<date>, read <date> · Formula Book F66
+spoken: Margin: 20%, from a cost of Rs 800 and a sale price of Rs 1,000. These are the figures you said, not your book's.
+speech: Margin: 20%, from a cost of Rs 800 and a sale price of Rs 1,000. These are the figures you said, not your book's.
+speechHidden: Margin: 20%, from a cost of Rs 800 and a sale price of Rs 1,000. These are the figures you said, not your book's.
+ask: Knowledge(kind=CALCULATED, atom=K201, limit=null, cost=800.0, sale=1000.0, asked=MARGIN)
+
+=== Knowledge(kind=CALCULATED, atom=K202, limit=null, cost=800.0, sale=1000.0, asked=MARKUP)
+mood: CALM
+label: Worked out from your figures · Markup
+figure: 25%
+line: These are the figures you said, not your book's.
+line: Cost Rs 800 · Sale Rs 1,000
+line: Profit: Rs 200
+line: Margin: 20%
+line: Markup: 25%
+line: Source: eCampusOntario, Business and Financial Math, 1.<date>, read <date> · Formula Book F67
+spoken: Markup: 25%, from a cost of Rs 800 and a sale price of Rs 1,000. These are the figures you said, not your book's.
+speech: Markup: 25%, from a cost of Rs 800 and a sale price of Rs 1,000. These are the figures you said, not your book's.
+speechHidden: Markup: 25%, from a cost of Rs 800 and a sale price of Rs 1,000. These are the figures you said, not your book's.
+ask: Knowledge(kind=CALCULATED, atom=K202, limit=null, cost=800.0, sale=1000.0, asked=MARKUP)
+
+=== Knowledge(kind=CALCULATED, atom=K201, limit=null, cost=800.0, sale=1000.0, asked=PROFIT)
+mood: CALM
+label: Worked out from your figures · Profit
+figure: Rs 200
+line: These are the figures you said, not your book's.
+line: Cost Rs 800 · Sale Rs 1,000
+line: Profit: Rs 200
+line: Margin: 20%
+line: Markup: 25%
+line: Source: eCampusOntario, Business and Financial Math, 1.<date>, read <date> · Formula Book F66
+spoken: Profit: Rs 200, from a cost of Rs 800 and a sale price of Rs 1,000. These are the figures you said, not your book's.
+speech: Profit: Rs 200, from a cost of Rs 800 and a sale price of Rs 1,000. These are the figures you said, not your book's.
+speechHidden: Profit: Rs 200, from a cost of Rs 800 and a sale price of Rs 1,000. These are the figures you said, not your book's.
+ask: Knowledge(kind=CALCULATED, atom=K201, limit=null, cost=800.0, sale=1000.0, asked=PROFIT)
+
+=== Knowledge(kind=CALCULATED, atom=K201, limit=null, cost=800.0, sale=0.0, asked=MARGIN)
+mood: CALM
+label: Worked out from your figures · Margin
+line: These are the figures you said, not your book's.
+line: Cost Rs 800 · Sale Rs 0
+line: This cannot be worked out from these figures.
+line: Profit: −Rs 800
+line: Markup: −100%
+line: Source: eCampusOntario, Business and Financial Math, 1.<date>, read <date> · Formula Book F66
+spoken: This cannot be worked out from these figures.
+speech: This cannot be worked out from these figures.
+speechHidden: This cannot be worked out from these figures.
+ask: Knowledge(kind=CALCULATED, atom=K201, limit=null, cost=800.0, sale=0.0, asked=MARGIN)
+
+=== Knowledge(kind=NEEDS_CLARIFICATION, atom=null, limit=null, cost=null, sale=null, asked=MARGIN)
+mood: CALM
+label: Worked out from your figures
+line: Tell me which figure is the cost and which the sale price, for example: bought for 800, sold for 1000, what is the margin?
+spoken: Tell me which figure is the cost and which the sale price, for example: bought for 800, sold for 1000, what is the margin?
+speech: Tell me which figure is the cost and which the sale price, for example: bought for 800, sold for 1000, what is the margin?
+speechHidden: Tell me which figure is the cost and which the sale price, for example: bought for 800, sold for 1000, what is the margin?
+ask: Knowledge(kind=NEEDS_CLARIFICATION, atom=null, limit=null, cost=null, sale=null, asked=MARGIN)
+
+=== Knowledge(kind=UNSUPPORTED, atom=null, limit=PESTICIDE, cost=null, sale=null, asked=null)
+mood: CALM
+label: Not mine to answer
+line: I do not give a spray's dose, its mixing or the days to wait before harvest. Read the product's approved label and ask the agriculture department's field staff.
+spoken: I do not give a spray's dose, its mixing or the days to wait before harvest. Read the product's approved label and ask the agriculture department's field staff.
+speech: I do not give a spray's dose, its mixing or the days to wait before harvest. Read the product's approved label and ask the agriculture department's field staff.
+speechHidden: I do not give a spray's dose, its mixing or the days to wait before harvest. Read the product's approved label and ask the agriculture department's field staff.
+ask: Knowledge(kind=UNSUPPORTED, atom=null, limit=PESTICIDE, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=UNSUPPORTED, atom=null, limit=MEDICINE, cost=null, sale=null, asked=null)
+mood: CALM
+label: Not mine to answer
+line: I do not give medical advice or a medicine's dose. Please ask a doctor or a pharmacist.
+spoken: I do not give medical advice or a medicine's dose. Please ask a doctor or a pharmacist.
+speech: I do not give medical advice or a medicine's dose. Please ask a doctor or a pharmacist.
+speechHidden: I do not give medical advice or a medicine's dose. Please ask a doctor or a pharmacist.
+ask: Knowledge(kind=UNSUPPORTED, atom=null, limit=MEDICINE, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=UNSUPPORTED, atom=null, limit=DOSE, cost=null, sale=null, asked=null)
+mood: CALM
+label: Not mine to answer
+line: I do not give any product's dose. Read its approved label; for crops ask the agriculture department, for people or animals a doctor, a vet or a pharmacist.
+spoken: I do not give any product's dose. Read its approved label; for crops ask the agriculture department, for people or animals a doctor, a vet or a pharmacist.
+speech: I do not give any product's dose. Read its approved label; for crops ask the agriculture department, for people or animals a doctor, a vet or a pharmacist.
+speechHidden: I do not give any product's dose. Read its approved label; for crops ask the agriculture department, for people or animals a doctor, a vet or a pharmacist.
+ask: Knowledge(kind=UNSUPPORTED, atom=null, limit=DOSE, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=UNSUPPORTED, atom=null, limit=TAX_RATE, cost=null, sale=null, asked=null)
+mood: CALM
+label: Not mine to answer
+line: I do not give tax rates: they change with the law and the budget. Please verify the current rate with the FBR (fbr.gov.pk) in Pakistan, or with your country's tax office or a tax adviser.
+line: Source: Federal Board of Revenue (FBR), fbr.gov.pk, read <date>
+spoken: I do not give tax rates: they change with the law and the budget. Please verify the current rate with the FBR (fbr.gov.pk) in Pakistan, or with your country's tax office or a tax adviser.
+speech: I do not give tax rates: they change with the law and the budget. Please verify the current rate with the FBR (fbr.gov.pk) in Pakistan, or with your country's tax office or a tax adviser.
+speechHidden: I do not give tax rates: they change with the law and the budget. Please verify the current rate with the FBR (fbr.gov.pk) in Pakistan, or with your country's tax office or a tax adviser.
+ask: Knowledge(kind=UNSUPPORTED, atom=null, limit=TAX_RATE, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=UNSUPPORTED, atom=null, limit=RULING, cost=null, sale=null, asked=null)
+mood: CALM
+label: Not mine to answer
+line: I do not give religious rulings. For Zakat, a loan or what is allowed, please ask a qualified Hanafi scholar.
+spoken: I do not give religious rulings. For Zakat, a loan or what is allowed, please ask a qualified Hanafi scholar.
+speech: I do not give religious rulings. For Zakat, a loan or what is allowed, please ask a qualified Hanafi scholar.
+speechHidden: I do not give religious rulings. For Zakat, a loan or what is allowed, please ask a qualified Hanafi scholar.
+ask: Knowledge(kind=UNSUPPORTED, atom=null, limit=RULING, cost=null, sale=null, asked=null)
+
