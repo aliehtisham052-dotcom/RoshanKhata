@@ -506,11 +506,13 @@ ask: Goods(ids=[2], facet=SUPPLIERS, window=null)
 
 === Goods(ids=[1, 2], facet=PRICE, window=null)
 mood: CALM
-label: Which one do you mean?
-row: party=0 | Urea | Rs 4,000 | Green Field Co. | open=ProductsActivity
-row: party=0 | DAP | Rs 9,000 | Kisan Co. | open=ProductsActivity
+label: Cash price
+row: party=0 | Urea | Rs 4,000 / bag | Green Field Co. | open=ProductsActivity | ask=Goods(ids=[1], facet=PRICE, window=null)
+row: party=0 | DAP | Rs 9,000 / bag | Kisan Co. | open=ProductsActivity | ask=Goods(ids=[2], facet=PRICE, window=null)
+open: ProductsActivity
+speech: Cash price. Urea, Rs 4,000 / bag, Green Field Co. DAP, Rs 9,000 / bag, Kisan Co.
+speechHidden: Cash price. Urea, Green Field Co. DAP, Kisan Co. [an amount left out]
 ask: Goods(ids=[1, 2], facet=PRICE, window=null)
-quiet: true
 
 === Goods(ids=[], facet=PRICE, window=null)
 mood: CALM

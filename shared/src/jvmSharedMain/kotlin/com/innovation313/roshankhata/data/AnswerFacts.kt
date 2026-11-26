@@ -279,6 +279,48 @@ object AnswerFacts {
     // ------------------------------------------------------------------------------------------------ goods
 
     /**
+     * One name that is several products ("Urea" for Urea Sona, Urea Fatima, Urea Engro; 26 Nov 2026, the owner's phone, BC-408).
+     * Stock and price are answered for every one of them, a row each with its company, and stock's total when every row is
+     * counted in one unit — the question asked is answered, never turned into "which one?". Any other fact is a choice whose
+     * rows ask that same fact of the one tapped (they opened the products list before, and the question was lost).
+     */
+    private suspend fun severalGoods(
+        c: AnswerEnv, dao: KhataDao, found: List<Product>, facet: Hudhud.GoodsFacet, window: VoiceQuestion.Window?
+    ): AnswerCard {
+        fun askOne(p: Product) = Hudhud.Ask.Goods(listOf(p.id), facet, window)
+        return when (facet) {
+            Hudhud.GoodsFacet.STOCK -> {
+                val stock = Valuation.compute(dao).rows.associateBy { it.productId }
+                val each = found.map { it to stock[it.id] }
+                val rows = each.map { (p, s) ->
+                    val have: Double? = s?.onHand
+                    Row(0, p.name, if (have == null) c.getString(W.stock_no_movement) else Format.qty(have, s?.unit),
+                        listOfNotNull(p.company?.takeIf { it.isNotBlank() }, if (s?.isLow == true) c.getString(W.hudhud_t_low) else null)
+                            .joinToString(" · ").ifBlank { null },
+                        open = ScreenId.PRODUCTS, ask = askOne(p))
+                }
+                val total: String? = HudhudGoodsTotal.of(each.map { (_, s) -> s?.onHand to s?.unit })
+                    ?.let { (sum, unit) -> Format.qty(sum, unit) }
+                AnswerCard(if (each.any { (_, s) -> s?.isLow == true }) Mood.CARE else Mood.CALM, label = c.getString(W.hudhud_l_stock),
+                    figure = total, lines = listOfNotNull(total?.let { c.getString(W.hudhud_l_total) }),
+                    rows = rows, open = ScreenId.PRODUCTS)
+            }
+            Hudhud.GoodsFacet.PRICE -> {
+                val rows = found.map { p ->
+                    val v = p.salePrice ?: p.creditPrice
+                    val unit = p.defaultUnit?.takeIf { it.isNotBlank() }
+                    Row(0, p.name, v?.let { AnswerBook.money(it) + (unit?.let { u -> " / " + UnitWords.label(u) } ?: "") }
+                        ?: c.getString(W.hudhud_price_none), p.company?.takeIf { it.isNotBlank() },
+                        open = ScreenId.PRODUCTS, ask = askOne(p))
+                }
+                AnswerCard(Mood.CALM, label = c.getString(W.hudhud_l_cash_price), rows = rows, open = ScreenId.PRODUCTS)
+            }
+            else -> AnswerCard(Mood.CALM, label = c.getString(W.hudhud_pick_party),
+                rows = found.map { Row(0, it.name, "", it.company, open = ScreenId.PRODUCTS, ask = askOne(it)) }, quiet = true)
+        }
+    }
+
+    /**
      * A product's facts: price and stock for everyone at the counter; what it cost, which supplier charged what and how
      * much sold, behind REPORTS. Suppliers' rates are their last rate each, from the bill lines (Purchase rates' own
      * reading), cheapest first, with the day each was charged — an old rate stands beside its date, never as today's.
@@ -287,10 +329,7 @@ object AnswerFacts {
         val products = dao.productsOnce()
         val found = ids.mapNotNull { id -> products.firstOrNull { it.id == id } }
         if (found.isEmpty()) return AnswerBook.unknown(c)
-        if (found.size > 1) {
-            return AnswerCard(Mood.CALM, label = c.getString(W.hudhud_pick_party),
-                rows = found.map { Row(0, it.name, it.salePrice?.let { v -> AnswerBook.money(v) } ?: "", it.company, open = ScreenId.PRODUCTS) }, quiet = true)
-        }
+        if (found.size > 1) return severalGoods(c, dao, found, facet, window)
         val p = found.first()
         val name = p.name
         val unit = p.defaultUnit?.takeIf { it.isNotBlank() }
