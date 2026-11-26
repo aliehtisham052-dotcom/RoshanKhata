@@ -315,8 +315,23 @@ object HudhudSheet {
             parties = readParties(); goods = readGoods(); staffNames = readStaffNames()
         }
 
-        /** What the last question was taken for, so "uska number?" or "aur kal?" carry on from it. */
-        var before: Hudhud.Ask? = null
+        /**
+         * The talk (Marhala 7, 26 Nov 2026; shared with the computer's panel): what the last question was about, so "uska number?" or
+         * "aur kal?" carry on from it, the question he asked back ("whose?", a choice) and the last answer, for "nahi, doosra Ali".
+         * Ended by another business, another person signed in, ten quiet minutes, a greeting or a goodbye.
+         */
+        var talk = com.innovation313.roshankhata.data.HudhudDialogue.State()
+
+        /** The talk as it stands for a question asked now: never another book's or another person's. */
+        private fun talkNow(): com.innovation313.roshankhata.data.HudhudDialogue.State =
+            com.innovation313.roshankhata.data.HudhudDialogue.current(
+                talk, com.innovation313.roshankhata.data.Businesses.active(ctx).id,
+                com.innovation313.roshankhata.data.HudhudDialogue.who(
+                    com.innovation313.roshankhata.data.Access.account(com.innovation313.roshankhata.data.Access.current),
+                    HudhudGate.reports(), HudhudGate.staff()
+                ),
+                System.currentTimeMillis()
+            )
 
         /** The day's own questions (what the bell has), first among the chips until something is asked. */
         var starters: List<Hudhud.Ask> = emptyList()
@@ -720,8 +735,9 @@ object HudhudSheet {
             // The recogniser's language, so a Persian or Indonesian amount is read its own way (voice entry's rule).
             val language = Locale.getDefault().toLanguageTag()
             val input = if (spoken) CheckLog.Input.VOICE else CheckLog.Input.TYPED
+            val state = talkNow()
             answer(candidates.first(), spoken, input) { names, products, staff ->
-                Hudhud.understand(candidates, names, topics, language, products, before, staff)
+                com.innovation313.roshankhata.data.HudhudDialogue.read(candidates, names, topics, language, products, staff, state)
             }
         }
 
@@ -809,9 +825,9 @@ object HudhudSheet {
                 // taken for; a list of names offered ("whose?") keeps the one before. A matter of faith or his own story
                 // is a detour: the shop's talk goes on from where it was, not from it.
                 val taken = (result.ask as? Hudhud.Ask.Guessed)?.ask ?: result.ask
-                // The rule is shared with the computer's panel (AnswerBook.carriesOn, 16 Nov 2026).
-                if (taken != null && com.innovation313.roshankhata.data.AnswerBook.carriesOn(taken, result.answer.reverent)) {
-                    before = taken
+                // The rule is shared with the computer's panel (HudhudDialogue.after, 26 Nov 2026).
+                result.ask?.let {
+                    talk = com.innovation313.roshankhata.data.HudhudDialogue.after(talkNow(), it, result.answer.reverent, System.currentTimeMillis())
                 }
                 // The tab follows the answer: Personal for a matter of faith or his story, the shop's for the rest.
                 shownAsk = taken

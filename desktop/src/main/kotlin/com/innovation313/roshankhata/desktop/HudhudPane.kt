@@ -37,6 +37,7 @@ import com.innovation313.roshankhata.data.DayCloseMath
 import com.innovation313.roshankhata.data.DesktopDatabase
 import com.innovation313.roshankhata.data.FileShopSettings
 import com.innovation313.roshankhata.data.Hudhud
+import com.innovation313.roshankhata.data.HudhudDialogue
 import com.innovation313.roshankhata.data.HudhudLook
 import com.innovation313.roshankhata.data.HudhudReadFailure
 import com.innovation313.roshankhata.data.HudhudSense
@@ -387,7 +388,16 @@ fun HudhudPanel(
     var asked by remember { mutableStateOf<String?>(null) }
     var card by remember(env) { mutableStateOf(HudhudDeskEnv.opening(env)) }
     var chips by remember { mutableStateOf<List<Pair<Hudhud.Ask, String>>>(emptyList()) }
-    var before by remember { mutableStateOf<Hudhud.Ask?>(null) }
+    // The talk (Marhala 7, the phone's own rule): ended by another business, another person signed in, ten quiet minutes, a greeting.
+    // The panel is handed the open business's own DAO: another business is another DAO, so the talk is filed by it.
+    var talk by remember(dao) { mutableStateOf(HudhudDialogue.State()) }
+    // The last answer that was an answer, for "dobara bolo" (the phone's lastReal): the card again, as it was.
+    var lastReal by remember { mutableStateOf<AnswerCard?>(null) }
+    fun talkNow() = HudhudDialogue.current(
+        talk, System.identityHashCode(dao).toLong(),
+        HudhudDialogue.who(Access.account(Access.current), AnswerGate.reports(), AnswerGate.staff()),
+        System.currentTimeMillis()
+    )
     var busy by remember { mutableStateOf(false) }
     var products by remember { mutableStateOf<List<Hudhud.Name>>(emptyList()) }
     var staff by remember { mutableStateOf<List<Hudhud.Name>>(emptyList()) }
@@ -429,7 +439,7 @@ fun HudhudPanel(
         if (busy || words.isBlank()) return
         busy = true
         asked = words
-        val talk = before
+        val state = talkNow()
         scope.launch {
             if (!bookRead) bookRead = readBook()
             if (!bookRead) {
@@ -439,15 +449,16 @@ fun HudhudPanel(
             }
             val result: Pair<AnswerCard, List<Hudhud.Ask>>? = try {
                 val q = known ?: withContext(Dispatchers.Default) {
-                    Hudhud.understand(listOf(words), names, topics, language, products, talk, staff).second
+                    HudhudDialogue.read(listOf(words), names, topics, language, products, staff, state).second
                 }
-                val answer = withContext(Dispatchers.IO) { AnswerBook.answer(env, dao, q, parties) }
+                val again = (q as? Hudhud.Ask.Voice)?.change == Hudhud.VoiceChange.AGAIN
+                val answer = lastReal.takeIf { again } ?: withContext(Dispatchers.IO) { AnswerBook.answer(env, dao, q, parties) }
                 val next = withContext(Dispatchers.Default) {
                     AnswerBook.chipsFor(env, words, q, answer.options, answer.tookAs != null, names, products, topics, language)
                 }
                 // What the talk is about now, so "uska number?" carries on (the phone's own rule).
-                val taken = (q as? Hudhud.Ask.Guessed)?.ask ?: q
-                if (AnswerBook.carriesOn(taken, answer.reverent)) before = taken
+                talk = HudhudDialogue.after(state, q, answer.reverent, System.currentTimeMillis())
+                if (answer.voice == null) lastReal = answer
                 HudhudDeskEnv.forDesk(answer, env.words) to next
             } catch (e: kotlinx.coroutines.CancellationException) {
                 throw e

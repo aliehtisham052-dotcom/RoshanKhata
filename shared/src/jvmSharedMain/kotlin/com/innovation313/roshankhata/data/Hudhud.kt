@@ -5385,6 +5385,9 @@ object Hudhud {
                 }
             }
             val hit = tries.drop(1).firstOrNull { t -> HudhudMind.meaningOf(t).any { it in FACT_CONCEPTS } }
+                // "رقم" with "his" or "and" joined to it is Arabic's "his number": in Urdu the same letters are an amount (lesson 92),
+                // so the stem alone is not a phone to the rules; a joined pronoun or "and" says the sentence is Arabic's.
+                ?: tries.drop(1).firstOrNull { it == ARABIC_NUMBER }?.let { PHONE_WORD }
             if (hit != null) { cut = true; hit } else w
         }
         return if (cut && out.isNotEmpty()) out.joinToString(" ") else heard
@@ -5395,6 +5398,8 @@ object Hudhud {
         HudhudMind.C.LIMIT, HudhudMind.C.PROMISE, HudhudMind.C.PAYMENT, HudhudMind.C.ENTRY, HudhudMind.C.PRICE, HudhudMind.C.STOCK,
         HudhudMind.C.COST, HudhudMind.C.SUPPLIER, HudhudMind.C.ACCOUNT)
 
+    private val ARABIC_NUMBER: String by lazy { norm("رقم") }
+    private val PHONE_WORD: String by lazy { norm("هاتف") }
     private val HIS_ENDINGS: List<String> by lazy { listOf("ها", "هم", "ه", "اش", "ش").map { norm(it) }.sortedByDescending { it.length } }
     private val JOINED_HIS: Set<String> by lazy { listOf("اش", "و").map { norm(it) }.toSet() }
     private val PATA_WORDS: Set<String> by lazy { listOf("pata", "patta", "پتہ", "پتا", "पता").map { norm(it) }.toSet() }
