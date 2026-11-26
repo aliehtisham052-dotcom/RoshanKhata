@@ -32,3 +32,5 @@ report revenue") are a separate list that happens to share the letter; they are 
 | D19 | 25 Nov 2026, 20:10 | Concentration: first only the share of all credit one party holds; an alert and its threshold later, by the owner or by measurement. | docs/decisions-25nov2026.md | 10 *(stated)* |
 | D20 | 25 Nov 2026, 20:10 | Master plan v1 is the base; a new plan is fitted into its phases; a v2 only when new evidence changes a decision, saying what, why and the source. | docs/decisions-25nov2026.md | all *(stated)* |
 | D21 | 25 Nov 2026, 20:10 | The repository stays public (free GitHub runners); Hudhud's name and bank are therefore public; outside AI tools get only the name-free context pack. | docs/decisions-25nov2026.md | all; 12 (rights register: the bank is public) *(read)* |
+| D22 | 26 Nov 2026, morning | Business-knowledge atoms no longer cite OpenStax; each atom names a source from the rights register's allowed hosts. | docs/decisions-25nov2026.md | 9 *(stated)* |
+| D23 | 26 Nov 2026, morning | Zakat unchanged: "kis par farz" opens the Zakat page; no ruling of Hudhud's own, rulings to a qualified Hanafi scholar. | docs/decisions-25nov2026.md | 9 *(stated)* |

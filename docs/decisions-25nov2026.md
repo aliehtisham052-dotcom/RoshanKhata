@@ -48,3 +48,10 @@ order; the plan's rules stay (each piece with its tests, no big refactor, figure
 retrain still needs the owner's own check-log mistakes (decided 25 Nov: no synthetic retrain). The owner will use the
 test build for two days (about 70 real questions a day, marking wrong answers) instead of seven (Marhala 2), and will
 look at the sealed set (D18) later; Claude never writes its sentences.
+
+### 26 November 2026 (morning): two questions answered
+
+| Id | Decision |
+|---|---|
+| D22 | Business-knowledge sources: OpenStax is replaced ("Source badal do"). Its books are CC BY 4.0, but each atom must point at a source the owner can open and check in one step; the atoms of Marhala 9 take their source from the rights register's allowed hosts, and an OpenStax link in an atom fails `check_knowledge_atoms.py`. |
+| D23 | Zakat stays as it is ("Yahi rakho"): "on whom is Zakat due" opens the Zakat page and its calculator; Hudhud gives no ruling of his own, and rulings are sent to a qualified Hanafi scholar. The rate's source is the comment above `Zakat.RATE`. |
