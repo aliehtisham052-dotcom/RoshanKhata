@@ -13,7 +13,7 @@ import java.math.RoundingMode
  *
  * Sources (the knowledge atoms of shared/hudhud/knowledge/atoms.tsv carry them with the day they were read): margin and markup as
  * the rates of markup on selling price and on cost (eCampusOntario, Business and Financial Math, 1.3 Markup); contribution
- * margin and break-even units (OpenStax, Principles of Accounting Vol. 2, 3.1 and 3.2); credit concentration as an idea
+ * margin and break-even units (University of Missouri Extension G648; OpenStax was dropped 26 Nov 2026); credit concentration as an idea
  * (OCC Comptroller's Handbook, Concentrations of Credit), measured here as a share of all money owed to the shop (D19).
  */
 object PriceMath {

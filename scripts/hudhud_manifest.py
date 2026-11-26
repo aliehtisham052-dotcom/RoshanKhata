@@ -73,7 +73,7 @@ ORIGINS = [
      "Written by hand in project sessions under the owner's rule that Hudhud's reach is the app's own map (one decision per "
      "column, profile field, screen and More entry); every claim is checked against the code by gen_hudhud_catalog.py. "
      "Writer per line: unknown (shallow history)."),
-    ("shared/hudhud/knowledge/atoms.tsv", "knowledge", "n/a", "no", "RS-15;RS-16;RS-17;RS-02",
+    ("shared/hudhud/knowledge/atoms.tsv", "knowledge", "n/a", "no", "RS-16;RS-17;RS-02;RS-14;RS-19;RS-20;RS-21;RS-22;RS-23;RS-24;RS-25;RS-26;RS-27;RS-28;RS-29;RS-30;RS-31;RS-32",
      "Hudhud's knowledge atoms (Marhala 9, lane B, D16; 26 Nov 2026): what a shop word means, each with its source (an address, a "
      "tier 1-5) and the day it was read; the meanings are written in the app's own words in its nine strings.xml (RS-02: a Claude "
      "session), no source's text copied. Not training data: the table the app ships (HudhudKnowledgeAtoms.kt, written from it by "

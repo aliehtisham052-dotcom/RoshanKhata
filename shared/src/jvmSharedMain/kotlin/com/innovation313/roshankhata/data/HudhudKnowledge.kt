@@ -299,6 +299,34 @@ object HudhudKnowledge {
     private const val MONEY = "qqmoney"
     private const val MINE = "qqmine"
     private const val NUMBER = "qqfig"
+    // Modules 3-8 (26 Nov 2026, K2): cash flow, stock, credit and collection, tax words (no rate), Zakat's page, trade basics.
+    private const val CASH = "qqcash"
+    private const val CASH_CYCLE = "qqcashcycle"
+    private const val CREDIT_SALE = "qqcreditsale"
+    private const val EFFECT = "qqeffect"
+    private const val STOCK_COVER = "qqcover"
+    private const val REORDER = "qqreorder"
+    private const val DEAD = "qqdead"
+    private const val FIFO = "qqfifo"
+    private const val FEFO = "qqfefo"
+    private const val LIMIT = "qqlimit"
+    private const val AGING = "qqaging"
+    private const val TONE = "qqtone"
+    private const val QARZ = "qqqarz"
+    private const val SALES_TAX = "qqsalestax"
+    private const val WHT = "qqwht"
+    private const val TAX_IN = "qqtaxin"
+    private const val TAX_OUT = "qqtaxout"
+    private const val NISAB = "qqnisab"
+    private const val ZAKAT = "qqzakat"
+    private const val DOUBTFUL = "qqdoubt"
+    private const val PACK = "qqpack"
+    private const val UNIT_PRICE = "qqunitprice"
+    private const val BATCH = "qqbatch"
+    private const val EXPIRY = "qqexpiry"
+    private const val PRICE_LIST = "qqpricelist"
+    private const val CASH_PRICE = "qqcashprice"
+    private const val CREDIT_PRICE = "qqcreditprice"
 
     /** Phrases and words, in any of the nine languages, and the token each becomes. Longer phrases are matched first. */
     private val VOCAB: Map<String, List<String>> = mapOf(
@@ -369,7 +397,10 @@ object HudhudKnowledge {
             "فارمولو", "كيف احسب", "كيف تحسب", "كيف يحسب", "كيفية حساب", "معادلة", "صيغة", "چطور حساب", "چگونه حساب",
             "چگونه محاسبه", "چطور محاسبه", "فرمول", "कैसे निकालें", "कैसे निकालते", "कैसे निकाले", "फॉर्मूला", "फार्मूला", "सूत्र",
             "কীভাবে বের করব", "কিভাবে বের করব", "কীভাবে বের", "কিভাবে বের", "কীভাবে হিসাব", "কিভাবে হিসাব", "সূত্র", "ফর্মুলা",
-            "cara menghitung", "bagaimana menghitung", "cara hitung", "rumus"
+            "cara menghitung", "bagaimana menghitung", "cara hitung", "rumus",
+            "kaisa hona chahiye", "kaisi honi chahiye", "kaisa ho", "kaisi ho", "how should", "should be", "کیسا ہونا چاہیے",
+            "کیسی ہونی چاہیے", "ڪهڙو هجڻ گهرجي", "ڪيئن هجي", "كيف يكون", "كيف يجب أن يكون", "چگونہ باشد", "چگونه باشد", "چطور باشد",
+            "कैसा होना चाहिए", "कैसी होनी चाहिए", "কেমন হওয়া উচিত", "কেমন হবে", "seperti apa", "bagaimana seharusnya"
         ),
         COST_BEFORE to listOf(
             "cost price", "buying price", "purchase price", "bought for", "bought at", "bought it for", "buy at", "buy for", "buy it for",
@@ -400,6 +431,129 @@ object HudhudKnowledge {
         MINE to listOf(
             "my", "mera", "meri", "mere", "hamara", "hamari", "hamare", "میرا", "میری", "میرے", "ہمارا", "منهنجو", "منهنجي", "مेरा",
             "मेरा", "मेरी", "हमारा", "আমার", "saya", "ku"
+        ),
+        // Module 3: cash flow.
+        CASH to listOf(
+            "cash", "naqd", "naqdi", "naqad", "paisa hath mein", "نقد", "نقدی", "کیش", "ڪيش", "نقدي", "السيولة", "سيولة", "النقد",
+            "نقدینگی", "پول نقد", "नकद", "नकदी", "कैश", "নগদ", "ক্যাশ", "kas", "uang tunai", "tunai"
+        ),
+        CASH_CYCLE to listOf(
+            "cash conversion cycle", "cash cycle", "operating cycle", "naqdi ka chakkar", "cash ka chakkar", "کیش سائیکل", "نقدی کا چکر",
+            "ڪيش سائيڪل", "نقد جو چڪر", "دورة التحويل النقدي", "دورة النقد", "الدورة النقدية", "چرخہ تبدیل وجہ نقد", "چرخہ نقدی",
+            "چرخه تبدیل وجه نقد", "چرخه نقدی", "कैश साइकिल", "नकदी चक्र", "ক্যাশ সাইকেল", "নগদ চক্র", "siklus konversi kas", "siklus kas"
+        ),
+        CREDIT_SALE to listOf(
+            "credit sales", "credit sale", "sales on credit", "selling on credit", "udhaar sale", "udhar sale", "udhaar ki sale",
+            "udhar ki sale", "udhaar par bechna", "udhar par bechna", "ادھار کی سیل", "ادھار سیل", "ادھار پر بیچنا", "ادھار فروخت",
+            "اڌار وڪرو", "اڌار تي وڪرو", "البيع بالآجل", "البيع الآجل", "المبيعات الآجلة", "فروش نسیہ", "فروش اعتباری", "فروش نسیه",
+            "उधार बिक्री", "उधार की बिक्री", "उधार पर बेचना", "বাকিতে বিক্রি", "বাকি বিক্রি", "penjualan kredit", "jual kredit"
+        ),
+        EFFECT to listOf(
+            "asar", "effect", "affect", "affects", "impact", "hurt", "hurts", "why", "kyun", "kyon", "kiyon", "kam hota", "kam hoti",
+            "kam ho jata", "kam karta", "kam karti", "reduce", "reduces", "اثر", "کیوں", "کم ہوتا", "کم ہوتی", "ڇو", "گهٽ ٿيندو", "تأثير",
+            "يؤثر", "لماذا", "تاثیر", "چرا", "کم می شود", "असर", "प्रभाव", "क्यों", "कम होता", "কেন", "প্রভাব", "কমে", "pengaruh",
+            "dampak", "mengapa", "kenapa", "berkurang"
+        ),
+        // Module 4: stock.
+        STOCK_COVER to listOf(
+            "stock cover", "cover days", "days of stock", "days of cover", "stock kavar", "اسٹاک کور", "سٹاک کور", "اسٽاڪ ڪور",
+            "تغطية المخزون", "أيام التغطية", "پوشش موجودی", "روزهای پوشش", "स्टॉक कवर", "স্টক কভার", "cakupan stok", "hari stok"
+        ),
+        REORDER to listOf(
+            "reorder point", "re order point", "reorder level", "re order level", "ری آرڈر پوائنٹ", "ری آرڈر لیول", "ري آرڊر پوائنٽ",
+            "نقطة إعادة الطلب", "نقطة اعادة الطلب", "حد إعادة الطلب", "نقطه سفارش مجدد", "نقطه سفارش", "रीऑर्डर पॉइंट", "री ऑर्डर पॉइंट",
+            "पुनः ऑर्डर बिंदु", "রিঅর্ডার পয়েন্ট", "রি অর্ডার পয়েন্ট", "পুনঃঅর্ডার বিন্দু", "titik pemesanan ulang", "titik pesan ulang"
+        ),
+        DEAD to listOf(
+            "dead stock", "dead inventory", "slow moving stock", "na bikne wala maal", "na bikne wala mal", "ڈیڈ اسٹاک", "ڈیڈ سٹاک",
+            "نہ بکنے والا مال", "ڊيڊ اسٽاڪ", "نه وڪامندڙ مال", "المخزون الراکد", "مخزون راکد", "المخزون الميت", "موجودی راکد",
+            "کالای راکد", "डेड स्टॉक", "न बिकने वाला माल", "ডেড স্টক", "অচল মজুত", "stok mati", "barang tidak laku"
+        ),
+        FIFO to listOf("first in first out", "fifo", "فیفو", "فيفو", "الوارد أولا صادر أولا", "फीफो", "ফিফো", "masuk pertama keluar pertama"),
+        FEFO to listOf(
+            "first expiry first out", "first expired first out", "fefo", "فیفو ایکسپائری", "فيفو ايڪسپائري", "ما ينتهي أولا يصرف أولا", "फेफो",
+            "ফেফো", "kedaluwarsa pertama keluar pertama"
+        ),
+        // Module 5: credit and collection.
+        LIMIT to listOf(
+            "credit limit", "credit limits", "udhaar ki had", "udhar ki had", "udhaar limit", "udhar limit", "کریڈٹ لمٹ", "ادھار کی حد",
+            "ڪريڊٽ لمٽ", "اڌار جي حد", "حد الائتمان", "الحد الائتماني", "سقف اعتبار", "حد اعتبار", "क्रेडिट लिमिट", "उधार की सीमा",
+            "उधार सीमा", "ক্রেডিট লিমিট", "বাকির সীমা", "batas kredit", "limit kredit"
+        ),
+        AGING to listOf(
+            "receivables aging", "receivable aging", "aging report", "ageing report", "aging", "ageing", "dues by age", "udhaar ki umar",
+            "udhar ki umar", "ایجنگ", "ادھار کی عمر", "ايجنگ", "اڌار جي عمر", "أعمار الديون", "أعمار الذمم", "تقادم الذمم", "سن مطالبات",
+            "سنی بندی مطالبات", "एजिंग", "उधार की उम्र", "এজিং", "বাকির বয়স", "umur piutang", "aging piutang"
+        ),
+        TONE to listOf(
+            "tone of a payment reminder", "tone of a reminder", "payment reminder tone", "reminder tone", "polite reminder",
+            "reminder ka lehja", "reminder ka andaz", "yaad dehani ka lehja", "تقاضے کا لہجہ", "ریمائنڈر کا لہجہ", "یاد دہانی کا لہجہ",
+            "ياد ڏهاني جو لهجو", "ريمائنڊر جو لهجو", "نبرة التذكير", "أسلوب التذكير", "لحن یادآوری", "लहजा रिमाइंडर", "रिमाइंडर का लहजा",
+            "तकाजे का लहजा", "রিমাইন্ডারের ভাষা", "তাগাদার ভাষা", "nada pengingat", "gaya pengingat"
+        ),
+        QARZ to listOf(
+            "qarz e hasna", "qarze hasna", "qarz e hasana", "qarz hasna", "qarzehasna", "qard hasan", "qard al hasan", "qardul hasan",
+            "qardhul hasan", "qard e hasan", "qarz e husna", "قرض حسنہ", "قرض حسنو", "القرض الحسن", "قرض حسن", "قرض الحسنہ",
+            "कर्ज ए हसना", "करज ए हसना", "কর্জে হাসানা", "করজে হাসানা", "কর্জে হাসানাহ", "pinjaman kebajikan"
+        ),
+        // Module 6: tax words, never a rate.
+        SALES_TAX to listOf(
+            "sales tax", "general sales tax", "gst", "vat", "value added tax", "سیلز ٹیکس", "سيلز ٽيڪس", "ضريبة المبيعات",
+            "ضريبة القيمة المضافة", "مالیات بر ارزش افزودہ", "مالیات بر ارزش افزوده", "مالیات فروش", "बिक्री कर", "सेल्स टैक्स",
+            "जीएसटी", "বিক্রয় কর", "ভ্যাট", "pajak penjualan", "ppn", "pajak pertambahan nilai"
+        ),
+        WHT to listOf(
+            "withholding tax", "withholding", "wht", "tax at source", "ودہولڈنگ ٹیکس", "ود ہولڈنگ ٹیکس", "ودھولڈنگ ٹیکس",
+            "وڊهولڊنگ ٽيڪس", "ضريبة الاستقطاع", "الضريبة المقتطعة", "ضريبة مقتطعة", "مالیات تکلیفی", "مالیات کسر در منبع",
+            "विदहोल्डिंग टैक्स", "स्रोत पर कर", "उत्स कर", "উৎসে কর", "উইথহোল্ডিং ট্যাক্স", "pajak potong pungut", "pajak pemotongan"
+        ),
+        TAX_IN to listOf(
+            "tax inclusive", "inclusive of tax", "including tax", "price including tax", "tax ke saath", "tax samait", "ٹیکس سمیت",
+            "ٹیکس شامل", "ٽيڪس سميت", "شامل الضريبة", "شاملة الضريبة", "با مالیات", "شامل مالیات", "टैक्स सहित", "कर सहित",
+            "করসহ", "ভ্যাটসহ", "termasuk pajak"
+        ),
+        TAX_OUT to listOf(
+            "tax exclusive", "exclusive of tax", "excluding tax", "plus tax", "tax alag", "tax ke baghair", "tax ke bagair",
+            "ٹیکس الگ", "ٹیکس کے بغیر", "ٽيڪس الڳ", "غير شامل الضريبة", "بدون الضريبة", "بدون مالیات", "टैक्स अलग", "कर रहित",
+            "কর ছাড়া", "ভ্যাট ছাড়া", "belum termasuk pajak", "tidak termasuk pajak"
+        ),
+        // Module 7: Zakat's page and Qarz-e-Hasna.
+        NISAB to listOf("nisab", "nisaab", "نصاب", "النصاب", "निसाब", "नसाब", "নিসাব", "nishab"),
+        ZAKAT to listOf("zakat", "zakaat", "zakah", "زکوٰۃ", "زکوۃ", "زکات", "زڪوات", "زڪوٰات", "الزکاۃ", "زکاۃ", "زكاة", "الزكاة", "ज़कात", "जकात", "যাকাত", "জাকাত"),
+        DOUBTFUL to listOf(
+            "doubtful debts", "doubtful debt", "doubtful udhaar", "doubtful udhar", "mushkook qarz", "mashkook udhaar", "doobne wala udhaar",
+            "مشکوک قرض", "مشکوک ادھار", "شڪي قرض", "شڪي اڌار", "الديون المشکوک فيها", "ديون مشکوک فيها", "مطالبات مشکوک",
+            "संदिग्ध कर्ज", "संदिग्ध उधार", "সন্দেহজনক পাওনা", "সন্দেহজনক বাকি", "piutang ragu ragu"
+        ),
+        // Module 8: trade basics.
+        PACK to listOf("pack", "packs", "pack size", "carton", "peti", "پیک", "کارٹن", "پیٹی", "پيڪ", "ڪارٽن", "عبوة", "كرتونة", "بستہ", "کارتن", "पैक", "कार्टन", "প্যাক", "কার্টন", "kemasan", "karton"),
+        UNIT_PRICE to listOf(
+            "unit price", "price per unit", "per unit price", "fi unit qeemat", "fi unit price", "فی یونٹ قیمت", "یونٹ قیمت", "في يونٽ قيمت",
+            "سعر الوحدة", "قیمت واحد", "قیمت هر واحد", "प्रति इकाई मूल्य", "यूनिट प्राइस", "ইউনিট মূল্য", "একক দাম", "harga satuan", "harga per unit"
+        ),
+        // Urdu's bare بیچ is also "sell" (and Sindhi's spelling folds to it): only with نمبر.
+        BATCH to listOf(
+            "batch number", "lot number", "batch", "lot", "بیچ نمبر", "بيچ نمبر", "رقم التشغيلة", "التشغيلة", "رقم الدفعة",
+            "شمارہ سری ساخت", "شماره سری ساخت", "سری ساخت", "बैच नंबर", "बैच", "ব্যাচ নম্বর", "ব্যাচ", "nomor batch", "batch produksi"
+        ),
+        EXPIRY to listOf(
+            "expiry date", "expiration date", "expiry", "best before", "ایکسپائری ڈیٹ", "ایکسپائری", "میعاد ختم ہونے کی تاریخ",
+            "ايڪسپائري", "تاريخ الانتہاء", "تاريخ انتہاء الصلاحيہ", "تاریخ انقضا", "تاريخ الانتهاء", "تاريخ انتهاء الصلاحية",
+            "एक्सपायरी डेट", "एक्सपायरी", "समाप्ति तिथि", "মেয়াদ শেষের তারিখ", "মেয়াদোত্তীর্ণের তারিখ", "এক্সপায়ারি",
+            "tanggal kedaluwarsa", "kedaluwarsa"
+        ),
+        PRICE_LIST to listOf(
+            "price list", "rate list", "qeemat ki fehrist", "ریٹ لسٹ", "پرائس لسٹ", "قیمتوں کی فہرست", "ريٽ لسٽ", "قيمتن جي لسٽ",
+            "قائمة الأسعار", "قائمة الاسعار", "فہرست قیمت", "فهرست قیمت", "लिस्ट मूल्य", "मूल्य सूची", "रेट लिस्ट", "মূল্য তালিকা",
+            "রেট লিস্ট", "daftar harga"
+        ),
+        CASH_PRICE to listOf(
+            "cash price", "naqd qeemat", "naqad qeemat", "cash rate", "نقد قیمت", "کیش ریٹ", "نقد قيمت", "سعر النقد", "السعر النقدي",
+            "قیمت نقدی", "नकद दाम", "नकद मूल्य", "নগদ দাম", "harga tunai"
+        ),
+        CREDIT_PRICE to listOf(
+            "credit price", "udhaar qeemat", "udhar qeemat", "udhaar rate", "udhar rate", "ادھار قیمت", "ادھار ریٹ", "اڌار قيمت",
+            "سعر الآجل", "السعر الآجل", "قیمت نسیہ", "قیمت نسیه", "उधार दाम", "उधार मूल्य", "বাকির দাম", "harga kredit"
         )
     )
 
@@ -411,37 +565,76 @@ object HudhudKnowledge {
     /** Little words that ask nothing: being, joining, "the", "of", "and", "then", "tell me", "if". Never "my" (that is [MINE]). */
     private val LITTLE = StrictWords(
         // English
-        "the a an is are was were be do does did it its in on of for to from and or then if i we you so what which between " +
+        "the a an is are was were be do does did it its in on of for to from and or then if i we you so what which between about " +
             "tell me please explain show calculated worked found work out item thing per unit units one",
         // Roman Urdu and Hindi in Latin letters
         "ka ki ke ko se mein me main aur ya to agar hai hain he hy hota hoti hote hoga hogi honge hua hui banta banti bane banega " +
             "banegi niklega niklegi nikle bata batao bataiye btao samjhao samjha samjhaiye zara ji please plz kya kia is us ye yeh wo " +
-            "woh dono kaun konsa konsi kis cheez chiz item ek jab",
+            "woh dono kaun konsa konsi kis cheez chiz item ek jab par pe",
         // Urdu
-        "کا کی کے کو سے میں اور یا تو اگر ہے ہیں ہوتا ہوتی ہوگا ہوگی ہوا بنتا بنتی بنے گا بتاؤ بتائیں بتائیے سمجھاؤ ذرا جی کیا اس یہ وہ دونوں کون چیز ایک",
+        "کا کی کے کو سے میں اور یا تو اگر ہے ہیں ہوتا ہوتی ہوگا ہوگی ہوا بنتا بنتی بنے گا بتاؤ بتائیں بتائیے سمجھاؤ ذرا جی کیا اس یہ وہ دونوں کون چیز ایک پر",
         // Sindhi
-        "جو جي جا کي کان ۾ ۽ يا ته جيڪڏهن آهي آهن ٿيندو ٻڌايو ٻڌاءِ سمجهايو ڇا هي اهو ٻئي ڪهڙو شيء هڪ",
+        "جو جي جا کي کان ۾ ۽ يا ته جيڪڏهن آهي آهن ٿيندو ٻڌايو ٻڌاءِ سمجهايو ڇا هي اهو ٻئي ڪهڙو شيء هڪ تي",
         // Arabic
         "بين و او في من على عن الى إلى هل هو هي لي قل اخبرني أخبرني اشرح ما ماذا كيف اذا إذا ثم هذا هذه",
         // Farsi
-        "بین و یا در از به را که است چیست چه این آن بگو توضیح بده اگر پس",
+        "بین و یا در از به را که است چیست چه این آن بگو توضیح بده اگر پس بر",
         // Hindi
-        "का की के को से में और या तो अगर है हैं होता होती होगा होगी हुआ बताओ बताइए समझाओ जरा जी क्या इस यह ये वह दोनों कौन चीज एक",
+        "का की के को से में और या तो अगर है हैं होता होती होगा होगी हुआ बताओ बताइए समझाओ जरा जी क्या इस यह ये वह दोनों कौन चीज एक पर",
         // Bengali
-        "এর এ ও আর বা তাহলে যদি হয় হল হলো হবে বলো বলুন বুঝিয়ে দাও কী কি এই এটা দুটো মধ্যে মধ্য একটা জিনিস টা টি",
+        "এর এ ও আর বা তাহলে যদি হয় হল হলো হবে বলো বলুন বুঝিয়ে দাও কী কি এই এটা দুটো মধ্যে মধ্য একটা জিনিস টা টি উপর",
         // Indonesian
-        "dan atau dengan antara itu ini adalah yang di ke dari jika kalau maka tolong jelaskan beritahu apa bagaimana sebuah satu barang"
+        "dan atau dengan antara itu ini adalah yang di ke dari jika kalau maka tolong jelaskan beritahu apa bagaimana sebuah satu barang atas"
     )
 
     /** Topics that are also a figure the book has: a weak "what is" beside one could ask the book's own ("margin kya hai"). */
-    private val BOOK_LIKE = setOf(MARGIN, RECEIVABLE, PAYABLE, NET, CONC)
+    private val BOOK_LIKE = setOf(
+        MARGIN, RECEIVABLE, PAYABLE, NET, CONC, CREDIT_SALE, STOCK_COVER, DEAD, LIMIT, AGING, QARZ, NISAB, PACK, BATCH, EXPIRY, PRICE_LIST
+    )
+
+    /**
+     * Topics the app has a page of its own for (K2, 26 Nov 2026): "how" beside one of them asks how to do it in the app ("rate list
+     * kaise banaun" is the price list's page, "nisab kaise nikalein" the Zakat page), so only a meaning or a difference is read.
+     */
+    private val APP_PAGE = setOf(CREDIT_SALE, DEAD, LIMIT, AGING, QARZ, NISAB, PACK, BATCH, EXPIRY, PRICE_LIST, CASH_PRICE, CREDIT_PRICE)
+
+    /** Words that are no topic alone: they only name a pair ([pairOf]); left over, the sentence is not read. */
+    private val AUX = setOf(CASH, EFFECT, ZAKAT, DOUBTFUL)
 
     private val ATOM_OF = mapOf(
         RECEIVABLE to "K101", PAYABLE to "K102", NET to "K103", CONC to "K104", MARGIN to "K201", MARKUP to "K202",
-        CONTRIB to "K204", BREAK_EVEN to "K205"
+        CONTRIB to "K204", BREAK_EVEN to "K205",
+        CASH_CYCLE to "K302", CREDIT_SALE to "K303", STOCK_COVER to "K401", REORDER to "K402", DEAD to "K403", FIFO to "K404",
+        FEFO to "K404", LIMIT to "K501", AGING to "K502", TONE to "K503", QARZ to "K504", SALES_TAX to "K601", WHT to "K602",
+        TAX_IN to "K603", TAX_OUT to "K603", NISAB to "K701", PACK to "K801", UNIT_PRICE to "K801", BATCH to "K802", EXPIRY to "K802",
+        PRICE_LIST to "K803", CASH_PRICE to "K803", CREDIT_PRICE to "K803"
     )
 
-    private val TOPICS = setOf(MARGIN, MARKUP, CONTRIB, BREAK_EVEN, DISCOUNT, RECEIVABLE, PAYABLE, NET, CONC)
+    private val TOPICS = setOf(
+        MARGIN, MARKUP, CONTRIB, BREAK_EVEN, DISCOUNT, RECEIVABLE, PAYABLE, NET, CONC, CASH_CYCLE, CREDIT_SALE, STOCK_COVER, REORDER,
+        DEAD, FIFO, FEFO, LIMIT, AGING, TONE, QARZ, SALES_TAX, WHT, TAX_IN, TAX_OUT, NISAB, PACK, UNIT_PRICE, BATCH, EXPIRY,
+        PRICE_LIST, CASH_PRICE, CREDIT_PRICE
+    )
+
+    /**
+     * Two words that together name one atom (K2, 26 Nov 2026), and what else the sentence must say. Cash with profit is K301 only
+     * with a difference or an effect ("cash aur munafa mein farq"); a credit sale with cash K303 with any cue; a Qarz-e-Hasna or a
+     * doubtful debt with Zakat K702/K703 with or without one (the pair is the question: "qarz e hasna par zakat"); the rest only as a
+     * difference. Anything more than the pair (a third topic) and nothing is read.
+     */
+    private fun pairOf(topics: Set<String>, define: Boolean, how: Boolean, diff: Boolean, effect: Boolean): String? = when (topics) {
+        setOf(CASH, PROFIT) -> if (diff || effect) "K301" else null
+        setOf(CREDIT_SALE, CASH) -> if (diff || effect || define || how) "K303" else null
+        setOf(QARZ, ZAKAT) -> "K702"
+        setOf(DOUBTFUL, ZAKAT) -> "K703"
+        setOf(QARZ, CREDIT_SALE) -> if (diff) "K504" else null
+        setOf(TAX_IN, TAX_OUT) -> if (diff || define) "K603" else null
+        setOf(PACK, UNIT_PRICE) -> if (diff) "K801" else null
+        setOf(BATCH, EXPIRY) -> if (diff || define || how) "K802" else null
+        setOf(CASH_PRICE, CREDIT_PRICE) -> if (diff || define) "K803" else null
+        setOf(FIFO, FEFO) -> if (diff || define) "K404" else null
+        else -> null
+    }
 
     /** A figure as written: plain digits, thousands with commas (or a lakh's), or at most two decimals after a point. */
     private val AMOUNT = Regex("(?<![\\p{Nd},.])\\p{Nd}[\\p{Nd},.]*(?<![,.])")
@@ -498,14 +691,21 @@ object HudhudKnowledge {
     /** An atom's meaning, its formula or the difference between two: no figure in the sentence. */
     private fun definition(tokens: List<String>): Hudhud.Ask.Knowledge? {
         val topics = tokens.filter { it in TOPICS }.toSet()
-        if (topics.isEmpty()) return null
         // Words that belong to a worked example (a cost, a sale price, "how much", "my") ask a figure, not a meaning.
         if (tokens.any { it == COST_BEFORE || it == COST_AFTER || it == SALE_BEFORE || it == SALE_AFTER || it == MINE || it == ASK || it == MONEY }) return null
-        if (tokens.contains(PROFIT)) return null
         val define = DEFINE in tokens
         val weak = WHAT in tokens
         val how = HOW in tokens
         val diff = DIFF in tokens
+        // A pair that names one atom between them (modules 3-8): cash and profit, a credit sale and cash, Qarz-e-Hasna and Zakat.
+        val paired = (topics + tokens.filter { it in AUX || it == PROFIT }) - EFFECT
+        if (paired.size == 2) pairOf(paired, define, how, diff, EFFECT in tokens)?.let { id -> return atom(id)?.let { Hudhud.Ask.Knowledge(it.kind, atom = id) } }
+        if (topics.isEmpty()) return null
+        if (tokens.contains(PROFIT)) return null
+        // A word that only names a pair, left over, is a sentence about something else ("cash kya hai", "zakat kya hai").
+        if (tokens.any { it in AUX }) return null
+        // "How" beside a topic the app has a page for is how to do it in the app: that page answers it.
+        if (how && !define && !diff && topics.any { it in APP_PAGE }) return null
         val atom: String = when {
             diff && topics == setOf(MARGIN, MARKUP) -> "K203"
             diff && (topics == setOf(DISCOUNT, MARKUP) || topics == setOf(DISCOUNT, MARGIN)) -> "K206"
@@ -530,6 +730,7 @@ object HudhudKnowledge {
         if (measures.size != 1) return null
         if (tokens.any { it in TOPICS && it != MARGIN && it != MARKUP }) return null
         if (DIFF in tokens || HOW in tokens) return null
+        if (tokens.any { it in AUX }) return null
         val asked = when (measures.first()) {
             MARGIN -> KnowMeasure.MARGIN
             MARKUP -> KnowMeasure.MARKUP

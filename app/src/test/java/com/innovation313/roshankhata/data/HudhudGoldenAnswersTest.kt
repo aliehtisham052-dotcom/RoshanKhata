@@ -317,7 +317,10 @@ internal object HudhudGoldenAsks {
         a += Hudhud.Ask.NoHistory
         // Business knowledge (Marhala 9, 26 Nov 2026): every atom, the card of an atom asked as checked (it still says what the
         // atom's own review says), each measure worked from 800 and 1,000, the question back, and every limit refused.
-        for (id in listOf("K101", "K102", "K103", "K104", "K201", "K202", "K203", "K204", "K205", "K206")) {
+        // Modules 3-8 (K2, 26 Nov 2026): one atom of each module.
+        for (id in listOf(
+            "K101", "K102", "K103", "K104", "K201", "K202", "K203", "K204", "K205", "K206", "K301", "K401", "K501", "K601", "K701", "K801"
+        )) {
             a += Hudhud.Ask.Knowledge(KnowKind.GENERAL_GUIDANCE, atom = id)
         }
         a += Hudhud.Ask.Knowledge(KnowKind.VERIFIED, atom = "K201")

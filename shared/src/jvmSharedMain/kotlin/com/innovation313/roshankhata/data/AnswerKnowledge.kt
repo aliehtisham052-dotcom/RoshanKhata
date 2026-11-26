@@ -149,7 +149,10 @@ object AnswerKnowledge {
                 "K204" -> listOf("K205", "K201")
                 "K205" -> listOf("K204", "K201")
                 "K206" -> listOf("K203", "K202", "K201")
-                else -> emptyList()
+                // Modules 3-8 (K2, 26 Nov 2026): the other atoms of the same module, at most three.
+                else -> HudhudKnowledge.atom(ask.atom)?.let { a ->
+                    HudhudKnowledgeAtoms.ALL.filter { it.module == a.module && it.id != a.id }.map { it.id }.take(3)
+                } ?: emptyList()
             }
         }
         return ids.mapNotNull { id -> HudhudKnowledge.atom(id)?.let { Hudhud.Ask.Knowledge(it.kind, atom = id) } }
