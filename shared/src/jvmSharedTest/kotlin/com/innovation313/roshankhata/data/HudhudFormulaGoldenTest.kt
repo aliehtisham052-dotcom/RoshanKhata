@@ -7,7 +7,7 @@ import org.junit.Test
 
 /**
  * Golden figures of the Formula Book's F65–F69 ([PriceMath]; Marhala 9, lane B, 26 Nov 2026). Each is held to a worked figure
- * from its source (OpenStax 3.2: 18,000 ÷ 80 = 225) or to the owner's example (800 cost, 1,000 sale: margin 20%, markup 25%),
+ * from the atom's own example (18,000 ÷ 80 = 225; the formula from University of Missouri Extension G648) or to the owner's example (800 cost, 1,000 sale: margin 20%, markup 25%),
  * exactly — the formulas work in decimal arithmetic, so no tolerance is needed for these — and to the edges where a figure
  * cannot be said (a sale at nothing, a cost of nothing, a price at or under the variable cost, nothing owed).
  */

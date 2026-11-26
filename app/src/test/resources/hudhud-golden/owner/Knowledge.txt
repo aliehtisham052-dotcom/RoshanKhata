@@ -4,7 +4,7 @@ label: To get (receivable)
 line: Money your customers owe the shop for goods or cash given on credit; accountants call it accounts receivable. In this app it is the total you have to get: the balances of everyone who owes you, added up.
 line: Example: One customer owes 500 and another 300: you have 800 to get.
 line: General guidance written from the source below; not yet checked by a person.
-line: Source: OpenStax, Principles of Accounting Vol. 1 (Franklin, Graybeal, Cooper), ch. 2 key terms, read <date> · Formula Book F02
+line: Source: Business Development Bank of Canada (BDC), Glossary: Accounts receivable, read <date> · Formula Book F02
 spoken: Money your customers owe the shop for goods or cash given on credit; accountants call it accounts receivable. In this app it is the total you have to get: the balances of everyone who owes you, added up. Example: One customer owes 500 and another 300: you have 800 to get. General guidance written from the source below; not yet checked by a person.
 speech: Money your customers owe the shop for goods or cash given on credit; accountants call it accounts receivable. In this app it is the total you have to get: the balances of everyone who owes you, added up. Example: One customer owes 500 and another 300: you have 800 to get. General guidance written from the source below; not yet checked by a person.
 speechHidden: Money your customers owe the shop for goods or cash given on credit; accountants call it accounts receivable. In this app it is the total you have to get: the balances of everyone who owes you, added up. Example: One customer owes 500 and another 300: you have 800 to get. General guidance written from the source below; not yet checked by a person.
@@ -16,7 +16,7 @@ label: To give (payable)
 line: Money the shop owes for goods or services it will pay for later; accountants call it accounts payable. In this app it is the total you have to give: everything the shop owes, added up.
 line: Example: You owe one supplier 2,000 and another 1,000: you have 3,000 to give.
 line: General guidance written from the source below; not yet checked by a person.
-line: Source: OpenStax, Principles of Accounting Vol. 1 (Franklin, Graybeal, Cooper), ch. 2 key terms, read <date> · Formula Book F03
+line: Source: Business Development Bank of Canada (BDC), Glossary: Accounts payable, read <date> · Formula Book F03
 spoken: Money the shop owes for goods or services it will pay for later; accountants call it accounts payable. In this app it is the total you have to give: everything the shop owes, added up. Example: You owe one supplier 2,000 and another 1,000: you have 3,000 to give. General guidance written from the source below; not yet checked by a person.
 speech: Money the shop owes for goods or services it will pay for later; accountants call it accounts payable. In this app it is the total you have to give: everything the shop owes, added up. Example: You owe one supplier 2,000 and another 1,000: you have 3,000 to give. General guidance written from the source below; not yet checked by a person.
 speechHidden: Money the shop owes for goods or services it will pay for later; accountants call it accounts payable. In this app it is the total you have to give: everything the shop owes, added up. Example: You owe one supplier 2,000 and another 1,000: you have 3,000 to give. General guidance written from the source below; not yet checked by a person.
@@ -28,7 +28,7 @@ label: Net balance
 line: What you have to get minus what you have to give: where the whole book stands with everyone together. Above nought, more is owed to you than you owe.
 line: Example: 5,000 to get and 3,000 to give: the net balance is 2,000.
 line: General guidance written from the source below; not yet checked by a person.
-line: Source: OpenStax, Principles of Accounting Vol. 1 (Franklin, Graybeal, Cooper), ch. 2 key terms, read <date> · Formula Book F01
+line: Source: Business Development Bank of Canada (BDC), Glossary: Accounts receivable / Business Development Bank of Canada (BDC), Glossary: Accounts payable, read <date> · Formula Book F01
 spoken: What you have to get minus what you have to give: where the whole book stands with everyone together. Above nought, more is owed to you than you owe. Example: 5,000 to get and 3,000 to give: the net balance is 2,000. General guidance written from the source below; not yet checked by a person.
 speech: What you have to get minus what you have to give: where the whole book stands with everyone together. Above nought, more is owed to you than you owe. Example: 5,000 to get and 3,000 to give: the net balance is 2,000. General guidance written from the source below; not yet checked by a person.
 speechHidden: What you have to get minus what you have to give: where the whole book stands with everyone together. Above nought, more is owed to you than you owe. Example: 5,000 to get and 3,000 to give: the net balance is 2,000. General guidance written from the source below; not yet checked by a person.
@@ -91,7 +91,7 @@ label: Contribution
 line: Contribution is what one unit sold leaves after its variable cost (the cost that comes with each unit): price − variable cost per unit. It pays the fixed costs first; after that it is profit.
 line: Example: Price 100 and variable cost 20: each unit sold leaves 80.
 line: General guidance written from the source below; not yet checked by a person.
-line: Source: OpenStax, Principles of Accounting Vol. 2 (Franklin, Graybeal, Cooper), 3.1 Contribution margin, read <date> · Formula Book F68
+line: Source: University of Missouri Extension, Break-even Pricing, Revenue and Units (G648, Rahe and Milhollin, revised 2026) / University of Maryland Extension, Determine Your Contributive Margin Before Setting Your Price (G. S. Myers), read <date> · Formula Book F68
 spoken: Contribution is what one unit sold leaves after its variable cost (the cost that comes with each unit): price − variable cost per unit. It pays the fixed costs first; after that it is profit. Example: Price 100 and variable cost 20: each unit sold leaves 80. General guidance written from the source below; not yet checked by a person.
 speech: Contribution is what one unit sold leaves after its variable cost (the cost that comes with each unit): price − variable cost per unit. It pays the fixed costs first; after that it is profit. Example: Price 100 and variable cost 20: each unit sold leaves 80. General guidance written from the source below; not yet checked by a person.
 speechHidden: Contribution is what one unit sold leaves after its variable cost (the cost that comes with each unit): price − variable cost per unit. It pays the fixed costs first; after that it is profit. Example: Price 100 and variable cost 20: each unit sold leaves 80. General guidance written from the source below; not yet checked by a person.
@@ -104,7 +104,7 @@ line: Break-even is how many units must be sold to cover all the costs with noth
 line: Example: Fixed costs 18,000 a month, price 100, variable cost 20: 18,000 ÷ 80 = 225 units.
 line: If the price is not above the variable cost, no number of sales ever breaks even.
 line: General guidance written from the source below; not yet checked by a person.
-line: Source: OpenStax, Principles of Accounting Vol. 2 (Franklin, Graybeal, Cooper), 3.2 Break-even point, read <date> · Formula Book F69
+line: Source: University of Missouri Extension, Break-even Pricing, Revenue and Units (G648, Rahe and Milhollin, revised 2026), read <date> · Formula Book F69
 spoken: Break-even is how many units must be sold to cover all the costs with nothing left over: fixed costs ÷ (price − variable cost per unit). Below it is a loss, above it a profit. Example: Fixed costs 18,000 a month, price 100, variable cost 20: 18,000 ÷ 80 = 225 units. If the price is not above the variable cost, no number of sales ever breaks even. General guidance written from the source below; not yet checked by a person.
 speech: Break-even is how many units must be sold to cover all the costs with nothing left over: fixed costs ÷ (price − variable cost per unit). Below it is a loss, above it a profit. Example: Fixed costs 18,000 a month, price 100, variable cost 20: 18,000 ÷ 80 = 225 units. If the price is not above the variable cost, no number of sales ever breaks even. General guidance written from the source below; not yet checked by a person.
 speechHidden: Break-even is how many units must be sold to cover all the costs with nothing left over: fixed costs ÷ (price − variable cost per unit). Below it is a loss, above it a profit. Example: Fixed costs 18,000 a month, price 100, variable cost 20: 18,000 ÷ 80 = 225 units. If the price is not above the variable cost, no number of sales ever breaks even. General guidance written from the source below; not yet checked by a person.
@@ -121,6 +121,81 @@ spoken: A markup is added on the cost; a discount is taken off the sale price. T
 speech: A markup is added on the cost; a discount is taken off the sale price. The same percent does not undo itself, because each is taken from a different base. Example: A 25 percent markup on 800 gives 1,000, but 25 percent off 1,000 gives 750. To come back to 800 the discount is 20 percent, the margin. General guidance written from the source below; not yet checked by a person.
 speechHidden: A markup is added on the cost; a discount is taken off the sale price. The same percent does not undo itself, because each is taken from a different base. Example: A 25 percent markup on 800 gives 1,000, but 25 percent off 1,000 gives 750. To come back to 800 the discount is 20 percent, the margin. General guidance written from the source below; not yet checked by a person.
 ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K206, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K301, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Cash and profit
+line: Profit is what a sale leaves after its cost; cash is the money really in your drawer or bank. A sale on credit makes its profit on the day it is written, but its cash comes only when the customer pays, while your own bills still fall due. A shop can show a profit and still run short of cash.
+line: Example: Goods that cost 800 sold for 1,000 on credit: a profit of 200 today, and no cash until the customer pays.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: Nebraska SBDC, University of Nebraska Omaha, Why Cash Flow is More Important than Profit (A. Boex, 2020) / U.S. Small Business Administration, Manage your finances (accrual and cash method), read <date> · Formula Book F13, F23
+spoken: Profit is what a sale leaves after its cost; cash is the money really in your drawer or bank. A sale on credit makes its profit on the day it is written, but its cash comes only when the customer pays, while your own bills still fall due. A shop can show a profit and still run short of cash. Example: Goods that cost 800 sold for 1,000 on credit: a profit of 200 today, and no cash until the customer pays. General guidance written from the source below; not yet checked by a person.
+speech: Profit is what a sale leaves after its cost; cash is the money really in your drawer or bank. A sale on credit makes its profit on the day it is written, but its cash comes only when the customer pays, while your own bills still fall due. A shop can show a profit and still run short of cash. Example: Goods that cost 800 sold for 1,000 on credit: a profit of 200 today, and no cash until the customer pays. General guidance written from the source below; not yet checked by a person.
+speechHidden: Profit is what a sale leaves after its cost; cash is the money really in your drawer or bank. A sale on credit makes its profit on the day it is written, but its cash comes only when the customer pays, while your own bills still fall due. A shop can show a profit and still run short of cash. Example: Goods that cost 800 sold for 1,000 on credit: a profit of 200 today, and no cash until the customer pays. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K301, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K401, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Stock cover
+line: Stock cover is how many days the goods on the shelf will last at the pace they sell: stock on hand ÷ sales per day. This app works it out from the last 30 days of sales.
+line: Example: 120 bags on hand and 4 sold a day: 120 ÷ 4 = 30 days.
+line: With no sales in those days, the cover cannot be worked out.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: K. S. Bigel, Corporate Finance (Touro University open textbook, CC BY 4.0), the cash conversion cycle / NC State University, Supply Chain Resource Cooperative, Safety stock, read <date> · Formula Book F33
+spoken: Stock cover is how many days the goods on the shelf will last at the pace they sell: stock on hand ÷ sales per day. This app works it out from the last 30 days of sales. Example: 120 bags on hand and 4 sold a day: 120 ÷ 4 = 30 days. With no sales in those days, the cover cannot be worked out. General guidance written from the source below; not yet checked by a person.
+speech: Stock cover is how many days the goods on the shelf will last at the pace they sell: stock on hand ÷ sales per day. This app works it out from the last 30 days of sales. Example: 120 bags on hand and 4 sold a day: 120 ÷ 4 = 30 days. With no sales in those days, the cover cannot be worked out. General guidance written from the source below; not yet checked by a person.
+speechHidden: Stock cover is how many days the goods on the shelf will last at the pace they sell: stock on hand ÷ sales per day. This app works it out from the last 30 days of sales. Example: 120 bags on hand and 4 sold a day: 120 ÷ 4 = 30 days. With no sales in those days, the cover cannot be worked out. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K401, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K501, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Credit limit
+line: A credit limit is the most a customer may owe the shop at one time. Set it before giving credit, tell the customer, and do not let his balance pass it. In this app a sale that would take a customer past his limit is asked about first.
+line: Example: Limit 20,000 and he already owes 18,000: a new credit sale of 5,000 would pass the limit.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: Small Business Development Corporation, Western Australia, Providing credit to customers, read <date> · Formula Book F04
+spoken: A credit limit is the most a customer may owe the shop at one time. Set it before giving credit, tell the customer, and do not let his balance pass it. In this app a sale that would take a customer past his limit is asked about first. Example: Limit 20,000 and he already owes 18,000: a new credit sale of 5,000 would pass the limit. General guidance written from the source below; not yet checked by a person.
+speech: A credit limit is the most a customer may owe the shop at one time. Set it before giving credit, tell the customer, and do not let his balance pass it. In this app a sale that would take a customer past his limit is asked about first. Example: Limit 20,000 and he already owes 18,000: a new credit sale of 5,000 would pass the limit. General guidance written from the source below; not yet checked by a person.
+speechHidden: A credit limit is the most a customer may owe the shop at one time. Set it before giving credit, tell the customer, and do not let his balance pass it. In this app a sale that would take a customer past his limit is asked about first. Example: Limit 20,000 and he already owes 18,000: a new credit sale of 5,000 would pass the limit. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K501, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K601, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Sales tax
+line: Sales tax is a tax on the sale of goods and services. A registered seller charges it on his sales (output tax), sets off the tax he paid on his own purchases (input tax), and pays the difference to the government.
+line: Example: A registered shop collects tax on what it sells, takes off the tax it paid on its own purchases, and pays only the rest.
+line: Rates, who must register and what is exempt are set by law and change. I give no rate: please verify with the FBR (fbr.gov.pk) in Pakistan, or with your country's tax office.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: Federal Board of Revenue (FBR), Sales Tax Basics, read <date>
+spoken: Sales tax is a tax on the sale of goods and services. A registered seller charges it on his sales (output tax), sets off the tax he paid on his own purchases (input tax), and pays the difference to the government. Example: A registered shop collects tax on what it sells, takes off the tax it paid on its own purchases, and pays only the rest. Rates, who must register and what is exempt are set by law and change. I give no rate: please verify with the FBR (fbr.gov.pk) in Pakistan, or with your country's tax office. General guidance written from the source below; not yet checked by a person.
+speech: Sales tax is a tax on the sale of goods and services. A registered seller charges it on his sales (output tax), sets off the tax he paid on his own purchases (input tax), and pays the difference to the government. Example: A registered shop collects tax on what it sells, takes off the tax it paid on its own purchases, and pays only the rest. Rates, who must register and what is exempt are set by law and change. I give no rate: please verify with the FBR (fbr.gov.pk) in Pakistan, or with your country's tax office. General guidance written from the source below; not yet checked by a person.
+speechHidden: Sales tax is a tax on the sale of goods and services. A registered seller charges it on his sales (output tax), sets off the tax he paid on his own purchases (input tax), and pays the difference to the government. Example: A registered shop collects tax on what it sells, takes off the tax it paid on its own purchases, and pays only the rest. Rates, who must register and what is exempt are set by law and change. I give no rate: please verify with the FBR (fbr.gov.pk) in Pakistan, or with your country's tax office. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K601, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K701, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Nisab
+line: Nisab is the least wealth on which Zakat falls due. The app's Zakat page states the figures it uses: 612.36 grams of silver (or 87.48 grams of gold) at the price you enter, and Zakat of 2.5 percent on wealth at or above the nisab.
+line: Example: Enter today's price of silver: the page works out the nisab in money from it.
+line: Which metal to go by, and what Zakat falls on in your case, are for a qualified Hanafi scholar: the page is a reference, not a fatwa.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: Darul Ifta, Darul Uloom Deoband, fatwa 1758/B=399/TB=1433 (nisab and rate), read <date> · Formula Book F35, F37
+spoken: Nisab is the least wealth on which Zakat falls due. The app's Zakat page states the figures it uses: 612.36 grams of silver (or 87.48 grams of gold) at the price you enter, and Zakat of 2.5 percent on wealth at or above the nisab. Example: Enter today's price of silver: the page works out the nisab in money from it. Which metal to go by, and what Zakat falls on in your case, are for a qualified Hanafi scholar: the page is a reference, not a fatwa. General guidance written from the source below; not yet checked by a person.
+speech: Nisab is the least wealth on which Zakat falls due. The app's Zakat page states the figures it uses: 612.36 grams of silver (or 87.48 grams of gold) at the price you enter, and Zakat of 2.5 percent on wealth at or above the nisab. Example: Enter today's price of silver: the page works out the nisab in money from it. Which metal to go by, and what Zakat falls on in your case, are for a qualified Hanafi scholar: the page is a reference, not a fatwa. General guidance written from the source below; not yet checked by a person.
+speechHidden: Nisab is the least wealth on which Zakat falls due. The app's Zakat page states the figures it uses: 612.36 grams of silver (or 87.48 grams of gold) at the price you enter, and Zakat of 2.5 percent on wealth at or above the nisab. Example: Enter today's price of silver: the page works out the nisab in money from it. Which metal to go by, and what Zakat falls on in your case, are for a qualified Hanafi scholar: the page is a reference, not a fatwa. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K701, limit=null, cost=null, sale=null, asked=null)
+
+=== Knowledge(kind=GENERAL_GUIDANCE, atom=K801, limit=null, cost=null, sale=null, asked=null)
+mood: CALM
+label: Packs and units
+line: A pack (a carton, a bag, a box) holds a set number of a smaller unit. Keep one unit for each product and say how many go in a pack, so stock and prices agree whichever way you sell. A price per unit (per kilo, per litre, per piece) lets you compare pack sizes fairly. This app turns packs into the product's own unit.
+line: Example: A carton of 12 bottles for 1,200 is 100 a bottle; a carton of 24 for 2,280 is 95 a bottle.
+line: General guidance written from the source below; not yet checked by a person.
+line: Source: Competition and Markets Authority (GOV.UK), Unit pricing: information for consumers (2015), read <date> · Formula Book F55
+spoken: A pack (a carton, a bag, a box) holds a set number of a smaller unit. Keep one unit for each product and say how many go in a pack, so stock and prices agree whichever way you sell. A price per unit (per kilo, per litre, per piece) lets you compare pack sizes fairly. This app turns packs into the product's own unit. Example: A carton of 12 bottles for 1,200 is 100 a bottle; a carton of 24 for 2,280 is 95 a bottle. General guidance written from the source below; not yet checked by a person.
+speech: A pack (a carton, a bag, a box) holds a set number of a smaller unit. Keep one unit for each product and say how many go in a pack, so stock and prices agree whichever way you sell. A price per unit (per kilo, per litre, per piece) lets you compare pack sizes fairly. This app turns packs into the product's own unit. Example: A carton of 12 bottles for 1,200 is 100 a bottle; a carton of 24 for 2,280 is 95 a bottle. General guidance written from the source below; not yet checked by a person.
+speechHidden: A pack (a carton, a bag, a box) holds a set number of a smaller unit. Keep one unit for each product and say how many go in a pack, so stock and prices agree whichever way you sell. A price per unit (per kilo, per litre, per piece) lets you compare pack sizes fairly. This app turns packs into the product's own unit. Example: A carton of 12 bottles for 1,200 is 100 a bottle; a carton of 24 for 2,280 is 95 a bottle. General guidance written from the source below; not yet checked by a person.
+ask: Knowledge(kind=GENERAL_GUIDANCE, atom=K801, limit=null, cost=null, sale=null, asked=null)
 
 === Knowledge(kind=VERIFIED, atom=K201, limit=null, cost=null, sale=null, asked=null)
 mood: CALM

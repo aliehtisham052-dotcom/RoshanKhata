@@ -11,24 +11,24 @@ internal object HudhudKnowledgeAtoms {
             id = "K101", module = 1, concept = "receivable (to get)",
             title = W.hudhud_kn_k101_title, definition = W.hudhud_kn_k101_def, example = W.hudhud_kn_k101_ex, exception = null,
             formulas = listOf("F02"),
-            sources = listOf("OpenStax, Principles of Accounting Vol. 1 (Franklin, Graybeal, Cooper), ch. 2 key terms"),
-            tiers = listOf(3), dateRead = "2026-11-26",
+            sources = listOf("Business Development Bank of Canada (BDC), Glossary: Accounts receivable"),
+            tiers = listOf(2), dateRead = "2026-11-26",
             reviewedBy = "pending"
         ),
         KnowledgeAtom(
             id = "K102", module = 1, concept = "payable (to give)",
             title = W.hudhud_kn_k102_title, definition = W.hudhud_kn_k102_def, example = W.hudhud_kn_k102_ex, exception = null,
             formulas = listOf("F03"),
-            sources = listOf("OpenStax, Principles of Accounting Vol. 1 (Franklin, Graybeal, Cooper), ch. 2 key terms"),
-            tiers = listOf(3), dateRead = "2026-11-26",
+            sources = listOf("Business Development Bank of Canada (BDC), Glossary: Accounts payable"),
+            tiers = listOf(2), dateRead = "2026-11-26",
             reviewedBy = "pending"
         ),
         KnowledgeAtom(
             id = "K103", module = 1, concept = "net balance",
             title = W.hudhud_kn_k103_title, definition = W.hudhud_kn_k103_def, example = W.hudhud_kn_k103_ex, exception = null,
             formulas = listOf("F01"),
-            sources = listOf("OpenStax, Principles of Accounting Vol. 1 (Franklin, Graybeal, Cooper), ch. 2 key terms"),
-            tiers = listOf(3), dateRead = "2026-11-26",
+            sources = listOf("Business Development Bank of Canada (BDC), Glossary: Accounts receivable", "Business Development Bank of Canada (BDC), Glossary: Accounts payable"),
+            tiers = listOf(2, 2), dateRead = "2026-11-26",
             reviewedBy = "pending"
         ),
         KnowledgeAtom(
@@ -67,15 +67,15 @@ internal object HudhudKnowledgeAtoms {
             id = "K204", module = 2, concept = "contribution per unit",
             title = W.hudhud_kn_k204_title, definition = W.hudhud_kn_k204_def, example = W.hudhud_kn_k204_ex, exception = null,
             formulas = listOf("F68"),
-            sources = listOf("OpenStax, Principles of Accounting Vol. 2 (Franklin, Graybeal, Cooper), 3.1 Contribution margin"),
-            tiers = listOf(3), dateRead = "2026-11-26",
+            sources = listOf("University of Missouri Extension, Break-even Pricing, Revenue and Units (G648, Rahe and Milhollin, revised 2026)", "University of Maryland Extension, Determine Your Contributive Margin Before Setting Your Price (G. S. Myers)"),
+            tiers = listOf(3, 3), dateRead = "2026-11-26",
             reviewedBy = "pending"
         ),
         KnowledgeAtom(
             id = "K205", module = 2, concept = "break-even units",
             title = W.hudhud_kn_k205_title, definition = W.hudhud_kn_k205_def, example = W.hudhud_kn_k205_ex, exception = W.hudhud_kn_k205_exc,
             formulas = listOf("F69"),
-            sources = listOf("OpenStax, Principles of Accounting Vol. 2 (Franklin, Graybeal, Cooper), 3.2 Break-even point"),
+            sources = listOf("University of Missouri Extension, Break-even Pricing, Revenue and Units (G648, Rahe and Milhollin, revised 2026)"),
             tiers = listOf(3), dateRead = "2026-11-26",
             reviewedBy = "pending"
         ),
@@ -85,6 +85,166 @@ internal object HudhudKnowledgeAtoms {
             formulas = listOf("F67", "F66"),
             sources = listOf("eCampusOntario, Business and Financial Math, 1.5 Discounts, markup and markdown", "eCampusOntario, Business and Financial Math, 1.3 Markup"),
             tiers = listOf(3, 3), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K301", module = 3, concept = "cash and profit",
+            title = W.hudhud_kn_k301_title, definition = W.hudhud_kn_k301_def, example = W.hudhud_kn_k301_ex, exception = null,
+            formulas = listOf("F13", "F23"),
+            sources = listOf("Nebraska SBDC, University of Nebraska Omaha, Why Cash Flow is More Important than Profit (A. Boex, 2020)", "U.S. Small Business Administration, Manage your finances (accrual and cash method)"),
+            tiers = listOf(3, 2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K302", module = 3, concept = "cash cycle",
+            title = W.hudhud_kn_k302_title, definition = W.hudhud_kn_k302_def, example = W.hudhud_kn_k302_ex, exception = null,
+            formulas = emptyList(),
+            sources = listOf("K. S. Bigel, Corporate Finance (Touro University open textbook, CC BY 4.0), the cash conversion cycle"),
+            tiers = listOf(3), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K303", module = 3, concept = "credit sales and cash",
+            title = W.hudhud_kn_k303_title, definition = W.hudhud_kn_k303_def, example = W.hudhud_kn_k303_ex, exception = null,
+            formulas = listOf("F02"),
+            sources = listOf("Nebraska SBDC, University of Nebraska Omaha, Why Cash Flow is More Important than Profit (A. Boex, 2020)", "Small Business Development Corporation, Western Australia, Providing credit to customers"),
+            tiers = listOf(3, 2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K401", module = 4, concept = "stock cover",
+            title = W.hudhud_kn_k401_title, definition = W.hudhud_kn_k401_def, example = W.hudhud_kn_k401_ex, exception = W.hudhud_kn_k401_exc,
+            formulas = listOf("F33"),
+            sources = listOf("K. S. Bigel, Corporate Finance (Touro University open textbook, CC BY 4.0), the cash conversion cycle", "NC State University, Supply Chain Resource Cooperative, Safety stock"),
+            tiers = listOf(3, 3), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K402", module = 4, concept = "reorder point",
+            title = W.hudhud_kn_k402_title, definition = W.hudhud_kn_k402_def, example = W.hudhud_kn_k402_ex, exception = null,
+            formulas = listOf("F34", "F60"),
+            sources = listOf("NC State University, Supply Chain Resource Cooperative, Safety stock"),
+            tiers = listOf(3), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K403", module = 4, concept = "dead stock",
+            title = W.hudhud_kn_k403_title, definition = W.hudhud_kn_k403_def, example = W.hudhud_kn_k403_ex, exception = null,
+            formulas = emptyList(),
+            sources = listOf("Business Development Bank of Canada (BDC), Inventory management: tactics to reduce costs and recover cash"),
+            tiers = listOf(2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K404", module = 4, concept = "FIFO and FEFO",
+            title = W.hudhud_kn_k404_title, definition = W.hudhud_kn_k404_def, example = W.hudhud_kn_k404_ex, exception = null,
+            formulas = listOf("F53", "F54"),
+            sources = listOf("World Health Organization, e-Manual, warehousing and inventory management policy (FEFO and FIFO, batch and expiry)"),
+            tiers = listOf(2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K501", module = 5, concept = "credit limit",
+            title = W.hudhud_kn_k501_title, definition = W.hudhud_kn_k501_def, example = W.hudhud_kn_k501_ex, exception = null,
+            formulas = listOf("F04"),
+            sources = listOf("Small Business Development Corporation, Western Australia, Providing credit to customers"),
+            tiers = listOf(2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K502", module = 5, concept = "ageing of dues",
+            title = W.hudhud_kn_k502_title, definition = W.hudhud_kn_k502_def, example = W.hudhud_kn_k502_ex, exception = null,
+            formulas = listOf("F29"),
+            sources = listOf("Office of the Washington State Auditor, Accounts receivable help: red flags in your aging report (2025)"),
+            tiers = listOf(2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K503", module = 5, concept = "tone of a payment reminder",
+            title = W.hudhud_kn_k503_title, definition = W.hudhud_kn_k503_def, example = W.hudhud_kn_k503_ex, exception = null,
+            formulas = emptyList(),
+            sources = listOf("Business Victoria (Victorian Government), Manage overdue payments and debt recovery"),
+            tiers = listOf(2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K504", module = 5, concept = "Qarz-e-Hasna as a loan, not a sale",
+            title = W.hudhud_kn_k504_title, definition = W.hudhud_kn_k504_def, example = W.hudhud_kn_k504_ex, exception = W.hudhud_kn_k504_exc,
+            formulas = listOf("F07", "F38"),
+            sources = listOf("State Bank of Pakistan, Glossary on Islamic Banking (Qard)"),
+            tiers = listOf(1), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K601", module = 6, concept = "sales tax (no rate)",
+            title = W.hudhud_kn_k601_title, definition = W.hudhud_kn_k601_def, example = W.hudhud_kn_k601_ex, exception = W.hudhud_kn_tax_verify,
+            formulas = emptyList(),
+            sources = listOf("Federal Board of Revenue (FBR), Sales Tax Basics"),
+            tiers = listOf(2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K602", module = 6, concept = "withholding tax (no rate)",
+            title = W.hudhud_kn_k602_title, definition = W.hudhud_kn_k602_def, example = W.hudhud_kn_k602_ex, exception = W.hudhud_kn_tax_verify,
+            formulas = emptyList(),
+            sources = listOf("Federal Board of Revenue (FBR), Withholding Taxes"),
+            tiers = listOf(2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K603", module = 6, concept = "tax inclusive and exclusive prices (no rate)",
+            title = W.hudhud_kn_k603_title, definition = W.hudhud_kn_k603_def, example = W.hudhud_kn_k603_ex, exception = W.hudhud_kn_tax_verify,
+            formulas = listOf("F44"),
+            sources = listOf("GOV.UK, Charge, reclaim and record VAT: VAT-inclusive and exclusive prices", "Federal Board of Revenue (FBR), Sales Tax Basics"),
+            tiers = listOf(2, 2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K701", module = 7, concept = "nisab on the Zakat page",
+            title = W.hudhud_kn_k701_title, definition = W.hudhud_kn_k701_def, example = W.hudhud_kn_k701_ex, exception = W.hudhud_kn_k701_exc,
+            formulas = listOf("F35", "F37"),
+            sources = listOf("Darul Ifta, Darul Uloom Deoband, fatwa 1758/B=399/TB=1433 (nisab and rate)"),
+            tiers = listOf(4), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K702", module = 7, concept = "Qarz-e-Hasna on the Zakat page",
+            title = W.hudhud_kn_k702_title, definition = W.hudhud_kn_k702_def, example = W.hudhud_kn_k702_ex, exception = W.hudhud_kn_zakat_scholar,
+            formulas = listOf("F36", "F38"),
+            sources = listOf("State Bank of Pakistan, Glossary on Islamic Banking (Qard)", "Darul Iftaa Mahmudiyyah (Zambia), Is Zakaat due on debts receivable?"),
+            tiers = listOf(1, 4), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K703", module = 7, concept = "doubtful debts on the Zakat page",
+            title = W.hudhud_kn_k703_title, definition = W.hudhud_kn_k703_def, example = W.hudhud_kn_k703_ex, exception = W.hudhud_kn_zakat_scholar,
+            formulas = listOf("F36"),
+            sources = listOf("Darul Iftaa Mahmudiyyah (Zambia), Is Zakaat due on debts receivable?"),
+            tiers = listOf(4), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K801", module = 8, concept = "packs and units",
+            title = W.hudhud_kn_k801_title, definition = W.hudhud_kn_k801_def, example = W.hudhud_kn_k801_ex, exception = null,
+            formulas = listOf("F55"),
+            sources = listOf("Competition and Markets Authority (GOV.UK), Unit pricing: information for consumers (2015)"),
+            tiers = listOf(2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K802", module = 8, concept = "batch and expiry",
+            title = W.hudhud_kn_k802_title, definition = W.hudhud_kn_k802_def, example = W.hudhud_kn_k802_ex, exception = null,
+            formulas = listOf("F53", "F54"),
+            sources = listOf("World Health Organization, e-Manual, warehousing and inventory management policy (FEFO and FIFO, batch and expiry)"),
+            tiers = listOf(2), dateRead = "2026-11-26",
+            reviewedBy = "pending"
+        ),
+        KnowledgeAtom(
+            id = "K803", module = 8, concept = "price list, cash and credit price",
+            title = W.hudhud_kn_k803_title, definition = W.hudhud_kn_k803_def, example = W.hudhud_kn_k803_ex, exception = null,
+            formulas = emptyList(),
+            sources = listOf("Competition and Markets Authority (GOV.UK), Unit pricing: information for consumers (2015)"),
+            tiers = listOf(2), dateRead = "2026-11-26",
             reviewedBy = "pending"
         )
     )
