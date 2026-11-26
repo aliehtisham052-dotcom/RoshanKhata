@@ -4773,10 +4773,15 @@ Hanafi scholar) recorded.
   command, its self-test in Strings CI. The retrain waits for the owner's check log from his two-day phone test.
 - **Marhala 9, business knowledge** (`HudhudKnowledge`, `AnswerKnowledge`, `PriceMath` F65-F69, `shared/hudhud/knowledge/atoms.tsv`
   + `check_knowledge_atoms.py`): eight modules, every atom with its source and date, cricket/jokes/general knowledge still refused.
+- **Marhala 10, advice** (`HudhudAdviceAsk`, `HudhudAdviceRules`, `AnswerAdvisor`): "should I give him more credit" shows his
+  balance, his pace and whether he is late, then "the decision is yours" — never yes/no, no risk label; credit concentration is
+  the share only (F65, no alert: D19); the profit why adds each span's margin and khata buyers. REPORTS only. BC-395..402.
+- **Marhala 9's modules 3-8** (K2): 30 atoms in all, every one "pending" a person's review (the card says general guidance);
+  the Zakat atoms want a qualified Hanafi scholar; OpenStax refused by the checker (BC-403..407).
 - **Speed** (S1, BC-353..358): a name index; 1,000 names p50 34 -> 6.4 ms, 10,000 names 387 -> 28 ms.
 - **Figures after the M7 merge:** owner short 159/200, the 1,000 sentences 813, held-out 1,080 strict / 1,096 lenient, review D
-  1,047 and O 1,074 held, wrong side/amount/person/product 0 on every set; 1,006 shared tests; bug register 341 classes, each
-  with its test.
+  1,047 and O 1,074 held, wrong side/amount/person/product 0 on every set; 1,039 shared tests; bug register 354 classes, each
+  with its test. On a quiet machine the held-out median read is 6.1 ms (5.4 ms on 25 Nov: the new readers).
 - **Left:** the owner's two-day phone test and its check log (then Marhala 8's retrain); the sealed set v2 (the owner's and a
   second writer's); native reads of Sindhi, Bengali, Farsi and Arabic; five rights-register licences a person must verify.
 
