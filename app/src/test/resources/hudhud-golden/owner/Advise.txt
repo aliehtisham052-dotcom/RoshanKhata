@@ -26,3 +26,51 @@ speech: Next 30 days, Coming in: Rs 4,500. Going out: Rs 164,000. Net: −Rs 159
 speechHidden: Next 30 days, Coming in. Only what has a date is counted: instalment plans, pending cheques and supplier bills with a due date. A promise is not money in hand, so promises already broken are not counted on; late bills are due now. Ali Raza, <date>, Cheque to receive. Ali Raza, <date>, Instalment. [an amount left out]
 ask: Advise(of=NEXT_30)
 
+=== Advise(of=MORE_CREDIT)
+mood: CALM
+label: More credit
+line: Add the customer’s name, as in “Should I give Ali more credit?”, and I will tell you what the book says.
+speech: More credit. Add the customer’s name, as in “Should I give Ali more credit?”, and I will tell you what the book says.
+speechHidden: More credit. Add the customer’s name, as in “Should I give Ali more credit?”, and I will tell you what the book says.
+ask: Advise(of=MORE_CREDIT)
+
+=== Advise(of=CONCENTRATION)
+mood: CALM
+label: Share of credit with one party
+figure: 85%
+line: Ali Raza owes 85% of all the money owed to you.
+line: All the money owed to you: Rs 20,000
+row: party=1 | Ali Raza | Rs 17,000 | 85% of the total
+row: party=2 | Bashir Ahmad | Rs 3,000 | 15% of the total
+open: KhataActivity
+money: true
+speech: Share of credit with one party: 85%. Ali Raza owes 85% of all the money owed to you. All the money owed to you: Rs 20,000. Ali Raza, Rs 17,000, 85% of the total. Bashir Ahmad, Rs 3,000, 15% of the total.
+speechHidden: Share of credit with one party. Ali Raza owes 85% of all the money owed to you. Ali Raza, 85% of the total. Bashir Ahmad, 15% of the total. [an amount left out]
+ask: Advise(of=CONCENTRATION)
+
+=== Advise(of=MAGIC)
+mood: CALM
+label: Who owes the most
+line: No magic here, I’m afraid, but a reminder often works. These owe you the most:
+row: party=1 | Ali Raza | Rs 17,000 | -
+row: party=2 | Bashir Ahmad | Rs 3,000 | -
+open: FollowUpActivity
+money: true
+speech: Who owes the most. No magic here, I’m afraid, but a reminder often works. These owe you the most. Ali Raza, Rs 17,000. Bashir Ahmad, Rs 3,000.
+speechHidden: Who owes the most. No magic here, I’m afraid, but a reminder often works. These owe you the most. Ali Raza. Bashir Ahmad. [an amount left out]
+ask: Advise(of=MAGIC)
+
+=== Advise(of=MORE_CREDIT, ids=[1])
+mood: CALM
+label: Ali Raza · More credit
+figure: Rs 17,000
+line: Balance now: Rs 17,000 · You will get
+line: Not enough history yet
+line: Too few repaid amounts yet to say whether he pays late
+line: These are the facts in your book. Whether to give more credit is your decision.
+openParty: 1
+money: true
+speech: Ali Raza, More credit: Rs 17,000. Balance now: Rs 17,000, You will get. Not enough history yet. Too few repaid amounts yet to say whether he pays late. These are the facts in your book. Whether to give more credit is your decision.
+speechHidden: Ali Raza, More credit. Not enough history yet. Too few repaid amounts yet to say whether he pays late. These are the facts in your book. Whether to give more credit is your decision. [an amount left out]
+ask: Advise(of=MORE_CREDIT, ids=[1])
+

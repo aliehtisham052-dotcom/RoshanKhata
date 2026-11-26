@@ -726,7 +726,7 @@ object AnswerBook {
                 else sum(labelRes, label, PartyTotals.of(parties.map { it.balance }).give, ScreenId.KHATA, calm = true)
             VoiceQuestion.Kind.PROFIT_MONTH -> profit(context, labelRes, label, monthProfit(context, dao, VoiceQuestion.Window.THIS_MONTH), ScreenId.INSIGHTS)
             VoiceQuestion.Kind.WHO_OWES_MOST -> {
-                val top = parties.filter { Money.isPositive(it.balance) }.sortedByDescending { it.balance }.take(TOP)
+                val top = HudhudAdviceRules.owedMost(parties, TOP) { it.balance }
                 if (top.isEmpty()) {
                     AnswerCard(Mood.GOOD, label = label, lines = listOf(context.getString(W.vq_nobody)))
                 } else {
@@ -1304,7 +1304,7 @@ object AnswerBook {
         is Hudhud.Ask.Figure -> c.getString(labelOf(ask.kind))
         is Hudhud.Ask.Period -> c.getString(periodLabel(ask.measure, ask.window))
         is Hudhud.Ask.Trend -> c.getString(W.hudhud_t_trend)
-        is Hudhud.Ask.Advise -> c.getString(if (ask.of == Hudhud.AdviseOf.CHASE) W.hudhud_t_chase else W.hudhud_t_next30)
+        is Hudhud.Ask.Advise -> c.getString(AnswerAdvisor.titleOf(ask.of))
         is Hudhud.Ask.Knowledge -> AnswerKnowledge.chipLabel(c, ask)
         Hudhud.Ask.Abilities -> c.getString(W.hudhud_chip_abilities)
         Hudhud.Ask.Today -> c.getString(W.hudhud_chip_today)
@@ -1578,10 +1578,16 @@ object AnswerBook {
             // The advisor's three lead to each other and to the figure behind them (the filter below leaves the REPORTS ones to REPORTS).
             is Hudhud.Ask.Trend -> listOf(Hudhud.Ask.Why(Hudhud.WhyOf.SALES, ask.window), Hudhud.Ask.TopGoods(ask.window),
                 Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE))
-            is Hudhud.Ask.Advise -> if (ask.of == Hudhud.AdviseOf.CHASE) {
-                listOf(Hudhud.Ask.WhenPays(emptyList()), Hudhud.Ask.Advise(Hudhud.AdviseOf.NEXT_30), Hudhud.Ask.Trend(VoiceQuestion.Window.THIS_MONTH))
-            } else {
-                listOf(Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE), Hudhud.Ask.Status(Hudhud.StatusOf.CHEQUES), Hudhud.Ask.Trend(VoiceQuestion.Window.THIS_MONTH))
+            is Hudhud.Ask.Advise -> when (ask.of) {
+                Hudhud.AdviseOf.CHASE ->
+                    listOf(Hudhud.Ask.WhenPays(emptyList()), Hudhud.Ask.Advise(Hudhud.AdviseOf.NEXT_30), Hudhud.Ask.Trend(VoiceQuestion.Window.THIS_MONTH))
+                Hudhud.AdviseOf.NEXT_30 ->
+                    listOf(Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE), Hudhud.Ask.Status(Hudhud.StatusOf.CHEQUES), Hudhud.Ask.Trend(VoiceQuestion.Window.THIS_MONTH))
+                // A customer's three facts lead to his own reading and the chase; the share and the joke to whom to chase first.
+                Hudhud.AdviseOf.MORE_CREDIT -> listOfNotNull(ask.ids.singleOrNull()?.let { Hudhud.Ask.WhenPays(listOf(it)) },
+                    Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE))
+                Hudhud.AdviseOf.CONCENTRATION, Hudhud.AdviseOf.MAGIC ->
+                    listOf(Hudhud.Ask.Advise(Hudhud.AdviseOf.CHASE), Hudhud.Ask.Figure(VoiceQuestion.Kind.TO_GET))
             }
             is Hudhud.Ask.Activity -> listOf(Hudhud.Ask.Collected(today), Hudhud.Ask.Deliveries(today), Hudhud.Ask.Count(Hudhud.Thing.INVOICES, today))
             is Hudhud.Ask.Collected -> listOf(Hudhud.Ask.Activity(today), Hudhud.Ask.Drawer, Hudhud.Ask.Figure(VoiceQuestion.Kind.SALES_TODAY))

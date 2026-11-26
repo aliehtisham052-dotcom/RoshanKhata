@@ -1189,6 +1189,22 @@
     <string name="hudhud_t_chase">اول از چه کسی وصول کنم</string>
     <string name="hudhud_chase_note">بر اساس مدت، همان‌طور که «بدهی‌ها بر اساس مدت» می‌شمارد (0–30، 31–60، 61–90، بیش از 90 روز): قدیمی‌ترین بازه اول؛ در هر بازه اول کسانی که رادار پرداخت دیرپرداز می‌داند، سپس مبلغ بیشتر. از اینجا چیزی فرستاده نمی‌شود.</string>
     <string name="hudhud_t_next30">30 روز آینده</string>
+    <!-- Marhala 10 (26 Nov 2026): more credit (D8), concentration (D19), the joke at the dues, the reasons of a profit drop. Wording for a native read. -->
+    <string name="hudhud_t_more_credit">نسیه بیشتر</string>
+    <string name="hudhud_credit_whose">نام مشتری را بگویید، مثلاً: «آیا به علی نسیه بیشتر بدهم؟»</string>
+    <string name="hudhud_credit_balance">مانده اکنون: %1$s · %2$s</string>
+    <string name="hudhud_credit_late">دیرتر از پرداخت‌های معمولش: %1$s انتظار، معمولاً %2$s</string>
+    <string name="hudhud_credit_not_late">دیرتر از پرداخت‌های معمولش نیست</string>
+    <string name="hudhud_credit_late_unknown">هنوز مبالغ برگشتی کافی نیست تا بگوییم دیر پرداخت می‌کند یا نه</string>
+    <string name="hudhud_credit_yours">این‌ها واقعیت‌های دفتر شماست. دادن نسیه بیشتر تصمیم خود شماست.</string>
+    <string name="hudhud_t_concentration">سهم طلب نزد یک طرف</string>
+    <string name="hudhud_conc_line">%1$s ‏%2$s از کل پولی را که از دیگران طلب دارید بدهکار است.</string>
+    <string name="hudhud_conc_total">کل پولی که طلب دارید: %1$s</string>
+    <string name="hudhud_conc_share">%1$s از کل</string>
+    <string name="hudhud_magic_line">متأسفانه جادویی در کار نیست، اما یادآوری اغلب جواب می‌دهد. این‌ها بیشترین بدهی را به شما دارند:</string>
+    <string name="hudhud_why_buyers">مشتریانی که نسیه خریدند: اکنون %1$d، قبل %2$d</string>
+    <string name="hudhud_why_margin">حاشیه سود فروش‌هایی که قیمت تمام‌شده دارند: اکنون %1$s، قبل %2$s</string>
+    <string name="hudhud_why_price_pressure">فروش بالا رفت اما حاشیه سود پایین آمد: هر فروش سود کمتری گذاشت.</string>
     <string name="hudhud_today_promise">%1$s قول داده امروز بپردازد (%2$s).</string>
     <string name="hudhud_today_cover">%1$s با روند اخیرش حدود %2$s کافی است.</string>
     <string name="hudhud_today_cover_now">%1$s با روند اخیرش امروز را دوام نمی‌آورد.</string>

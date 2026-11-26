@@ -1179,6 +1179,22 @@
     <string name="hudhud_t_chase">Tagih siapa dulu</string>
     <string name="hudhud_chase_note">Menurut umur, seperti dihitung «Tagihan menurut umur» (0–30, 31–60, 61–90, lebih dari 90 hari): kelompok terlama dulu; dalam satu kelompok, yang disebut terlambat oleh Radar Pembayaran lebih dulu, lalu jumlah terbesar. Tidak ada yang dikirim dari sini.</string>
     <string name="hudhud_t_next30">30 hari ke depan</string>
+    <!-- Marhala 10 (26 Nov 2026): more credit (D8), concentration (D19), the joke at the dues, the reasons of a profit drop. -->
+    <string name="hudhud_t_more_credit">Tambah utang</string>
+    <string name="hudhud_credit_whose">Sebutkan nama pelanggan, misalnya: “Apakah saya kasih Ali utang lagi?”</string>
+    <string name="hudhud_credit_balance">Saldo sekarang: %1$s · %2$s</string>
+    <string name="hudhud_credit_late">Lebih lambat dari pembayaran biasanya: menunggu %1$s, biasanya %2$s</string>
+    <string name="hudhud_credit_not_late">Tidak lebih lambat dari pembayaran biasanya</string>
+    <string name="hudhud_credit_late_unknown">Belum cukup jumlah yang dibayar kembali untuk mengatakan apakah ia terlambat membayar</string>
+    <string name="hudhud_credit_yours">Ini fakta di buku Anda. Memberi utang lagi atau tidak, itu keputusan Anda.</string>
+    <string name="hudhud_t_concentration">Porsi piutang pada satu pihak</string>
+    <string name="hudhud_conc_line">%1$s memegang %2$s dari semua uang yang terutang kepada Anda.</string>
+    <string name="hudhud_conc_total">Semua uang yang terutang kepada Anda: %1$s</string>
+    <string name="hudhud_conc_share">%1$s dari total</string>
+    <string name="hudhud_magic_line">Sayangnya saya tidak punya sihir, tetapi pengingat sering berhasil. Merekalah yang paling banyak berutang kepada Anda:</string>
+    <string name="hudhud_why_buyers">Pelanggan yang membeli secara utang: sekarang %1$d, sebelumnya %2$d</string>
+    <string name="hudhud_why_margin">Margin penjualan yang harga pokoknya diketahui: sekarang %1$s, sebelumnya %2$s</string>
+    <string name="hudhud_why_price_pressure">Penjualan naik sementara margin turun: setiap penjualan menyisakan laba lebih kecil.</string>
     <string name="hudhud_today_promise">%1$s berjanji membayar hari ini (%2$s).</string>
     <string name="hudhud_today_cover">%1$s akan cukup sekitar %2$s dengan kecepatan terbarunya.</string>
     <string name="hudhud_today_cover_now">%1$s tidak akan cukup untuk hari ini dengan kecepatan terbarunya.</string>

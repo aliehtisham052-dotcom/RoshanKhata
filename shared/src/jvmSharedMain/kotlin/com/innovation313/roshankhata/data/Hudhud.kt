@@ -309,8 +309,16 @@ object Hudhud {
          * The shop's advisor (25 Nov 2026, plan H5): [AdviseOf.CHASE] — whom to chase first, the oldest dues by Dues by age's rule with
          * the Radar's late payers; [AdviseOf.NEXT_30] — what is promised to come in over the next 30 days, the Cash flow page's own
          * figure. Read by [HudhudAdviceAsk] alone, never by the sense; REPORTS ([AnswerAdvisor.advise]).
+         *
+         * 26 Nov 2026 (Marhala 10): [AdviseOf.MORE_CREDIT] — "Aslam ko aur udhaar doon?", the customer named in [ids]: three facts
+         * (his balance, his pace F39, his late payments F63) and "the decision is yours", never yes or no, never a risk label (D8);
+         * [AdviseOf.CONCENTRATION] — the largest party's share of all money owed to the shop (F65, D19: the share only, no alert);
+         * [AdviseOf.MAGIC] — a joke aimed at the dues ("jadoo kar ke udhaar wapas la do"): a light line and the five who owe most.
+         * [ids] is empty for every other kind; the printed form stays "Advise(of=…)" then (the golden answers' header).
          */
-        data class Advise(val of: AdviseOf) : Ask()
+        data class Advise(val of: AdviseOf, val ids: List<Long> = emptyList()) : Ask() {
+            override fun toString(): String = if (ids.isEmpty()) "Advise(of=$of)" else "Advise(of=$of, ids=$ids)"
+        }
 
         /**
          * Business knowledge (Marhala 9, lane B, D16; 26 Nov 2026): an atom's meaning or formula ([atom], [HudhudKnowledgeAtoms]),
@@ -339,7 +347,7 @@ object Hudhud {
     enum class WhyOf { SALES, PROFIT, EXPENSES, COLLECTED, DUES }
 
     /** What the shop's advisor is asked ([Ask.Advise]): whom to chase first, what will come in over the next 30 days. */
-    enum class AdviseOf { CHASE, NEXT_30 }
+    enum class AdviseOf { CHASE, NEXT_30, MORE_CREDIT, CONCENTRATION, MAGIC }
 
     /** His little acts. */
     enum class Move { FLY, DANCE, JUMP }
@@ -2461,6 +2469,11 @@ object Hudhud {
         // The shop's advisor (25 Nov 2026, plan H5): is the sale going up or down, whom to chase first, what will come in over the next
         // 30 days. The same strict reading as "why" (every word its own or a little word), read after it, so a "why" is always the why's.
         HudhudAdviceAsk.read(heard, isName = { w -> knownName(w, names) || knownName(w, goods) }, calling = { it in VOCATIVE_SET })?.let { return it }
+        // More credit for one customer (26 Nov 2026, Marhala 10, D8): "Aslam ko aur udhaar doon?" — every word the reader's own or a word
+        // of the named customer's; the customer is found by the name search, a choice when several.
+        if (HudhudAdviceAsk.moreCredit(heard, isName = { w -> knownName(w, names) }, calling = { it in VOCATIVE_SET })) {
+            namedIn(said, names, topics).takeIf { it.isNotEmpty() }?.let { return Ask.Advise(AdviseOf.MORE_CREDIT, it) }
+        }
         // What a shop says every day (15 Nov 2026, the everyday-phrasing review): who paid and who does not, where the money went,
         // what left the drawer, what sells best. Words alone, only when no name of the book is in the sentence; [decide] keeps it.
         // A total stated by the sentence's shape ("مردم در کل چقدر به من می‌دهند": how much in all will people give me) is that total,
@@ -3947,6 +3960,7 @@ object Hudhud {
         is Ask.Entry -> a.ids
         is Ask.OnDays -> a.ids
         is Ask.Took -> a.ids
+        is Ask.Advise -> a.ids
         else -> null
     }?.takeIf { it.isNotEmpty() }
 

@@ -1161,6 +1161,22 @@
     <string name="hudhud_t_chase">Pehle kis se wusooli karein</string>
     <string name="hudhud_chase_note">Muddat ke hisaab se, jaise “Baqaya raqam, muddat ke hisaab se” ginta hai (0–30, 31–60, 61–90, 90 din se zyada): sab se purana hissa pehle; ek hisse mein pehle woh jinhein Payment Radar late kehta hai, phir bari raqam. Yahan se kuch bheja nahi jata.</string>
     <string name="hudhud_t_next30">Agle 30 din</string>
+    <!-- Marhala 10 (26 Nov 2026): more credit (D8), concentration (D19), the joke at the dues, the reasons of a profit drop. -->
+    <string name="hudhud_t_more_credit">Aur udhaar</string>
+    <string name="hudhud_credit_whose">Gahak ka naam batayein, maslan: “Kya Ali ko aur udhaar doon?”</string>
+    <string name="hudhud_credit_balance">Ab ka baqaya: %1$s · %2$s</string>
+    <string name="hudhud_credit_late">Apni aam adaigi se late: %1$s se intezar, aam taur par %2$s</string>
+    <string name="hudhud_credit_not_late">Apni aam adaigi se late nahi</string>
+    <string name="hudhud_credit_late_unknown">Abhi itni wapas aayi raqamein nahi ke bataya ja sake ke woh late deta hai ya nahi</string>
+    <string name="hudhud_credit_yours">Yeh aap ke khate ki baatein hain. Aur udhaar dena hai ya nahi, yeh faisla aap ka hai.</string>
+    <string name="hudhud_t_concentration">Ek party ke paas udhaar ka hissa</string>
+    <string name="hudhud_conc_line">%1$s ke paas aap ki kul baqi raqam ka %2$s hai.</string>
+    <string name="hudhud_conc_total">Aap ki kul baqi raqam: %1$s</string>
+    <string name="hudhud_conc_share">Kul ka %1$s</string>
+    <string name="hudhud_magic_line">Jadoo to mere paas nahi, magar yaad-dehani aksar kaam karti hai. Sab se zyada in ki taraf baqi hai:</string>
+    <string name="hudhud_why_buyers">Khate par khareedne wale gahak: ab %1$d, pehle %2$d</string>
+    <string name="hudhud_why_margin">Jin ki laagat maloom hai un ki sale par margin: ab %1$s, pehle %2$s</string>
+    <string name="hudhud_why_price_pressure">Sale barhi magar margin ghata: har sale se kam munafa bacha.</string>
     <string name="hudhud_today_promise">%1$s ne aaj ada karne ka wada kiya hai (%2$s).</string>
     <string name="hudhud_today_cover">%1$s apni haali raftaar se taqreeban %2$s chalega.</string>
     <string name="hudhud_today_cover_now">%1$s apni haali raftaar se aaj ka din nahi nikalega.</string>

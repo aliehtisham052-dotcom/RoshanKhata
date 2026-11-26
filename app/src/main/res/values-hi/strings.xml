@@ -1201,6 +1201,22 @@
     <string name="hudhud_t_chase">पहले किससे वसूली करें</string>
     <string name="hudhud_chase_note">अवधि के हिसाब से, जैसे «बाकी रकम, अवधि के हिसाब से» गिनता है (0–30, 31–60, 61–90, 90 दिन से ज्यादा): सबसे पुराना हिस्सा पहले; एक हिस्से में पहले वे जिन्हें पेमेंट रडार देर से देने वाला कहता है, फिर बड़ी रकम। यहाँ से कुछ भेजा नहीं जाता।</string>
     <string name="hudhud_t_next30">अगले 30 दिन</string>
+    <!-- Marhala 10 (26 Nov 2026): more credit (D8), concentration (D19), the joke at the dues, the reasons of a profit drop. -->
+    <string name="hudhud_t_more_credit">और उधार</string>
+    <string name="hudhud_credit_whose">ग्राहक का नाम बताइए, जैसे: «क्या अली को और उधार दूं?»</string>
+    <string name="hudhud_credit_balance">अभी का बकाया: %1$s · %2$s</string>
+    <string name="hudhud_credit_late">अपने आम भुगतान से देर: %1$s से इंतज़ार, आम तौर पर %2$s</string>
+    <string name="hudhud_credit_not_late">अपने आम भुगतान से देर नहीं</string>
+    <string name="hudhud_credit_late_unknown">अभी इतनी लौटी रकमें नहीं कि बताया जा सके कि वह देर से देता है या नहीं</string>
+    <string name="hudhud_credit_yours">ये आपके खाते की बातें हैं। और उधार देना है या नहीं, यह फैसला आपका है।</string>
+    <string name="hudhud_t_concentration">एक पार्टी के पास उधार का हिस्सा</string>
+    <string name="hudhud_conc_line">%1$s के पास आपकी कुल बाकी रकम का %2$s है।</string>
+    <string name="hudhud_conc_total">आपकी कुल बाकी रकम: %1$s</string>
+    <string name="hudhud_conc_share">कुल का %1$s</string>
+    <string name="hudhud_magic_line">जादू तो मेरे पास नहीं, पर याद दिलाना अक्सर काम करता है। सबसे ज़्यादा इनकी तरफ बाकी है:</string>
+    <string name="hudhud_why_buyers">खाते पर खरीदने वाले ग्राहक: अब %1$d, पहले %2$d</string>
+    <string name="hudhud_why_margin">जिनकी लागत मालूम है उनकी बिक्री पर मार्जिन: अब %1$s, पहले %2$s</string>
+    <string name="hudhud_why_price_pressure">बिक्री बढ़ी पर मार्जिन घटा: हर बिक्री से कम मुनाफा बचा।</string>
     <string name="hudhud_today_promise">%1$s ने आज देने का वादा किया है (%2$s)।</string>
     <string name="hudhud_today_cover">%1$s अपनी हाल की रफ़्तार से लगभग %2$s चलेगा।</string>
     <string name="hudhud_today_cover_now">%1$s अपनी हाल की रफ़्तार से आज का दिन नहीं निकालेगा।</string>

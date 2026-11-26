@@ -39,7 +39,7 @@ object AnswerWhy {
         val (nowFrom, nowTo) = spans.now
         val (beforeFrom, beforeTo) = spans.before
         val figures = when (ask.of) {
-            Hudhud.WhyOf.SALES -> sales(dao, spans)
+            Hudhud.WhyOf.SALES -> sales(c, dao, spans)
             Hudhud.WhyOf.PROFIT -> profit(c, dao, spans)
             Hudhud.WhyOf.EXPENSES -> expenses(c, dao, spans)
             Hudhud.WhyOf.COLLECTED -> collected(c, dao, spans)
@@ -96,16 +96,26 @@ object AnswerWhy {
         }
     }
 
-    private suspend fun sales(dao: KhataDao, s: HudhudWhyAsk.Spans): Figures {
+    private suspend fun sales(c: AnswerEnv, dao: KhataDao, s: HudhudWhyAsk.Spans): Figures {
         val (a1, a2) = s.now
         val (b1, b2) = s.before
+        val nowBuyers = dao.topCustomersBetween(a1, a2, ALL_ROWS)
+        val beforeBuyers = dao.topCustomersBetween(b1, b2, ALL_ROWS)
         val customers = Group(
-            HudhudWhyAsk.summed(dao.topCustomersBetween(a1, a2, ALL_ROWS).map { it.name to it.total }),
-            HudhudWhyAsk.summed(dao.topCustomersBetween(b1, b2, ALL_ROWS).map { it.name to it.total })
+            HudhudWhyAsk.summed(nowBuyers.map { it.name to it.total }),
+            HudhudWhyAsk.summed(beforeBuyers.map { it.name to it.total })
         )
         val goods = Group(goodsOf(dao.topProductsBetween(a1, a2, ALL_ROWS)), goodsOf(dao.topProductsBetween(b1, b2, ALL_ROWS)), money = false)
-        return Figures(dao.salesTotalBetween(a1, a2), dao.salesTotalBetween(b1, b2), listOf(customers, goods))
+        return Figures(dao.salesTotalBetween(a1, a2), dao.salesTotalBetween(b1, b2), listOf(customers, goods),
+            listOfNotNull(buyersLine(c, nowBuyers.size, beforeBuyers.size)))
     }
+
+    /**
+     * How many customers bought on khata in each span (26 Nov 2026, Marhala 10: "fewer customers" among the reasons), the same rows as
+     * the customers' parts above (Insights' top customers). Said as a count of each, never judged; nothing when neither span had one.
+     */
+    private fun buyersLine(c: AnswerEnv, now: Int, before: Int): String? =
+        if (now == 0 && before == 0) null else c.getString(W.hudhud_why_buyers, now, before)
 
     /** Goods sold by quantity, each name with its unit ("Urea (bag)"): two units of one name are two parts, never added. */
     private fun goodsOf(rows: List<ProductStat>): Map<String, Double> =
@@ -128,8 +138,25 @@ object AnswerWhy {
         }
         // Lines with no cost leave part of the profit unknown: said as counts, never guessed into the figure.
         if (now.skippedLines > 0 || before.skippedLines > 0) notes += c.getString(W.hudhud_why_no_cost, now.skippedLines, before.skippedLines)
+        // 26 Nov 2026 (Marhala 10, the reasons of a profit drop the book can show): the margin on the costed sales in each span (F66 over
+        // the span's own figures), and "sales up, margin down" said only when the two margins as shown differ; then how many customers
+        // bought (fewer customers). No threshold of our own: a fact is said when the book holds it.
+        val marginNow = marginOf(now)
+        val marginBefore = marginOf(before)
+        if (marginNow != null && marginBefore != null) {
+            notes += c.getString(W.hudhud_why_margin, AnswerKnowledge.percent(marginNow), AnswerKnowledge.percent(marginBefore))
+            if (HudhudAdviceRules.pricePressure(now.salesTotal, before.salesTotal, marginNow, marginBefore)) {
+                notes += c.getString(W.hudhud_why_price_pressure)
+            }
+        }
+        buyersLine(c, dao.topCustomersBetween(s.now.first, s.now.second, ALL_ROWS).size,
+            dao.topCustomersBetween(s.before.first, s.before.second, ALL_ROWS).size)?.let { notes += it }
         return Figures(now.takeUnless { it.isEmpty }?.grossProfit, before.takeUnless { it.isEmpty }?.grossProfit, listOf(products), notes)
     }
+
+    /** F66 over a span: the gross profit as a share of the sale value of the same costed lines; null when nothing was costed. */
+    private fun marginOf(r: Profit.ProfitReport): Double? =
+        if (r.isEmpty) null else PriceMath.marginPercent(cost = r.coveredRevenue - r.grossProfit, sale = r.coveredRevenue)
 
     private suspend fun expenses(c: AnswerEnv, dao: KhataDao, s: HudhudWhyAsk.Spans): Figures {
         // Profit.between's own rule: the cashbook's (from, to] shifted by one to read [from, to), and the staff's pay.

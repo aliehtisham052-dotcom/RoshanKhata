@@ -1203,6 +1203,22 @@
     <string name="hudhud_t_chase">Whom to chase first</string>
     <string name="hudhud_chase_note">By age, as “Dues by age” counts it (0–30, 31–60, 61–90, over 90 days): the oldest band first; in one band, those the Payment Radar calls late first, then the larger amount. Nothing is sent from here.</string>
     <string name="hudhud_t_next30">Next 30 days</string>
+    <!-- Marhala 10 (26 Nov 2026): more credit (D8), concentration (D19), the joke at the dues, the reasons of a profit drop. -->
+    <string name="hudhud_t_more_credit">More credit</string>
+    <string name="hudhud_credit_whose">Add the customer’s name, as in “Should I give Ali more credit?”, and I will tell you what the book says.</string>
+    <string name="hudhud_credit_balance">Balance now: %1$s · %2$s</string>
+    <string name="hudhud_credit_late">Later than his usual payments: waiting %1$s, usually %2$s</string>
+    <string name="hudhud_credit_not_late">Not later than his usual payments</string>
+    <string name="hudhud_credit_late_unknown">Too few repaid amounts yet to say whether he pays late</string>
+    <string name="hudhud_credit_yours">These are the facts in your book. Whether to give more credit is your decision.</string>
+    <string name="hudhud_t_concentration">Share of credit with one party</string>
+    <string name="hudhud_conc_line">%1$s owes %2$s of all the money owed to you.</string>
+    <string name="hudhud_conc_total">All the money owed to you: %1$s</string>
+    <string name="hudhud_conc_share">%1$s of the total</string>
+    <string name="hudhud_magic_line">No magic here, I’m afraid, but a reminder often works. These owe you the most:</string>
+    <string name="hudhud_why_buyers">Customers who bought on khata: %1$d now, %2$d before</string>
+    <string name="hudhud_why_margin">Margin on sales with a known cost: %1$s now, %2$s before</string>
+    <string name="hudhud_why_price_pressure">Sales went up while the margin went down: each sale left less profit.</string>
     <string name="hudhud_today_promise">%1$s promised to pay today (%2$s).</string>
     <string name="hudhud_today_cover">%1$s should last about %2$s at its recent pace.</string>
     <string name="hudhud_today_cover_now">%1$s will not last the day at its recent pace.</string>

@@ -302,6 +302,8 @@ internal object HudhudGoldenAsks {
         }
         for (w in WINDOWS) a += Hudhud.Ask.Trend(w)
         Hudhud.AdviseOf.values().forEach { a += Hudhud.Ask.Advise(it) }
+        // Marhala 10 (26 Nov 2026): more credit for one customer — his three facts and the owner's decision (D8).
+        a += Hudhud.Ask.Advise(Hudhud.AdviseOf.MORE_CREDIT, ali)
         // Two entries in one sentence: offered one at a time, nothing written.
         a += Hudhud.Ask.Entries(
             listOf(

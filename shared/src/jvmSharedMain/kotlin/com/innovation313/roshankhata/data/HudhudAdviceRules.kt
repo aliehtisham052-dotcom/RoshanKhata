@@ -63,4 +63,23 @@ object HudhudAdviceRules {
         }
         return out
     }
+
+    /**
+     * Who owes the shop the most (26 Nov 2026, one rule): the parties whose balance is above nought ([Money.isPositive]), the largest
+     * first, the first [n]. A tie keeps the book's order (a stable sort), so the first is [PriceMath.concentration]'s largest too. The
+     * "who owes most" figure, the concentration's rows and the joke's list all read it.
+     */
+    fun <T> owedMost(parties: List<T>, n: Int, balance: (T) -> Double): List<T> =
+        parties.filter { Money.isPositive(balance(it)) }.sortedByDescending { balance(it) }.take(n)
+
+    /**
+     * Price pressure (26 Nov 2026, Marhala 10): the sales of the span rose ([Money.isPositive] of the change) while the margin fell, the
+     * two margins compared as the card shows them (two decimals, half up) — a difference the card cannot show is no fall. No threshold
+     * of our own.
+     */
+    fun pricePressure(salesNow: Double, salesBefore: Double, marginNow: Double, marginBefore: Double): Boolean {
+        val a = java.math.BigDecimal.valueOf(marginNow).setScale(2, java.math.RoundingMode.HALF_UP)
+        val b = java.math.BigDecimal.valueOf(marginBefore).setScale(2, java.math.RoundingMode.HALF_UP)
+        return Money.isPositive(salesNow - salesBefore) && a < b
+    }
 }

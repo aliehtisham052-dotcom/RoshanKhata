@@ -12,11 +12,12 @@ line: Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0)
 line: Paracetamol (packet): +4 (now 4, before 0)
 line: DAP (bag): +1 (now 1, before 0)
 line: Urea (bag): +1 (now 1, before 0)
+line: Customers who bought on khata: 2 now, 0 before
 line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
 open: InsightsActivity
 money: true
-speech: Sales: what changed: +Rs 13,200. Now (<date>): Rs 13,200. The same days before (<date>): Rs 0. Difference: +Rs 13,200. It did not go down: it went up by Rs 13,200. What moved most. Ali Raza: +Rs 9,000 (now Rs 9,000, before Rs 0). Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0). Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
-speechHidden: Sales: what changed. What moved most. Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+speech: Sales: what changed: +Rs 13,200. Now (<date>): Rs 13,200. The same days before (<date>): Rs 0. Difference: +Rs 13,200. It did not go down: it went up by Rs 13,200. What moved most. Ali Raza: +Rs 9,000 (now Rs 9,000, before Rs 0). Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0). Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). Customers who bought on khata: 2 now, 0 before. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales: what changed. What moved most. Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). Customers who bought on khata: 2 now, 0 before. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
 ask: Why(of=SALES, window=TODAY, down=true)
 
 === Why(of=SALES, window=THIS_MONTH, down=null)
@@ -32,11 +33,12 @@ line: Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0)
 line: Paracetamol (packet): +4 (now 4, before 0)
 line: DAP (bag): +1 (now 1, before 0)
 line: Urea (bag): +1 (now 1, before 0)
+line: Customers who bought on khata: 2 now, 0 before
 line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
 open: InsightsActivity
 money: true
-speech: Sales: what changed: +Rs 13,200. Now (<date> – <date>): Rs 13,200. The same days before (<date> – <date>): Rs 0. Difference: +Rs 13,200. What moved most. Ali Raza: +Rs 9,000 (now Rs 9,000, before Rs 0). Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0). Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
-speechHidden: Sales: what changed. What moved most. Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+speech: Sales: what changed: +Rs 13,200. Now (<date> – <date>): Rs 13,200. The same days before (<date> – <date>): Rs 0. Difference: +Rs 13,200. What moved most. Ali Raza: +Rs 9,000 (now Rs 9,000, before Rs 0). Bashir Ahmad: +Rs 4,000 (now Rs 4,000, before Rs 0). Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). Customers who bought on khata: 2 now, 0 before. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Sales: what changed. What moved most. Paracetamol (packet): +4 (now 4, before 0). DAP (bag): +1 (now 1, before 0). Urea (bag): +1 (now 1, before 0). Customers who bought on khata: 2 now, 0 before. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
 ask: Why(of=SALES, window=THIS_MONTH, down=null)
 
 === Why(of=PROFIT, window=TODAY, down=true)
@@ -46,11 +48,12 @@ line: Now (<date>): Rs 1,030
 line: The same days before (<date>): —
 line: One of the two figures is not known, so I give no difference.
 line: Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0)
+line: Customers who bought on khata: 2 now, 0 before
 line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
 open: InsightsActivity
 money: true
-speech: Profit: what changed. Now (<date>): Rs 1,030. The same days before (<date>): —. One of the two figures is not known, so I give no difference. Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
-speechHidden: Profit: what changed. The same days before (<date>): —. One of the two figures is not known, so I give no difference. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+speech: Profit: what changed. Now (<date>): Rs 1,030. The same days before (<date>): —. One of the two figures is not known, so I give no difference. Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0). Customers who bought on khata: 2 now, 0 before. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Profit: what changed. The same days before (<date>): —. One of the two figures is not known, so I give no difference. Customers who bought on khata: 2 now, 0 before. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
 ask: Why(of=PROFIT, window=TODAY, down=true)
 
 === Why(of=PROFIT, window=THIS_MONTH, down=null)
@@ -60,11 +63,12 @@ line: Now (<date> – <date>): Rs 1,030
 line: The same days before (<date> – <date>): —
 line: One of the two figures is not known, so I give no difference.
 line: Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0)
+line: Customers who bought on khata: 2 now, 0 before
 line: These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
 open: InsightsActivity
 money: true
-speech: Profit: what changed. Now (<date> – <date>): Rs 1,030. The same days before (<date> – <date>): —. One of the two figures is not known, so I give no difference. Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0). These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
-speechHidden: Profit: what changed. The same days before (<date> – <date>): —. One of the two figures is not known, so I give no difference. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
+speech: Profit: what changed. Now (<date> – <date>): Rs 1,030. The same days before (<date> – <date>): —. One of the two figures is not known, so I give no difference. Expenses (cashbook): +Rs 2,550 (now Rs 2,550, before Rs 0). Customers who bought on khata: 2 now, 0 before. These are the book's own figures. A reason outside the book (the market, the weather) is not in it.
+speechHidden: Profit: what changed. The same days before (<date> – <date>): —. One of the two figures is not known, so I give no difference. Customers who bought on khata: 2 now, 0 before. These are the book's own figures. A reason outside the book (the market, the weather) is not in it. [an amount left out]
 ask: Why(of=PROFIT, window=THIS_MONTH, down=null)
 
 === Why(of=EXPENSES, window=TODAY, down=true)
