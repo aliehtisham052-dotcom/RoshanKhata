@@ -19,6 +19,8 @@ same on every computer.
     python3 scripts/hudhud_calib_folds.py --check                                  # prove the trace and the split, write nothing
     python3 scripts/hudhud_calib_folds.py --by-text --out FILE                     # the NAIVE split (text key only), to measure
                                                                                    # how much a split that ignores scripts flatters
+    python3 scripts/hudhud_calib_folds.py --src DIR --bank FILE --recipe 3 --out F # a CANDIDATE bank (scripts/hudhud_cycle.sh): the
+                                                                                   # sources in DIR (DIR/<lang>.tsv, DIR/more/), its bank.tsv
 
 The output holds the bank's own lines in the bank's own order (checked against bank.tsv), so a fold model is learnt from exactly
 the lines the shipped sense was learnt from, minus one fold.
@@ -57,10 +59,11 @@ def traced():
             i = seen.get(label, 0)
             seen[label] = i + 1
             (held if i in BANK.HELD_OUT else bank).append((lang, label, text, ("first", label, i)))
-    if recipe == 2:
+    measured = BANK.measured_keys() if recipe == 3 else set()
+    if recipe >= 2:
         held_keys = {SAME(t) for _, _, t, _ in held}
-        bank = [b for b in bank if SAME(b[2]) not in held_keys]
-    taken = {SAME(t) for _, _, t, _ in held} | {SAME(t) for _, _, t, _ in bank}
+        bank = [b for b in bank if SAME(b[2]) not in held_keys and SAME(b[2]) not in measured]
+    taken = {SAME(t) for _, _, t, _ in held} | {SAME(t) for _, _, t, _ in bank} | measured
     for lang in BANK.LANGS:
         path = BANK.MORE / f"{lang}.tsv"
         if not path.exists():
@@ -152,6 +155,16 @@ def check(rows, family, fold, by_text_only=False):
 
 
 def main(argv):
+    global SAME
+    # A candidate bank (scripts/hudhud_cycle.sh): its sources, its bank file and its recipe instead of the repository's.
+    if "--src" in argv:
+        src = Path(argv[argv.index("--src") + 1])
+        BANK.SRC, BANK.MORE = src, src / "more"
+    if "--bank" in argv:
+        BANK.OUT = Path(argv[argv.index("--bank") + 1])
+    if "--recipe" in argv:
+        BANK.DEFAULT_RECIPE = int(argv[argv.index("--recipe") + 1])
+        SAME = BANK.key if BANK.DEFAULT_RECIPE == 1 else BANK.key_indic
     naive = "--by-text" in argv
     rows, family, fold = folds(naive)
     problems = check(rows, family, fold, naive)

@@ -33,6 +33,19 @@ written only where asked, and --check always proves its coverage next to the shi
 
     python3 scripts/gen_hudhud_bank.py --recipe 2 --out-dir /tmp/bank2   # bank.tsv and heldout.tsv of recipe 2 there
     python3 scripts/gen_hudhud_bank.py --recipe 2                        # H4: write recipe 2 over the shipped files (flip DEFAULT_RECIPE)
+
+H4 shipped recipe 2 (DEFAULT_RECIPE = 2, 25 Nov 2026): the Indic-safe key and the held-out copies left out are DONE. What
+the next retrain still owes (Marhala 8, 26 Nov 2026; scripts/hudhud_sets_overlap.tsv says "each goes when the bank is next
+changed and the sense learnt again"):
+
+  recipe 3  recipe 2, and a bank sentence whose key_indic is a sentence of a MEASURED set (owner_set.tsv, owner_1000.tsv,
+            review_d.tsv, review_o.tsv: the sentence column, not the context column) is left out of the bank too, first round
+            and second round alike, so the owner's floors and the review rows stop measuring the bank's memory. The held-out
+            set is the same. Prepared, not applied: only `--recipe 3` / `--next-key` writes it, and scripts/hudhud_cycle.sh
+            --next-key --apply is the one road that makes it the default (it flips DEFAULT_RECIPE, rewrites the overlap list,
+            which may only shrink, and learns the sense again in the same step).
+
+    python3 scripts/gen_hudhud_bank.py --next-key --out-dir /tmp/bank3   # recipe 3's bank and held-out there (same as --recipe 3)
 """
 import sys
 from pathlib import Path
@@ -85,9 +98,35 @@ def key_indic(text):
     return " ".join(t.split())
 
 
+# The sets Hudhud is measured with (recipe 3 leaves their sentences out of the bank): file name -> the sentence column.
+MEASURED = {"owner_set.tsv": 1, "owner_1000.tsv": 1, "review_d.tsv": 2, "review_o.tsv": 2}
+MEASURED_DIR = OUT.parent  # where they live (a candidate bank written elsewhere is still measured by the repository's sets)
+
+
+def measured_keys(res=None):
+    """key_indic of every sentence of the measured sets (MEASURED), read from [res] (the tests' resources folder by default)."""
+    res = MEASURED_DIR if res is None else Path(res)
+    keys = set()
+    for name, col in MEASURED.items():
+        path = res / name
+        if not path.exists():
+            raise SystemExit(f"gen_hudhud_bank: {path} is missing (recipe 3 needs every measured set)")
+        for raw in path.read_text(encoding="utf-8").splitlines():
+            if not raw.strip() or raw.startswith("#"):
+                continue
+            cols = raw.split("\t")
+            if len(cols) > col and cols[col].strip():
+                keys.add(key_indic(cols[col]))
+    keys.discard("")
+    return keys
+
+
 def read(recipe=None):
-    """(bank, held) as (language, meaning, sentence) rows; [recipe] is 1 (as shipped) or 2 (the stable one, see the header)."""
+    """(bank, held) as (language, meaning, sentence) rows; [recipe] is 1 (as recipe 1 wrote it), 2 (shipped since H4) or 3
+    (the next retrain's: recipe 2 without the measured sets' sentences; see the header)."""
     recipe = DEFAULT_RECIPE if recipe is None else recipe
+    if recipe not in (1, 2, 3):
+        raise SystemExit(f"gen_hudhud_bank: no recipe {recipe}")
     same = key if recipe == 1 else key_indic
     bank, held = [], []
     for lang in LANGS:
@@ -99,11 +138,12 @@ def read(recipe=None):
             i = seen.get(label, 0)
             seen[label] = i + 1
             (held if i in HELD_OUT else bank).append((lang, label, text))
-    if recipe == 2:
+    measured = measured_keys() if recipe == 3 else set()
+    if recipe >= 2:
         # A first-round sentence that is a held-out sentence is not taught: the held-out figure would measure memory.
         held_keys = {same(t) for _, _, t in held}
-        bank = [b for b in bank if same(b[2]) not in held_keys]
-    taken = {same(t) for _, _, t in held} | {same(t) for _, _, t in bank}
+        bank = [b for b in bank if same(b[2]) not in held_keys and same(b[2]) not in measured]
+    taken = {same(t) for _, _, t in held} | {same(t) for _, _, t in bank} | measured
     for lang in LANGS:
         path = MORE / f"{lang}.tsv"
         if not path.exists():
@@ -167,6 +207,31 @@ def coverage_problems():
     return problems, bank1, bank2, held2
 
 
+def recipe3_problems(bank2=None, held2=None):
+    """Recipe 3 against recipe 2: the same held-out set; the bank only loses rows, each one a measured-set sentence or a later
+    copy of one; no bank row is a measured sentence. (problems, rows left out)."""
+    if bank2 is None:
+        bank2, held2 = read(2)
+    bank3, held3 = read(3)
+    measured = measured_keys()
+    problems = []
+    if held3 != held2:
+        problems.append("the held-out set differs between recipe 2 and recipe 3")
+    for lang, label, text in bank3:
+        if key_indic(text) in measured:
+            problems.append(f"recipe 3 still teaches a measured sentence: [{lang}] {label}: {text}")
+    s3 = {(l, lb, t) for l, lb, t in bank3}
+    if not s3 <= {(l, lb, t) for l, lb, t in bank2}:
+        problems.append("recipe 3 adds a row recipe 2 does not have")
+    gone = [b for b in bank2 if b not in s3]
+    for lang, label, text in gone:
+        if key_indic(text) not in measured:
+            problems.append(f"recipe 3 left out a sentence that no measured set holds: [{lang}] {label}: {text}")
+    if [b for b in bank2 if b in s3] != bank3:
+        problems.append("recipe 3 changes the order of the rows it keeps")
+    return problems, len(gone)
+
+
 def bank_text(bank):
     return "".join(f"{label}\t{text}\n" for _, label, text in bank)
 
@@ -184,9 +249,9 @@ def _arg(name, default=None):
 
 
 def main():
-    recipe = int(_arg("--recipe", DEFAULT_RECIPE))
-    if recipe not in (1, 2):
-        print("--recipe is 1 or 2")
+    recipe = 3 if "--next-key" in sys.argv else int(_arg("--recipe", DEFAULT_RECIPE))
+    if recipe not in (1, 2, 3):
+        print("--recipe is 1, 2 or 3 (--next-key is 3)")
         return 2
     bank, held = read(recipe)
     k, h = bank_text(bank), held_text(held)
@@ -207,6 +272,11 @@ def main():
         dropped = len({(l, lb, t) for l, lb, t in bank1} - {(l, lb, t) for l, lb, t in bank2})
         print(f"Recipe 2 coverage holds: it adds {added} sentences the old key folded together and leaves out {dropped} held-out copies "
               f"({len(bank1)} -> {len(bank2)} in the bank; the held-out set is the same {len(held2)}).")
+        p3, left3 = recipe3_problems(bank2, held2)
+        if p3:
+            print("Recipe 3 (the next retrain's):\n  " + "\n  ".join(p3[:20]))
+            return 1
+        print(f"Recipe 3 (prepared, not shipped) holds: it leaves out {left3} more sentences that are measured-set sentences; nothing else moves.")
         stale = []
         if not OUT.exists() or OUT.read_text(encoding="utf-8") != k:
             stale.append(str(OUT.relative_to(ROOT)))

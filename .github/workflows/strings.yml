@@ -44,6 +44,11 @@ on:
       - 'scripts/hudhud_manifest.py'
       - 'scripts/check_label_map.py'
       - 'docs/hudhud-label-map.tsv'
+      - 'scripts/hudhud_cycle.*'
+      - 'scripts/hudhud_pairs.py'
+      - 'scripts/test_hudhud_cycle.py'
+      - 'scripts/test_gen_hudhud_bank.py'
+      - 'docs/hudhud-bank-additions.tsv'
       # Hudhud's glossary: the engine's concept words by concept and language, for a native read (hudhud_glossary.py --check;
       # Marhala 11 item 5). HudhudMind.kt itself is under shared/src/**.
       - 'scripts/hudhud_glossary.py'
@@ -121,6 +126,11 @@ on:
       - 'scripts/hudhud_manifest.py'
       - 'scripts/check_label_map.py'
       - 'docs/hudhud-label-map.tsv'
+      - 'scripts/hudhud_cycle.*'
+      - 'scripts/hudhud_pairs.py'
+      - 'scripts/test_hudhud_cycle.py'
+      - 'scripts/test_gen_hudhud_bank.py'
+      - 'docs/hudhud-bank-additions.tsv'
       # Hudhud's glossary: the engine's concept words by concept and language, for a native read (hudhud_glossary.py --check;
       # Marhala 11 item 5). HudhudMind.kt itself is under shared/src/**.
       - 'scripts/hudhud_glossary.py'
@@ -210,6 +220,9 @@ jobs:
       # BC-380: every meaning of the sense and the rules is mapped; every figure label has a Formula Book id.
       - name: Hudhud's label map holds every label, each figure with its formula
         run: python3 scripts/check_label_map.py
+      # Marhala 8: the training cycle's gate, verdict and apply refusals, without training (BC-389..394).
+      - name: Hudhud training cycle self-test
+        run: bash scripts/hudhud_cycle.sh --self-test
       # Plan v1, Marhala 11 item 5: docs/hudhud-glossary.tsv is HudhudMind.kt's LEXICON by concept and language (the language
       # read from the letters, never guessed), with a reviewed_by column a native reader fills; stale against the code = fail.
       - name: Hudhud's glossary is current against HudhudMind.kt

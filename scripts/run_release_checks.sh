@@ -60,4 +60,6 @@ for c in "${CHECKS[@]}"; do
   if ! python3 scripts/$c; then echo "::error::release check failed: $c"; failed=1; fi
 done
 bash scripts/shared_harness/run.sh --lists-only || { echo "::error::the shared harness's file lists are stale"; failed=1; }
+# The training cycle's own checks (no Java, no training; about 30 s): the gate, the SHIP rule, the pairs, the bank recipes, the ledger.
+bash scripts/hudhud_cycle.sh --self-test || { echo "::error::the training cycle's self-test failed"; failed=1; }
 exit $failed

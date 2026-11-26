@@ -191,7 +191,11 @@ object HudhudBaseline {
         return r
     }
 
-    fun pass(timing: Boolean, collectConfusion: Boolean): Figures {
+    /** One row's result for [pass]'s [sink] (scripts/hudhud_cycle.sh compares two passes sentence by sentence): the set, a key that
+     *  names the row in that set, the reading shown, and whether it counts as right there (held-out: strict). */
+    fun interface RowSink { fun row(set: String, key: String, shown: String, right: Boolean) }
+
+    fun pass(timing: Boolean, collectConfusion: Boolean, sink: RowSink? = null): Figures {
         val f = Figures()
         // held-out
         for (h in heldRows) {
@@ -199,6 +203,7 @@ object HudhudBaseline {
             val got = timed(f, timing, "heldout") { Hudhud.understand(said, heldNames, heldTopics, h.lang, heldGoods) }
             val label = heldLabel(got)
             f.rate("heldout strict", h.lang).add(label == h.label)
+            sink?.row("heldout", "${h.lang}\t${h.label}\t${h.text}", label ?: "(none)", label == h.label)
             f.rate("heldout lenient", h.lang).add(close(h.label, label))
             if (collectConfusion && label != h.label) {
                 val k = h.label to (label ?: "(none)")
@@ -217,6 +222,7 @@ object HudhudBaseline {
             val shown = HudhudShown.of(got)
             val right = o.ok.any { shown.startsWith(it) }
             f.rate(o.set, "owner").add(right)
+            sink?.row(o.set, o.id, shown, right)
             if (collectConfusion && !right) {
                 val k = o.ok.joinToString("|") to shown
                 f.confusion[k] = (f.confusion[k] ?: 0) + 1
@@ -232,6 +238,7 @@ object HudhudBaseline {
             val ok = r.status == "OK"
             val same = ok && shown == r.held
             f.rate(r.set, r.lang).add(same)
+            if (ok) sink?.row(r.set, "${r.lang}\t${r.said}\t${r.prev.orEmpty()}", shown, same)
             val c = f.reviewOk.getOrPut(r.set) { IntArray(2) }
             if (ok) { c[0]++; if (same) c[1]++ }
             if (collectConfusion && ok && !same) {
