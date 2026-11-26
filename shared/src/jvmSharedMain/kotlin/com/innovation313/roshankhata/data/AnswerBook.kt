@@ -1494,11 +1494,7 @@ object AnswerBook {
      * or "aur kal?" read against it: not a list offered ("whose?"), a change to his voice or the look, a name to keep, a span
      * he cannot give, nor a matter of faith or his own story ([reverent]: a detour, the shop's talk goes on from before it).
      */
-    fun carriesOn(taken: Hudhud.Ask, reverent: Boolean): Boolean =
-        !reverent && taken !is Hudhud.Ask.DidYouMean && taken != Hudhud.Ask.Unknown &&
-            taken !is Hudhud.Ask.NeedName && taken !is Hudhud.Ask.Voice && taken !is Hudhud.Ask.NeedGoods &&
-            taken !is Hudhud.Ask.CallMe && taken !is Hudhud.Ask.Look && taken !is Hudhud.Ask.LookDone &&
-            taken !is Hudhud.Ask.SpanLimit
+    fun carriesOn(taken: Hudhud.Ask, reverent: Boolean): Boolean = HudhudDialogue.carries(taken, reverent)
 
     /**
      * What to ask next after [ask] (13 Nov 2026, the owner: "recommendation automatically pick kare"): the questions
